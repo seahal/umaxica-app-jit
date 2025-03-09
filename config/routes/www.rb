@@ -20,9 +20,9 @@ Rails.application.routes.draw do
           resources :telephone, only: [ :update, :show ]
           resources :message, only: [ :update, :create ]
         end
-        # ROBOTS
+        # robots.txt
         resources :robots, only: :index, format: :txt
-        # sitemap
+        # sitemap.xml
         resource :sitemap, only: :show, format: :xml
         # Security
         get "/security(.:format)", to: redirect("#{ENV['EDGE_CORPORATE_URL']}/security.html"), as: :security
@@ -67,9 +67,9 @@ Rails.application.routes.draw do
           end
           # Settings
           resource :preference, only: :show
-          # ROBOTS
+          # robots.txt
           resources :robots, only: :index, format: :txt
-          # sitemap
+          # sitemap.xml
           resource :sitemap, only: :show, format: :xml
           # Security
           get "/security(.:format)", to: redirect("#{ENV['EDGE_SERVICE_URL']}/security.html"), as: :security
@@ -110,7 +110,7 @@ Rails.application.routes.draw do
         resource :session, only: :new, shallow: true do
           resource :email, only: %i[new create]
         end
-        # ROBOTS
+        # robots.txt
         resources :robots, only: :index, format: :txt
         # sitemap
         resource :sitemap, only: :show, format: :xml
