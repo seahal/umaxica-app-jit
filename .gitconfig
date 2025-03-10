@@ -1,7 +1,7 @@
 # This is Git's per-user configuration file.
 [user]
-    name = seahal
-    email = seahal.com@gmail.com
+	name = seahal
+	email = seahal.com@gmail.com
 [filter "lfs"]
     smudge = git-lfs smudge -- %f
     process = git-lfs filter-process

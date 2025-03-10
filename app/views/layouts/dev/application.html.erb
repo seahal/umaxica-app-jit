@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for?(:page_title) ? "UMAXICA | #{yield(:page_title)} " : "UMAXICA" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= favicon_link_tag "net/favicon.ico" %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "net/main" %>
+    <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="px-4">
+    <header>
+      <h1 class="font-bold text-4xl"></h1>
+      <%= link_to 'UMAXICA(DEV)', dev_root_path %>
+    </header>
+
+    <hr>
+
+    <nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
+
+    </nav>
+
+    <main class="container mx-auto mt-28 px-5 block"><%= yield %></main>
+
+    <hr>
+
+    <footer>
+      <%= link_to 'Homepage', dev_root_path %>
+    </footer>
+
+    <%= javascript_include_tag "net/main" %>
+  </body>
+</html>
