@@ -1,6 +1,6 @@
 module Dev
   module Api
-    class NetController < ApplicationController
+    class AppController < ApplicationController
       def show
       end
     end

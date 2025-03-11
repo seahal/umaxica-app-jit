@@ -18,5 +18,5 @@
 # end
 
 ActiveSupport::Inflector.inflections(:en) do |inflect|
-  inflect.uncountable %w[ www com org net api dev ]
+  inflect.uncountable %w[ www com org net api dev app]
 end
