@@ -1,7 +1,7 @@
 <div>
   <h1 class="font-bold text-4xl">Net::Registration::Emails#new</h1>
   <p>Find me in app/views/net/registration/emails/new.html.erb</p>
-  <%= form_with model: @user_email, url: net_registration_email_path do |form| %>
+  <%= form_with model: @user_email, url: www_app_registration_email_path do |form| %>
     <div>
       <%= form.label :address %>
       <%= form.email_field :address %>
@@ -14,6 +14,6 @@
   <% end %>
 
   <p>
-    <%= link_to 'log in?', new_net_session_path %>
+    <%= link_to 'log in?', new_www_app_session_email_path %>
   </p>
 </div>

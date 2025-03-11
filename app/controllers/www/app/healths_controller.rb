@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Net
+module App
   class HealthsController < ApplicationController
     include ::Health
   end

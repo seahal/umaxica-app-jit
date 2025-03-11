@@ -41,13 +41,14 @@ Rails.application.routes.draw do
           # non-loggined settings
           resource :privacy, only: [ :show, :edit ]
           # contact page
-          resource :contact, only: :new, shallow: true do
+          resource :contact, only: :new do
             resources :email, only: [ :update, :show ]
             resources :telephone, only: [ :update, :show ]
             resources :message, only: [ :update, :create ]
           end
           # Sign up pages
-          resource :registration, only: :new, shallow: true do
+          resource :registration, only: :new
+          namespace :registration do
             resource :email, only: %i[new create edit update]
             resource :telephone, only: %i[new create edit update]
             resource :google, only: %i[new create]
