@@ -1,6 +1,6 @@
 module Dev
   module Www
-    class AppController < ApplicationController
+    class AppsController < ApplicationController
       def show
       end
     end

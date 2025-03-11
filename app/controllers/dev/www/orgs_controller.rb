@@ -1,6 +1,6 @@
 module Dev
   module Www
-    class OrgController < ApplicationController
+    class OrgsController < ApplicationController
       def show
       end
     end

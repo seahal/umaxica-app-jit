@@ -1,6 +1,6 @@
 module Dev
   module Www
-    class ComController < ApplicationController
+    class ComsController < ApplicationController
       def show
       end
     end
