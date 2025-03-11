@@ -1,5 +1,5 @@
 module Www
-  module App
+  module Org
     class RegistrationsController < ApplicationController
       def new
       end

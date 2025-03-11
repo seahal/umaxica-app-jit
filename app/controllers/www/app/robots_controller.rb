@@ -1,5 +1,3 @@
-
-
 module Www
   module App
     class RobotsController < ApplicationController

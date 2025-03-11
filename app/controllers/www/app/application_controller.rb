@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module Www
   module App
     class ApplicationController < ActionController::Base

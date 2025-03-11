@@ -1,5 +1,3 @@
-
-
 module Www
   module Org
     class RobotsController < ApplicationController

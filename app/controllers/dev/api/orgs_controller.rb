@@ -1,6 +1,6 @@
 module Dev
   module Api
-    class OrgController < ApplicationController
+    class OrgsController < ApplicationController
       def show
       end
     end

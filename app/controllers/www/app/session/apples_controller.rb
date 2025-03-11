@@ -1,4 +1,3 @@
-
 module Net
   module Session
     class ApplesController < ApplicationController

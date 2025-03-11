@@ -1,6 +1,6 @@
 module Dev
   module Api
-    class ComController < ApplicationController
+    class AppsController < ApplicationController
       def show
       end
     end

@@ -1,4 +1,3 @@
-
 module Net
   module Registration
     class TelephonesController < ApplicationController

@@ -1,4 +1,3 @@
-
 module Net
   module Session
     class PasskeysController < ApplicationController
