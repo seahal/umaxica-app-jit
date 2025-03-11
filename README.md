@@ -10,15 +10,15 @@ Things you may want to cover:
 * Ruby version
     - Just Do It => `ruby -v`, and check `Gemfile` or `.ruby-version`.
 * System dependencies
-	- Linux => Run on it.
-    - Ruby => Ofcource, we are on Ruby.
+  - Linux => Run on it.
+  - Ruby => Of cource, we are on Ruby.
 * Configuration
     - Edit `/etc/hosts` files to separate .com or .net.
     - ```
       # See hosts(5) for details.
 	  127.0.0.1   com.www.localdomain net.www.localdomain org.www.localdomain asset.com.www.localdomain asset.net.www.localdomain asset.www.org.localdomain
 	  ```
-    - `com.jit.localdomain` is for jit.umaxica.com, `net.jit.localdomain` is for jit.umaxica.net and `org.jit.localdomain` is for jit.umaxica.org .
+    - `com.www.localdomain` is for jit.umaxica.com, `net.www.localdomain` is for jit.umaxica.net and `org.www.localdomain` is for jit.umaxica.org .
 * Database creation
     - `bin/rails db:create`
 * Database initialization
@@ -39,7 +39,12 @@ Things you may want to cover:
     * eks
     * cloudlfront
   * Fastly
+    * CDN
+    * Compute
   * CloudFlare
+    * Registers
+    * Workers
+    * Turnstile 
   * Terraform Cloud
   * [OpenTelemetry](https://opentelemetry.io/)
 * Secrets
