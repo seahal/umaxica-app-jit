@@ -29,7 +29,7 @@ Rails.application.routes.draw do
       end
 
       constraints host: ENV["WWW_SERVICE_URL"] do
-        scope module: :net, as: :net do
+        scope module: :app, as: :app do
           # homepage
           root to: redirect("https://#{ENV['EDGE_SERVICE_URL']}")
           # root to: "roots#index"

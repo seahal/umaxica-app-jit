@@ -1,7 +1,7 @@
 
 
 module Www
-  module Net
+  module App
     class RobotsController < ApplicationController
       def index
       end
