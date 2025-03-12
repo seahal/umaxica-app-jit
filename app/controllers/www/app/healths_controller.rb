@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-module App
-  class HealthsController < ApplicationController
-    include ::Health
+module Www
+  module App
+    class HealthsController < ApplicationController
+      include ::Health
+    end
   end
 end
