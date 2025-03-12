@@ -1,7 +1,9 @@
-module Net
-  module Session
-    class GooglesController < ApplicationController
-      def new
+module Www
+  module App
+    module Session
+      class GooglesController < ApplicationController
+        def new
+        end
       end
     end
   end
