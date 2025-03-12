@@ -22,10 +22,14 @@ Rails.application.routes.draw do
         end
         # robots.txt
         resources :robots, only: :index, format: :txt
+        # ads.txt
+        resources :ads, only: :index, format: :txt
         # sitemap.xml
         resource :sitemap, only: :show, format: :xml
         # Security
-        get "/security(.:format)", to: redirect("#{ENV['EDGE_CORPORATE_URL']}/security.html"), as: :security
+        resource :security, only: :show, format: :txt
+        # PWA
+        resource :manifest, only: :show, format: :json
       end
 
       constraints host: ENV["WWW_SERVICE_URL"] do
@@ -70,10 +74,14 @@ Rails.application.routes.draw do
           resource :preference, only: :show
           # robots.txt
           resources :robots, only: :index, format: :txt
+          # ads.txt
+          resources :ads, only: :index, format: :txt
           # sitemap.xml
           resource :sitemap, only: :show, format: :xml
           # Security
-          get "/security(.:format)", to: redirect("#{ENV['EDGE_SERVICE_URL']}/security.html"), as: :security
+          resource :security, only: :show, format: :txt
+          # PWA
+          resource :manifest, only: :show, format: :json
         end
       end
     end
@@ -115,8 +123,12 @@ Rails.application.routes.draw do
         resources :robots, only: :index, format: :txt
         # sitemap
         resource :sitemap, only: :show, format: :xml
+        # ads.txt
+        resources :ads, only: :index, format: :txt
         # Security
-        get "/security(.:format)", to: redirect("#{ENV['EDGE_STAFF_URL']}/security.html"), as: :security
+        resource :security, only: :show, format: :txt
+        # PWA
+        resource :manifest, only: :show, format: :json
       end
     end
   end
