@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     end
 
     constraints host: ENV["API_SERVICE_URL"] do
-      scope module: :net, as: :net do
+      scope module: :app, as: :app do
         namespace :v1 do
           resource :staging, only: :show
           resource :health, only: :show

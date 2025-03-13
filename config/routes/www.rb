@@ -22,14 +22,18 @@ Rails.application.routes.draw do
         end
         # robots.txt
         resources :robots, only: :index, format: :txt
+        # ads.txt
+        resources :ads, only: :index, format: :txt
         # sitemap.xml
         resource :sitemap, only: :show, format: :xml
         # Security
-        get "/security(.:format)", to: redirect("#{ENV['EDGE_CORPORATE_URL']}/security.html"), as: :security
+        resource :security, only: :show, format: :txt
+        # PWA
+        resource :manifest, only: :show, format: :json
       end
 
       constraints host: ENV["WWW_SERVICE_URL"] do
-        scope module: :net, as: :net do
+        scope module: :app, as: :app do
           # homepage
           root to: redirect("https://#{ENV['EDGE_SERVICE_URL']}")
           # root to: "roots#index"
@@ -41,13 +45,14 @@ Rails.application.routes.draw do
           # non-loggined settings
           resource :privacy, only: [ :show, :edit ]
           # contact page
-          resource :contact, only: :new, shallow: true do
+          resource :contact, only: :new do
             resources :email, only: [ :update, :show ]
             resources :telephone, only: [ :update, :show ]
             resources :message, only: [ :update, :create ]
           end
           # Sign up pages
-          resource :registration, only: :new, shallow: true do
+          resource :registration, only: :new
+          namespace :registration do
             resource :email, only: %i[new create edit update]
             resource :telephone, only: %i[new create edit update]
             resource :google, only: %i[new create]
@@ -69,10 +74,14 @@ Rails.application.routes.draw do
           resource :preference, only: :show
           # robots.txt
           resources :robots, only: :index, format: :txt
+          # ads.txt
+          resources :ads, only: :index, format: :txt
           # sitemap.xml
           resource :sitemap, only: :show, format: :xml
           # Security
-          get "/security(.:format)", to: redirect("#{ENV['EDGE_SERVICE_URL']}/security.html"), as: :security
+          resource :security, only: :show, format: :txt
+          # PWA
+          resource :manifest, only: :show, format: :json
         end
       end
     end
@@ -114,8 +123,12 @@ Rails.application.routes.draw do
         resources :robots, only: :index, format: :txt
         # sitemap
         resource :sitemap, only: :show, format: :xml
+        # ads.txt
+        resources :ads, only: :index, format: :txt
         # Security
-        get "/security(.:format)", to: redirect("#{ENV['EDGE_STAFF_URL']}/security.html"), as: :security
+        resource :security, only: :show, format: :txt
+        # PWA
+        resource :manifest, only: :show, format: :json
       end
     end
   end

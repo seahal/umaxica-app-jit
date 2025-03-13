@@ -81,9 +81,6 @@ group :development, :test do
   gem "debug", platforms: %i[mri windows]
   gem "dotenv-rails", "~> 3.1", ">= 3.1.2" # OPTIMIZE: .env file must not be included sign_in production.
   gem "faker"
-  # rubocop
-  gem "rubocop", require: false
-  gem "rubocop-rails-omakase", require: false
   # erb linter
   gem "erb_lint", require: false
 end
@@ -101,7 +98,9 @@ group :development do
   gem "letter_opener"
   # Live Reload
   gem "rails_live_reload"
-
+  # rubocop
+  gem "rubocop", require: false
+  gem "rubocop-rails-omakase", require: false
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]

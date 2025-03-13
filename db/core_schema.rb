@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_02_20_205901) do
+ActiveRecord::Schema[8.1].define(version: 2025_02_20_135926) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -42,14 +42,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_02_20_205901) do
     t.datetime "current_sign_in_at"
     t.string "encrypted_password", limit: 255
     t.datetime "last_sign_in_at"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "terms", force: :cascade do |t|
-    t.text "body"
-    t.datetime "created_at", null: false
-    t.uuid "staff_id"
-    t.string "title"
     t.datetime "updated_at", null: false
   end
 
