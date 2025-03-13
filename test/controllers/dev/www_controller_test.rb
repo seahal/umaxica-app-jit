@@ -2,7 +2,7 @@ require "test_helper"
 
 class Dev::AppControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
-    get dev_app_url
+    get dev_www_url
     assert_response :success
     assert_select "a[href=?]", dev_root_path, count: 3
     assert_select "a[href=?]", dev_www_com_path, count: 1
