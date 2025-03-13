@@ -1,8 +1,8 @@
 # # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
- staff_emails_one:
-   type: 'Staff'
-   address: 'staff@example.com'
- user_emails_one:
-   type: 'User'
-   address: 'user@example.net'
+staff_emails_one:
+  type: 'Staff'
+  address: 'staff@example.com'
+user_emails_one:
+  type: 'User'
+  address: 'user@example.net'

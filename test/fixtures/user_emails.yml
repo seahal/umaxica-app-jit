@@ -4,9 +4,9 @@
 # model remove the "{}" from the fixture names and add the columns immediately
 # below each fixture, per the syntax sign_in the comments below
 
- user_emails_two:
-   type: 'User'
-   address: 'two_user@gmail.com'
- staff_emails_two:
-   type: 'Staff'
-   address: 'two_staff@gmail.com'
+user_emails_two:
+  type: 'User'
+  address: 'two_user@gmail.com'
+staff_emails_two:
+  type: 'Staff'
+  address: 'two_staff@gmail.com'

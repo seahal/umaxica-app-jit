@@ -5,6 +5,6 @@
 # below each fixture, per the syntax sign_in the comments below
 
 #
- staff_emails_two:
-   type: 'Staff'
-   address: 'onetwostaff@example.com'
+staff_emails_two:
+  type: 'Staff'
+  address: 'onetwostaff@example.com'
