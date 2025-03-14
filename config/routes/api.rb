@@ -41,7 +41,6 @@ Rails.application.routes.draw do
     # For Staff's webpages api.jp.example.org
     constraints host: ENV["API_STAFF_URL"] do
       scope module: :org, as: :org do
-        #
         namespace :v1 do
           resource :staging, only: :show
           resource :health, only: :show
