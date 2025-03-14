@@ -16,9 +16,8 @@ Things you may want to cover:
     - Edit `/etc/hosts` files to separate .com or .net.
     - ```
       # See hosts(5) for details.
-	  127.0.0.1   com.www.localdomain net.www.localdomain org.www.localdomain asset.com.www.localdomain asset.net.www.localdomain asset.www.org.localdomain
+	  127.0.0.1   com.www.localdomain app.www.localdomain org.www.localdomain com.api.localdomain app.api.localdomain org.api.localdomain
 	  ```
-    - `com.www.localdomain` is for jit.umaxica.com, `net.www.localdomain` is for jit.umaxica.net and `org.www.localdomain` is for jit.umaxica.org .
 * Database creation
     - `bin/rails db:create`
 * Database initialization
