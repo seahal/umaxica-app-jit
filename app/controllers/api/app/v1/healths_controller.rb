@@ -1,4 +1,3 @@
-
 module Api
   module App
     module V1

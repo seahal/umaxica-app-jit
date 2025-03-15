@@ -1,5 +1,3 @@
-
-
 module Api
   module App
     class RobotsController < ApplicationController
