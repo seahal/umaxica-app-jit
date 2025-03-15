@@ -1,5 +1,5 @@
 module Api
-  module Org
+  module App
     module V1
       module Beacon
         class EmailsController < ApplicationController
