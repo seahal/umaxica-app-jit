@@ -1,4 +1,3 @@
-
 module Api
   module Org
     module V1

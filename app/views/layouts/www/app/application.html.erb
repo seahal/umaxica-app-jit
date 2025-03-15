@@ -3,10 +3,8 @@
   <head>
     <title><%= content_for?(:page_title) ? "UMAXICA | #{yield(:page_title)} " : "UMAXICA" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= favicon_link_tag "net/favicon.ico" %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "net/main" %>
     <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -14,7 +12,7 @@
   <body class="px-4">
     <header>
       <h1 class="font-bold text-4xl"></h1>
-      <%= link_to 'UMAXICA(SERVICE)', net_root_path %>
+      <%= link_to 'UMAXICA(SERVICE)', www_app_root_path %>
     </header>
 
     <hr>
@@ -28,8 +26,7 @@
     <hr>
 
     <footer>
-      <%= link_to 'Homepage', net_root_path %>
+      <%= link_to 'Homepage', www_app_root_path %>
     </footer>
-    <%= javascript_include_tag "net/main" %>
   </body>
 </html>

@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-
 module Api
-  module Net
+  module App
     class ApplicationController < ActionController::Base
       allow_browser versions: :modern
     end

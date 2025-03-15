@@ -1,4 +1,3 @@
-
 module Dev
   class RootsController < ApplicationController
     def index

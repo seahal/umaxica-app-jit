@@ -3,10 +3,10 @@
   <head>
     <title><%= content_for?(:page_title) ? "UMAXICA | #{yield(:page_title)} " : "UMAXICA" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= favicon_link_tag "net/favicon.ico" %>
+    <%= favicon_link_tag "dev/favicon.ico" %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "net/main" %>
+    <%= stylesheet_link_tag "dev/main" %>
     <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -31,6 +31,6 @@
       <%= link_to 'Homepage', dev_root_path %>
     </footer>
 
-    <%= javascript_include_tag "net/main" %>
+    <%= javascript_include_tag "dev/main" %>
   </body>
 </html>
