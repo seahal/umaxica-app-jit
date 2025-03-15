@@ -45,7 +45,7 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
   config.action_mailer.smtp_settings = {
     address: "email-smtp.ap-northeast-1.amazonaws.com",
-    domain: "umaxica.net",
+    domain: "umaxica.app",
     port: 2465,
     user_name: ENV["SMTP_USERNAME"],
     password: ENV["SMTP_PASSWORD"],
@@ -97,11 +97,11 @@ Rails.application.configure do
   config.hosts << "localhost"
   config.hosts << "com.www.localdomain"
   config.hosts << "app.www.localdomain"
-  config.hosts << "net.www.localdomain"
+  config.hosts << "app.www.localdomain"
   config.hosts << "org.www.localdomain"
   config.hosts << "com.api.localdomain"
   config.hosts << "app.api.localdomain"
-  config.hosts << "net.api.localdomain"
+  config.hosts << "app.api.localdomain"
   config.hosts << "org.api.localdomain"
 
   ## file watcher

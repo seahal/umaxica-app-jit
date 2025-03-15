@@ -5,4 +5,4 @@ staff_emails_one:
   address: 'staff@example.com'
 user_emails_one:
   type: 'User'
-  address: 'user@example.net'
+  address: 'user@example.app'

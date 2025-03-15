@@ -7,7 +7,7 @@ module Net
     test "should get show" do
       get www_app_health_url
       assert_response :success
-      assert_select "a[href=?]", www_app_root_path, count: 0
+      assert_select "a[href=?]", www_app_root_path, count: 2
     end
 
     test "should not get show when required json file" do
