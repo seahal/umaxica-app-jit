@@ -6,7 +6,7 @@ module Com
   class RootsControllerTest < ActionDispatch::IntegrationTest
     test "should get index" do
       get www_com_root_url
-      assert_response :redirect
+      assert_response :success
     end
   end
 end

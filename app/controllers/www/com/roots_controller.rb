@@ -1,4 +1,9 @@
-class Www::Com::RootsController < ApplicationController
-  def index
+
+module Www
+  module Com
+    class RootsController < ApplicationController
+      def index
+      end
+    end
   end
 end

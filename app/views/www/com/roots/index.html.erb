@@ -1,15 +1,4 @@
-<div>
-  <h1 class="font-bold text-4xl">Com::Roots#index</h1>
-  <p>This screen is not displayed in the production environment.</p>
-  <ul>
-    <li><%= link_to 'health', com_health_path %></li>
-    <li><%= link_to 'term', com_term_path %></li>
-    <li><%= link_to 'staging', com_staging_path %></li>
-    <li><%= link_to 'sitemap', '/sitemap.txt' %></li>
-    <li><%= link_to 'robots.txt', '/robots.txt' %></li>
-    <li><%= link_to 'privacy', com_privacy_path %></li>
-    <li><%= link_to 'contact', new_com_contact_path %></li>
-  </ul>
+
   <ul>
     <li>現在の言語: <%= I18n.locale %></li>
     <li>TimeZone: <%= params[:tz].to_s.downcase == 'utc' ? "utc" : 'jst'  %></li>
@@ -17,4 +6,3 @@
     <li><%= Time.now.in_time_zone("Tokyo") %></li>
     <li><%= to_localetime Time.now, 'jst' %></li>
   </ul>
-</div>
