@@ -1,2 +1,2 @@
-module Net::Session::GooglesHelper
+module Www::App::Session::GooglesHelper
 end

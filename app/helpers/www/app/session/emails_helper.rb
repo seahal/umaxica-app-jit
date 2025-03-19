@@ -1,2 +1,2 @@
-module Net::Session::EmailsHelper
+module Www::App::Session::EmailsHelper
 end

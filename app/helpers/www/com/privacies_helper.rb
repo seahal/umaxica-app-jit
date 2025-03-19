@@ -1,2 +1,2 @@
-module Com::PrivaciesHelper
+module Www::Com::PrivaciesHelper
 end

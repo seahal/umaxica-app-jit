@@ -1,2 +1,2 @@
-module Net::Session::ApplesHelper
+module Www::App::Session::ApplesHelper
 end

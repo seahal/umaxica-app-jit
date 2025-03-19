@@ -1,2 +1,2 @@
-module Net::Session::PasskeysHelper
+module Www::App::Session::PasskeysHelper
 end

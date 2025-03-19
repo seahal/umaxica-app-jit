@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-module Net
+module Www::App
   class SessionsControllerTest < ActionDispatch::IntegrationTest
     test "should get new" do
       get new_www_app_session_url

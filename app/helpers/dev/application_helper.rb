@@ -1,4 +1,4 @@
 # frozen_string_literal: true
 
-module Www::App::HealthsHelper
+module Dev::ApplicationHelper
 end
