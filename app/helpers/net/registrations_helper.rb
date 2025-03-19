@@ -1,2 +1,0 @@
-module Net::RegistrationsHelper
-end

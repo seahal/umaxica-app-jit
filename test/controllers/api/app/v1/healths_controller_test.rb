@@ -2,7 +2,8 @@
 
 require "test_helper"
 
-module Net
+module Api
+module App
   module V1
     class HealthsControllerTest < ActionDispatch::IntegrationTest
       test "should get show" do
@@ -11,4 +12,5 @@ module Net
       end
     end
   end
+end
 end

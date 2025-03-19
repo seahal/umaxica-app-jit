@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Net
-  module RootsHelper
+module Www::App
+  module HealthsHelper
   end
 end
