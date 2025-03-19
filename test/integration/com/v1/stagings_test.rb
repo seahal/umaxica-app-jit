@@ -6,7 +6,7 @@ module Com
   module V1
     class StagingsTest < ActionDispatch::IntegrationTest
       test "should get show" do
-        get com_v1_staging_url
+        get api_com_v1_staging_url
         assert_response :success
         json = JSON.parse(response.body)
         assert_equal false, json["staging"]
