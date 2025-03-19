@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-module Com
+module Www::Com
   class ApplicationHelperTest < ActionView::TestCase
     test "sample" do
       # assert_equal Time.new, to_localtime(Time.new)

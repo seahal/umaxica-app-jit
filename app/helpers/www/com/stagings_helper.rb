@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Com
+module Www::Com
   module StagingsHelper
   end
 end

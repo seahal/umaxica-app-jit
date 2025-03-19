@@ -1,2 +1,2 @@
-module Com::ContactsHelper
+module Www::Com::ContactsHelper
 end
