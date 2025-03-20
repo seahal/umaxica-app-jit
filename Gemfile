@@ -85,8 +85,6 @@ group :development, :test do
   gem "faker"
   # erb linter
   gem "erb_lint", require: false
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
   # coverage
   gem "simplecov", require: false
 end
@@ -111,6 +109,7 @@ group :development do
   # gem "spring"
   gem "brakeman", require: false
   # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
 end
 
 group :test do

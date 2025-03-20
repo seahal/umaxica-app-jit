@@ -176,6 +176,7 @@ volumes: #
   opensearch-volume:
   openobserve-volume:
   minio-data-1:
+  sqlite-volume:
 networks:
   backend:
   frontend:
