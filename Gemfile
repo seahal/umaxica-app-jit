@@ -85,15 +85,18 @@ group :development, :test do
   gem "faker"
   # erb linter
   gem "erb_lint", require: false
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
+  # coverage
+  gem "simplecov", require: false
 end
 
 group :development do
-  #  gem 'bullet', '~> 8.0'
+  gem "bullet", "~> 8.0"
   gem "bundler-audit", "~> 0.9.1"
   gem "foreman"
   gem "guard"
   gem "guard-minitest"
-  gem "web-console"
   # Preview email in the default browser instead of sending it.
   gem "letter_opener"
   # Live Reload
@@ -105,11 +108,12 @@ group :development do
   # gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  gem "brakeman", require: false
+  # Use console on exceptions pages [https://github.com/rails/web-console]
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-  gem "simplecov", require: false
 end
