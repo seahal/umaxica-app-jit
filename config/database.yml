@@ -58,6 +58,11 @@ development:
     database: development_core_db
     port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %> # FIXME: change to use replica
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %>  # FIXME: change to use replica
+  message:
+    <<: *default
+    database: development_core_db
+    port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %> # FIXME: change to use replica
 
 
 # Warning: The database defined as "test" will be erased and

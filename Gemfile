@@ -12,6 +12,8 @@ gem "rails", github: "rails/rails", branch: "main"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 # Use PostgreSQL as the database for Active Record
 gem "pg"
+# also use SQLite as the database for Active Record
+gem "sqlite3", ">= 2.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -86,8 +88,6 @@ group :development, :test do
 end
 
 group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "brakeman", require: false
   #  gem 'bullet', '~> 8.0'
   gem "bundler-audit", "~> 0.9.1"
   gem "foreman"
