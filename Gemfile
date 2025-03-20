@@ -92,7 +92,8 @@ group :development, :test do
 end
 
 group :development do
-  gem "bullet", "~> 8.0"
+  # FIXME: bullet would not run on rails edge version.
+  # gem "bullet", "~> 8.0"
   gem "bundler-audit", "~> 0.9.1"
   gem "foreman"
   gem "guard"
