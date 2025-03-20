@@ -3,10 +3,13 @@
 Rails.application.routes.draw do
   namespace :www do
     namespace :org do
-      get "registrations/new"
+      get "roots/index"
+    end
+    namespace :com do
+      get "roots/index"
     end
     namespace :app do
-      get "registrations/new"
+      get "roots/index"
     end
   end
   # Pages for dev pages.

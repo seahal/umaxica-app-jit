@@ -1,5 +1,3 @@
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
 <div>
   <h1 class="font-bold text-4xl">Net::Registration::Emails#new</h1>
   <p>Find me in app/views/net/registration/emails/new.html.erb</p>
@@ -12,16 +10,12 @@
       <%= form.checkbox :confirm_policy %>
       <%= form.label :confirm_policy, '利用規約に同意する' %>
     </div>
+    <div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>
     <%= form.submit %>
-
-    <div
-      class="cf-turnstile"
-      data-sitekey="yourSitekey"
-      data-callback="javascriptCallback">
-    </div>
   <% end %>
 
   <p>
     <%= link_to 'log in?', new_www_app_session_email_path %>
   </p>
 </div>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

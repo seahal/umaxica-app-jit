@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Net::Registration::TelephonesControllerTest < ActionDispatch::IntegrationTest
+class Www::App::Registration::TelephonesControllerTest < ActionDispatch::IntegrationTest
   # test "should get new" do
   #   get new_net_registration_telephone_url
   #   assert_response :success

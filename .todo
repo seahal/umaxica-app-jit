@@ -1,7 +1,0 @@
-- [ ] implement UserEmail model.
-- [ ] implement email sending system using kafka and amazon sns.
-- [ ] set up Porsgresql's read and write replicas.
-- [ ] build up Elasticsearch.
-- [ ] build up Kafka.
-- [ ] set up otp
-- [ ] Fix broken system test on Docker Compose

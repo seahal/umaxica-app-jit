@@ -3,7 +3,7 @@ Rails.application.routes.draw do
     constraints host: ENV["WWW_CORPORATE_URL"] do
       scope module: :com, as: :com do
         #
-        root to: redirect("https://#{ENV['EDGE_CORPORATE_URL']}")
+        root to: "roots#index"
         # health check for html
         resource :health, only: :show
         # show latest 'term of use'
@@ -35,7 +35,7 @@ Rails.application.routes.draw do
       constraints host: ENV["WWW_SERVICE_URL"] do
         scope module: :app, as: :app do
           # homepage
-          root to: redirect("https://#{ENV['EDGE_SERVICE_URL']}")
+          root to: "roots#index"
           # root to: "roots#index"
           resource :health, only: :show # health check for html
           # show latest 'term of use'
@@ -90,7 +90,7 @@ Rails.application.routes.draw do
     constraints host: ENV["WWW_STAFF_URL"] do
       scope module: :org, as: :org do
         # Homepage
-        root to: redirect("https://#{ENV['EDGE_STAFF_URL']}")
+        root to: "roots#index"
         # health check for html
         resource :health, only: :show
         # show 'term of use'

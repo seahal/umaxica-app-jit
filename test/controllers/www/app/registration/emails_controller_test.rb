@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Net::Registration::EmailsControllerTest < ActionDispatch::IntegrationTest
+class Www::App::Registration::EmailsControllerTest < ActionDispatch::IntegrationTest
   # test "should get new" do
   #   get new_net_registration_email_url
   #   assert_response :success

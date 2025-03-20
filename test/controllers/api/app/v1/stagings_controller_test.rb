@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-module Net
+module Api::App
   module V1
     class StagingsControllerTest < ActionDispatch::IntegrationTest
       test "should get show" do
