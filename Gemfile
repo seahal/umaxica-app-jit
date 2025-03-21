@@ -87,6 +87,9 @@ group :development, :test do
   gem "erb_lint", require: false
   # coverage
   gem "simplecov", require: false
+  # rubocop
+  gem "rubocop", require: false
+  gem "rubocop-rails-omakase", require: false
 end
 
 group :development do
@@ -100,11 +103,8 @@ group :development do
   gem "letter_opener"
   # Live Reload
   gem "rails_live_reload"
-  # rubocop
-  gem "rubocop", require: false
-  gem "rubocop-rails-omakase", require: false
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
-  # gem "rack-mini-profiler"
+  gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
   gem "brakeman", require: false

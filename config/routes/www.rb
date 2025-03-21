@@ -53,7 +53,7 @@ Rails.application.routes.draw do
           # Sign up pages
           resource :registration, only: :new
           namespace :registration do
-            resource :email, only: %i[new create edit update]
+            resources :emails, only: %i[new create edit update show]
             resource :telephone, only: %i[new create edit update]
             resource :google, only: %i[new create]
             resource :apple, only: %i[new create]

@@ -2200,6 +2200,8 @@ GEM
       rack (>= 1.0, < 4)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
+    rack-mini-profiler (3.3.1)
+      rack (>= 1.2.0)
     rack-session (2.1.0)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -2412,6 +2414,7 @@ DEPENDENCIES
   rack
   rack-attack
   rack-cors
+  rack-mini-profiler
   rails!
   rails_live_reload
   rbs
