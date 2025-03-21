@@ -34,6 +34,12 @@ services:
       - ./docker/psql-sub/init.sh:/docker-entrypoint-initdb.d/init.sh
     depends_on:
       - psql-pub
+  sqlite:
+    image: keinos/sqlite3
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./docker/sqlite:/root/db/
   minio:
     image: minio/minio:RELEASE.2025-02-07T23-21-09Z-cpuv1
     volumes:
@@ -170,6 +176,7 @@ volumes: #
   opensearch-volume:
   openobserve-volume:
   minio-data-1:
+  sqlite-volume:
 networks:
   backend:
   frontend:

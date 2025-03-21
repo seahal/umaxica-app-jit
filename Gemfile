@@ -12,6 +12,8 @@ gem "rails", github: "rails/rails", branch: "main"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 # Use PostgreSQL as the database for Active Record
 gem "pg"
+# also use SQLite as the database for Active Record
+gem "sqlite3", ">= 2.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -83,33 +85,35 @@ group :development, :test do
   gem "faker"
   # erb linter
   gem "erb_lint", require: false
+  # coverage
+  gem "simplecov", require: false
+  # rubocop
+  gem "rubocop", require: false
+  gem "rubocop-rails-omakase", require: false
 end
 
 group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "brakeman", require: false
-  #  gem 'bullet', '~> 8.0'
+  # FIXME: bullet would not run on rails edge version.
+  # gem "bullet", "~> 8.0"
   gem "bundler-audit", "~> 0.9.1"
   gem "foreman"
   gem "guard"
   gem "guard-minitest"
-  gem "web-console"
   # Preview email in the default browser instead of sending it.
   gem "letter_opener"
   # Live Reload
   gem "rails_live_reload"
-  # rubocop
-  gem "rubocop", require: false
-  gem "rubocop-rails-omakase", require: false
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
-  # gem "rack-mini-profiler"
+  gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  gem "brakeman", require: false
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-  gem "simplecov", require: false
 end
