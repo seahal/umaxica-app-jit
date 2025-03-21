@@ -1,4 +1,4 @@
-[![Hello](https://github.com/seahal/demo-application-ror/actions/workflows/ci.yaml/badge.svg)](https://github.com/seahal/demo-application-ror/actions/workflows/ci.yaml)
+[![Hello](https://github.com/seahal/demo-application-ror/actions/workflows/ci.yaml/badge.svg)](https://github.com/seahal/demo-application-ror/actions/workflows/ci.yaml?branch=main)
 # README
 
 
