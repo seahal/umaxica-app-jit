@@ -34,7 +34,7 @@ development:
     <<: *default
     database: development_core_db
     port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %> # FIXME: change to use replica
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %>
   core_replica:
     <<: *default
     replica: true
@@ -45,7 +45,7 @@ development:
     <<: *default
     database: development_core_db
     port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %> # FIXME: change to use replica
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %>
   message_replica:
     <<: *default
     replica: true
@@ -78,13 +78,13 @@ test:
   docs:
     <<: *default
     database: test_docs_db
-    port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %> # FIXME: change to use replica
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %> # FIXME: change to use replica
+    port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %>
   docs_replica:
     <<: *default
     replica: true
     database: test_docs_db
-    port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %> # FIXME: change to use replica
+    port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %> 
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %>  # FIXME: change to use replica
   core:
     <<: *default
@@ -96,7 +96,7 @@ test:
     replica: true
     database: test_core_db
     port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"] : 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"] : 'localhost' %>  # FIXME: change to use replica
   message:
     <<: *default
     database: test_core_db
@@ -107,7 +107,7 @@ test:
     replica: true
     database: test_core_db
     port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"] : 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"] : 'localhost' %> # FIXME: change to use replica
   # solid:
   #   adapter: sqlite3
   #   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
