@@ -44,11 +44,11 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
   config.action_mailer.smtp_settings = {
-    address: "email-smtp.ap-northeast-1.amazonaws.com",
+    address: ENV["AMAZON_SES_SMTP_ADDRESS"],
     domain: "umaxica.app",
-    port: 2465,
-    user_name: ENV["SMTP_USERNAME"],
-    password: ENV["SMTP_PASSWORD"],
+    port: 2587,
+    user_name: ENV["AMAZON_SES_SMTP_USER_NAME"],
+    password: ENV["AMAZON_SES_SMTP_PASSWORD"],
     authentication: :login,
     enable_starttls: true,
     open_timeout: 5,
