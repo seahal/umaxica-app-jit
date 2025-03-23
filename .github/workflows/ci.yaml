@@ -94,10 +94,10 @@ jobs:
       - name: Stats
         run: bin/rails stats
       - name: notes
-        run: bin/rails note
+        run: bin/rails notes
       - name: about
         run: bin/rails about
-  tests:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
