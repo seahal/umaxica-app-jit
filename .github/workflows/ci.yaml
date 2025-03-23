@@ -127,6 +127,7 @@ jobs:
       POSTGRESQL_CORE_SUB: 'localhost'
       REDIS_CACHE_URL: 'redis://localhost:6380/0'
       REDIS_SESSION_URL: 'redis://localhost:6380/1'
+      ENV: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
