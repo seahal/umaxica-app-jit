@@ -93,10 +93,10 @@ jobs:
           bundler-cache: true
       - name: Stats
         run: bin/rails stats
-      - name: notes
-        run: bin/rails notes
       - name: about
         run: bin/rails about
+      - name: notes
+        run: bin/rails notes
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
