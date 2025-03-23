@@ -36,15 +36,16 @@ Things you may want to cover:
     * ses and sms
     * ecr
     * eks
-    * cloudlfront
+    * cloudfront
   * Fastly
     * CDN
     * Compute
   * CloudFlare
     * Registers
-    * Workers
     * Turnstile 
-  * Terraform Cloud
+  * Terraform
+    * TCP Terraform
+  * Kubernetes
   * [OpenTelemetry](https://opentelemetry.io/)
 * Secrets
   * You have to set `.env.local` and `.envrc` on your own environment.This is because it has confidential.
