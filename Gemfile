@@ -69,8 +69,6 @@ gem "thruster", require: false
 # To use tailwind css
 gem "tailwindcss-rails", "~> 4.0"
 # OpenTelemetry
-gem "opentelemetry-sdk"
-gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
 # sitemap
 gem "sitemap_generator"
