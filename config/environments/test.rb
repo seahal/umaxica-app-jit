@@ -60,8 +60,8 @@ Rails.application.configure do
     driver: :hiredis       # hiredisドライバを使用することで高速化できる
   }
 
-  # if ENV['CI']
-  #   config.assets.compile = false
-  #   config.assets.gzip = false
-  # end
+  if ENV['CI']
+    config.assets.compile = false
+    config.assets.gzip = false
+  end
 end
