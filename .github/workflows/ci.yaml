@@ -151,7 +151,7 @@ jobs:
   teardown:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [brakeman, rubocop, bundle-audit,audit,tests]
+    needs: [brakeman, rubocop, bundle-audit,audit,test]
     defaults:
       run:
         shell: bash
