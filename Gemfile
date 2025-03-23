@@ -33,7 +33,7 @@ gem "rack-attack"
 gem "argon2"
 gem "bcrypt"
 # SHA3
-gem "sha3", "~> 2.0"
+gem "sha3"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[windows jruby]
 # Reduces boot times through caching; required sign_in config/boot.rb
@@ -63,12 +63,14 @@ gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", require: false
+# gem "kamal", require: false
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
-gem "thruster", require: false
+# gem "thruster", require: false
 # To use tailwind css
-gem "tailwindcss-rails", "~> 4.0"
+gem "tailwindcss-rails"
 # OpenTelemetry
+gem "opentelemetry-sdk"
+gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
 # sitemap
 gem "sitemap_generator"
