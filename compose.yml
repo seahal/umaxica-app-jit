@@ -89,29 +89,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_NUM_PARTITIONS: 3
-      #  cp-kafka-rest:
-      #    image: confluentinc/cp-kafka-rest:6.2.4         # https://hub.docker.com/r/confluentinc/cp-kafka-rest
-      #    restart: always
-      #    depends_on:
-      #      - "kafka-broker"
-      #      - "zookeeper"
-      #    environment:
-      #      KAFKA_REST_BOOTSTRAP_SERVERS: "kafka-broker:19092"
-      #      KAFKA_REST_CLIENT_SECURITY_PROTOCOL: "PLAINTEXT"
-      #      KAFKA_REST_HOST_NAME: "cp-kafka-rest"
-      #      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
-      #  kafka-topic-ui:    # 管理コンソール（http://localhost:8000）
-      #    image: landoop/kafka-topics-ui:0.9.4    # https://hub.docker.com/r/landoop/kafka-topics-ui
-      #    restart: always
-      #    depends_on:
-      #      - "kafka-broker"
-      #      - "zookeeper"
-      #      - "cp-kafka-rest"
-      #    ports:
-      #      - "8000:8000"
-      #    environment:
-      #      KAFKA_REST_PROXY_URL: "http://cp-kafka-rest:8082"
-      #      PROXY: "true"
   main:
     build:
       context: ./
@@ -126,7 +103,7 @@ services:
     ports:
       - "3333:3000"
     volumes:
-      - ./:/ror
+      - ./:/main
     networks:
       - backend
     depends_on:
