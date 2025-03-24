@@ -1,4 +1,4 @@
-name: '[CI] Ruby on Rails'
+name: '[CI]'
 on:
   push:
     branches:
@@ -28,8 +28,8 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Check helath
-        run: bin/rails about
+      - name: Check Application Boot
+        run: bundle exec rails runner "puts ActiveRecord::Base.connection.active?"
   brakeman:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -77,7 +77,7 @@ jobs:
           bundler-cache: true
       - name: bundle audit
         run: bundle exec bundle audit check --update
-  bootable:
+  audit:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -91,9 +91,13 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Check Application Boot
-        run: bundle exec rails runner "puts ActiveRecord::Base.connection.active?"
-  tests:
+      - name: Stats
+        run: bin/rails stats
+      - name: about
+        run: bin/rails about
+      - name: notes
+        run: bin/rails notes
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -127,6 +131,7 @@ jobs:
       POSTGRESQL_CORE_SUB: 'localhost'
       REDIS_CACHE_URL: 'redis://localhost:6380/0'
       REDIS_SESSION_URL: 'redis://localhost:6380/1'
+      ENV: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -146,7 +151,7 @@ jobs:
   teardown:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [brakeman, rubocop, bundle-audit,bootable,tests]
+    needs: [brakeman, rubocop, bundle-audit,audit,test]
     defaults:
       run:
         shell: bash

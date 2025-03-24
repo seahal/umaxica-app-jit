@@ -54,3 +54,6 @@ Things you may want to cover:
 * Tools
   * `envrc`
   * `yamlfmt`
+  * [Lefthook](https://github.com/evilmartians/lefthook)
+  * [tflint](https://github.com/terraform-linters/tflint)
+  * [asdf](https://asdf-vm.com/)
