@@ -21,7 +21,7 @@ Rails.application.routes.draw do
           resources :message, only: [ :update, :create ]
         end
         # robots.txt
-        resources :robots, only: :index, format: :txt
+        # resources :robots, only: :index, format: :txt
         # ads.txt
         resources :ads, only: :index, format: :txt
         # sitemap.xml
@@ -73,7 +73,7 @@ Rails.application.routes.draw do
           # Settings
           resource :preference, only: :show
           # robots.txt
-          resources :robots, only: :index, format: :txt
+          # resources :robots, only: :index, format: :txt
           # ads.txt
           resources :ads, only: :index, format: :txt
           # sitemap.xml
@@ -120,7 +120,7 @@ Rails.application.routes.draw do
           resource :email, only: %i[new create]
         end
         # robots.txt
-        resources :robots, only: :index, format: :txt
+        # resources :robots, only: :index, format: :txt
         # sitemap
         resource :sitemap, only: :show, format: :xml
         # ads.txt

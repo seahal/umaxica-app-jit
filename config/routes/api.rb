@@ -11,7 +11,7 @@ Rails.application.routes.draw do
           resource :status, only: :show
         end
         # ROBOTS
-        resources :robots, only: :index, format: :txt
+        # resources :robots, only: :index, format: :txt
         # Security
         get "/security(.:format)", to: redirect("https://#{ENV['EDGE_CORPORATE_URL']}/security.html"), as: :security
       end
@@ -32,7 +32,7 @@ Rails.application.routes.draw do
           end
         end
         # ROBOTS
-        resources :robots, only: :index, format: :txt
+        # resources :robots, only: :index, format: :txt
         # Security
         get "/security(.:format)", to: redirect("#{ENV['EDGE_SERVICE_URL']}/security.html"), as: :security
       end
@@ -50,7 +50,7 @@ Rails.application.routes.draw do
           resource :status, only: :show
         end
         # robots
-        resources :robots, only: :index, format: :txt
+        # resources :robots, only: :index, format: :txt
         # Security
         get "/security(.:format)", to: redirect("#{ENV['EDGE_STAFF_URL']}/security.html"), as: :security
       end
