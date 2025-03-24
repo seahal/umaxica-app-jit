@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Dev::Www::NetControllerTest < ActionDispatch::IntegrationTest
+class Dev::Www::AppControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     get dev_www_app_url
     assert_response :success

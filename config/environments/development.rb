@@ -18,8 +18,8 @@ Rails.application.configure do
   config.server_timing = true
 
   # Enable/disable Action Controller caching. By default Action Controller caching is disabled.
-  # Run rails dev:cache to toggle Action Controller caching.
-  if Rails.root.join("tmp/caching-dev.txt").exist?
+  # Run rails org:cache to toggle Action Controller caching.
+  if Rails.root.join("tmp/caching-org.txt").exist?
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
     config.public_file_server.headers = { "cache-control" => "public, max-age=#{2.days.to_i}" }
@@ -38,22 +38,6 @@ Rails.application.configure do
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
-
-  # Email Settings
-  ## Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
-  config.action_mailer.smtp_settings = {
-    address: "email-smtp.ap-northeast-1.amazonaws.com",
-    domain: "umaxica.app",
-    port: 2465,
-    user_name: ENV["SMTP_USERNAME"],
-    password: ENV["SMTP_PASSWORD"],
-    authentication: :login,
-    enable_starttls: true,
-    open_timeout: 5,
-    read_timeout: 5
-  }
 
   ## Letter Opener => https://github.com/ryanb/letter_opener
   #  config.action_mailer.delivery_method = :letter_opener
@@ -97,10 +81,8 @@ Rails.application.configure do
   config.hosts << "localhost"
   config.hosts << "com.www.localdomain"
   config.hosts << "app.www.localdomain"
-  config.hosts << "app.www.localdomain"
   config.hosts << "org.www.localdomain"
   config.hosts << "com.api.localdomain"
-  config.hosts << "app.api.localdomain"
   config.hosts << "app.api.localdomain"
   config.hosts << "org.api.localdomain"
 
@@ -109,4 +91,20 @@ Rails.application.configure do
 
   # Rack Attack preferences
   Rack::Attack.cache.store = Rails.cache
+
+    ## Email Settings
+    ### Set localhost to be used by links generated in mailer templates.
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
+    config.action_mailer.smtp_settings = {
+      address: ENV["AMAZON_SES_SMTP_ENDPOINT"],
+      user_name: ENV["AMAZON_SES_SMTP_USER_NAME"],
+      password: ENV["AMAZON_SES_SMTP_PASSWORD"],
+      domain: "umaxica.app",
+      port: 587,
+      authentication: :login,
+      enable_starttls: true,
+      open_timeout: 5,
+      read_timeout: 5
+    }
 end

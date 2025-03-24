@@ -52,12 +52,6 @@ development:
     database: development_core_db
     port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %> # FIXME: change to use replica
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %>  # FIXME: change to use replica
-  # solid:
-  #   adapter: sqlite3
-  #   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  #   timeout: 5000
-  #   database: development_solid_db
-  #   database:  <%= File.exist?('/.dockerenv') ? ENV["SQLITE_URL"] : 'localhost' %>
 
 
 # Warning: The database defined as "test" will be erased and
@@ -108,12 +102,6 @@ test:
     database: test_core_db
     port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"] : 'localhost' %> # FIXME: change to use replica
-  # solid:
-  #   adapter: sqlite3
-  #   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  #   timeout: 5000
-  #   database: test_solid_db
-  #   database: <%= File.exist?('/.dockerenv') ? ENV["SQLITE_URL"] : 'localhost' %>
 
 
 # FIXME: please implement below

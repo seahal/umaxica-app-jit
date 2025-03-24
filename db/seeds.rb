@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-raise '[SAFEGUARD] db:seed only use for dev env.' unless Rails.env.development?
+raise '[SAFEGUARD] db:seed only use for org env.' unless Rails.env.development?
 
 #
 # StaffEmailStaff.find_or_create_by(
