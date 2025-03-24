@@ -20,16 +20,6 @@ Rails.application.routes.draw do
           resources :telephone, only: [ :update, :show ]
           resources :message, only: [ :update, :create ]
         end
-        # robots.txt
-        # resources :robots, only: :index, format: :txt
-        # ads.txt
-        resources :ads, only: :index, format: :txt
-        # sitemap.xml
-        resource :sitemap, only: :show, format: :xml
-        # Security
-        resource :security, only: :show, format: :txt
-        # PWA
-        resource :manifest, only: :show, format: :json
       end
 
       constraints host: ENV["WWW_SERVICE_URL"] do
@@ -72,16 +62,6 @@ Rails.application.routes.draw do
           end
           # Settings
           resource :preference, only: :show
-          # robots.txt
-          # resources :robots, only: :index, format: :txt
-          # ads.txt
-          resources :ads, only: :index, format: :txt
-          # sitemap.xml
-          resource :sitemap, only: :show, format: :xml
-          # Security
-          resource :security, only: :show, format: :txt
-          # PWA
-          resource :manifest, only: :show, format: :json
         end
       end
     end
@@ -119,16 +99,6 @@ Rails.application.routes.draw do
         resource :session, only: :new, shallow: true do
           resource :email, only: %i[new create]
         end
-        # robots.txt
-        # resources :robots, only: :index, format: :txt
-        # sitemap
-        resource :sitemap, only: :show, format: :xml
-        # ads.txt
-        resources :ads, only: :index, format: :txt
-        # Security
-        resource :security, only: :show, format: :txt
-        # PWA
-        resource :manifest, only: :show, format: :json
       end
     end
   end
