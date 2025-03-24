@@ -39,22 +39,6 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  # Email Settings
-  ## Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
-  config.action_mailer.smtp_settings = {
-    address: "email-smtp.ap-northeast-1.amazonaws.com",
-    domain: "umaxica.app",
-    port: 2465,
-    user_name: ENV["SMTP_USERNAME"],
-    password: ENV["SMTP_PASSWORD"],
-    authentication: :login,
-    enable_starttls: true,
-    open_timeout: 5,
-    read_timeout: 5
-  }
-
   ## Letter Opener => https://github.com/ryanb/letter_opener
   #  config.action_mailer.delivery_method = :letter_opener
   # config.action_mailer.perform_deliveries = true
@@ -107,4 +91,20 @@ Rails.application.configure do
 
   # Rack Attack preferences
   Rack::Attack.cache.store = Rails.cache
+
+    ## Email Settings
+    ### Set localhost to be used by links generated in mailer templates.
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
+    config.action_mailer.smtp_settings = {
+      address: ENV["AMAZON_SES_SMTP_ENDPOINT"],
+      user_name: ENV["AMAZON_SES_SMTP_USER_NAME"],
+      password: ENV["AMAZON_SES_SMTP_PASSWORD"],
+      domain: "umaxica.app",
+      port: 587,
+      authentication: :login,
+      enable_starttls: true,
+      open_timeout: 5,
+      read_timeout: 5
+    }
 end

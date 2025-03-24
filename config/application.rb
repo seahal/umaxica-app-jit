@@ -31,9 +31,6 @@ module Jit
     # CORS
     config.middleware.use Rack::Attack
 
-    # public files settings
-    # middleware.use ::ActionDispatch::Static, "#{Rails.root}/public/dev/", index: 'index'
-
     # USE UTC
     config.time_zone ="UTC"
     config.active_record.default_timezone = :utc
