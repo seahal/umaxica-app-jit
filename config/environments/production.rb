@@ -18,7 +18,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
 
   # Cache assets for far-future expiry since they are all digest stamped.
-  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+  # config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
@@ -88,4 +88,8 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  ### Added by owner
+  # We've configured this production environment to prevent the delivery of public static content.
+  config.public_file_server.enabled = false
 end

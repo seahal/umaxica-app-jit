@@ -118,7 +118,7 @@ services:
     networks:
       - frontend
     ports:
-      - "4444:4444"
+      - "4440:4444"
       - "7900:7900"
     depends_on:
       - main

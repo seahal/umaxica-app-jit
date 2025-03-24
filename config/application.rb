@@ -8,7 +8,7 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module Learn
+module Jit
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
@@ -30,6 +30,9 @@ module Learn
 
     # CORS
     config.middleware.use Rack::Attack
+
+    # public files settings
+    # middleware.use ::ActionDispatch::Static, "#{Rails.root}/public/dev/", index: 'index'
 
     # USE UTC
     config.time_zone ="UTC"

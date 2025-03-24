@@ -18,8 +18,8 @@ Rails.application.configure do
   config.server_timing = true
 
   # Enable/disable Action Controller caching. By default Action Controller caching is disabled.
-  # Run rails dev:cache to toggle Action Controller caching.
-  if Rails.root.join("tmp/caching-dev.txt").exist?
+  # Run rails org:cache to toggle Action Controller caching.
+  if Rails.root.join("tmp/caching-org.txt").exist?
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
     config.public_file_server.headers = { "cache-control" => "public, max-age=#{2.days.to_i}" }
@@ -97,10 +97,8 @@ Rails.application.configure do
   config.hosts << "localhost"
   config.hosts << "com.www.localdomain"
   config.hosts << "app.www.localdomain"
-  config.hosts << "app.www.localdomain"
   config.hosts << "org.www.localdomain"
   config.hosts << "com.api.localdomain"
-  config.hosts << "app.api.localdomain"
   config.hosts << "app.api.localdomain"
   config.hosts << "org.api.localdomain"
 
