@@ -13,12 +13,12 @@ Rails.application.routes.draw do
         # show search pages
         resource :search, only: :show
         # non-loggined settings
-        resource :privacy, only: [:show, :edit]
+        resource :privacy, only: [ :show, :edit ]
         # contact page
         resource :contact, only: :new, shallow: true do
-          resources :email, only: [:update, :show]
-          resources :telephone, only: [:update, :show]
-          resources :message, only: [:update, :create]
+          resources :email, only: [ :update, :show ]
+          resources :telephone, only: [ :update, :show ]
+          resources :message, only: [ :update, :create ]
         end
       end
 
@@ -33,12 +33,12 @@ Rails.application.routes.draw do
           # show stating env
           resource :staging, only: :show
           # non-loggined settings
-          resource :privacy, only: [:show, :edit]
+          resource :privacy, only: [ :show, :edit ]
           # contact page
           resource :contact, only: :new do
-            resources :email, only: [:update, :show]
-            resources :telephone, only: [:update, :show]
-            resources :message, only: [:update, :create]
+            resources :email, only: [ :update, :show ]
+            resources :telephone, only: [ :update, :show ]
+            resources :message, only: [ :update, :create ]
           end
           # Sign up pages
           resource :registration, only: :new
@@ -78,12 +78,12 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show
         # non-loggined settings
-        resource :privacy, only: [:show, :edit]
+        resource :privacy, only: [ :show, :edit ]
         # contact page
         namespace :contact do
-          resources :email, only: [:update, :show]
-          resources :telephone, only: [:update, :show]
-          resources :message, only: [:update, :create]
+          resources :email, only: [ :update, :show ]
+          resources :telephone, only: [ :update, :show ]
+          resources :message, only: [ :update, :create ]
         end
         # TODO: Owner's lounge
         resource :owner, only: :show

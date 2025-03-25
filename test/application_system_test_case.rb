@@ -17,8 +17,8 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   url = ENV.fetch("SELENIUM_REMOTE_URL", nil)
   options = if url
               { browser: :remote, url: url }
-            else
+  else
               { browser: :chrome }
-            end
+  end
   driven_by :selenium, using: :headless_chrome, options: options
 end

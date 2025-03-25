@@ -15,7 +15,7 @@ module App
         get api_app_v1_health_url(format: :json)
         assert_response :success
         assert_nothing_raised do
-          assert_equal "OK", JSON.parse(response.body)['status']
+          assert_equal "OK", JSON.parse(response.body)["status"]
         end
       end
     end

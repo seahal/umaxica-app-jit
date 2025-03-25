@@ -36,7 +36,7 @@ module Www
 
         # Only allow a list of trusted parameters through.
         def sample_params
-          params.expect(user_email: [:address, :confirm_policy])
+          params.expect(user_email: [ :address, :confirm_policy ])
         end
 
         def cloudflare_turnstile_validation

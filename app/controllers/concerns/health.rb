@@ -6,6 +6,7 @@ module Health
   def show
     expires_in 1.second, public: true # this page wouldn't include private data
 
+    # FIXME: much more validations requires
     if !!User.connection.execute("SELECT 1 FROM users LIMIT 1")
       @title = "OK"
       respond_to do |format|
