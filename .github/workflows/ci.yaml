@@ -197,6 +197,9 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1 postgres.dolphin.com" | sudo tee -a /etc/hosts
       - name: Rails db:create
         run: bin/rails db:create
       - name: Rails db:migrate
