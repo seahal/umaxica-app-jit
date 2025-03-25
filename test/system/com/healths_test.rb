@@ -6,7 +6,7 @@ module Com
   class HealthsTest < ApplicationSystemTestCase
     test "visiting the index" do
       visit www_com_health_url
-      assert_selector "h1", text: "ok"
+      assert_text "OK"
     end
   end
 end

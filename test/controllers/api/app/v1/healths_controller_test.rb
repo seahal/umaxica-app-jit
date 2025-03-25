@@ -3,14 +3,14 @@
 require "test_helper"
 
 module Api
-module App
-  module V1
-    class HealthsControllerTest < ActionDispatch::IntegrationTest
-      test "should get show" do
-        get api_app_v1_health_url
-        assert_response :success
+  module App
+    module V1
+      class HealthsControllerTest < ActionDispatch::IntegrationTest
+        test "should get show" do
+          get api_app_v1_health_url
+          assert_response :success
+        end
       end
     end
   end
-end
 end

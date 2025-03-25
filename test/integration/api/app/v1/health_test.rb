@@ -5,17 +5,18 @@ require "test_helper"
 module App
   module V1
     class HealthTest < ActionDispatch::IntegrationTest
-      # test "the truth" do
-      #   get api_app_v1_health_url, as: :json
-      #   json = JSON.parse(response.body)
-      #   assert_response :success
-      #   assert json["active"]
-      # end
-
-      test "should get json show when required html file" do
-        get api_app_v1_health_url, as: :html
+      test "should get show" do
+        get api_app_v1_health_url(format: :html)
         assert_response :success
-        assert JSON.parse(response.body)["active"]
+        assert_equal "OK", @response.body
+      end
+
+      test "should get show when required json file" do
+        get api_app_v1_health_url(format: :json)
+        assert_response :success
+        assert_nothing_raised do
+          assert_equal "OK", JSON.parse(response.body)["status"]
+        end
       end
     end
   end

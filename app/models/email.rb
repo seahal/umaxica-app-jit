@@ -7,6 +7,6 @@ class Email < AuthRecord
   has_one :staff, foreign_key: "id"
 
   validates :address, length: 3..255,
-                      format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i },
-                      uniqueness: { case_sensitive: false }
+            format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i },
+            uniqueness: { case_sensitive: false }
 end

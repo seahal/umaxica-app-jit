@@ -56,8 +56,8 @@ Rails.application.configure do
   # The following lines were added by me.
   config.cache_store = :redis_cache_store, {
     url: ENV["VALKEY_CACHE_URL"], # Redisの接続情報を環境変数から取得する
-    expires_in: 1.hour,    # キャッシュの有効期限を設定
-    driver: :hiredis       # hiredisドライバを使用することで高速化できる
+    expires_in: 1.hour, # キャッシュの有効期限を設定
+    driver: :hiredis # hiredisドライバを使用することで高速化できる
   }
 
   if ENV["CI"]

@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= content_for?(:page_title) ? "UMAXICA | #{yield(:page_title)} " : "UMAXICA" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  </head>
+<head>
+  <title><%= content_for?(:page_title) ? "UMAXICA | #{yield(:page_title)} " : "UMAXICA" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
 
-  <body class="px-4">
-    <header>
-      <h1 class="font-bold text-4xl"></h1>
-      <%= link_to 'UMAXICA(SERVICE)', www_app_root_path %>
-    </header>
+<body class="px-4">
+<header>
+  <h1 class="font-bold text-4xl"></h1>
+  <%= link_to 'UMAXICA(SERVICE)', www_app_root_path %>
+</header>
 
-    <hr>
+<hr>
 
-    <nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
-      home
-    </nav>
+<nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
+  home
+</nav>
 
-    <main class="container mx-auto mt-28 px-5 block"><%= yield %></main>
+<main class="container mx-auto mt-28 px-5 block"><%= yield %></main>
 
-    <hr>
+<hr>
 
-    <footer>
-      <%= link_to 'Homepage', www_app_root_path %>
-      Support
-      Terms
-      Privacy
-      Security
-      Accessibility
-    </footer>
-  </body>
+<footer>
+  <%= link_to 'Homepage', www_app_root_path %>
+  Support
+  Terms
+  Privacy
+  Security
+  Accessibility
+</footer>
+</body>
 </html>

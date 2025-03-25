@@ -32,7 +32,7 @@ module Jit
     config.middleware.use Rack::Attack
 
     # USE UTC
-    config.time_zone ="UTC"
+    config.time_zone = "UTC"
     config.active_record.default_timezone = :utc
   end
 end

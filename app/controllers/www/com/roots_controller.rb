@@ -1,4 +1,3 @@
-
 module Www
   module Com
     class RootsController < ApplicationController

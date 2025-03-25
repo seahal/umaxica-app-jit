@@ -92,19 +92,19 @@ Rails.application.configure do
   # Rack Attack preferences
   Rack::Attack.cache.store = Rails.cache
 
-    ## Email Settings
-    ### Set localhost to be used by links generated in mailer templates.
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
-    config.action_mailer.smtp_settings = {
-      address: ENV["AMAZON_SES_SMTP_ENDPOINT"],
-      user_name: ENV["AMAZON_SES_SMTP_USER_NAME"],
-      password: ENV["AMAZON_SES_SMTP_PASSWORD"],
-      domain: "umaxica.app",
-      port: 587,
-      authentication: :login,
-      enable_starttls: true,
-      open_timeout: 5,
-      read_timeout: 5
-    }
+  ## Email Settings
+  ### Set localhost to be used by links generated in mailer templates.
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
+  config.action_mailer.smtp_settings = {
+    address: ENV["AMAZON_SES_SMTP_ENDPOINT"],
+    user_name: ENV["AMAZON_SES_SMTP_USER_NAME"],
+    password: ENV["AMAZON_SES_SMTP_PASSWORD"],
+    domain: "umaxica.app",
+    port: 587,
+    authentication: :login,
+    enable_starttls: true,
+    open_timeout: 5,
+    read_timeout: 5
+  }
 end

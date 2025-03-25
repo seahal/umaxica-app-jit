@@ -14,7 +14,7 @@ module Www
 
           respond_to do |format|
             if res["success"] == true && @user_email.save
-               format.html { redirect_to www_app_registration_email_path(Base64.urlsafe_encode64(@user_email.address)), notice: "Sample was successfully created." }
+              format.html { redirect_to www_app_registration_email_path(Base64.urlsafe_encode64(@user_email.address)), notice: "Sample was successfully created." }
             else
               format.html { render :new, status: :unprocessable_entity }
             end
@@ -41,9 +41,9 @@ module Www
 
         def cloudflare_turnstile_validation
           res = Net::HTTP.post_form(URI.parse("https://challenges.cloudflare.com/turnstile/v0/siteverify"),
-                              { "secret" => ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"],
-                                "response" => params["cf-turnstile-response"],
-                                "remoteip" => request.remote_ip })
+                                    { "secret" => ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"],
+                                      "response" => params["cf-turnstile-response"],
+                                      "remoteip" => request.remote_ip })
 
           JSON.parse(res.body)
         end

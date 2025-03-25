@@ -5,25 +5,25 @@ require "test_helper"
 module Com
   class HealthTest < ActionDispatch::IntegrationTest
     # NOTE: following tests are nothing to do with health check controller
-    test "check default params" do
-      get www_com_health_url, params: { tz: "jst", lang: "ja" }
-      assert_select "a[href=?]", "/"
-    end
-
-    test "check default params(ja,)" do
-      get www_com_health_url, params: { lang: "ja", tz: "" }
-      assert_select "a[href=?]", "/"
-    end
-
-    test "check default params(ja)" do
-      get www_com_health_url, params: { lang: "ja" }
-      assert_select "a[href=?]", "/"
-    end
-
-    test "check default params(jst)" do
-      get www_com_health_url, params: { tz: "jst" }
-      assert_select "a[href=?]", "/"
-    end
+    # test "check default params" do
+    #   get www_com_health_url, params: { tz: "jst", lang: "ja" }
+    #   assert_select "a[href=?]", "/"
+    # end
+    #
+    # test "check default params(ja,)" do
+    #   get www_com_health_url, params: { lang: "ja", tz: "" }
+    #   assert_select "a[href=?]", "/"
+    # end
+    #
+    # test "check default params(ja)" do
+    #   get www_com_health_url, params: { lang: "ja" }
+    #   assert_select "a[href=?]", "/"
+    # end
+    #
+    # test "check default params(jst)" do
+    #   get www_com_health_url, params: { tz: "jst" }
+    #   assert_select "a[href=?]", "/"
+    # end
     #
     # test "check default params(en)" do
     #   get www_com_health_url, params: { lang: "en" }

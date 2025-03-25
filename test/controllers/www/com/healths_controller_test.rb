@@ -7,13 +7,15 @@ module Com
     test "should get show" do
       get www_com_health_url
       assert_response :success
-      # assert_select "a[href=?]", www_com_root_path, count: 2
+      assert_equal "OK", @response.body
+      assert_select "a[href=?]", www_app_root_path, count: 0
     end
 
-    test "should not get show when required json file" do
-      get www_com_health_url
-      assert_raises do
-        JSON.parse(response.body)
+    test "should get show when required json file" do
+      get www_com_health_url(format: :json)
+      assert_response :success
+      assert_nothing_raised do
+        assert_equal "OK", JSON.parse(response.body)["status"]
       end
     end
   end
