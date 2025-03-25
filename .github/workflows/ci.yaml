@@ -182,12 +182,6 @@ jobs:
       POSTGRESQL_CORE_SUB: 'localhost'
       REDIS_CACHE_URL: 'redis://localhost:6380/0'
       REDIS_SESSION_URL: 'redis://localhost:6380/1'
-      API_CORPORATE_URL: 'localhost:30001'
-      API_SERVICE_URL: 'localhost:30002'
-      API_STAFF_URL: 'localhost:30003'
-      WWW_CORPORATE_URL: 'localhost:30004'
-      WWW_SERVICE_URL: 'localhost:30005'
-      WWW_STAFF_URL: 'localhost:30006'
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
@@ -199,13 +193,13 @@ jobs:
           bundler-cache: true
       - name: Add hosts to /etc/hosts
         run: |
-          sudo echo "127.0.0.1 postgres.dolphin.com" | sudo tee -a /etc/hosts
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
       - name: Rails db:create
         run: bin/rails db:create
       - name: Rails db:migrate
         run: bin/rails db:migrate
-#      - name: Do System Test
-#        run: bin/rails test:system
+      - name: Do System Test
+        run: bin/rails test:system
   teardown:
     runs-on: ubuntu-latest
     timeout-minutes: 5
