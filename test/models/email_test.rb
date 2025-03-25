@@ -3,7 +3,7 @@
 require "test_helper"
 
 class AccountTest < ActiveSupport::TestCase
-  [ StaffEmail, UserEmail ].each do |model|
+  [StaffEmail, UserEmail].each do |model|
     test "good #{model}'s email pattern" do
       assert model.create(address: "eg@example.com").valid?
     end
@@ -44,7 +44,7 @@ class AccountTest < ActiveSupport::TestCase
 
     test "email(#{model}) : a@b.c is equal to A@b.c, A@B.C A@B.c, ... A@B.C" do
       assert model.create(address: "a@b.c").valid?
-      [ "A@b.c", "A@B.c", "A@B.C", "a@B.c", "a@B.C", "a@b.C" ].each do |_address|
+      ["A@b.c", "A@B.c", "A@B.C", "a@B.c", "a@B.C", "a@b.C"].each do |_address|
         assert_no_difference "UserEmail.count", 1 do
           assert_not model.create(address: "A@B.C").valid?
         end

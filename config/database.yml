@@ -78,7 +78,7 @@ test:
     <<: *default
     replica: true
     database: test_docs_db
-    port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %> 
+    port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"] : 'localhost' %>  # FIXME: change to use replica
   core:
     <<: *default

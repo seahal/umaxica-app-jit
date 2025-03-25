@@ -6,10 +6,10 @@ module Www::Org::ApplicationHelper
     raise if time.nil?
 
     time.in_time_zone(case tz.to_s.downcase
-    when "jst"
+                      when "jst"
                         "Asia/Tokyo"
-    else
+                      else
                         "UTC"
-    end)
+                      end)
   end
 end

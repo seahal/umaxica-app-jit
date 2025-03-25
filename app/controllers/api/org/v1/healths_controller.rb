@@ -2,7 +2,7 @@ module Api
   module Org
     module V1
       class HealthsController < ApplicationController
-        include ::V1::Health
+        include ::Health
       end
     end
   end

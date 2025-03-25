@@ -7,13 +7,17 @@ module Health
     expires_in 1.second, public: true # this page wouldn't include private data
 
     if !!User.connection.execute("SELECT 1 FROM users LIMIT 1")
-      @title = "ok"
-      @message = "There are no erros this system"
-      render status: 200
+      @title = "OK"
+      respond_to do |format|
+        format.json { render json: { status: @title }, status: 200 }
+        format.html { render plain: @title, status: 200 }
+      end
     else
-      @title = "failure"
-      @message = "System health check failed"
-      render status: 500
+      @title = "NG"
+      respond_to do |format|
+        format.json { render json: { status: @title }, status: 503 }
+        format.html { render plain: @title, status: 503 }
+      end
     end
   end
 end

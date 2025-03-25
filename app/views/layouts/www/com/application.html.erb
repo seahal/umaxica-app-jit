@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <title><%= content_for?(:page_title) ? "Umaxica | #{yield(:page_title)} " : "Umaxica" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "www/com/main" %>
-    <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  </head>
+<head>
+  <title><%= content_for?(:page_title) ? "Umaxica | #{yield(:page_title)} " : "Umaxica" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "www/com/main" %>
+  <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
 
-  <body class="px-4">
-    <header>
-      <h1 class="container mx-auto mt-28 px-5 flex"><%= link_to 'UMAXICA(Corporate Site)', www_com_root_path %></h1>
-    </header>
+<body class="px-4">
+<header>
+  <h1 class="container mx-auto mt-28 px-5 flex"><%= link_to 'UMAXICA(Corporate Site)', www_com_root_path %></h1>
+</header>
 
-    <hr>
+<hr>
 
-    <nav></nav>
-    <main class="container mx-auto mt-28 px-5 block">
-      <%= yield %>
-    </main>
+<nav></nav>
+<main class="container mx-auto mt-28 px-5 block">
+  <%= yield %>
+</main>
 
-    <hr>
+<hr>
 
-    <footer>
+<footer>
 
-      Support
-      Terms
-      Privacy
-      Security
-      Accessibility
-      <%= link_to 'Homepage', www_com_root_path %>
-    </footer>
+  Support
+  Terms
+  Privacy
+  Security
+  Accessibility
+  <%= link_to 'Homepage', www_com_root_path %>
+</footer>
 
-  </body>
+</body>
 </html>
