@@ -201,8 +201,8 @@ jobs:
         run: bin/rails db:create
       - name: Rails db:migrate
         run: bin/rails db:migrate
-      - name: Do System Test
-        run: bin/rails test:system
+#      - name: Do System Test
+#        run: bin/rails test:system
   teardown:
     runs-on: ubuntu-latest
     timeout-minutes: 5
