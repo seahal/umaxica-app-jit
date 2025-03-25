@@ -51,9 +51,7 @@ Rails.application.routes.draw do
           # Withdrawal
           resource :withdrawal, only: %i[edit destroy] # TODO: Create or Delete membership
           # Sign In/Out, NEED WEB
-          resource :session, only: %i[new destroy]
-          # todo: rewrite namespace
-          namespace :session do
+          resource :session, only: %i[new destroy] do
             resource :email, only: %i[new create]
             resource :google, only: %i[new create]
             resource :apple, only: %i[new create]

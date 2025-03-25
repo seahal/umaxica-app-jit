@@ -29,24 +29,28 @@ Things you may want to cover:
     - Redis
     - Kafka
     - S3(minio)
+    - Terraform
+    * Kubernetes
+    * [OpenTelemetry](https://opentelemetry.io/)
 * Deployment instructions
     - When you are free, look at 'bin/rails notes'
 * Using Services
   * Amazon Web Service
-    * ses and sms
+    * ses
+    * AWS End User Messaging
     * ecr
     * eks
     * cloudfront
   * Fastly
     * CDN
     * Compute
+  * Vercel
+    * hosting?
   * CloudFlare
     * Registers
     * Turnstile 
   * Terraform
     * TCP Terraform
-  * Kubernetes
-  * [OpenTelemetry](https://opentelemetry.io/)
 * Secrets
   * You have to set `.env.local` and `.envrc` on your own environment.This is because it has confidential.
   * "You can use the AWS CLI command, and then you should run aws configure --profile umaxica."
