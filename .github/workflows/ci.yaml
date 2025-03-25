@@ -148,7 +148,7 @@ jobs:
       #   timeout-minutes: 15
       - name: Do tests without System Test
         run: bin/rails test
-  test_system:
+  test-system:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -182,7 +182,12 @@ jobs:
       POSTGRESQL_CORE_SUB: 'localhost'
       REDIS_CACHE_URL: 'redis://localhost:6380/0'
       REDIS_SESSION_URL: 'redis://localhost:6380/1'
-      ENV: true
+      API_CORPORATE_URL: 'localhost:30001'
+      API_SERVICE_URL: 'localhost:30002'
+      API_STAFF_URL: 'localhost:30003'
+      WWW_CORPORATE_URL: 'localhost:30004'
+      WWW_SERVICE_URL: 'localhost:30005'
+      WWW_STAFF_URL: 'localhost:30006'
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
@@ -201,7 +206,7 @@ jobs:
   teardown:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [brakeman, rubocop, bundle-audit,audit,test,test_system]
+    needs: [brakeman, rubocop, bundle-audit,audit,test,test-system]
     defaults:
       run:
         shell: bash
@@ -212,5 +217,3 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Check helath
-        run: bin/rails about
