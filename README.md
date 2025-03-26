@@ -16,7 +16,7 @@ Things you may want to cover:
     - Edit `/etc/hosts` files to separate .com or .net.
     - ```
       # See hosts(5) for details.
-	  127.0.0.1   com.www.localdomain app.www.localdomain org.www.localdomain com.api.localdomain app.api.localdomain org.api.localdomain
+	  127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost
 	  ```
 * Database creation
     - `bin/rails db:create`
@@ -44,8 +44,9 @@ Things you may want to cover:
   * Fastly
     * CDN
     * Compute
-  * Vercel
-    * hosting?
+  * Google Cloud
+    * Domain
+    * Firebase
   * CloudFlare
     * Registers
     * Turnstile 
