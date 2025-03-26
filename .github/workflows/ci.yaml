@@ -14,6 +14,9 @@ concurrency:
 permissions:
   contents: read
   issues: write
+defaults:
+  run:
+    shell: bash
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -148,7 +151,7 @@ jobs:
       #   timeout-minutes: 15
       - name: Do tests without System Test
         run: bin/rails test
-  test-system:
+  'test:system':
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -200,17 +203,15 @@ jobs:
         run: bin/rails db:migrate
       - name: Do System Test
         run: bin/rails test:system
-  teardown:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [brakeman, rubocop, bundle-audit,audit,test,test-system]
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
+#  test:channels     -- Run tests in test/channels
+#  test:controllers  -- Run tests in test/controllers
+#  test:db           -- Reset the database and run 'bin/rails test'
+#  test:functionals  -- Run tests in test/controllers, test/mailers, and test/functional
+#  test:generators   -- Run tests in test/lib/generators
+#  test:helpers      -- Run tests in test/helpers
+#  test:integration  -- Run tests in test/integration
+#  test:jobs         -- Run tests in test/jobs
+#  test:mailboxes    -- Run tests in test/mailboxes
+#  test:mailers      -- Run tests in test/mailers
+#  test:models       -- Run tests in test/models
+#  test:units
