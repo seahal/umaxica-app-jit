@@ -68,7 +68,7 @@ test:
     replica: true
     database: test_auth_db
     port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_AUTH_SUB"] : 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_AUTH_SUB"] : 'localhost' %> # FIXME: change to use replica
   docs:
     <<: *default
     database: test_docs_db

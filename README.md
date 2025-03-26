@@ -44,8 +44,9 @@ Things you may want to cover:
   * Fastly
     * CDN
     * Compute
-  * Vercel
-    * hosting?
+  * Google Cloud
+    * Domain
+    * Firebase
   * CloudFlare
     * Registers
     * Turnstile 

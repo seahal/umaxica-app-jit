@@ -119,7 +119,7 @@ services:
       - frontend
     ports:
       - "4440:4444"
-      - "7900:7900"
+      - "4900:7900"
     depends_on:
       - main
   firefox:
@@ -128,8 +128,8 @@ services:
     networks:
       - frontend
     ports:
-      - "4445:4444"
-      - "7901:7900"
+      - "4441:4444"
+      - "4901:7900"
     depends_on:
       - main
 volumes: #
