@@ -151,7 +151,7 @@ jobs:
       #   timeout-minutes: 15
       - name: Do tests without System Test
         run: bin/rails test
-  'test:system':
+  'test-system':
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
