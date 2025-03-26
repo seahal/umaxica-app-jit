@@ -88,6 +88,8 @@ group :development, :test do
   # rubocop
   gem "rubocop", require: false
   gem "rubocop-rails-omakase", require: false
+  #
+  gem 'parallel_tests'
 end
 
 group :development do

@@ -58,6 +58,11 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
+  auth2:
+    <<: *default
+    database: auth2_test<%= ENV['TEST_ENV_NUMBER'] %>
+    port: <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_AUTH_PUB"] : 'localhost' %>
   auth:
     <<: *default
     database: test_auth_db
