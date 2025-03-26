@@ -50,8 +50,9 @@ gem "addressable", "~> 2.8", ">= 2.8.7"
 # Authentication
 gem "cancancan", "~> 3.6", ">= 3.6.1"
 # FIXME: i am wondering that using aws's s3.
-gem "aws-sdk", "~> 3.0", ">= 3.0.1"
+gem "aws-sdk"
 gem "aws-sdk-s3", require: false
+gem 'aws-sdk-pinpointsmsvoicev2', '~> 1.34'
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
@@ -72,9 +73,9 @@ gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
 # sitemap
 gem "sitemap_generator"
-#
+# JWE + JWT
 gem "jwt", "3.0.0.beta1"
-
+gem 'jwe', '~> 1.0'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

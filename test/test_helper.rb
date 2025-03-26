@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# simplecov
 require "simplecov"
 SimpleCov.start "rails"
 

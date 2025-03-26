@@ -78,6 +78,8 @@ Rails.application.configure do
 
   # added
   ## to avoid errors
+  #
+  config.hosts << "main"
   config.hosts << "localhost"
   config.hosts << "com.www.localdomain"
   config.hosts << "app.www.localdomain"

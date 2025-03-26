@@ -9,7 +9,10 @@ ENV HOME=/main
 RUN mkdir /main
 WORKDIR /main
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
+    apt-get upgrade -qq && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 postgresql-client libvips wget zsh bash && \
+    apt-get install -y fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 libgtk2.0-0 libnss3 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libgbm1 libasound2  && \
+    apt-get install -y chromium chromium-chromedriver python3 python3-dev py3-pip && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 COPY Gemfile Gemfile.lock /main/
 RUN bundle install
