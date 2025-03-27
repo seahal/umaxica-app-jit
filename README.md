@@ -1,4 +1,4 @@
-[![Hello](https://github.com/seahal/demo-application-ror/actions/workflows/ci.yaml/badge.svg)](https://github.com/seahal/demo-application-ror/actions/workflows/ci.yaml?branch=main) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit-server/main)
+[![Hello](https://github.com/seahal/demo-application-ror/actions/workflows/ci.yaml/badge.svg)](https://github.com/seahal/demo-application-ror/actions/workflows/ci.yaml?branch=main) [![CD](https://github.com/seahal/umaxica-app-jit-ruby-on-rails/actions/workflows/delivery.yaml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit-ruby-on-rails/actions/workflows/delivery.yaml)  ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit-server/main)
 # README
 
 
@@ -41,15 +41,16 @@ Things you may want to cover:
     * ecr
     * eks
     * cloudfront
-  * Fastly
-    * CDN
-    * Compute
   * Google Cloud
     * Domain
     * Firebase
+    * CloudRun
   * CloudFlare
     * Registers
-    * Turnstile 
+    * Turnstile
+  * Fastly
+    * CDN
+    * Compute
   * Terraform
     * TCP Terraform
 * Secrets
