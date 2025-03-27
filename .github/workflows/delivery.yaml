@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      # developブランチへのプッシュでのCDは意図的に削除しました
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -119,31 +118,18 @@ jobs:
           docker push $ECR_REPOSITORY:latest
           docker push $ECR_REPOSITORY:${{ github.sha }}
 
-  deploy-to-storage:
-    name: ストレージへのデプロイ
+  deploy-to-cloudflare-r2:
     needs: [test]
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      matrix:
-        target: [cloudflare-r2, amazon-s3]
-      fail-fast: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      # Cloudflare R2向けのデプロイ手順
-      - name: Configure Cloudflare R2
-        if: matrix.target == 'cloudflare-r2'
-        run: echo "Cloudflare R2向けの設定を行います"
-        # ここにCloudflare R2向けの実際のデプロイステップを追加
-
-      # Amazon S3向けのデプロイ手順
-      - name: Configure AWS S3
-        if: matrix.target == 'amazon-s3'
-        run: echo "Amazon S3向けの設定を行います"
-        # ここにAmazon S3向けの実際のデプロイステップを追加
-
-      - name: Deploy to ${{ matrix.target }}
-        run: echo "${{ matrix.target }}へのデプロイを実行します"
-        # ここに実際のデプロイコマンドを追加
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: R2 Upload Action
+        run: aws --endpoint-url https://umaxica-production-cloudflare-r2-asset-jp.r2.cloudflarestorage.com s3 ls
