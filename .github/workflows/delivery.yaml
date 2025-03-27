@@ -136,5 +136,5 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: compile assets pipeline
         run: SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
-#      - name: R2 Upload Action
-#        run: aws --endpoint-url https://umaxica-production-cloudflare-r2-asset-jp.r2.cloudflarestorage.com s3 ls
+      - name: R2 Upload Action
+        run: aws --endpoint-url https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com/umaxica-production-cloudflare-r2-asset-jp s3 cp ./public/
