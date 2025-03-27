@@ -234,7 +234,54 @@ jobs:
         run: bin/rails db:migrate
       - name: Do System Test
         run: bin/rails test:system
-  'test(system)':
+  'test(controller)':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:controllers
+  'test(model)':
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -284,57 +331,7 @@ jobs:
         run: bin/rails db:migrate
       - name: Do System Test
         run: bin/rails test:system
-  'test(system)':
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [setup]
-    defaults:
-      run:
-        shell: bash
-    services:
-      redis:
-        image: redis
-        options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 6380:6379
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: 'default'
-          POSTGRES_PASSWORD: 'password'
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 5433:5432
-    env:
-      POSTGRES_USER: 'default'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRESQL_AUTH_PUB: 'localhost'
-      POSTGRESQL_AUTH_SUB: 'localhost'
-      POSTGRESQL_DOCS_PUB: 'localhost'
-      POSTGRESQL_DOCS_SUB: 'localhost'
-      POSTGRESQL_CORE_PUB: 'localhost'
-      POSTGRESQL_CORE_SUB: 'localhost'
-      REDIS_CACHE_URL: 'redis://localhost:6380/0'
-      REDIS_SESSION_URL: 'redis://localhost:6380/1'
-    steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-      - name: Add hosts to /etc/hosts
-        run: |
-          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
-      - name: Rails db:migrate
-        run: bin/rails db:migrate
-      - name: Do System Test
-        run: bin/rails test:system
-  'test(system)':
+  'test(3)':
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -392,7 +389,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Docker build for production
         run: docker build --target production .
-        #  test:channels     -- Run tests in test/channels
         #  test:controllers  -- Run tests in test/controllers
         #  test:functionals  -- Run tests in test/controllers, test/mailers, and test/functional
         #  test:generators   -- Run tests in test/lib/generators
