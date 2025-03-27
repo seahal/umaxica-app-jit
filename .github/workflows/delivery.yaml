@@ -3,18 +3,32 @@ on:
   push:
     branches:
       - main
-      - develop # delete this line
+      # developブランチへのプッシュでのCDは意図的に削除しました
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-permissions: {}
+
+# 明示的に必要な権限を設定
+permissions:
+  contents: read
+
 jobs:
-  setup:
+  test:
+    name: テストとバリデーション
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    defaults:
-      run:
-        shell: bash
+    timeout-minutes: 10
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
     services:
       redis:
         image: redis
@@ -31,94 +45,105 @@ jobs:
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         ports:
           - 5433:5432
-    env:
-      POSTGRES_USER: 'default'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRESQL_AUTH_PUB: 'localhost'
-      POSTGRESQL_AUTH_SUB: 'localhost'
-      POSTGRESQL_DOCS_PUB: 'localhost'
-      POSTGRESQL_DOCS_SUB: 'localhost'
-      POSTGRESQL_CORE_PUB: 'localhost'
-      POSTGRESQL_CORE_SUB: 'localhost'
-      REDIS_CACHE_URL: 'redis://localhost:6380/0'
-      REDIS_SESSION_URL: 'redis://localhost:6380/1'
     steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
       - name: Checkout code
         uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
+
+      - name: Install system packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Add hosts to /etc/hosts
+
+      - name: Configure test environment
         run: |
           sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
-      - name: rubocop
+
+      - name: Static code analysis
         run: bin/rubocop
-      - name: Rails db:create
-        run: bin/rails db:create
-      - name: Rails db:migrate
-        run: bin/rails db:migrate
-      - name: Do System Test
+
+      - name: Setup database
+        run: |
+          bin/rails db:create
+          bin/rails db:migrate
+
+      - name: Run all tests
         run: bin/rails test:all
-  push-to-amazon-ecr:
+
+  deploy-to-ecr:
+    name: AWSのECRにデプロイ
+    needs: [test]
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: read
-    needs: [ setup ]
-    defaults:
-      run:
-        shell: bash
+    timeout-minutes: 10
+    env:
+      ECR_REPOSITORY: 841162677945.dkr.ecr.ap-northeast-1.amazonaws.com/umaxica/jit
+      AWS_REGION: ap-northeast-1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      # Set up AWS CLI
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: Set up AWS environment
-        run: aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin 841162677945.dkr.ecr.ap-northeast-1.amazonaws.com
-      - name: Build Docker image
-        run: docker build --target production -t docker.io/my-organization/my-app:${{ github.sha }} --build-arg COMMIT_HASH=${{ github.sha }} .
-      #      - name: Run Trivy vulnerability scanner
-      #        uses: aquasecurity/trivy-action@0.28.0
-      #        with:
-      #          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-      #          format: 'table'
-      #          exit-code: '1'
-      #          ignore-unfixed: true
-      #          vuln-type: 'os,library'
-      #          severity: 'CRITICAL,HIGH'
-      - name: Retag dockerimage
-        run: docker tag docker.io/my-organization/my-app:${{ github.sha }} 841162677945.dkr.ecr.ap-northeast-1.amazonaws.com/umaxica/jit:latest
-      - name: Push to Amazon ECR
-        run: docker push 841162677945.dkr.ecr.ap-northeast-1.amazonaws.com/umaxica/jit:latest
-  push-to-cloudflare-r2:
+
+      - name: Login to Amazon ECR
+        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
+
+      - name: Build production Docker image
+        run: |
+          docker build --target production \
+            -t docker.io/my-organization/my-app:${{ github.sha }} \
+            --build-arg COMMIT_HASH=${{ github.sha }} .
+
+      # セキュリティスキャンを有効にする場合はコメントを外してください
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@0.28.0
+      #   with:
+      #     image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+      #     format: 'table'
+      #     exit-code: '1'
+      #     ignore-unfixed: true
+      #     vuln-type: 'os,library'
+      #     severity: 'CRITICAL,HIGH'
+
+      - name: Tag and push to Amazon ECR
+        run: |
+          docker tag docker.io/my-organization/my-app:${{ github.sha }} $ECR_REPOSITORY:latest
+          docker tag docker.io/my-organization/my-app:${{ github.sha }} $ECR_REPOSITORY:${{ github.sha }}
+          docker push $ECR_REPOSITORY:latest
+          docker push $ECR_REPOSITORY:${{ github.sha }}
+
+  deploy-to-storage:
+    name: ストレージへのデプロイ
+    needs: [test]
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: read
-    needs: [ setup ]
-    defaults:
-      run:
-        shell: bash
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        target: [cloudflare-r2, amazon-s3]
+      fail-fast: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-  push-to-amazon-s3:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: read
-    needs: [ setup ]
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+
+      # Cloudflare R2向けのデプロイ手順
+      - name: Configure Cloudflare R2
+        if: matrix.target == 'cloudflare-r2'
+        run: echo "Cloudflare R2向けの設定を行います"
+        # ここにCloudflare R2向けの実際のデプロイステップを追加
+
+      # Amazon S3向けのデプロイ手順
+      - name: Configure AWS S3
+        if: matrix.target == 'amazon-s3'
+        run: echo "Amazon S3向けの設定を行います"
+        # ここにAmazon S3向けの実際のデプロイステップを追加
+
+      - name: Deploy to ${{ matrix.target }}
+        run: echo "${{ matrix.target }}へのデプロイを実行します"
+        # ここに実際のデプロイコマンドを追加
