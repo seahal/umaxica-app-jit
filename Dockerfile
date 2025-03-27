@@ -18,7 +18,7 @@ COPY Gemfile Gemfile.lock /main/
 RUN bundle install
 
 
-FROM ruby:$RUBY_VERSION-bookworm AS production
+FROM ruby:$RUBY_VERSION-slim AS production
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \

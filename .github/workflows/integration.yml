@@ -21,9 +21,6 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,9 +34,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,9 +46,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -68,9 +59,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -84,9 +72,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -203,15 +188,20 @@ jobs:
         run: bin/rails db:migrate
       - name: Do System Test
         run: bin/rails test:system
-#  test:channels     -- Run tests in test/channels
-#  test:controllers  -- Run tests in test/controllers
-#  test:db           -- Reset the database and run 'bin/rails test'
-#  test:functionals  -- Run tests in test/controllers, test/mailers, and test/functional
-#  test:generators   -- Run tests in test/lib/generators
-#  test:helpers      -- Run tests in test/helpers
-#  test:integration  -- Run tests in test/integration
-#  test:jobs         -- Run tests in test/jobs
-#  test:mailboxes    -- Run tests in test/mailboxes
-#  test:mailers      -- Run tests in test/mailers
-#  test:models       -- Run tests in test/models
-#  test:units
+  'check-production-ready':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        #  test:channels     -- Run tests in test/channels
+        #  test:controllers  -- Run tests in test/controllers
+        #  test:functionals  -- Run tests in test/controllers, test/mailers, and test/functional
+        #  test:generators   -- Run tests in test/lib/generators
+        #  test:helpers      -- Run tests in test/helpers
+        #  test:integration  -- Run tests in test/integration
+        #  test:jobs         -- Run tests in test/jobs
+        #  test:mailboxes    -- Run tests in test/mailboxes
+        #  test:mailers      -- Run tests in test/mailers
+        #  test:models       -- Run tests in test/models
+        #  test:units
