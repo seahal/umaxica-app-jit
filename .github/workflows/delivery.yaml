@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - main
-      # developブランチへのプッシュでのCDは意図的に削除しました
+      - develop
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 # 明示的に必要な権限を設定
 permissions:
@@ -15,7 +15,6 @@ permissions:
 
 jobs:
   test:
-    name: テストとバリデーション
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -73,8 +72,7 @@ jobs:
       - name: Run all tests
         run: bin/rails test:all
 
-  deploy-to-ecr:
-    name: AWSのECRにデプロイ
+  deploy-to-amazon-ecr:
     needs: [test]
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -101,16 +99,15 @@ jobs:
             -t docker.io/my-organization/my-app:${{ github.sha }} \
             --build-arg COMMIT_HASH=${{ github.sha }} .
 
-      # セキュリティスキャンを有効にする場合はコメントを外してください
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@0.28.0
-      #   with:
-      #     image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-      #     format: 'table'
-      #     exit-code: '1'
-      #     ignore-unfixed: true
-      #     vuln-type: 'os,library'
-      #     severity: 'CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+         image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+         format: 'table'
+         exit-code: '1'
+         ignore-unfixed: true
+         vuln-type: 'os,library'
+         severity: 'CRITICAL,HIGH'
 
       - name: Tag and push to Amazon ECR
         run: |
@@ -119,31 +116,25 @@ jobs:
           docker push $ECR_REPOSITORY:latest
           docker push $ECR_REPOSITORY:${{ github.sha }}
 
-  deploy-to-storage:
-    name: ストレージへのデプロイ
+  deploy-to-cloudflare-r2:
     needs: [test]
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      matrix:
-        target: [cloudflare-r2, amazon-s3]
-      fail-fast: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      # Cloudflare R2向けのデプロイ手順
-      - name: Configure Cloudflare R2
-        if: matrix.target == 'cloudflare-r2'
-        run: echo "Cloudflare R2向けの設定を行います"
-        # ここにCloudflare R2向けの実際のデプロイステップを追加
-
-      # Amazon S3向けのデプロイ手順
-      - name: Configure AWS S3
-        if: matrix.target == 'amazon-s3'
-        run: echo "Amazon S3向けの設定を行います"
-        # ここにAmazon S3向けの実際のデプロイステップを追加
-
-      - name: Deploy to ${{ matrix.target }}
-        run: echo "${{ matrix.target }}へのデプロイを実行します"
-        # ここに実際のデプロイコマンドを追加
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: compile assets pipeline
+        run: SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
+      - name: R2 Upload Action
+        run: aws --endpoint-url https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com/umaxica-production-cloudflare-r2-asset-jp s3 cp ./public/
