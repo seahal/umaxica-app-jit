@@ -81,12 +81,6 @@ jobs:
       ECR_REPOSITORY: 841162677945.dkr.ecr.ap-northeast-1.amazonaws.com/umaxica/jit
       AWS_REGION: ap-northeast-1
     steps:
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -99,16 +93,15 @@ jobs:
             -t docker.io/my-organization/my-app:${{ github.sha }} \
             --build-arg COMMIT_HASH=${{ github.sha }} .
 
-      # セキュリティスキャンを有効にする場合はコメントを外してください
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@0.28.0
-      #   with:
-      #     image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-      #     format: 'table'
-      #     exit-code: '1'
-      #     ignore-unfixed: true
-      #     vuln-type: 'os,library'
-      #     severity: 'CRITICAL,HIGH'
+       - name: Run Trivy vulnerability scanner
+         uses: aquasecurity/trivy-action@0.28.0
+         with:
+           image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+           format: 'table'
+           exit-code: '1'
+           ignore-unfixed: true
+           vuln-type: 'os,library'
+           severity: 'CRITICAL,HIGH'
 
       - name: Tag and push to Amazon ECR
         run: |
