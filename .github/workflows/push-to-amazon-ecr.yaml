@@ -30,10 +30,8 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: AWS preference
         run: aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin 841162677945.dkr.ecr.ap-northeast-1.amazonaws.com
-      # Dockerイメージのビルド
       - name: Build Docker image
-        run: docker build -t docker.io/my-organization/my-app:${{ github.sha }} --build-arg COMMIT_HASH=${{ github.sha }} .
-      # scanning with trivy
+        run: docker build --target production -t docker.io/my-organization/my-app:${{ github.sha }} --build-arg COMMIT_HASH=${{ github.sha }} .
 #      - name: Run Trivy vulnerability scanner
 #        uses: aquasecurity/trivy-action@0.28.0
 #        with:

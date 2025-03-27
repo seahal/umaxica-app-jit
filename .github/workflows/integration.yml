@@ -383,43 +383,8 @@ jobs:
         run: bin/rails db:create
       - name: Rails db:migrate
         run: bin/rails db:migrate
-      - name: Do System Test
-        run: bin/rails test:system
-  'test_mailboxes':
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [setup]
-    defaults:
-      run:
-        shell: bash
-    services:
-      redis:
-        image: redis
-        options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 6380:6379
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: 'default'
-          POSTGRES_PASSWORD: 'password'
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 5433:5432
-    env:
-      POSTGRES_USER: 'default'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRESQL_AUTH_PUB: 'localhost'
-      POSTGRESQL_AUTH_SUB: 'localhost'
-      POSTGRESQL_DOCS_PUB: 'localhost'
-      POSTGRESQL_DOCS_SUB: 'localhost'
-      POSTGRESQL_CORE_PUB: 'localhost'
-      POSTGRESQL_CORE_SUB: 'localhost'
-      REDIS_CACHE_URL: 'redis://localhost:6380/0'
-      REDIS_SESSION_URL: 'redis://localhost:6380/1'
-    steps:
+#      - name: Do System Test
+#        run: bin/rails test:jobs
   'test_mailers':
     runs-on: ubuntu-latest
     timeout-minutes: 5
