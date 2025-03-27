@@ -85,7 +85,7 @@ jobs:
         run: bin/rails notes
       - name: Stats
         run: bin/rails stats
-  test:
+  test_channels:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -136,7 +136,7 @@ jobs:
       #   timeout-minutes: 15
       - name: Do tests without System Test
         run: bin/rails test
-  'test_channel':
+  'test_controllers':
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -281,7 +281,7 @@ jobs:
         run: bin/rails db:migrate
       - name: Do System Test
         run: bin/rails test:controllers
-  'test_model':
+  'test_generators':
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -331,7 +331,507 @@ jobs:
         run: bin/rails db:migrate
       - name: Do System Test
         run: bin/rails test:system
-  'test_3':
+  'test_helpers':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_integration2':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_jobs2':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_generatorsy':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_helpersx':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_integration':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_jobs':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_mailboxes':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_mailers':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_models':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        shell: bash
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6380:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: 'default'
+          POSTGRES_PASSWORD: 'password'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5433:5432
+    env:
+      POSTGRES_USER: 'default'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRESQL_AUTH_PUB: 'localhost'
+      POSTGRESQL_AUTH_SUB: 'localhost'
+      POSTGRESQL_DOCS_PUB: 'localhost'
+      POSTGRESQL_DOCS_SUB: 'localhost'
+      POSTGRESQL_CORE_PUB: 'localhost'
+      POSTGRESQL_CORE_SUB: 'localhost'
+      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:migrate
+      - name: Do System Test
+        run: bin/rails test:system
+  'test_units':
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
