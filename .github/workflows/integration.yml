@@ -194,6 +194,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Docker build for production
+        run: docker build --target production .
         #  test:channels     -- Run tests in test/channels
         #  test:controllers  -- Run tests in test/controllers
         #  test:functionals  -- Run tests in test/controllers, test/mailers, and test/functional

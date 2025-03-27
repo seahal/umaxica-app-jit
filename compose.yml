@@ -114,13 +114,6 @@ services:
       - vk-cache
       - vk-session
       - minio
-#  guard:
-#    build: .
-#    volumes:
-#      - .:/usr/src/app
-#    environment:
-#      - RAILS_ENV=development
-#    command: bundle exec guard --no-bundler-warning --no-interactions
 volumes: #
   psql-pub-volume:
   psql-sub-volume:
