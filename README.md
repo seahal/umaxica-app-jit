@@ -11,7 +11,7 @@ Things you may want to cover:
     - Just Do It => `ruby -v`, and check `Gemfile` or `.ruby-version`.
 * System dependencies
   - Linux => Run on it.
-  - Ruby => Of cource, we are on Ruby.
+  - Ruby => Of course, we are on Ruby.
 * Configuration
     - Edit `/etc/hosts` files to separate .com or .net.
     - ```
@@ -41,10 +41,6 @@ Things you may want to cover:
     * ecr
     * eks
     * cloudfront
-  * Google Cloud
-    * Domain
-    * Firebase
-    * CloudRun
   * CloudFlare
     * Registers
     * Turnstile
@@ -57,6 +53,7 @@ Things you may want to cover:
   * You have to set `.env.local` and `.envrc` on your own environment.This is because it has confidential.
   * "You can use the AWS CLI command, and then you should run aws configure --profile umaxica."
   * You should use [git-secrets](https://github.com/awslabs/git-secrets).
+  * We began to use Rails' Credentials, but we were unsure how to use them.
 * Tools
   * `envrc`
   * `yamlfmt`
