@@ -889,13 +889,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Docker build for production
         run: docker build --target production .
-        #  test:controllers  -- Run tests in test/controllers
-        #  test:functionals  -- Run tests in test/controllers, test/mailers, and test/functional
-        #  test:generators   -- Run tests in test/lib/generators
-        #  test:helpers      -- Run tests in test/helpers
-        #  test:integration  -- Run tests in test/integration
-        #  test:jobs         -- Run tests in test/jobs
-        #  test:mailboxes    -- Run tests in test/mailboxes
-        #  test:mailers      -- Run tests in test/mailers
-        #  test:models       -- Run tests in test/models
-        #  test:units
+  'check-development-ready':
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Docker compose build for production
+        run: docker compose build
