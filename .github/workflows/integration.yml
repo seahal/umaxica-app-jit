@@ -178,7 +178,7 @@ jobs:
         run: |
           sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
       - name: Rails db:create
-        run: bin/rails db:crate
+        run: bin/rails db:create
       - name: Rails db:migrate
         run: bin/rails db:migrate
       - name: Do System Test
@@ -325,13 +325,12 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Add hosts to /etc/hosts
-        run: |
-          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:create
+        run: bin/rails db:create
       - name: Rails db:migrate
         run: bin/rails db:migrate
       - name: Do System Test
-        run: bin/rails test:helpers
+        run: bin/rails test:generators
   'test_integration':
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -378,6 +377,8 @@ jobs:
       - name: Add hosts to /etc/hosts
         run: |
           sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:migrate
+        run: bin/rails db:create
       - name: Rails db:migrate
         run: bin/rails db:migrate
       - name: Do System Test
