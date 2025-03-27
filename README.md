@@ -41,15 +41,16 @@ Things you may want to cover:
     * ecr
     * eks
     * cloudfront
-  * Fastly
-    * CDN
-    * Compute
   * Google Cloud
     * Domain
     * Firebase
+    * CloudRun
   * CloudFlare
     * Registers
-    * Turnstile 
+    * Turnstile
+  * Fastly
+    * CDN
+    * Compute
   * Terraform
     * TCP Terraform
 * Secrets
