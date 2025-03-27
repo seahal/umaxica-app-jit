@@ -37,5 +37,5 @@ COPY Gemfile Gemfile.lock /main/
 #   bundle exec bootsnap precompile --gemfile
 ADD ./ /main
 RUN useradd ${DOCKER_USER} -u ${DOCKER_UID} -g ${DOCKER_GROUP}
-RUN chown -R ${DOCKER_USER}:${DOCKER_GROUP} db log storage tmp
+# RUN chown -R ${DOCKER_USER}:${DOCKER_GROUP} db log storage tmp
 USER ${DOCKER_USER}
