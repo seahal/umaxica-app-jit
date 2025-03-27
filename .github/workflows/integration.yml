@@ -228,6 +228,8 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Rails db:create
+        run: bin/rails db:create
       - name: Rails db:migrate
         run: bin/rails db:migrate
       - name: Do System Test
@@ -281,7 +283,7 @@ jobs:
       - name: Rails db:migrate
         run: bin/rails db:migrate
       - name: Do System Test
-        run: bin/rails test:system
+        run: bin/rails test:generators
   'test_helpers':
     runs-on: ubuntu-latest
     timeout-minutes: 5
