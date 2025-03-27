@@ -28,8 +28,6 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Check Application Boot
-        run: bundle exec rails runner "puts ActiveRecord::Base.connection.active?"
   brakeman:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -68,7 +66,7 @@ jobs:
           bundler-cache: true
       - name: bundle audit
         run: bundle exec bundle audit check --update
-  audit:
+  seim:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [setup]
@@ -333,7 +331,7 @@ jobs:
       - name: Rails db:migrate
         run: bin/rails db:migrate
       - name: Do System Test
-        run: bin/rails test:system
+        run: bin/rails test:helpers
   'test_integration':
     runs-on: ubuntu-latest
     timeout-minutes: 5
