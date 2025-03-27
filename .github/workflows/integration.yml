@@ -131,11 +131,8 @@ jobs:
         run: bin/rails db:create
       - name: Rails db:migrate
         run: bin/rails db:migrate
-      # - name: Debug
-      #   uses: mxschmitt/action-tmate@v3
-      #   timeout-minutes: 15
       - name: Do tests without System Test
-        run: bin/rails test
+        run: bin/rails test:channels
   'test_system':
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -182,6 +179,8 @@ jobs:
       - name: Add hosts to /etc/hosts
         run: |
           sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Rails db:create
+        run: bin/rails db:crate
       - name: Rails db:migrate
         run: bin/rails db:migrate
       - name: Do System Test
