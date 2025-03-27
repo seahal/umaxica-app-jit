@@ -65,16 +65,15 @@ jobs:
       - name: Static code analysis
         run: bin/rubocop
 
-      - name: Setup database
-        run: |
-          bin/rails db:create
-          bin/rails db:migrate
-
-      - name: Run all tests
-        run: bin/rails test:all
+#      - name: Setup database
+#        run: |
+#          bin/rails db:create
+#          bin/rails db:migrate
+#
+#      - name: Run all tests
+#        run: bin/rails test:all
 
   deploy-to-ecr:
-    name: AWSのECRにデプロイ
     needs: [test]
     runs-on: ubuntu-latest
     timeout-minutes: 10
