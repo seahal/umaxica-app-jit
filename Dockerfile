@@ -32,9 +32,9 @@ ENV COMMIT_HASH=${COMMIT_HASH}
 RUN groupadd -g ${DOCKER_GID} ${DOCKER_GROUP}
 WORKDIR /main
 COPY Gemfile Gemfile.lock /main/
-RUN bundle install && \
-   rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-   bundle exec bootsnap precompile --gemfile
+#RUN bundle install && \
+#   rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+#   bundle exec bootsnap precompile --gemfile
 ADD ./ /main
 RUN useradd ${DOCKER_USER} -u ${DOCKER_UID} -g ${DOCKER_GROUP}
 RUN chown -R ${DOCKER_USER}:${DOCKER_GROUP} db log storage tmp
