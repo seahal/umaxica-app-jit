@@ -110,3 +110,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+  push-to-amazon-s3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    needs: [ setup ]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
