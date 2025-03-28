@@ -133,6 +133,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           aws-secret-access-key: ${{ secrets.CLOUDFLARE_ACCOUNT_API_TOKEN }}
+          aws-region: auto
       - name: compile assets pipeline
         run: SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
       - name: Upload assets to Cloudflare R2
