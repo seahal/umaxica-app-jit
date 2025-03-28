@@ -52,7 +52,7 @@ RUN apt-get update -qq && \
 WORKDIR /main
 COPY Gemfile Gemfile.lock /main/
 RUN bundle config set without 'test development' && \
-    bundle install --without test development && \
+    bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 COPY . /main
 # change user & group id
