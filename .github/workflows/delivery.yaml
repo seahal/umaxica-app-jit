@@ -74,6 +74,6 @@ jobs:
         run: |
           aws configure set aws_access_key_id ${{ secrets.CLOUDFLARE_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.CLOUDFLARE_SECRET_ACCESS_KEY }}      
-          aws s3 sync public/assets/ s3://umaxica-production-cloudflare-r2-asset-jp/assets/ \
-          --endpoint-url https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com \
+          aws s3 sync ./public/ s3://umaxica-production-cloudflare-r2-asset-jp/ \
+          --endpoint-url https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com/umaxica-production-cloudflare-r2-asset-jp \
           --acl public-read
