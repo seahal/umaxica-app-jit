@@ -74,7 +74,8 @@ jobs:
 #        uses: mxschmitt/action-tmate@v3
       - name: Upload assets to Cloudflare R2
         run: |
-          export AWS_DEFAULT_OUTPUT="json"
+          unset ECR_REPOSITORY
+          export AWS_DEFAULT_OUTPUT=json
           export AWS_DEFAULT_REGION=auto
           aws configure set aws_access_key_id ${{ secrets.CLOUDFLARE_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.CLOUDFLARE_SECRET_ACCESS_KEY }}
