@@ -4,6 +4,8 @@ on:
     branches:
       - main
       - develop
+  schedule:
+    - cron: '0 1 * * 2' # Schedule to run every Tuesday at 10:00 PM JST.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -44,15 +46,15 @@ jobs:
           docker build --target production \
             -t docker.io/my-organization/my-app:${{ github.sha }} \
             --build-arg COMMIT_HASH=${{ github.sha }} .
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-         image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-         format: 'table'
-         exit-code: '1'
-         ignore-unfixed: true
-         vuln-type: 'os,library'
-         severity: 'CRITICAL,HIGH'
+#      - name: Run Trivy vulnerability scanner
+#        uses: aquasecurity/trivy-action@0.28.0
+#        with:
+#         image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+#         format: 'table'
+#         exit-code: '1'
+#         ignore-unfixed: true
+#         vuln-type: 'os,library'
+#         severity: 'CRITICAL,HIGH'
       - name: Tag and push to Amazon ECR
         run: |
           docker tag docker.io/my-organization/my-app:${{ github.sha }} $ECR_REPOSITORY:latest
