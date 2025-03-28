@@ -76,9 +76,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm init -y
       - name: Build & Deploy Worker
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run:  npx wrangler r2 object put umaxica-production-cloudflare-r2-asset-jp/ --file=./public/
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
