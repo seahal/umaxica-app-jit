@@ -79,8 +79,7 @@ jobs:
           cd ./public
           find . -type f -not -path "*/\.*" -not -name ".*" | while read -r file; do
             relative_path="${file:2}"
-            echo "Uploading $file to R2 bucket path: $relative_path"
-            npx wrangler r2 object put "umaxica-production-cloudflare-r2-asset-jp/$relative_path" --file="$file"
+            npx wrangler r2 object put "umaxica-production-cloudflare-r2-asset-jp/$relative_path" --file="$file" --remote
           done
 #      - name: Setup tmate session
 #        uses: mxschmitt/action-tmate@v3
