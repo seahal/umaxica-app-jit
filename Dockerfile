@@ -12,7 +12,7 @@ ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
 ENV COMMIT_HASH=${COMMIT_HASH}
-ENV TZ=UT
+ENV TZ=UTC
 ENV HOME=/main
 WORKDIR /main
 RUN apt-get update -qq && \
@@ -58,6 +58,6 @@ COPY . /main
 # change user & group id
 RUN groupadd -g ${DOCKER_GID} ${DOCKER_GROUP} && \
     useradd -l ${DOCKER_USER} -u ${DOCKER_UID} -g ${DOCKER_GROUP} && \
-    chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main 
+    chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
 # chown?
 USER ${DOCKER_USER}
