@@ -60,15 +60,20 @@ jobs:
           docker tag docker.io/my-organization/my-app:${{ github.sha }} $ECR_REPOSITORY:${{ github.sha }}
           docker push $ECR_REPOSITORY:latest
           docker push $ECR_REPOSITORY:${{ github.sha }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
-      - run: npm init -y
-      - name: Build & Deploy Worker
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+#      - uses: actions/setup-node@v4
+#        with:
+#          node-version: '20.x'
+#          registry-url: 'https://registry.npmjs.org'
+#      - run: npm init -y
+#      - name: Build & Deploy Worker
+#        uses: cloudflare/wrangler-action@v3
+#        with:
+#          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+#          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Upload assets to Cloudflare R2
-        run:
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.CLOUDFLARE_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.CLOUDFLARE_SECRET_ACCESS_KEY }}      
+          aws s3 sync public/assets/ s3://umaxica-production-cloudflare-r2-asset-jp/assets/ \
+          --endpoint-url https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com \
+          --acl public-read
