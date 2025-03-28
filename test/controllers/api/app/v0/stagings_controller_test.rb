@@ -2,11 +2,11 @@
 
 require "test_helper"
 
-module Org
-  module V1
+module Api::App
+  module V0
     class StagingsControllerTest < ActionDispatch::IntegrationTest
       test "should get show" do
-        get api_org_v1_staging_url
+        get api_app_v0_staging_url
         assert_response :success
       end
     end

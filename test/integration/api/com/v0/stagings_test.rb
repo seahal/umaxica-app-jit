@@ -2,16 +2,14 @@
 
 require "test_helper"
 
-module Org
-  module V1
+module Api::Com::V0
     class StagingsTest < ActionDispatch::IntegrationTest
       test "should get show" do
-        get api_org_v1_staging_url
+        get api_com_v0_staging_url
         assert_response :success
         json = JSON.parse(response.body)
         assert_equal false, json["staging"]
         assert_equal ENV.fetch("COMMIT_HASH", ""), json["id"]
       end
     end
-  end
 end
