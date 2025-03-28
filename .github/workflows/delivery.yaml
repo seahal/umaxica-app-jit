@@ -72,6 +72,8 @@ jobs:
 #          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Upload assets to Cloudflare R2
         run: |
+          unset AWS_ACCESS_KEY_ID
+          unset AWS_SECRET_ACCESS_KEY
           aws configure set aws_access_key_id ${{ secrets.CLOUDFLARE_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.CLOUDFLARE_SECRET_ACCESS_KEY }}      
           aws s3 sync ./public/ s3://umaxica-production-cloudflare-r2-asset-jp/ \
