@@ -65,11 +65,11 @@ jobs:
 #          node-version: '20.x'
 #          registry-url: 'https://registry.npmjs.org'
 #      - run: npm init -y
-#      - name: Build & Deploy Worker
-#        uses: cloudflare/wrangler-action@v3
-#        with:
-#          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-#          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Build & Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - uses: actions/setup-node@v4
         with:
           node-version: '23.x'
