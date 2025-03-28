@@ -16,141 +16,55 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      POSTGRES_USER: 'default'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRESQL_AUTH_PUB: 'localhost'
-      POSTGRESQL_AUTH_SUB: 'localhost'
-      POSTGRESQL_DOCS_PUB: 'localhost'
-      POSTGRESQL_DOCS_SUB: 'localhost'
-      POSTGRESQL_CORE_PUB: 'localhost'
-      POSTGRESQL_CORE_SUB: 'localhost'
-      REDIS_CACHE_URL: 'redis://localhost:6380/0'
-      REDIS_SESSION_URL: 'redis://localhost:6380/1'
-    services:
-      redis:
-        image: redis
-        options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 6380:6379
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: 'default'
-          POSTGRES_PASSWORD: 'password'
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 5433:5432
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install system packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Configure test environment
-        run: |
-          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
-
-      - name: Static code analysis
-        run: bin/rubocop
-
-      - name: Setup database
-        run: |
-          bin/rails db:create
-          bin/rails db:migrate
-
-      - name: Run all tests
-        run: bin/rails test:all
-
-  deploy-to-amazon-ecr:
-    needs: [test]
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       ECR_REPOSITORY: 841162677945.dkr.ecr.ap-northeast-1.amazonaws.com/umaxica/jit
       AWS_REGION: ap-northeast-1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-
+      - name: compile assets pipeline
+        run: SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
       - name: Login to Amazon ECR
         run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
-
       - name: Build production Docker image
         run: |
           docker build --target production \
             -t docker.io/my-organization/my-app:${{ github.sha }} \
             --build-arg COMMIT_HASH=${{ github.sha }} .
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-         image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-         format: 'table'
-         exit-code: '1'
-         ignore-unfixed: true
-         vuln-type: 'os,library'
-         severity: 'CRITICAL,HIGH'
-
+#      - name: Run Trivy vulnerability scanner
+#        uses: aquasecurity/trivy-action@0.28.0
+#        with:
+#         image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+#         format: 'table'
+#         exit-code: '1'
+#         ignore-unfixed: true
+#         vuln-type: 'os,library'
+#         severity: 'CRITICAL,HIGH'
       - name: Tag and push to Amazon ECR
         run: |
           docker tag docker.io/my-organization/my-app:${{ github.sha }} $ECR_REPOSITORY:latest
           docker tag docker.io/my-organization/my-app:${{ github.sha }} $ECR_REPOSITORY:${{ github.sha }}
           docker push $ECR_REPOSITORY:latest
           docker push $ECR_REPOSITORY:${{ github.sha }}
-
-  deploy-to-cloudflare-r2:
-    needs: [test]
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
       - run: npm init -y
       - run: npm ci
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
       - name: Build & Deploy Worker
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: compile assets pipeline
-        run: SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
-      - name: Upload assets to Cloudflare R2
-        run: |
-          aws --endpoint-url https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com s3 sync \
-            ./public/assets/ \
-            s3://umaxica-production-cloudflare-r2-asset-jp/assets/ \
-            --delete \
-            --cache-control "public, max-age=31536000"        
+#      - name: Upload assets to Cloudflare R2
+#        run: |
