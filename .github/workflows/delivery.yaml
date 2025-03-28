@@ -127,6 +127,7 @@ jobs:
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
+      - run: npm init -y
       - run: npm ci
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
