@@ -72,11 +72,9 @@ jobs:
 #          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Upload assets to Cloudflare R2
         run: |
-          unset ECR_REPOSITORY
-          export AWS_DEFAULT_OUTPUT=json
-          export AWS_DEFAULT_REGION=auto
           aws configure set aws_access_key_id ${{ secrets.CLOUDFLARE_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.CLOUDFLARE_SECRET_ACCESS_KEY }}
-          # aws s3 sync ./public s3://umaxica-production-cloudflare-r2-asset-jp/ --endpoint-url https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com/
+          aws configure set region auto
+          aws s3 sync ./public s3://umaxica-production-cloudflare-r2-asset-jp/ --endpoint-url https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com/
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
