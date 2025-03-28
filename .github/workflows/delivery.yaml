@@ -70,13 +70,13 @@ jobs:
 #        with:
 #          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 #          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
       - name: Upload assets to Cloudflare R2
         run: |
           unset AWS_ACCESS_KEY_ID
           unset AWS_SECRET_ACCESS_KEY
           aws configure set aws_access_key_id ${{ secrets.CLOUDFLARE_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.CLOUDFLARE_SECRET_ACCESS_KEY }}      
-          aws s3 sync ./public/ s3://umaxica-production-cloudflare-r2-asset-jp/ \
-          --endpoint-url https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com/
+          aws s3 sync ./public s3://umaxica-production-cloudflare-r2-asset-jp \
+          --endpoint-url https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com/
