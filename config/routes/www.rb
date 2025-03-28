@@ -9,7 +9,7 @@ Rails.application.routes.draw do
         # show latest 'term of use'
         resource :term, only: :show
         # show stating env
-        resource :staging, only: :show
+        resource :staging, only: :show, format: :html
         # show search pages
         resource :search, only: :show
         # non-loggined settings
@@ -31,7 +31,7 @@ Rails.application.routes.draw do
           # show latest 'term of use'
           resource :term, only: :show
           # show stating env
-          resource :staging, only: :show
+          resource :staging, only: :show, format: :html
           # non-loggined settings
           resource :privacy, only: [ :show, :edit ]
           # contact page
@@ -74,7 +74,7 @@ Rails.application.routes.draw do
         # show 'term of use'
         resource :term, only: :show
         # show stating env
-        resource :staging, only: :show
+        resource :staging, only: :show, format: :html
         # non-loggined settings
         resource :privacy, only: [ :show, :edit ]
         # contact page

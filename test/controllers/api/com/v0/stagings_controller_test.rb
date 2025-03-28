@@ -2,13 +2,11 @@
 
 require "test_helper"
 
-module Com
-  module V1
+module Api::Com::V0
     class StagingsControllerTest < ActionDispatch::IntegrationTest
-      test "should get show for api" do
-        get api_com_v1_health_url
+      test "should get show" do
+        get api_com_v0_staging_url
         assert_response :success
       end
     end
-  end
 end
