@@ -72,10 +72,16 @@ jobs:
 #          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '23.x'
       - run: npm init -y
       - name: Build & Deploy Worker
-        run:  npx wrangler r2 object put umaxica-production-cloudflare-r2-asset-jp/ --file=./public/
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+        run: |
+          cd public
+          find . -type f -not -path "*/\.*" -not -name ".*" | while read -r file; do
+            relative_path="${file:2}"  # 先頭の "./" を削除
+            echo "Uploading $file to R2 bucket path: $relative_path"
+            npx wrangler r2 object put "umaxica-production-cloudflare-r2-asset-jp/$relative_path" --file="$file"
+          done
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
+
