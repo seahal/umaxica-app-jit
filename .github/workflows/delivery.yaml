@@ -25,14 +25,17 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: false
+      - name: compile assets pipeline
+        run: SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: compile assets pipeline
-        run: SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
       - name: Login to Amazon ECR
         run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
       - name: Build production Docker image
