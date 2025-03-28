@@ -60,3 +60,4 @@ Things you may want to cover:
   * [Lefthook](https://github.com/evilmartians/lefthook)
   * [tflint](https://github.com/terraform-linters/tflint)
   * [asdf](https://asdf-vm.com/)
+  * [hadolint](https://github.com/hadolint/hadolint)
