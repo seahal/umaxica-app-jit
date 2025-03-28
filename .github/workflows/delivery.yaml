@@ -28,6 +28,8 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: false
+      - name: bundle install
+        run: bundle config set without 'test development' && bundle install
       - name: compile assets pipeline
         run: SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
       - name: Configure AWS credentials
