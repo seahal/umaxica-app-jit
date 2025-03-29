@@ -7,18 +7,19 @@ module Health
     expires_in 1.second, public: true # this page wouldn't include private data
 
     # FIXME: much more validations requires
-    if !!User.connection.execute("SELECT 1 FROM users LIMIT 1")
-      @title = "OK"
-      respond_to do |format|
-        format.json { render json: { status: @title }, status: 200 }
-        format.html { render plain: @title, status: 200 }
-      end
+    @status, @body =  if !!User.connection.execute("SELECT 1 FROM users LIMIT 1")
+                        [200, 'OK']
+                      else
+                        [500, 'NG']
+                      end
+
+    case request.path
+    when "/health"
+      render html: @body, status: @status
+    when  "/v1/health"
+      render json: { status: @body }, status: @status
     else
-      @title = "NG"
-      respond_to do |format|
-        format.json { render json: { status: @title }, status: 503 }
-        format.html { render plain: @title, status: 503 }
-      end
+      raise
     end
   end
 end

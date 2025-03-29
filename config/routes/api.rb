@@ -9,7 +9,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :version, only: :show
           resource :metric, only: :show
-          resource :debug, only: :show
           resource :status, only: :show
         end
       end
@@ -24,7 +23,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :version, only: :show
           resource :metric, only: :show
-          resource :debug, only: :show
           resource :status, only: :show
           namespace :beacon do
             resources :emails, only: %i[show]
@@ -43,7 +41,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :version, only: :show
           resource :metric, only: :show
-          resource :debug, only: :show
           resource :status, only: :show
         end
       end

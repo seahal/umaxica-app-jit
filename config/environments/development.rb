@@ -107,7 +107,4 @@ Rails.application.configure do
     open_timeout: 5,
     read_timeout: 5
   }
-
-  #
-  action_controller.escape_json_responses = false
 end
