@@ -11,6 +11,7 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
