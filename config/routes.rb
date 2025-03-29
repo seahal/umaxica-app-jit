@@ -4,7 +4,12 @@ Rails.application.routes.draw do
   # Pages for org pages.
   draw :dev unless Rails.env.production?
   # for pages which show html
-  draw :www
+  #
+
+    draw :www
+
   # api endpoint url
-  draw :api
+
+    draw :api
+
 end

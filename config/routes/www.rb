@@ -5,7 +5,7 @@ Rails.application.routes.draw do
         #
         root to: "roots#index"
         # health check for html
-        resource :health, only: :show
+        resource :health, only: :show, format: :html
         # show latest 'term of use'
         resource :term, only: :show
         # show stating env
@@ -27,11 +27,11 @@ Rails.application.routes.draw do
           # homepage
           root to: "roots#index"
           # root to: "roots#index"
-          resource :health, only: :show # health check for html
+          resource :health, only: :show
           # show latest 'term of use'
           resource :term, only: :show
           # show stating env
-          resource :staging, only: :show, format: :html
+          resource :staging, only: :show
           # non-loggined settings
           resource :privacy, only: [ :show, :edit ]
           # contact page

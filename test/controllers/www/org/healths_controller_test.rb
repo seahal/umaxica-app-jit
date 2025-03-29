@@ -11,11 +11,9 @@ module Org
       assert_select "a[href=?]", www_app_root_path, count: 0
     end
 
-    test "should get show when required json file" do
-      get www_org_health_url(format: :json)
-      assert_response :success
-      assert_nothing_raised do
-        assert_equal "OK", JSON.parse(response.body)["status"]
+    test "should not get show when required json file" do
+      assert_raise do
+        get www_org_health_url(format: :json)
       end
     end
   end
