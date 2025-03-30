@@ -8,10 +8,10 @@ module Health
 
     # FIXME: much more validations requires
     @status, @body = if !!User.connection.execute("SELECT 1 FROM users LIMIT 1")
-                       [200, "OK"]
-                     else
-                       [500, "NG"]
-                     end
+                       [ 200, "OK" ]
+    else
+                       [ 500, "NG" ]
+    end
 
     case request.path
     when "/health"
