@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        check: [brakeman, rubocop, bundle-audit]
+        check: [brakeman, rubocop, bundle-audit, erb-lint]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,6 +55,9 @@ jobs:
       - name: Run Bundle Audit
         if: matrix.check == 'bundle-audit'
         run: bundle exec bundle audit check --update
+      - name: Erb lint
+        if: matrix.check == 'erb-lint'
+        run: erb_lint --lint-all
 
   seim:
     runs-on: ubuntu-latest
