@@ -19,13 +19,13 @@ module App
         end
       end
 
-      # test "should get show when required json file postfix" do
-      #   get api_app_v1_health_url(format: :json)
-      #   assert_response :success
-      #   assert_nothing_raised do
-      #     assert_equal "OK", JSON.parse(response.body)["status"]
-      #   end
-      # end
+      test "should get show when required json file postfix" do
+        get api_app_v1_health_url(format: :json)
+        assert_response :success
+        assert_nothing_raised do
+          assert_equal "OK", JSON.parse(response.body)["status"]
+        end
+      end
     end
   end
 end
