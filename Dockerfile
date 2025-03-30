@@ -1,9 +1,9 @@
 ARG RUBY_VERSION=3.4.2
-ARG DOCKER_UID=1000
+ARG BUN_VERSION=1.2.7
 ARG DOCKER_GID=1000
-ARG DOCKER_USER=developer
 ARG DOCKER_GROUP=developer
-ARG BUN_VERSION=1.0.31
+ARG DOCKER_UID=1000
+ARG DOCKER_USER=developer
 
 # For Developing Environment
 FROM ruby:$RUBY_VERSION-bookworm AS development
@@ -23,9 +23,7 @@ RUN apt-get update -qq && \
 #    apt-get install -y fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 libgtk2.0-0 libnss3 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libgbm1 libasound2  && \
 #    apt-get install -y chromium chromium-chromedriver python3 python3-dev py3-pip && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
-# Install bun
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}" && \
-    ln -s ${HOME}/.bun/bin/bun /usr/local/bin/bun
+RUN curl -fsSL https://bun.sh/install | bash
 COPY Gemfile Gemfile.lock /main/
 RUN bundle install
 COPY . /main
