@@ -24,9 +24,13 @@
       <%= form.label :confirm_policy, '利用規約に同意する' %>
     </div>
 
-    <script>
+    <% content_tag(:div, nil, {id: "root", 'data-parent':'sss'}) %>
 
-    </script>
+    <div id="root" data-parent="root">
+      <div>
+        <p>Hello world from Rails!</p>
+      </div>
+    </div>
 
     <div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>
     <%= form.submit %>
