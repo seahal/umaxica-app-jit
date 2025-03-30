@@ -6,9 +6,10 @@ import ReactDOM from 'react-dom/client'
 import { App } from './components/App'
 
 const dom = document.getElementById('root')
+const data = dom.getAttribute('data-parent') || 'bun'
 
 ReactDOM.createRoot(dom).render(
     <React.StrictMode>
-        <App name='Bun' />
+        <App name={data} />
     </React.StrictMode>
 )
