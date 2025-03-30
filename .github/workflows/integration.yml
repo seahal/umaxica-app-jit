@@ -57,7 +57,7 @@ jobs:
         run: bundle exec bundle audit check --update
       - name: Erb lint
         if: matrix.check == 'erb-lint'
-        run: erb_lint --lint-all
+        run: bundle exec erb_lint --lint-all
 
   seim:
     runs-on: ubuntu-latest
@@ -118,30 +118,23 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-
-      # 必要なシステムパッケージのインストール (テストの種類によって)
       - name: Install system packages
         if: matrix.test_suite != 'channels'
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
-
-      # ホスト設定 (一部のテストスイートにのみ必要)
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.0
       - name: Add hosts to /etc/hosts
         if: matrix.test_suite == 'system' || matrix.test_suite == 'integration' || matrix.test_suite == 'jobs'
         run: |
           sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
-
-      # データベースセットアップ
       - name: Rails db:create
         run: bin/rails db:create
       - name: Rails db:migrate
         run: bin/rails db:migrate
-
-      # テスト実行
       - name: Run tests
         if: matrix.test_suite != 'jobs' # jobs テストがコメントアウトされていたため、同じ条件を維持
         run: bin/rails test:${{ matrix.test_suite }}
-
-      # jobs テストが必要な場合はコメントを外してください
       #- name: Run jobs tests
       #  if: matrix.test_suite == 'jobs'
       #  run: bin/rails test:jobs
