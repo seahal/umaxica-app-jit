@@ -26,13 +26,14 @@
 
     <% content_tag(:div, nil, {id: "root", 'data-parent':'sss'}) %>
 
-    <div id="root" data-parent="root">
+    <div id="root" data-parent="ruby and bun on rails">
       <div>
         <p>Hello world from Rails!</p>
       </div>
     </div>
 
     <div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>
+
     <%= form.submit %>
   <% end %>
 
