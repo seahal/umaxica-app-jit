@@ -64,4 +64,4 @@
 .envrc
 .vscode/
 .config/
-#.bun
+.bun

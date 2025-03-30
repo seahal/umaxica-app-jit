@@ -23,16 +23,15 @@ RUN apt-get update -qq && \
 #    apt-get install -y fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 libgtk2.0-0 libnss3 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libgbm1 libasound2  && \
 #    apt-get install -y chromium chromium-chromedriver python3 python3-dev py3-pip && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
-RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}" && \
+    export PATH="$BUN_INSTALL/bin:$PATH" && \
+    export BUN_INSTALL="$HOME/.bun"
 COPY Gemfile Gemfile.lock /main/
 RUN bundle install
 COPY . /main
-# ユーザーとグループを作成
 RUN groupadd -g ${DOCKER_GID} ${DOCKER_GROUP} && \
     useradd -l -u ${DOCKER_UID} -g ${DOCKER_GROUP} -m ${DOCKER_USER}
-# ディレクトリの所有権を設定
 RUN chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
-# 作成したユーザーに切り替え
 USER ${DOCKER_USER}
 
 
