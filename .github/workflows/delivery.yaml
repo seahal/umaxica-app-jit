@@ -24,11 +24,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Setup Ruby
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.7
+      - name: Set up Bun
+        run: bun install
       - name: bundle install
         run: bundle config set without 'test development' && bundle install
       - name: compile assets pipeline

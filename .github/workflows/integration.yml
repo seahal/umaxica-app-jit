@@ -123,7 +123,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.2.0
+          bun-version: 1.2.7
       - run: bun install
       - name: Add hosts to /etc/hosts
         if: matrix.test_suite == 'system' || matrix.test_suite == 'integration' || matrix.test_suite == 'jobs'
