@@ -165,7 +165,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: ['bin/rails test']
+        runner: ['bin/rails test', 'bun test']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -173,6 +173,5 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
         run: docker compose build
-      - name: test
-        if: matrix.runner == 'bin/rails test'
+      - name: run
         run: docker compose run main ${{ matrix.runner }}
