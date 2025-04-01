@@ -124,6 +124,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.2.7
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - run: bun install
       - name: Add hosts to /etc/hosts
         if: matrix.test_suite == 'system' || matrix.test_suite == 'integration' || matrix.test_suite == 'jobs'
