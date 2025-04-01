@@ -31,14 +31,14 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-  security-checks:
+  ubuntu:
     needs: [setup]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        check: [brakeman, rubocop, bundle-audit, erb-lint]
+        check: [brakeman, rubocop, bundle-audit, erb-lint, about, notes]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -58,6 +58,12 @@ jobs:
       - name: Erb lint
         if: matrix.check == 'erb-lint'
         run: bundle exec erb_lint --lint-all
+      - name: about
+        if: matrix.check == 'about'
+        run: bundle exec rails about
+      - name: Erb lint
+        if: matrix.check == 'notes'
+        run: bundle exec rails notes
 
 #  tests:
 #    runs-on: ubuntu-latest
