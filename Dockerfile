@@ -17,8 +17,7 @@ ENV COMMIT_HASH=${COMMIT_HASH}
 ENV TZ=UTC
 ENV HOME=/main
 WORKDIR /main
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql-client unzip sudo
-RUN apt install chromium
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql-client unzip
 #RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg
 #RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list
 #RUN apt install google-chrome-stable
@@ -37,17 +36,17 @@ RUN apt install chromium
 #    rm chromedriver_linux64.zip && \
     # キャッシュをクリーンアップ
     #rm -rf /var/lib/apt/lists /var/cache/apt/archives
-#COPY Gemfile Gemfile.lock /main/
-#RUN bundle install
-#COPY . /main
-#RUN groupadd -g ${DOCKER_GID} ${DOCKER_GROUP} && \
-#    useradd -l -u ${DOCKER_UID} -g ${DOCKER_GROUP} -m ${DOCKER_USER}
-#RUN chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
-#RUN chsh -s /bin/bash
-#ENV SHELL /bin/bash
-#RUN curl https://bun.sh/install | bash
-#ENV PATH="/main/.bun/bin:$PATH"
-#USER ${DOCKER_USER}
+COPY Gemfile Gemfile.lock /main/
+RUN bundle install
+COPY . /main
+RUN groupadd -g ${DOCKER_GID} ${DOCKER_GROUP} && \
+    useradd -l -u ${DOCKER_UID} -g ${DOCKER_GROUP} -m ${DOCKER_USER}
+RUN chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
+RUN chsh -s /bin/bash
+ENV SHELL /bin/bash
+RUN curl https://bun.sh/install | bash
+ENV PATH="/main/.bun/bin:$PATH"
+USER ${DOCKER_USER}
 
 
 # For Production Environment
