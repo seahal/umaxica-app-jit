@@ -124,13 +124,13 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.2.7
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - run: bun install
       - name: Add hosts to /etc/hosts
         if: matrix.test_suite == 'system' || matrix.test_suite == 'integration' || matrix.test_suite == 'jobs'
         run: |
           sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Rails db:create
         run: bin/rails db:create
       - name: Rails db:migrate
@@ -141,6 +141,24 @@ jobs:
       #- name: Run jobs tests
       #  if: matrix.test_suite == 'jobs'
       #  run: bin/rails test:jobs
+  bun:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5 # テスト実行には時間がかかる可能性があるため、タイムアウトを増加
+    needs: [setup]
+    services:
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.7
+      - run: bun install
+      - name: Run tests
+        run: bun run test
 
   docker-build:
     runs-on: ubuntu-latest
