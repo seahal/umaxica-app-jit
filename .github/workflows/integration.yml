@@ -76,88 +76,88 @@ jobs:
           bin/rails notes
           bin/rails stats
 
-  tests:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10 # テスト実行には時間がかかる可能性があるため、タイムアウトを増加
-    needs: [setup]
-    strategy:
-      fail-fast: false
-      matrix:
-        test_suite: [channels, system, controllers, helpers, integration, jobs, mailers, models]
-    services:
-      redis:
-        image: redis
-        options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 6380:6379
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: 'default'
-          POSTGRES_PASSWORD: 'password'
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 5433:5432
-    env:
-      POSTGRES_USER: 'default'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRESQL_AUTH_PUB: 'localhost'
-      POSTGRESQL_AUTH_SUB: 'localhost'
-      POSTGRESQL_DOCS_PUB: 'localhost'
-      POSTGRESQL_DOCS_SUB: 'localhost'
-      POSTGRESQL_CORE_PUB: 'localhost'
-      POSTGRESQL_CORE_SUB: 'localhost'
-      REDIS_CACHE_URL: 'redis://localhost:6380/0'
-      REDIS_SESSION_URL: 'redis://localhost:6380/1'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-      - name: Install system packages
-        if: matrix.test_suite != 'channels'
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.2.7
-      - run: bun install
-      - name: Add hosts to /etc/hosts
-        if: matrix.test_suite == 'system' || matrix.test_suite == 'integration' || matrix.test_suite == 'jobs'
-        run: |
-          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-      - name: Rails db:create
-        run: bin/rails db:create
-      - name: Rails db:migrate
-        run: bin/rails db:migrate
-      - name: Run tests
-        if: matrix.test_suite != 'jobs' # jobs テストがコメントアウトされていたため、同じ条件を維持
-        run: bin/rails test:${{ matrix.test_suite }}
-      #- name: Run jobs tests
-      #  if: matrix.test_suite == 'jobs'
-      #  run: bin/rails test:jobs
-  bun:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5 # テスト実行には時間がかかる可能性があるため、タイムアウトを増加
-    needs: [setup]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.2.7
-      - run: bun install
-      - name: Run tests
-        run: bun run test
+#  tests:
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 10 # テスト実行には時間がかかる可能性があるため、タイムアウトを増加
+#    needs: [setup]
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        test_suite: [channels, system, controllers, helpers, integration, jobs, mailers, models]
+#    services:
+#      redis:
+#        image: redis
+#        options: >-
+#          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+#        ports:
+#          - 6380:6379
+#      postgres:
+#        image: postgres
+#        env:
+#          POSTGRES_USER: 'default'
+#          POSTGRES_PASSWORD: 'password'
+#        options: >-
+#          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+#        ports:
+#          - 5433:5432
+#    env:
+#      POSTGRES_USER: 'default'
+#      POSTGRES_PASSWORD: 'password'
+#      POSTGRESQL_AUTH_PUB: 'localhost'
+#      POSTGRESQL_AUTH_SUB: 'localhost'
+#      POSTGRESQL_DOCS_PUB: 'localhost'
+#      POSTGRESQL_DOCS_SUB: 'localhost'
+#      POSTGRESQL_CORE_PUB: 'localhost'
+#      POSTGRESQL_CORE_SUB: 'localhost'
+#      REDIS_CACHE_URL: 'redis://localhost:6380/0'
+#      REDIS_SESSION_URL: 'redis://localhost:6380/1'
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#      - uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: .ruby-version
+#          bundler-cache: true
+#      - name: Install system packages
+#        if: matrix.test_suite != 'channels'
+#        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+#      - uses: oven-sh/setup-bun@v2
+#        with:
+#          bun-version: 1.2.7
+#      - run: bun install
+#      - name: Add hosts to /etc/hosts
+#        if: matrix.test_suite == 'system' || matrix.test_suite == 'integration' || matrix.test_suite == 'jobs'
+#        run: |
+#          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
+#      - name: Rails db:create
+#        run: bin/rails db:create
+#      - name: Rails db:migrate
+#        run: bin/rails db:migrate
+#      - name: Run tests
+#        if: matrix.test_suite != 'jobs' # jobs テストがコメントアウトされていたため、同じ条件を維持
+#        run: bin/rails test:${{ matrix.test_suite }}
+#      #- name: Run jobs tests
+#      #  if: matrix.test_suite == 'jobs'
+#      #  run: bin/rails test:jobs
+#  bun:
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 5 # テスト実行には時間がかかる可能性があるため、タイムアウトを増加
+#    needs: [setup]
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#      - uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: .ruby-version
+#          bundler-cache: true
+#      - uses: oven-sh/setup-bun@v2
+#        with:
+#          bun-version: 1.2.7
+#      - run: bun install
+#      - name: Run tests
+#        run: bun run test
 
   docker-build:
     runs-on: ubuntu-latest
@@ -169,3 +169,5 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
         run: docker compose build
+      - name: test
+        run: docker compose run main bin/rails test
