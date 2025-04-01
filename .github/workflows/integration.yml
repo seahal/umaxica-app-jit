@@ -165,7 +165,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: ['bin/rails test', 'bun test']
+        runner: ['bin/rails test', 'bun test', 'bin/rubocop', 'bin/brakeman -z -q']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
