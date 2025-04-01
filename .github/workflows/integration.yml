@@ -159,9 +159,13 @@ jobs:
 #      - name: Run tests
 #        run: bun run test
 
-  docker-build:
+  docker:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: ['bin/rails test']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -170,4 +174,5 @@ jobs:
       - name: Build Docker image
         run: docker compose build
       - name: test
-        run: docker compose run main bin/rails test
+        if: matrix.runner == 'bin/rails test'
+        run: docker compose run main ${{ matrix.runner }}
