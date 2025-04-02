@@ -1,6 +1,4 @@
 <div>
-  <h1 class="font-bold text-4xl">Net::Registration::Emails#new</h1>
-  <p>Find me in app/views/net/registration/emails/new.html.erb</p>
 
   <%= form_with model: @user_email, url: www_app_registration_emails_path do |form| %>
     <% if @user_email.errors.any? %>
@@ -37,9 +35,10 @@
     <%= form.submit %>
   <% end %>
 
-  <p>
-    <%= link_to 'log in?', new_www_app_session_email_path %>
-  </p>
+  <ul>
+    <li><%= link_to 'others?', new_www_app_registration_path %></li>
+    <li><%= link_to 'log in?', new_www_app_session_email_path %></li>
+  </ul>
 </div>
 
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

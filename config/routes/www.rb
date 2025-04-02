@@ -15,9 +15,9 @@ Rails.application.routes.draw do
           resource :telephone, only: :show
           resource :email, only: :show
         end
-        resource :preference, only: [:show] do
-          resource :privacy, only: [:edit, :update]
-          resources :emails, only: [:index]
+        resource :preference, only: [ :show ] do
+          resource :privacy, only: [ :edit, :update ]
+          resources :emails, only: [ :index ]
         end
       end
 
@@ -31,34 +31,35 @@ Rails.application.routes.draw do
           resource :term, only: :show
           # show stating env
           resource :staging, only: :show
-        end
-        # Sign up pages
-        resource :registration, only: :new
-        namespace :registration do
-          resources :emails, only: %i[new create edit update show]
-          resource :telephone, only: %i[new create edit update]
-          resource :google, only: %i[new create]
-          resource :apple, only: %i[new create]
-        end
-        # Withdrawal
-        resource :withdrawal, only: %i[edit destroy] # TODO: Create or Delete membership
-        # Sign In/Out, NEED WEB
-        resource :session, only: %i[new destroy] do
-          resource :email, only: %i[new create]
-          resource :google, only: %i[new create]
-          resource :apple, only: %i[new create]
-          resource :passkey, only: %i[new create]
-          resource :password, only: %i[new create]
-        end
-        # Settings without login
-        resource :preference, only: [:show] do
-          resource :privacy, only: [:edit, :update]
-          resources :emails, only: [:index]
+          # Sign up pages
+          resource :registration, only: :new
+          namespace :registration do
+              resources :emails, only: %i[new create edit update show]
+              resources :telephones, only: %i[new create edit update]
+              resource :google, only: %i[new create]
+              resource :apple, only: %i[new create]
+          end
+          # Withdrawal
+          resource :withdrawal, only: %i[edit destroy] # TODO: Create or Delete membership
+          # Sign In/Out, NEED WEB
+          resource :session, only: %i[new destroy]
+          namespace :session do
+            resource :email, only: %i[new create]
+            resource :telephone, only: %i[new create]
+            resource :google, only: %i[new create]
+            resource :apple, only: %i[new create]
+            resource :passkey, only: %i[new create]
+            resource :password, only: %i[new create]
+          end
+          # Settings without login
+          resource :preference, only: [ :show ] do
+            resource :privacy, only: [ :edit, :update ]
+            resources :emails, only: [ :index ]
+          end
         end
       end
     end
   end
-
   # For Staff's webpages www.jp.example.org
   constraints host: ENV["WWW_STAFF_URL"] do
     scope module: :org, as: :org do
@@ -71,7 +72,7 @@ Rails.application.routes.draw do
       # show stating env
       resource :staging, only: :show, format: :html
       # non-loggined settings
-      resource :privacy, only: [:show, :edit]
+      resource :privacy, only: [ :show, :edit ]
       # contact page
       namespace :contact do
       end
@@ -90,9 +91,9 @@ Rails.application.routes.draw do
         resource :email, only: %i[new create]
       end
       # Settings without login
-      resource :preference, only: [:show] do
-        resource :privacy, only: [:edit, :update]
-        resources :emails, only: [:index]
+      resource :preference, only: [ :show ] do
+        resource :privacy, only: [ :edit, :update ]
+        resources :emails, only: [ :index ]
       end
     end
   end
