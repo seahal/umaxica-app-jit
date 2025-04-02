@@ -24,7 +24,7 @@ module Www
             secret_access_key: "",
             region: "ap-northeast-1"
           ).publish({
-                      phone_number: "",
+                      phone_number: "+81",
                       message: "シークレットやで",
                       subject: "ほんまやで"
                     })
