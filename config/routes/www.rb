@@ -59,7 +59,6 @@ Rails.application.routes.draw do
         end
       end
     end
-  end
   # For Staff's webpages www.jp.example.org
   constraints host: ENV["WWW_STAFF_URL"] do
     scope module: :org, as: :org do
@@ -93,8 +92,8 @@ Rails.application.routes.draw do
       # Settings without login
       resource :preference, only: [ :show ] do
         resource :privacy, only: [ :edit, :update ]
-        resources :emails, only: [ :index ]
       end
     end
   end
+    end
 end
