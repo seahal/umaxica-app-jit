@@ -20,13 +20,13 @@ module Www
           #   end
           # end
           Aws::SNS::Client.new(
-            access_key_id: "<アクセスキーID>",
-            secret_access_key: "<シークレットアクセスキー>",
+            access_key_id: "",
+            secret_access_key: "",
             region: "ap-northeast-1"
           ).publish({
-                      phone_number: "<+81901xxxxx33>",
+                      phone_number: "",
                       message: "シークレットやで",
-                      subject: ""
+                      subject: "ほんまやで"
                     })
 
           @user_telephone = UserEmail.new
