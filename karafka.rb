@@ -67,6 +67,8 @@ class KarafkaApp < Karafka::App
       # config(partitions: 2, 'cleanup.policy': 'compact')
       consumer ExampleConsumer
     end
+
+    active_job_topic :default
   end
 end
 
