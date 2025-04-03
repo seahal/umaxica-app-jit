@@ -15,7 +15,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-#      - psql-pub-volume:/var/lib/postgresql/data
+      #      - psql-pub-volume:/var/lib/postgresql/data
       - ./docker/psql-pub/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./docker/psql-pub/pg_hba.conf:/etc/postgresql/pg_hba.conf
   psql-sub:
@@ -30,7 +30,7 @@ services:
     ports:
       - "5434:5432"
     volumes:
-#      - psql-sub-volume:/var/lib/postgresql/data
+      #      - psql-sub-volume:/var/lib/postgresql/data
       - ./docker/psql-sub/init.sh:/docker-entrypoint-initdb.d/init.sh
     depends_on:
       - psql-pub
@@ -85,6 +85,18 @@ services:
     container_name: kafka1
     ports:
       - "9093:9093"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093,PLAINTEXT_INTERNAL://kafka1:29093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  kafka2:
+    image: confluentinc/cp-kafka:7.9.0
+    ports:
+      - "9094:9094"
     depends_on:
       - zookeeper
     environment:

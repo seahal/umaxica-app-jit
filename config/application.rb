@@ -34,5 +34,8 @@ module Jit
     # USE UTC
     config.time_zone = "UTC"
     config.active_record.default_timezone = :utc
+
+    # ActiveJob
+    config.active_job.queue_adapter = :karafka
   end
 end
