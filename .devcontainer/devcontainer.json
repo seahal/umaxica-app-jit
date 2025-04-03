@@ -1,5 +1,6 @@
 {
   "dockerComposeFile": ["../compose.yml"],
-  "service": "ror",
-  "workspaceFolder": "/ror"
+  "service": "jit",
+  "workspaceFolder": "/main",
+  "postCreateCommand": "bundle install" 
 }
