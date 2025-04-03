@@ -4,6 +4,8 @@ Rails.application.routes.draw do
       scope module: :com, as: :com do
         namespace :v0 do
           resource :staging, only: :show, format: "json"
+          resource :docs, only: :show
+          resource :news, only: :show
         end
         namespace :v1 do
           resource :health, only: :show
@@ -18,6 +20,8 @@ Rails.application.routes.draw do
       scope module: :app, as: :app do
         namespace :v0 do
           resource :staging, only: :show, format: "json"
+          resource :docs, only: :show
+          resource :news, only: :show
         end
         namespace :v1 do
           resource :health, only: :show
@@ -36,6 +40,8 @@ Rails.application.routes.draw do
       scope module: :org, as: :org do
         namespace :v0 do
           resource :staging, only: :show, format: "json"
+          resource :docs, only: :show
+          resource :news, only: :show
         end
         namespace :v1 do
           resource :health, only: :show
