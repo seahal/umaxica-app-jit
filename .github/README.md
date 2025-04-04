@@ -41,9 +41,11 @@ Things you may want to cover:
     * ecr
     * eks
     * cloudfront
+      * functions
   * CloudFlare
     * Registers
     * Turnstile
+    * Workers
   * Fastly
     * CDN
     * Compute
@@ -61,3 +63,6 @@ Things you may want to cover:
   * [tflint](https://github.com/terraform-linters/tflint)
   * [asdf](https://asdf-vm.com/)
   * [hadolint](https://github.com/hadolint/hadolint)
+  * fastly
+  * bun
+  * wrangler

@@ -82,9 +82,6 @@ Rails.application.routes.draw do
       resource :registration, only: :new, shallow: true do
         resources :emails, only: %i[create edit update]
       end
-      # TODO: Create or Delete membership
-      namespace :membership do
-      end
       # TODO: Login or Logout
       resource :session, only: :new, shallow: true do
         resource :email, only: %i[new create]
@@ -93,6 +90,14 @@ Rails.application.routes.draw do
       resource :preference, only: [ :show ] do
         resource :privacy, only: [ :edit, :update ]
       end
+      # for owner
+      resources :owner
+      # for customer services
+      resources :customer
+      # docs
+      resources :docs
+      # news
+      resources :news
     end
   end
     end
