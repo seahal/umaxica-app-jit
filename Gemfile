@@ -51,13 +51,10 @@ gem "cancancan", "~> 3.6", ">= 3.6.1"
 # FIXME: i am wondering that using aws's s3.
 gem "aws-sdk"
 gem "aws-sdk-s3", require: false
-gem "aws-sdk-pinpointsmsvoicev2", "~> 1.34"
+# Google Cloud
+gem "google-cloud-storage"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
-# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-# gem "kamal", require: false
-# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
-# gem "thruster", require: false
 # OpenTelemetry
 gem "opentelemetry-sdk"
 gem "opentelemetry-exporter-otlp"
