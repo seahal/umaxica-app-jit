@@ -99,8 +99,8 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
-#      - name: Debug
-#        uses: mxschmitt/action-tmate@v3
+      - name: Debug
+        uses: mxschmitt/action-tmate@v3
 
       - name: Run tests in Docker
         run: docker compose run main ${{ matrix.runner }}
