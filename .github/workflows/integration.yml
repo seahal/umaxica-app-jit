@@ -78,8 +78,8 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Debug
-        uses: mxschmitt/action-tmate@v3
+#      - name: Debug
+#        uses: mxschmitt/action-tmate@v3
       - name: Run docker build
         run: docker compose build --build-arg DOCKER_GID=0 --build-arg DOCKER_UID=0
       - name: Run docker compose
