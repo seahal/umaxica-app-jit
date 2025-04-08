@@ -83,7 +83,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Run docker compose build
-        run: docker compose build --build-arg GITHUB_ACTIONS=true DOCKER_UID=$(id -u)
+        run: docker compose build --build-arg GITHUB_ACTIONS=true --build-arg DOCKER_UID=$(id -u)
       - name: Run docker compose up
         run: docker compose up -d
       - name: Debug
