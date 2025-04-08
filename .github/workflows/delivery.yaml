@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - develop
+#      - develop
   schedule:
     - cron: '0 1 * * 2' # Schedule to run every Tuesday at 10:00 PM JST.
 
