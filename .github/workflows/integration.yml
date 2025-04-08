@@ -68,7 +68,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     needs: [setup]
-    timeout-minutes: 15 # ToDo: reduce this parametor.
+    timeout-minutes: 20 # ToDo: reduce this parametor.
     strategy:
       fail-fast: false
       matrix:
@@ -93,6 +93,7 @@ jobs:
         run: docker compose up -d
       - uses: oven-sh/setup-bun@v2
       - run: bun install
+      - run: chmod -R 777 .
       - run: bin/rails db:create
       - run: bin/rails db:migrate
       - run: echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee /etc/hosts
