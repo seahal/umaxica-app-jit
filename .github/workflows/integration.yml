@@ -71,7 +71,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: ['bin/rails test', 'bin/rubocop', 'bin/brakeman -z -q']
+        runner: ['bin/rails test', 'bin/rubocop', 'bin/brakeman -z -q', 'bundle exec erb_lint --lint-all']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -83,7 +83,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Run docker compose build
-        run: docker compose build --build-arg GITHUB_ACTIONS=true
+        run: docker compose build --build-arg GITHUB_ACTIONS=true DOCKER_UID=$(id -u)
       - name: Run docker compose up
         run: docker compose up -d
       - name: Debug
