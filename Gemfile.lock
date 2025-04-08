@@ -1769,7 +1769,6 @@ GEM
     declarative (0.0.20)
     digest-crc (0.7.0)
       rake (>= 12.0.0, < 14.0.0)
-    docile (1.4.1)
     dotenv (3.1.7)
     dotenv-rails (3.1.7)
       dotenv (= 3.1.7)
@@ -2327,12 +2326,6 @@ GEM
       faraday (>= 0.17.5, < 3.a)
       jwt (>= 1.5, < 3.0)
       multi_json (~> 1.10)
-    simplecov (0.22.0)
-      docile (~> 1.1)
-      simplecov-html (~> 0.11)
-      simplecov_json_formatter (~> 0.1)
-    simplecov-html (0.13.1)
-    simplecov_json_formatter (0.1.4)
     sitemap_generator (6.3.0)
       builder (~> 3.0)
     smart_properties (1.17.0)
@@ -2429,7 +2422,6 @@ DEPENDENCIES
   rubocop-rails-omakase
   selenium-webdriver
   sha3
-  simplecov
   sitemap_generator
   tzinfo-data
   web-console
