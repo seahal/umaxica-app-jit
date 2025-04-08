@@ -90,7 +90,7 @@ jobs:
         run: docker compose up -d
       - uses: oven-sh/setup-bun@v2
       - run: bun install
-      - run: chmod -R 777 .
+      - run: chmod -R 777 . # note: delete this line if you want to run in a more secure way.
       - run: bin/rails db:create
       - run: bin/rails db:migrate
       - run: echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee /etc/hosts
