@@ -97,8 +97,8 @@ jobs:
       - run: bin/rails db:create
       - run: bin/rails db:migrate
       - run: echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee /etc/hosts
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
       - run: bin/rails test
       # - name: Run db create on docker compose
       #   run: docker compose exec main bundle exec rails db:migrate
