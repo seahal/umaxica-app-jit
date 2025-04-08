@@ -98,9 +98,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install
       - run: bin/rails db:create
-      - run: bin/rails db:create
-      - name: Debug
-        uses: mxschmitt/action-tmate@v3
+      - run: bin/rails db:migrate
+#      - name: Debug
+#        uses: mxschmitt/action-tmate@v3
       - run: bin/rails test
       # - name: Run db create on docker compose
       #   run: docker compose exec main bundle exec rails db:migrate
