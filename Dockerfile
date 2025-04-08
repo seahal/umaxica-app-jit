@@ -3,7 +3,8 @@ ARG GITHUB_ACTIONS=""
 ARG RUBY_VERSION=3.4.2
 ARG BUN_VERSION=1.2.8
 ARG DOCKER_UID=1000
-ARG DOCKER_USER=developer
+ARG DOCKER_GID=1000
+ARG DOCKER_USER=devuser
 
 # For Developing Environment
 FROM ruby:$RUBY_VERSION-bookworm AS development
@@ -23,8 +24,9 @@ ENV PATH="/main/.bun/bin:$PATH"
 COPY bun.config.js bun.lock package.json /main/
 RUN bun install
 RUN if [ -z "$GITHUB_ACTIONS" ] && [ -z "$CI" ]; then \
-      useradd ${DOCKER_USER} -u ${DOCKER_UID} && \
-      chown -R ${DOCKER_USER} /main; \
+      groupadd -g ${DOCKER_GID} ${DOCKER_USER} && \
+      useradd -m ${DOCKER_USER} -u ${DOCKER_UID} -g ${DOCKER_GID} && \
+      chown -R ${DOCKER_USER}:${DOCKER_USER} /main; \
     fi
 USER ${DOCKER_USER}
 
