@@ -30,8 +30,6 @@ RUN if [ -z "$GITHUB_ACTIONS" ]; then \
       groupadd -g ${DOCKER_GID} ${DOCKER_GROUP} && \
       useradd -l -u ${DOCKER_UID} -g ${DOCKER_GROUP} -m ${DOCKER_USER} && \
       chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
-    else \
-      chown -R root:root /main; \
     fi
 RUN chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
 USER ${DOCKER_USER}
