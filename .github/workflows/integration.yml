@@ -67,7 +67,7 @@ jobs:
 
   docker:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 15 # ToDo: reduce this parametor.
     strategy:
       fail-fast: false
       matrix:
