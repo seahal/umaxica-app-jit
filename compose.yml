@@ -125,7 +125,6 @@ services:
         COMMIT_HASH: 'abcdef'
     command: /bin/sh -c "bin/dev"
     restart: always
-    user: "1000:1000"
     tty: true
     stdin_open: true
     extra_hosts:
