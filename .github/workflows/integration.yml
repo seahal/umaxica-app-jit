@@ -89,8 +89,8 @@ jobs:
       # - name: Debug
       #   uses: mxschmitt/action-tmate@v3
       - name: Run db create on docker compose
-        run: docker compose run main bin/rails db:create
+        run: docker compose exec main bundle exec rails db:create
       - name: Run db create on docker compose
-        run: docker compose run main bin/rails db:migrate   
+        run: docker compose exec main bundle exec rails db:migrate
       - name: Run tests in Docker
         run: docker compose exec main ${{ matrix.runner }}

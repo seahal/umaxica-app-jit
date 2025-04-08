@@ -147,6 +147,12 @@ services:
       - vk-cache
       - vk-session
       - minio
+      - kafka-ui
+      - kafka0
+      - kafka1
+      - kafka2
+      - psql-pub
+      - zookeeper
 volumes: #
   psql-pub-volume:
   psql-sub-volume:
