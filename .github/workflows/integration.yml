@@ -91,13 +91,13 @@ jobs:
         run: docker compose build --build-arg GITHUB_ACTIONS=true --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g)
       - name: Run docker compose up
         run: docker compose up -d
-      # - name: Debug
-      #   uses: mxschmitt/action-tmate@v3
-      - name: Run db create on docker compose
-        run: docker compose exec main bundle install
-      - name: Run db create on docker compose
-        run: docker compose exec main bundle exec rails db:create
-      - name: Run db create on docker compose
-        run: docker compose exec main bundle exec rails db:migrate
-      - name: Run tests in Docker
-        run: bundle exec rails test
+      - name: Debug
+        uses: mxschmitt/action-tmate@v3
+      # - name: Run db create on docker compose
+      #   run: docker compose exec main bundle install
+      # - name: Run db create on docker compose
+      #   run: docker compose exec main bundle exec rails db:create
+      # - name: Run db create on docker compose
+      #   run: docker compose exec main bundle exec rails db:migrate
+      # - name: Run tests in Docker
+      #   run: bundle exec rails test
