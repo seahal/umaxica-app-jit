@@ -85,7 +85,7 @@ jobs:
       - name: Run docker compose build
         run: docker compose build --build-arg GITHUB_ACTIONS=true --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g)
       - name: Run docker compose up
-        run: docker compose up -d --restart=always 
+        run: docker compose up -d
       # - name: Debug
       #   uses: mxschmitt/action-tmate@v3
       - name: Run db create on docker compose
