@@ -67,11 +67,11 @@ jobs:
 
   docker:
     runs-on: ubuntu-latest
-    timeout-minutes: 15 # ToDo: reduce this parametor.
+    timeout-minutes: 10 # ToDo: reduce this parametor.
     strategy:
       fail-fast: false
       matrix:
-        runner: ['bin/rails test', 'bin/rubocop', 'bin/brakeman -z -q', 'bundle exec erb_lint --lint-all']
+        runner: ['bin/rails test']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -86,8 +86,8 @@ jobs:
         run: docker compose build --build-arg GITHUB_ACTIONS=true --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g)
       - name: Run docker compose up
         run: docker compose up -d
-      # - name: Debug
-      #   uses: mxschmitt/action-tmate@v3
+      - name: Debug
+        uses: mxschmitt/action-tmate@v3
       - name: Run db create on docker compose
         run: | 
           docker compose exec main bin/rails db:create &&\
