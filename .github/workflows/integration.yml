@@ -91,14 +91,11 @@ jobs:
         run: docker compose build --build-arg GITHUB_ACTIONS=true --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g)
       - name: Run docker compose up
         run: docker compose up -d
-      - name: Run db create on docker compose
-        run: bin/rails db:create
-      - name: Run db create on docker compose
-        run: bin/rails db:migrate
       - uses: oven-sh/setup-bun@v2
       - run: bun install
       - run: bin/rails db:create
       - run: bin/rails db:migrate
+      - run: echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee /etc/hosts
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
       - run: bin/rails test
