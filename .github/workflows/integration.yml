@@ -97,7 +97,3 @@ jobs:
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
       - run: bin/rails test
-      # - name: Run db create on docker compose
-      #   run: docker compose exec main bundle exec rails db:migrate
-      # - name: Run tests in Docker
-      #   run: bundle exec rails test
