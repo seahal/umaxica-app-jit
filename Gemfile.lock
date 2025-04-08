@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 32d96235810e268eb5335a7837b13cda3f8b653d
+  revision: c3c33947160e473a3d41555f8cf3aee7f3a48c76
   branch: main
   specs:
     actioncable (8.1.0.alpha)
@@ -1785,7 +1785,7 @@ GEM
     erubi (1.13.1)
     faker (3.5.1)
       i18n (>= 1.8.11, < 2)
-    faraday (2.12.2)
+    faraday (2.12.3)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
@@ -2348,9 +2348,9 @@ GEM
     unicode-emoji (4.0.4)
     uri (1.0.3)
     useragent (0.16.11)
-    waterdrop (2.8.2)
-      karafka-core (>= 2.4.3, < 3.0.0)
-      karafka-rdkafka (>= 0.17.5)
+    waterdrop (2.8.3)
+      karafka-core (>= 2.4.9, < 3.0.0)
+      karafka-rdkafka (>= 0.19.1)
       zeitwerk (~> 2.3)
     web-console (4.2.1)
       actionview (>= 6.0.0)
