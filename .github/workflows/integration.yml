@@ -84,8 +84,8 @@ jobs:
           cache-to: type=gha,mode=max
       - name: Run docker compose build
         run: docker compose build --build-arg GITHUB_ACTIONS=true --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g)
-      # - name: Run docker compose up
-      #   run: docker compose up -d
+      - name: Run docker compose up
+        run: docker compose up -d --restart=always 
       # - name: Debug
       #   uses: mxschmitt/action-tmate@v3
       - name: Run db create on docker compose
