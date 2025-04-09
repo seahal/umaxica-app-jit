@@ -88,6 +88,7 @@ jobs:
           bundle exec rails about
           bundle exec rails notes
           bundle exec rails stats
+          bundle exec rails routes --unused
 
   integration-tests:
     name: Integration Tests
