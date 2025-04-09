@@ -8,89 +8,131 @@ on:
     branches:
       - master
       - develop
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 permissions:
   contents: read
   issues: write
+
 defaults:
   run:
     shell: bash
 
-# 再利用可能なステップを定義
 jobs:
   setup:
+    name: Setup
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      # Add shared cache creation here if needed
 
-  ubuntu:
+  static-analysis:
+    name: Static Analysis
     needs: [setup]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        check: [brakeman, rubocop, bundle-audit, erb-lint, about, notes]
+        check: [brakeman, rubocop, bundle-audit, erb-lint]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Run Brakeman
-        if: matrix.check == 'brakeman'
-        run: bundle exec brakeman -z -q
-      - name: Run Rubocop
-        if: matrix.check == 'rubocop'
-        run: bin/rubocop --fail-fast
-      - name: Run Bundle Audit
-        if: matrix.check == 'bundle-audit'
-        run: bundle exec bundle audit check --update
-      - name: Erb lint
-        if: matrix.check == 'erb-lint'
-        run: bundle exec erb_lint --lint-all
-      - name: about
-        if: matrix.check == 'about'
-        run: bundle exec rails about
-      - name: Erb lint
-        if: matrix.check == 'notes'
-        run: bundle exec rails notes
+      - name: Run ${{ matrix.check }}
+        run: |
+          case "${{ matrix.check }}" in
+            brakeman)
+              bundle exec brakeman -z -q
+              ;;
+            rubocop)
+              bin/rubocop --fail-fast
+              ;;
+            bundle-audit)
+              bundle exec bundle audit check --update
+              ;;
+            erb-lint)
+              bundle exec erb_lint --lint-all
+              ;;
+          esac
 
-  docker:
-    runs-on: ubuntu-latest
+  rails-info:
+    name: Rails Project Info
     needs: [setup]
-    timeout-minutes: 20 # ToDo: reduce this parametor.
-    strategy:
-      fail-fast: false
-      matrix:
-        runner: ['bin/rails test']
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Set up QEMU 
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Run docker compose build
-        run: docker compose build --build-arg GITHUB_ACTIONS=true --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g)
-      - name: Run docker compose up
+      - name: Rails information
+        run: |
+          bundle exec rails about
+          bundle exec rails notes
+          bundle exec rails stats
+
+  integration-tests:
+    name: Integration Tests
+    needs: [setup]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # Reduced from 20 minutes to 15 minutes
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      
+      - name: Setup Docker environment
+        run: |
+          # Setup QEMU and Buildx
+          docker run --privileged --rm tonistiigi/binfmt --install all
+          docker buildx create --use
+
+      - name: Build Docker containers
+        run: |
+          docker compose build --build-arg GITHUB_ACTIONS=true \
+            --build-arg DOCKER_UID=$(id -u) \
+            --build-arg DOCKER_GID=$(id -g)
+      
+      - name: Start Docker services
         run: docker compose up -d
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install
-      - run: bin/rails db:create
-      - run: bin/rails db:migrate
-      - run: echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee /etc/hosts
-      - run: bin/rails test:all
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      
+      - name: Install dependencies
+        run: bun install
+      
+      - name: Setup database
+        run: |
+          bin/rails db:create
+          bin/rails db:migrate
+      
+      - name: Configure hosts
+        run: |
+          echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee -a /etc/hosts
+      
+      - name: Run all tests
+        run: bin/rails test:all
