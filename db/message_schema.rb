@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_04_02_105648) do
+ActiveRecord::Schema[8.1].define(version: 2025_04_10_033125) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -48,6 +48,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_04_02_105648) do
   create_table "telephones", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "number"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "universal_email_identifiers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "universal_telephone_identifiers", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
