@@ -1,41 +1,46 @@
 name: 'jit'
 services:
-  psql-pub:
+  primary:
     image: postgres:16.6
+    command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
     networks:
       - backend
     environment:
-      POSTGRES_USER: default
+      POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       TZ: UTC
       POSTGRES_HOST_AUTH_METHOD: trust # NOTE: 開発用のため
       POSTGRES_INITDB_WAL_LEVEL: replica # wal_levelの設定
       POSTGRES_INITDB_MAX_WAL_SENDERS: 10 #max_wal_sendersの設定
       POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10 #max_replication_slotsの設定
+      POSTGRES_DB: db
     tmpfs: /var/lib/postgresql/data
     ports:
       - "5433:5432"
     volumes:
-      #      - psql-pub-volume:/var/lib/postgresql/data
       - ./docker/psql-pub/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./docker/psql-pub/pg_hba.conf:/etc/postgresql/pg_hba.conf
-  psql-sub:
+      - ./docker/psql-pub/init.sh:/docker-entrypoint-initdb.d/init.sh
+  replica:
     image: postgres:16.6
+    entrypoint: /entrypoint.sh
     networks:
       - backend
     environment:
-      POSTGRES_USER: default
+      POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       TZ: UTC
       POSTGRES_HOST_AUTH_METHOD: trust # NOTE: 開発用のため
+      POSTGRES_DB: db
     ports:
       - "5434:5432"
     tmpfs: /var/lib/postgresql/data
     volumes:
-      #      - psql-sub-volume:/var/lib/postgresql/data
-      - ./docker/psql-sub/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./docker/psql-sub/entrypoint.sh:/entrypoint.sh
+      - ./docker/psql-sub/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./docker/psql-sub/pg_hba.conf:/etc/postgresql/pg_hba.conf
     depends_on:
-      - psql-pub
+      - primary
   minio:
     image: minio/minio:RELEASE.2025-02-07T23-21-09Z-cpuv1
     volumes:
@@ -125,7 +130,7 @@ services:
       - minio
       - kafka-ui
       - kafka
-      - psql-pub
+      - primary
       - zookeeper
 volumes: #
   psql-pub-volume:
