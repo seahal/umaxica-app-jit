@@ -69,7 +69,7 @@ services:
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-  kafka0:
+  kafka:
     image: confluentinc/cp-kafka:7.9.0
     ports:
       - "9092:9092"
@@ -78,45 +78,19 @@ services:
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
-  kafka1:
-    image: confluentinc/cp-kafka:7.9.0
-    container_name: kafka1
-    ports:
-      - "9093:9093"
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093,PLAINTEXT_INTERNAL://kafka1:29093
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  kafka2:
-    image: confluentinc/cp-kafka:7.9.0
-    ports:
-      - "9094:9094"
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093,PLAINTEXT_INTERNAL://kafka1:29093
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
   kafka-ui:
     container_name: kafka-ui
     image: ghcr.io/kafbat/kafka-ui:v1.2.0
     ports:
       - "8080:8080"
     depends_on:
-      - kafka0
-      - kafka1
+      - kafka
     restart: always
     environment:
       KAFKA_CLUSTERS_0_NAME: local-cluster
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka0:29092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
   main:
     build:
       context: ./
@@ -125,7 +99,6 @@ services:
         COMMIT_HASH: 'abcdef'
     command: /bin/sh -c "bin/dev"
     restart: always
-    user: "1000:1000"
     tty: true
     stdin_open: true
     extra_hosts:
@@ -148,6 +121,10 @@ services:
       - vk-cache
       - vk-session
       - minio
+      - kafka-ui
+      - kafka
+      - psql-pub
+      - zookeeper
 volumes: #
   psql-pub-volume:
   psql-sub-volume:

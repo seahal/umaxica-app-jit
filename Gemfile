@@ -76,7 +76,7 @@ group :development, :test do
   # erb linter
   gem "erb_lint", require: false
   # coverage
-  gem "simplecov", require: false
+  # gem "simplecov", require: false
   # rubocop
   gem "rubocop", require: false
   gem "rubocop-rails-omakase", require: false

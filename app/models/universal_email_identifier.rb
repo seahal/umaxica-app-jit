@@ -1,0 +1,2 @@
+class UniversalEmailIdentifier < ApplicationRecord
+end

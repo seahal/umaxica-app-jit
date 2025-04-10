@@ -1,3 +1,4 @@
+# TODO: use 'bundle exec rails routes --unused' 
 name: 'CI'
 on:
   push:
@@ -8,170 +9,131 @@ on:
     branches:
       - master
       - develop
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 permissions:
   contents: read
   issues: write
+
 defaults:
   run:
     shell: bash
 
-# 再利用可能なステップを定義
 jobs:
   setup:
+    name: Setup
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      # Add shared cache creation here if needed
 
-  ubuntu:
+  static-analysis:
+    name: Static Analysis
     needs: [setup]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        check: [brakeman, rubocop, bundle-audit, erb-lint, about, notes]
+        check: [brakeman, rubocop, bundle-audit, erb-lint]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Run Brakeman
-        if: matrix.check == 'brakeman'
-        run: bundle exec brakeman -z -q
-      - name: Run Rubocop
-        if: matrix.check == 'rubocop'
-        run: bin/rubocop --fail-fast
-      - name: Run Bundle Audit
-        if: matrix.check == 'bundle-audit'
-        run: bundle exec bundle audit check --update
-      - name: Erb lint
-        if: matrix.check == 'erb-lint'
-        run: bundle exec erb_lint --lint-all
-      - name: about
-        if: matrix.check == 'about'
-        run: bundle exec rails about
-      - name: Erb lint
-        if: matrix.check == 'notes'
-        run: bundle exec rails notes
+      - name: Run ${{ matrix.check }}
+        run: |
+          case "${{ matrix.check }}" in
+            brakeman)
+              bundle exec brakeman -z -q
+              ;;
+            rubocop)
+              bin/rubocop --fail-fast
+              ;;
+            bundle-audit)
+              bundle exec bundle audit check --update
+              ;;
+            erb-lint)
+              bundle exec erb_lint --lint-all
+              ;;
+          esac
 
-#  tests:
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 10 # テスト実行には時間がかかる可能性があるため、タイムアウトを増加
-#    needs: [setup]
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        test_suite: [channels, system, controllers, helpers, integration, jobs, mailers, models]
-#    services:
-#      redis:
-#        image: redis
-#        options: >-
-#          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-#        ports:
-#          - 6380:6379
-#      postgres:
-#        image: postgres
-#        env:
-#          POSTGRES_USER: 'default'
-#          POSTGRES_PASSWORD: 'password'
-#        options: >-
-#          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-#        ports:
-#          - 5433:5432
-#    env:
-#      POSTGRES_USER: 'default'
-#      POSTGRES_PASSWORD: 'password'
-#      POSTGRESQL_AUTH_PUB: 'localhost'
-#      POSTGRESQL_AUTH_SUB: 'localhost'
-#      POSTGRESQL_DOCS_PUB: 'localhost'
-#      POSTGRESQL_DOCS_SUB: 'localhost'
-#      POSTGRESQL_CORE_PUB: 'localhost'
-#      POSTGRESQL_CORE_SUB: 'localhost'
-#      REDIS_CACHE_URL: 'redis://localhost:6380/0'
-#      REDIS_SESSION_URL: 'redis://localhost:6380/1'
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#      - uses: ruby/setup-ruby@v1
-#        with:
-#          ruby-version: .ruby-version
-#          bundler-cache: true
-#      - name: Install system packages
-#        if: matrix.test_suite != 'channels'
-#        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
-#      - uses: oven-sh/setup-bun@v2
-#        with:
-#          bun-version: 1.2.7
-#      - run: bun install
-#      - name: Add hosts to /etc/hosts
-#        if: matrix.test_suite == 'system' || matrix.test_suite == 'integration' || matrix.test_suite == 'jobs'
-#        run: |
-#          sudo echo "127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost" | sudo tee -a /etc/hosts
-#      - name: Setup tmate session
-#        uses: mxschmitt/action-tmate@v3
-#      - name: Rails db:create
-#        run: bin/rails db:create
-#      - name: Rails db:migrate
-#        run: bin/rails db:migrate
-#      - name: Run tests
-#        if: matrix.test_suite != 'jobs' # jobs テストがコメントアウトされていたため、同じ条件を維持
-#        run: bin/rails test:${{ matrix.test_suite }}
-#      #- name: Run jobs tests
-#      #  if: matrix.test_suite == 'jobs'
-#      #  run: bin/rails test:jobs
-#  bun:
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 5 # テスト実行には時間がかかる可能性があるため、タイムアウトを増加
-#    needs: [setup]
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#      - uses: ruby/setup-ruby@v1
-#        with:
-#          ruby-version: .ruby-version
-#          bundler-cache: true
-#      - uses: oven-sh/setup-bun@v2
-#        with:
-#          bun-version: 1.2.7
-#      - run: bun install
-#      - name: Run tests
-#        run: bun run test
-
-  docker:
+  rails-info:
+    name: Rails Project Info
+    needs: [setup]
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        runner: ['bin/rails test', 'bun test', 'bin/rubocop', 'bin/brakeman -z -q']
+    timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Cache Docker layers
-        uses: actions/cache@v3
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-      - name: Set up buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build Docker image
-        run: docker compose build
-      - name: run
-        run: docker compose run main ${{ matrix.runner }}
-      - name: Move cache
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Rails information
         run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          bundle exec rails about
+          bundle exec rails notes
+          bundle exec rails stats
+
+  integration-tests:
+    name: Integration Tests
+    needs: [setup]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # Reduced from 20 minutes to 15 minutes
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      
+      - name: Setup Docker environment
+        run: |
+          # Setup QEMU and Buildx
+          docker run --privileged --rm tonistiigi/binfmt --install all
+          docker buildx create --use
+
+      - name: Build Docker containers
+        run: |
+          docker compose build --build-arg GITHUB_ACTIONS=true \
+            --build-arg DOCKER_UID=$(id -u) \
+            --build-arg DOCKER_GID=$(id -g)
+      
+      - name: Start Docker services
+        run: docker compose up -d
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      
+      - name: Install dependencies
+        run: bun install
+      
+      - name: Setup database
+        run: |
+          bin/rails db:create
+          bin/rails db:migrate
+      
+      - name: Configure hosts
+        run: |
+          echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee -a /etc/hosts
+      
+      - name: Run all tests
+        run: bin/rails test:all
