@@ -12,6 +12,7 @@ services:
       POSTGRES_INITDB_WAL_LEVEL: replica # wal_levelの設定
       POSTGRES_INITDB_MAX_WAL_SENDERS: 10 #max_wal_sendersの設定
       POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10 #max_replication_slotsの設定
+    tmpfs: /var/lib/postgresql/data
     ports:
       - "5433:5432"
     volumes:
@@ -29,6 +30,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust # NOTE: 開発用のため
     ports:
       - "5434:5432"
+    tmpfs: /var/lib/postgresql/data
     volumes:
       #      - psql-sub-volume:/var/lib/postgresql/data
       - ./docker/psql-sub/init.sh:/docker-entrypoint-initdb.d/init.sh
