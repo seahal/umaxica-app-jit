@@ -1,2 +1,2 @@
-class UniversalUserIdentifier < ApplicationRecord
+class UniversalUserIdentifier < SingletonRecord
 end

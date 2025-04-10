@@ -131,6 +131,7 @@ services:
       - kafka-ui
       - kafka
       - primary
+      - replica
       - zookeeper
 volumes: #
   psql-pub-volume:

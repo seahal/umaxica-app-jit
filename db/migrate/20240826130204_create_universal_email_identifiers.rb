@@ -1,4 +1,5 @@
 # ToDo: Use table partitioning.
+# INFO: Use lowercase for emails address
 
 class CreateUniversalEmailIdentifiers < ActiveRecord::Migration[7.2]
   def change
