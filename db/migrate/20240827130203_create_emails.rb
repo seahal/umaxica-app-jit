@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # ToDo: Use table partitioning.
 
 

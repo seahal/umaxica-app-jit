@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# MEMO: SHA3::Digest::SHA3_256.new(ENV['SINGLETON_DEFAULT_SALT'] + 'one@example.com').digest
+
 class Email < AuthRecord
   self.primary_key = :address
 
