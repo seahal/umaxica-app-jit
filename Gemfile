@@ -30,7 +30,7 @@ gem "rack-attack"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt"
 # SHA3
-gem "sha3"
+gem "sha3", "~> 2.2"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[windows jruby]
 # Reduces boot times through caching; required sign_in config/boot.rb

@@ -5,8 +5,10 @@
 # below each fixture, per the syntax sign_in the comments below
 
 user_emails_two:
+  id: 'xbd0'
   type: 'User'
   address: 'two_user@gmail.com'
 staff_emails_two:
+  id: '010a'
   type: 'Staff'
   address: 'two_staff@gmail.com'

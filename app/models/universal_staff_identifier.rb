@@ -1,0 +1,2 @@
+class UniversalStaffIdentifier < ApplicationRecord
+end

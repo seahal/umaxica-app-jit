@@ -1,0 +1,2 @@
+class UniversalUserIdentifier < ApplicationRecord
+end

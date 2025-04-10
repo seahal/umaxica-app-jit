@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: e17dc84e1baeb493296aa961fe997dc8507c10f2
+  revision: 42a71a03a0adb465dc49b4e21dec8e0ea29e8e35
   branch: main
   specs:
     actioncable (8.1.0.alpha)
@@ -2421,7 +2421,7 @@ DEPENDENCIES
   rubocop
   rubocop-rails-omakase
   selenium-webdriver
-  sha3
+  sha3 (~> 2.2)
   sitemap_generator
   tzinfo-data
   web-console

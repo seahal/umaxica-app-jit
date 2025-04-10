@@ -21,7 +21,7 @@
     "@happy-dom/global-registrator": "^17.4.4",
     "@types/bun": "latest",
     "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.1",
+    "@types/react-dom": "^19.1.2",
     "biome": "^0.3.3"
   }
 }

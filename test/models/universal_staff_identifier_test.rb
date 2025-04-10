@@ -1,6 +1,6 @@
 require "test_helper"
 
-class UniversalTelephoneIdentifierTest < ActiveSupport::TestCase
+class UniversalStaffIdentifierTest < ActiveSupport::TestCase
   test "the truth" do
     assert true
   end
