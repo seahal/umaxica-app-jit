@@ -35,7 +35,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_04_02_105648) do
     t.string "address", limit: 512, null: false
     t.datetime "created_at", null: false
     t.string "type", null: false
-    t.binary "universal_email_identifiers_id"
     t.datetime "updated_at", null: false
   end
 

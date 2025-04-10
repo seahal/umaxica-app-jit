@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # ToDo: Use table partitioning.
+# ToDo: Use hash index
 
 
 # # if production?
@@ -15,7 +16,6 @@ class CreateEmails < ActiveRecord::Migration[7.2]
         CREATE TABLE emails ( id bytea PRIMARY KEY NOT NULL default '',
                               address varchar (512) NOT NULL,
                               type varchar not null,
-                              universal_email_identifiers_id bytea,
                               created_at timestamp(6) not null,
                               updated_at timestamp(6) not null );
     SQL
