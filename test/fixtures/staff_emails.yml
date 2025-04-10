@@ -8,3 +8,4 @@
 staff_emails_two:
   type: 'Staff'
   address: 'onetwostaff@example.com'
+  universal_email_identifiers_id: ''

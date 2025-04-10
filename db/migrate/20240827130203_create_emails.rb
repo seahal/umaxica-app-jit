@@ -1,6 +1,7 @@
 # frozen_string_literal: true
+# ToDo: Use table partitioning.
 
-#
+
 # # if production?
 # PARTITION_SIZE = 15
 #
@@ -12,7 +13,7 @@ class CreateEmails < ActiveRecord::Migration[7.2]
     execute <<-SQL
         CREATE TABLE emails ( address varchar(256) PRIMARY KEY,
                               type varchar not null,
-                              universal_email_identifiers_id bytea not null,
+                              universal_email_identifiers_id bytea,
                               created_at timestamp(6) not null,
                               updated_at timestamp(6) not null );
     SQL
