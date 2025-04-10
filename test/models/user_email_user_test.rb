@@ -8,7 +8,7 @@ class UserEmailUserTest < ActiveSupport::TestCase
   end
 
   test "email user relation" do
-    ue = UserEmail.create(address: "one@example.com")
+    ue = UserEmail.create(id:'0c0x', address: "one@example.com")
     assert ue.valid?
   end
 end

@@ -31,14 +31,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_04_02_105648) do
     t.uuid "user_id"
   end
 
-  create_table "emails", primary_key: "address", id: { type: :string, limit: 256 }, force: :cascade do |t|
+  create_table "emails", id: :binary, default: "", force: :cascade do |t|
+    t.string "address", limit: 512, null: false
     t.datetime "created_at", null: false
     t.string "type", null: false
     t.binary "universal_email_identifiers_id"
     t.datetime "updated_at", null: false
   end
 
-  create_table "staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staffs", id: :binary, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
     t.string "encrypted_password", limit: 255
@@ -73,7 +74,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_04_02_105648) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "users", id: :binary, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
     t.string "display_name", limit: 32

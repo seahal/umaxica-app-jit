@@ -1,10 +1,12 @@
 # # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 staff_emails_one:
+  id: '0c1a'
   type: 'Staff'
   address: 'staff@example.com'
-  universal_email_identifiers_id: ''
+  universal_email_identifiers_id: '0x1x'
 user_emails_one:
+  id: '0c2b'
   type: 'User'
   address: 'user@example.app'
-  universal_email_identifiers_id: ''
+  universal_email_identifiers_id: '0x2x'

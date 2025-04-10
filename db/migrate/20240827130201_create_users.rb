@@ -5,7 +5,7 @@
 class CreateUsers < ActiveRecord::Migration[7.2]
   def change
     # FIXME: need hashed partition.
-    create_table :users, id: :uuid do |t|
+    create_table :users, id: :binary do |t|
       t.string :encrypted_password, limit: 255, default: nil
       t.string :display_name, limit: 32, default: nil
 

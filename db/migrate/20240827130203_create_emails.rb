@@ -5,14 +5,15 @@
 
 # # if production?
 # PARTITION_SIZE = 15
-#
+
 class CreateEmails < ActiveRecord::Migration[7.2]
   def up
     enable_extension 'pgcrypto' unless extension_enabled?('pgcrypto')
 
     # I want to table emails as uniqueness of email address.
     execute <<-SQL
-        CREATE TABLE emails ( address varchar(256) PRIMARY KEY,
+        CREATE TABLE emails ( id bytea PRIMARY KEY NOT NULL default '',
+                              address varchar (512) NOT NULL,
                               type varchar not null,
                               universal_email_identifiers_id bytea,
                               created_at timestamp(6) not null,
