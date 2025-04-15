@@ -1,2 +1,2 @@
-class UniversalUserIdentifier < SingletonRecord
+class UniversalUserIdentifier < IdentifierRecord
 end

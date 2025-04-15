@@ -3,5 +3,5 @@
 class StorageRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  connects_to database: { writing: :storage, reading: :storage }
+  connects_to database: { writing: :storage, reading: :storage_storage }
 end

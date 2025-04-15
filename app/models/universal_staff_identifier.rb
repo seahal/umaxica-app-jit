@@ -1,2 +1,2 @@
-class UniversalStaffIdentifier < SingletonRecord
+class UniversalStaffIdentifier < IdentifierRecord
 end
