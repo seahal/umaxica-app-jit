@@ -1,5 +1,5 @@
 class CoreService
-  def initialize()
+  def initialize
   end
 
   def self.hello

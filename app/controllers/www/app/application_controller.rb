@@ -15,7 +15,7 @@ module Www
           secure: true,
           expires: 1.years
         }
-        cookies['abc'] = 'abc'
+        cookies["abc"] = "abc"
       end
     end
   end

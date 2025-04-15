@@ -63,7 +63,6 @@ gem "opentelemetry-instrumentation-all"
 gem "sitemap_generator"
 # JWE + JWT
 gem "jwt", "3.0.0.beta1"
-gem "jwe", "~> 1.0"
 #
 gem "jsbundling-rails"
 #
