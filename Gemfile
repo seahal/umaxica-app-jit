@@ -66,6 +66,7 @@ gem "jwt", "3.0.0.beta1"
 gem "jwe", "~> 1.0"
 #
 gem "jsbundling-rails"
+# 
 
 
 group :development, :test do
@@ -86,7 +87,7 @@ end
 
 group :development do
   # FIXME: bullet would not run on rails edge version.
-  # gem "bullet", "~> 8.0"
+  gem "bullet", "~> 8.0"
   gem "bundler-audit", "~> 0.9.1"
   gem "foreman"
   gem "guard"
