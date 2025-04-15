@@ -7,6 +7,7 @@ module Com
     test "should get index" do
       get www_com_root_url
       assert_response :success
+      assert_select "a[href=?]", edit_www_com_cookie_path
     end
   end
 end
