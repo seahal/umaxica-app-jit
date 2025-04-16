@@ -82,6 +82,21 @@ development:
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %> # FIXME: change to use replica
     host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>  # FIXME: change to use replica
+  notification:
+    <<: *default
+    database: development_notification_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_PUB"]: 'localhost' %>
+  notification_replica:
+    <<: *default
+    replica: true
+    database: development_notification_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %> # FIXME: change to use replica
+    host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>  # FIXME: change to use replica
   core:
     <<: *default
@@ -179,6 +194,21 @@ test:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %> # FIXME: change to use replica
+  notification:
+    <<: *default
+    database: test_message_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_PUB"]: 'localhost' %>
+  notification_replica:
+    <<: *default
+    replica: true
+    database: test_message_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %> # FIXME: change to use replica
   core:
     <<: *default
     database: test_core_db

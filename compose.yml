@@ -133,6 +133,12 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 8000:3000
+    volumes:
+      - grafana-volume:/var/lib/grafana
 volumes: #
   psql-pub-volume:
   psql-sub-volume:
@@ -142,6 +148,7 @@ volumes: #
   minio-data-1:
   sqlite-volume:
   kafka-broker-volume:
+  grafana-volume:
 networks:
   backend:
   frontend:

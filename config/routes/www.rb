@@ -9,7 +9,7 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # for ePrivacy settings.
-        resource :cookie, only: [:edit, :update]
+        resource :cookie, only: [ :edit, :update ]
         # show search pages
         resource :search, only: :show
         # contact page
@@ -30,7 +30,7 @@ Rails.application.routes.draw do
           # root to: "roots#index"
           resource :health, only: :show
           # for ePrivacy settings.
-          resource :cookie, only: [:edit, :update]
+          resource :cookie, only: [ :edit, :update ]
           # show stating env
           resource :staging, only: :show
           # Sign up pages
@@ -69,7 +69,7 @@ Rails.application.routes.draw do
       # health check for html
       resource :health, only: :show
       # for ePrivacy settings.
-      resource :cookie, only: [:edit, :update]
+      resource :cookie, only: [ :edit, :update ]
       # show stating env
       resource :staging, only: :show, format: :html
       # non-loggined settings
