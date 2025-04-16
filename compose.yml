@@ -1,5 +1,40 @@
 name: 'jit'
 services:
+  main:
+    build:
+      context: ./
+      target: development
+      args:
+        COMMIT_HASH: 'abcdef'
+    command: /bin/sh -c "bin/dev"
+    restart: always
+    tty: true
+    stdin_open: true
+    extra_hosts:
+      - "com.api.localdomain:127.0.0.1"
+      - "net.api.localdomain:127.0.0.1"
+      - "org.api.localdomain:127.0.0.1"
+      - "app.api.localdomain:127.0.0.1"
+      - "com.www.localdomain:127.0.0.1"
+      - "net.www.localdomain:127.0.0.1"
+      - "org.www.localdomain:127.0.0.1"
+      - "app.www.localdomain:127.0.0.1"
+    ports:
+      - "3333:3000"
+    volumes:
+      - ./:/main
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      - vk-cache
+      - vk-session
+      - minio
+      - kafka-ui
+      - kafka
+      - primary
+      - replica
+      - zookeeper
   primary:
     image: postgres:16.6
     command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
@@ -98,40 +133,12 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-  main:
-    build:
-      context: ./
-      target: development
-      args:
-        COMMIT_HASH: 'abcdef'
-    command: /bin/sh -c "bin/dev"
-    restart: always
-    tty: true
-    stdin_open: true
-    extra_hosts:
-      - "com.api.localdomain:127.0.0.1"
-      - "net.api.localdomain:127.0.0.1"
-      - "org.api.localdomain:127.0.0.1"
-      - "app.api.localdomain:127.0.0.1"
-      - "com.www.localdomain:127.0.0.1"
-      - "net.www.localdomain:127.0.0.1"
-      - "org.www.localdomain:127.0.0.1"
-      - "app.www.localdomain:127.0.0.1"
+  grafana:
+    image: grafana/grafana:latest
     ports:
-      - "3333:3000"
+      - 8000:3000
     volumes:
-      - ./:/main
-    networks:
-      - backend
-      - frontend
-    depends_on:
-      - vk-cache
-      - vk-session
-      - minio
-      - kafka-ui
-      - kafka
-      - primary
-      - zookeeper
+      - grafana-volume:/var/lib/grafana
 volumes: #
   psql-pub-volume:
   psql-sub-volume:
@@ -141,6 +148,7 @@ volumes: #
   minio-data-1:
   sqlite-volume:
   kafka-broker-volume:
+  grafana-volume:
 networks:
   backend:
   frontend:

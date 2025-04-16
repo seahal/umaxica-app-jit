@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.4.2"
+ruby "3.4.3"
 
 # rack
 gem "rack"
@@ -58,14 +58,14 @@ gem "propshaft"
 # OpenTelemetry
 gem "opentelemetry-sdk"
 gem "opentelemetry-exporter-otlp"
-gem "opentelemetry-instrumentation-all"
+gem "opentelemetry-instrumentation-all", "~> 0.74.0"
 # sitemap
 gem "sitemap_generator"
 # JWE + JWT
 gem "jwt", "3.0.0.beta1"
-gem "jwe", "~> 1.0"
 #
 gem "jsbundling-rails"
+#
 
 
 group :development, :test do

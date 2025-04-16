@@ -7,7 +7,9 @@ module Health
     expires_in 1.second, public: true # this page wouldn't include private data
 
     # FIXME: much more validations requires
-    @status, @body = if !!User.connection.execute("SELECT 1 FROM users LIMIT 1")
+    # @status, @body = if !! [IdentifiersRecord, AccountsRecord, NotificationsRecord, CoresRecord, SessionsRecord, StoragesRecord, MessagesRecord].all?{ it.connection.execute("SELECT 1;") }
+
+    @status, @body = if !! [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
                        [ 200, "OK" ]
     else
                        [ 500, "NG" ]
