@@ -1,7 +1,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } * 100 %>
   timeout: 5000
   username: <%= ENV["POSTGRES_USER"] %>
   password: <%= ENV["POSTGRES_PASSWORD"] %>
@@ -12,17 +12,19 @@ development:
     <<: *default
     database: development_identifier_db
     port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+      <%= File.exist?('/.dockerenv') ? 5432 : 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
+    migrations_paths:  db/identifiers_migrate
   identifier_replica:
     <<: *default
     replica: true
     database: development_identifier_db
     port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5434 %> # FIXME: change replica
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+    migrations_paths:  db/identifiers_migrate
   account:
     <<: *default
     database: development_account_db
@@ -30,14 +32,16 @@ development:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_PUB"]: 'localhost' %>
+    migrations_paths:  db/accounts_migrate
   account_replica:
     <<: *default
     replica: true
     database: development_account_db
     port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5434 %> # FIXME: change replica
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_SUB"]: 'localhost' %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_SUB"]: 'localhost' %>
+    migrations_paths:  db/accounts_migrate
   session:
     <<: *default
     database: development_session_db
@@ -45,14 +49,16 @@ development:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_PUB"]: 'localhost' %>
-  sesssion_replica:
+    migrations_paths:  db/sessions_migrate
+  session_replica:
     <<: *default
     replica: true
     database: development_session_db
     port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5434 %> # FIXME: change replica
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_SUB"]: 'localhost' %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_SUB"]: 'localhost' %>
+    migrations_paths:  db/sessions_migrate
   storage:
     <<: *default
     database: development_storage_db
@@ -60,14 +66,16 @@ development:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_PUB"]: 'localhost' %>
+    migrations_paths:  db/storages_migrate
   storage_replica:
     <<: *default
     replica: true
     database: development_storage_db
     port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5434 %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_SUB"]: 'localhost' %>  # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_SUB"]: 'localhost' %>
+    migrations_paths:  db/storages_migrate
   message:
     <<: *default
     database: development_message_db
@@ -75,14 +83,16 @@ development:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_PUB"]: 'localhost' %>
+    migrations_paths:  db/messages_migrate
   message_replica:
     <<: *default
     replica: true
     database: development_message_db
     port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5434 %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>  # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
+    migrations_paths:  db/messages_migrate
   notification:
     <<: *default
     database: development_notification_db
@@ -90,14 +100,16 @@ development:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_PUB"]: 'localhost' %>
+    migrations_paths:  db/notifications_migrate
   notification_replica:
     <<: *default
     replica: true
     database: development_notification_db
     port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5434 %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>  # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>
+    migrations_paths:  db/notifications_migrate
   core:
     <<: *default
     database: development_core_db
@@ -105,14 +117,16 @@ development:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"]: 'localhost' %>
+    migrations_paths:  db/cores_migrate
   core_replica:
     <<: *default
     replica: true
     database: development_core_db
     port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5434 %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"]: 'localhost' %>  # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"]: 'localhost' %>
+    migrations_paths:  db/cores_migrate
 
 
 # Warning: The database defined as "test" will be erased and
@@ -126,6 +140,7 @@ test:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
+    migrations_paths:  db/identifiers_migrate
   identifier_replica:
     <<: *default
     replica: true
@@ -133,7 +148,8 @@ test:
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+    migrations_paths:  db/identifiers_migrate
   account:
     <<: *default
     database: test_account_db
@@ -141,6 +157,7 @@ test:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_PUB"]: 'localhost' %>
+    migrations_paths:  db/accounts_migrate
   account_replica:
     <<: *default
     replica: true
@@ -148,7 +165,8 @@ test:
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_SUB"]: 'localhost' %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_SUB"]: 'localhost' %>
+    migrations_paths:  db/accounts_migrate
   session:
     <<: *default
     database: test_session_db
@@ -156,6 +174,7 @@ test:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_PUB"]: 'localhost' %>
+    migrations_paths:  db/sessions_migrate
   session_replica:
     <<: *default
     replica: true
@@ -163,7 +182,8 @@ test:
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_SUB"]: 'localhost' %>  # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_SUB"]: 'localhost' %>
+    migrations_paths:  db/sessions_migrate
   storage:
     <<: *default
     database: test_storage_db
@@ -171,6 +191,7 @@ test:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_PUB"]: 'localhost' %>
+    migrations_paths:  db/storages_migrate
   storage_replica:
     <<: *default
     replica: true
@@ -178,7 +199,8 @@ test:
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_SUB"]: 'localhost' %>  # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_SUB"]: 'localhost' %>
+    migrations_paths:  db/storages_migrate
   message:
     <<: *default
     database: test_message_db
@@ -186,6 +208,7 @@ test:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_PUB"]: 'localhost' %>
+    migrations_paths:  db/messages_migrate
   message_replica:
     <<: *default
     replica: true
@@ -193,22 +216,25 @@ test:
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>
+    migrations_paths:  db/messages_migrate
   notification:
     <<: *default
-    database: test_message_db
+    database: test_notification_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_PUB"]: 'localhost' %>
+    migrations_paths:  db/notifications_migrate
   notification_replica:
     <<: *default
     replica: true
-    database: test_message_db
+    database: test_notification_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %> # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
+    migrations_paths:  db/notifications_migrate
   core:
     <<: *default
     database: test_core_db
@@ -216,6 +242,7 @@ test:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_PUB"]: 'localhost' %>
+    migrations_paths:  db/cores_migrate
   core_replica:
     <<: *default
     replica: true
@@ -223,9 +250,10 @@ test:
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"]: 'localhost' %>  # FIXME: change to use replica
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"]: 'localhost' %>
+    migrations_paths:  db/cores_migrate
 
-# FIXME: please implement below
+# FIXME: please implement below code
 production:
   none:
     <<: *default

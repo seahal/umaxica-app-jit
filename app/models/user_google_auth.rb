@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-class UserGoogleAuth < AccountRecord
+class UserGoogleAuth < AccountsRecord
   belongs_to :user
 end

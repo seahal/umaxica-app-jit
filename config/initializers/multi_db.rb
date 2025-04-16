@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Multi-db Configuration
 #
 # This file is used for configuration settings related to multiple databases.
@@ -24,12 +22,12 @@
 # strategy for connection switching and pass that into the middleware through
 # these configuration options.
 #
-Rails.application.configure do
-  config.active_record.database_selector = { delay: 2.seconds }
-  config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
-  config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
-end
-
+# Rails.application.configure do
+#   config.active_record.database_selector = { delay: 2.seconds }
+#   config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
+#   config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+# end
+#
 # Enable Shard Selector
 #
 # Inserts middleware to perform automatic shard swapping. The `shard_selector` hash

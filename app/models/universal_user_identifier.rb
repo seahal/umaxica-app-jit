@@ -1,2 +1,2 @@
-class UniversalUserIdentifier < IdentifierRecord
+class UniversalUserIdentifier < IdentifiersRecord
 end

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-class UserAppleAuth < AccountRecord
+class UserAppleAuth < AccountsRecord
   belongs_to :user
 end
