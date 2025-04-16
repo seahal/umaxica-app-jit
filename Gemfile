@@ -58,7 +58,7 @@ gem "propshaft"
 # OpenTelemetry
 gem "opentelemetry-sdk"
 gem "opentelemetry-exporter-otlp"
-gem "opentelemetry-instrumentation-all"
+gem 'opentelemetry-instrumentation-all', '~> 0.74.0'
 # sitemap
 gem "sitemap_generator"
 # JWE + JWT
