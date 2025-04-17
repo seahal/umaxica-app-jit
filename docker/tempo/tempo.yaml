@@ -1,0 +1,37 @@
+server:
+  http_listen_port: 3200
+  grpc_listen_port: 9095
+
+distributor:
+  receivers:
+    jaeger:
+      protocols:
+        thrift_http:
+        thrift_binary:
+        thrift_compact:
+    otlp:
+      protocols:
+        grpc:
+        http:
+    zipkin:
+      endpoint: /api/v2/spans
+
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+  trace_idle_period: 5m
+  max_block_bytes: 5_000_000
+  max_block_duration: 5m
+
+compactor:
+  compaction:
+    block_retention: 24h
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces
