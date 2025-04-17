@@ -3,25 +3,21 @@ name: 'CI'
 on:
   push:
     branches:
-      - master
+      - main
       - develop
   pull_request:
     branches:
-      - master
+      - main
       - develop
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 permissions:
   contents: read
   issues: write
-
 defaults:
   run:
     shell: bash
-
 jobs:
   setup:
     name: Setup
@@ -35,8 +31,7 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      # Add shared cache creation here if needed
-
+    # Add shared cache creation here if needed
   static-analysis:
     name: Static Analysis
     needs: [setup]
@@ -49,6 +44,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Remove Gemfile.lock
+        run: rm -f Gemfile.lock
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -70,7 +67,6 @@ jobs:
               bundle exec erb_lint --lint-all
               ;;
           esac
-
   rails-info:
     name: Rails Project Info
     needs: [setup]
@@ -89,51 +85,43 @@ jobs:
           bundle exec rails about
           bundle exec rails notes
           bundle exec rails stats
-
   integration-tests:
     name: Integration Tests
     needs: [setup]
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # Reduced from 20 minutes to 15 minutes
+    timeout-minutes: 15 # Reduced from 20 minutes to 15 minutes
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+      - name: Remove Gemfile.lock
+        run: rm -f Gemfile.lock
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      
       - name: Setup Docker environment
         run: |
           # Setup QEMU and Buildx
           docker run --privileged --rm tonistiigi/binfmt --install all
           docker buildx create --use
-
       - name: Build Docker containers
         run: |
           docker compose build --build-arg GITHUB_ACTIONS=true \
             --build-arg DOCKER_UID=$(id -u) \
             --build-arg DOCKER_GID=$(id -g)
-      
       - name: Start Docker services
         run: docker compose up -d
-      
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
-      
       - name: Install dependencies
         run: bun install
-      
       - name: Setup database
         run: |
           bin/rails db:create
           bin/rails db:migrate
-      
       - name: Configure hosts
         run: |
           echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee -a /etc/hosts
-      
       - name: Run all tests
         run: bin/rails test:all
