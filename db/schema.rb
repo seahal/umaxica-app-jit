@@ -23,6 +23,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_04_17_073619) do
   create_table "identifier_region_codes_universal_email_identifiers", id: false, force: :cascade do |t|
     t.bigint "identifier_region_code_id", null: false
     t.bigint "universal_email_identifier_id", null: false
+    t.index ["identifier_region_code_id", "universal_email_identifier_id"], name: "idx_on_identifier_region_code_id_universal_email_id_cf18cb1cd5"
+    t.index ["universal_email_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_email_identifier_id_identifier_reg_2ed2b46450"
   end
 
   create_table "identifier_region_codes_universal_staff_identifiers", id: false, force: :cascade do |t|
@@ -44,18 +46,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_04_17_073619) do
     t.bigint "universal_user_identifier_id", null: false
     t.index ["identifier_region_code_id", "universal_user_identifier_id"], name: "idx_on_identifier_region_code_id_universal_user_ide_59f36db5f2"
     t.index ["universal_user_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_user_identifier_id_identifier_regi_1475aa39aa"
-  end
-
-  create_table "region_codes", id: :decimal, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "region_codes_universal_email_identifiers", id: false, force: :cascade do |t|
-    t.bigint "region_code_id", null: false
-    t.bigint "universal_email_identifier_id", null: false
-    t.index ["region_code_id", "universal_email_identifier_id"], name: "idx_on_region_code_id_universal_email_identifier_id_be1f90efe8"
-    t.index ["universal_email_identifier_id", "region_code_id"], name: "idx_on_universal_email_identifier_id_region_code_id_e1fb550fb3"
   end
 
   create_table "universal_email_identifiers", id: :binary, force: :cascade do |t|
