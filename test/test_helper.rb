@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # simplecov
-# require "simplecov"
-# SimpleCov.start "rails"
+require "simplecov"
+SimpleCov.start "rails"
 
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
