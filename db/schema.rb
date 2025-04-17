@@ -10,9 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_04_16_120427) do
+ActiveRecord::Schema[8.1].define(version: 2025_04_17_055937) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pgcrypto"
+
+  create_table "identifier_region_codes", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "region_codes", id: :string, force: :cascade do |t|
   end
@@ -22,7 +28,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_04_16_120427) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "universal_staff_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "universal_staff_identifiers", id: :binary, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -32,7 +38,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_04_16_120427) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "universal_user_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "universal_user_identifiers", id: :binary, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

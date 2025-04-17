@@ -1,6 +1,6 @@
 require "test_helper"
 
-class RegionCodeTest < ActiveSupport::TestCase
+class IdentifierRegionCodeTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
