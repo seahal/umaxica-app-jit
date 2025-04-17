@@ -29,12 +29,10 @@ services:
     depends_on:
       - vk-cache
       - vk-session
-      - minio
-      - kafka-ui
       - kafka
       - primary
       - replica
-      - zookeeper
+      - elasticsearch
   primary:
     image: postgres:16.6
     command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
@@ -44,10 +42,10 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       TZ: UTC
-      POSTGRES_HOST_AUTH_METHOD: trust # NOTE: 開発用のため
-      POSTGRES_INITDB_WAL_LEVEL: replica # wal_levelの設定
-      POSTGRES_INITDB_MAX_WAL_SENDERS: 10 #max_wal_sendersの設定
-      POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10 #max_replication_slotsの設定
+      POSTGRES_HOST_AUTH_METHOD: trust # NOTE: Development only
+      POSTGRES_INITDB_WAL_LEVEL: replica # wal_level setting
+      POSTGRES_INITDB_MAX_WAL_SENDERS: 10 # max_wal_senders setting
+      POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10 # max_replication_slots setting
       POSTGRES_DB: db
     tmpfs: /var/lib/postgresql/data
     ports:
@@ -65,7 +63,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       TZ: UTC
-      POSTGRES_HOST_AUTH_METHOD: trust # NOTE: 開発用のため
+      POSTGRES_HOST_AUTH_METHOD: trust # NOTE: Development only
       POSTGRES_DB: db
     ports:
       - "5434:5432"
@@ -76,20 +74,9 @@ services:
       - ./docker/psql-sub/pg_hba.conf:/etc/postgresql/pg_hba.conf
     depends_on:
       - primary
-  minio:
-    image: minio/minio:RELEASE.2025-02-07T23-21-09Z-cpuv1
-    volumes:
-      - minio-data-1:/data
-    command: server --console-address ":9001" /data
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    networks:
-      - backend
-    environment:
-      MINIO_ROOT_USER: default
-      MINIO_ROOT_PASSWORD: password
-      MINIO_DEFAULT_BUCKETS: application
+  #===========================================
+  # Cache
+  #===========================================
   vk-session: # AWS MemoryDB
     image: 'valkey/valkey:7.2'
     networks:
@@ -106,11 +93,16 @@ services:
       - backend
     ports:
       - '6379:6379'
+  #===========================================
+  # Messaging System
+  #===========================================
   zookeeper:
     image: confluentinc/cp-zookeeper:7.9.0
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - backend
   kafka:
     image: confluentinc/cp-kafka:7.9.0
     ports:
@@ -122,6 +114,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+    networks:
+      - backend
   kafka-ui:
     container_name: kafka-ui
     image: ghcr.io/kafbat/kafka-ui:v1.2.0
@@ -133,22 +127,115 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    networks:
+      - backend
+  #===========================================
+  # Search Engine
+  #===========================================
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - backend
+    restart: always
+  #===========================================
+  # Monitoring System
+  #===========================================
   grafana:
     image: grafana/grafana:latest
     ports:
       - 8000:3000
     volumes:
       - grafana-volume:/var/lib/grafana
-volumes: #
+      # Add config files if available
+      # - ./docker/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - backend
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+      - elasticsearch
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+  # Metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-volume:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - backend
+    restart: always
+  # Log collection
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki-volume:/tmp/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - backend
+    restart: always
+  # Distributed tracing
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    command: -config.file=/etc/tempo.yaml
+    volumes:
+      - ./docker/tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo-volume:/tmp/tempo
+    ports:
+      - "14268:14268" # jaeger ingest
+      - "3200:3200" # tempo
+      - "9411:9411" # zipkin
+      - "4317:4317" # otlp grpc
+      - "4318:4318" # otlp http
+    networks:
+      - backend
+    restart: always
+volumes:
   psql-pub-volume:
   psql-sub-volume:
   vk-session-data:
   vk-cache-volume:
-  opensearch-volume:
-  minio-data-1:
-  sqlite-volume:
   kafka-broker-volume:
   grafana-volume:
+  prometheus-volume:
+  loki-volume:
+  tempo-volume:
+  elasticsearch-data:
 networks:
   backend:
   frontend:
+  observility:

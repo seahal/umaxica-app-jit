@@ -3,7 +3,7 @@
 
 class CreateUniversalTelephoneIdentifiers < ActiveRecord::Migration[8.0]
   def change
-    create_table :universal_telephone_identifiers, id: :binary do |t|
+    create_table :universal_telephone_identifiers, id: :bytea do |t|
       t.timestamps
     end
   end
