@@ -7,8 +7,8 @@ gem "rack"
 # type for Ruby language.
 gem "rbs"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-# gem 'rails', '~> 8.0', '>= 8.0.1'
-gem "rails", github: "rails/rails", branch: "main"
+gem "rails", "~> 8.0", ">= 8.0.1"
+# gem "rails", github: "rails/rails", branch: "main"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 # Use PostgreSQL as the database for Active Record
 gem "pg"
@@ -76,7 +76,7 @@ group :development, :test do
   # erb linter
   gem "erb_lint", require: false
   # coverage
-  # gem "simplecov", require: false
+  gem "simplecov", require: false
   # rubocop
   gem "rubocop", require: false
   gem "rubocop-rails-omakase", require: false

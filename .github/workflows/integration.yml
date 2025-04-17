@@ -31,7 +31,6 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-    # Add shared cache creation here if needed
   static-analysis:
     name: Static Analysis
     needs: [setup]
@@ -44,8 +43,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Remove Gemfile.lock
-        run: rm -f Gemfile.lock
+      - name: Remove lock files of packages
+        run: rm -f Gemfile.lock bun.lock
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
