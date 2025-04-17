@@ -13,5 +13,4 @@ raise '[SAFEGUARD] db:seed only use for dev env.' unless Rails.env.development?
 # )
 
 # CREATE IDENTIFIER REGION CODES
-IdentifierRegionCode.create_or_find_by(id: 'JP')
-IdentifierRegionCode.create_or_find_by(id: 'US')
+RegionCode.create_or_find_by(id: 392)

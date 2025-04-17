@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_04_17_055937) do
+ActiveRecord::Schema[8.1].define(version: 2025_04_17_073619) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -20,7 +20,42 @@ ActiveRecord::Schema[8.1].define(version: 2025_04_17_055937) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "region_codes", id: :string, force: :cascade do |t|
+  create_table "identifier_region_codes_universal_email_identifiers", id: false, force: :cascade do |t|
+    t.bigint "identifier_region_code_id", null: false
+    t.bigint "universal_email_identifier_id", null: false
+  end
+
+  create_table "identifier_region_codes_universal_staff_identifiers", id: false, force: :cascade do |t|
+    t.bigint "identifier_region_code_id", null: false
+    t.bigint "universal_staff_identifier_id", null: false
+    t.index ["identifier_region_code_id", "universal_staff_identifier_id"], name: "idx_on_identifier_region_code_id_universal_staff_id_cb9119c8ef"
+    t.index ["universal_staff_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_staff_identifier_id_identifier_reg_936e7af644"
+  end
+
+  create_table "identifier_region_codes_universal_telephone_identifiers", id: false, force: :cascade do |t|
+    t.bigint "identifier_region_code_id", null: false
+    t.bigint "universal_telephone_identifier_id", null: false
+    t.index ["identifier_region_code_id", "universal_telephone_identifier_id"], name: "idx_on_identifier_region_code_id_universal_telephon_5ebb5e9ee8"
+    t.index ["universal_telephone_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_telephone_identifier_id_identifier_faf3041fb5"
+  end
+
+  create_table "identifier_region_codes_universal_user_identifiers", id: false, force: :cascade do |t|
+    t.bigint "identifier_region_code_id", null: false
+    t.bigint "universal_user_identifier_id", null: false
+    t.index ["identifier_region_code_id", "universal_user_identifier_id"], name: "idx_on_identifier_region_code_id_universal_user_ide_59f36db5f2"
+    t.index ["universal_user_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_user_identifier_id_identifier_regi_1475aa39aa"
+  end
+
+  create_table "region_codes", id: :decimal, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "region_codes_universal_email_identifiers", id: false, force: :cascade do |t|
+    t.bigint "region_code_id", null: false
+    t.bigint "universal_email_identifier_id", null: false
+    t.index ["region_code_id", "universal_email_identifier_id"], name: "idx_on_region_code_id_universal_email_identifier_id_be1f90efe8"
+    t.index ["universal_email_identifier_id", "region_code_id"], name: "idx_on_universal_email_identifier_id_region_code_id_e1fb550fb3"
   end
 
   create_table "universal_email_identifiers", id: :binary, force: :cascade do |t|
