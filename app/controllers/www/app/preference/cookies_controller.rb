@@ -6,10 +6,8 @@ module Www
         end
 
         def update
-
         end
       end
     end
   end
 end
-
