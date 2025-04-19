@@ -1,4 +1,4 @@
-3# frozen_string_literal: true
+3 # frozen_string_literal: true
 
 class StoragesRecord < ActiveRecord::Base
   self.abstract_class = true

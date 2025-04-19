@@ -3,13 +3,13 @@ import "@hotwired/turbo-rails"
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { App } from './components/App'
+import {App} from './components/App'
 
 const dom = document.getElementById('root')
 const data = dom.getAttribute('data-parent') || 'bun'
 
 ReactDOM.createRoot(dom).render(
     <React.StrictMode>
-        <App name={data} />
+        <App name={data}/>
     </React.StrictMode>
 )
