@@ -8,6 +8,7 @@ module Www
       before_action :check_session
 
       private
+
       def check_session
         cookies[:sample] = {
           value: "sample",
