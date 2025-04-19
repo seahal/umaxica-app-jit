@@ -7,7 +7,7 @@ module App
     test "should get index" do
       get www_app_root_url
       assert_response :success
-      assert_select "a[href=?]", edit_www_app_cookie_path
+      assert_select "a[href=?]", edit_www_app_preference_cookie_path
     end
   end
 end

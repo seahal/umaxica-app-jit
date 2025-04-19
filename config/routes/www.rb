@@ -17,9 +17,11 @@ Rails.application.routes.draw do
           resource :telephone, only: :show
           resource :email, only: :show
         end
-        resource :preference, only: [ :show ] do
-          resource :privacy, only: [ :edit, :update ]
-          resources :emails, only: [ :index ]
+
+        resource :preference, only: [ :show ]
+        namespace :preference do
+          resource :cookie, only: [ :edit, :update ]
+          resources :emails, only: [ :create, :new ]
         end
       end
 
@@ -101,8 +103,10 @@ Rails.application.routes.draw do
           resource :email, only: %i[new create]
         end
         # Settings without login
-        resource :preference, only: [ :show ] do
-          resource :privacy, only: [ :edit, :update ]
+        resource :preference, only: [ :show ]
+        namespace :preference do
+          resource :cookie, only: [ :edit, :update ]
+          resources :emails, only: [ :create, :new ]
         end
         # for owner
         resources :owner
