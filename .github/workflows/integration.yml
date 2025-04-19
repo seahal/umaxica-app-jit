@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        check: [brakeman, rubocop, bundle-audit, erb-lint]
+        check: [ brakeman, rubocop, bundle-audit, erb-lint, reek ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

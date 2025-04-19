@@ -65,7 +65,8 @@ gem "sitemap_generator"
 gem "jwt", "3.0.0.beta1"
 #
 gem "jsbundling-rails"
-#
+# QR Code generator
+gem "rqrcode", "~> 2.2"
 
 
 group :development, :test do
@@ -80,8 +81,8 @@ group :development, :test do
   # rubocop
   gem "rubocop", require: false
   gem "rubocop-rails-omakase", require: false
-  # acceleration of ci
-  # gem "parallel_tests"
+  # reek
+  gem "reek", "~> 6.5"
 end
 
 group :development do

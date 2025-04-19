@@ -9,7 +9,7 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # for ePrivacy settings.
-        resource :cookie, only: [ :edit, :update ]
+        resource :cookie, only: [:edit, :update]
         # show search pages
         resource :search, only: :show
         # contact page
@@ -17,9 +17,9 @@ Rails.application.routes.draw do
           resource :telephone, only: :show
           resource :email, only: :show
         end
-        resource :preference, only: [ :show ] do
-          resource :privacy, only: [ :edit, :update ]
-          resources :emails, only: [ :index ]
+        resource :preference, only: [:show] do
+          resource :privacy, only: [:edit, :update]
+          resources :emails, only: [:index]
         end
       end
 
@@ -30,20 +30,20 @@ Rails.application.routes.draw do
           # root to: "roots#index"
           resource :health, only: :show
           # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
+          resource :cookie, only: [:edit, :update]
           # show stating env
           resource :staging, only: :show
           # Sign up pages
           resource :registration, only: :new
           namespace :registration do
-              resources :emails, only: %i[new create edit update show]
-              resources :telephones, only: %i[new create edit update]
-              resource :google, only: %i[new create]
-              resource :apple, only: %i[new create]
+            resources :emails, only: %i[new create edit update show]
+            resources :telephones, only: %i[new create edit update]
+            resource :google, only: %i[new create]
+            resource :apple, only: %i[new create]
           end
           # Withdrawal
           resource :withdrawal, only: %i[edit destroy] # TODO: Create or Delete membership
-          # Sign In/Out, NEED WEB
+          # Sign In/Out pages
           resource :session, only: %i[new destroy]
           namespace :session do
             resource :email, only: %i[new create]
@@ -53,54 +53,61 @@ Rails.application.routes.draw do
             resource :passkey, only: %i[new create]
             resource :password, only: %i[new create]
           end
+          # Settings with login
+          resource :setting, only: %i[show]
+          namespace :setting do
+            resources :totp, only: [:index, :new, :create, :edit, :update]
+            resources :key, only: [:index, :edit, :update]
+          end
           # Settings without login
-          resource :preference, only: [ :show ] do
-            resource :privacy, only: [ :edit, :update ]
-            resources :emails, only: [ :index ]
+          resource :preference, only: %i[show]
+          namespace :preference do
+            resource :privacy, only: [:edit, :update]
+            resources :emails, only: [:index]
           end
         end
       end
     end
-  # For Staff's webpages www.jp.example.org
-  constraints host: ENV["WWW_STAFF_URL"] do
-    scope module: :org, as: :org do
-      # Homepage
-      root to: "roots#index"
-      # health check for html
-      resource :health, only: :show
-      # for ePrivacy settings.
-      resource :cookie, only: [ :edit, :update ]
-      # show stating env
-      resource :staging, only: :show, format: :html
-      # non-loggined settings
-      resource :privacy, only: [ :show, :edit ]
-      # contact page
-      namespace :contact do
+    # For Staff's webpages www.jp.example.org
+    constraints host: ENV["WWW_STAFF_URL"] do
+      scope module: :org, as: :org do
+        # Homepage
+        root to: "roots#index"
+        # health check for html
+        resource :health, only: :show
+        # for ePrivacy settings.
+        resource :cookie, only: [:edit, :update]
+        # show stating env
+        resource :staging, only: :show, format: :html
+        # non-loggined settings
+        resource :privacy, only: [:show, :edit]
+        # contact page
+        namespace :contact do
+        end
+        # TODO: Owner's lounge
+        resource :owner, only: :show
+        # Sign up pages
+        # todo: rewrite namespace
+        resource :registration, only: :new, shallow: true do
+          resources :emails, only: %i[create edit update]
+        end
+        # TODO: Login or Logout
+        resource :session, only: :new, shallow: true do
+          resource :email, only: %i[new create]
+        end
+        # Settings without login
+        resource :preference, only: [:show] do
+          resource :privacy, only: [:edit, :update]
+        end
+        # for owner
+        resources :owner
+        # for customer services
+        resources :customer
+        # docs
+        resources :docs
+        # news
+        resources :news
       end
-      # TODO: Owner's lounge
-      resource :owner, only: :show
-      # Sign up pages
-      # todo: rewrite namespace
-      resource :registration, only: :new, shallow: true do
-        resources :emails, only: %i[create edit update]
-      end
-      # TODO: Login or Logout
-      resource :session, only: :new, shallow: true do
-        resource :email, only: %i[new create]
-      end
-      # Settings without login
-      resource :preference, only: [ :show ] do
-        resource :privacy, only: [ :edit, :update ]
-      end
-      # for owner
-      resources :owner
-      # for customer services
-      resources :customer
-      # docs
-      resources :docs
-      # news
-      resources :news
     end
   end
-    end
 end

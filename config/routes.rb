@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       get "cookies/update"
     end
     namespace :app do
+      get "setting/show"
       get "cookies/show"
       get "cookies/edit"
       get "cookies/update"
