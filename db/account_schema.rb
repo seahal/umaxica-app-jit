@@ -17,32 +17,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_02_105648) do
 
   create_table "emails", id: :binary, default: "", force: :cascade do |t|
     t.string "address", limit: 512, null: false
-    t.datetime "created_at", null: false
     t.string "type", null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "staffs", id: :binary, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "current_sign_in_at"
     t.string "encrypted_password", limit: 255
+    t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "telephones", force: :cascade do |t|
-    t.datetime "created_at", null: false
     t.string "number"
     t.binary "universal_telephone_identifiers_id"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "users", id: :binary, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "current_sign_in_at"
-    t.string "display_name", limit: 32
     t.string "encrypted_password", limit: 255
+    t.string "display_name", limit: 32
+    t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 end

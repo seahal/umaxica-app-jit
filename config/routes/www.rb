@@ -9,7 +9,7 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # for ePrivacy settings.
-        resource :cookie, only: [:edit, :update]
+        resource :cookie, only: [ :edit, :update ]
         # show search pages
         resource :search, only: :show
         # contact page
@@ -17,9 +17,9 @@ Rails.application.routes.draw do
           resource :telephone, only: :show
           resource :email, only: :show
         end
-        resource :preference, only: [:show] do
-          resource :privacy, only: [:edit, :update]
-          resources :emails, only: [:index]
+        resource :preference, only: [ :show ] do
+          resource :privacy, only: [ :edit, :update ]
+          resources :emails, only: [ :index ]
         end
       end
 
@@ -29,10 +29,10 @@ Rails.application.routes.draw do
           root to: "roots#index"
           # root to: "roots#index"
           resource :health, only: :show
-          # for ePrivacy settings.
-          resource :cookie, only: [:edit, :update]
           # show stating env
           resource :staging, only: :show
+          # for ePrivacy settings.
+          resource :cookie, only: [ :edit, :update ]
           # Sign up pages
           resource :registration, only: :new
           namespace :registration do
@@ -56,14 +56,19 @@ Rails.application.routes.draw do
           # Settings with login
           resource :setting, only: %i[show]
           namespace :setting do
-            resources :totp, only: [:index, :new, :create, :edit, :update]
-            resources :key, only: [:index, :edit, :update]
+            resources :totp, only: [ :index, :new, :create, :edit, :update ]
+            resources :security_keys, only: [ :index, :edit, :update ]
+            resources :sessions, only: [ :show, :destroy ]
+            resources :emails, only: [ :index ]
+            resource :apple, only: [ :show ]
+            resource :google, only: [ :show ]
           end
           # Settings without login
           resource :preference, only: %i[show]
           namespace :preference do
-            resource :privacy, only: [:edit, :update]
-            resources :emails, only: [:index]
+            # for ePrivacy settings.
+            resource :cookie, only: [ :edit, :update ]
+            resources :emails, only: [ :edit, :update, :new ]
           end
         end
       end
@@ -76,11 +81,11 @@ Rails.application.routes.draw do
         # health check for html
         resource :health, only: :show
         # for ePrivacy settings.
-        resource :cookie, only: [:edit, :update]
+        resource :cookie, only: [ :edit, :update ]
         # show stating env
         resource :staging, only: :show, format: :html
         # non-loggined settings
-        resource :privacy, only: [:show, :edit]
+        resource :privacy, only: [ :show, :edit ]
         # contact page
         namespace :contact do
         end
@@ -96,8 +101,8 @@ Rails.application.routes.draw do
           resource :email, only: %i[new create]
         end
         # Settings without login
-        resource :preference, only: [:show] do
-          resource :privacy, only: [:edit, :update]
+        resource :preference, only: [ :show ] do
+          resource :privacy, only: [ :edit, :update ]
         end
         # for owner
         resources :owner

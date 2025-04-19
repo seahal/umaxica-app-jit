@@ -8,18 +8,18 @@ Rails.application.routes.draw do
       # for api
       resource :api, only: :show do
         scope module: :api do
-          resource :com, only: [:show]
-          resource :app, only: [:show]
-          resource :org, only: [:show]
+          resource :com, only: [ :show ]
+          resource :app, only: [ :show ]
+          resource :org, only: [ :show ]
         end
       end
 
       # for www
       resource :www, only: :show do
         scope module: :www do
-          resource :com, only: [:show]
-          resource :app, only: [:show]
-          resource :org, only: [:show]
+          resource :com, only: [ :show ]
+          resource :app, only: [ :show ]
+          resource :org, only: [ :show ]
         end
       end
     end
