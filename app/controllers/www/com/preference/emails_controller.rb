@@ -1,6 +1,6 @@
 module Www
-  module App
-    module Preferences
+  module Com
+    module Preference
       class EmailsController < ApplicationController
         def new
         end

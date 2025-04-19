@@ -21,18 +21,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_17_131202) do
   end
 
   create_table "identifier_region_codes_universal_staff_identifiers", id: false, force: :cascade do |t|
-    t.binary "id", null: false
     t.bigint "identifier_region_code_id", null: false
     t.bigint "universal_staff_identifier_id", null: false
+    t.binary "id", null: false
     t.index ["id"], name: "idx_on_id_c687582e61", unique: true
     t.index ["identifier_region_code_id", "universal_staff_identifier_id"], name: "idx_on_identifier_region_code_id_universal_staff_id_cb9119c8ef"
     t.index ["universal_staff_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_staff_identifier_id_identifier_reg_936e7af644"
   end
 
   create_table "identifier_region_codes_universal_user_identifiers", id: false, force: :cascade do |t|
-    t.binary "id", null: false
     t.bigint "identifier_region_code_id", null: false
     t.bigint "universal_user_identifier_id", null: false
+    t.binary "id", null: false
     t.index ["id"], name: "index_identifier_region_codes_universal_user_identifiers_on_id", unique: true
     t.index ["identifier_region_code_id", "universal_user_identifier_id"], name: "idx_on_identifier_region_code_id_universal_user_ide_59f36db5f2"
     t.index ["universal_user_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_user_identifier_id_identifier_regi_1475aa39aa"
