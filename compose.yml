@@ -12,11 +12,9 @@ services:
     stdin_open: true
     extra_hosts:
       - "com.api.localdomain:127.0.0.1"
-      - "net.api.localdomain:127.0.0.1"
       - "org.api.localdomain:127.0.0.1"
       - "app.api.localdomain:127.0.0.1"
       - "com.www.localdomain:127.0.0.1"
-      - "net.www.localdomain:127.0.0.1"
       - "org.www.localdomain:127.0.0.1"
       - "app.www.localdomain:127.0.0.1"
     ports:
