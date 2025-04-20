@@ -6,29 +6,42 @@ ARG DOCKER_GID=1000
 ARG DOCKER_GROUP=group
 ARG GITHUB_ACTIONS=""
 
-# Bun, JS runtime
+# Bun JS runtime layer
 FROM --platform=$BUILDPLATFORM oven/bun:alpine AS bun
 
-# For Developing Environment
+# Development environment
 FROM ruby:$RUBY_VERSION-alpine3.21 AS development
 ARG COMMIT_HASH
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
-ARG BUN_VERSION
 ENV COMMIT_HASH=${COMMIT_HASH}
 ENV TZ=UTC
 ENV HOME=/main/
 WORKDIR /main/
 RUN apk update && \
     apk upgrade && \
-    apk add --no-cache linux-headers libxml2-dev make gcc git g++ libc-dev tzdata bash libpq-dev yaml-dev  chromium-chromedriver fontconfig && \
-    apk add --no-cache -t .build-packages --no-cache build-base curl-dev postgresql-client && \
-    apk del --purge .build-packages
+    apk add --no-cache \
+        bash \
+        build-base \
+        chromium-chromedriver \
+        curl-dev \
+        fontconfig \
+        g++ \
+        gcc \
+        git \
+        libc-dev \
+        linux-headers \
+        libpq-dev \
+        libxml2-dev \
+        make \
+        postgresql-client \
+        tzdata \
+        yaml-dev
 COPY Gemfile Gemfile.lock /main/
-RUN gem install bundler
-RUN bundle install --gemfile /main/Gemfile --jobs 32
+RUN gem install bundler && \
+    bundle install --gemfile /main/Gemfile --jobs 32
 COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 COPY bun.config.js bun.lock package.json /main/
 RUN bun install
@@ -36,8 +49,10 @@ RUN if [ -z "$GITHUB_ACTIONS" ]; then \
     addgroup -g ${DOCKER_GID} ${DOCKER_GROUP} && \
     adduser -D -u ${DOCKER_UID} -G ${DOCKER_GROUP} -h /home/${DOCKER_USER} ${DOCKER_USER} && \
     chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
- fi
-RUN chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
+fi && \
+chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
+
+# Switch to non-root user
 USER ${DOCKER_USER}
 
 

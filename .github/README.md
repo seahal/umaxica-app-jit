@@ -15,8 +15,8 @@ Things you may want to cover:
 * Configuration
     - Edit `/etc/hosts` files to separate .com or .net.
     - ```
-      # 
-	     127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost
+      # See hosts(5) for details.
+      127.0.0.1    localhost com.api.localdomain app.api.localdomainc org.api.localdomain app.www.localdomain org.www.localdomain com.www.localdomai app.news.localdomain org.news.localdomain com.news.localdomain app.docs.localdomain org.docs.localdomain com.docs.localdomain
 	  ```
 * Database creation
     - `bin/rails db:create`

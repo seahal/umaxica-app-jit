@@ -62,13 +62,13 @@ gem "opentelemetry-instrumentation-all", "~> 0.74.0"
 # sitemap
 gem "sitemap_generator"
 # JWE + JWT
-gem 'jwt', '~> 2.10', '>= 2.10.1'
+gem "jwt", "~> 2.10", ">= 2.10.1"
 #
 gem "jsbundling-rails"
 # webauthn
-gem 'webauthn', '~> 3.4'
+gem "webauthn", "~> 3.4"
 # TOTP and HTOP
-gem 'rotp', '~> 6.3'
+gem "rotp", "~> 6.3"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -88,11 +88,11 @@ end
 
 group :development do
   # FIXME: bullet would not run on rails edge version.
-  # gem "bullet", "~> 8.0"
+  gem "bullet", "~> 8.0"
+  #
   gem "bundler-audit", "~> 0.9.1"
+  #
   gem "foreman"
-  gem "guard"
-  gem "guard-minitest"
   # Preview email in the default browser instead of sending it.
   gem "letter_opener"
   # Live Reload
