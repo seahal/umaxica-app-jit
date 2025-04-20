@@ -6,8 +6,11 @@ ARG DOCKER_GID=1000
 ARG DOCKER_GROUP=group
 ARG GITHUB_ACTIONS=""
 
+# Bun, JS runtime
+FROM --platform=$BUILDPLATFORM oven/bun:alpine AS bun
+
 # For Developing Environment
-FROM ruby:$RUBY_VERSION-bookworm AS development
+FROM ruby:$RUBY_VERSION-alpine3.21 AS development
 ARG COMMIT_HASH
 ARG DOCKER_UID
 ARG DOCKER_GID
@@ -18,20 +21,22 @@ ENV COMMIT_HASH=${COMMIT_HASH}
 ENV TZ=UTC
 ENV HOME=/main/
 WORKDIR /main/
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql-client unzip bash curl npm
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache linux-headers libxml2-dev make gcc git g++ libc-dev tzdata bash libpq-dev yaml-dev  chromium-chromedriver fontconfig && \
+    apk add --no-cache -t .build-packages --no-cache build-base curl-dev postgresql-client && \
+    apk del --purge .build-packages
 COPY Gemfile Gemfile.lock /main/
 RUN gem install bundler
-RUN bundle install --gemfile /main/Gemfile --jobs 4
-#RUN curl -fsSL https://bun.sh/install | bash
-#ENV PATH="/main/.bun/bin:$PATH"
-RUN npm install -g bun
+RUN bundle install --gemfile /main/Gemfile --jobs 32
+COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 COPY bun.config.js bun.lock package.json /main/
 RUN bun install
 RUN if [ -z "$GITHUB_ACTIONS" ]; then \
-      groupadd -g ${DOCKER_GID} ${DOCKER_GROUP} && \
-      useradd -l -u ${DOCKER_UID} -g ${DOCKER_GROUP} -m ${DOCKER_USER} && \
-      chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
-    fi
+    addgroup -g ${DOCKER_GID} ${DOCKER_GROUP} && \
+    adduser -D -u ${DOCKER_UID} -G ${DOCKER_GROUP} -h /home/${DOCKER_USER} ${DOCKER_USER} && \
+    chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
+ fi
 RUN chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
 USER ${DOCKER_USER}
 

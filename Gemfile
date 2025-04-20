@@ -62,12 +62,13 @@ gem "opentelemetry-instrumentation-all", "~> 0.74.0"
 # sitemap
 gem "sitemap_generator"
 # JWE + JWT
-gem "jwt", "3.0.0.beta1"
+gem 'jwt', '~> 2.10', '>= 2.10.1'
 #
 gem "jsbundling-rails"
-# QR Code generator
-gem "rqrcode", "~> 2.2"
-
+# webauthn
+gem 'webauthn', '~> 3.4'
+# TOTP and HTOP
+gem 'rotp', '~> 6.3'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
