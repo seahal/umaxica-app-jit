@@ -74,6 +74,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
+    android_key_attestation (0.3.0)
     ast (2.4.3)
     aws-eventstream (1.3.2)
     aws-partitions (1.1090.0)
@@ -1709,6 +1710,7 @@ GEM
       parser (>= 2.4)
       smart_properties
     bigdecimal (3.1.9)
+    bindata (2.5.1)
     bindex (0.8.1)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
@@ -1728,12 +1730,15 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
+    cbor (0.5.9.8)
     childprocess (5.1.0)
       logger (~> 1.5)
-    chunky_png (1.4.0)
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.1)
+    cose (1.3.1)
+      cbor (~> 0.5.9)
+      openssl-signature_algorithm (~> 1.0)
     crass (1.0.6)
     date (3.4.1)
     debug (1.10.0)
@@ -1900,7 +1905,7 @@ GEM
     jsbundling-rails (1.3.1)
       railties (>= 6.0.0)
     json (2.10.2)
-    jwt (3.0.0.beta1)
+    jwt (2.10.1)
       base64
     karafka (2.4.18)
       base64 (~> 0.2)
@@ -1990,6 +1995,9 @@ GEM
     opensearch-ruby (3.4.0)
       faraday (>= 1.0, < 3)
       multi_json (>= 1.0)
+    openssl (3.3.0)
+    openssl-signature_algorithm (1.3.0)
+      openssl (> 2.0)
     opentelemetry-api (1.5.0)
     opentelemetry-common (0.22.0)
       opentelemetry-api (~> 1.0)
@@ -2313,10 +2321,7 @@ GEM
       uber (< 0.2.0)
     retriable (3.1.2)
     rexml (3.4.1)
-    rqrcode (2.2.0)
-      chunky_png (~> 1.0)
-      rqrcode_core (~> 1.0)
-    rqrcode_core (1.2.0)
+    rotp (6.3.0)
     rubocop (1.75.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -2350,6 +2355,8 @@ GEM
       ffi (~> 1.12)
       logger
     rubyzip (2.4.1)
+    safety_net_attestation (0.4.0)
+      jwt (~> 2.0)
     securerandom (0.4.1)
     selenium-webdriver (4.31.0)
       base64 (~> 0.2)
@@ -2376,6 +2383,10 @@ GEM
     stringio (3.1.6)
     thor (1.3.2)
     timeout (0.4.3)
+    tpm-key_attestation (0.14.0)
+      bindata (~> 2.4)
+      openssl (> 2.0)
+      openssl-signature_algorithm (~> 1.0)
     trailblazer-option (0.1.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -2394,6 +2405,14 @@ GEM
       activemodel (>= 6.0.0)
       bindex (>= 0.4.0)
       railties (>= 6.0.0)
+    webauthn (3.4.0)
+      android_key_attestation (~> 0.3.0)
+      bindata (~> 2.4)
+      cbor (~> 0.5.9)
+      cose (~> 1.1)
+      openssl (>= 2.2)
+      safety_net_attestation (~> 0.4.0)
+      tpm-key_attestation (~> 0.14.0)
     websocket (1.2.11)
     websocket-driver (0.7.7)
       base64
@@ -2440,7 +2459,7 @@ DEPENDENCIES
   image_processing
   jbuilder
   jsbundling-rails
-  jwt (= 3.0.0.beta1)
+  jwt (~> 2.10, >= 2.10.1)
   karafka (~> 2.4, >= 2.4.17)
   kredis
   letter_opener
@@ -2462,7 +2481,7 @@ DEPENDENCIES
   redis
   redis-actionpack
   reek (~> 6.5)
-  rqrcode (~> 2.2)
+  rotp (~> 6.3)
   rubocop
   rubocop-rails-omakase
   selenium-webdriver
@@ -2471,9 +2490,10 @@ DEPENDENCIES
   sitemap_generator
   tzinfo-data
   web-console
+  webauthn (~> 3.4)
 
 RUBY VERSION
    ruby 3.4.3p32
 
 BUNDLED WITH
-   2.6.7
+   2.6.8

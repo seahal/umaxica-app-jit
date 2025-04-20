@@ -2,7 +2,6 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "umaxica-app-ruby-on-rails",
       "dependencies": {
         "@hotwired/stimulus": "^3.2.2",
         "@hotwired/turbo-rails": "^8.0.13",

@@ -17,10 +17,17 @@ services:
       - "com.www.localdomain:127.0.0.1"
       - "org.www.localdomain:127.0.0.1"
       - "app.www.localdomain:127.0.0.1"
+      - "com.docs.localdomain:127.0.0.1"
+      - "app.docs.localdomain:127.0.0.1"
+      - "org.docs.localdomain:127.0.0.1"
+      - "com.news.localdomain:127.0.0.1"
+      - "app.news.localdomain:127.0.0.1"
+      - "org.news.localdomain:127.0.0.1"
     ports:
       - "3333:3000"
     volumes:
       - ./:/main
+      - bundle-volume:/main/vendor/bundle
     networks:
       - backend
       - frontend
@@ -132,7 +139,7 @@ services:
     cap_add:
       - IPC_LOCK
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-volume:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -210,7 +217,8 @@ volumes:
   prometheus-volume:
   loki-volume:
   tempo-volume:
-  elasticsearch-data:
+  elasticsearch-volume:
+  bundle-volume:
 networks:
   backend:
   frontend:
