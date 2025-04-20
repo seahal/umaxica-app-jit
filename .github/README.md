@@ -8,7 +8,7 @@ application up and running.
 Things you may want to cover:
 
 * Ruby version
-    - Just Do It => `ruby -v`, and check `Gemfile` or `.ruby-version`.
+    - Find it => `ruby -v`, and check `Gemfile` or `.ruby-version`.
 * System dependencies
   - Linux => Run on it.
   - Ruby => Of course, we are on Ruby.
@@ -16,7 +16,7 @@ Things you may want to cover:
     - Edit `/etc/hosts` files to separate .com or .net.
     - ```
       # See hosts(5) for details.
-	  127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost
+      127.0.0.1    localhost com.api.localdomain app.api.localdomainc org.api.localdomain app.www.localdomain org.www.localdomain com.www.localdomai app.news.localdomain org.news.localdomain com.news.localdomain app.docs.localdomain org.docs.localdomain com.docs.localdomain
 	  ```
 * Database creation
     - `bin/rails db:create`
@@ -52,7 +52,7 @@ Things you may want to cover:
   * Terraform
     * TCP Terraform
 * Secrets
-  * You have to set `.env.local` and `.envrc` on your own environment.This is because it has confidential.
+  * You have to set `.env.local` and `.envrc` on your own environment. This is because it contains confidential.
   * "You can use the AWS CLI command, and then you should run aws configure --profile umaxica."
   * You should use [git-secrets](https://github.com/awslabs/git-secrets).
   * We began to use Rails' Credentials, but we were unsure how to use them.
@@ -63,6 +63,6 @@ Things you may want to cover:
   * [tflint](https://github.com/terraform-linters/tflint)
   * [asdf](https://asdf-vm.com/)
   * [hadolint](https://github.com/hadolint/hadolint)
-  * fastly
+  * [Fastly]()
   * bun
   * wrangler
