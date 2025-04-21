@@ -8,7 +8,7 @@ application up and running.
 Things you may want to cover:
 
 * Ruby version
-    - Just Do It => `ruby -v`, and check `Gemfile` or `.ruby-version`.
+    - Find it => `ruby -v`, and check `Gemfile` or `.ruby-version`.
 * System dependencies
   - Linux => Run on it.
   - Ruby => Of course, we are on Ruby.
@@ -52,7 +52,7 @@ Things you may want to cover:
   * Terraform
     * TCP Terraform
 * Secrets
-  * You have to set `.env.local` and `.envrc` on your own environment.This is because it has confidential.
+  * You have to set `.env.local` and `.envrc` on your own environment. This is because it contains confidential.
   * "You can use the AWS CLI command, and then you should run aws configure --profile umaxica."
   * You should use [git-secrets](https://github.com/awslabs/git-secrets).
   * We began to use Rails' Credentials, but we were unsure how to use them.
@@ -63,6 +63,6 @@ Things you may want to cover:
   * [tflint](https://github.com/terraform-linters/tflint)
   * [asdf](https://asdf-vm.com/)
   * [hadolint](https://github.com/hadolint/hadolint)
-  * fastly
+  * [Fastly]()
   * bun
   * wrangler
