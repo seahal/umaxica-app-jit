@@ -1,9 +1,13 @@
 class TimeBasedOneTimePassword < AccountsRecord
+  #
   has_many :staff_time_based_one_time_passwords, dependent: :destroy
   has_many :user_time_based_one_time_passwords, dependent: :destroy
 
+  #
   attr_accessor :first_token, :second_token
-  encrypts :private_key
+
+  # Encrypts the column value
+  encrypts :private_key, downcase: true
 
   #
   validates :private_key, presence: true
