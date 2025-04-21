@@ -4,20 +4,20 @@ class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
   test "validation of prvate_key" do
     tbotp = TimeBasedOneTimePassword.new()
     refute tbotp.valid?
-    tbotp.private_key = 'EXAMPLE'
+    tbotp.private_key = "EXAMPLE"
     tbotp.first_token = 123456
     tbotp.second_token = 123456
     assert tbotp.valid?
-    tbotp.private_key = ''
+    tbotp.private_key = ""
     refute tbotp.valid?
     tbotp.private_key = nil
     refute tbotp.valid?
-    tbotp.private_key = 'EXAMPLE2'
+    tbotp.private_key = "EXAMPLE2"
     assert tbotp.save
   end
 
   test "validations of first_token" do
-    tbotp = TimeBasedOneTimePassword.new(private_key: 'SAMPLE')
+    tbotp = TimeBasedOneTimePassword.new(private_key: "SAMPLE")
     refute tbotp.valid?
     tbotp.first_token = 123456
     tbotp.second_token = 123456
@@ -28,16 +28,16 @@ class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
     refute tbotp.valid?
     tbotp.first_token = nil
     refute tbotp.valid?
-    tbotp.first_token = ''
+    tbotp.first_token = ""
     refute tbotp.valid?
-    tbotp.first_token = 'abcdef'
+    tbotp.first_token = "abcdef"
     refute tbotp.valid?
     tbotp.first_token = 123456
     assert tbotp.valid?
   end
 
   test "validation of second_token" do
-    tbotp = TimeBasedOneTimePassword.new(private_key: 'SAMPLE')
+    tbotp = TimeBasedOneTimePassword.new(private_key: "SAMPLE")
     refute tbotp.valid?
     tbotp.first_token = 123456
     tbotp.second_token = 123456
@@ -48,16 +48,16 @@ class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
     refute tbotp.valid?
     tbotp.second_token = nil
     refute tbotp.valid?
-    tbotp.second_token = ''
+    tbotp.second_token = ""
     refute tbotp.valid?
-    tbotp.second_token = 'abcdef'
+    tbotp.second_token = "abcdef"
     refute tbotp.valid?
     tbotp.second_token = 123456
     assert tbotp.valid?
   end
 
   test "check the field encryption" do
-    tbotp = TimeBasedOneTimePassword.create(private_key: 'EXAMPLE', first_token: 123456, second_token: 123456)
+    tbotp = TimeBasedOneTimePassword.create(private_key: "EXAMPLE", first_token: 123456, second_token: 123456)
     assert tbotp.encrypted_attribute? :private_key
     refute tbotp.encrypted_attribute? :id
   end
