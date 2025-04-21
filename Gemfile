@@ -95,13 +95,13 @@ group :development do
   gem "brakeman", require: false
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-    # rubocop
-    gem "rubocop", require: false
-    gem "rubocop-rails-omakase", require: false
-    # reek
-    gem "reek", "~> 6.5"
-    # erb linter
-    gem "erb_lint", require: false
+  # rubocop
+  gem "rubocop", require: false
+  gem "rubocop-rails-omakase", require: false
+  # reek
+  gem "reek", "~> 6.5"
+  # erb linter
+  gem "erb_lint", require: false
 end
 
 group :test do
