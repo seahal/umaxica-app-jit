@@ -11,7 +11,6 @@ module Org
       assert_select "a[href=?]", www_org_root_path, count: 0
     end
 
-
     test "should get show with postfix" do
       get www_org_health_url(format: :html)
       assert_response :success
