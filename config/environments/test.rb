@@ -6,6 +6,12 @@
 # and recreated between test runs. Don't rely on the data there!
 
 Rails.application.configure do
+  config.after_initialize do
+    Bullet.enable        = true
+    Bullet.bullet_logger = true
+    Bullet.raise         = true # raise an error if n+1 query occurs
+  end
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # While tests run files are not watched, reloading is not necessary.
@@ -54,6 +60,14 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   # The following lines were added by me.
+  # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
+  Rails.application.configure do
+    config.after_initialize do
+      Bullet.enable        = true
+      Bullet.bullet_logger = true
+      Bullet.raise         = true # raise an error if n+1 query occurs
+    end
+  end
 
   # ci seed up.
   if ENV["CI"]
