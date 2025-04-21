@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateUserSessions < ActiveRecord::Migration[7.2]
+class CreateUserTokens < ActiveRecord::Migration[7.2]
   #   def change
   #     # FIXME: need hashed partition.
   #     # TODO: Table are should be alike to id
