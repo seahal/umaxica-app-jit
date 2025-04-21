@@ -1,2 +1,0 @@
-module Dev::WwwsHelper
-end
