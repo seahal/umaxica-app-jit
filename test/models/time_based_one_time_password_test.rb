@@ -2,7 +2,7 @@ require "test_helper"
 
 class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
   test "validation of prvate_key" do
-    tbotp = TimeBasedOneTimePassword.new()
+    tbotp = TimeBasedOneTimePassword.new(id: "00000000-0000-0000-0000-0000000000110")
     refute tbotp.valid?
     tbotp.private_key = "EXAMPLE"
     tbotp.first_token = 123456
@@ -57,7 +57,7 @@ class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
   end
 
   test "check the field encryption" do
-    tbotp = TimeBasedOneTimePassword.create(private_key: "EXAMPLE", first_token: 123456, second_token: 123456)
+    tbotp = TimeBasedOneTimePassword.create(private_key: "EXAMPLE", first_token: 123456, second_token: 123456, id: "00000000-0000-0000-0000-0000000000100")
     assert tbotp.encrypted_attribute? :private_key
     refute tbotp.encrypted_attribute? :id
   end

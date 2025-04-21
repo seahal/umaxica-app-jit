@@ -8,6 +8,7 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", docs_app_root_path
     assert_select "a[href=?]", news_org_root_url
     assert_select "a[href=?]", edit_www_app_preference_cookie_url
+    assert_select "p", "© #{ Time.now.year } Umaxica."
     assert_response :success
   end
 end
