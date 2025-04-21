@@ -76,6 +76,9 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  # session
+  config.session_store :cookie_store
+
   # added
   ## to avoid errors
   config.hosts << "localhost"
