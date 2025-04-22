@@ -1,5 +1,11 @@
 ---
 ja:
+  www:
+    app:
+      preference:
+        cookie:
+          edit:
+            h1: 'クッキーの設定'
   hello: "やぁ、せかい"
   activerecord:
     errors:
