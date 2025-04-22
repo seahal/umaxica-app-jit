@@ -1,0 +1,10 @@
+require "test_helper"
+
+class Docs::App::TermsControllerTest < ActionDispatch::IntegrationTest
+  test "should get index" do
+    get docs_app_terms_index_url
+    assert_select "h1", "Docs::App::Terms#index"
+    assert_select "p", "Find me in app/views/docs/app/terms/index.html.erb"
+    assert_response :success
+  end
+end

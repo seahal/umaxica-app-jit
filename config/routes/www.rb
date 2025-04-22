@@ -116,6 +116,17 @@ Rails.application.routes.draw do
         resources :docs
         # news
         resources :news
+        namespace :www do
+          namespace :com do
+            resources :docs, only: %i[new]
+          end
+          namespace :app do
+            resources :docs, only: %i[new]
+          end
+          namespace :org do
+            resources :docs, only: %i[new]
+          end
+        end
       end
     end
   end

@@ -4,6 +4,8 @@ Rails.application.routes.draw do
       scope module: :com, as: :com do
         #
         root to: "roots#index"
+        # terms of use docs
+        resources :terms, only: %i[index]
       end
     end
 
@@ -11,6 +13,8 @@ Rails.application.routes.draw do
       scope module: :app, as: :app do
         #
         root to: "roots#index"
+        # terms of use docs
+        resources :terms, only: %i[index]
       end
     end
 
@@ -19,6 +23,8 @@ Rails.application.routes.draw do
       scope module: :org, as: :org do
         #
         root to: "roots#index"
+        # terms of use docs
+        resources :terms, only: %i[index]
       end
     end
   end
