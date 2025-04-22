@@ -6,7 +6,7 @@ module Www
         end
 
         def update
-          redirect_to '/'
+          redirect_to "/"
         end
       end
     end

@@ -8,16 +8,11 @@ Rails.application.routes.draw do
         resource :health, only: :show, format: :html
         # show stating env
         resource :staging, only: :show, format: :html
-        # for ePrivacy settings.
-        resource :cookie, only: [ :edit, :update ]
         # show search pages
         resource :search, only: :show
         # contact page
-        resources :contacts, only: :new do
-          resource :telephone, only: :show
-          resource :email, only: :show
-        end
-
+        resources :contacts, only: :new
+        #
         resource :preference, only: [ :show ]
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
@@ -33,8 +28,8 @@ Rails.application.routes.draw do
           resource :health, only: :show
           # show stating env
           resource :staging, only: :show
-          # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
+          # contact page
+          resources :contacts, only: :new
           # Sign up pages
           resource :registration, only: :new
           namespace :registration do
