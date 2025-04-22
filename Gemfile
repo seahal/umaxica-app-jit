@@ -22,13 +22,13 @@ gem "redis"
 # For Cache store @ Redis
 gem "redis-actionpack"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
-# gem "kredis"
+gem "kredis"
 # For CORS
 gem "rack-cors"
 # To Avoid attacks from crackers
 gem "rack-attack"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt"
+gem "argon2"
 # SHA3
 gem "sha3", "~> 2.2"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

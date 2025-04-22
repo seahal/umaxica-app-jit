@@ -11,9 +11,9 @@ Rails.application.routes.draw do
         # show search pages
         resource :search, only: :show
         # contact page
-        resources :contacts, only: [:new, :index, :create, :edit] do
-          get 'email'
-          get 'telephone'
+        resources :contacts, only: [ :new, :index, :create, :edit ] do
+          get "email"
+          get "telephone"
         end
         #
         resource :preference, only: [ :show ]
