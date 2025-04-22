@@ -1,2 +1,2 @@
-class BreadcrumbDecorator < Draper::Decorator
+class BreadcrumbDecotrator < Draper::Decorator
 end

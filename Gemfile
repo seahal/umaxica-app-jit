@@ -68,7 +68,7 @@ gem "webauthn", "~> 3.4"
 # TOTP and HTOP
 gem "rotp", "~> 6.3"
 # Decorator
-gem 'draper'
+gem "draper"
 
 group :development, :test do
   # to avoid n+1 queries
@@ -79,6 +79,9 @@ group :development, :test do
   gem "faker"
   # coverage
   gem "simplecov", require: false
+  #
+  gem 'guard'
+  gem 'guard-minitest', require: false
 end
 
 group :development do
