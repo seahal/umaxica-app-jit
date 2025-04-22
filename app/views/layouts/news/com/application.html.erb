@@ -22,7 +22,14 @@
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>
 </main>
+<hr>
 
+<nav>
+  <ul>
+    <li><%= link_to 'Homepage', www_com_root_url %></li>
+    <li><%= link_to 'news', news_com_root_url %></li>
+  </ul>
+</nav>
 <hr>
 
 <footer>

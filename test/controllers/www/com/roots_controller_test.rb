@@ -10,5 +10,10 @@ module Com
       assert_select "p", "© #{ Time.now.year } Umaxica."
       assert_select "a[href=?]", edit_www_com_preference_cookie_path
     end
+
+    test "Breadcrumbs" do
+      get www_com_root_url
+      assert_select "nav ul li a[href=?]", www_com_root_url
+    end
   end
 end

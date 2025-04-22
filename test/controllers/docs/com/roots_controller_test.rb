@@ -19,4 +19,11 @@ class Docs::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", "© #{ Time.now.year } Umaxica."
     assert_response :success
   end
+
+
+  test "Breadcrumbs" do
+    get docs_com_root_url
+    assert_select "nav ul li a[href=?]", www_com_root_url
+    assert_select "nav ul li a[href=?]", docs_com_root_url
+  end
 end

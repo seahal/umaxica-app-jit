@@ -12,8 +12,7 @@
 
 <body class="px-4">
 <header>
-  <h1 class="font-bold text-4xl"></h1>
-  <%= link_to 'UMAXICA(SERVICE)', www_app_root_path %>
+  <h1 class="font-bold text-4xl"><%= link_to 'UMAXICA(SERVICE)', www_app_root_path %></h1>
 </header>
 
 <hr>
@@ -22,7 +21,16 @@
   home
 </nav>
 
-<main class="container mx-auto mt-28 px-5 block"><%= yield %></main>
+<main class="container mx-auto mt-28 px-5 block">
+  <%= yield %>
+
+<nav>
+  <ul>
+    <li><%= link_to 'Home', www_app_root_url %></li>
+  </ul>
+</nav>
+
+</main>
 
 <hr>
 
@@ -36,5 +44,6 @@
   Accessibility
   <p>© 2025 Umaxica.</p>
 </footer>
+
 </body>
 </html>

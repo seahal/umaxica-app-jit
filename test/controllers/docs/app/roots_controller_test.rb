@@ -19,4 +19,11 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", news_app_root_url
     assert_select "p", "© #{ Time.now.year } Umaxica."
   end
+
+
+  test "Breadcrumbs" do
+    get docs_app_root_url
+    assert_select "nav ul li a[href=?]", www_app_root_url
+    assert_select "nav ul li a[href=?]", docs_app_root_url
+  end
 end

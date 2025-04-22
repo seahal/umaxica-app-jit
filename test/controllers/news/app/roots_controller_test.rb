@@ -11,4 +11,11 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", "© #{ Time.now.year } Umaxica."
     assert_response :success
   end
+
+
+  test "Breadcrumbs" do
+    get news_app_root_url
+    assert_select "nav ul li a[href=?]", www_app_root_url
+    assert_select "nav ul li a[href=?]", news_app_root_url
+  end
 end
