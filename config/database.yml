@@ -23,8 +23,25 @@ development:
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
     migrations_paths: db/identifiers_migrate
+  universal:
+    <<: *default
+    database: development_universal_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_PUB"]: 'localhost' %>
+    migrations_paths: db/universals_migrate
+  universal_replica:
+    <<: *default
+    replica: true
+    database: development_universal_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+    migrations_paths: db/universals_migrate
   account:
     <<: *default
     database: development_account_db
@@ -149,7 +166,24 @@ test:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
-    migrations_paths: db/identifiers_migrate
+    migrations_paths: db/universals_migrate
+  universal:
+    <<: *default
+    database: test_universal_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_PUB"]: 'localhost' %>
+    migrations_paths: db/universals_migrate
+  universal_replica:
+    <<: *default
+    replica: true
+    database: test_universal_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
+    migrations_paths: db/universals_migrate
   account:
     <<: *default
     database: test_account_db
