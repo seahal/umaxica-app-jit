@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  namespace :docs do
-    namespace :org do
-      get "privacies/show"
-    end
-    namespace :com do
-      get "privacies/show"
+  namespace :www do
+    namespace :app do
+      get "authentication/new"
+      get "authentication/delete"
     end
   end
   # for pages which show html

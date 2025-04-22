@@ -89,11 +89,11 @@ Rails.application.routes.draw do
         resource :owner, only: :show
         # Sign up pages
         # todo: rewrite namespace
-        resource :registration, only: :new, shallow: true do
+        resource :authentication, only: :new do
           resources :emails, only: %i[create edit update]
         end
         # TODO: Login or Logout
-        resource :session, only: :new, shallow: true do
+        resource :session, only: :new do
           resource :email, only: %i[new create]
         end
         # Settings without login
