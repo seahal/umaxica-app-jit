@@ -2,8 +2,8 @@
 // For config options, see the README at: https://github.com/devcontainers/templates/tree/main/src/ruby
 {
   "name": "jit",
-  "dockerComposeFile": "compose.yaml",
-  "service": "rails-app",
+  "dockerComposeFile": "compose.yml",
+  "service": "main",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
@@ -21,7 +21,7 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [3000, 5432, 6379],
+    "forwardPorts": [3000, 5432, 6379, 3333],
 
   // Configure tool-specific properties.
   // "customizations": {},
