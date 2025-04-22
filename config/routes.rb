@@ -3,13 +3,10 @@
 Rails.application.routes.draw do
   namespace :docs do
     namespace :org do
-      get "terms/index"
+      get "privacies/show"
     end
     namespace :com do
-      get "terms/index"
-    end
-    namespace :app do
-      get "terms/index"
+      get "privacies/show"
     end
   end
   # for pages which show html
