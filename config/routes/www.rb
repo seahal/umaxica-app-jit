@@ -11,7 +11,10 @@ Rails.application.routes.draw do
         # show search pages
         resource :search, only: :show
         # contact page
-        resources :contacts, only: :new
+        resources :contacts, only: [:new, :index, :create, :edit] do
+          get 'email'
+          get 'telephone'
+        end
         #
         resource :preference, only: [ :show ]
         namespace :preference do
@@ -50,7 +53,7 @@ Rails.application.routes.draw do
             resource :passkey, only: %i[new create]
             resource :password, only: %i[new create]
           end
-          # Settings with login
+          # Settings with logined user
           resource :setting, only: %i[show]
           namespace :setting do
             resources :totp, only: [ :index, :new, :create, :edit, :update ]
@@ -77,12 +80,8 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html
         resource :health, only: :show
-        # for ePrivacy settings.
-        resource :cookie, only: [ :edit, :update ]
         # show stating env
         resource :staging, only: :show, format: :html
-        # non-loggined settings
-        resource :privacy, only: [ :show, :edit ]
         # contact page
         namespace :contact do
         end
