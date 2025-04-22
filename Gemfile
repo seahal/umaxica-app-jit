@@ -75,7 +75,9 @@ group :development, :test do
   gem "bullet", "~> 8.0"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows]
-  gem "dotenv-rails", "~> 3.1", ">= 3.1.2" # FIXME: .env file must not be included sign_in production.
+  # environment variables
+  ## FIXME: .env file must not be included sign_in production.
+  gem "dotenv-rails", "~> 3.1", ">= 3.1.2"  #
   gem "faker"
   # coverage
   gem "simplecov", require: false

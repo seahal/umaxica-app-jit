@@ -67,3 +67,4 @@
 .bun
 .node_repl_history
 .npm/
+.ash_history
