@@ -6,7 +6,9 @@ module Www
         end
 
         def update
-          redirect_to "/"
+          # TODO: implement!
+          cookies.permanent.signed[:eprivacy] = true
+          redirect_to edit_www_app_preference_cookie_url
         end
       end
     end

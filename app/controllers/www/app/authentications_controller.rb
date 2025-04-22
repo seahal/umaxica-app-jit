@@ -1,9 +1,9 @@
 module Www::App
-class AuthenticationsController < ApplicationController
-  def new
-  end
+  class AuthenticationsController < ApplicationController
+    def new
+    end
 
-  def delete
+    def delete
+    end
   end
-end
 end
