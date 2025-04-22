@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+Page = Struct.new(:title, :url)
+
 module Www
   module App
     class ApplicationController < ActionController::Base
@@ -18,6 +20,9 @@ module Www
         }
         cookies["abc"] = "abc"
       end
+
+      # breadcrumb_lists
+      @breadcrumb_lists = []
     end
   end
 end

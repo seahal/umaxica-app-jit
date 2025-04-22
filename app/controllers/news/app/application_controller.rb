@@ -4,6 +4,8 @@ module News
   module App
     class ApplicationController < ActionController::Base
       allow_browser versions: :modern
+
+      @breadcrumb_lists = []
     end
   end
 end
