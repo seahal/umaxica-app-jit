@@ -53,6 +53,15 @@ Rails.application.routes.draw do
             resource :passkey, only: %i[new create]
             resource :password, only: %i[new create]
           end
+          resource :authentication, only: %i[new edit destroy]
+          namespace :authentication do
+            resource :email, only: %i[new create]
+            resource :telephone, only: %i[new create]
+            resource :google, only: %i[new create]
+            resource :apple, only: %i[new create]
+            resource :passkey, only: %i[new create]
+            resource :token, only: %i[new create]
+          end
           # Settings with logined user
           resource :setting, only: %i[show]
           namespace :setting do
