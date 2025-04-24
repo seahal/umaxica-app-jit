@@ -22,13 +22,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_21_131416) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "hmac_based_one_time_passwords", id: :binary, force: :cascade do |t|
-    t.string "private_key", limit: 1024, null: false
-    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "staff_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
     t.binary "staff_id", null: false
     t.binary "hmac_based_one_time_password_id", null: false
@@ -53,13 +46,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_21_131416) do
   create_table "telephones", id: :binary, force: :cascade do |t|
     t.string "number"
     t.binary "universal_telephone_identifiers_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "time_based_one_time_passwords", id: :binary, force: :cascade do |t|
-    t.string "private_key", limit: 1024, null: false
-    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

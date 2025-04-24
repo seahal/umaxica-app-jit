@@ -1,2 +1,2 @@
-class HmacBasedOneTimePassword < AccountsRecord
+class HmacBasedOneTimePassword < UniversalRecord
 end

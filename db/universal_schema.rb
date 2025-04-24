@@ -10,10 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_17_131202) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_21_125748) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "hmac_based_one_time_passwords", id: :binary, force: :cascade do |t|
+    t.string "private_key", limit: 1024, null: false
+    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "identifier_region_codes", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -36,6 +43,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_17_131202) do
     t.index ["id"], name: "index_identifier_region_codes_universal_user_identifiers_on_id", unique: true
     t.index ["identifier_region_code_id", "universal_user_identifier_id"], name: "idx_on_identifier_region_code_id_universal_user_ide_59f36db5f2"
     t.index ["universal_user_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_user_identifier_id_identifier_regi_1475aa39aa"
+  end
+
+  create_table "time_based_one_time_passwords", id: :binary, force: :cascade do |t|
+    t.string "private_key", limit: 1024, null: false
+    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "universal_email_identifiers", id: :binary, force: :cascade do |t|
