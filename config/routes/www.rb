@@ -32,7 +32,10 @@ Rails.application.routes.draw do
           # show stating env
           resource :staging, only: :show
           # contact page
-          resources :contacts, only: :new
+          resources :contacts, only: [ :new, :index, :create, :edit ] do
+            get "email"
+            get "telephone"
+          end
           # Sign up pages
           resource :registration, only: :new
           namespace :registration do
@@ -42,7 +45,7 @@ Rails.application.routes.draw do
             resource :apple, only: %i[new create]
           end
           # Withdrawal
-          resource :withdrawal, only: %i[new create edit update] # TODO: Create or Delete membership
+          resource :withdrawal, only: %i[new create edit update]
           # Sign In/Out pages
           resource :authentication, only: %i[new edit destroy]
           namespace :authentication do
@@ -73,6 +76,7 @@ Rails.application.routes.draw do
         end
       end
     end
+
     # For Staff's webpages www.jp.example.org
     constraints host: ENV["WWW_STAFF_URL"] do
       scope module: :org, as: :org do
@@ -85,16 +89,9 @@ Rails.application.routes.draw do
         # contact page
         namespace :contact do
         end
-        # TODO: Owner's lounge
-        resource :owner, only: :show
         # Sign up pages
-        # todo: rewrite namespace
         resource :authentication, only: :new do
           resources :emails, only: %i[create edit update]
-        end
-        # TODO: Login or Logout
-        resource :session, only: :new do
-          resource :email, only: %i[new create]
         end
         # Settings without login
         resource :preference, only: [ :show ]
