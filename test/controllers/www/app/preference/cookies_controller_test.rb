@@ -9,4 +9,9 @@ class Www::App::Preference::CookiesControllerTest < ActionDispatch::IntegrationT
     assert_select "form input[type=?]", "submit"
     assert_response :success
   end
+
+  test "checking cookie policy" do
+    get edit_www_app_preference_cookie_url
+    assert_nil cookies[:accept_tracking_cookies]
+  end
 end
