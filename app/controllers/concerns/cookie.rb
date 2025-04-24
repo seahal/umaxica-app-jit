@@ -4,7 +4,7 @@ module Cookie
   extend ActiveSupport::Concern
 
   def edit
-    @accept_tracking_cookies = cookies.signed[:accept_tracking_cookies]
+    @accept_tracking_cookies = cookies.signed[:accept_tracking_cookies] || false
   end
 
   def update
