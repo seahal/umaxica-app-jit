@@ -5,9 +5,9 @@ Rails.application.routes.draw do
         #
         root to: "roots#index"
         # terms of use docs
-        resource :term, only: %i[show]
-        # terms of privacy
-        resource :privacy, only: %i[show]
+        resources :terms, only: %i[index]
+        #
+        resources :privacy, only: %i[index]
       end
     end
 
@@ -16,9 +16,9 @@ Rails.application.routes.draw do
         #
         root to: "roots#index"
         # terms of use docs
-        resource :term, only: %i[show]
+        resources :terms, only: %i[index]
         #
-        resource :privacy, only: %i[show]
+        resources :privacy, only: %i[index]
       end
     end
 
@@ -28,9 +28,9 @@ Rails.application.routes.draw do
         #
         root to: "roots#index"
         # terms of use docs
-        resource :term, only: %i[show]
+        resources :terms, only: %i[index]
         #
-        resource :privacy, only: %i[show]
+        resources :privacy, only: %i[index]
       end
     end
   end
