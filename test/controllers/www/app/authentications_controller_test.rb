@@ -4,19 +4,19 @@ class Www::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_www_app_authentication_url
     assert_response :success
-    # assert_select "a[href=?]", new_app_session_email_path
-    # assert_select "a[href=?]", new_app_session_apple_path
-    # assert_select "a[href=?]", new_app_session_google_path
-    # assert_select "a[href=?]", new_app_session_passkey_path
-    # assert_select "a[href=?]", new_app_session_password_path
-    # assert_select "a[href=?]", new_app_registration_path
-    # assert_select "a[href=?]", www_app_root_path, count: 2
+    assert_select "a[href=?]", new_www_app_authentication_email_path
+    assert_select "a[href=?]", new_www_app_authentication_telephone_path
+    assert_select "a[href=?]", new_www_app_authentication_apple_path
+    assert_select "a[href=?]", new_www_app_authentication_google_path
+    assert_select "a[href=?]", new_www_app_authentication_passkey_path
+    assert_select "a[href=?]", new_www_app_authentication_passcode_path
+    assert_select "a[href=?]", new_www_app_registration_path
   end
 
   test "should get edit" do
     get edit_www_app_authentication_url
     assert_response :success
-    refute nil
+    assert_select "h1", I18n.t("www.app.authentication.edit.title")
   end
 
   test "should get delete" do

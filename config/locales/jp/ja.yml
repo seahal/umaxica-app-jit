@@ -2,6 +2,9 @@
 ja:
   www:
     app:
+      authentication:
+        edit:
+          title: 'ログアウトしますか？'
       preference:
         cookie:
           edit:

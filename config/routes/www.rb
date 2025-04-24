@@ -42,25 +42,16 @@ Rails.application.routes.draw do
             resource :apple, only: %i[new create]
           end
           # Withdrawal
-          resource :withdrawal, only: %i[edit destroy] # TODO: Create or Delete membership
+          resource :withdrawal, only: %i[new create edit destroy] # TODO: Create or Delete membership
           # Sign In/Out pages
-          resource :session, only: %i[new destroy]
-          namespace :session do
-            resource :email, only: %i[new create]
-            resource :telephone, only: %i[new create]
-            resource :google, only: %i[new create]
-            resource :apple, only: %i[new create]
-            resource :passkey, only: %i[new create]
-            resource :password, only: %i[new create]
-          end
           resource :authentication, only: %i[new edit destroy]
           namespace :authentication do
             resource :email, only: %i[new create]
             resource :telephone, only: %i[new create]
+            resource :passkey, only: %i[new create]
+            resource :passcode, only: %i[new create]
             resource :google, only: %i[new create]
             resource :apple, only: %i[new create]
-            resource :passkey, only: %i[new create]
-            resource :token, only: %i[new create]
           end
           # Settings with logined user
           resource :setting, only: %i[show]
