@@ -1,2 +1,9 @@
 <h1>Www::App::Cookies#edit</h1>
 <p>Find me in app/views/www/app/cookies/edit.html.erb</p>
+<%= form_with url: www_org_preference_cookie_url, method: :patch do |f| %>
+  <div class="interests-selection">
+    <%= f.check_box :accept_tracking_cookies, {checked: @accept_tracking_cookies } %>
+    <%= f.label :accept_tracking_cookies, t('www.app.preference.cookie.edit.accept_tracking_cookies') %>
+  </div>
+  <div> <%= f.submit %></div>
+<% end %>

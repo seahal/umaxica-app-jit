@@ -1,21 +1,14 @@
 # frozen_string_literal: true
 
-module Staging
+module Cookie
   extend ActiveSupport::Concern
 
-  def show
-    expires_in 1.second, public: true # this page wouldn't include private data
+  def edit
+    @accept_tracking_cookies = cookies.signed[:accept_tracking_cookies]
+  end
 
-    if ENV["STAGING"].blank? && Rails.env.production?
-      respond_to do |format|
-        format.html { @git_hash = "" }
-        format.json { render status: 200, json: { staging: true } }
-      end
-    else
-      respond_to do |format|
-        format.html { @git_hash = ENV.fetch("COMMIT_HASH", nil) }
-        format.json { render status: 200, json: { staging: false, id: ENV.fetch("COMMIT_HASH", nil) || "" } }
-      end
-    end
+  def update
+    cookies.permanent.signed[:accept_tracking_cookies] = params[:accept_tracking_cookies] == "1" ? true : false
+    redirect_to edit_www_app_preference_cookie_path
   end
 end
