@@ -49,6 +49,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_24_163410) do
     t.string "title"
     t.string "description"
     t.string "entity_status_id"
+    t.binary "staff_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -63,6 +64,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_24_163410) do
     t.string "title"
     t.string "description"
     t.string "entity_status_id"
+    t.binary "staff_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
