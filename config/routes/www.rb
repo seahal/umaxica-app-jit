@@ -19,7 +19,6 @@ Rails.application.routes.draw do
         resource :preference, only: [ :show ]
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
-          resources :emails, only: [ :create, :new ]
         end
       end
 
@@ -72,6 +71,7 @@ Rails.application.routes.draw do
             # for ePrivacy settings.
             resource :cookie, only: [ :edit, :update ]
             resources :emails, only: [ :edit, :update, :new ]
+            resources :telephones, only: [ :create, :new ]
           end
         end
       end
@@ -98,6 +98,7 @@ Rails.application.routes.draw do
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
           resources :emails, only: [ :create, :new ]
+          resources :telephones, only: [ :create, :new ]
         end
         #
         resource :withdrawal, only: %i[new create edit update]
