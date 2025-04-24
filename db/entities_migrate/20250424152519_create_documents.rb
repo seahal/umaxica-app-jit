@@ -6,6 +6,7 @@ class CreateDocuments < ActiveRecord::Migration[8.0]
       t.binary :succ_id
       t.string :title
       t.string :description
+      t.string :entity_status_id
       t.timestamps
     end
   end

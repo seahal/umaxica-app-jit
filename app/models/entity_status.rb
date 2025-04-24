@@ -1,0 +1,2 @@
+class EntityStatus < EntitiesRecord
+end

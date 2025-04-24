@@ -48,8 +48,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_24_163410) do
     t.binary "succ_id"
     t.string "title"
     t.string "description"
+    t.string "entity_status_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "entity_statuses", id: :string, force: :cascade do |t|
   end
 
   create_table "timelines", force: :cascade do |t|
@@ -58,6 +62,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_24_163410) do
     t.binary "prev_id"
     t.string "title"
     t.string "description"
+    t.string "entity_status_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

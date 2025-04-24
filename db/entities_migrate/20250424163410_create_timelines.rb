@@ -6,7 +6,7 @@ class CreateTimelines < ActiveRecord::Migration[8.0]
       t.binary :prev_id
       t.string :title
       t.string :description
-
+      t.string :entity_status_id
       t.timestamps
     end
   end
