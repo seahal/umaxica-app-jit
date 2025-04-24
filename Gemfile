@@ -68,7 +68,7 @@ gem "webauthn", "~> 3.4"
 # TOTP and HTOP
 gem "rotp", "~> 6.3"
 # Decorator
-gem "draper"
+# gem "draper"
 
 group :development, :test do
   # to avoid n+1 queries

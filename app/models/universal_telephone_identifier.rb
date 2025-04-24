@@ -1,2 +1,2 @@
-class UniversalTelephoneIdentifier < UniversalsRecord
+class UniversalTelephoneIdentifier < UniversalRecord
 end

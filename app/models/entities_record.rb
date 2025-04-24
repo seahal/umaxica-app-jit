@@ -3,5 +3,5 @@
 class EntitiesRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  connects_to database: { writing: :storage, reading: :storage_replica }
+  connects_to database: { writing: :entity, reading: :entity_replica }
 end

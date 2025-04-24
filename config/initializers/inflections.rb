@@ -18,5 +18,5 @@
 # end
 
 ActiveSupport::Inflector.inflections(:en) do |inflect|
-  inflect.uncountable %w[privacy]
+  inflect.uncountable %w[privacy universal]
 end

@@ -1,2 +1,2 @@
-class UniversalEmailIdentifier < UniversalsRecord
+class UniversalEmailIdentifier < UniversalRecord
 end
