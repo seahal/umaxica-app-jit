@@ -4,7 +4,7 @@ class Docs::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get docs_com_root_url
     assert_select "h1", "Docs::Com::Roots#index"
-    #assert_select "a[href=?]", docs_com_terms_path
+    # assert_select "a[href=?]", docs_com_terms_path
     # assert_select "a[href=?]", docs_com_privacy_path
     assert_response :success
   end
