@@ -2,11 +2,7 @@ module Www
   module App
     module Preference
       class CookiesController < ApplicationController
-        def edit
-        end
-
-        def update
-        end
+        include ::Cookie
       end
     end
   end

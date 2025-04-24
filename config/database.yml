@@ -23,8 +23,25 @@ development:
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
     migrations_paths: db/identifiers_migrate
+  universal:
+    <<: *default
+    database: development_universal_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_PUB"]: 'localhost' %>
+    migrations_paths: db/universals_migrate
+  universal_replica:
+    <<: *default
+    replica: true
+    database: development_universal_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+    migrations_paths: db/universals_migrate
   account:
     <<: *default
     database: development_account_db
@@ -42,23 +59,23 @@ development:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_SUB"]: 'localhost' %>
     migrations_paths: db/accounts_migrate
-  session:
+  token:
     <<: *default
-    database: development_session_db
+    database: development_token_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_PUB"]: 'localhost' %>
-    migrations_paths: db/sessions_migrate
-  session_replica:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_PUB"]: 'localhost' %>
+    migrations_paths: db/tokens_migrate
+  token_replica:
     <<: *default
     replica: true
-    database: development_session_db
+    database: development_token_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_SUB"]: 'localhost' %>
-    migrations_paths: db/sessions_migrate
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
+    migrations_paths: db/tokens_migrate
   storage:
     <<: *default
     database: development_storage_db
@@ -149,7 +166,24 @@ test:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
-    migrations_paths: db/identifiers_migrate
+    migrations_paths: db/universals_migrate
+  universal:
+    <<: *default
+    database: test_universal_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_PUB"]: 'localhost' %>
+    migrations_paths: db/universals_migrate
+  universal_replica:
+    <<: *default
+    replica: true
+    database: test_universal_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
+    migrations_paths: db/universals_migrate
   account:
     <<: *default
     database: test_account_db
@@ -167,23 +201,23 @@ test:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_SUB"]: 'localhost' %>
     migrations_paths: db/accounts_migrate
-  session:
+  token:
     <<: *default
-    database: test_session_db
+    database: test_token_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_PUB"]: 'localhost' %>
-    migrations_paths: db/sessions_migrate
-  session_replica:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_PUB"]: 'localhost' %>
+    migrations_paths: db/tokens_migrate
+  token_replica:
     <<: *default
     replica: true
-    database: test_session_db
+    database: test_token_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SESSION_SUB"]: 'localhost' %>
-    migrations_paths: db/sessions_migrate
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
+    migrations_paths: db/tokens_migrate
   storage:
     <<: *default
     database: test_storage_db

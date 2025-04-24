@@ -21,18 +21,24 @@
 <nav></nav>
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>
+<nav>
+  <ul>
+    <li><%= link_to 'Home', www_com_root_url %></li>
+  </ul>
+</nav>
 </main>
-
 <hr>
 
 <footer>
-  <%= link_to 'Cookie', edit_www_app_preference_cookie_path %>
+  <%= link_to 'Cookie', edit_www_com_preference_cookie_path %>
   Support
   Terms
   Privacy
   Security
   Accessibility
   <%= link_to 'Homepage', www_com_root_path %>
+
+  <p>© <%= Time.now.year %> Umaxica.</p>
 </footer>
 
 </body>

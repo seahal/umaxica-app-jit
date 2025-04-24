@@ -18,21 +18,28 @@
 
 <hr>
 
-<nav></nav>
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>
+  <nav>
+  <ul>
+    <li><%= link_to 'Home', www_com_root_url %></li>
+    <li><%= link_to 'docs', docs_com_root_url %></li>
+  </ul>
+</nav>
 </main>
 
 <hr>
 
 <footer>
-  <%= link_to 'Cookie', edit_www_app_preference_cookie_path %>
+  <%= link_to 'Cookie', edit_www_com_preference_cookie_url %>
+  <li><%= link_to 'Documents', docs_org_root_url %></li>
+  <li><%= link_to 'News', news_org_root_url %></li>
   Support
   Terms
   Privacy
   Security
   Accessibility
-  <%= link_to 'Homepage', www_com_root_path %>
+  <%= link_to 'Homepage', www_com_root_url %><p>© <%= Time.now.year %> Umaxica.</p>
 </footer>
 
 </body>

@@ -45,6 +45,7 @@ RUN gem install bundler && \
 COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 COPY bun.config.js bun.lock package.json /main/
 RUN bun install
+RUN rm -rf /var/cache/apk/*
 RUN if [ -z "$GITHUB_ACTIONS" ]; then \
     addgroup -g ${DOCKER_GID} ${DOCKER_GROUP} && \
     adduser -D -u ${DOCKER_UID} -G ${DOCKER_GROUP} -h /home/${DOCKER_USER} ${DOCKER_USER} && \

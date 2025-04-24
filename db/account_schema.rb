@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_21_075447) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_21_131416) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -22,30 +22,63 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_21_075447) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "hmac_based_one_time_passwords", id: :binary, force: :cascade do |t|
+    t.string "private_key", limit: 1024, null: false
+    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
+    t.binary "staff_id", null: false
+    t.binary "hmac_based_one_time_password_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_time_based_one_time_passwords", id: false, force: :cascade do |t|
+    t.binary "staff_id", null: false
+    t.binary "time_based_one_time_password_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "staffs", id: :binary, force: :cascade do |t|
-    t.string "encrypted_password", limit: 255
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "telephones", force: :cascade do |t|
+  create_table "telephones", id: :binary, force: :cascade do |t|
     t.string "number"
     t.binary "universal_telephone_identifiers_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "time_based_one_time_passwords", force: :cascade do |t|
-    t.string "private_key"
+  create_table "time_based_one_time_passwords", id: :binary, force: :cascade do |t|
+    t.string "private_key", limit: 1024, null: false
+    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
+    t.binary "user_id", null: false
+    t.binary "hmac_based_one_time_password_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_time_based_one_time_passwords", id: false, force: :cascade do |t|
+    t.binary "user_id", null: false
+    t.binary "time_based_one_time_password_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "users", id: :binary, force: :cascade do |t|
-    t.string "encrypted_password", limit: 255
-    t.string "display_name", limit: 32
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.datetime "created_at", null: false

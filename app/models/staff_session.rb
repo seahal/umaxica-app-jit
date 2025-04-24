@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-class StaffSession < SessionsRecord
+class StaffSession < TokensRecord
   belongs_to :staff
 end

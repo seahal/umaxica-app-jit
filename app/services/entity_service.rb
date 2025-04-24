@@ -1,0 +1,2 @@
+class EntityService
+end

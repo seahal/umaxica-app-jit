@@ -22,18 +22,28 @@
   home
 </nav>
 
-<main class="container mx-auto mt-28 px-5 block"><%= yield %></main>
+<main class="container mx-auto mt-28 px-5 block"><%= yield %>
+
+<nav>
+  <ul>
+    <li><%= link_to 'Home', www_app_root_url %></li>
+    <li><%= link_to 'docs', docs_app_root_url %></li>
+  </ul>
+</nav>
+</main>
 
 <hr>
 
 <footer>
-  <%= link_to 'Homepage', www_app_root_path %>
-  <%= link_to 'Cookie', edit_www_app_preference_cookie_path %>
+  <li><%= link_to 'Homepage', www_app_root_url %></li>
+  <li><%= link_to 'Documents', docs_app_root_url %></li>
+  <li><%= link_to 'News', news_app_root_url %></li>
+  <li><%= link_to 'Cookie', edit_www_app_preference_cookie_url %></li>
   Support
   Terms
   Privacy
   Security
-  Accessibility
+  Accessibility<p>© <%= Time.now.year %> Umaxica.</p>
 </footer>
 </body>
 </html>

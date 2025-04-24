@@ -6,6 +6,12 @@
 # and recreated between test runs. Don't rely on the data there!
 
 Rails.application.configure do
+  config.after_initialize do
+    Bullet.enable        = true
+    Bullet.bullet_logger = true
+    Bullet.raise         = true # raise an error if n+1 query occurs
+  end
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # While tests run files are not watched, reloading is not necessary.
@@ -54,16 +60,23 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   # The following lines were added by me.
-  config.cache_store = :redis_cache_store, {
-    url: ENV["VALKEY_CACHE_URL"], # Redisの接続情報を環境変数から取得する
-    expires_in: 1.hour, # キャッシュの有効期限を設定
-    driver: :hiredis # hiredisドライバを使用することで高速化できる
-  }
+  # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
+  Rails.application.configure do
+    config.after_initialize do
+      Bullet.enable        = true
+      Bullet.bullet_logger = true
+      Bullet.raise         = true # raise an error if n+1 query occurs
+    end
+  end
 
+  # ci seed up.
   if ENV["CI"]
     config.assets.compile = false
     config.assets.gzip = false
   end
 
-  # ???
+  ## Active Record Encryption
+  config.active_record.encryption.primary_key = ENV["ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY"]
+  config.active_record.encryption.deterministic_key = ENV["ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY"]
+  config.active_record.encryption.key_derivation_salt = ENV["ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT"]
 end

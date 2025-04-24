@@ -8,16 +8,14 @@ Rails.application.routes.draw do
         resource :health, only: :show, format: :html
         # show stating env
         resource :staging, only: :show, format: :html
-        # for ePrivacy settings.
-        resource :cookie, only: [ :edit, :update ]
         # show search pages
         resource :search, only: :show
         # contact page
-        resources :contacts, only: :new do
-          resource :telephone, only: :show
-          resource :email, only: :show
+        resources :contacts, only: [ :new, :index, :create, :edit ] do
+          get "email"
+          get "telephone"
         end
-
+        #
         resource :preference, only: [ :show ]
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
@@ -33,8 +31,8 @@ Rails.application.routes.draw do
           resource :health, only: :show
           # show stating env
           resource :staging, only: :show
-          # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
+          # contact page
+          resources :contacts, only: :new
           # Sign up pages
           resource :registration, only: :new
           namespace :registration do
@@ -55,7 +53,16 @@ Rails.application.routes.draw do
             resource :passkey, only: %i[new create]
             resource :password, only: %i[new create]
           end
-          # Settings with login
+          resource :authentication, only: %i[new edit destroy]
+          namespace :authentication do
+            resource :email, only: %i[new create]
+            resource :telephone, only: %i[new create]
+            resource :google, only: %i[new create]
+            resource :apple, only: %i[new create]
+            resource :passkey, only: %i[new create]
+            resource :token, only: %i[new create]
+          end
+          # Settings with logined user
           resource :setting, only: %i[show]
           namespace :setting do
             resources :totp, only: [ :index, :new, :create, :edit, :update ]
@@ -82,12 +89,8 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html
         resource :health, only: :show
-        # for ePrivacy settings.
-        resource :cookie, only: [ :edit, :update ]
         # show stating env
         resource :staging, only: :show, format: :html
-        # non-loggined settings
-        resource :privacy, only: [ :show, :edit ]
         # contact page
         namespace :contact do
         end
@@ -95,11 +98,11 @@ Rails.application.routes.draw do
         resource :owner, only: :show
         # Sign up pages
         # todo: rewrite namespace
-        resource :registration, only: :new, shallow: true do
+        resource :authentication, only: :new do
           resources :emails, only: %i[create edit update]
         end
         # TODO: Login or Logout
-        resource :session, only: :new, shallow: true do
+        resource :session, only: :new do
           resource :email, only: %i[new create]
         end
         # Settings without login
@@ -116,6 +119,17 @@ Rails.application.routes.draw do
         resources :docs
         # news
         resources :news
+        namespace :www do
+          namespace :com do
+            resources :docs, only: %i[new]
+          end
+          namespace :app do
+            resources :docs, only: %i[new]
+          end
+          namespace :org do
+            resources :docs, only: %i[new]
+          end
+        end
       end
     end
   end
