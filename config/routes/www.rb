@@ -42,7 +42,7 @@ Rails.application.routes.draw do
             resource :apple, only: %i[new create]
           end
           # Withdrawal
-          resource :withdrawal, only: %i[new create edit destroy] # TODO: Create or Delete membership
+          resource :withdrawal, only: %i[new create edit update] # TODO: Create or Delete membership
           # Sign In/Out pages
           resource :authentication, only: %i[new edit destroy]
           namespace :authentication do
@@ -102,6 +102,8 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           resources :emails, only: [ :create, :new ]
         end
+        #
+        resource :withdrawal, only: %i[new create edit update]
         # for owner
         resources :owner
         # for customer services
