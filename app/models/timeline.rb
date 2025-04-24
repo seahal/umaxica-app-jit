@@ -1,0 +1,2 @@
+class Timeline < EntitiesRecord
+end
