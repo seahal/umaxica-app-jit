@@ -1,8 +1,9 @@
 module Docs
   module App
-    class PrivaciesController < ApplicationController
+    class PrivacyController < ApplicationController
       def show
       end
     end
   end
 end
+

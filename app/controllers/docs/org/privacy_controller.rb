@@ -1,6 +1,6 @@
 module Docs
   module Org
-    class PrivaciesController < ApplicationController
+    class PrivacyController < ApplicationController
       def show
       end
     end
