@@ -9,9 +9,9 @@ class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
     tbotp.second_token = 123456
     assert tbotp.valid?
     tbotp.private_key = ""
-    refute tbotp.valid?
+    assert tbotp.valid?
     tbotp.private_key = nil
-    refute tbotp.valid?
+    assert tbotp.valid?
     tbotp.private_key = "EXAMPLE2"
     assert tbotp.save
   end

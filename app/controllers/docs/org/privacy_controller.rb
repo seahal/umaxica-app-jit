@@ -1,7 +1,7 @@
 module Docs
   module Org
     class PrivacyController < ApplicationController
-      def show
+      def index
       end
     end
   end

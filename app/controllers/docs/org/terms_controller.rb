@@ -1,7 +1,7 @@
 module Docs
   module Org
     class TermsController < ApplicationController
-      def show
+      def index
       end
     end
   end

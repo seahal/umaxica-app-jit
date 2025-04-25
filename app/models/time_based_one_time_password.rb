@@ -1,8 +1,4 @@
-class TimeBasedOneTimePassword < AccountsRecord
-  #
-  has_many :staff_time_based_one_time_passwords, dependent: :destroy
-  has_many :user_time_based_one_time_passwords, dependent: :destroy
-
+class TimeBasedOneTimePassword < UniversalRecord
   #
   attr_accessor :first_token, :second_token
 
@@ -10,7 +6,6 @@ class TimeBasedOneTimePassword < AccountsRecord
   encrypts :private_key, downcase: true
 
   #
-  validates :private_key, presence: true
   validates :first_token, presence: true, length: { is: 6 }, numericality: { only_integer: true }
   validates :second_token, presence: true, length: { is: 6 }, numericality: { only_integer: true }
 end

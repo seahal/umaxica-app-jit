@@ -8,7 +8,7 @@ class Www::App::Registration::EmailsControllerTest < ActionDispatch::Integration
 
   test "should show link for sign in pages" do
     get new_www_app_registration_email_url
-    assert_select "a[href=?]", new_www_app_session_email_path, count: 1
+    assert_select "a[href=?]", new_www_app_authentication_email_path, count: 1
   end
 
   test "DOM validation" do

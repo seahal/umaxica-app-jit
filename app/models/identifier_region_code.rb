@@ -1,2 +1,2 @@
-class IdentifierRegionCode < IdentifiersRecord
+class IdentifierRegionCode < UniversalRecord
 end

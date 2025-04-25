@@ -76,23 +76,23 @@ development:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
     migrations_paths: db/tokens_migrate
-  storage:
+  entity:
     <<: *default
-    database: development_storage_db
+    database: development_entity_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_PUB"]: 'localhost' %>
-    migrations_paths: db/storages_migrate
-  storage_replica:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ENTITY_PUB"]: 'localhost' %>
+    migrations_paths: db/entities_migrate
+  entity_replica:
     <<: *default
     replica: true
-    database: development_storage_db
+    database: development_entity_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_SUB"]: 'localhost' %>
-    migrations_paths: db/storages_migrate
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ENTITY_SUB"]: 'localhost' %>
+    migrations_paths: db/entitys_migrate
   message:
     <<: *default
     database: development_message_db
@@ -218,23 +218,23 @@ test:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
     migrations_paths: db/tokens_migrate
-  storage:
+  entity:
     <<: *default
-    database: test_storage_db
+    database: test_entity_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_PUB"]: 'localhost' %>
-    migrations_paths: db/storages_migrate
-  storage_replica:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ENTITY_PUB"]: 'localhost' %>
+    migrations_paths: db/entities_migrate
+  entity_replica:
     <<: *default
     replica: true
-    database: test_storage_db
+    database: test_entity_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_STORAGE_SUB"]: 'localhost' %>
-    migrations_paths: db/storages_migrate
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ENTITY_SUB"]: 'localhost' %>
+    migrations_paths: db/entities_migrate
   message:
     <<: *default
     database: test_message_db

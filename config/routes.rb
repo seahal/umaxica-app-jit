@@ -2,9 +2,15 @@
 
 Rails.application.routes.draw do
   namespace :www do
+    namespace :org do
+      get "withdrawals/new"
+      get "withdrawals/edit"
+    end
+    namespace :com do
+      get "withdrawals/new"
+      get "withdrawals/edit"
+    end
     namespace :app do
-      get "authentication/new"
-      get "authentication/delete"
     end
   end
   # for pages which show html

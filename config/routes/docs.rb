@@ -4,10 +4,12 @@ Rails.application.routes.draw do
       scope module: :com, as: :com do
         #
         root to: "roots#index"
+        # health check for html
+        resource :health, only: :show, format: :html
         # terms of use docs
-        resource :term, only: %i[show]
-        # terms of privacy
-        resource :privacy, only: %i[show]
+        resources :terms, only: %i[index]
+        #
+        resources :privacy, only: %i[index]
       end
     end
 
@@ -15,10 +17,12 @@ Rails.application.routes.draw do
       scope module: :app, as: :app do
         #
         root to: "roots#index"
+        # health check for html
+        resource :health, only: :show, format: :html
         # terms of use docs
-        resource :term, only: %i[show]
+        resources :terms, only: %i[index]
         #
-        resource :privacy, only: %i[show]
+        resources :privacy, only: %i[index]
       end
     end
 
@@ -27,10 +31,12 @@ Rails.application.routes.draw do
       scope module: :org, as: :org do
         #
         root to: "roots#index"
+        # health check for html
+        resource :health, only: :show, format: :html
         # terms of use docs
-        resource :term, only: %i[show]
+        resources :terms, only: %i[index]
         #
-        resource :privacy, only: %i[show]
+        resources :privacy, only: %i[index]
       end
     end
   end

@@ -1,4 +1,3 @@
-class UserTimeBasedOneTimePassword < ApplicationRecord
+class UserTimeBasedOneTimePassword < AccountsRecord
   belongs_to :user
-  belongs_to :time_based_one_time_password
 end
