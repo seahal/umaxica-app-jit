@@ -59,7 +59,7 @@ Rails.application.routes.draw do
           resource :setting, only: %i[show]
           namespace :setting do
             resources :totp, only: [ :index, :new, :create, :edit, :update ]
-            resources :security_keys, only: [ :index, :edit, :update, :new ]
+            resources :passkeys, only: [ :index, :edit, :update, :new ]
             resources :tokens, only: [ :show, :destroy ]
             resources :emails, only: [ :index ]
             resource :apple, only: [ :show ]
@@ -95,7 +95,7 @@ Rails.application.routes.draw do
         end
         namespace :setting do
           resources :totp, only: [ :index, :new, :create, :edit, :update ]
-          resources :security_keys, only: [ :index, :edit, :update, :new ]
+          resources :passkeys, only: [ :index, :edit, :update, :new ]
           resources :emails, only: [ :index ]
           resources :apples, only: [ :show ]
           resources :googles, only: [ :show ]

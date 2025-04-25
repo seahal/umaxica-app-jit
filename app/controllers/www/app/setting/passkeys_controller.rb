@@ -1,7 +1,7 @@
 module Www
   module App
     module Setting
-      class SecurityKeysController < ApplicationController
+      class PasskeysController < ApplicationController
         def index
         end
 
