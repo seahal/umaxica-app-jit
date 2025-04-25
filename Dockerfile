@@ -38,7 +38,8 @@ RUN apk update && \
         make \
         postgresql-client \
         tzdata \
-        yaml-dev
+        yaml-dev \
+        chromium
 COPY Gemfile Gemfile.lock /main/
 RUN gem install bundler && \
     bundle install --gemfile /main/Gemfile --jobs 32
@@ -52,8 +53,6 @@ RUN if [ -z "$GITHUB_ACTIONS" ]; then \
     chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
 fi && \
 chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
-
-# Switch to non-root user
 USER ${DOCKER_USER}
 
 
