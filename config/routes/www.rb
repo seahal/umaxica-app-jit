@@ -31,7 +31,7 @@ Rails.application.routes.draw do
           # show stating env
           resource :staging, only: :show
           # contact page
-          resources :contacts, only: [ :new, :index, :create, :edit ] do
+          resources :contacts, only: [ :new, :index, :create, :edit, :show ] do
             get "email"
             get "telephone"
           end
