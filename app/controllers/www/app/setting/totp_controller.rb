@@ -7,6 +7,11 @@ module Www
         end
 
         def new
+          rand = ROTP::Base32.random_base32
+          totp = ROTP::TOTP.new(rand, issuer: "Umaxica")
+          url = totp.provisioning_uri('localhost@example.com') # ToDo: <= set account_id
+          qrcode = RQRCode::QRCode.new(url)
+          @png = qrcode.as_png()
           @utbotp = TimeBasedOneTimePassword.new
         end
 

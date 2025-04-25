@@ -68,7 +68,7 @@ gem "webauthn", "~> 3.4"
 # TOTP and HTOP
 gem "rotp", "~> 6.3"
 # QRCode Generator, QRCode is a deso wave's ...
-gem 'rqrcode', '~> 3.0'
+gem "rqrcode", "~> 3.0"
 
 group :development, :test do
   # to avoid n+1 queries
