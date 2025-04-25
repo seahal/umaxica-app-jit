@@ -10,6 +10,12 @@ ja:
           edit:
             h1: 'クッキーの設定'
             accept_tracking_cookies: 'トラッキングの許可について'
+      setting:
+        totp:
+          index:
+            title: 'TOTP no ichiran'
+          new:
+            title: 'TOTP no shinki'
   hello: "やぁ、せかい"
   activerecord:
     errors:

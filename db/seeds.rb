@@ -13,8 +13,12 @@ raise '[SAFEGUARD] db:seed only use for dev env.' unless Rails.env.development?
 # )
 
 # CREATE IDENTIFIER REGION CODES
-RegionCode.create_or_find_by(id: 392)
+# RegionCode.create_or_find_by(id: 392)
 
 # CREATE TERM
-Document.create(id: '01', parent_id: nil, prev_id: nil, succ_id: nil, title: 'TERM', description: '')
-Document.create(id: '11', parent_id: nil, prev_id: nil, succ_id: nil, title: 'PRIVACY', description: '')
+Document.find_or_create_by(id: '0', parent_id: nil, prev_id: nil, succ_id: nil, title: 'TERM', description: '')
+Document.find_or_create_by(id: '1', parent_id: nil, prev_id: nil, succ_id: nil, title: 'PRIVACY', description: '')
+
+# USER
+User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38')
+User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')

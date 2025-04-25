@@ -6,4 +6,5 @@ class User < AccountsRecord
   has_one :user_apple_auth
   has_one :user_google_auth
   has_many :user_sessions
+  has_many :user_time_based_one_time_password
 end
