@@ -1,2 +1,28 @@
 <h1><%= t('www.app.setting.totp.new.title') %></h1>
-<p>Find me in app/views/www/app/setting/show.html.erb</p>
+
+<%= form_with model: @utbotp, url: www_app_setting_totp_index_url do |form| %>
+  <% if @utbotp.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(@utbotp.errors.count, "error") %> prohibited this sample from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% @utbotp.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :first_token %>
+    <%= form.text_field :first_token %>
+  </div>
+
+  <div>
+    <%= form.label :second_token %>
+    <%= form.text_field :second_token %>
+  </div>
+  <%= form.submit %>
+<% end %>
+
+</div>

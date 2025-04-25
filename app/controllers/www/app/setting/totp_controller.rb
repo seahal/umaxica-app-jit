@@ -7,6 +7,7 @@ module Www
         end
 
         def new
+          @utbotp = UserTimeBasedOneTimePassword.new
         end
       end
     end
