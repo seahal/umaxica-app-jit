@@ -66,7 +66,7 @@ gem "solid_queue", "~> 1.1"
 gem "mission_control-jobs"
 #
 gem 'importmap-rails'
-# 
+#
 gem "tailwindcss-ruby"
 
 group :development, :test do

@@ -10,12 +10,12 @@ module Org
         assert_response :success
       end
 
-      # test "should not get show when required json file" do
-      #   get api_org_v1_health_url
-      #   assert_raises do
-      #     JSON.parse(response.body)
-      #   end
-      # end
+      test "should not get show when required json file" do
+        get api_org_v1_health_url
+        assert_raises do
+          JSON.parse(response.body)
+        end
+      end
     end
   end
 end
