@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: time_based_one_time_passwords
+#
+#  id          :binary           not null, primary key
+#  last_otp_at :datetime         not null
+#  private_key :string(1024)     not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
 class TimeBasedOneTimePassword < UniversalRecord
   #
   attr_accessor :first_token

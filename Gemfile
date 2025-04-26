@@ -69,6 +69,8 @@ gem "webauthn", "~> 3.4"
 gem "rotp", "~> 6.3"
 # QRCode Generator, QRCode is a deso wave's ...
 gem "rqrcode", "~> 3.0"
+#
+gem 'vite_rails', '~> 3.0', '>= 3.0.19'
 
 group :development, :test do
   # to avoid n+1 queries
@@ -109,6 +111,8 @@ group :development do
   gem "reek", "~> 6.5"
   # erb linter
   gem "erb_lint", require: false
+  # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
+  gem "annotaterb"
 end
 
 group :test do

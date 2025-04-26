@@ -127,6 +127,40 @@ development:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>
     migrations_paths: db/notifications_migrate
+  cache:
+    <<: *default
+    database: development_cache_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_PUB"]: 'localhost' %>
+    migrations_paths: db/caches_migrate
+  cache_replica:
+    <<: *default
+    replica: true
+    database: development_cache_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_SUB"]: 'localhost' %>
+    migrations_paths: db/caches_migrate
+  queue:
+    <<: *default
+    database: development_queue_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_QUEUE_PUB"]: 'localhost' %>
+    migrations_paths: db/queues_migrate
+  queue_replica:
+    <<: *default
+    replica: true
+    database: development_queue_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"]: 'localhost' %>
+    migrations_paths: db/queues_migrate
   core:
     <<: *default
     database: development_core_db
@@ -269,6 +303,40 @@ test:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
     migrations_paths: db/notifications_migrate
+  cache:
+    <<: *default
+    database: test_cache_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_PUB"]: 'localhost' %>
+    migrations_paths: db/caches_migrate
+  cache_replica:
+    <<: *default
+    replica: true
+    database: test_cache_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_SUB"]: 'localhost' %>
+    migrations_paths: db/caches_migrate
+  queue:
+    <<: *default
+    database: test_queue_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_QUEUE_PUB"]: 'localhost' %>
+    migrations_paths: db/queues_migrate
+  queue_replica:
+    <<: *default
+    replica: true
+    database: test_queue_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"]: 'localhost' %>
+    migrations_paths: db/queues_migrate
   core:
     <<: *default
     database: test_core_db

@@ -20,12 +20,12 @@ module Www
         def create
           @utbotp = TimeBasedOneTimePassword.new(sample_params)
           @utbotp.private_key = session[:privacy_key]
-          @utbotp.id = '0001010101'
+          @utbotp.id = "0001010101"
 
           respond_to do |format|
             if ROTP::TOTP.new(@utbotp.private_key).verify(@utbotp.first_token) && @utbotp.save
               session[:privacy_key] = nil
-              format.html { redirect_to  www_app_setting_totp_index_path, notice: "Sample was successfully created." }
+              format.html { redirect_to www_app_setting_totp_index_path, notice: "Sample was successfully created." }
             else
               totp = ROTP::TOTP.new(@utbotp.private_key)
               @png = RQRCode::QRCode.new(totp.provisioning_uri("localhost@example.com")).as_png()

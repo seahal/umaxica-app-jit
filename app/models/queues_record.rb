@@ -1,5 +1,5 @@
-class AccountsRecord < ApplicationRecord
+class QueuesRecord < ApplicationRecord
   self.abstract_class = true
 
-  connects_to database: { writing: :account, reading: :account_replica }
+  connects_to database: { writing: :queue, reading: :queue_replica }
 end

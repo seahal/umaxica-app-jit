@@ -39,7 +39,18 @@ RUN apk update && \
         postgresql-client \
         tzdata \
         yaml-dev \
-        chromium
+        chromium \
+        build-base \
+        git \
+        chromium-chromedriver \
+        zlib-dev \
+        xvfb  \
+        wait4ports  \
+        xorg-server  \
+        dbus  \
+        ttf-freefont  \
+        udev  \
+        curl
 COPY Gemfile Gemfile.lock /main/
 RUN gem install bundler && \
     bundle install --gemfile /main/Gemfile --jobs 32

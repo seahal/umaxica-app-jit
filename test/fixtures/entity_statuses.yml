@@ -4,6 +4,12 @@
 # model remove the "{}" from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
+# == Schema Information
+#
+# Table name: entity_statuses
+#
+#  id :string           not null, primary key
+#
 one: {}
 # column: value
 #
