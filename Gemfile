@@ -65,9 +65,11 @@ gem "solid_cache", "~> 1.0"
 gem "solid_queue", "~> 1.1"
 gem "mission_control-jobs"
 #
-gem 'importmap-rails'
+gem "importmap-rails"
 #
 gem "tailwindcss-ruby"
+# pagenation
+gem "kaminari"
 
 group :development, :test do
   # to avoid n+1 queries
