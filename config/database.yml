@@ -8,23 +8,6 @@ default: &default
 
 
 development:
-  identifier:
-    <<: *default
-    database: development_identifier_db
-    port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
-    migrations_paths: db/identifiers_migrate
-  identifier_replica:
-    <<: *default
-    replica: true
-    database: development_identifier_db
-    port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
-    migrations_paths: db/identifiers_migrate
   universal:
     <<: *default
     database: development_universal_db
@@ -135,6 +118,7 @@ development:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_PUB"]: 'localhost' %>
     migrations_paths: db/caches_migrate
+    max_size: <%= 256.gigabytes %>
   cache_replica:
     <<: *default
     replica: true
@@ -144,6 +128,7 @@ development:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_SUB"]: 'localhost' %>
     migrations_paths: db/caches_migrate
+    max_size: <%= 256.gigabytes %>
   queue:
     <<: *default
     database: development_queue_db
@@ -184,23 +169,6 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  identifier:
-    <<: *default
-    database: test_identifier_db
-    port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
-    migrations_paths: db/identifiers_migrate
-  identifier_replica:
-    <<: *default
-    replica: true
-    database: test_identifier_db
-    port:
-      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
-    migrations_paths: db/universals_migrate
   universal:
     <<: *default
     database: test_universal_db

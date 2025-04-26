@@ -8,8 +8,6 @@ Rails.application.routes.draw do
         resource :health, only: :show, format: :html
         # show stating env
         resource :staging, only: :show, format: :html
-        # show search pages
-        resource :search, only: :show
         # contact page
         resources :contacts, only: [ :new, :index, :create, :edit ] do
           get "email"

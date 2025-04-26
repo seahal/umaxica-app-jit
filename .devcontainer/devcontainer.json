@@ -4,7 +4,7 @@
   "name": "jit",
   "dockerComposeFile": ["../compose.yml", "./docker-compose.yml"],
   "service": "main",
-  "workspaceFolder": "/main",
+  "workspaceFolder": "/main"
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {

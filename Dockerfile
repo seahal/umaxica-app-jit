@@ -6,9 +6,6 @@ ARG DOCKER_GID=1000
 ARG DOCKER_GROUP=group
 ARG GITHUB_ACTIONS=""
 
-# Bun JS runtime layer
-FROM --platform=$BUILDPLATFORM oven/bun:alpine AS bun
-
 # Development environment
 FROM ruby:$RUBY_VERSION-alpine3.21 AS development
 ARG COMMIT_HASH
@@ -54,9 +51,6 @@ RUN apk update && \
 COPY Gemfile Gemfile.lock /main/
 RUN gem install bundler && \
     bundle install --gemfile /main/Gemfile --jobs 32
-COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
-COPY bun.config.js bun.lock package.json /main/
-RUN bun install
 RUN rm -rf /var/cache/apk/*
 RUN if [ -z "$GITHUB_ACTIONS" ]; then \
     addgroup -g ${DOCKER_GID} ${DOCKER_GROUP} && \
