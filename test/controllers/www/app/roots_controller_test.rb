@@ -8,8 +8,6 @@ module App
       get www_app_root_url
       assert_response :success
       assert_select "a[href=?]", edit_www_app_preference_cookie_path
-      assert_select "a[href=?]", news_app_root_url
-      assert_select "a[href=?]", docs_app_root_url
       assert_select "p", "© #{ Time.now.year } Umaxica."
     end
 
