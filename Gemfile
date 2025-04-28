@@ -42,7 +42,8 @@ gem "opensearch-ruby", "~> 3.4"
 gem "cancancan", "~> 3.6", ">= 3.6.1"
 # FIXME: i am wondering that using aws's s3.
 gem "aws-sdk"
-gem "aws-sdk-s3", require: false
+# for Active Storage
+gem "google-cloud-storage"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
@@ -62,14 +63,15 @@ gem "rqrcode", "~> 3.0"
 #
 gem "solid_cache", "~> 1.0"
 #
-gem "solid_queue", "~> 1.1"
-gem "mission_control-jobs"
-#
 gem "importmap-rails"
 #
 gem "tailwindcss-ruby"
 # pagenation
 gem "kaminari"
+# for communications with telecommunications
+gem "twilio-ruby", "~> 7.5", ">= 7.5.2"
+# Breadcrumbs
+gem 'gretel', '~> 5.0', '>= 5.0.1'
 
 group :development, :test do
   # to avoid n+1 queries
@@ -121,5 +123,4 @@ group :test do
 end
 
 group :auxiliary do
-
 end
