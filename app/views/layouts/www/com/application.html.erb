@@ -24,7 +24,8 @@
 <nav>
   <ul>
     <li><%= link_to 'Home', www_com_root_url %></li>
-  </ul>
+  </ul>  <%= breadcrumbs pretext: "You are here: ",
+                         separator: " &rsaquo; " %>
 </nav>
 </main>
 <hr>
