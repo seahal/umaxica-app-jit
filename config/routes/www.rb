@@ -8,8 +8,6 @@ Rails.application.routes.draw do
         resource :health, only: :show, format: :html
         # show stating env
         resource :staging, only: :show, format: :html
-        # show search pages
-        resource :search, only: :show
         # contact page
         resources :contacts, only: [ :new, :index, :create, :edit ] do
           get "email"
@@ -31,7 +29,7 @@ Rails.application.routes.draw do
           # show stating env
           resource :staging, only: :show
           # contact page
-          resources :contacts, only: [ :new, :index, :create, :edit ] do
+          resources :contacts, only: [ :new, :index, :create, :edit, :show ] do
             get "email"
             get "telephone"
           end
@@ -59,8 +57,8 @@ Rails.application.routes.draw do
           resource :setting, only: %i[show]
           namespace :setting do
             resources :totp, only: [ :index, :new, :create, :edit, :update ]
-            resources :security_keys, only: [ :index, :edit, :update ]
-            resources :sessions, only: [ :show, :destroy ]
+            resources :passkeys, only: [ :index, :edit, :update, :new ]
+            resources :tokens, only: [ :show, :destroy ]
             resources :emails, only: [ :index ]
             resource :apple, only: [ :show ]
             resource :google, only: [ :show ]
@@ -92,6 +90,13 @@ Rails.application.routes.draw do
         # Sign up pages
         resource :authentication, only: :new do
           resources :emails, only: %i[create edit update]
+        end
+        namespace :setting do
+          resources :totp, only: [ :index, :new, :create, :edit, :update ]
+          resources :passkeys, only: [ :index, :edit, :update, :new ]
+          resources :emails, only: [ :index ]
+          resources :apples, only: [ :show ]
+          resources :googles, only: [ :show ]
         end
         # Settings without login
         resource :preference, only: [ :show ]

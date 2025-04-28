@@ -2,9 +2,9 @@
 // For config options, see the README at: https://github.com/devcontainers/templates/tree/main/src/ruby
 {
   "name": "jit",
-  "dockerComposeFile": "../compose.yml",
+  "dockerComposeFile": ["../compose.yml", "./docker-compose.yml"],
   "service": "main",
-  "workspaceFolder": "/main",
+  "workspaceFolder": "/main"
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {
@@ -20,7 +20,7 @@
   // "customizations": {},
 
   // Uncomment to connect as root instead. More info: https://containers.dev/implementors/json_reference/#remoteUser.
-  "remoteUser": "root"
+  // "remoteUser": "root"
 
 
   // Use 'postCreateCommand' to run commands after the container is created.

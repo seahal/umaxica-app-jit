@@ -116,15 +116,11 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
   config.action_mailer.smtp_settings = {
-    address: ENV["AMAZON_SES_SMTP_ENDPOINT"],
-    user_name: ENV["AMAZON_SES_SMTP_USER_NAME"],
-    password: ENV["AMAZON_SES_SMTP_PASSWORD"],
-    domain: "umaxica.app",
-    port: 587,
-    authentication: :login,
-    enable_starttls: true,
-    open_timeout: 5,
-    read_timeout: 5
+    address: ENV["RESEND_SMTP_ENDPOINT"],
+    user_name: ENV["RESEND_SMTP_USER_NAME"],
+    password: ENV["RESEND_SMTP_PASSWORD"],
+    port: 465,
+    tls: true
   }
 
   ## Active Record Encryption

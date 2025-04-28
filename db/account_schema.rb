@@ -31,7 +31,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_21_131416) do
 
   create_table "staff_time_based_one_time_passwords", id: false, force: :cascade do |t|
     t.binary "staff_id", null: false
-    t.binary "time_based_one_time_password_id"
+    t.binary "time_based_one_time_password_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -57,9 +57,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_21_131416) do
 
   create_table "user_time_based_one_time_passwords", id: false, force: :cascade do |t|
     t.binary "user_id", null: false
-    t.binary "time_based_one_time_password_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.binary "time_based_one_time_password_id", null: false
   end
 
   create_table "users", id: :binary, force: :cascade do |t|

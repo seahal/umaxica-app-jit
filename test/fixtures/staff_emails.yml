@@ -5,6 +5,16 @@
 # below each fixture, per the syntax sign_in the comments below
 
 #
+# == Schema Information
+#
+# Table name: emails
+#
+#  id         :binary           default(""), not null
+#  address    :string(512)      not null, primary key
+#  type       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 staff_emails_two:
   id: '0x1a'
   type: 'Staff'

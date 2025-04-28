@@ -11,10 +11,9 @@ class Www::App::Registration::ApplesControllerTest < ActionDispatch::Integration
   test "should get new" do
     get new_www_app_setting_totp_url
     assert_select "h1", I18n.t("www.app.setting.totp.new.title")
+    assert_select "main form div img[alt=?]", "QR Code", count: 1
     assert_select "label[for=?]", "time_based_one_time_password_first_token", count: 1
     assert_select "input[name=?]", "time_based_one_time_password[first_token]", count: 1
-    assert_select "label[for=?]", "time_based_one_time_password_second_token", count: 1
-    assert_select "input[name=?]", "time_based_one_time_password[second_token]", count: 1
     assert_select "input[type=?]", "submit", count: 1
     assert_select "a[href=?]",    www_app_setting_totp_index_path
     assert_response :success

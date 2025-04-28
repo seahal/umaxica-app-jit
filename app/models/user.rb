@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: users
+#
+#  id         :binary           not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 class User < AccountsRecord
   has_many :emails, foreign_key: "address"
   has_many :phones, foreign_key: "id"

@@ -1,5 +1,15 @@
 # # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+# == Schema Information
+#
+# Table name: emails
+#
+#  id         :binary           default(""), not null
+#  address    :string(512)      not null, primary key
+#  type       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 staff_emails_one:
   id: '0c1a'
   type: 'Staff'

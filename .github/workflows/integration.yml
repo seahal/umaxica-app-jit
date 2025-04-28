@@ -107,14 +107,11 @@ jobs:
             --build-arg DOCKER_GID=$(id -g)
       - name: Start Docker services
         run: docker compose up -d
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-      - name: Install dependencies
-        run: bun install
       - name: Setup database
         run: |
           bin/rails db:create
           bin/rails db:migrate
+          bin/rails db:seed
       - name: Configure hosts
         run: |
           echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee -a /etc/hosts

@@ -31,8 +31,6 @@ services:
       - backend
       - frontend
     depends_on:
-      - vk-cache
-      - vk-session
       - primary
       - replica
       - elasticsearch
@@ -78,22 +76,6 @@ services:
       - ./docker/psql-sub/pg_hba.conf:/etc/postgresql/pg_hba.conf
     depends_on:
       - primary
-  vk-session: # AWS MemoryDB
-    image: 'valkey/valkey:7.2'
-    networks:
-      - backend
-    ports:
-      - "6380:6379"
-    volumes:
-      - vk-session-data:/data
-  vk-cache: # AWS ElastiCache
-    image: 'valkey/valkey:8.0'
-    volumes:
-      - vk-cache-volume:/data
-    networks:
-      - backend
-    ports:
-      - '6379:6379'
   zookeeper:
     image: confluentinc/cp-zookeeper:7.9.0
     container_name: zookeeper
@@ -209,8 +191,6 @@ services:
 volumes:
   psql-pub-volume:
   psql-sub-volume:
-  vk-session-data:
-  vk-cache-volume:
   kafka-broker-volume:
   grafana-volume:
   prometheus-volume:

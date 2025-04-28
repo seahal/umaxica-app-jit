@@ -16,11 +16,6 @@ gem "pg"
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
-# Use Redis adapter to run Action Cable sign_in production
-gem "hiredis"
-gem "redis"
-# For Cache store @ Redis
-gem "redis-actionpack"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
 gem "kredis"
 # For CORS
@@ -44,13 +39,11 @@ gem "opensearch-ruby", "~> 3.4"
 # gem 'elasticsearch', '~> 8.14'
 # OpenStruct
 # gem "ostruct", "~> 0.6.1"
-# URL normalization gem
-# gem "addressable", "~> 2.8", ">= 2.8.7"
-#
 gem "cancancan", "~> 3.6", ">= 3.6.1"
 # FIXME: i am wondering that using aws's s3.
 gem "aws-sdk"
-gem "aws-sdk-s3", require: false
+# for Active Storage
+gem "google-cloud-storage", require: false
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
@@ -61,14 +54,24 @@ gem "opentelemetry-instrumentation-all", "~> 0.74.0"
 gem "sitemap_generator"
 # JWT
 gem "jwt", "~> 2.10", ">= 2.10.1"
-#
-gem "jsbundling-rails"
 # Webauthn
 gem "webauthn", "~> 3.4"
 # TOTP and HTOP
 gem "rotp", "~> 6.3"
-# Decorator
+# QRCode Generator, QRCode is a deso wave's ...
+gem "rqrcode", "~> 3.0"
 #
+gem "solid_cache", "~> 1.0"
+#
+gem "importmap-rails"
+#
+gem "tailwindcss-ruby"
+# pagenation
+gem "kaminari"
+# for communications with telecommunications
+gem "twilio-ruby", "~> 7.5", ">= 7.5.2"
+# Breadcrumbs
+gem "gretel", "~> 5.0", ">= 5.0.1"
 
 group :development, :test do
   # to avoid n+1 queries
@@ -109,10 +112,15 @@ group :development do
   gem "reek", "~> 6.5"
   # erb linter
   gem "erb_lint", require: false
+  # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
+  gem "annotaterb"
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+end
+
+group :auxiliary do
 end
