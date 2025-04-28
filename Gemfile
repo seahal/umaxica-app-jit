@@ -43,7 +43,7 @@ gem "cancancan", "~> 3.6", ">= 3.6.1"
 # FIXME: i am wondering that using aws's s3.
 gem "aws-sdk"
 # for Active Storage
-gem "google-cloud-storage"
+gem "google-cloud-storage", require: false
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
@@ -71,7 +71,7 @@ gem "kaminari"
 # for communications with telecommunications
 gem "twilio-ruby", "~> 7.5", ">= 7.5.2"
 # Breadcrumbs
-gem 'gretel', '~> 5.0', '>= 5.0.1'
+gem "gretel", "~> 5.0", ">= 5.0.1"
 
 group :development, :test do
   # to avoid n+1 queries
