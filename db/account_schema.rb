@@ -37,6 +37,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_21_131416) do
   end
 
   create_table "staffs", id: :binary, force: :cascade do |t|
+    t.string "otp_private_key"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

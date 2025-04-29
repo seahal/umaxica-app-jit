@@ -15,7 +15,7 @@ class Www::App::Registration::EmailsControllerTest < ActionDispatch::Integration
     get new_www_app_registration_email_url
     assert_select "input#user_email_address"
     assert_select "input#user_email_confirm_policy"
-
+    assert_select "h1", I18n.t("www.app.registration.email.new.page_title")
     assert_select "form[action=?][method=?]", www_app_registration_emails_path, "post" do
       # email入力フィールドの存在と属性チェック
       assert_select "input[type=?][name=?]", "email", "user_email[address]"

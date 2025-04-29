@@ -5,10 +5,21 @@ module Www
         #  before_action :set_user_email, only: %i[ show edit update ]
 
         def new
+          # FIXME: write test code!
+          render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
+
+          # to avoid session attack
+          session[:user_email_address] = nil
+          session[:user_totp_privacy_keys] = nil
+
+          # make user email
           @user_email = UserEmail.new
         end
 
         def create
+          # FIXME: write test code!
+          render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
+
           @user_email = UserEmail.new(sample_params)
           res = cloudflare_turnstile_validation
 

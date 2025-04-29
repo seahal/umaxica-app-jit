@@ -49,7 +49,7 @@ Rails.application.routes.draw do
             resource :email, only: %i[new create]
             resource :telephone, only: %i[new create]
             resource :passkey, only: %i[new create]
-            resource :passcode, only: %i[new create]
+            resource :recovery, only: %i[new create]
             resource :google, only: %i[new create]
             resource :apple, only: %i[new create]
           end

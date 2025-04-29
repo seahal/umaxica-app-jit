@@ -1,4 +1,5 @@
 <div>
+  <h1 class="font-bold text-4xl"><%= t('www.app.registration.email.new.page_title') %></h1>
 
   <%= form_with model: @user_email, url: www_app_registration_emails_path do |form| %>
     <% if @user_email.errors.any? %>
@@ -17,17 +18,10 @@
       <%= form.label :address %>
       <%= form.email_field :address %>
     </div>
+
     <div>
       <%= form.checkbox :confirm_policy %>
       <%= form.label :confirm_policy, '利用規約に同意する' %>
-    </div>
-
-    <% content_tag(:div, nil, { id: "root", 'data-parent': 'sss' }) %>
-
-    <div id="root" data-parent="ruby and bun on rails">
-      <div>
-        <p>Hello world from Rails!</p>
-      </div>
     </div>
 
     <div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>
