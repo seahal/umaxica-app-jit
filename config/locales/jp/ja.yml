@@ -2,6 +2,13 @@
 ja:
   www:
     app:
+      registration:
+        email:
+          new:
+            page_title: 'email で登録します'
+            you_have_already_logged_in: 'あなたはログインしています'
+          create:
+            you_have_already_logged_in: 'あなたはログインしています'
       authentication:
         edit:
           title: 'ログアウトしますか？'
