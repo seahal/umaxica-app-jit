@@ -5,6 +5,14 @@ ja:
       authentication:
         edit:
           title: 'ログアウトしますか？'
+        new:
+          back: '他の方法を選びますか？'
+        email:
+          new:
+            page_title: 'email でページ登録'
+            you_have_already_logged_in: 'あなたはログインしています'
+          create:
+            you_have_already_logged_in: 'あなたはログインしています'
       preference:
         cookie:
           edit:
