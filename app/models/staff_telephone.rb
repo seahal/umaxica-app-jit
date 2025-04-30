@@ -8,5 +8,4 @@
 #  updated_at :datetime         not null
 #
 class StaffTelephone < AccountsRecord
-
 end
