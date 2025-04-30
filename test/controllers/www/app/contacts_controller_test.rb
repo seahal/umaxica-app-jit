@@ -3,7 +3,7 @@ require "test_helper"
 class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_www_app_contact_url
-   assert_response :success
+    assert_response :success
   end
 
   test "should get show" do

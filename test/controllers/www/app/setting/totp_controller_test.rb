@@ -4,7 +4,7 @@ class Www::App::Registration::ApplesControllerTest < ActionDispatch::Integration
   test "should get index" do
     get www_app_setting_totp_index_url
     assert_select "h1", I18n.t("www.app.setting.totp.index.title")
-    assert_select "a[href=?]",    new_www_app_setting_totp_path
+    assert_select "a[href=?]", new_www_app_setting_totp_path
     assert_response :success
   end
 
@@ -15,7 +15,7 @@ class Www::App::Registration::ApplesControllerTest < ActionDispatch::Integration
     assert_select "label[for=?]", "time_based_one_time_password_first_token", count: 1
     assert_select "input[name=?]", "time_based_one_time_password[first_token]", count: 1
     assert_select "input[type=?]", "submit", count: 1
-    assert_select "a[href=?]",    www_app_setting_totp_index_path
+    assert_select "a[href=?]", www_app_setting_totp_index_path
     assert_response :success
   end
 

@@ -7,7 +7,7 @@ module Org
     class HealthTest < ActionDispatch::IntegrationTest
       test "should get show" do
         assert_raise do
-        get api_org_v1_health_url(format: :html)
+          get api_org_v1_health_url(format: :html)
         end
       end
 
