@@ -4,17 +4,24 @@
 #
 # Table name: emails
 #
-#  id         :binary           default(""), not null
-#  address    :string(512)      not null, primary key
-#  type       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id             :binary           default(""), not null
+#  address        :string(512)      not null, primary key
+#  entryable_type :string           not null
+#  type           :string           not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  entryable_id   :binary           not null
 #
 staff_emails_one:
   id: '0c1a'
   type: 'Staff'
+  entryable_type: 'a'
+  entryable_id: '1'
   address: 'staff@example.com'
+
 user_emails_one:
   id: '0c2b'
   type: 'User'
   address: 'user@example.app'
+  entryable_type: 'b'
+  entryable_id: '0'

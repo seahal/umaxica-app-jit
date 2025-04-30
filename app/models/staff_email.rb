@@ -2,13 +2,14 @@
 
 # == Schema Information
 #
-# Table name: emails
+# Table name: staff_emails
 #
-#  id         :binary           default(""), not null
-#  address    :string(512)      not null, primary key
-#  type       :string           not null
+#  id         :binary           not null, primary key
+#  address    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class StaffEmail < Email
+class StaffEmail < AccountsRecord
+  include SetId
+  include EmailAddress
 end

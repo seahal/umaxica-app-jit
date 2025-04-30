@@ -1,16 +1,13 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
-# Table name: emails
+# Table name: user_emails
 #
-#  id         :binary           default(""), not null
-#  address    :string(512)      not null, primary key
-#  type       :string           not null
+#  id         :binary           not null, primary key
+#  address    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class UserEmail < Email
-  attr_accessor :confirm_policy
-  validates :confirm_policy, acceptance: true
+class UserEmail < AccountsRecord
+  include EmailAddress
+  include SetId
 end
