@@ -1,4 +1,3 @@
-
 require "test_helper"
 
 module Www::App

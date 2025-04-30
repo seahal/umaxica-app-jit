@@ -20,13 +20,13 @@
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>
 
-<nav>
-  <ul>
-    <li><%= link_to 'Home', www_app_root_url %></li>
-  </ul>
-  <%= breadcrumbs pretext: "You are here: ",
-                  separator: " &rsaquo; " %>
-</nav>
+  <nav>
+    <ul>
+      <li><%= link_to 'Home', www_app_root_url %></li>
+    </ul>
+    <%= breadcrumbs pretext: "You are here: ",
+                    separator: " &rsaquo; " %>
+  </nav>
 
 </main>
 

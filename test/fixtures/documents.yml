@@ -16,15 +16,15 @@
 #  succ_id          :binary
 #
 one:
-  parent_id: 
-  succ_id: 
-  parent_id: 
+  parent_id:
+  succ_id:
+  parent_id:
   title: MyString
   description: MyString
 
 two:
-  parent_id: 
-  succ_id: 
-  parent_id: 
+  parent_id:
+  succ_id:
+  parent_id:
   title: MyString
   description: MyString

@@ -10,8 +10,8 @@
 #
 #  id :string           not null, primary key
 #
-one: {}
+one: { }
 # column: value
 #
-two: {}
+two: { }
 # column: value
