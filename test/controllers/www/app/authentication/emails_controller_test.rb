@@ -5,6 +5,7 @@ class Www::App::Session::EmailsControllerTest < ActionDispatch::IntegrationTest
     get new_www_app_authentication_email_url
     assert_select "h1", I18n.t("www.app.authentication.email.new.page_title")
     assert_select "a", I18n.t("www.app.authentication.new.back")
+    assert_select "a", I18n.t("www.app.authentication.email.new.registration")
     assert_select "a[href=?]", new_www_app_authentication_path
     assert_select "form[action=?][method=?]", www_app_authentication_email_path, "post" do
       # email入力フィールドの存在と属性チェック

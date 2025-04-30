@@ -18,6 +18,7 @@ ja:
           new:
             page_title: 'email でページ登録'
             you_have_already_logged_in: 'あなたはログインしています'
+            registration: '登録しますか？'
           create:
             you_have_already_logged_in: 'あなたはログインしています'
       preference:
