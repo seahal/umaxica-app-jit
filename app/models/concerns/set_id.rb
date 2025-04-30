@@ -3,10 +3,11 @@ module SetId
 
   included do
     before_create :set_id
+  end
 
-    # FIXME: ???
-    def set_id
-      self.id = rand(1000000)
-    end
+  # FIXME: ???
+  protected
+  def set_id
+    self.id = rand(1000000)
   end
 end
