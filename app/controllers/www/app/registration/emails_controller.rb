@@ -2,15 +2,15 @@ module Www
   module App
     module Registration
       class EmailsController < ApplicationController
-        #  before_action :set_user_email, only: %i[ show edit update ]
+        before_action :set_user_email, only: %i[ show edit  ]
 
         def new
           # FIXME: write test code!
           render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
 
-          # to avoid session attack
-          session[:user_email_address] = nil
-          session[:user_totp_privacy_keys] = nil
+          # # to avoid session attack
+          # session[:user_email_address] = nil
+          # session[:user_totp_privacy_keys] = nil
 
           # make user email
           @user_email = UserEmail.new
@@ -20,11 +20,11 @@ module Www
           # FIXME: write test code!
           render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
 
-          @user_email = UserEmail.new(sample_params)
-          res = cloudflare_turnstile_validation
+          @user_email = UserEmail.new(user_email_params)
+          # res = cloudflare_turnstile_validation
 
           respond_to do |format|
-            if res["success"] == true && @user_email.save
+            if @user_email.save # && res["success"] == true
               format.html { redirect_to www_app_registration_email_path(Base64.urlsafe_encode64(@user_email.address)), notice: "Sample was successfully created." }
             else
               format.html { render :new, status: :unprocessable_entity }
@@ -33,20 +33,22 @@ module Www
         end
 
         def show
+          render plain: "aaa" and return
         end
 
         def edit
+          render plain: "aaa" and return
         end
 
         private
 
         # Use callbacks to share common setup or constraints between actions.
         def set_user_email
-          @user_email = UserEmail.find(params.expect(:id))
+          @user_email = UserEmail.find(params.expect(:address))
         end
 
         # Only allow a list of trusted parameters through.
-        def sample_params
+        def user_email_params
           params.expect(user_email: [ :address, :confirm_policy ])
         end
 

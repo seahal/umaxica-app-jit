@@ -16,10 +16,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_234642) do
   enable_extension "pgcrypto"
 
   create_table "emails", id: :binary, default: "", force: :cascade do |t|
-    t.string "address", limit: 512, null: false
-    t.string "type", null: false
-    t.string "entryable_type", null: false
-    t.binary "entryable_id", null: false
+    t.string "address", limit: 1024, null: false
+    t.string "emailable_type", null: false
+    t.binary "emailable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

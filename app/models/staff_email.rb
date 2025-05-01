@@ -12,4 +12,5 @@
 class StaffEmail < AccountsRecord
   include SetId
   include EmailAddress
+  include Emailable
 end

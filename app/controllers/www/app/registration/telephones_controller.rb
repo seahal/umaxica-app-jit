@@ -5,7 +5,7 @@ module Www
         #  before_action :set_user_email, only: %i[ show edit update ]
 
         def new
-          @user_telephone = UserEmail.new
+          @user_telephone = UserTelephone.new
         end
 
         def create
@@ -19,15 +19,15 @@ module Www
           #     format.html { render :new, status: :unprocessable_entity }
           #   end
           # end
-          Aws::SNS::Client.new(
-            access_key_id: "",
-            secret_access_key: "",
-            region: "ap-northeast-1"
-          ).publish({
-                      phone_number: "+81",
-                      message: "シークレットやで",
-                      subject: "ほんまやで"
-                    })
+          # Aws::SNS::Client.new(
+          #   access_key_id: "",
+          #   secret_access_key: "",
+          #   region: "ap-northeast-1"
+          # ).publish({
+          #             phone_number: "+81",
+          #             message: "シークレットやで",
+          #             subject: "ほんまやで"
+          #           })
 
           @user_telephone = UserEmail.new
           render :new

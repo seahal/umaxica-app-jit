@@ -39,6 +39,6 @@ module Jit
     config.active_job.queue_adapter = :karafka
 
     # much more secure session
-    config.middleware.use ActionDispatch::Session::CookieStore, secure: true
+    # config.middleware.use ActionDispatch::Session::CookieStore, secure: true
   end
 end

@@ -2,14 +2,13 @@ module SetId
   extend ActiveSupport::Concern
 
   included do
-    before_create :set_id
+    before_create :generate_id
   end
 
+  private
+
   # FIXME: ???
-
-  protected
-
-  def set_id
-    self.id = rand(1000000)
+  def generate_id
+    self.id = SecureRandom.uuid_v7
   end
 end

@@ -10,4 +10,5 @@
 class UserEmail < AccountsRecord
   include EmailAddress
   include SetId
+  include Emailable
 end
