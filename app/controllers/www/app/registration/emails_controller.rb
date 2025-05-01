@@ -18,9 +18,9 @@ module Www
           # FIXME: write test code!
           render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
 
-          @user_email = UserEmail.new(params.expect(user_email: [:address, :confirm_policy]))
+          @user_email = UserEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
           res = cloudflare_turnstile_validation
-          id = SecureRandom.random_number(1 << 64)
+          id = SecureRandom.random_number(1 << 128)
           otp_private_key = ROTP::Base32.random_base32
           hotp = ROTP::HOTP.new(otp_private_key)
           num = hotp.at(id)
@@ -43,12 +43,12 @@ module Www
         def edit
           render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
 
-          p session[:user_email_registration].to_json['id']
-          p params['id']
-          p session[:user_email_registration]['id'] == params['id']
-          puts 'a' * 1000
+          p session[:user_email_registration].to_json["id"]
+          p params["id"]
+          p session[:user_email_registration]["id"] == params["id"]
+          puts "a" * 1000
 
-          if session[:user_email_registration] && session[:user_email_registration]['id'] == params['id']
+          if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"]
             @user_email = UserEmail.new
           else
             redirect_to new_www_app_registration_email_path, notice: t("www.app.registration.email.edit.your_session_was_expired")
