@@ -7,8 +7,8 @@ module Www
           render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
 
           # # to avoid session attack
-          # session[:user_email_address] = nil
-          # session[:user_totp_privacy_keys] = nil
+          session[:user_email_address] = nil
+          session[:user_totp_privacy_keys] = nil
 
           # make user email
           @user_email = UserEmail.new
@@ -20,19 +20,21 @@ module Www
 
           @user_email = UserEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
           res = cloudflare_turnstile_validation
-          id = SecureRandom.random_number(1 << 128)
-          otp_private_key = ROTP::Base32.random_base32
+          otp_private_key = ROTP::Base32.random_base32 # NOTE: you would wonder why this code was written ...
+          otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
           hotp = ROTP::HOTP.new(otp_private_key)
-          num = hotp.at(id)
+          num = hotp.at(otp_count_number)
+          id = SecureRandom.uuid_v7
 
           # FIXME: use kafka!
-
 
           if res["success"] && @user_email.valid?
             session[:user_email_registration] = {
               id: id,
               address: @user_email.address,
-              otp_private_key: otp_private_key
+              otp_private_key: otp_private_key,
+              otp_counter: otp_count_number,
+              expires_at: 12.minutes.from_now.to_i
             }
             redirect_to edit_www_app_registration_email_path(id), notice: "Email was successfully created."
           else
@@ -41,14 +43,10 @@ module Www
         end
 
         def edit
-          render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
+          render plain: t("www.app.registration.email.edit.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
+          render plain: t("www.app.registration.email.edit.forbidden_action"), status: 400 and return if session[:user_email_registration].nil?
 
-          p session[:user_email_registration].to_json["id"]
-          p params["id"]
-          p session[:user_email_registration]["id"] == params["id"]
-          puts "a" * 1000
-
-          if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"]
+          if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"] && session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
             @user_email = UserEmail.new
           else
             redirect_to new_www_app_registration_email_path, notice: t("www.app.registration.email.edit.your_session_was_expired")
@@ -59,10 +57,16 @@ module Www
           # FIXME: write test code!
           render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
 
-          @user_email = UserEmail.new()
+          @user_email = UserEmail.new(address: nil, pass_code: params["user_email"]["pass_code"])
 
-          if UserEmail.create(address: "")
-            redirect_to @sample, notice: "Sample was successfully updated."
+          if [
+            @user_email.valid?,
+            session[:user_email_registration]["id"] == params["id"],
+            session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
+          ].all?
+            @user_email.address = session[:user_email_registration]["address"]
+            @user_email.save!
+            redirect_to "/", notice: "Sample was successfully updated."
           else
             render :edit, status: :unprocessable_entity
           end
@@ -71,7 +75,7 @@ module Www
         private
 
         def cloudflare_turnstile_validation
-          # FIXME:
+          # FIXME: remove following one line.
           return { "success" => true }
 
           res = Net::HTTP.post_form(URI.parse("https://challenges.cloudflare.com/turnstile/v0/siteverify"),

@@ -10,6 +10,8 @@ ja:
           create:
             you_have_already_logged_in: 'あなたはログインしています'
           edit:
+            you_have_already_logged_in: 'あなたはログインしています'
+            forbidden_action: '最初からやり直してください'
             your_session_was_expired: '有効期間が切れたので、最初からやり直してください'
       authentication:
         edit:
