@@ -9,6 +9,8 @@ ja:
             you_have_already_logged_in: 'あなたはログインしています'
           create:
             you_have_already_logged_in: 'あなたはログインしています'
+          edit:
+            your_session_was_expired: '有効期間が切れたので、最初からやり直してください'
       authentication:
         edit:
           title: 'ログアウトしますか？'

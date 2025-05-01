@@ -14,7 +14,7 @@
 require "test_helper"
 
 class AccountTest < ActiveSupport::TestCase
-  [ StaffEmail, UserEmail ].each do |model|
+  [ StaffEmail, UserEmail, ClientEmail ].each do |model|
     test "good #{model}'s email pattern" do
       assert model.create(address: "eg@example.com").valid?
     end
@@ -39,11 +39,8 @@ class AccountTest < ActiveSupport::TestCase
     test "validable email(#{model}) addresses" do
       assert model.new(address: "Abc@example.com").valid?
       assert model.new(address: "Abc.123@example.com").valid?
-      # assert model.new(address: 'user+mailbox/department=shipping@example.com').valid?
-      # assert model.new(address: "!#$%&'*+-/=?^_`.{|}~@example.com").valid?
-      # assert model.new(address: '"Abc@def"@example.com').valid?
-      # assert model.new(address: "\"Fred\ Bloggs\"@example.com").valid?
-      # assert model.new(address: '"Joe.\\Blow"@example.com').valid?
+      assert model.new(address: "user+mailbox/department=shipping@example.com").valid?
+      assert model.new(address: "!#$%&'*+-/=?^_`.{|}~@example.com").valid?
     end
 
     test "email(#{model}) should be only one" do
@@ -60,6 +57,33 @@ class AccountTest < ActiveSupport::TestCase
           assert_not model.create(address: "A@B.C").valid?
         end
       end
+    end
+
+    test "email(#{model}) : email address must downcase." do
+      mail_address = "A@B.C".upcase
+      model.create(address: mail_address)
+      assert_not_equal model.first.address, mail_address
+      assert_equal model.first.address, mail_address.downcase
+      assert_equal model.first.address.upcase, mail_address
+    end
+
+    test "email(#{model}) : email address was downcase." do
+      m = model.new(address: nil)
+      m.pass_code = 123456
+      assert m.valid?
+      m.pass_code = 12345
+      refute m.valid?
+      m.pass_code = 1234567
+      refute m.valid?
+      m.pass_code = 0
+      refute m.valid?
+      m.pass_code = nil
+      refute m.valid?
+    end
+
+    test "email(#{model}) : Address and pass_code cannot both be nil." do
+      m = model.new(address: nil, pass_code: nil)
+      refute m.valid?
     end
   end
 end

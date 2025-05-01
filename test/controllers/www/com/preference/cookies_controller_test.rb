@@ -5,7 +5,13 @@ module Www
     module Preference
       class CookiesControllerTest < ActionDispatch::IntegrationTest
         test "should get edit" do
+          ActionController::Base.allow_forgery_protection = true
           get edit_www_com_preference_cookie_url
+          assert_select "form" do
+            assert_select "input[type='hidden'][name='authenticity_token']"
+            assert_select "input[type='checkbox'][name='accept_tracking_cookies']", count: 1
+            assert_select "input[type=?]", "submit"
+          end
           assert_response :success
         end
 
