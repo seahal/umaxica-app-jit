@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   scope module: :www, as: :www do
+    # for client site
     constraints host: ENV["WWW_CORPORATE_URL"] do
       scope module: :com, as: :com do
         #
@@ -18,8 +19,14 @@ Rails.application.routes.draw do
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
         end
+        #
+        resource :registration, only: [ :new, :create, :edit, :update ] do
+          resource :emails, only: [ :new, :create, :edit, :update ]
+          resource :telephone, only: [ :new, :create, :edit, :update ]
+        end
       end
 
+      # service page
       constraints host: ENV["WWW_SERVICE_URL"] do
         scope module: :app, as: :app do
           # homepage
@@ -86,6 +93,11 @@ Rails.application.routes.draw do
         resource :staging, only: :show, format: :html
         # contact page
         namespace :contact do
+        end
+        # registration staff page
+        resource :registration, only: [ :new, :create, :edit, :update ] do
+          resource :emails, only: [ :new, :create, :edit, :update ]
+          resource :telephone, only: [ :new, :create, :edit, :update ]
         end
         # Sign up pages
         resource :authentication, only: :new do

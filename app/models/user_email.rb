@@ -8,7 +8,6 @@
 #  updated_at :datetime         not null
 #
 class UserEmail < AccountsRecord
-  include EmailAddress
   include SetId
-  include Emailable
+  include Email
 end

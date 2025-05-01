@@ -1,16 +1,13 @@
 # == Schema Information
 #
-# Table name: user_telephones
+# Table name: client_telephones
 #
 #  id         :binary           not null, primary key
 #  number     :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-require "test_helper"
-
-class UserTelephoneTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+class ClientTelephone < AccountsRecord
+  include SetId
+  include Telephone
 end

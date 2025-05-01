@@ -10,15 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_29_234642) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_01_005941) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "emails", id: :binary, default: "", force: :cascade do |t|
-    t.string "address", limit: 1024, null: false
-    t.string "emailable_type", null: false
-    t.binary "emailable_id", null: false
+  create_table "client_emails", id: :binary, force: :cascade do |t|
+    t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "client_telephones", id: :binary, force: :cascade do |t|
+    t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -36,7 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_234642) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_telephones", force: :cascade do |t|
+  create_table "staff_telephones", id: :binary, force: :cascade do |t|
     t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -55,14 +59,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_234642) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "telephones", id: :binary, force: :cascade do |t|
-    t.string "number"
-    t.string "entryable_type"
-    t.binary "entryable_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "user_emails", id: :binary, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
@@ -76,7 +72,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_234642) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_telephones", force: :cascade do |t|
+  create_table "user_telephones", id: :binary, force: :cascade do |t|
     t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

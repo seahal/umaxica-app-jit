@@ -1,4 +1,4 @@
-module Emailable
+module Email
   extend ActiveSupport::Concern
 
   included do

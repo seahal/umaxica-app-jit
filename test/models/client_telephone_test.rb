@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: user_telephones
+# Table name: client_telephones
 #
 #  id         :binary           not null, primary key
 #  number     :string
@@ -9,7 +9,7 @@
 #
 require "test_helper"
 
-class UserTelephoneTest < ActiveSupport::TestCase
+class ClientTelephoneTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
