@@ -3,6 +3,7 @@ module Www
     module Registration
       class EmailsController < ApplicationController
         include ::Cloudflare
+        include ::Redirect
 
         def new
           # FIXME: write test code!
