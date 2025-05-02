@@ -13,7 +13,7 @@ module Redirect
   end
 
   def jump_to_generated_url(chars)
-    redirect_to '/' if chars.blank?
+    redirect_to "/" if chars.blank?
 
     parsed_uri = URI.parse(Base64.urlsafe_decode64(url))
 

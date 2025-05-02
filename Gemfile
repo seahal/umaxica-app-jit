@@ -40,7 +40,7 @@ gem "opensearch-ruby", "~> 3.4"
 # OpenStruct
 # gem "ostruct", "~> 0.6.1"
 gem "cancancan", "~> 3.6", ">= 3.6.1"
-# FIXME: i am wondering that using aws's s3.
+# for communications with telecommunications
 gem "aws-sdk"
 # for Active Storage
 gem "google-cloud-storage", require: false
@@ -68,10 +68,11 @@ gem "importmap-rails"
 gem "tailwindcss-ruby"
 # pagenation
 gem "kaminari"
-# for communications with telecommunications
-gem "twilio-ruby", "~> 7.5", ">= 7.5.2"
 # Breadcrumbs
 gem "gretel", "~> 5.0", ">= 5.0.1"
+# Social Login
+gem "omniauth"
+gem "omniauth-rails_csrf_protection"
 
 group :development, :test do
   # to avoid n+1 queries
