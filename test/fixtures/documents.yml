@@ -18,13 +18,11 @@
 one:
   parent_id:
   succ_id:
-  parent_id:
   title: MyString
   description: MyString
 
 two:
   parent_id:
   succ_id:
-  parent_id:
   title: MyString
   description: MyString

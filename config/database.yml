@@ -25,40 +25,40 @@ development:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
-  identity:
+  identifier:
     <<: *default
-    database: development_identity_db
+    database: development_identifier_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTITY_PUB"]: 'localhost' %>
-    migrations_paths: db/identities_migrate
-  identity_replica:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
+    migrations_paths: db/identifiers_migrate
+  identifier_replica:
     <<: *default
     replica: true
-    database: development_identity_db
+    database: development_identifier_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTITY_SUB"]: 'localhost' %>
-    migrations_paths: db/identities_migrate
-  account:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+    migrations_paths: db/identifiers_migrate
+  profile:
     <<: *default
-    database: development_account_db
+    database: development_profile_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_PUB"]: 'localhost' %>
-    migrations_paths: db/accounts_migrate
-  account_replica:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_PUB"]: 'localhost' %>
+    migrations_paths: db/profiles_migrate
+  profile_replica:
     <<: *default
     replica: true
-    database: development_account_db
+    database: development_profile_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_SUB"]: 'localhost' %>
-    migrations_paths: db/accounts_migrate
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_SUB"]: 'localhost' %>
+    migrations_paths: db/profiles_migrate
   token:
     <<: *default
     database: development_token_db
@@ -186,40 +186,40 @@ test:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
-  identity:
+  identifier:
     <<: *default
-    database: test_identity_db
+    database: test_identifier_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTITY_PUB"]: 'localhost' %>
-    migrations_paths: db/identities_migrate
-  identity_replica:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
+    migrations_paths: db/identifiers_migrate
+  identifier_replica:
     <<: *default
     replica: true
-    database: test_identity_db
+    database: test_identifier_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTITY_SUB"]: 'localhost' %>
-    migrations_paths: db/identity_migrate
-  account:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+    migrations_paths: db/identifiers_migrate
+  profile:
     <<: *default
-    database: test_account_db
+    database: test_profile_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_PUB"]: 'localhost' %>
-    migrations_paths: db/accounts_migrate
-  account_replica:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_PUB"]: 'localhost' %>
+    migrations_paths: db/profiles_migrate
+  profile_replica:
     <<: *default
     replica: true
-    database: test_account_db
+    database: test_profile_db
     port:
       <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
     host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_ACCOUNT_SUB"]: 'localhost' %>
-    migrations_paths: db/accounts_migrate
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_SUB"]: 'localhost' %>
+    migrations_paths: db/profiles_migrate
   token:
     <<: *default
     database: test_token_db

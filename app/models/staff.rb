@@ -9,6 +9,6 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
-class Staff < AccountsRecord
+class Staff < IdentifiersRecord
   has_many :emails, foreign_key: "address"
 end

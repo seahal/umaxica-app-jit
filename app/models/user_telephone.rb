@@ -7,7 +7,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class UserTelephone < AccountsRecord
+class UserTelephone < IdentifiersRecord
   include Telephone
   include SetId
 end

@@ -7,7 +7,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class ClientEmail < AccountsRecord
+class ClientEmail < IdentifiersRecord
   include SetId
   include Email
 end

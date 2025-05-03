@@ -73,6 +73,8 @@ gem "gretel", "~> 5.0", ">= 5.0.1"
 # Social Login
 gem "omniauth"
 gem "omniauth-rails_csrf_protection"
+gem "omniauth-apple", "~> 1.3"
+gem "omniauth-google-oauth2", "~> 1.1", ">= 1.1.1"
 
 group :development, :test do
   # to avoid n+1 queries
