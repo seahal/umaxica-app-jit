@@ -36,7 +36,6 @@ gem "image_processing"
 gem "karafka", "~> 2.4", ">= 2.4.17"
 # Elasticsearch
 gem "opensearch-ruby", "~> 3.4"
-# gem 'elasticsearch', '~> 8.14'
 # OpenStruct
 # gem "ostruct", "~> 0.6.1"
 gem "cancancan", "~> 3.6", ">= 3.6.1"

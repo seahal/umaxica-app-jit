@@ -65,7 +65,7 @@ Rails.application.routes.draw do
           namespace :setting do
             resources :totp, only: [ :index, :new, :create, :edit, :update ]
             resources :passkeys, only: [ :index, :edit, :update, :new ]
-            resources :recoveries, only: %i[index new create edit update]
+            resources :recovery_codes, only: %i[index new create edit update destroy]
             resources :tokens, only: [ :show, :destroy ]
             resources :emails, only: [ :index ]
             resource :apple, only: [ :show ]
