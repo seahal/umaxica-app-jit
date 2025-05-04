@@ -10,13 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_01_005941) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_04_005612) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "client_emails", id: :binary, force: :cascade do |t|
     t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "client_recovery_codes", force: :cascade do |t|
+    t.string "password_digest"
+    t.date "expire_in"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -36,6 +43,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_01_005941) do
   create_table "staff_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
     t.binary "staff_id", null: false
     t.binary "hmac_based_one_time_password_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_recovery_codes", force: :cascade do |t|
+    t.string "password_digest"
+    t.date "expire_in"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -68,6 +82,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_01_005941) do
   create_table "user_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
     t.binary "user_id", null: false
     t.binary "hmac_based_one_time_password_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_recovery_codes", force: :cascade do |t|
+    t.string "password_digest"
+    t.date "expire_in"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

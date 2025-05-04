@@ -1,7 +1,7 @@
 module Www
   module App
     module Authentication
-      class RecoveriesController < ApplicationController
+      class RecoveryCodesController < ApplicationController
         def new
         end
       end

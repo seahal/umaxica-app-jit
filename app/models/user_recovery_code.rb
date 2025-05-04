@@ -1,0 +1,2 @@
+class UserRecoveryCode < IdentifiersRecord
+end

@@ -2520,7 +2520,7 @@ PLATFORMS
 
 DEPENDENCIES
   annotaterb
-  argon2
+  argon2 (~> 2.3, >= 2.3.2)
   aws-sdk
   bootsnap
   brakeman

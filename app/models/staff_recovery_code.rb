@@ -1,0 +1,2 @@
+class StaffRecoveryCode < IdentifiersRecord
+end

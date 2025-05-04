@@ -1,0 +1,2 @@
+class ClientRecoveryCode < IdentifiersRecord
+end
