@@ -3,6 +3,12 @@ ja:
   www:
     app:
       registration:
+        apple:
+          new:
+            page_title: 'apple id で登録します'
+        google:
+          new:
+            page_title: 'google id で登録します'
         email:
           new:
             page_title: 'email で登録します'
