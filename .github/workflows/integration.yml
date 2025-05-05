@@ -57,8 +57,6 @@ jobs:
           bundler-cache: true
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-        with:
-          detached: true
       - name: Setup database
         run: |
           bin/rails db:create
