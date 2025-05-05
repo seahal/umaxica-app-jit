@@ -20,9 +20,22 @@ class ServiceSiteContact < ContactsRecord
   encrypts :title
   encrypts :description
 
-  validates :confirm_policy, acceptance: true
-  validates :email_address, format: { with: URI::MailTo::EMAIL_REGEXP },
-            presence: true
+  validates :confirm_policy,
+            acceptance: true,
+            on: :create
+  validates :email_address,
+            format: { with: URI::MailTo::EMAIL_REGEXP },
+            presence: true,
+            on: :create
   validates :telephone_number,
-            presence: true
+            presence: true,
+            on: :create
+  # validates :email_pass_code, numericality: { only_integer: true },
+  #           length: { is: 6 },
+  #           presence: true,
+  #           unless: Proc.new { |a| a.pass_code.nil? && !a.number.nil? }
+  # validates :telephone_pass_code, numericality: { only_integer: true },
+  #           length: { is: 6 },
+  #           presence: true,
+  #           unless: Proc.new { |a| a.pass_code.nil? && !a.number.nil?
 end

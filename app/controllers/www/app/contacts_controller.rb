@@ -4,18 +4,23 @@ module Www::App
 
     def new
       @service_site_contact = ServiceSiteContact.new
-      session[:contact_email_address] = nil
-      session[:contact_telephone_number] = nil
+      clear_session
     end
 
     def create
       @service_site_contact = ServiceSiteContact.new(sample_params)
       if @service_site_contact.valid? && cloudflare_turnstile_validation["success"]
+        clear_session
         id = session[:contact_id] = SecureRandom.uuid_v7
         session[:contact_email_address] = @service_site_contact.email_address
         session[:contact_telephone_number] = @service_site_contact.telephone_number
-        redirect_to  www_app_contact_url(id)
+        # session[:contact_otp_private_key] =
+        # session[:contact_expires_in] =
+        session[:contact_email_checked] = false
+        session[:contact_telephone_checked] = false
+        redirect_to new_www_app_contact_email_url(id)
       else
+        clear_session
         render :new, status: :unprocessable_entity
       end
     end
@@ -30,7 +35,14 @@ module Www::App
     end
 
     private
-
+    def clear_session
+      session[:contact_email_address] = nil
+      session[:contact_telephone_number] = nil
+      session[:contact_email_checked] = nil
+      session[:contact_telephone_checked] = nil
+      session[:contact_otp_private_key] = nil
+      session[:contact_expires_in] = nil
+    end
     # Use callbacks to share common setup or constraints between actions.
     def set_sample
       @service_site_contact = ServiceSiteContact.find(params.expect(:id))

@@ -1,6 +1,11 @@
 require "test_helper"
 
 class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
+  teardown do
+    # コントローラがキャッシュを使っている場合、テスト後にリセットしておくとよい
+    Rails.cache.clear
+  end
+
   test "should get new" do
     get new_www_app_contact_url
     assert_response :success
@@ -34,7 +39,7 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
     assert session[:contact_id]
     assert_equal email_address, session[:contact_email_address]
     assert_equal telephone_number, session[:contact_telephone_number]
-    assert_redirected_to www_app_contact_url(session[:contact_id])
+    assert_redirected_to new_www_app_contact_email_url(session[:contact_id])
   end
 
   test "should not get create" do
