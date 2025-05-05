@@ -64,6 +64,8 @@ jobs:
           bin/rails db:create
           bin/rails db:migrate
           bin/rails db:seed
+        env:
+          POSTGRESQL_PORT: 5432
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
 #  static-analysis:
