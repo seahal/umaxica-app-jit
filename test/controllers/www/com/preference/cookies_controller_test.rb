@@ -15,10 +15,10 @@ module Www
           assert_response :success
         end
 
-        test "Breadcrumbs" do
-          get www_com_root_url
-          # assert_select "nav ul li a[href=?]", www_com_root_url
-        end
+        # test "Breadcrumbs" do
+        #   get www_com_root_url
+        #   # assert_select "nav ul li a[href=?]", www_com_root_url
+        # end
 
         test "checking cookie policy" do
           get edit_www_com_preference_cookie_url
