@@ -52,7 +52,7 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
         telephone_number: telephone_number }
       }
     end
-    assert_not session[:contact_id]
+    assert_nil session[:contact_id]
     assert_nil session[:contact_email_address]
     assert_nil session[:contact_telephone_number]
   end
