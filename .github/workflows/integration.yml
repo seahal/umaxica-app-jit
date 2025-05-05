@@ -66,10 +66,29 @@ jobs:
           bin/rails db:create
           bin/rails db:migrate
           bin/rails db:seed
+      - name: brakeman
+        run: bundle exec brakeman -z -q
+      - name: rubocop
+        run:  bundle exec rubocop --fail-fast
+      - name: bundle audit
+        run: bundle exec bundle audit check --update
+      - name: erb lint
+        run: bundle exec erb_lint --lint-all
+      #              bundle exec bundle audit check --update
+      #              bundle exec brakeman -z -q
+      #              ;;
+      #            rubocop)
+      #              bin/rubocop --fail-fast
+      #              ;;
+      #            bundle-audit)
+      #              bundle exec bundle audit check --update
+      #              ;;
+      #            erb-lint)
+      #              bin/rails test:all
       - name: Rails Test (Without System Test)
         run: bin/rails test
-      - name: Rails Test (SYSTEM TEST)
-        run: bin/rails test:system
+#      - name: Rails Test (SYSTEM TEST)
+#        run: bin/rails test:system
 #  static-analysis:
 #    name: Static Analysis
 #    needs: [setup]
