@@ -5,14 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
+  <%= javascript_importmap_tags %>
   <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body class="px-4">
 <header>
   <h1 class="font-bold text-4xl"><%= link_to 'UMAXICA(SERVICE)', www_app_root_path %></h1>
+  <p>
+    <%= link_to_if !@user&.active?, "logout?", new_www_app_registration_path %>
+    <%= link_to_unless @user&.active?, "login?", new_www_app_registration_path %>
+  </p>
 </header>
 
 <hr>

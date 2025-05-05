@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   scope module: :www, as: :www do
+    # for client site
     constraints host: ENV["WWW_CORPORATE_URL"] do
       scope module: :com, as: :com do
         #
@@ -9,17 +10,25 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # contact page
-        resources :contacts, only: [ :new, :index, :create, :edit ] do
-          get "email"
-          get "telephone"
+        resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
+          scope module: :contact do
+            resource :email, only: [ :new, :create ]
+            resource :telephone, only: [ :new, :create ]
+          end
         end
         #
         resource :preference, only: [ :show ]
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
         end
+        #
+        resource :registration, only: [ :new, :create, :edit, :update ] do
+          resource :emails, only: [ :new, :create, :edit, :update ]
+          resource :telephone, only: [ :new, :create, :edit, :update ]
+        end
       end
 
+      # service page
       constraints host: ENV["WWW_SERVICE_URL"] do
         scope module: :app, as: :app do
           # homepage
@@ -29,14 +38,16 @@ Rails.application.routes.draw do
           # show stating env
           resource :staging, only: :show
           # contact page
-          resources :contacts, only: [ :new, :index, :create, :edit, :show ] do
-            get "email"
-            get "telephone"
+          resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
+            scope module: :contact do
+              resource :email, only: [ :new, :create ]
+              resource :telephone, only: [ :new, :create ]
+            end
           end
           # Sign up pages
           resource :registration, only: :new
           namespace :registration do
-            resources :emails, only: %i[new create edit update show]
+            resources :emails, only: %i[new create edit update]
             resources :telephones, only: %i[new create edit update]
             resource :google, only: %i[new create]
             resource :apple, only: %i[new create]
@@ -49,7 +60,7 @@ Rails.application.routes.draw do
             resource :email, only: %i[new create]
             resource :telephone, only: %i[new create]
             resource :passkey, only: %i[new create]
-            resource :recovery, only: %i[new create]
+            resource :recovery_code, only: %i[new create]
             resource :google, only: %i[new create]
             resource :apple, only: %i[new create]
           end
@@ -58,6 +69,7 @@ Rails.application.routes.draw do
           namespace :setting do
             resources :totp, only: [ :index, :new, :create, :edit, :update ]
             resources :passkeys, only: [ :index, :edit, :update, :new ]
+            resources :recovery_codes, only: %i[index new create edit update destroy show]
             resources :tokens, only: [ :show, :destroy ]
             resources :emails, only: [ :index ]
             resource :apple, only: [ :show ]
@@ -85,7 +97,16 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # contact page
-        namespace :contact do
+        resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
+          scope module: :contact do
+            resource :email, only: [ :new, :create ]
+            resource :telephone, only: [ :new, :create ]
+          end
+        end
+        # registration staff page
+        resource :registration, only: [ :new, :create, :edit, :update ] do
+          resource :emails, only: [ :new, :create, :edit, :update ]
+          resource :telephone, only: [ :new, :create, :edit, :update ]
         end
         # Sign up pages
         resource :authentication, only: :new do

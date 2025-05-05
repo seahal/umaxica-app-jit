@@ -1,0 +1,10 @@
+<h1>Www::App::Setting::Recoveries#index</h1>
+<p>Find me in app/views/www/app/setting/recoveries/index.html.erb</p>
+
+<ul>
+  <% @user_recover_code.each do |urc| %>
+    <li><%= urc.created_at %>, <%= link_to 'edit', www_app_setting_recovery_code_path(urc.id) %></li>
+  <% end %>
+</ul>
+
+<p><%= link_to 'new recovery code', new_www_app_setting_recovery_code_path %></p>

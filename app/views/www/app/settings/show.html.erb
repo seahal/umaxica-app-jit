@@ -1,2 +1,8 @@
 <h1>Www::App::Setting#show</h1>
 <p>Find me in app/views/www/app/setting/show.html.erb</p>
+
+<ul>
+  <li><%= link_to 'TOTP', www_app_setting_totp_index_path %></li>
+  <li><%= link_to 'PASSKEY', www_app_setting_passkeys_path %></li>
+  <li><%= link_to 'RECOVERY CODE', www_app_setting_recovery_codes_path %></li>
+</ul>

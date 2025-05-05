@@ -1,0 +1,24 @@
+<h1>Www::App::Setting::Recoveries#new</h1>
+<p>Find me in app/views/www/app/setting/recoveries/new.html.erb</p>
+
+<%= form_with model: @user_recover_code, url: www_app_setting_recovery_codes_path do |f| %>
+
+  <% if @user_recover_code.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(@user_recover_code.errors.count, "error") %> prohibited this sample from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% @user_recover_code.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.checkbox :confirm_create_recovery_code %>
+    <%= f.label :confirm_create_recovery_code, 'create' %>
+  </div>
+
+  <div><%= f.submit %></div>
+<% end %>

@@ -1,6 +1,5 @@
 <div>
-
-  <%= form_with model: @user_telephone, url: www_app_registration_telephones_path do |form| %>
+  <%= form_with model: @user_telephone, url: www_app_registration_telephones_path, method: 'post' do |form| %>
     <% if @user_telephone.errors.any? %>
       <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
         <h2><%= pluralize(@user_telephone.errors.count, "error") %> prohibited this sample from being saved:</h2>
@@ -14,8 +13,8 @@
     <% end %>
 
     <div>
-      <%= form.label :address %>
-      <%= form.email_field :address %>
+      <%= form.label :number %>
+      <%= form.text_field :number %>
     </div>
 
     <div>
@@ -24,16 +23,8 @@
     </div>
 
     <div>
-      <%= form.checkbox :confirm_policy %>
-      <%= form.label :confirm_fido2, 'FIDO2の利用を確認する' %>
-    </div>
-
-    <% content_tag(:div, nil, { id: "root", 'data-parent': 'sss' }) %>
-
-    <div id="root" data-parent="ruby and bun on rails">
-      <div>
-        <p>Hello world from Rails!</p>
-      </div>
+      <%= form.checkbox :confirm_using_mfa %>
+      <%= form.label :confirm_using_mfa, 'MFAの利用を確認する' %>
     </div>
 
     <div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>

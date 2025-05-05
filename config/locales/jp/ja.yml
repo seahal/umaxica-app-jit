@@ -1,14 +1,32 @@
 ---
 ja:
+  controller:
+    www:
+      app:
+        contacts:
+          new:
+            page_title: 'お問い合わせページ'
+            confirm_policy: 'プライバシーポリシーに同意します'
+        registration:
+          apple:
+            new:
+              page_title: 'apple id で登録します'
   www:
     app:
       registration:
+        google:
+          new:
+            page_title: 'google id で登録します'
         email:
           new:
             page_title: 'email で登録します'
             you_have_already_logged_in: 'あなたはログインしています'
           create:
             you_have_already_logged_in: 'あなたはログインしています'
+          edit:
+            you_have_already_logged_in: 'あなたはログインしています'
+            forbidden_action: '最初からやり直してください'
+            your_session_was_expired: '有効期間が切れたので、最初からやり直してください'
       authentication:
         edit:
           title: 'ログアウトしますか？'

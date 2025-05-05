@@ -66,3 +66,5 @@ Things you may want to cover:
   * [Fastly]()
   * bun
   * wrangler
+  * [Apple]()
+  * [Google]()

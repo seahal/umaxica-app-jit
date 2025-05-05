@@ -8,7 +8,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class User < AccountsRecord
+class User < IdentifiersRecord
   has_many :emails, foreign_key: "address"
   has_many :phones, foreign_key: "id"
   has_one :user_apple_auth
