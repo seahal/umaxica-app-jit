@@ -55,6 +55,11 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Setup database
+        run: |
+          bin/rails db:create
+          bin/rails db:migrate
+          bin/rails db:seed
 #  static-analysis:
 #    name: Static Analysis
 #    needs: [setup]
