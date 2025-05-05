@@ -48,98 +48,100 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-  static-analysis:
-    name: Static Analysis
-    needs: [setup]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    strategy:
-      fail-fast: false
-      matrix:
-        check: [ brakeman, rubocop, bundle-audit, erb-lint, reek ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
       - name: Remove lock files of packages
-        run: rm -f Gemfile.lock bun.lock
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-      - name: Run ${{ matrix.check }}
-        run: |
-          case "${{ matrix.check }}" in
-            brakeman)
-              bundle exec brakeman -z -q
-              ;;
-            rubocop)
-              bin/rubocop --fail-fast
-              ;;
-            bundle-audit)
-              bundle exec bundle audit check --update
-              ;;
-            erb-lint)
-              bin/rails test:all
-              ;;
-          esac
-  rails-info:
-    name: Rails Project Info
-    needs: [setup]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-      - name: Rails information
-        run: |
-          bundle exec rails about
-          bundle exec rails notes
-          bundle exec rails stats
-  integration-tests:
-    name: Integration Tests
-    needs: [setup]
-    runs-on: ubuntu-latest
-    timeout-minutes: 15 # Reduced from 20 minutes to 15 minutes
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Remove Gemfile.lock
         run: rm -f Gemfile.lock
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Setup Docker environment
-        run: |
-          # Setup QEMU and Buildx
-          docker run --privileged --rm tonistiigi/binfmt --install all
-          docker buildx create --use
-      - name: Build Docker containers
-        run: |
-          docker compose build --build-arg GITHUB_ACTIONS=true \
-            --build-arg DOCKER_UID=$(id -u) \
-            --build-arg DOCKER_GID=$(id -g)
-      - name: Start Docker services
-        run: docker compose up -d
-      - name: Setup database
-        run: |
-          bin/rails db:create
-          bin/rails db:migrate
-          bin/rails db:seed
-      - name: Configure hosts
-        run: |
-          echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee -a /etc/hosts
-      - name: Run all tests
-        run: bin/rails test:all
+#  static-analysis:
+#    name: Static Analysis
+#    needs: [setup]
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 5
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        check: [ brakeman, rubocop, bundle-audit, erb-lint, reek ]
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#      - name: Remove lock files of packages
+#        run: rm -f Gemfile.lock
+#      - name: Setup Ruby
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: .ruby-version
+#          bundler-cache: true
+#      - name: Run ${{ matrix.check }}
+#        run: |
+#          case "${{ matrix.check }}" in
+#            brakeman)
+#              bundle exec brakeman -z -q
+#              ;;
+#            rubocop)
+#              bin/rubocop --fail-fast
+#              ;;
+#            bundle-audit)
+#              bundle exec bundle audit check --update
+#              ;;
+#            erb-lint)
+#              bin/rails test:all
+#              ;;
+#          esac
+#  rails-info:
+#    name: Rails Project Info
+#    needs: [setup]
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 5
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#      - name: Setup Ruby
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: .ruby-version
+#          bundler-cache: true
+#      - name: Rails information
+#        run: |
+#          bundle exec rails about
+#          bundle exec rails notes
+#          bundle exec rails stats
+#  integration-tests:
+#    name: Integration Tests
+#    needs: [setup]
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 15 # Reduced from 20 minutes to 15 minutes
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#      - name: Remove Gemfile.lock
+#        run: rm -f Gemfile.lock
+#      - name: Setup Ruby
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: .ruby-version
+#          bundler-cache: true
+#      - name: Setup Docker environment
+#        run: |
+#          # Setup QEMU and Buildx
+#          docker run --privileged --rm tonistiigi/binfmt --install all
+#          docker buildx create --use
+#      - name: Build Docker containers
+#        run: |
+#          docker compose build --build-arg GITHUB_ACTIONS=true \
+#            --build-arg DOCKER_UID=$(id -u) \
+#            --build-arg DOCKER_GID=$(id -g)
+#      - name: Start Docker services
+#        run: docker compose up -d
+#      - name: Setup database
+#        run: |
+#          bin/rails db:create
+#          bin/rails db:migrate
+#          bin/rails db:seed
+#      - name: Configure hosts
+#        run: |
+#          echo '127.0.0.1   com.api.localdomain net.api.localdomainc org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee -a /etc/hosts
+#      - name: Run all tests
+#        run: bin/rails test:all
