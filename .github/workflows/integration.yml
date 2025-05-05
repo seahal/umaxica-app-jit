@@ -58,10 +58,12 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Create .env file.
+      - name: Update .env file.
         run: |
           touch .env
-          echo "POSTGRESQL_UNIVERSAL_PUB='localhost'" > .env
+          echo "POSTGRESQL_PASSWORD=password" > .env
+          echo "POSTGRESQL_PORT=5432" >> .env
+          echo "POSTGRESQL_UNIVERSAL_PUB='localhost'" >> .env
           echo "POSTGRESQL_UNIVERSAL_SUB='localhost'" >> .env
           echo "POSTGRESQL_CONTACT_PUB='localhost'" >> .env
           echo "POSTGRESQL_CONTACT_SUB='localhost'" >> .env

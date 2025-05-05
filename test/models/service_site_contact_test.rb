@@ -2,7 +2,7 @@
 #
 # Table name: service_site_contacts
 #
-#  id               :bigint           not null, primary key
+#  id               :uuid             not null, primary key
 #  description      :text
 #  email_address    :string
 #  telephone_number :string

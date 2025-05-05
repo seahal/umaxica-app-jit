@@ -15,7 +15,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_05_020715) do
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "service_site_contacts", force: :cascade do |t|
+  create_table "service_site_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "email_address"
     t.string "telephone_number"
     t.string "title"
