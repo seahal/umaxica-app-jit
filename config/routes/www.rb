@@ -10,7 +10,7 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # contact page
-        resources :contacts, only: [ :new, :create, :edit, :update, :show] do
+        resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
           scope module: :contact do
             resource :email, only: [ :new, :create ]
             resource :telephone, only: [ :new, :create ]
@@ -38,7 +38,7 @@ Rails.application.routes.draw do
           # show stating env
           resource :staging, only: :show
           # contact page
-          resources :contacts, only: [ :new, :create, :edit, :update, :show] do
+          resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
             scope module: :contact do
               resource :email, only: [ :new, :create ]
               resource :telephone, only: [ :new, :create ]
@@ -97,7 +97,7 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # contact page
-        resources :contacts, only: [ :new, :create, :edit, :update, :show] do
+        resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
           scope module: :contact do
             resource :email, only: [ :new, :create ]
             resource :telephone, only: [ :new, :create ]

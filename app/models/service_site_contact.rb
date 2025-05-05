@@ -13,7 +13,7 @@
 class ServiceSiteContact < ContactsRecord
   attr_accessor :confirm_policy
 
-  before_save { self.address&.downcase! }
+  before_save { self.email_address&.downcase! }
 
   encrypts :email_address, downcase: true
   encrypts :telephone_number, downcase: true

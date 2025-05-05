@@ -16,13 +16,42 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
       assert_select "div.cf-turnstile", 1
       assert_select "input[type=?]", "submit"
     end
+    assert_nil session[:contact_id]
+    assert_nil session[:contact_email_address]
+    assert_nil session[:contact_telephone_number]
   end
 
-  # test "should get show" do
-  #   get www_app_contacts_url(1)
-  #   assert_response :success
-  # end
-  #
+  test "should get create" do
+    email_address = "sample@example.com"
+    telephone_number = "+819012345678"
+    assert_no_difference("ServiceSiteContact.count") do
+      post www_app_contacts_url, params: { service_site_contact: {
+        confirm_policy: 1,
+        email_address: email_address,
+        telephone_number: telephone_number }
+      }
+    end
+    assert session[:contact_id]
+    assert_equal email_address, session[:contact_email_address]
+    assert_equal telephone_number, session[:contact_telephone_number]
+    assert_redirected_to www_app_contact_url(session[:contact_id])
+  end
+
+  test "should not get create" do
+    email_address = "sample@example.net"
+    telephone_number = "+819012345670"
+    assert_no_difference("ServiceSiteContact.count") do
+      post www_app_contacts_url, params: { service_site_contact: {
+        confirm_policy: 0,
+        email_address: email_address,
+        telephone_number: telephone_number }
+      }
+    end
+    assert_not session[:contact_id]
+    assert_nil session[:contact_email_address]
+    assert_nil session[:contact_telephone_number]
+  end
+
   # test "should get update" do
   #   get www_app_contacts_url(1)
   #   assert_response :success
