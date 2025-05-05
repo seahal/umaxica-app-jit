@@ -39,6 +39,7 @@ jobs:
         # Provide the password for postgres
         env:
           POSTGRES_PASSWORD: password
+          POSTGRES_USER: root
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -58,39 +59,13 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Update .env file.
-        run: |
-          touch .env
-          echo "POSTGRESQL_PASSWORD=password" > .env
-          echo "POSTGRESQL_PORT=5432" >> .env
-          echo "POSTGRESQL_USER=postgres" >> .env
-          echo "POSTGRESQL_UNIVERSAL_PUB='localhost'" >> .env
-          echo "POSTGRESQL_UNIVERSAL_SUB='localhost'" >> .env
-          echo "POSTGRESQL_CONTACT_PUB='localhost'" >> .env
-          echo "POSTGRESQL_CONTACT_SUB='localhost'" >> .env
-          echo "POSTGRESQL_IDENTIFIER_PUB='localhost'" >> .env
-          echo "POSTGRESQL_IDENTIFIER_SUB='localhost'" >> .env
-          echo "POSTGRESQL_PROFILE_PUB='localhost'" >> .env
-          echo "POSTGRESQL_PROFILE_SUB='localhost'" >> .env
-          echo "POSTGRESQL_TOKEN_PUB='localhost'" >> .env
-          echo "POSTGRESQL_TOKEN_SUB='localhost'" >> .env
-          echo "POSTGRESQL_ENTITY_PUB='localhost'" >> .env
-          echo "POSTGRESQL_ENTITY_SUB='localhost'" >> .env
-          echo "POSTGRESQL_MESSAGE_PUB='localhost'" >> .env
-          echo "POSTGRESQL_MESSAGE_SUB='localhost'" >> .env
-          echo "POSTGRESQL_NOTIFICATION_PUB='localhost'" >> .env
-          echo "POSTGRESQL_NOTIFICATION_SUB='localhost'" >> .env
-          echo "POSTGRESQL_CACHE_PUB='localhost'" >> .env
-          echo "POSTGRESQL_CACHE_SUB='localhost'" >> .env
-          echo "POSTGRESQL_CORE_PUB='localhost'" >> .env
-          echo "POSTGRESQL_CORE_SUB='localhost'" >> .env
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Setup database
         run: |
           bin/rails db:create
           bin/rails db:migrate
           bin/rails db:seed
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 #  static-analysis:
 #    name: Static Analysis
 #    needs: [setup]
