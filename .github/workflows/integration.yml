@@ -80,6 +80,7 @@ jobs:
           echo "POSTGRESQL_CORE_SUB='localhost'" >> .env
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
+      - name: Setup database
         run: |
           bin/rails db:create
           bin/rails db:migrate
