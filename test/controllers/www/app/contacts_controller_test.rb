@@ -61,6 +61,29 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
     assert session[:contact_expires_in] == nil
   end
 
+
+  test "should get create email" do
+    email_address = "sample@example.com"
+    telephone_number = "+819012345600"
+    assert_no_difference("ServiceSiteContact.count") do
+      post www_app_contacts_url, params: { service_site_contact: {
+        confirm_policy: 1,
+        email_address: email_address,
+        telephone_number: telephone_number }
+      }
+    end
+    follow_redirect!
+    assert_equal "new", @controller.action_name
+    assert_equal "emails", @controller.controller_name
+    assert_select "h1", I18n.t("controller.www.app.contacts.new.page_title")
+    assert_select "p", "Find me in app/views/www/app/contacts/new.html.erb"
+    assert_select "form[action=?][method=?]", www_app_contact_email_path, "post" do
+      assert_select "label[for=?]", "service_site_contact_email_pass_code"
+      assert_select "input[type=?][name=?]", "text", "service_site_contact[email_pass_code]"
+      assert_select "input[type=?]", "submit"
+    end
+  end
+
   # test "should get update" do
   #   get www_app_contacts_url(1)
   #   assert_response :success

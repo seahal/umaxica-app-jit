@@ -11,7 +11,7 @@
 #  updated_at       :datetime         not null
 #
 class ServiceSiteContact < ContactsRecord
-  attr_accessor :confirm_policy
+  attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code
 
   before_save { self.email_address&.downcase! }
 
