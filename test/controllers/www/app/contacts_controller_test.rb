@@ -52,9 +52,9 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
         telephone_number: telephone_number }
       }
     end
-    assert_nil session[:contact_id]
-    assert_nil session[:contact_email_address]
-    assert_nil session[:contact_telephone_number]
+    assert session[:contact_id].nil?
+    assert session[:contact_email_address].nil?
+    assert session[:contact_telephone_number].nil?
   end
 
   # test "should get update" do
