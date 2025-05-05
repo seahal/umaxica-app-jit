@@ -38,7 +38,6 @@ gem "karafka", "~> 2.4", ">= 2.4.17"
 gem "opensearch-ruby", "~> 3.4"
 # OpenStruct
 # gem "ostruct", "~> 0.6.1"
-gem "cancancan", "~> 3.6", ">= 3.6.1"
 # for communications with telecommunications
 gem "aws-sdk"
 # for Active Storage
@@ -71,9 +70,11 @@ gem "kaminari"
 gem "gretel", "~> 5.0", ">= 5.0.1"
 # Social Login
 gem "omniauth"
-gem "omniauth-rails_csrf_protection"
 gem "omniauth-apple", "~> 1.3"
 gem "omniauth-google-oauth2", "~> 1.1", ">= 1.1.1"
+gem "omniauth-rails_csrf_protection"
+# pundit
+gem "pundit", "~> 2.5"
 
 group :development, :test do
   # to avoid n+1 queries

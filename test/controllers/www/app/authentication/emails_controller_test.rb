@@ -18,6 +18,7 @@ class Www::App::Session::EmailsControllerTest < ActionDispatch::IntegrationTest
       assert_select "input[type=?]", "submit"
     end
     assert_not cookies[:htop_private_key].nil?
+    assert_select "a[href=?]", new_www_app_authentication_path, I18n.t('www.app.authentication.new.back')
     assert_response :success
   end
 

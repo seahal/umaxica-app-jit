@@ -1,2 +1,9 @@
 <h1>Www::App::Authentication::Telephones#new</h1>
 <p>Find me in app/views/www/app/authentication/telephones/new.html.erb</p>
+
+<div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>
+
+
+<ul>
+  <li><%= link_to t('www.app.authentication.new.back'), new_www_app_authentication_path %></li>
+</ul>
