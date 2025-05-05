@@ -66,8 +66,10 @@ jobs:
           bin/rails db:create
           bin/rails db:migrate
           bin/rails db:seed
-      - name: Rails Test
-        run: bin/rails test:all
+      - name: Rails Test (Without System Test)
+        run: bin/rails test
+      - name: Rails Test (SYSTEM TEST)
+        run: bin/rails test:system
 #  static-analysis:
 #    name: Static Analysis
 #    needs: [setup]
