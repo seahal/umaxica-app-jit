@@ -55,53 +55,31 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Create .end file.
+      - name: Create .env file.
         run: |
           touch .env
-          echo "POSTGRESQL_UNIVERSAL_PUB='postgres'" > .env
-          echo "POSTGRESQL_UNIVERSAL_SUB='postgres'" >> .env
-          echo "POSTGRESQL_CONTACT_PUB='postgres'" >> .env
-          echo "POSTGRESQL_CONTACT_SUB='postgres'" >> .env
-          echo "POSTGRESQL_IDENTIFIER_PUB='postgres'" >> .env
-          echo "POSTGRESQL_IDENTIFIER_SUB='postgres'" >> .env
-          echo "POSTGRESQL_PROFILE_PUB='postgres'" >> .env
-          echo "POSTGRESQL_PROFILE_SUB='postgres'" >> .env
-          echo "POSTGRESQL_TOKEN_PUB='postgres'" >> .env
-          echo "POSTGRESQL_TOKEN_SUB='postgres'" >> .env
-          echo "POSTGRESQL_ENTITY_PUB='postgres'" >> .env
-          echo "POSTGRESQL_ENTITY_SUB='postgres'" >> .env
-          echo "POSTGRESQL_MESSAGE_PUB='postgres'" >> .env
-          echo "POSTGRESQL_MESSAGE_SUB='postgres'" >> .env
-          echo "POSTGRESQL_NOTIFICATION_PUB='postgres'" >> .env
-          echo "POSTGRESQL_NOTIFICATION_SUB='postgres'" >> .env
-          echo "POSTGRESQL_CACHE_PUB='postgres'" >> .env
-          echo "POSTGRESQL_CACHE_SUB='postgres'" >> .env
-          echo "POSTGRESQL_CORE_PUB='postgres'" >> .env
-          echo "POSTGRESQL_CORE_SUB='postgres'" >> .env
+          echo "POSTGRESQL_UNIVERSAL_PUB='localhost'" >> .env
+          echo "POSTGRESQL_UNIVERSAL_SUB='localhost'" >> .env
+          echo "POSTGRESQL_CONTACT_PUB='localhost'" >> .env
+          echo "POSTGRESQL_CONTACT_SUB='localhost'" >> .env
+          echo "POSTGRESQL_IDENTIFIER_PUB='localhost'" >> .env
+          echo "POSTGRESQL_IDENTIFIER_SUB='localhost'" >> .env
+          echo "POSTGRESQL_PROFILE_PUB='localhost'" >> .env
+          echo "POSTGRESQL_PROFILE_SUB='localhost'" >> .env
+          echo "POSTGRESQL_TOKEN_PUB='localhost'" >> .env
+          echo "POSTGRESQL_TOKEN_SUB='localhost'" >> .env
+          echo "POSTGRESQL_ENTITY_PUB='localhost'" >> .env
+          echo "POSTGRESQL_ENTITY_SUB='localhost'" >> .env
+          echo "POSTGRESQL_MESSAGE_PUB='localhost'" >> .env
+          echo "POSTGRESQL_MESSAGE_SUB='localhost'" >> .env
+          echo "POSTGRESQL_NOTIFICATION_PUB='localhost'" >> .env
+          echo "POSTGRESQL_NOTIFICATION_SUB='localhost'" >> .env
+          echo "POSTGRESQL_CACHE_PUB='localhost'" >> .env
+          echo "POSTGRESQL_CACHE_SUB='localhost'" >> .env
+          echo "POSTGRESQL_CORE_PUB='localhost'" >> .env
+          echo "POSTGRESQL_CORE_SUB='localhost'" >> .env
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-      - name: Setup database
-        env:
-          POSTGRESQL_UNIVERSAL_PUB: 'primary'
-          POSTGRESQL_UNIVERSAL_SUB: 'replica'
-          POSTGRESQL_CONTACT_PUB: 'primary'
-          POSTGRESQL_CONTACT_SUB: 'replica'
-          POSTGRESQL_IDENTIFIER_PUB: 'primary'
-          POSTGRESQL_IDENTIFIER_SUB: 'replica'
-          POSTGRESQL_PROFILE_PUB: 'primary'
-          POSTGRESQL_PROFILE_SUB: 'replica'
-          POSTGRESQL_TOKEN_PUB: 'primary'
-          POSTGRESQL_TOKEN_SUB: 'replica'
-          POSTGRESQL_ENTITY_PUB: 'primary'
-          POSTGRESQL_ENTITY_SUB: 'replica'
-          POSTGRESQL_MESSAGE_PUB: 'primary'
-          POSTGRESQL_MESSAGE_SUB: 'replica'
-          POSTGRESQL_NOTIFICATION_PUB: 'primary'
-          POSTGRESQL_NOTIFICATION_SUB: 'replica'
-          POSTGRESQL_CACHE_PUB: 'primary'
-          POSTGRESQL_CACHE_SUB: 'replica'
-          POSTGRESQL_CORE_PUB: 'primary'
-          POSTGRESQL_CORE_SUB: 'replica'
         run: |
           bin/rails db:create
           bin/rails db:migrate
