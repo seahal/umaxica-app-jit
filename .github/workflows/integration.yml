@@ -85,7 +85,7 @@ jobs:
               bundle exec bundle audit check --update
               ;;
             erb-lint)
-              bundle exec erb_lint --lint-all
+              bin/rails test:all
               ;;
           esac
   rails-info:
