@@ -58,6 +58,27 @@ jobs:
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
       - name: Setup database
+        env:
+          POSTGRESQL_UNIVERSAL_PUB: 'primary'
+          POSTGRESQL_UNIVERSAL_SUB: 'replica'
+          POSTGRESQL_CONTACT_PUB: 'primary'
+          POSTGRESQL_CONTACT_SUB: 'replica'
+          POSTGRESQL_IDENTIFIER_PUB: 'primary'
+          POSTGRESQL_IDENTIFIER_SUB: 'replica'
+          POSTGRESQL_PROFILE_PUB: 'primary'
+          POSTGRESQL_PROFILE_SUB: 'replica'
+          POSTGRESQL_TOKEN_PUB: 'primary'
+          POSTGRESQL_TOKEN_SUB: 'replica'
+          POSTGRESQL_ENTITY_PUB: 'primary'
+          POSTGRESQL_ENTITY_SUB: 'replica'
+          POSTGRESQL_MESSAGE_PUB: 'primary'
+          POSTGRESQL_MESSAGE_SUB: 'replica'
+          POSTGRESQL_NOTIFICATION_PUB: 'primary'
+          POSTGRESQL_NOTIFICATION_SUB: 'replica'
+          POSTGRESQL_CACHE_PUB: 'primary'
+          POSTGRESQL_CACHE_SUB: 'replica'
+          POSTGRESQL_CORE_PUB: 'primary'
+          POSTGRESQL_CORE_SUB: 'replica'
         run: |
           bin/rails db:create
           bin/rails db:migrate
