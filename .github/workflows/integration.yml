@@ -58,26 +58,26 @@ jobs:
       - name: Create .end file.
         run: |
           touch .env
-          echo "POSTGRESQL_UNIVERSAL_PUB='primary'" >> .env
-          echo "POSTGRESQL_UNIVERSAL_SUB='replica'" >> .env
-          echo "POSTGRESQL_CONTACT_PUB='primary'" >> .env
-          echo "POSTGRESQL_CONTACT_SUB='replica'" >> .env
-          echo "POSTGRESQL_IDENTIFIER_PUB='primary'" >> .env
-          echo "POSTGRESQL_IDENTIFIER_SUB='replica'" >> .env
-          echo "POSTGRESQL_PROFILE_PUB='primary'" >> .env
-          echo "POSTGRESQL_PROFILE_SUB='replica'" >> .env
-          echo "POSTGRESQL_TOKEN_PUB='primary'" >> .env
-          echo "POSTGRESQL_TOKEN_SUB='replica'" >> .env
-          echo "POSTGRESQL_ENTITY_PUB='primary'" >> .env
-          echo "POSTGRESQL_ENTITY_SUB='replica'" >> .env
-          echo "POSTGRESQL_MESSAGE_PUB='primary'" >> .env
-          echo "POSTGRESQL_MESSAGE_SUB='replica'" >> .env
-          echo "POSTGRESQL_NOTIFICATION_PUB='primary'" >> .env
-          echo "POSTGRESQL_NOTIFICATION_SUB='replica'" >> .env
-          echo "POSTGRESQL_CACHE_PUB='primary'" >> .env
-          echo "POSTGRESQL_CACHE_SUB='replica'" >> .env
-          echo "POSTGRESQL_CORE_PUB='primary'" >> .env
-          echo "POSTGRESQL_CORE_SUB='replica'" >> .env
+          echo "POSTGRESQL_UNIVERSAL_PUB='postgres'" > .env
+          echo "POSTGRESQL_UNIVERSAL_SUB='postgres'" >> .env
+          echo "POSTGRESQL_CONTACT_PUB='postgres'" >> .env
+          echo "POSTGRESQL_CONTACT_SUB='postgres'" >> .env
+          echo "POSTGRESQL_IDENTIFIER_PUB='postgres'" >> .env
+          echo "POSTGRESQL_IDENTIFIER_SUB='postgres'" >> .env
+          echo "POSTGRESQL_PROFILE_PUB='postgres'" >> .env
+          echo "POSTGRESQL_PROFILE_SUB='postgres'" >> .env
+          echo "POSTGRESQL_TOKEN_PUB='postgres'" >> .env
+          echo "POSTGRESQL_TOKEN_SUB='postgres'" >> .env
+          echo "POSTGRESQL_ENTITY_PUB='postgres'" >> .env
+          echo "POSTGRESQL_ENTITY_SUB='postgres'" >> .env
+          echo "POSTGRESQL_MESSAGE_PUB='postgres'" >> .env
+          echo "POSTGRESQL_MESSAGE_SUB='postgres'" >> .env
+          echo "POSTGRESQL_NOTIFICATION_PUB='postgres'" >> .env
+          echo "POSTGRESQL_NOTIFICATION_SUB='postgres'" >> .env
+          echo "POSTGRESQL_CACHE_PUB='postgres'" >> .env
+          echo "POSTGRESQL_CACHE_SUB='postgres'" >> .env
+          echo "POSTGRESQL_CORE_PUB='postgres'" >> .env
+          echo "POSTGRESQL_CORE_SUB='postgres'" >> .env
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
       - name: Setup database
