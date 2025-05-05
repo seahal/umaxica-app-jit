@@ -63,6 +63,7 @@ jobs:
           touch .env
           echo "POSTGRESQL_PASSWORD=password" > .env
           echo "POSTGRESQL_PORT=5432" >> .env
+          echo "POSTGRESQL_USER=postgres" >> .env
           echo "POSTGRESQL_UNIVERSAL_PUB='localhost'" >> .env
           echo "POSTGRESQL_UNIVERSAL_SUB='localhost'" >> .env
           echo "POSTGRESQL_CONTACT_PUB='localhost'" >> .env
