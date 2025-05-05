@@ -25,6 +25,23 @@ development:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
+  contact:
+    <<: *default
+    database: development_contact_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_PUB"]: 'localhost' %>
+    migrations_paths: db/contacts_migrate
+  contact_replica:
+    <<: *default
+    replica: true
+    database: development_contact_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_SUB"]: 'localhost' %>
+    migrations_paths: db/contacts_migrate
   identifier:
     <<: *default
     database: development_identifier_db
@@ -186,6 +203,23 @@ test:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
+  contact:
+    <<: *default
+    database: test_contact_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_PUB"]: 'localhost' %>
+    migrations_paths: db/contacts_migrate
+  contact_replica:
+    <<: *default
+    replica: true
+    database: test_contact_db
+    port:
+      <%= File.exist?('/.dockerenv') ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_SUB"]: 'localhost' %>
+    migrations_paths: db/contacts_migrate
   identifier:
     <<: *default
     database: test_identifier_db

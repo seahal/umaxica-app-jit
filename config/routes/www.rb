@@ -36,9 +36,9 @@ Rails.application.routes.draw do
           # show stating env
           resource :staging, only: :show
           # contact page
-          resources :contacts, only: [ :new, :index, :create, :edit, :show ] do
-            get "email"
-            get "telephone"
+          resources :contacts, only: [ :new, :create, :edit, :update ] do
+            resource :email, only: [ :new, :create ]
+            resource :telephone, only: [ :new, :create ]
           end
           # Sign up pages
           resource :registration, only: :new
@@ -93,7 +93,9 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # contact page
-        namespace :contact do
+        resources :contacts, only: [ :new, :index, :create, :edit, :show ] do
+          resource :email
+          resource :telephone
         end
         # registration staff page
         resource :registration, only: [ :new, :create, :edit, :update ] do

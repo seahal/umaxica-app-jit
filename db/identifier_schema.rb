@@ -21,9 +21,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_04_005612) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "client_recovery_codes", force: :cascade do |t|
+  create_table "client_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "password_digest"
-    t.date "expire_in"
+    t.date "expires_in"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -47,9 +47,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_04_005612) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_recovery_codes", force: :cascade do |t|
+  create_table "staff_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "password_digest"
-    t.date "expire_in"
+    t.date "expires_in"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -86,9 +86,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_04_005612) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_recovery_codes", force: :cascade do |t|
+  create_table "user_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "password_digest"
-    t.date "expire_in"
+    t.date "expires_in"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -1,18 +1,19 @@
 module Www::App
   class ContactsController < ApplicationController
     def new
+      @service_site_contact = ServiceSiteContact.new
     end
 
-    def show
+    def create
     end
 
     def update
     end
 
-    def index
+    def edit
     end
 
-    def edit
+    def show
     end
   end
 end

@@ -1,5 +1,12 @@
 ---
 ja:
+  controller:
+    www:
+      app:
+        contacts:
+          new:
+            page_title: 'お問い合わせページ'
+            confirm_policy: 'プライバシーポリシーに同意します'
   www:
     app:
       registration:
