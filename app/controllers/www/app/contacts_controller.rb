@@ -36,6 +36,7 @@ module Www::App
 
     private
     def clear_session
+      session[:contact_id] = nil
       session[:contact_email_address] = nil
       session[:contact_telephone_number] = nil
       session[:contact_email_checked] = nil
