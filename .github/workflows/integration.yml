@@ -54,6 +54,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Configure hosts
+        run: |
+          echo '127.0.0.1   com.api.localdomain net.api.localdomain org.api.localdomain app.api.localdomain com.www.localdomain net.www.localdomain org.www.localdomain app.www.localdomain localhost' | sudo tee -a /etc/hosts
       - name: Remove lock files of packages
         run: rm -f Gemfile.lock
       - name: Setup Ruby
@@ -74,21 +77,10 @@ jobs:
         run: bundle exec bundle audit check --update
       - name: erb lint
         run: bundle exec erb_lint --lint-all
-      #              bundle exec bundle audit check --update
-      #              bundle exec brakeman -z -q
-      #              ;;
-      #            rubocop)
-      #              bin/rubocop --fail-fast
-      #              ;;
-      #            bundle-audit)
-      #              bundle exec bundle audit check --update
-      #              ;;
-      #            erb-lint)
-      #              bin/rails test:all
       - name: Rails Test (Without System Test)
         run: bin/rails test
-#      - name: Rails Test (SYSTEM TEST)
-#        run: bin/rails test:system
+      - name: Rails Test (SYSTEM TEST)
+        run: bin/rails test:system
 #  static-analysis:
 #    name: Static Analysis
 #    needs: [setup]
