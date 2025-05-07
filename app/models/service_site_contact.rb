@@ -14,13 +14,12 @@ class ServiceSiteContact < ContactsRecord
   attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code
 
   before_save { self.email_address&.downcase! }
+  before_save { self.telephone_number&.downcase! }
 
   encrypts :email_address, downcase: true
   encrypts :telephone_number, downcase: true
   encrypts :title
   encrypts :description
-
-  all_nil_params = {}
 
   validates :confirm_policy,
             acceptance: true,
@@ -37,14 +36,18 @@ class ServiceSiteContact < ContactsRecord
             numericality: { only_integer: true },
             length: { is: 6 },
             presence: true,
-            if: Proc.new { !it.email_pass_code.nil? }
+            unless: Proc.new { it.email_pass_code.nil? }
   validates :telephone_pass_code,
             numericality: { only_integer: true },
             length: { is: 6 },
             presence: true,
-            if: Proc.new { !it.telephone_pass_code.nil? }
-  validates :title, presence: true, length: { maximum: 255 },
-            if: Proc.new { it.telephone_pass_code.nil? && it.confirm_policy.nil? && it.email_address.nil? && it.telephone_number.nil? && !it.title.nil? && !it.description.nil? && it.email_pass_code.nil? }
-  #         if: Proc.new { it.telephone_pass_code.nil? && it.confirm_policy.nil? && it.email_address.nil? && it.telephone_number.nil? && it.title.nil? && it.description.nil? && it.email_pass_code.nil? }
-  validates :description, presence: true, length: { maximum: 4095 }, if: Proc.new { it.telephone_pass_code.nil? && it.confirm_policy.nil? && it.email_address.nil? && it.telephone_number.nil? && !it.title.nil? && !it.description.nil? && it.email_pass_code.nil? }
+            unless: Proc.new { it.telephone_pass_code.nil? }
+  validates :title,
+            presence: true,
+            length: { in: 8...256 },
+            unless: Proc.new { it.title.nil? }
+  validates :description,
+            presence: true,
+            length: { in: 8...1024 },
+            unless: Proc.new { it.description.nil? }
 end

@@ -90,12 +90,34 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       # refute model.new(email_pass_code: 123456, telephone_pass_code: 123456).valid?
     end
 
-    # test "good #{model}'s confirm pattern" do
-    #   assert_no_changes(model.count) do
-    #     assert_not model.new(confirm_policy: false, email_address: "eg@example.com", telephone_number: "+81901232456789").valid?
-    #   end
-    # end
-    #
+    test "bad #{model}'s title pattern" do
+      [ "", "a" * 7, "a" * 256 ].each do
+        @good_pattern.title = it
+        refute @good_pattern.valid?
+      end
+    end
+
+    test "good #{model}'s title pattern" do
+      [ "a" * 8, "a" * 255, nil ].each do
+        @good_pattern.title = it
+        assert @good_pattern.valid?
+      end
+    end
+
+    test "bad #{model}'s description pattern" do
+      [ "", "a" * 7, "a" * 1024 ].each do
+        @good_pattern.description = it
+        refute @good_pattern.valid?
+      end
+    end
+
+    test "good #{model}'s description pattern" do
+      [ "a" * 8, "a" * 1023, nil ].each do
+        @good_pattern.description = it
+        assert @good_pattern.valid?
+      end
+    end
+
     # test "valid #{model}'s email pattern" do
     #   eg = model.count
     #   model.create(email_address: "eg@example.net", telephone_number: "+8180123245689")
