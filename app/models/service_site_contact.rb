@@ -11,8 +11,9 @@
 #  updated_at       :datetime         not null
 #
 class ServiceSiteContact < ContactsRecord
-  attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code
+  attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code, :step
 
+  before_validation { self.step ||= "init" }
   before_save { self.email_address&.downcase! }
   before_save { self.telephone_number&.downcase! }
 
@@ -21,6 +22,8 @@ class ServiceSiteContact < ContactsRecord
   encrypts :title
   encrypts :description
 
+  validates :step,
+            presence: true
   validates :confirm_policy,
             acceptance: true,
             unless: Proc.new { it.telephone_number.nil? && it.confirm_policy.nil? && it.email_address.nil? }
@@ -36,7 +39,8 @@ class ServiceSiteContact < ContactsRecord
             numericality: { only_integer: true },
             length: { is: 6 },
             presence: true,
-            unless: Proc.new { it.email_pass_code.nil? }
+            unless: Proc.new { it.email_pass_code.nil? },
+            if: Proc.new { it.telephone_pass_code.nil? }
   validates :telephone_pass_code,
             numericality: { only_integer: true },
             length: { is: 6 },

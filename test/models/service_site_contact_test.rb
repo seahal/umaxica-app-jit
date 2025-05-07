@@ -76,7 +76,6 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       refute model.new(email_pass_code: 0).valid?
       refute model.new(email_pass_code: 1).valid?
       assert model.new(email_pass_code: nil, telephone_pass_code: 123456).valid?
-      # refute model.new(email_pass_code: 123456, telephone_pass_code: 123456).valid?
     end
 
     test "good #{model}'s telephone otp password pattern" do
@@ -87,7 +86,6 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       refute model.new(telephone_pass_code: 0).valid?
       refute model.new(telephone_pass_code: 1).valid?
       assert model.new(email_pass_code: 123456, telephone_pass_code: nil).valid?
-      # refute model.new(email_pass_code: 123456, telephone_pass_code: 123456).valid?
     end
 
     test "bad #{model}'s title pattern" do
