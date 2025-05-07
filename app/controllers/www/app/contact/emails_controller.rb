@@ -11,13 +11,13 @@ module Www
           ## checking not email validation
           ## checking not telephone validation
           ## checking time
-          # if [ true ].all?
-          #   render template: "www/app/contacts/error", status: :unprocessable_entity
-          # end
+          if [ true ].all?
+            #  render template: "www/app/contacts/error", status: :unprocessable_entity
+          end
           # make forms which for email sonzai
           @service_site_contact = ServiceSiteContact.new
         end
-        #new_www_app_contact_email
+        # new_www_app_contact_email
 
         def create
         end
