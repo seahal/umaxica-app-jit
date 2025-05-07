@@ -18,7 +18,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       @good_pattern = model.new(
         confirm_policy: true,
         email_address: "eg@example.com",
-        telephone_number: "+81901232456789",
+        telephone_number: "+819012345678",
         email_pass_code: 123456,
         telephone_pass_code: 123456,
         title: "good title",
@@ -26,36 +26,70 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     end
 
     test "good #{model}'s email pattern" do
-        #    assert_changes(model.count) do
         assert @good_pattern.valid?
         assert @good_pattern.save
         @good_pattern.email_address = "x@example.net"
         assert @good_pattern.valid?
-      # endrequire "test_helper"
     end
 
-    test "valid #{model}'s email otp password pattern" do
-      assert model.new(email_pass_code: nil, telephone_pass_code: 123456).valid?
-      assert model.new(email_pass_code: 123456, telephone_pass_code: nil).valid?
-      # refute model.new(email_pass_code: 123456, telephone_pass_code: 123456).valid?
+    test "valid #{model}'s confirmation check" do
+      assert @good_pattern.valid?
+      @good_pattern.confirm_policy = false
+      refute @good_pattern.valid?
+      @good_pattern.confirm_policy = nil
+      assert @good_pattern.valid?
+    end
+
+    test "invalid #{model}'s email patterns" do
+      [ nil, "", "example..com", "exampleexample.com", "xample@#example.jp", "@example.com" ].each do
+        @good_pattern.email_address = it
+        refute @good_pattern.valid?
+      end
+    end
+
+    test "valid #{model}'s email patterns" do
+      [ "example@example.org" ].each do |chars|
+        @good_pattern.email_address = chars
+        assert @good_pattern.valid?
+      end
+    end
+
+    test "invalid #{model}'s telephone number patterns" do
+      [ "", nil, "+810901234", "81901234" ].each do
+        @good_pattern.email_address = it
+        refute @good_pattern.valid?
+      end
+    end
+
+    test "valid #{model}'s telephone number patterns" do
+      [ "+811" ].each do
+        @good_pattern.email_address = it
+        refute @good_pattern.valid?
+      end
     end
 
     test "good #{model}'s email otp password pattern" do
       assert model.new(email_pass_code: 123456).valid?
+      assert model.new(email_pass_code: nil).valid?
       refute model.new(email_pass_code: 12345).valid?
       refute model.new(email_pass_code: 1234567).valid?
       refute model.new(email_pass_code: 0).valid?
       refute model.new(email_pass_code: 1).valid?
+      assert model.new(email_pass_code: nil, telephone_pass_code: 123456).valid?
+      # refute model.new(email_pass_code: 123456, telephone_pass_code: 123456).valid?
     end
 
     test "good #{model}'s telephone otp password pattern" do
       assert model.new(telephone_pass_code: 123456).valid?
+      assert model.new(telephone_pass_code: nil).valid?
       refute model.new(telephone_pass_code: 12345).valid?
       refute model.new(telephone_pass_code: 1234567).valid?
       refute model.new(telephone_pass_code: 0).valid?
       refute model.new(telephone_pass_code: 1).valid?
+      assert model.new(email_pass_code: 123456, telephone_pass_code: nil).valid?
+      # refute model.new(email_pass_code: 123456, telephone_pass_code: 123456).valid?
     end
-    #
+
     # test "good #{model}'s confirm pattern" do
     #   assert_no_changes(model.count) do
     #     assert_not model.new(confirm_policy: false, email_address: "eg@example.com", telephone_number: "+81901232456789").valid?

@@ -24,22 +24,25 @@ class ServiceSiteContact < ContactsRecord
 
   validates :confirm_policy,
             acceptance: true,
-            if: Proc.new { it.email_pass_code.nil? && it.telephone_pass_code.nil? && !!it.confirm_policy && !!it.email_address && !!it.telephone_number && !!it.title && !!it.description }
+            unless: Proc.new { it.telephone_number.nil? && it.confirm_policy.nil? && it.email_address.nil? }
   validates :email_address,
             format: { with: URI::MailTo::EMAIL_REGEXP },
             presence: true,
-            if: Proc.new { it.email_pass_code.nil? && it.telephone_pass_code.nil? && !!it.confirm_policy && !!it.email_address && !!it.telephone_number && !!it.title && !!it.description }
+            unless: Proc.new { it.telephone_number.nil? && it.confirm_policy.nil? && it.email_address.nil? }
   validates :telephone_number,
             presence: true,
-            if: Proc.new { it.email_pass_code.nil? && it.telephone_pass_code.nil? && !!it.confirm_policy && !!it.email_address && !!it.telephone_number && !!it.title && !!it.description }
-  validates :email_pass_code, numericality: { only_integer: true },
+            format: { with: /\A\+[1-9]\d{1,14}\z/ },
+            unless: Proc.new { it.telephone_number.nil? && it.confirm_policy.nil? && it.email_address.nil? }
+  validates :email_pass_code,
+            numericality: { only_integer: true },
             length: { is: 6 },
             presence: true,
-            if: Proc.new { !it.email_pass_code.nil? && it.confirm_policy.nil? && it.email_address.nil? && it.telephone_number.nil? && it.title.nil? && it.description.nil? && it.telephone_pass_code.nil? }
-  validates :telephone_pass_code, numericality: { only_integer: true },
+            if: Proc.new { !it.email_pass_code.nil? }
+  validates :telephone_pass_code,
+            numericality: { only_integer: true },
             length: { is: 6 },
             presence: true,
-            if: Proc.new { !it.telephone_pass_code.nil? && it.confirm_policy.nil? && it.email_address.nil? && it.telephone_number.nil? && it.title.nil? && it.description.nil? && it.email_pass_code.nil? }
+            if: Proc.new { !it.telephone_pass_code.nil? }
   validates :title, presence: true, length: { maximum: 255 },
             if: Proc.new { it.telephone_pass_code.nil? && it.confirm_policy.nil? && it.email_address.nil? && it.telephone_number.nil? && !it.title.nil? && !it.description.nil? && it.email_pass_code.nil? }
   #         if: Proc.new { it.telephone_pass_code.nil? && it.confirm_policy.nil? && it.email_address.nil? && it.telephone_number.nil? && it.title.nil? && it.description.nil? && it.email_pass_code.nil? }
