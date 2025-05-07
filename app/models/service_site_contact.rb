@@ -13,7 +13,7 @@
 class ServiceSiteContact < ContactsRecord
   attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code, :step
 
-  before_validation { self.step ||= "init" }
+  before_validation { self.step ||= "introduction" }
   before_save { self.email_address&.downcase! }
   before_save { self.telephone_number&.downcase! }
 

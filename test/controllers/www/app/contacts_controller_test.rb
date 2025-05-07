@@ -2,7 +2,6 @@ require "test_helper"
 
 class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
   teardown do
-    # コントローラがキャッシュを使っている場合、テスト後にリセットしておくとよい
     Rails.cache.clear
   end
 
@@ -35,11 +34,52 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
         email_address: email_address,
         telephone_number: telephone_number }
       }
+      assert_response :redirect
     end
     assert session[:contact_id]
     assert_equal email_address, session[:contact_email_address]
     assert_equal telephone_number, session[:contact_telephone_number]
     assert_redirected_to new_www_app_contact_email_url(session[:contact_id])
+  end
+
+  test "invalid first post" do
+    assert_no_difference("ServiceSiteContact.count") do
+      post www_app_contacts_url, params: { service_site_contact: { confirm_policy: 0,
+                                                                   email_address: "",
+                                                                   telephone_number: "" } }
+      assert_select "h2", "5 error prohibited this sample from being saved:"
+      assert_equal "create", @controller.action_name
+      assert_response :unprocessable_content
+    end
+     assert_no_difference("ServiceSiteContact.count") do
+      post www_app_contacts_url, params: { service_site_contact: { confirm_policy: 1,
+                                                                   email_address: "",
+                                                                   telephone_number: "" } }
+      assert_select "h2", "4 error prohibited this sample from being saved:"
+      assert_equal "create", @controller.action_name
+      assert_response :unprocessable_content
+    end
+    assert_no_difference("ServiceSiteContact.count") do
+      post www_app_contacts_url, params: { service_site_contact: { confirm_policy: 0,
+                                                                   email_address: "sample@example.net",
+                                                                   telephone_number: "" } }
+      assert_select "h2", "3 error prohibited this sample from being saved:"
+      assert_equal "create", @controller.action_name
+      assert_response :unprocessable_content
+    end
+    assert_no_difference("ServiceSiteContact.count") do
+      post www_app_contacts_url, params: { service_site_contact: { confirm_policy: 0,
+                                                                   email_address: "",
+                                                                   telephone_number: "+817012345678" } }
+      assert_select "h2", "3 error prohibited this sample from being saved:"
+      assert_equal "create", @controller.action_name
+      assert_response :unprocessable_content
+    end
+    refute session[:contact_id]
+    refute session[:contact_email_address]
+    refute session[:contact_telephone_number]
+
+    #  assert_redirected_to new_www_app_contact_email_url(session[:contact_id])
   end
 
   test "should not get create" do
@@ -62,7 +102,6 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
     # assert session[:contact_expires_in] == nil
   end
 
-
   test "should get create email" do
     email_address = "sample@example.com"
     telephone_number = "+819012345600"
@@ -72,6 +111,7 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
         email_address: email_address,
         telephone_number: telephone_number }
       }
+      assert_response :redirect
     end
     follow_redirect!
     assert_equal "new", @controller.action_name

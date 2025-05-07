@@ -1,5 +1,9 @@
 ---
 ja:
+  model:
+    concern:
+      cloudflare:
+        invalid_input: 'Captcha を操作してください'
   controller:
     www:
       app:
