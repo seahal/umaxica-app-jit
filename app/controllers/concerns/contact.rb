@@ -20,12 +20,12 @@ module Contact
   end
 
   def check_all_contact_session_not_nil?
-    [session[:contact_email_address],
+    [ session[:contact_email_address],
     session[:contact_telephone_number],
     session[:contact_email_checked],
     session[:contact_telephone_checked],
-    session[:contact_otp_private_key] ,
-    session[:contact_expires_in] ,
-    session[:contact_hotp_counter]].all?{ it.nil? == false }
+    session[:contact_otp_private_key],
+    session[:contact_expires_in],
+    session[:contact_hotp_counter] ].all? { it.nil? == false }
   end
 end

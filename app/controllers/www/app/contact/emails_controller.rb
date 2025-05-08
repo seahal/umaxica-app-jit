@@ -6,7 +6,7 @@ module Www
 
         def new
           # check sesion
-          p 'a' * 100
+          p "a" * 100
           p check_all_contact_session_not_nil?
           p params[:contact_id], session[:contact_otp_counter].to_i, session[:contact_otp_private_key], session[:contact_hotp]
           p ROTP::HOTP.new(session[:contact_otp_private_key]).verify(params[:contact_id].to_s, session[:contact_hotp_counter].to_i)
@@ -20,7 +20,7 @@ module Www
             !session[:contact_telephone_checked],
             ## checking time
             session[:contact_expires_in] < Time.now
-          ].all?{ !it.nil? }
+          ].all? { !it.nil? }
             show_error_page
           else
             # make forms which for email sonzai

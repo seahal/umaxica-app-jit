@@ -7,7 +7,7 @@ module Email::App
     #
     def create
       @greeting = params[:'hotp_token']
-      mail to: params[:'mail_address']
+      mail to: params[:'email_address']
     end
   end
 end
