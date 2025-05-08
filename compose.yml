@@ -76,6 +76,13 @@ services:
       - ./docker/psql-sub/pg_hba.conf:/etc/postgresql/pg_hba.conf
     depends_on:
       - primary
+  redis:
+    image: valkey/valkey:8.1.1-alpine3.21
+    container_name: valkey
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-volume:/data
   zookeeper:
     image: confluentinc/cp-zookeeper:7.9.0
     container_name: zookeeper
@@ -191,6 +198,7 @@ services:
 volumes:
   psql-pub-volume:
   psql-sub-volume:
+  redis-volume:
   kafka-broker-volume:
   grafana-volume:
   prometheus-volume:
