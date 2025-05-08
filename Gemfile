@@ -19,6 +19,7 @@ gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
 gem "redis"
 gem "kredis"
+gem "hiredis"
 # For CORS
 gem "rack-cors"
 # To Avoid attacks from crackers
