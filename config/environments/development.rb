@@ -28,7 +28,7 @@ Rails.application.configure do
   end
 
   # Change to :null_store to avoid any caching.
-  config.cache_store = :redis_cache_store, { url: File.exist?("/.dockerenv") ? ENV["REDIS_CACHE_URL"] : "localhost", expires_in: 1.hour, driver: :hiredis }
+  config.cache_store = :solid_cache_store
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
@@ -76,10 +76,25 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  # added by user
   # session
-  config.session_store :cookie_store
+  # config.session_store :redis_session_store,
+  #                      #   on_redis_down: ->(*a) { logger.error("Redis down! #{a.inspect}") },
+  #                      key: "_jit_session",
+  #                      redis: {
+  #                       driver: :hiredis,
+  #                       expire_after: 120.minutes,
+  #                       key_prefix: "jit:session:",
+  #                       url: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "redis://localhost:6379/"
+  #                      }
+  # rub  config.session_store :redis_store,
+  # servers: [ File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "redis://localhost:6379/0/session" ],
+  # servers: [ "redis://localhost:6379/0/session" ],
+  # expire_after: 90.minutes,
+  # key: "#{Rails.application.class}_session",
+  # threadsafe: true,
+  # secure: true
 
-  # added
   ## to avoid errors
   config.hosts << "localhost"
   config.hosts << "com.www.localdomain"
