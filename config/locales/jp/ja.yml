@@ -1,5 +1,9 @@
 ---
 ja:
+  model:
+    concern:
+      cloudflare:
+        invalid_input: 'Captcha を操作してください'
   controller:
     www:
       app:
@@ -7,6 +11,10 @@ ja:
           new:
             page_title: 'お問い合わせページ'
             confirm_policy: 'プライバシーポリシーに同意します'
+          error:
+            page_title: 'エラーが生じました'
+            page_description: 'はじめからやりなおしてください'
+            back_to_contact_root_page: 'もどる'
         registration:
           apple:
             new:

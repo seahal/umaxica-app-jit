@@ -1,6 +1,6 @@
-module Email::App
+module Email::Org
   class ApplicationMailer < ActionMailer::Base
     default from: Rails.application.credentials.SMTP_FROM_ADDRESS
-    layout "mailer/app/mailer"
+    layout "mailer/org/mailer"
   end
 end
