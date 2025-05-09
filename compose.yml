@@ -33,7 +33,7 @@ services:
     depends_on:
       - primary
       - replica
-      - elasticsearch
+      - opensearch
       - kafka
       - redis
   primary:
@@ -117,13 +117,17 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
     networks:
       - backend
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
-    container_name: elasticsearch
+  opensearch:
+    image: opensearchproject/opensearch:latest
     environment:
-      - xpack.security.enabled=false
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch
+      - discovery.seed_hosts=opensearch
+      - cluster.initial_cluster_manager_nodes=opensearch
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=yourStrongPassword123!
+      - DISABLE_SECURITY_PLUGIN=true
     ulimits:
       memlock:
         soft: -1
@@ -131,77 +135,85 @@ services:
       nofile:
         soft: 65536
         hard: 65536
-    cap_add:
-      - IPC_LOCK
     volumes:
-      - elasticsearch-volume:/usr/share/elasticsearch/data
+      - opensearch-volume:/usr/share/opensearch/data
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - 9200:9200
+      - 9600:9600
     networks:
       - backend
-    restart: always
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - 8000:3000
-    volumes:
-      - grafana-volume:/var/lib/grafana
-      # Add config files if available
-      # - ./docker/grafana/provisioning:/etc/grafana/provisioning
-    networks:
-      - backend
-    depends_on:
-      - prometheus
-      - loki
-      - tempo
-      - elasticsearch
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
-  prometheus:
-    image: prom/prometheus:latest
+      OPEN_SEARCH_ADMIN_PASSWORD: 'yourStrongPassword123!'
+      OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
     ports:
-      - "9090:9090"
-    volumes:
-      - prometheus-volume:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
+    - 5601:5601
+    expose:
+    - "5601"
     networks:
-      - observility
-    restart: always
-  # Log collection
-  loki:
-    image: grafana/loki:latest
-    ports:
-      - "3100:3100"
-    volumes:
-      - loki-volume:/tmp/loki
-    command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - observility
-    restart: always
-  # Distributed tracing
-  tempo:
-    image: grafana/tempo:latest
-    command: -config.file=/etc/tempo.yaml  # .yaml から .yml に変更
-    volumes:
-    - ./docker/tempo/tempo.yaml:/etc/tempo.yaml  # ファイル名とパスを変更
-    - tempo-volume:/tmp/tempo
-    ports:
-      - "14268:14268"  # jaeger ingest
-      - "3200:3200"   # tempo
-      - "9095:9095" # tempo grpc
-      - "4317:4317"  # otlp grpc
-      - "4318:4318"  # otlp http
-      - "9411:9411"   # zipkin
-    depends_on:
-      - main
+    - backend
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - 8000:3000
+  #   volumes:
+  #     - grafana-volume:/var/lib/grafana
+  #     # Add config files if available
+  #     # - ./docker/grafana/provisioning:/etc/grafana/provisioning
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     - prometheus
+  #     - loki
+  #     - tempo
+  #     - elasticsearch
+  #   environment:
+  #     GF_SECURITY_ADMIN_USER: admin
+  #     GF_SECURITY_ADMIN_PASSWORD: admin
+  #     GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - prometheus-volume:/prometheus
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #     - '--storage.tsdb.path=/prometheus'
+  #     - '--web.console.libraries=/etc/prometheus/console_libraries'
+  #     - '--web.console.templates=/etc/prometheus/consoles'
+  #     - '--web.enable-lifecycle'
+  #   networks:
+  #     - observility
+  #   restart: always
+  # # Log collection
+  # loki:
+  #   image: grafana/loki:latest
+  #   ports:
+  #     - "3100:3100"
+  #   volumes:
+  #     - loki-volume:/tmp/loki
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   networks:
+  #     - observility
+  #   restart: always
+  # # Distributed tracing
+  # tempo:
+  #   image: grafana/tempo:latest
+  #   command: -config.file=/etc/tempo.yaml  # .yaml から .yml に変更
+  #   volumes:
+  #   - ./docker/tempo/tempo.yaml:/etc/tempo.yaml  # ファイル名とパスを変更
+  #   - tempo-volume:/tmp/tempo
+  #   ports:
+  #     - "14268:14268"  # jaeger ingest
+  #     - "3200:3200"   # tempo
+  #     - "9095:9095" # tempo grpc
+  #     - "4317:4317"  # otlp grpc
+  #     - "4318:4318"  # otlp http
+  #     - "9411:9411"   # zipkin
+  #   depends_on:
+  #     - main
 volumes:
   psql-pub-volume:
   psql-sub-volume:
@@ -211,8 +223,8 @@ volumes:
   prometheus-volume:
   loki-volume:
   tempo-volume:
-  elasticsearch-volume:
   bundle-volume:
+  opensearch-volume:
 networks:
   backend:
   frontend:

@@ -59,11 +59,11 @@ module Www
       end
 
       def [](key)
-        @redis.call("GET", "#{@originality_prefix}.#{key}")
+        @redis.call("GET", "#{Rails.env}.#{@originality_prefix}.#{key}")
       end
 
       def []=(key, value, expires_in = 2.hours)
-        @redis.call("SET", "#{@originality_prefix}.#{key}", value.to_s, "EX", expires_in.to_i)
+        @redis.call("SET", "#{Rails.env}.#{@originality_prefix}.#{key}", value.to_s, "EX", expires_in.to_i)
       end
     end
   end

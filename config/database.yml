@@ -333,6 +333,23 @@ test:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CORE_SUB"]: 'localhost' %>
     migrations_paths: db/cores_migrate
+  cache:
+    <<: *default
+    database: test_cache_db
+    port:
+      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_PUB"]: 'localhost' %>
+    migrations_paths: db/caches_migrate
+  cache_replica:
+    <<: *default
+    replica: true
+    database: test_cache_db
+    port:
+      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host:
+      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_SUB"]: 'localhost' %>
+    migrations_paths: db/caches_migrate
 
 # FIXME: please implement below code
 production:

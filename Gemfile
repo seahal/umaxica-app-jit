@@ -8,8 +8,6 @@ gem "rack"
 gem "rbs"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0", ">= 8.0.2"
-# gem "rails", github: "rails/rails", branch: "main"
-# The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 # Use PostgreSQL as the database for Active Record
 gem "pg"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -36,9 +34,7 @@ gem "image_processing"
 gem "karafka", "~> 2.4", ">= 2.4.17"
 # Elasticsearch
 gem "opensearch-ruby", "~> 3.4"
-# OpenStruct
-# gem "ostruct", "~> 0.6.1"
-# for communications with telecommunications
+# for Amazon SNS
 gem "aws-sdk"
 # for Active Storage
 gem "google-cloud-storage", require: false
@@ -84,7 +80,6 @@ group :development, :test do
   # environment variables
   ## FIXME: .env file must not be included sign_in production.
   gem "dotenv-rails", "~> 3.1", ">= 3.1.2"  #
-  gem "faker"
   # coverage
   gem "simplecov", require: false
   #
@@ -111,8 +106,6 @@ group :development do
   # rubocop
   gem "rubocop", require: false
   gem "rubocop-rails-omakase", require: false
-  # reek
-  gem "reek", "~> 6.5"
   # erb linter
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
@@ -123,7 +116,4 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-end
-
-group :auxiliary do
 end
