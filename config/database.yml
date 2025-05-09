@@ -147,22 +147,16 @@ development:
   cache:
     <<: *default
     database: development_cache_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_PUB"]: 'localhost' %>
     migrations_paths: db/caches_migrate
-    max_size: <%= 256.gigabytes %>
   cache_replica:
     <<: *default
     replica: true
     database: development_cache_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_SUB"]: 'localhost' %>
     migrations_paths: db/caches_migrate
-    max_size: <%= 256.gigabytes %>
   core:
     <<: *default
     database: development_core_db
@@ -322,23 +316,6 @@ test:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
     migrations_paths: db/notifications_migrate
-  cache:
-    <<: *default
-    database: test_cache_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_PUB"]: 'localhost' %>
-    migrations_paths: db/caches_migrate
-  cache_replica:
-    <<: *default
-    replica: true
-    database: test_cache_db
-    port:
-      <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_SUB"]: 'localhost' %>
-    migrations_paths: db/caches_migrate
   core:
     <<: *default
     database: test_core_db
