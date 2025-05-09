@@ -35,6 +35,7 @@ services:
       - replica
       - elasticsearch
       - kafka
+      - redis
   primary:
     image: postgres:16.6
     command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
@@ -78,16 +79,18 @@ services:
       - primary
   redis:
     image: valkey/valkey:8.1.1-alpine3.21
-    container_name: valkey
     ports:
       - "6379:6379"
+    networks:
+      - backend
     volumes:
       - redis-volume:/data
   zookeeper:
     image: confluentinc/cp-zookeeper:7.9.0
-    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - backend
   kafka:
     image: confluentinc/cp-kafka:7.9.0
     ports:
@@ -99,6 +102,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+    networks:
+      - backend
   kafka-ui:
     container_name: kafka-ui
     image: ghcr.io/kafbat/kafka-ui:v1.2.0
@@ -110,6 +115,8 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    networks:
+      - backend
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
     container_name: elasticsearch
