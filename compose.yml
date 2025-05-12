@@ -36,6 +36,18 @@ services:
       - opensearch
       - kafka
       - redis
+      - minio
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-volume:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
   primary:
     image: postgres:16.6
     command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
@@ -219,13 +231,8 @@ volumes:
   psql-sub-volume:
   redis-volume:
   kafka-broker-volume:
-  grafana-volume:
-  prometheus-volume:
-  loki-volume:
-  tempo-volume:
-  bundle-volume:
   opensearch-volume:
+  minio-volume:
 networks:
   backend:
   frontend:
-  observility:
