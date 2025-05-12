@@ -111,12 +111,12 @@ module Www::App
 
     # Only allow a list of trusted parameters through.
     def create_params
-      params.expect(service_site_contact: [:confirm_policy, :telephone_number, :email_address])
+      params.expect(service_site_contact: [ :confirm_policy, :telephone_number, :email_address ])
     end
 
     # Only allow a list of trusted parameters through.
     def update_params
-      params.expect(service_site_contact: [:title, :description])
+      params.expect(service_site_contact: [ :title, :description ])
     end
   end
 end
