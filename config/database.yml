@@ -11,19 +11,15 @@ development:
   universal:
     <<: *default
     database: development_universal_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_PUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
   universal_replica:
     <<: *default
     replica: true
     database: development_universal_db
-    port:
-      <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
   contact:
     <<: *default
@@ -97,14 +93,14 @@ development:
     <<: *default
     database: development_business_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUISINESS_PUB"]: 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUSINESS_PUB"]: 'localhost' %>
     migrations_paths: db/businesses_migrate
   business_replica:
     <<: *default
     replica: true
     database: development_business_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUISINESS_SUB"]: 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUSINESS_SUB"]: 'localhost' %>
     migrations_paths: db/businesses_migrate
   message:
     <<: *default
@@ -274,18 +270,18 @@ test:
     host:
       <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
     migrations_paths: db/tokens_migrate
-  buisiness:
+  business:
     <<: *default
-    database: test_buisiness_db
+    database: test_business_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUISINESS_PUB"]: 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUSINESS_PUB"]: 'localhost' %>
     migrations_paths: db/entities_migrate
-  buisiness_replica:
+  business_replica:
     <<: *default
     replica: true
-    database: test_buisiness_db
+    database: test_business_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUISINESS_SUB"]: 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUSINESS_SUB"]: 'localhost' %>
     migrations_paths: db/entities_migrate
   message:
     <<: *default
@@ -368,14 +364,14 @@ test:
     <<: *default
     database: test_business_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUISINESS_PUB"]: 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUSINESS_PUB"]: 'localhost' %>
     migrations_paths: db/businesses_migrate
   business_replica:
     <<: *default
     replica: true
-    database: development_business_db
+    database: test_business_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUISINESS_SUB"]: 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUSINESS_SUB"]: 'localhost' %>
     migrations_paths: db/businesses_migrate
 
 # FIXME: please implement below code
