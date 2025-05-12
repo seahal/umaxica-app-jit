@@ -4,5 +4,5 @@
 #
 #  id :string           not null, primary key
 #
-class EntityStatus < EntitiesRecord
+class EntityStatus < BusinessesRecord
 end

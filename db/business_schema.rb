@@ -10,14 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_12_122515) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_24_163410) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
-  enable_extension "pgcrypto"
 
-  create_table "personas", id: :binary, force: :cascade do |t|
-    t.string "name"
-    t.binary "identifier_id"
+  create_table "documents", force: :cascade do |t|
+    t.binary "parent_id"
+    t.binary "prev_id"
+    t.binary "succ_id"
+    t.string "title"
+    t.string "description"
+    t.string "entity_status_id"
+    t.binary "staff_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "entity_statuses", id: :string, force: :cascade do |t|
+  end
+
+  create_table "timelines", force: :cascade do |t|
+    t.binary "parent_id"
+    t.binary "succ_id"
+    t.binary "prev_id"
+    t.string "title"
+    t.string "description"
+    t.string "entity_status_id"
+    t.binary "staff_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

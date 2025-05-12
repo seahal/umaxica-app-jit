@@ -7,7 +7,7 @@ module Www
 
         def new
           # FIXME: write test code!
-          render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
+          render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_user?
 
           # # to avoid session attack
           session[:user_email_registration] = nil
@@ -18,7 +18,7 @@ module Www
 
         def create
           # FIXME: write test code!
-          render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_staff? || logged_in_user?
+          render plain: t("www.app.authentication.email.new.you_have_already_logged_in"), status: 400 and return if logged_in_user?
 
           @user_email = UserEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
           res = cloudflare_turnstile_validation

@@ -10,7 +10,6 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
           resource :version, only: :show
-          resource :metric, only: :show
           resource :status, only: :show
         end
       end
@@ -26,10 +25,12 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
           resource :version, only: :show
-          resource :metric, only: :show
           resource :status, only: :show
           namespace :beacon do
             resources :emails, only: %i[show]
+          end
+          namespace :persona do
+            resources :avators
           end
         end
       end
@@ -46,7 +47,6 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
           resource :version, only: :show
-          resource :metric, only: :show
           resource :status, only: :show
         end
       end

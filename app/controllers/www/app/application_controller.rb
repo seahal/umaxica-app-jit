@@ -13,13 +13,6 @@ module Www
         false
       end
 
-      def logged_in_staff?
-        false
-      end
-
-      def logged_in_client?
-        false
-      end
 
       private
 
@@ -47,6 +40,30 @@ module Www
           secure: Rails.env.production? ? true : false,
           expires: refresh_token_expires_at
         }
+      end
+
+      # following method made for set value in Redis.
+      def memorize
+        @memorize ||= RedisMemorize.new(originality_prefix: request.host)
+      end
+
+      helper_method :memorize
+    end
+
+    # Code for Redis Memorization Class
+    class RedisMemorize
+      def initialize(originality_prefix: nil)
+        @originality_prefix = originality_prefix
+        redis_config = RedisClient.config(host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost", port: 6379, db: 0)
+        @redis = redis_config.new_pool(timeout: 0.5, size: Integer(ENV.fetch("RAILS_MAX_THREADS", 5)))
+      end
+
+      def [](key)
+        @redis.call("GET", "#{Rails.env}.#{@originality_prefix}.#{key}")
+      end
+
+      def []=(key, value, expires_in = 2.hours)
+        @redis.call("SET", "#{Rails.env}.#{@originality_prefix}.#{key}", value.to_s, "EX", expires_in.to_i)
       end
     end
   end
