@@ -6,7 +6,7 @@ services:
       target: development
       args:
         COMMIT_HASH: 'abcdef'
-    command: /bin/sh ./docker/main/entrypoint.sh
+    command: ['/bin/sh', './docker/main/entrypoint.sh']
     restart: always
     tty: true
     stdin_open: true

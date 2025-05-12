@@ -11,18 +11,18 @@ module Health
 
     # FIXME: hidoi!
     raise unless OpenSearch::Client.new(
-      host: File.exist?('/.dockerenv') ? ENV["OPENSEARCH_DEFAULT_URL"]: 'localhost:9200',
+      host: File.exist?("/.dockerenv") ? ENV["OPENSEARCH_DEFAULT_URL"]: "localhost:9200",
       user: Rails.application.credentials.OPENSEARCH.USERNAME,
       password: Rails.application.credentials.OPENSEARCH.PASSWORD,
       transport_options: { ssl: { verify: false } },
       log: true
     )
 
-    @status, @body = if !![IdentifiersRecord].all? { it.connection.execute("SELECT 1;") }
-                       [200, "OK"]
-                     else
-                       [500, "NG"]
-                     end
+    @status, @body = if !![ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
+                       [ 200, "OK" ]
+    else
+                       [ 500, "NG" ]
+    end
 
     case request.path
     when "/health"
