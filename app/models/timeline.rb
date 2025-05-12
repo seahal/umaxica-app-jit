@@ -13,5 +13,5 @@
 #  staff_id         :binary
 #  succ_id          :binary
 #
-class Timeline < EntitiesRecord
+class Timeline < BusinessesRecord
 end

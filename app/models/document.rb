@@ -13,7 +13,7 @@
 #  staff_id         :binary
 #  succ_id          :binary
 #
-class Document < EntitiesRecord
+class Document < BusinessesRecord
   encrypts :title
   encrypts :description
 end
