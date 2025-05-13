@@ -4,7 +4,7 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
   setup do
     Rails.cache.clear
     Www::App::ApplicationController.new # Initializer of RedisMemorize
-    @memorize = Www::App::RedisMemorize.new
+    @memorize = Www::App::RedisMemorize.new(originality_prefix: SecureRandom.hex(1000))
     @memorize[:contact_telephone_number] = ""
     @memorize[:contact_email_address] = ""
     @memorize[:contact_otp_private_key] = ""
@@ -35,29 +35,36 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_nil session[:contact_hotp_counter]
     assert_nil session[:contact_email_checked]
     assert_nil session[:contact_telephone_checked]
-    assert session[:contact_expires_in]
     assert @memorize[:contact_telephone_number].blank?
     assert @memorize[:contact_email_address].blank?
     assert @memorize[:contact_otp_private_key].blank?
+    assert session[:contact_expires_in]
+    assert session[:contact_expires_in].to_i > Time.now.to_i
+    travel_to 3.hours.from_now do
+      assert session[:contact_expires_in].to_i < Time.now.to_i
+    end
   end
 
-  # test "should get create" do
-  #   email_address = "sample@example.com"
-  #   telephone_number = "+819012345678"
-  #   assert_no_difference("ServiceSiteContact.count") do
-  #     post www_app_contacts_url, params: { service_site_contact: {
-  #       confirm_policy: 1,
-  #       email_address: email_address,
-  #       telephone_number: telephone_number }
-  #     }
-  #     # FIXME: check
-  #     # assert_response :redirect
-  #   end
-  #   # assert session[:contact_id]
-  #   # assert_equal email_address, session[:contact_email_address]
-  #   assert_equal telephone_number, session[:contact_telephone_number]
-  #   #    assert_redirected_to new_www_app_contact_email_url(session[:contact_id])
-  # end
+  test "should get create" do
+    email_address = "sample@example.com"
+    telephone_number = "+819012345678"
+    assert_no_difference("ServiceSiteContact.count") do
+      post www_app_contacts_url, params: { service_site_contact: {
+        confirm_policy: 1,
+        email_address: email_address,
+        telephone_number: telephone_number }
+      }
+      assert_response :redirect
+    end
+    assert session[:contact_id]
+    assert_not_equal email_address, session[:contact_email_address]
+    assert_not_equal telephone_number, session[:contact_telephone_number]
+    assert @memorize[:contact_email_address].blank?
+    assert @memorize[:contact_telephone_number].blank?
+
+    # FIXME: REWRITE!
+    assert_redirected_to new_www_app_contact_email_url(session[:contact_id])
+  end
 
   test "invalid first post" do
     assert_no_difference("ServiceSiteContact.count") do

@@ -17,8 +17,10 @@ module Www
       private
 
       def check_authentication
+        anonymous_id = 0
         user_id = 0
         staff_id = 0
+        customer_id = 0
         last_mfa_time = nil
         refresh_token_expires_at = 1.years.from_now
 
@@ -52,18 +54,19 @@ module Www
 
     # Code for Redis Memorization Class
     class RedisMemorize
-      def initialize(originality_prefix: nil)
-        @originality_prefix = originality_prefix
+      def initialize(originality_prefix: nil, originality_postfix: nil)
+        @originality_prefix = originality_prefix.to_s
+        @originality_postfix = originality_prefix.to_s
         redis_config = RedisClient.config(host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost", port: 6379, db: 0)
         @redis = redis_config.new_pool(timeout: 0.5, size: Integer(ENV.fetch("RAILS_MAX_THREADS", 5)))
       end
 
       def [](key)
-        @redis.call("GET", "#{Rails.env}.#{@originality_prefix}.#{key}")
+        @redis.call("GET", "#{Rails.env}.#{@originality_prefix}.#{@originality_postfix}.#{key}")
       end
 
       def []=(key, value, expires_in = 2.hours)
-        @redis.call("SET", "#{Rails.env}.#{@originality_prefix}.#{key}", value.to_s, "EX", expires_in.to_i)
+        @redis.call("SET", "#{Rails.env}.#{@originality_prefix}.#{@originality_postfix}.#{key}", value.to_s, "EX", expires_in.to_i)
       end
     end
   end
