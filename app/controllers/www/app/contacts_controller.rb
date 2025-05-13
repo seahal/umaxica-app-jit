@@ -2,6 +2,7 @@ module Www::App
   class ContactsController < ApplicationController
     include ::Cloudflare
     include ::Contact
+    include ::Rotp
 
     def new
       clear_contact_session
@@ -17,12 +18,12 @@ module Www::App
         clear_contact_session
         contact_id = SecureRandom.uuid_v4.to_s
         b32_private_key = ROTP::Base32.random
-        hotp_counter = 100
+        hotp_counter = 100 # FIXME: remove!
         hotp = ROTP::HOTP.new(b32_private_key)
         set_contact_session(contact_id: contact_id,
                             contact_email_checked: false,
                             contact_telephone_checked: false,
-                            contact_hotp_counter: hotp_counter,
+                            contact_hotp_counter: hotp_counter, # FIXME: remove!
                             contact_expires_in: 2.hours.from_now,
                             # secure data, so the data is not stored in Redis.
                             contact_otp_private_key: b32_private_key,
@@ -30,12 +31,16 @@ module Www::App
                             contact_email_address: @service_site_contact.email_address,
                             # secure data, so the data is not stored in Redis.
                             contact_telephone_number: @service_site_contact.telephone_number)
-         # FIXME: send email
-         Email::App::ContactMailer.with(
-           { email_address: @service_site_contact.email_address,
-             pass_code: hotp.at(hotp_counter) }
-         ).create.deliver_now
-        # FIXME: send telephone
+
+        # send email which contains a pass code
+        contact_email_pass_code = hotp.at(100)
+        session[:contact_email_pass_code] = contact_email_pass_code if Rails.env.test?
+        send_otp_code_using_email(pass_code: contact_email_pass_code, email_address: @service_site_contact.email_address) unless Rails.env.test?
+        # send email which contains a pass code
+        contact_telephone_pass_code = hotp.at(200)
+        session[:contact_telephone_pass_code] = contact_telephone_pass_code if Rails.env.test?
+        send_otp_code_using_sms(pass_code: contact_telephone_pass_code, telephone_number: @service_site_contact.telephone_number) unless Rails.env.test?
+        # move to another controller
         redirect_to new_www_app_contact_email_url(contact_id)
       else
         @service_site_contact.errors.add :base, :invalid, message: t("model.concern.cloudflare.invalid_input") unless cfv
@@ -45,18 +50,45 @@ module Www::App
     end
 
     def edit
-      show_error_page
+      if [
+        !!params[:id],
+        !!session[:contact_id],
+        session[:contact_id] == params[:id],
+        session[:contact_email_checked],
+        session[:contact_telephone_checked],
+        Time.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.now
+      ].all?
+        # make forms which for email sonzai
+        @service_site_contact = ServiceSiteContact.new
+      else
+        show_error_page
+      end
     end
 
     def update
       if [
-        session[:contact_id] == params[:contact_id],
+        session[:contact_id] == params[:id],
         session[:contact_email_checked] == false,
         session[:contact_telephone_checked] == false,
         session[:contact_expires_in].to_i > Time.now.to_i
       ].all?
         # make forms which for email sonzai
         @service_site_contact = ServiceSiteContact.new
+      else
+        show_error_page
+      end
+    end
+
+    def show
+      if [
+        !!session[:id],
+        !!params[:contact_id],
+        session[:id] == params[:contact_id],
+        session[:contact_email_checked] == false, # NOTE: you would strange to see, but false is Right for here.
+        session[:contact_telephone_checked] == true,
+        Time.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.now
+      ].all?
+        ""
       else
         show_error_page
       end
