@@ -13,11 +13,11 @@ module Contact
     session[:contact_id] = contact_id
     session[:contact_email_checked] = contact_email_checked
     session[:contact_telephone_checked] = contact_telephone_checked
-    session[:contact_otp_private_key] = contact_otp_private_key
     session[:contact_hotp_counter] = contact_hotp_counter
     session[:contact_expires_in] = contact_expires_in
     memorize[:contact_email_address] = contact_email_address
     memorize[:contact_telephone_number] = contact_telephone_number
+    memorize[:contact_otp_private_key] = contact_otp_private_key
   end
 
   def check_all_contact_session_not_nil?
