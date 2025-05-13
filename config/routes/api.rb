@@ -30,7 +30,7 @@ Rails.application.routes.draw do
             resources :emails, only: %i[show]
           end
           namespace :persona do
-            resources :avators
+            resources :avatars
           end
         end
       end

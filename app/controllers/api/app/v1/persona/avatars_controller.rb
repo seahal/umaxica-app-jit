@@ -2,7 +2,7 @@ module Api
   module App
     module V1
       module Persona
-        class AvatorsController < ApplicationController
+        class AvatarsController < ApplicationController
           def index
           end
 

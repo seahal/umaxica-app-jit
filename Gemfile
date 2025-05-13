@@ -71,6 +71,9 @@ gem "omniauth-google-oauth2", "~> 1.1", ">= 1.1.1"
 gem "omniauth-rails_csrf_protection"
 # pundit
 gem "pundit", "~> 2.5"
+# Altanative way of Active Storage
+gem "carrierwave", "~> 3.1", ">= 3.1.2"
+
 
 group :development, :test do
   # to avoid n+1 queries
