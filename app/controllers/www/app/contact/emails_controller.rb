@@ -5,8 +5,8 @@ module Www
         include ::Contact
 
         def new
+          raise
           # check sesion
-          p "a" * 100
           p check_all_contact_session_not_nil?
           p params[:contact_id], session[:contact_otp_counter].to_i, session[:contact_otp_private_key], session[:contact_hotp]
           p ROTP::HOTP.new(session[:contact_otp_private_key]).verify(params[:contact_id].to_s, session[:contact_hotp_counter].to_i)

@@ -1,5 +1,8 @@
 ---
 ja:
+  errors:
+    messages:
+      extension_allowlist_error: '???'
   model:
     concern:
       cloudflare:

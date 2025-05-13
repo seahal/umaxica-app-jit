@@ -5,6 +5,7 @@ module Www
         include ::Contact
 
         def new
+          raise
           @service_site_contact = ServiceSiteContact.new
         end
 

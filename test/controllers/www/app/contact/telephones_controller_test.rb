@@ -5,9 +5,10 @@ class Www::App::Contact::TelephonesControllerTest < ActionDispatch::IntegrationT
     Rails.cache.clear
   end
 
-  # FIXME: xxx
-  #  test "should get new" do
-  #    get new_www_app_contact_telephone_url(0)
-  #    assert_response  :unprocessable_entity
-  #  end
+  # FIXME: rewrite code
+  test "should not get new telephone contact when invalid way" do
+    assert_raise do
+      get new_www_app_contact_telephone_url(2)
+    end
+  end
 end

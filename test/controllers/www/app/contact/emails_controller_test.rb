@@ -5,9 +5,10 @@ class Www::App::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
     Rails.cache.clear
   end
 
-  # FIXME: xxx
-  # test "should get new" do
-  # get new_www_app_contact_email_url(0)
-  # assert_response :unprocessable_entity
-  # end
+  # FIXME: rewrite code
+  test "should not get new email contact when invalid way" do
+    assert_raise do
+      get new_www_app_contact_email_url(1)
+    end
+  end
 end

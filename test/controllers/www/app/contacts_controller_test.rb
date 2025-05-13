@@ -3,17 +3,24 @@ require "test_helper"
 class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
   setup do
     Rails.cache.clear
+    Www::App::ApplicationController.new # Initializer of RedisMemorize
+    @memorize = Www::App::RedisMemorize.new
+    @memorize[:contact_telephone_number] = ""
+    @memorize[:contact_email_address] = ""
+    @memorize[:contact_otp_private_key] = ""
   end
 
   teardown do
     Rails.cache.clear
+    @memorize[:contact_email_address] = ""
+    @memorize[:contact_telephone_number] = ""
+    @memorize[:contact_otp_private_key] = ""
   end
 
   test "should get new" do
     get new_www_app_contact_url
     assert_response :success
     assert_select "h1", I18n.t("controller.www.app.contacts.new.page_title")
-    assert_select "p", "Find me in app/views/www/app/contacts/new.html.erb"
     assert_select "form[action=?][method=?]", www_app_contacts_path, "post" do
       assert_select "input[type=?][name=?]", "checkbox", "service_site_contact[confirm_policy]"
       assert_select "input[type=?][name=?]", "hidden", "service_site_contact[confirm_policy]"
@@ -25,8 +32,13 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
       assert_select "input[type=?]", "submit"
     end
     assert_nil session[:contact_id]
-    assert_nil session[:contact_email_address]
-    assert_nil session[:contact_telephone_number]
+    assert_nil session[:contact_hotp_counter]
+    assert_nil session[:contact_email_checked]
+    assert_nil session[:contact_telephone_checked]
+    assert session[:contact_expires_in]
+    assert @memorize[:contact_telephone_number].blank?
+    assert @memorize[:contact_email_address].blank?
+    assert @memorize[:contact_otp_private_key].blank?
   end
 
   # test "should get create" do
@@ -56,7 +68,7 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
       assert_equal "create", @controller.action_name
       assert_response :unprocessable_content
     end
-     assert_no_difference("ServiceSiteContact.count") do
+    assert_no_difference("ServiceSiteContact.count") do
       post www_app_contacts_url, params: { service_site_contact: { confirm_policy: 1,
                                                                    email_address: "",
                                                                    telephone_number: "" } }

@@ -1,5 +1,4 @@
 <h1><%= t('controller.www.app.contacts.new.page_title') %></h1>
-<p>Find me in app/views/www/app/contacts/new.html.erb</p>
 
 <%= form_with model: @service_site_contact, url: www_app_contacts_path, method: 'post' do |form| %>
   <% if @service_site_contact.errors.any? %>
