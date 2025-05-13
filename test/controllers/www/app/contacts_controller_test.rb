@@ -116,14 +116,13 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
         telephone_number: telephone_number }
       }
     end
-    # FIXME: REWRITE!
-    # assert session[:contact_id] == nil
-    # assert session[:contact_email_address] == nil
-    # assert session[:contact_telephone_number] == nil
-    # assert session[:contact_email_checked] == nil
-    # assert session[:contact_telephone_checked] == nil
-    # assert session[:contact_otp_private_key] == nil
-    # assert session[:contact_expires_in] == nil
+    assert session[:contact_id] == nil
+    assert session[:contact_email_address] == nil
+    assert session[:contact_telephone_number] == nil
+    assert session[:contact_email_checked] == nil
+    assert session[:contact_telephone_checked] == nil
+    assert session[:contact_otp_private_key] == nil
+    assert session[:contact_expires_in] == nil
   end
 
   # test "should get create email" do
@@ -149,13 +148,13 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
   #   end
   # end
 
-  # test "should get update" do
-  #   get www_app_contacts_url(1)
-  #   assert_response :success
-  # end
-  #
-  # test "should get edit" do
-  #   get edit_www_app_contact_url(1)
-  #   assert_response :success
-  # end
+  # FIXME: rewrite code
+  test "should not get edit contact page when invalid way" do
+    get edit_www_app_contact_url(3)
+    refute session[:contact_id]
+    refute session[:contact_email_checked]
+    refute session[:contact_telephone_checked]
+    refute session[:contact_expires_in]
+    assert_response :unprocessable_entity
+  end
 end

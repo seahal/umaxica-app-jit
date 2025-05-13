@@ -6,6 +6,6 @@ class Email::App::ContactMailerTest < ActionMailer::TestCase
     assert_equal "Create", mail.subject
     # assert_equal [ "to@example.org" ], mail.to
     assert_equal [ "from@umaxica.net" ], mail.from
-    assert_match "Hi", mail.body.encoded
+    assert_match "pass", mail.body.encoded
   end
 end
