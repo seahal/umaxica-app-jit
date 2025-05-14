@@ -18,7 +18,7 @@ module Www
         end
 
         def create
-          @utbotp = TimeBasedOneTimePassword.new(sample_params)
+          @utbotp = TimeBasedOneTimePassword.new(create_params)
           @utbotp.private_key = session[:private_key]
           @utbotp.id = SecureRandom.uuid_v7
 

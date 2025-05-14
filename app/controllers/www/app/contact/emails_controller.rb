@@ -30,7 +30,7 @@ module Www
           hotp_counter = session[:contact_hotp_counter]
           hotp = ROTP::HOTP.new(b32_private_key)
           hotp.verify(pass_code, hotp_counter.to_i)
-
+          hotp_result = hotp.verify(pass_code.to_s, hotp_counter.to_i)
           if @service_site_contact.valid? && [
             session[:contact_id],
             params[:contact_id],
@@ -40,13 +40,14 @@ module Www
             session[:contact_telephone_checked] == false,
             ## find out the telephone number
             memorize[:contact_telephone_number],
-            # verify pass_code of emal
-            hotp.verify(pass_code.to_s, hotp_counter.to_i)
+            # verify pass_code of emails
+            hotp_result
           ].all?
             session[:contact_email_checked] = true
             session[:contact_expires_in] = 2.hours.from_now
             redirect_to new_www_app_contact_telephone_url(params[:contact_id])
           else
+            @service_site_contact.errors.add :base, :invalid, message: t("model.concern.otp:invalid_input") if hotp_result.blank?
             render :new, status: :unprocessable_entity
           end
         end

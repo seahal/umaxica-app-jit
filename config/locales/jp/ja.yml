@@ -1,12 +1,11 @@
 ---
 ja:
-  errors:
-    messages:
-      extension_allowlist_error: '???'
   model:
     concern:
       cloudflare:
         invalid_input: 'Captcha を操作してください'
+      otp:
+        invalid_input: 'Pass Code の値に問題があります'
   controller:
     www:
       app:
@@ -176,6 +175,7 @@ ja:
       too_long: は%{count}文字以内で入力してください
       too_short: は%{count}文字以上で入力してください
       wrong_length: は%{count}文字で入力してください
+      extension_allowlist_error: '???'
     template:
       body: 次の項目を確認してください
       header: "%{model}に%{count}個のエラーが発生しました"

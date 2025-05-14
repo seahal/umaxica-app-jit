@@ -3,16 +3,16 @@ module Www::App
     include ::Cloudflare
     include ::Contact
     include ::Rotp
+    include ::Common
 
     def new
       clear_contact_session
       session[:contact_expires_in] = 2.hours.from_now
-      @service_site_contact = ServiceSiteContact.new(step: :introduction)
+      @service_site_contact = ServiceSiteContact.new
     end
 
     def create
-      @service_site_contact = ServiceSiteContact.new(sample_params)
-      @service_site_contact.step = :introduction
+      @service_site_contact = ServiceSiteContact.new(create_params)
       cfv = cloudflare_turnstile_validation["success"]
       if @service_site_contact.valid? && cfv
         clear_contact_session
@@ -66,29 +66,37 @@ module Www::App
     end
 
     def update
-      if [
+      @service_site_contact = ServiceSiteContact.new(update_params)
+      if @service_site_contact.valid? && [
+        !!params[:id],
+        !!session[:contact_id],
         session[:contact_id] == params[:id],
-        session[:contact_email_checked] == false,
-        session[:contact_telephone_checked] == false,
-        session[:contact_expires_in].to_i > Time.now.to_i
+        session[:contact_email_checked] == true,
+        session[:contact_telephone_checked] == true,
+        Time.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.now
       ].all?
-        # make forms which for email sonzai
-        @service_site_contact = ServiceSiteContact.new
+        @service_site_contact.id = gen_original_uuid
+        @service_site_contact.email_address = memorize[:contact_email_address]
+        @service_site_contact.telephone_number = memorize[:contact_telephone_number]
+        @service_site_contact.id = gen_original_uuid
+        @service_site_contact.save!
+        session[:contact_email_checked] = false
+        # make forms which for email sonzai @service_site_contact
+        redirect_to www_app_contact_url(@service_site_contact.id)
       else
-        show_error_page
+        render :edit, status: :unprocessable_entity
       end
     end
 
     def show
       if [
-        !!session[:id],
-        !!params[:contact_id],
-        session[:id] == params[:contact_id],
+        !!params[:id],
+        !!session[:contact_id],
+        session[:contact_id] != params[:id],
         session[:contact_email_checked] == false, # NOTE: you would strange to see, but false is Right for here.
-        session[:contact_telephone_checked] == true,
-        Time.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.now
+        session[:contact_telephone_checked] == true
       ].all?
-        ""
+        clear_contact_session
       else
         show_error_page
       end
@@ -102,8 +110,13 @@ module Www::App
     end
 
     # Only allow a list of trusted parameters through.
-    def sample_params
-      params.expect(service_site_contact: [ :confirm_policy, :telephone_number, :email_address ])
+    def create_params
+      params.expect(service_site_contact: [:confirm_policy, :telephone_number, :email_address])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def update_params
+      params.expect(service_site_contact: [:title, :description])
     end
   end
 end

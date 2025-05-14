@@ -23,7 +23,7 @@ module Common
 
   # generate uuid
   def gen_original_uuid
-    SecureRandom.uuid
+    SecureRandom.uuid_v7
   end
 
   # convert utc to local time

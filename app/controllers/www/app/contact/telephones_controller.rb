@@ -21,13 +21,11 @@ module Www
         end
 
         def create
-          p "aaa"
           pass_code = params[:service_site_contact][:telephone_pass_code]
           @service_site_contact = ServiceSiteContact.new(telephone_pass_code: pass_code)
-          p "bbb"
           b32_private_key = memorize[:contact_otp_private_key]
           hotp = ROTP::HOTP.new(b32_private_key)
-          p "ccc"
+          hotp_result = hotp.verify(pass_code.to_s, 200)
           if @service_site_contact.valid? && [
             session[:contact_id],
             params[:contact_id],
@@ -39,12 +37,13 @@ module Www
             ## find out the telephone number
             memorize[:contact_telephone_number],
             # verify pass_code of emal
-            hotp.verify(pass_code.to_s, 200)
+            hotp_result
           ].all?
             session[:contact_telephone_checked] = true
             session[:contact_expires_in] = 2.hours.from_now
             redirect_to edit_www_app_contact_url(params[:contact_id])
           else
+            @service_site_contact.errors.add :base, :invalid, message: t("model.concern.otp.invalid_input") if hotp_result.blank?
             render :new, status: :unprocessable_entity
           end
         end
