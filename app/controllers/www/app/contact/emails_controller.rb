@@ -51,7 +51,7 @@ module Www
             redirect_to new_www_app_contact_telephone_url(params[:contact_id])
           else
             session[:contact_count] += 1
-            @service_site_contact.errors.add :base, :invalid, message: t("model.concern.otp:invalid_input") if hotp_result.blank?
+            @service_site_contact.errors.add :base, :invalid, message: t("model.concern.otp.invalid_input") if hotp_result.blank?
             render :new, status: :unprocessable_entity
           end
         end

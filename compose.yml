@@ -10,19 +10,6 @@ services:
     restart: always
     tty: true
     stdin_open: true
-    extra_hosts:
-      - "com.api.localdomain:127.0.0.1"
-      - "org.api.localdomain:127.0.0.1"
-      - "app.api.localdomain:127.0.0.1"
-      - "com.www.localdomain:127.0.0.1"
-      - "org.www.localdomain:127.0.0.1"
-      - "app.www.localdomain:127.0.0.1"
-      - "com.docs.localdomain:127.0.0.1"
-      - "app.docs.localdomain:127.0.0.1"
-      - "org.docs.localdomain:127.0.0.1"
-      - "com.news.localdomain:127.0.0.1"
-      - "app.news.localdomain:127.0.0.1"
-      - "org.news.localdomain:127.0.0.1"
     ports:
       - "3333:3000"
     volumes:
@@ -33,7 +20,7 @@ services:
     depends_on:
       - primary
       - replica
-      - opensearch
+      - elasticsearch
       - kafka
       - redis
       - minio
@@ -129,7 +116,7 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
     networks:
       - backend
-  opensearch:
+  elasticsearch:
     image: opensearchproject/opensearch:latest
     environment:
       - cluster.name=opensearch-cluster
@@ -148,13 +135,13 @@ services:
         soft: 65536
         hard: 65536
     volumes:
-      - opensearch-volume:/usr/share/opensearch/data
+      - elasticsearch-volume:/usr/share/opensearch/data
     ports:
       - 9200:9200
       - 9600:9600
     networks:
       - backend
-  opensearch-dashboards:
+  elasticsearch-dashboards:
     image: opensearchproject/opensearch-dashboards:latest
     environment:
       OPEN_SEARCH_ADMIN_PASSWORD: 'yourStrongPassword123!'
@@ -231,7 +218,7 @@ volumes:
   psql-sub-volume:
   redis-volume:
   kafka-broker-volume:
-  opensearch-volume:
+  elasticsearch-volume:
   minio-volume:
 networks:
   backend:

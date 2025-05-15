@@ -71,7 +71,7 @@ gem "pundit", "~> 2.5"
 # Altanative way of Active Storage
 gem "carrierwave", "~> 3.1", ">= 3.1.2"
 #
-# gem "importmap-rails"
+gem "jsbundling-rails"
 
 
 group :development, :test do

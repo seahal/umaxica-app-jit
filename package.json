@@ -1,0 +1,13 @@
+{
+  "name": "app",
+  "private": true,
+  "scripts": {
+    "build": "bun bun.config.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

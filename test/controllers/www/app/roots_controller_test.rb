@@ -13,6 +13,7 @@ module App
 
     test "Breadcrumbs" do
       get www_app_root_url
+      assert_response :success
       #      assert_select "nav ul li a[href=?]", www_app_root_url
     end
   end
