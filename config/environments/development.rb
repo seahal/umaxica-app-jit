@@ -96,19 +96,12 @@ Rails.application.configure do
   # secure: true
 
   ## to avoid errors
-  config.hosts << "localhost"
-  config.hosts << "com.www.localdomain"
-  config.hosts << "app.www.localdomain"
-  config.hosts << "org.www.localdomain"
-  config.hosts << "com.api.localdomain"
-  config.hosts << "app.api.localdomain"
-  config.hosts << "org.api.localdomain"
-  config.hosts << "com.news.localdomain"
-  config.hosts << "app.news.localdomain"
-  config.hosts << "org.news.localdomain"
-  config.hosts << "com.docs.localdomain"
-  config.hosts << "app.docs.localdomain"
-  config.hosts << "org.docs.localdomain"
+  config.hosts << "www.app.localdomain"
+  config.hosts << "www.com.localdomain"
+  config.hosts << "www.org.localdomain"
+  config.hosts << "api.app.localdomain"
+  config.hosts << "api.com.localdomain"
+  config.hosts << "api.org.localdomain"
 
   # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
   config.after_initialize do
@@ -124,7 +117,7 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   # Rack Attack preferences
-  Rack::Attack.cache.store = Rails.cache
+  Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: "#{ENV['REDIS_RACK_ATTACK_URL']}")
 
   ## Email Settings
   ### Set localhost to be used by links generated in mailer templates.

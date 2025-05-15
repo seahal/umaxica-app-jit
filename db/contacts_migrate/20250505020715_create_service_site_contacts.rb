@@ -5,6 +5,7 @@ class CreateServiceSiteContacts < ActiveRecord::Migration[8.0]
       t.string :telephone_number
       t.string :title
       t.text :description
+      t.cidr :ip_address
 
       t.timestamps
     end

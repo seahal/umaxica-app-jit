@@ -7,11 +7,13 @@ module Www::App
 
     def new
       clear_contact_session
+      session[:contact_count] ||= 0
       session[:contact_expires_in] = 2.hours.from_now
       @service_site_contact = ServiceSiteContact.new
     end
 
     def create
+      session[:contact_count] ||= 0
       @service_site_contact = ServiceSiteContact.new(create_params)
       cfv = cloudflare_turnstile_validation["success"]
       if @service_site_contact.valid? && cfv
@@ -31,18 +33,20 @@ module Www::App
                             contact_email_address: @service_site_contact.email_address,
                             # secure data, so the data is not stored in Redis.
                             contact_telephone_number: @service_site_contact.telephone_number)
-
+        session[:contact_count] = 0
         # send email which contains a pass code
         contact_email_pass_code = hotp.at(100)
         session[:contact_email_pass_code] = contact_email_pass_code if Rails.env.test?
         send_otp_code_using_email(pass_code: contact_email_pass_code, email_address: @service_site_contact.email_address) unless Rails.env.test?
         # send email which contains a pass code
         contact_telephone_pass_code = hotp.at(200)
+        puts contact_telephone_pass_code # FIXME: remove it
         session[:contact_telephone_pass_code] = contact_telephone_pass_code if Rails.env.test?
         send_otp_code_using_sms(pass_code: contact_telephone_pass_code, telephone_number: @service_site_contact.telephone_number) unless Rails.env.test?
         # move to another controller
         redirect_to new_www_app_contact_email_url(contact_id)
       else
+        session[:contact_count] += 1
         @service_site_contact.errors.add :base, :invalid, message: t("model.concern.cloudflare.invalid_input") unless cfv
         clear_contact_session
         render :new, status: :unprocessable_entity
@@ -50,13 +54,15 @@ module Www::App
     end
 
     def edit
+      session[:contact_count] ||= 0
       if [
         !!params[:id],
         !!session[:contact_id],
         session[:contact_id] == params[:id],
         session[:contact_email_checked],
         session[:contact_telephone_checked],
-        Time.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.now
+        Time.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.now,
+        session[:contact_count] < 10
       ].all?
         # make forms which for email sonzai
         @service_site_contact = ServiceSiteContact.new
@@ -66,6 +72,7 @@ module Www::App
     end
 
     def update
+      session[:contact_count] ||= 0
       @service_site_contact = ServiceSiteContact.new(update_params)
       if @service_site_contact.valid? && [
         !!params[:id],
@@ -78,7 +85,7 @@ module Www::App
         @service_site_contact.id = gen_original_uuid
         @service_site_contact.email_address = memorize[:contact_email_address]
         @service_site_contact.telephone_number = memorize[:contact_telephone_number]
-        @service_site_contact.id = gen_original_uuid
+        @service_site_contact.ip_address = request.remote_ip
         @service_site_contact.save!
         session[:contact_email_checked] = false
         # make forms which for email sonzai @service_site_contact
@@ -96,6 +103,7 @@ module Www::App
         session[:contact_email_checked] == false, # NOTE: you would strange to see, but false is Right for here.
         session[:contact_telephone_checked] == true
       ].all?
+        session[:contact_count] = 0
         clear_contact_session
       else
         show_error_page

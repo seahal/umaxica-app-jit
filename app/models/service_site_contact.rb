@@ -5,6 +5,7 @@
 #  id               :uuid             not null, primary key
 #  description      :text
 #  email_address    :string
+#  ip_address       :cidr
 #  telephone_number :string
 #  title            :string
 #  created_at       :datetime         not null
@@ -15,6 +16,7 @@ class ServiceSiteContact < ContactsRecord
 
   before_save { self.email_address&.downcase! }
   before_save { self.telephone_number&.downcase! }
+  before_create { raise if telephone_number.nil? && email_address.nil? && title.nil? && description.nil? }
 
   encrypts :email_address, downcase: true
   encrypts :telephone_number, downcase: true
@@ -23,7 +25,8 @@ class ServiceSiteContact < ContactsRecord
 
   validates :confirm_policy,
             acceptance: true,
-            unless: Proc.new { it.telephone_number.nil? && it.confirm_policy.nil? && it.email_address.nil? }
+            unless: Proc.new { it.telephone_number.nil? && it.confirm_policy.nil? && it.email_address.nil? },
+            on: :create
   validates :email_address,
             format: { with: URI::MailTo::EMAIL_REGEXP },
             presence: true,

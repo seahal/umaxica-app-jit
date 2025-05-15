@@ -92,4 +92,7 @@ Rails.application.configure do
   ### Added by owner
   # We've configured this production environment to prevent the delivery of public static content.
   config.public_file_server.enabled = false
+
+  # Rack Attack preferences
+  Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: "#{ENV['REDIS_RACK_ATTACK_URL']}")
 end

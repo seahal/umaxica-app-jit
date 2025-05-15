@@ -46,6 +46,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_172856) do
   create_table "personas", id: :binary, force: :cascade do |t|
     t.string "name"
     t.binary "identifier_id"
+    t.jsonb "avatar"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

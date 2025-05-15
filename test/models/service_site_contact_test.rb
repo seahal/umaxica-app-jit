@@ -5,6 +5,7 @@
 #  id               :uuid             not null, primary key
 #  description      :text
 #  email_address    :string
+#  ip_address       :cidr
 #  telephone_number :string
 #  title            :string
 #  created_at       :datetime         not null
@@ -26,10 +27,10 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     end
 
     test "good #{model}'s email pattern" do
-        assert @good_pattern.valid?
-        assert @good_pattern.save
-        @good_pattern.email_address = "x@example.net"
-        assert @good_pattern.valid?
+      assert @good_pattern.valid?
+      assert @good_pattern.save
+      @good_pattern.email_address = "x@example.net"
+      assert @good_pattern.valid?
     end
 
     test "valid #{model}'s confirmation check" do
@@ -116,12 +117,12 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       end
     end
 
-    # test "valid #{model}'s email pattern" do
-    #   eg = model.count
-    #   model.create(email_address: "eg@example.net", telephone_number: "+8180123245689")
-    #   assert_equal eg + 1, model.count
-    # end
-    #
+    test "none is invalid of #{model}'s pattern" do
+      assert_raise do
+        ServiceSiteContact.create
+      end
+    end
+
     # test "bad #{model}'s email pattern" do
     #   valid_telephone_number = "+81701232456789"
     #   assert_not model.new(email_address: "", telephone_number: valid_telephone_number).valid?
