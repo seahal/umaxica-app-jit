@@ -17,5 +17,20 @@ module ActiveSupport
     fixtures :all
 
     # Add more helper methods to be used by all tests here...
+    setup do
+      redis_host = File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost"
+      redis_config = RedisClient.config(
+        host: redis_host,
+        port: 6379,
+        db: 0
+      )
+
+      # Create a connection and clear the database
+      redis_client = redis_config.new_client
+
+      # Clear all keys in the test database
+      redis_client.call("FLUSHALL")
+
+    end
   end
 end
