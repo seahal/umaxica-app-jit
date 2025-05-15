@@ -46,7 +46,7 @@ module Www
 
       # following method made for set value in Redis.
       def memorize
-        @memorize ||= RedisMemorize.new(originality_prefix: request.host)
+        @memorize ||= RedisMemorize.new(originality_prefix: request.host, originality_postfix: session.id)
       end
 
       helper_method :memorize

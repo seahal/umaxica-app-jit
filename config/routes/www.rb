@@ -4,7 +4,7 @@ Rails.application.routes.draw do
     constraints host: ENV["WWW_CORPORATE_URL"] do
       scope module: :com, as: :com do
         #
-        root to: "roots#index"
+        root to: "roots#index"  # FIXME: remove this line
         # health check for html
         resource :health, only: :show, format: :html
         # show stating env
@@ -32,8 +32,8 @@ Rails.application.routes.draw do
       constraints host: ENV["WWW_SERVICE_URL"] do
         scope module: :app, as: :app do
           # homepage
-          root to: "roots#index"
-          # root to: "roots#index"
+          root to: "roots#index" # FIXME: remove this line
+          # endpoint of health check
           resource :health, only: :show
           # show stating env
           resource :staging, only: :show
@@ -91,7 +91,7 @@ Rails.application.routes.draw do
     constraints host: ENV["WWW_STAFF_URL"] do
       scope module: :org, as: :org do
         # Homepage
-        root to: "roots#index"
+        root to: "roots#index" # FIXME: remove this line
         # health check for html
         resource :health, only: :show
         # show stating env
