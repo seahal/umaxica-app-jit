@@ -56,10 +56,6 @@ gem "rotp", "~> 6.3"
 gem "rqrcode", "~> 3.0"
 #
 gem "solid_cache", "~> 1.0"
-#
-gem "importmap-rails"
-#
-gem "tailwindcss-ruby"
 # pagenation
 gem "kaminari"
 # Breadcrumbs
@@ -73,6 +69,8 @@ gem "omniauth-rails_csrf_protection"
 gem "pundit", "~> 2.5"
 # Altanative way of Active Storage
 gem "carrierwave", "~> 3.1", ">= 3.1.2"
+#
+# gem "importmap-rails"
 
 
 group :development, :test do
