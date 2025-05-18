@@ -4,7 +4,7 @@ class Www::App::ContactsControllerTest < ActionDispatch::IntegrationTest
   setup do
     Rails.cache.clear
     Www::App::ApplicationController.new # Initializer of RedisMemorize
-    @memorize = Www::App::RedisMemorize.new(originality_prefix: SecureRandom.hex(1000))
+    @memorize = Www::App::RedisMemorize.new(prefix: SecureRandom.hex(1000))
     @memorize[:contact_telephone_number] = ""
     @memorize[:contact_email_address] = ""
     @memorize[:contact_otp_private_key] = ""

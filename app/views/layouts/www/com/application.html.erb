@@ -11,8 +11,7 @@
 
 <body class="px-4">
 <header>
-  <h1 class="container mx-auto mt-28 px-5 flex"><%= link_to 'UMAXICA(Corporate Site)', www_com_root_path %></h1>
-</header>
+  <h1><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica(www, com)</a></h1></header>
 
 <hr>
 
@@ -21,7 +20,6 @@
   <%= yield %>
   <nav>
     <ul>
-      <li><%= link_to 'Home', www_com_root_url %></li>
     </ul>  <%= breadcrumbs pretext: "You are here: ",
                            separator: " &rsaquo; " %>
   </nav>
@@ -29,14 +27,14 @@
 <hr>
 
 <footer>
-  <%= link_to 'Cookie', edit_www_com_preference_cookie_path %>
-  Support
-  Terms
-  Privacy
-  Security
-  Accessibility
-  <%= link_to 'Homepage', www_com_root_path %>
-
+  <ul>
+    <li><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica</a></li>
+    <li>Support</li>
+    <li>Terms</li>
+    <li>Privacy</li>
+    <li>Security</li>
+    <li>Accessibility</li>
+  </ul>
   <p>© <%= Time.now.year %> Umaxica.</p>
 </footer>
 

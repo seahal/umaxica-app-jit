@@ -2,7 +2,7 @@
 
 module Api
   module App
-    module V0
+    module V1
       class StagingsController < ApplicationController
         include ::Staging
       end

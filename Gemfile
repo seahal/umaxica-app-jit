@@ -47,8 +47,6 @@ gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all", "~> 0.74.0"
 # sitemap
 gem "sitemap_generator"
-# JWT
-gem "jwt", "~> 2.10", ">= 2.10.1"
 # Webauthn
 gem "webauthn", "~> 3.4"
 # TOTP and HTOP
@@ -66,8 +64,9 @@ gem "omniauth"
 gem "omniauth-apple", "~> 1.3"
 gem "omniauth-google-oauth2", "~> 1.1", ">= 1.1.1"
 gem "omniauth-rails_csrf_protection"
-# pundit
+# 認可 (Authorization)
 gem "pundit", "~> 2.5"
+gem "rolify", "~> 6.0", ">= 6.0.1"
 # Altanative way of Active Storage
 gem "carrierwave", "~> 3.1", ">= 3.1.2"
 #

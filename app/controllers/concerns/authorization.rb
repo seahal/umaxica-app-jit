@@ -1,4 +1,8 @@
-module Authentication
+# frozen_string_literal: true
+
+# NOTE:
+
+module Authorization
   extend ActiveSupport::Concern
 
   # set url params

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Api
-  module Com
-    module V0
+  module Org
+    module V1
       class StagingsController < ApplicationController
         include ::Staging
       end

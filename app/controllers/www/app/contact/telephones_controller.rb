@@ -3,6 +3,7 @@ module Www
     module Contact
       class TelephonesController < ApplicationController
         include ::Contact
+        include ::Memorize
 
         def new
           session[:contact_count] ||= 0

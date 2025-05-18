@@ -4,7 +4,7 @@
     "": {
       "name": "app",
       "devDependencies": {
-        "@types/bun": "latest",
+        "@types/bun": "^1.2.13",
       },
       "peerDependencies": {
         "@biomejs/biome": "^1.9.4",

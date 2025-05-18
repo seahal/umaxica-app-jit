@@ -30,7 +30,6 @@ module ActiveSupport
 
       # Clear all keys in the test database
       redis_client.call("FLUSHALL")
-
     end
   end
 end

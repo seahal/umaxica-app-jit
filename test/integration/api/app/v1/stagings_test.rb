@@ -2,11 +2,11 @@
 
 require "test_helper"
 
-module Org
-  module V0
+module App
+  module V1
     class StagingsTest < ActionDispatch::IntegrationTest
       test "should get show" do
-        get api_org_v0_staging_url
+        get api_app_v1_staging_url
         assert_response :success
         json = JSON.parse(response.body)
         assert_equal false, json["staging"]

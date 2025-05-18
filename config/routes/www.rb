@@ -3,8 +3,6 @@ Rails.application.routes.draw do
     # for client site
     constraints host: ENV["WWW_CORPORATE_URL"] do
       scope module: :com, as: :com do
-        #
-        root to: "roots#index"  # FIXME: remove this line
         # health check for html
         resource :health, only: :show, format: :html
         # show stating env
@@ -31,8 +29,6 @@ Rails.application.routes.draw do
       # service page
       constraints host: ENV["WWW_SERVICE_URL"] do
         scope module: :app, as: :app do
-          # homepage
-          root to: "roots#index" # FIXME: remove this line
           # endpoint of health check
           resource :health, only: :show
           # show stating env
@@ -90,8 +86,6 @@ Rails.application.routes.draw do
     # For Staff's webpages www.jp.example.org
     constraints host: ENV["WWW_STAFF_URL"] do
       scope module: :org, as: :org do
-        # Homepage
-        root to: "roots#index" # FIXME: remove this line
         # health check for html
         resource :health, only: :show
         # show stating env
