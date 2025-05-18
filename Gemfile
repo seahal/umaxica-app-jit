@@ -71,6 +71,8 @@ gem "rolify", "~> 6.0", ">= 6.0.1"
 gem "carrierwave", "~> 3.1", ">= 3.1.2"
 #
 gem "jsbundling-rails"
+#
+gem 'view_component', '~> 3.22'
 
 
 group :development, :test do

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module News
-  module App
+  module Com
     class HealthsController < ApplicationController
       include ::Health
     end
