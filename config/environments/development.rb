@@ -102,6 +102,12 @@ Rails.application.configure do
   config.hosts << "api.app.localdomain"
   config.hosts << "api.com.localdomain"
   config.hosts << "api.org.localdomain"
+  config.hosts << "docs.app.localdomain"
+  config.hosts << "docs.com.localdomain"
+  config.hosts << "docs.org.localdomain"
+  config.hosts << "news.app.localdomain"
+  config.hosts << "news.com.localdomain"
+  config.hosts << "news.org.localdomain"
 
   # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
   config.after_initialize do
