@@ -9,6 +9,16 @@ ja:
   controller:
     www:
       app:
+        preference:
+          show:
+            page_title: 'konomi'
+          cookie:
+            edit:
+              page_title: 'クッキーの設定'
+              accept_tracking_cookies: 'トラッキングの許可について'
+          email:
+            new:
+              page_title: 'emailの設定'
         contacts:
           new:
             page_title: 'お問い合わせページ'
