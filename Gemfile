@@ -77,7 +77,8 @@ gem 'view_component', '~> 3.22'
 gem 'rswag'
 gem 'rswag-api'
 gem 'rswag-ui'
-
+#
+gem 'requestjs-rails'
 
 
 group :development, :test do

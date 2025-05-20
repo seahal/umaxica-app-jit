@@ -22,14 +22,20 @@
 
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>
-
-  <nav>
-    <ul></ul>
-    <%= breadcrumbs separator: " &rsaquo; " %>
-
-  </nav>
-
 </main>
+
+<nav>
+  <% breadcrumbs.tap do |links| %>
+    <% if links.any? %>
+      <ul>
+        <% links.each do |link| %>
+          <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
+        <% end %>
+    <% end %>
+    <li>...</li>
+    </ul>
+  <% end %>
+</nav>
 
 <hr>
 

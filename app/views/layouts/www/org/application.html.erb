@@ -16,7 +16,6 @@
 
 <hr>
 
-<nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500"></nav>
 
 <main class="container mx-auto mt-28 px-5 block"><%= yield %>
   <nav>
@@ -26,6 +25,21 @@
     <%= breadcrumbs pretext: "You are here: ", separator: " &rsaquo; " %>
   </nav>
 </main>
+
+<nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
+  <nav>
+    <% breadcrumbs.tap do |links| %>
+      <% if links.any? %>
+        <ul>
+          <% links.each do |link| %>
+            <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
+          <% end %>
+          <li>...</li>
+        </ul>
+      <% end %>
+    <% end %>
+  </nav>
+</nav>
 
 <hr>
 
