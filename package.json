@@ -8,7 +8,7 @@
     "typecheck": "bunx tsc --noEmit"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.13"
+    "@types/bun": "^1.2.14"
   },
   "peerDependencies": {
     "@biomejs/biome": "^1.9.4",
