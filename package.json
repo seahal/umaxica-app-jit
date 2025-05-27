@@ -5,10 +5,11 @@
     "build": "bun bun.config.js",
     "format": "bun x @biomejs/biome format app/ --write ",
     "lint": "bun x @biomejs/biome lint app/ --fix",
-    "typecheck": "bunx tsc --noEmit"
+    "typecheck": "bun x tsc --noEmit"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.14"
+    "@types/bun": "^1.2.14",
+    "@typescript/native-preview": "^7.0.0-dev.20250525.1"
   },
   "peerDependencies": {
     "@biomejs/biome": "^1.9.4",
