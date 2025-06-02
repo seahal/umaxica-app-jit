@@ -47,14 +47,20 @@ RUN apk update && \
         dbus  \
         ttf-freefont  \
         udev  \
-        curl
-COPY Gemfile Gemfile.lock /main/
+        curl \
+        nodejs \
+        npm \
+        sudo
+COPY Gemfile Gemfile.lock package.json bun.lock /main/
+RUN npm install -g bun
 RUN gem install bundler && \
     bundle install --gemfile /main/Gemfile --jobs 32
 RUN rm -rf /var/cache/apk/*
 RUN if [ -z "$GITHUB_ACTIONS" ]; then \
     addgroup -g ${DOCKER_GID} ${DOCKER_GROUP} && \
     adduser -D -u ${DOCKER_UID} -G ${DOCKER_GROUP} -h /home/${DOCKER_USER} ${DOCKER_USER} && \
+    echo "${DOCKER_USER}:hogehoge" | chpasswd && \
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
     chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
 fi && \
 chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
