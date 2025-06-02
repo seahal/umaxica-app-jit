@@ -72,13 +72,13 @@ gem "carrierwave", "~> 3.1", ">= 3.1.2"
 #
 gem "jsbundling-rails"
 #
-gem 'view_component', '~> 3.22'
+gem "view_component", "~> 3.22"
 # OpenAPI
-gem 'rswag'
-gem 'rswag-api'
-gem 'rswag-ui'
+gem "rswag"
+gem "rswag-api"
+gem "rswag-ui"
 #
-gem 'requestjs-rails'
+gem "requestjs-rails"
 
 
 group :development, :test do

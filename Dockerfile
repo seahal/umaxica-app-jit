@@ -22,9 +22,7 @@ RUN apk update && \
     apk add --no-cache \
         bash \
         build-base \
-        chromium-chromedriver \
         curl-dev \
-        fontconfig \
         g++ \
         gcc \
         git \
@@ -36,19 +34,16 @@ RUN apk update && \
         postgresql-client \
         tzdata \
         yaml-dev \
-        chromium \
         build-base \
         git \
-        chromium-chromedriver \
         zlib-dev \
         xvfb  \
         wait4ports  \
         xorg-server  \
         dbus  \
-        ttf-freefont  \
         udev  \
         curl \
-        nodejs \
+        openssl \
         npm \
         sudo
 COPY Gemfile Gemfile.lock package.json bun.lock /main/
