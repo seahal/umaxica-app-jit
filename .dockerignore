@@ -1,41 +1,127 @@
 # See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
 
-# Ignore git directory.
-/.git/
+# Git
+.git
+.gitignore
+.gitattributes
 
-# Ignore bundler config.
-/.bundle
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+doc/
+docs/
+*.md
 
-# Ignore all environment files (except templates).
-/.env*
-!/.env*.erb
+# Development files
+.devcontainer/
+.vscode/
+.idea/
 
-# Ignore all default key files.
-/config/master.key
-/config/credentials/*.key
+# Environment files
+.env*
+!.env.example
+!.env*.erb
 
-# Ignore all logfiles and tempfiles.
-/log/*
-/tmp/*
-!/log/.keep
-!/tmp/.keep
+# Security files
+config/master.key
+config/credentials/*.key
 
-# Ignore pidfiles, but keep the directory.
-/tmp/pids/*
-!/tmp/pids/.keep
+# Log files and temp files
+log/*
+!log/.keep
+tmp/*
+!tmp/.keep
+tmp/pids/*
+!tmp/pids/.keep
 
-# Ignore storage (uploaded files sign_in development and any SQLite databases).
-/storage/*
-!/storage/.keep
-/tmp/storage/*
-!/tmp/storage/.keep
+# Storage (uploaded files)
+storage/*
+!storage/.keep
+tmp/storage/*
+!tmp/storage/.keep
 
-# Ignore assets.
-/node_modules/
-/app/assets/builds/*
-!/app/assets/builds/.keep
-/public/assets
+# Dependencies
+node_modules/
+vendor/cache/
+.bundle
 
-# Added by owner
-/.env
-Dockerfile
+# Assets and builds
+app/assets/builds/*
+!app/assets/builds/.keep
+public/assets
+public/packs/
+public/packs-test/
+
+# Test files
+test/
+spec/
+coverage/
+.simplecov
+
+# Development databases
+*.sqlite3
+*.sqlite3-*
+
+# Cache
+.sass-cache/
+.byebug_history
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*~
+*.swp
+*.swo
+*#
+.#*
+
+# Ruby
+*.gem
+.rbenv-gemsets
+
+# JavaScript/TypeScript
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+jspm_packages/
+.npm
+.eslintcache
+build/
+dist/
+*.tsbuildinfo
+.node_repl_history
+*.tgz
+.yarn-integrity
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.lcov
+
+# Compiled binary addons
+build/Release/
+
+# Docker
+Dockerfile*
+docker-compose*
+compose.yml
+compose.yaml
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
