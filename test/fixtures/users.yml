@@ -8,5 +8,8 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-users_one:
+one:
   id: "e6c146b6-e4f5-4056-888c-338a16ab82ce"
+
+two:
+  id: "f7d257c7-f5g6-5167-999d-449b27bc93df"

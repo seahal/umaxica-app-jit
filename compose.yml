@@ -13,7 +13,7 @@ services:
     ports:
       - "3333:3000"
     volumes:
-      - ./:/main
+      - ./:/main:delegated
     networks:
       - backend
       - frontend

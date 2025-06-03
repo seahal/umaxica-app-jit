@@ -1,15 +1,11 @@
 {
 	"name": "umaxica-app-jit",
-	"dockerComposeFile": ["../compose.yml", "./docker-compose.yml"],
+	"dockerComposeFile": ["../compose.yml", "docker-compose.yml"],
 	"service": "main",
 	"workspaceFolder": "/main",
 	"remoteUser": "main",
-	"forwardPorts": [3000, 3333, 5432, 5433, 5434, 6379, 9092, 9200],
+	"forwardPorts": [3333, 5432, 5433, 5434, 6379, 9092, 9200],
 	"portsAttributes": {
-		"3000": {
-			"label": "Rails Server",
-			"onAutoForward": "notify"
-		},
 		"3333": {
 			"label": "Rails Server (Docker)",
 			"onAutoForward": "notify"
@@ -39,6 +35,11 @@
 	},
 	"customizations": {
 		"vscode": {
+			"extensions": [
+				"Shopify.ruby-lsp",
+				"bradlc.vscode-tailwindcss",
+				"ms-vscode.vscode-typescript-next"
+			],
 			"settings": {
 				"extensions.verifySignature": false,
 				"ruby.lsp.enabledFeatures": {
@@ -60,70 +61,7 @@
 					"workspaceSymbol": true,
 					"signatureHelp": true,
 					"typeHierarchy": true
-				},
-				"ruby.lsp.rubyVersionManager": "auto",
-				"editor.formatOnSave": true,
-				"editor.tabSize": 2,
-				"editor.insertSpaces": true,
-				"files.insertFinalNewline": true,
-				"files.trimTrailingWhitespace": true,
-				"terminal.integrated.defaultProfile.linux": "bash",
-				"git.autofetch": true,
-				"git.confirmSync": false,
-				"files.associations": {
-					"*.erb": "erb",
-					"Gemfile": "ruby",
-					"Rakefile": "ruby",
-					"*.rake": "ruby",
-					"*.rb": "ruby"
 				}
-			},
-			"extensions": [
-				"Shopify.ruby-lsp",
-				"KoichiSasada.vscode-rdbg",
-				"rebornix.Ruby",
-				"misogi.ruby-rubocop",
-				"aliariff.vscode-erb-beautify",
-				"ms-vscode.vscode-json",
-				"bradlc.vscode-tailwindcss",
-				"ms-vscode.vscode-typescript-next",
-				"biomejs.biome",
-				"ms-vscode-remote.remote-containers",
-				"GitHub.copilot",
-				"GitHub.copilot-chat",
-				"eamodio.gitlens",
-				"ms-vscode.test-adapter-converter",
-				"hbenl.vscode-test-explorer",
-				"connorshea.vscode-ruby-test-adapter",
-				"ms-vscode.remote-repositories",
-				"mtxr.sqltools",
-				"mtxr.sqltools-driver-pg"
-			]
-		},
-		"jetbrains": {
-			"backend": "IntelliJ",
-			"plugins": [
-				"org.jetbrains.plugins.ruby",
-				"org.jetbrains.plugins.yaml",
-				"com.intellij.database",
-				"Git4Idea",
-				"org.jetbrains.plugins.terminal",
-				"com.jetbrains.sh",
-				"JavaScript",
-				"CSS",
-				"com.intellij.css",
-				"HtmlTools",
-				"com.intellij.properties",
-				"org.jetbrains.plugins.github",
-				"Docker"
-			],
-			"settings": {
-				"ruby.sdk.version": "auto",
-				"editor.tabs.use_spaces": true,
-				"editor.tabs.size": 2,
-				"editor.show_whitespaces": true,
-				"git.auto_fetch": true,
-				"terminal.default_shell": "/bin/bash"
 			}
 		}
 	},

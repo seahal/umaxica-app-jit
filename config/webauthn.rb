@@ -1,36 +1,60 @@
 WebAuthn.configure do |config|
-  # This value needs to match `window.location.origin` evaluated by
-  # the User Agent during registration and authentication ceremonies.
-  # Multiple origins can be used when needed. Using more than one will imply you MUST configure rp_id explicitely. If you need your credentials to be bound to a single origin but you have more than one tenant, please see [our Advanced Configuration section](https://github.com/cedarcode/webauthn-ruby/blob/master/docs/advanced_configuration.md) instead of adding multiple origins.
-  config.allowed_origins = [ "https://auth.example.com" ]
+  # Configure allowed origins based on environment
+  # This application serves multiple domains for different user types
+  allowed_origins = []
+
+  if Rails.env.development?
+    allowed_origins = [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "http://localhost:3333",
+      "http://127.0.0.1:3333"
+    ]
+  elsif Rails.env.production?
+    # Production origins from environment variables
+    corporate_url = ENV["WWW_CORPORATE_URL"]
+    service_url = ENV["WWW_SERVICE_URL"]
+    staff_url = ENV["WWW_STAFF_URL"]
+
+    allowed_origins = [ corporate_url, service_url, staff_url ].compact
+  elsif Rails.env.test?
+    allowed_origins = [
+      "http://test.example.com",
+      "http://localhost:3000"
+    ]
+  end
+
+  config.allowed_origins = allowed_origins
 
   # Relying Party name for display purposes
-  config.rp_name = "Example Inc."
+  config.rp_name = ENV.fetch("WEBAUTHN_RP_NAME", "Umaxica")
 
-  # Optionally configure a client timeout hint, in milliseconds.
-  # This hint specifies how long the browser should wait for any
-  # interaction with the user.
-  # This hint may be overridden by the browser.
-  # https://www.w3.org/TR/webauthn/#dom-publickeycredentialcreationoptions-timeout
-  # config.credential_options_timeout = 120_000
+  # Configure timeout for user interaction (2 minutes)
+  config.credential_options_timeout = 120_000
 
-  # You can optionally specify a different Relying Party ID
-  # (https://www.w3.org/TR/webauthn/#relying-party-identifier)
-  # if it differs from the default one.
-  #
-  # In this case the default would be "auth.example.com", but you can set it to
-  # the suffix "example.com"
-  #
-  # config.rp_id = "example.com"
+  # Relying Party ID - use the base domain for cross-subdomain support
+  # In production, this should be the root domain (e.g., "example.com")
+  # to allow credentials to work across all subdomains
+  if Rails.env.production?
+    # Extract base domain from service URL or use environment variable
+    base_domain = ENV["WEBAUTHN_RP_ID"]
+    if base_domain.blank? && ENV["WWW_SERVICE_URL"].present?
+      uri = URI.parse(ENV["WWW_SERVICE_URL"])
+      # Extract base domain (e.g., "example.com" from "app.example.com")
+      host_parts = uri.host.split(".")
+      base_domain = host_parts.length > 2 ? host_parts[-2..-1].join(".") : uri.host
+    end
+    config.rp_id = base_domain if base_domain.present?
+  elsif Rails.env.development?
+    # For development, use localhost
+    config.rp_id = "localhost"
+  end
 
-  # Configure preferred binary-to-text encoding scheme. This should match the encoding scheme
-  # used in your client-side (user agent) code before sending the credential to the server.
-  # Supported values: `:base64url` (default), `:base64` or `false` to disable all encoding.
-  #
-  # config.encoding = :base64url
+  # Use base64url encoding (default, but explicit for clarity)
+  config.encoding = :base64url
 
-  # Possible values: "ES256", "ES384", "ES512", "PS256", "PS384", "PS512", "RS256", "RS384", "RS512", "RS1"
-  # Default: ["ES256", "PS256", "RS256"]
-  #
-  # config.algorithms << "ES384"
+  # Configure supported algorithms
+  # ES256 (ECDSA with SHA-256) is widely supported and recommended
+  # PS256 and RS256 provide RSA alternatives
+  config.algorithms = [ "ES256", "PS256", "RS256" ]
 end

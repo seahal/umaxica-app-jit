@@ -7,7 +7,7 @@ ARG DOCKER_GROUP=group
 ARG GITHUB_ACTIONS=""
 
 # Development environment
-FROM ruby:$RUBY_VERSION-alpine3.21 AS development
+FROM ruby:$RUBY_VERSION-bookworm AS development
 ARG COMMIT_HASH
 ARG DOCKER_UID
 ARG DOCKER_GID
@@ -16,49 +16,58 @@ ARG DOCKER_GROUP
 ENV COMMIT_HASH=${COMMIT_HASH}
 ENV TZ=UTC
 ENV HOME=/main/
+ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /main/
-RUN apk update && \
-    apk upgrade && \
-    apk add --no-cache \
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install --no-install-recommends -y \
         bash \
-        build-base \
-        curl-dev \
-        g++ \
-        gcc \
+        build-essential \
+        curl \
         git \
-        libc-dev \
-        linux-headers \
         libpq-dev \
         libxml2-dev \
-        make \
+        libyaml-dev \
+        libvips \
         postgresql-client \
         tzdata \
-        yaml-dev \
-        build-base \
-        git \
-        zlib-dev \
-        xvfb  \
-        wait4ports  \
-        xorg-server  \
-        dbus  \
-        udev  \
-        curl \
+        zlib1g-dev \
+        xvfb \
+        xserver-xorg-core \
+        dbus \
+        udev \
         openssl \
-        npm \
-        sudo
+        sudo \
+        ca-certificates \
+        gnupg \
+        lsb-release && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+# Install Node.js and Bun
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g bun@${BUN_VERSION}
+
+# Copy dependency files
 COPY Gemfile Gemfile.lock package.json bun.lock /main/
-RUN npm install -g bun
+
+# Install Ruby and Node.js dependencies
 RUN gem install bundler && \
-    bundle install --gemfile /main/Gemfile --jobs 32
-RUN rm -rf /var/cache/apk/*
+    bundle install --gemfile /main/Gemfile --jobs $(nproc)
+
+# Create user and set permissions
 RUN if [ -z "$GITHUB_ACTIONS" ]; then \
-    addgroup -g ${DOCKER_GID} ${DOCKER_GROUP} && \
-    adduser -D -u ${DOCKER_UID} -G ${DOCKER_GROUP} -h /home/${DOCKER_USER} ${DOCKER_USER} && \
-    echo "${DOCKER_USER}:hogehoge" | chpasswd && \
-    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
-fi && \
-chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main
+        groupadd -g ${DOCKER_GID} ${DOCKER_GROUP} && \
+        useradd -u ${DOCKER_UID} -g ${DOCKER_GROUP} -m -s /bin/bash ${DOCKER_USER} && \
+        echo "${DOCKER_USER}:hogehoge" | chpasswd && \
+        echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+        chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
+    else \
+        chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
+    fi
+
 USER ${DOCKER_USER}
 
 
