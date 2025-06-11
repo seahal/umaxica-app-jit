@@ -17,10 +17,6 @@ class UserTest < ActiveSupport::TestCase
     assert @user.valid?
   end
 
-  # test "should inherit from IdentifiersRecord" do
-  #   assert_instance_of IdentifiersRecord, @user
-  #   assert_kind_of IdentifiersRecord, @user
-  # end
 
   test "should have binary id" do
     assert @user.id.is_a?(String)
@@ -62,13 +58,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal :has_many, @user.class.reflect_on_association(:user_time_based_one_time_password).macro
   end
 
-  # test "should create user with valid attributes" do
-  #   user = User.new
-  #   assert user.save
-  #   assert_not_nil user.id
-  #   assert_not_nil user.created_at
-  #   assert_not_nil user.updated_at
-  # end
 
   test "should update timestamps on save" do
     original_updated_at = @user.updated_at

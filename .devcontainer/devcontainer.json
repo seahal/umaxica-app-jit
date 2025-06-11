@@ -1,6 +1,6 @@
 {
 	"name": "umaxica-app-jit",
-	"dockerComposeFile": ["../compose.yml", "docker-compose.yml"],
+	"dockerComposeFile": ["../compose.yml"],
 	"service": "main",
 	"workspaceFolder": "/main",
 	"remoteUser": "main",
@@ -38,7 +38,8 @@
 			"extensions": [
 				"Shopify.ruby-lsp",
 				"bradlc.vscode-tailwindcss",
-				"ms-vscode.vscode-typescript-next"
+				"ms-vscode.vscode-typescript-next",
+				"Shopify.ruby-extensions-pack"
 			],
 			"settings": {
 				"extensions.verifySignature": false,

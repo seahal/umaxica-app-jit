@@ -17,11 +17,6 @@ class StaffTest < ActiveSupport::TestCase
   test "should be valid" do
     assert @staff.valid?
   end
-  #
-  # test "should inherit from IdentifiersRecord" do
-  #   assert_instance_of IdentifiersRecord, @staff
-  #   assert_kind_of IdentifiersRecord, @staff
-  # end
 
   test "should have binary id" do
     assert @staff.id.is_a?(String)
@@ -53,19 +48,6 @@ class StaffTest < ActiveSupport::TestCase
     assert_equal "address", @staff.class.reflect_on_association(:emails).foreign_key
   end
 
-  # test "should create staff with valid attributes" do
-  #   staff = Staff.new
-  #   assert staff.save
-  #   assert_not_nil staff.id
-  #   assert_not_nil staff.created_at
-  #   assert_not_nil staff.updated_at
-  # end
-
-  # test "should create staff with otp_private_key" do
-  #   staff = Staff.new(otp_private_key: "test_key_123")
-  #   assert staff.save
-  #   assert_equal "test_key_123", staff.otp_private_key
-  # end
 
   test "should update timestamps on save" do
     original_updated_at = @staff.updated_at
