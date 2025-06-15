@@ -8,8 +8,8 @@
     "typecheck": "bun x tsc --noEmit"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.15",
-    "@typescript/native-preview": "^7.0.0-dev.20250611.1"
+    "@types/bun": "^1.2.16",
+    "@typescript/native-preview": "^7.0.0-dev.20250615.1"
   },
   "peerDependencies": {
     "@biomejs/biome": "^1.9.4",
@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "@rails/request.js": "^0.0.12",
-    "bun": "^1.2.15"
+    "bun": "^1.2.16"
   }
 }
