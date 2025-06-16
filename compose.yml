@@ -117,9 +117,10 @@ services:
       - backend
   elasticsearch:
     image: opensearchproject/opensearch:2.11.1
+    container_name: elasticsearch
     environment:
       - cluster.name=opensearch-cluster
-      - node.name=opensearch
+      - node.name=elasticsearch
       - discovery.type=single-node
       - bootstrap.memory_lock=false
       - "OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m"
@@ -128,6 +129,8 @@ services:
       - "network.host=0.0.0.0"
       - "http.host=0.0.0.0"
       - "transport.host=localhost"
+      - "http.port=9200"
+      - "transport.tcp.port=9300"
     ulimits:
       nofile:
         soft: 65536
@@ -135,23 +138,42 @@ services:
     volumes:
       - elasticsearch-volume:/usr/share/opensearch/data
     ports:
-      - 9200:9200
-      - 9600:9600
+      - "9200:9200"
+      - "9300:9300"
     networks:
       - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=10s || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+      start_period: 120s
   elasticsearch-dashboards:
     image: opensearchproject/opensearch-dashboards:2.11.1
+    container_name: elasticsearch-dashboards
     environment:
       OPENSEARCH_HOSTS: '["http://elasticsearch:9200"]'
       DISABLE_SECURITY_DASHBOARDS_PLUGIN: 'true'
+      SERVER_HOST: '0.0.0.0'
+      SERVER_PORT: 5601
+      LOGGING_LEVEL: info
+      OPENSEARCH_REQUEST_TIMEOUT: 120000
+      OPENSEARCH_PING_TIMEOUT: 30000
     ports:
-      - 5601:5601
-    expose:
-      - "5601"
+      - "5601:5601"
     networks:
       - backend
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 45s
+      timeout: 15s
+      retries: 10
+      start_period: 180s
   # grafana:
   #   image: grafana/grafana:latest
   #   ports:
