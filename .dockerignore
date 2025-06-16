@@ -125,3 +125,7 @@ compose.yaml
 .gitlab-ci.yml
 .travis.yml
 .circleci/
+
+
+#
+.ruby-lsp

@@ -10,7 +10,7 @@ if defined?(Karafka) && !Rails.env.test?
   end
 
   # Add custom queue names for different job priorities
-  ActiveJob::Base.queue_name_prefix = Rails.env.production? ? 'production' : 'development'
+  ActiveJob::Base.queue_name_prefix = Rails.env.production? ? "production" : "development"
 
   # Hook into Rails application lifecycle
   Rails.application.config.after_initialize do
@@ -19,7 +19,7 @@ if defined?(Karafka) && !Rails.env.test?
       # In development, we might want to log all produced messages
       # Note: The event name might vary depending on Karafka/WaterDrop version
       begin
-        Karafka.producer.monitor.subscribe('message.produced') do |event|
+        Karafka.producer.monitor.subscribe("message.produced") do |event|
           Rails.logger.debug "Kafka message produced: #{event[:message][:topic]}"
         end
       rescue Karafka::Core::Monitoring::Notifications::EventNotRegistered
@@ -29,9 +29,9 @@ if defined?(Karafka) && !Rails.env.test?
 
     # Subscribe to producer errors for monitoring
     begin
-      Karafka.producer.monitor.subscribe('error.occurred') do |event|
+      Karafka.producer.monitor.subscribe("error.occurred") do |event|
         Rails.logger.error "Kafka producer error: #{event[:error]}"
-        
+
         # In production, you might want to send this to an error tracking service
         # Sentry.capture_exception(event[:error]) if defined?(Sentry)
       end
@@ -59,7 +59,7 @@ if defined?(Karafka) && !Rails.env.test?
 
     def publish_created_event
       EventPublisher.publish_audit_log(
-        'create',
+        "create",
         current_user_id,
         resource_type: self.class.name,
         resource_id: id,
@@ -73,7 +73,7 @@ if defined?(Karafka) && !Rails.env.test?
       return unless saved_changes.any?
 
       EventPublisher.publish_audit_log(
-        'update',
+        "update",
         current_user_id,
         resource_type: self.class.name,
         resource_id: id,
@@ -85,7 +85,7 @@ if defined?(Karafka) && !Rails.env.test?
 
     def publish_destroyed_event
       EventPublisher.publish_audit_log(
-        'delete',
+        "delete",
         current_user_id,
         resource_type: self.class.name,
         resource_id: id

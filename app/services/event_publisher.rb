@@ -49,16 +49,16 @@ class EventPublisher
         payload: data.to_json,
         headers: default_headers.merge(headers)
       }
-      
+
       message[:key] = key if key
-      
+
       Karafka.producer.produce_sync(message)
-      
+
       Rails.logger.debug "Published message to topic '#{topic}': #{data}"
     rescue StandardError => e
       Rails.logger.error "Failed to publish message to topic '#{topic}': #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
-      
+
       # Optionally store failed messages for retry
       # FailedMessage.create(
       #   topic: topic,
@@ -66,7 +66,7 @@ class EventPublisher
       #   error: e.message,
       #   headers: headers
       # )
-      
+
       raise
     end
 
@@ -74,10 +74,10 @@ class EventPublisher
 
     def default_headers
       {
-        'content-type' => 'application/json',
-        'producer' => 'umaxica-app',
-        'environment' => Rails.env,
-        'version' => '1.0'
+        "content-type" => "application/json",
+        "producer" => "umaxica-app",
+        "environment" => Rails.env,
+        "version" => "1.0"
       }
     end
   end

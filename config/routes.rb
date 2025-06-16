@@ -2,9 +2,9 @@
 
 Rails.application.routes.draw do
   # Health check endpoints
-  get 'health', to: 'health#index'
-  get 'health/kafka', to: 'health#kafka'
-  
+  get "health", to: "health#index"
+  get "health/kafka", to: "health#kafka"
+
   namespace :news do
     namespace :app do
       get "healths/show"

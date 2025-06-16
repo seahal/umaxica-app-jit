@@ -12,17 +12,17 @@ class KarafkaApp < Karafka::App
       'session.timeout.ms': 30000,
       'heartbeat.interval.ms': 10000
     }
-    
+
     # Application identification
     config.client_id = ENV.fetch('KAFKA_CLIENT_ID', 'umaxica-app')
-    
+
     # Recreate consumers with each batch in development for code reload
     config.consumer_persistence = !Rails.env.development?
-    
+
     # Concurrency settings
     config.max_messages = 100
     config.max_wait_time = 1000 # 1 second
-    
+
     # Error handling
     config.pause_timeout = 10_000 # 10 seconds
     config.pause_max_timeout = 30_000 # 30 seconds
@@ -80,31 +80,31 @@ class KarafkaApp < Karafka::App
     active_job_topic :default do
       config(partitions: 3, replication_factor: 1)
     end
-    
+
     active_job_topic :critical do
       config(partitions: 2, replication_factor: 1)
     end
-    
+
     active_job_topic :mailers do
       config(partitions: 2, replication_factor: 1)
     end
-    
+
     # Application-specific topics
     topic :user_events do
       config(partitions: 6, replication_factor: 1, 'cleanup.policy': 'compact')
       consumer UserEventsConsumer
     end
-    
+
     topic :notifications do
       config(partitions: 3, replication_factor: 1)
       consumer NotificationsConsumer
     end
-    
+
     topic :audit_logs do
       config(partitions: 3, replication_factor: 1, 'retention.ms': 604800000) # 7 days
       consumer AuditLogsConsumer
     end
-    
+
     # Example consumer for development/testing
     topic :example do
       config(partitions: 1, replication_factor: 1)
