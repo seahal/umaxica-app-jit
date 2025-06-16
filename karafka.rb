@@ -2,11 +2,31 @@
 
 class KarafkaApp < Karafka::App
   setup do |config|
-    config.kafka = { 'bootstrap.servers': '127.0.0.1:9092' }
-    config.client_id = 'example_app'
-    # Recreate consumers with each batch. This will allow Rails code reload to work in the
-    # development mode. Otherwise Karafka process would not be aware of code changes
+    # Kafka broker configuration
+    config.kafka = {
+      'bootstrap.servers': ENV.fetch('KAFKA_BROKERS', '127.0.0.1:9092'),
+      'security.protocol': ENV.fetch('KAFKA_SECURITY_PROTOCOL', 'PLAINTEXT'),
+      'group.id': ENV.fetch('KAFKA_GROUP_ID', 'umaxica-app'),
+      'auto.offset.reset': 'earliest',
+      'enable.auto.commit': false,
+      'session.timeout.ms': 30000,
+      'heartbeat.interval.ms': 10000
+    }
+    
+    # Application identification
+    config.client_id = ENV.fetch('KAFKA_CLIENT_ID', 'umaxica-app')
+    
+    # Recreate consumers with each batch in development for code reload
     config.consumer_persistence = !Rails.env.development?
+    
+    # Concurrency settings
+    config.max_messages = 100
+    config.max_wait_time = 1000 # 1 second
+    
+    # Error handling
+    config.pause_timeout = 10_000 # 10 seconds
+    config.pause_max_timeout = 30_000 # 30 seconds
+    config.pause_with_exponential_backoff = true
   end
 
   # Comment out this part if you are not using instrumentation and/or you are not
@@ -56,19 +76,40 @@ class KarafkaApp < Karafka::App
   # end
 
   routes.draw do
-    # Uncomment this if you use Karafka with ActiveJob
-    # You need to define the topic per each queue name you use
-    # active_job_topic :default
+    # ActiveJob integration for background job processing
+    active_job_topic :default do
+      config(partitions: 3, replication_factor: 1)
+    end
+    
+    active_job_topic :critical do
+      config(partitions: 2, replication_factor: 1)
+    end
+    
+    active_job_topic :mailers do
+      config(partitions: 2, replication_factor: 1)
+    end
+    
+    # Application-specific topics
+    topic :user_events do
+      config(partitions: 6, replication_factor: 1, 'cleanup.policy': 'compact')
+      consumer UserEventsConsumer
+    end
+    
+    topic :notifications do
+      config(partitions: 3, replication_factor: 1)
+      consumer NotificationsConsumer
+    end
+    
+    topic :audit_logs do
+      config(partitions: 3, replication_factor: 1, 'retention.ms': 604800000) # 7 days
+      consumer AuditLogsConsumer
+    end
+    
+    # Example consumer for development/testing
     topic :example do
-      # Uncomment this if you want Karafka to manage your topics configuration
-      # Managing topics configuration via routing will allow you to ensure config consistency
-      # across multiple environments
-      #
-      # config(partitions: 2, 'cleanup.policy': 'compact')
+      config(partitions: 1, replication_factor: 1)
       consumer ExampleConsumer
     end
-
-    active_job_topic :default
   end
 end
 
