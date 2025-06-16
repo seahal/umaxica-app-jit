@@ -34,7 +34,8 @@ class HealthController < ActionController::Base
     {
       database: check_database_health,
       redis: check_redis_health,
-      kafka: check_kafka_health
+      kafka: check_kafka_health,
+      elasticsearch: check_elasticsearch_health
     }
   end
 
@@ -46,8 +47,10 @@ class HealthController < ActionController::Base
   end
 
   def check_redis_health
-    Redis.new(url: ENV.fetch("REDIS_URL", "redis://localhost:6379/0")).ping
-    { status: "ok", response_time: measure_time { Redis.new.ping } }
+    redis_url = ENV.fetch("REDIS_URL", "redis://localhost:6379/0")
+    redis = Redis.new(url: redis_url)
+    response_time = measure_time { redis.ping }
+    { status: "ok", response_time: response_time }
   rescue StandardError => e
     { status: "error", error: e.message }
   end
@@ -74,6 +77,25 @@ class HealthController < ActionController::Base
     { status: "ok", response_time: response_time }
   rescue StandardError => e
     { status: "error", error: e.message }
+  end
+
+  def check_elasticsearch_health
+    require 'net/http'
+    require 'json'
+    
+    elasticsearch_host = ENV.fetch('ELASTICSEARCH_URL', 'http://localhost:9200')
+    uri = URI("#{elasticsearch_host}/_cluster/health")
+    response_time = measure_time do
+      response = Net::HTTP.get_response(uri)
+      raise "HTTP #{response.code}" unless response.code == '200'
+      
+      health_data = JSON.parse(response.body)
+      raise "Cluster status: #{health_data['status']}" unless ['green', 'yellow'].include?(health_data['status'])
+    end
+    
+    { status: 'ok', response_time: response_time }
+  rescue StandardError => e
+    { status: 'error', error: e.message }
   end
 
   def measure_time

@@ -104,7 +104,6 @@ services:
     networks:
       - backend
   kafka-ui:
-    container_name: kafka-ui
     image: ghcr.io/kafbat/kafka-ui:v1.2.0
     ports:
       - "8080:8080"
@@ -117,20 +116,19 @@ services:
     networks:
       - backend
   elasticsearch:
-    image: opensearchproject/opensearch:latest
+    image: opensearchproject/opensearch:2.11.1
     environment:
       - cluster.name=opensearch-cluster
       - node.name=opensearch
-      - discovery.seed_hosts=opensearch
-      - cluster.initial_cluster_manager_nodes=opensearch
-      - bootstrap.memory_lock=true
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=yourStrongPassword123!
+      - discovery.type=single-node
+      - bootstrap.memory_lock=false
+      - "OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m"
       - DISABLE_SECURITY_PLUGIN=true
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+      - "network.host=0.0.0.0"
+      - "http.host=0.0.0.0"
+      - "transport.host=localhost"
     ulimits:
-      memlock:
-        soft: -1
-        hard: -1
       nofile:
         soft: 65536
         hard: 65536
@@ -142,16 +140,18 @@ services:
     networks:
       - backend
   elasticsearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:latest
+    image: opensearchproject/opensearch-dashboards:2.11.1
     environment:
-      OPEN_SEARCH_ADMIN_PASSWORD: 'yourStrongPassword123!'
-      OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
+      OPENSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: 'true'
     ports:
-    - 5601:5601
+      - 5601:5601
     expose:
-    - "5601"
+      - "5601"
     networks:
-    - backend
+      - backend
+    depends_on:
+      - elasticsearch
   # grafana:
   #   image: grafana/grafana:latest
   #   ports:
