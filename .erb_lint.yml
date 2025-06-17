@@ -4,6 +4,6 @@ exclude:
   - '**/vendor/**/*'
   - '**/node_modules/**/*'
 linters:
-  # 自動生成したERBファイルの閉じタグを検証から除外する
+  # Exclude automatically generated ERB file closing tags from validation
   SelfClosingTag:
     enabled: false
