@@ -1,6 +1,8 @@
 module Www
   module App
-    module Contact
+    module Inquiry
+      # EmailsController handles the email contact process for inquiries.
+      # It includes methods to create a new email contact and validate the pass code.
       class EmailsController < ApplicationController
         include ::Contact
         include ::Memorize

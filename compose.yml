@@ -167,13 +167,6 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
-      interval: 45s
-      timeout: 15s
-      retries: 10
-      start_period: 180s
   # grafana:
   #   image: grafana/grafana:latest
   #   ports:

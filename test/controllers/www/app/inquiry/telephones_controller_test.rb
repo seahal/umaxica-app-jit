@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Www::App::Contact::TelephonesControllerTest < ActionDispatch::IntegrationTest
+class Www::App::Inquiry::TelephonesControllerTest < ActionDispatch::IntegrationTest
   teardown do
     Rails.cache.clear
   end

@@ -8,13 +8,13 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # contact page
-        resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
+        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
           scope module: :contact do
             resource :email, only: [ :new, :create ]
             resource :telephone, only: [ :new, :create ]
           end
         end
-        #
+        # settings
         resource :preference, only: [ :show ]
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
@@ -34,7 +34,7 @@ Rails.application.routes.draw do
           # show stating env
           resource :staging, only: :show
           # contact page
-          resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
+          resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
             scope module: :contact do
               resource :email, only: [ :new, :create ]
               resource :telephone, only: [ :new, :create ]
@@ -91,7 +91,7 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # contact page
-        resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
+        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
           scope module: :contact do
             resource :email, only: [ :new, :create ]
             resource :telephone, only: [ :new, :create ]
