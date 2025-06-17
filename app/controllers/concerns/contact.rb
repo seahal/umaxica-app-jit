@@ -89,7 +89,7 @@ module Contact
   # エラーページを表示
   def show_error_page
     clear_contact_session
-    render template: "www/app/contacts/error", status: :unprocessable_entity and return
+    render template: "www/app/inquiries/error", status: :unprocessable_entity and return
   end
 
   # Cookieの初期化

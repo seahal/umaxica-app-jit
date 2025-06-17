@@ -4,8 +4,6 @@ module Memorize
   extend ActiveSupport::Concern
 
   included do
-    before_action :check_authentication
-
     helper_method :memorize
   end
 

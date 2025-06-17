@@ -35,7 +35,7 @@ Rails.application.routes.draw do
           resource :staging, only: :show
           # contact page
           resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
-            scope module: :contact do
+            scope module: :inquiry do
               resource :email, only: [ :new, :create ]
               resource :telephone, only: [ :new, :create ]
             end
