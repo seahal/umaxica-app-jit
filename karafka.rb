@@ -4,7 +4,7 @@ class KarafkaApp < Karafka::App
   setup do |config|
     # Kafka broker configuration
     config.kafka = {
-      'bootstrap.servers': ENV.fetch('KAFKA_BROKERS', '127.0.0.1:9092'),
+      'bootstrap.servers': File.exist?('/.dockerenv') ? ENV["KAFKA_BROKERS"]: 'localhost:9092',
       'security.protocol': ENV.fetch('KAFKA_SECURITY_PROTOCOL', 'PLAINTEXT'),
       'group.id': ENV.fetch('KAFKA_GROUP_ID', 'umaxica-app'),
       'auto.offset.reset': 'earliest',
