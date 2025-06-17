@@ -1,0 +1,24 @@
+{
+  "name": "app",
+  "private": true,
+  "scripts": {
+    "build": "bun bun.config.js",
+    "format": "bun x @biomejs/biome format app/ --write ",
+    "lint": "bun x @biomejs/biome lint app/ --fix",
+    "typecheck": "bun x tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.16",
+    "@typescript/native-preview": "^7.0.0-dev.20250617.1"
+  },
+  "peerDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "^1.2.13",
+    "dotenv": "^16.5.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@rails/request.js": "^0.0.12",
+    "bun": "^1.2.16"
+  }
+}

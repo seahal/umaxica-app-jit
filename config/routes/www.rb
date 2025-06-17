@@ -3,20 +3,18 @@ Rails.application.routes.draw do
     # for client site
     constraints host: ENV["WWW_CORPORATE_URL"] do
       scope module: :com, as: :com do
-        #
-        root to: "roots#index"
         # health check for html
         resource :health, only: :show, format: :html
         # show stating env
         resource :staging, only: :show, format: :html
         # contact page
-        resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
+        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
           scope module: :contact do
             resource :email, only: [ :new, :create ]
             resource :telephone, only: [ :new, :create ]
           end
         end
-        #
+        # settings
         resource :preference, only: [ :show ]
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
@@ -31,14 +29,12 @@ Rails.application.routes.draw do
       # service page
       constraints host: ENV["WWW_SERVICE_URL"] do
         scope module: :app, as: :app do
-          # homepage
-          root to: "roots#index"
-          # root to: "roots#index"
+          # endpoint of health check
           resource :health, only: :show
           # show stating env
           resource :staging, only: :show
           # contact page
-          resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
+          resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
             scope module: :contact do
               resource :email, only: [ :new, :create ]
               resource :telephone, only: [ :new, :create ]
@@ -90,14 +86,12 @@ Rails.application.routes.draw do
     # For Staff's webpages www.jp.example.org
     constraints host: ENV["WWW_STAFF_URL"] do
       scope module: :org, as: :org do
-        # Homepage
-        root to: "roots#index"
         # health check for html
         resource :health, only: :show
         # show stating env
         resource :staging, only: :show, format: :html
         # contact page
-        resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
+        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
           scope module: :contact do
             resource :email, only: [ :new, :create ]
             resource :telephone, only: [ :new, :create ]

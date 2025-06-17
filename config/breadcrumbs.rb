@@ -1,5 +1,37 @@
-crumb :root do
-  link "Home", root_path
+crumb :app do
+  link "Home", "/"
+end
+
+crumb :app_preference do
+  link I18n.t("controller.www.app.preference.show.page_title"), "/preference"
+  parent :app
+end
+
+crumb :app_preference_cookie do |user|
+  link I18n.t("controller.www.app.preference.cookie.edit.page_title"), "/preference/cookie/edit"
+  parent :app_preference
+end
+
+crumb :app_preference_email do |user|
+  link I18n.t("controller.www.app.preference.email.new.page_title"), "/preference/cookie/edit"
+  parent :app_preference
+end
+
+crumb :com do
+  link "Home", "/"
+end
+crumb :com_preference do
+  link I18n.t("controller.www.app.preference.show.page_title"), www_com_preference_path
+  parent :com
+end
+
+crumb :org do
+  link "Home", "/"
+end
+
+crumb :org_preference do
+  link I18n.t("controller.www.app.preference.show.page_title"), "/preference"
+  parent :org
 end
 
 # crumb :projects do

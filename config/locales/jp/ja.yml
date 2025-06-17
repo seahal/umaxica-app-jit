@@ -4,13 +4,28 @@ ja:
     concern:
       cloudflare:
         invalid_input: 'Captcha を操作してください'
+      otp:
+        invalid_input: 'Pass Code の値に問題があります'
   controller:
     www:
       app:
+        preference:
+          show:
+            page_title: 'konomi'
+          cookie:
+            edit:
+              page_title: 'クッキーの設定'
+              accept_tracking_cookies: 'トラッキングの許可について'
+          email:
+            new:
+              page_title: 'emailの設定'
         contacts:
           new:
             page_title: 'お問い合わせページ'
             confirm_policy: 'プライバシーポリシーに同意します'
+          show:
+            page_title: 'お問い合わせページ'
+            page_description: 'jyuri sare mashita'
           error:
             page_title: 'エラーが生じました'
             page_description: 'はじめからやりなおしてください'
@@ -170,6 +185,7 @@ ja:
       too_long: は%{count}文字以内で入力してください
       too_short: は%{count}文字以上で入力してください
       wrong_length: は%{count}文字で入力してください
+      extension_allowlist_error: '???'
     template:
       body: 次の項目を確認してください
       header: "%{model}に%{count}個のエラーが発生しました"

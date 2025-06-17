@@ -15,6 +15,7 @@ gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
+gem "redis", "~> 5.4"
 gem "hiredis-client"
 # For CORS
 gem "rack-cors"
@@ -46,8 +47,6 @@ gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all", "~> 0.74.0"
 # sitemap
 gem "sitemap_generator"
-# JWT
-gem "jwt", "~> 2.10", ">= 2.10.1"
 # Webauthn
 gem "webauthn", "~> 3.4"
 # TOTP and HTOP
@@ -56,10 +55,6 @@ gem "rotp", "~> 6.3"
 gem "rqrcode", "~> 3.0"
 #
 gem "solid_cache", "~> 1.0"
-#
-gem "importmap-rails"
-#
-gem "tailwindcss-ruby"
 # pagenation
 gem "kaminari"
 # Breadcrumbs
@@ -69,8 +64,22 @@ gem "omniauth"
 gem "omniauth-apple", "~> 1.3"
 gem "omniauth-google-oauth2", "~> 1.1", ">= 1.1.1"
 gem "omniauth-rails_csrf_protection"
-# pundit
+# 認可 (Authorization)
 gem "pundit", "~> 2.5"
+gem "rolify", "~> 6.0", ">= 6.0.1"
+# Altanative way of Active Storage
+gem "carrierwave", "~> 3.1", ">= 3.1.2"
+#
+gem "jsbundling-rails"
+#
+gem "view_component", "~> 3.22"
+# OpenAPI
+gem "rswag"
+gem "rswag-api"
+gem "rswag-ui"
+#
+gem "requestjs-rails"
+
 
 group :development, :test do
   # to avoid n+1 queries

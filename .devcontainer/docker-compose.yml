@@ -1,5 +1,21 @@
-version: '3'
-
 services:
   main:
+    build:
+      context: ../
+      target: development
+      args:
+        COMMIT_HASH: 'devcontainer'
     command: sleep infinity
+    volumes:
+      - ../:/main:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      - primary
+      - replica
+      - elasticsearch
+      - kafka
+      - redis
+      - minio

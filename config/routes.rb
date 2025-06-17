@@ -5,4 +5,8 @@ Rails.application.routes.draw do
   draw :www
   # api endpoint url
   draw :api
+  # endpoint for news
+  draw :news
+  # endpoint for docs
+  draw :docs
 end

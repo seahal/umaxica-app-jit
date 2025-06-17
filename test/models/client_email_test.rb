@@ -13,6 +13,4 @@ class ClientEmailTest < ActiveSupport::TestCase
   test "the truth" do
     assert true
   end
-
-  # ... some tests are written at emails_test.rb
 end

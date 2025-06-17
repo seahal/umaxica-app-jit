@@ -24,7 +24,7 @@ Rails.application.configure do
   config.asset_host = "https://assets.jp.umaxica.net"
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local # FIXME: change to Google Cloud Storage
+  # config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
@@ -92,4 +92,7 @@ Rails.application.configure do
   ### Added by owner
   # We've configured this production environment to prevent the delivery of public static content.
   config.public_file_server.enabled = false
+
+  # Rack Attack preferences
+  Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: "#{ENV['REDIS_RACK_ATTACK_URL']}")
 end

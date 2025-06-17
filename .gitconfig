@@ -1,7 +1,7 @@
 # This is Git's per-user configuration file.
 [user]
 	name = seahal
-	email = seahal@gmail.com
+	email = seahal.com@gmail.com
 [filter "lfs"]
     smudge = git-lfs smudge -- %f
     process = git-lfs filter-process
@@ -18,4 +18,4 @@
     templatedir = ~/git-templates/git-secretes
     defaultBranch = main
 [credential]
-	helper = "!f() { /main/.vscode-server/bin/17baf841131aa23349f217ca7c570c76ee87b957/node /tmp/vscode-remote-containers-e0b972f4-28ca-46b1-b2a9-0d937b6be643.js git-credential-helper $*; }; f"
+	helper = "!f() { /main/.vscode-server/bin/dfaf44141ea9deb3b4096f7cd6d24e00c147a4b1/node /tmp/vscode-remote-containers-0775f780-5edb-427d-86d8-31160c43fb04.js git-credential-helper $*; }; f"

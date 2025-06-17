@@ -24,70 +24,54 @@ development:
   contact:
     <<: *default
     database: development_contact_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_PUB"]: 'localhost' %>
     migrations_paths: db/contacts_migrate
   contact_replica:
     <<: *default
     replica: true
     database: development_contact_db
-    port:
-      <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_SUB"]: 'localhost' %>
     migrations_paths: db/contacts_migrate
   identifier:
     <<: *default
     database: development_identifier_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
     migrations_paths: db/identifiers_migrate
   identifier_replica:
     <<: *default
     replica: true
     database: development_identifier_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
     migrations_paths: db/identifiers_migrate
   profile:
     <<: *default
     database: development_profile_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_PUB"]: 'localhost' %>
     migrations_paths: db/profiles_migrate
   profile_replica:
     <<: *default
     replica: true
     database: development_profile_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_SUB"]: 'localhost' %>
     migrations_paths: db/profiles_migrate
   token:
     <<: *default
     database: development_token_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_PUB"]: 'localhost' %>
     migrations_paths: db/tokens_migrate
   token_replica:
     <<: *default
     replica: true
     database: development_token_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
     migrations_paths: db/tokens_migrate
   business:
     <<: *default
@@ -105,36 +89,28 @@ development:
   message:
     <<: *default
     database: development_message_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_PUB"]: 'localhost' %>
     migrations_paths: db/messages_migrate
   message_replica:
     <<: *default
     replica: true
     database: development_message_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
     migrations_paths: db/messages_migrate
   notification:
     <<: *default
     database: development_notification_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_PUB"]: 'localhost' %>
     migrations_paths: db/notifications_migrate
   notification_replica:
     <<: *default
     replica: true
     database: development_notification_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>
     migrations_paths: db/notifications_migrate
   cache:
     <<: *default
@@ -152,19 +128,15 @@ development:
   speciality:
     <<: *default
     database: development_speciality_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SPECIALITY_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SPECIALITY_PUB"]: 'localhost' %>
     migrations_paths: db/specialities_migrate
   speciality_replica:
     <<: *default
     replica: true
     migrations_paths: db/specialities_migrate
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SPECIALITY_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SPECIALITY_SUB"]: 'localhost' %>
     migrations_paths: db/specialitys_migrate
   storage:
     <<: *default
@@ -188,87 +160,67 @@ test:
   universal:
     <<: *default
     database: test_universal_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_PUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
   universal_replica:
     <<: *default
     replica: true
     database: test_universal_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
   contact:
     <<: *default
     database: test_contact_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_PUB"]: 'localhost' %>
     migrations_paths: db/contacts_migrate
   contact_replica:
     <<: *default
     replica: true
     database: test_contact_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_SUB"]: 'localhost' %>
     migrations_paths: db/contacts_migrate
   identifier:
     <<: *default
     database: test_identifier_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_PUB"]: 'localhost' %>
     migrations_paths: db/identifiers_migrate
   identifier_replica:
     <<: *default
     replica: true
     database: test_identifier_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_IDENTIFIER_SUB"]: 'localhost' %>
     migrations_paths: db/identifiers_migrate
   profile:
     <<: *default
     database: test_profile_db
-    port:
-      <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_PUB"]: 'localhost' %>
     migrations_paths: db/profiles_migrate
   profile_replica:
     <<: *default
     replica: true
     database: test_profile_db
-    port:
-      <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_SUB"]: 'localhost' %>
     migrations_paths: db/profiles_migrate
   token:
     <<: *default
     database: test_token_db
-    port:
-      <%= File.exist?('/.dockerenv') || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv') || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_PUB"]: 'localhost' %>
     migrations_paths: db/tokens_migrate
   token_replica:
     <<: *default
     replica: true
     database: test_token_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
     migrations_paths: db/tokens_migrate
   business:
     <<: *default
@@ -286,36 +238,28 @@ test:
   message:
     <<: *default
     database: test_message_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_PUB"]: 'localhost' %>
     migrations_paths: db/messages_migrate
   message_replica:
     <<: *default
     replica: true
     database: test_message_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>
     migrations_paths: db/messages_migrate
   notification:
     <<: *default
     database: test_notification_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_PUB"]: 'localhost' %>
     migrations_paths: db/notifications_migrate
   notification_replica:
     <<: *default
     replica: true
     database: test_notification_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
     migrations_paths: db/notifications_migrate
   speciality:
     <<: *default
@@ -333,19 +277,15 @@ test:
   cache:
     <<: *default
     database: test_cache_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_PUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_PUB"]: 'localhost' %>
     migrations_paths: db/caches_migrate
   cache_replica:
     <<: *default
     replica: true
     database: test_cache_db
-    port:
-      <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host:
-      <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_SUB"]: 'localhost' %>
+    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CACHE_SUB"]: 'localhost' %>
     migrations_paths: db/caches_migrate
   storage:
     <<: *default
