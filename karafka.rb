@@ -117,3 +117,11 @@ end
 # Visit the setup documentation to get started and enhance your experience.
 #
 # https://karafka.io/docs/Web-UI-Getting-Started
+
+Karafka::Web.setup do |config|
+  # You may want to set it per ENV. This value was randomly generated.
+  config.ui.sessions.secret = '54f9af8cf981a2b3cc95bfb843988b75da65dc8ad7455e48368c697dcb0915ce'
+end
+
+Karafka::Web.enable!
+
