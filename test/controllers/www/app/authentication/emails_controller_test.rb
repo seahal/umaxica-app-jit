@@ -10,7 +10,7 @@ class Www::App::Session::EmailsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_select "a[href=?]", new_www_app_authentication_path
     assert_select "form[action=?][method=?]", www_app_authentication_email_path, "post" do
-      # email入力フィールドの存在と属性チェック
+      # Check existence and attributes of email input field
       assert_select "input[type=?][name=?]", "email", "user_email[address]"
       # cloudflare tunstile
       assert_select "div.cf-turnstile"

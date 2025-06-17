@@ -24,7 +24,7 @@ module Redirect
       head :not_found
     end
 
-  rescue NoMethodError # そもそも uri じゃない文字列を除外する
+  rescue NoMethodError # Exclude strings that are not URIs in the first place
     head :not_found
   rescue URI::InvalidURIError # "iiii" とか防止
     head :not_found

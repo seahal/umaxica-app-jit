@@ -7,7 +7,7 @@ module Www::App
     include ::Contact
 
     def new
-      # clear_contact_session
+      clear_contact_session
       session[:contact_expires_in] = 2.hours.from_now
       @service_site_contact = ServiceSiteContact.new
     end
