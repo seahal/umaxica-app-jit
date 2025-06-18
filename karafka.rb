@@ -87,6 +87,7 @@ class KarafkaApp < Karafka::App
 
     active_job_topic :mailers do
       config(partitions: 2, replication_factor: 1)
+      consumer MailersConsumer
     end
 
     # Application-specific topics

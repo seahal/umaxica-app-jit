@@ -12,7 +12,7 @@
     "@typescript/native-preview": "^7.0.0-dev.20250617.1"
   },
   "peerDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.0.0",
     "@types/bun": "^1.2.13",
     "dotenv": "^16.5.0",
     "typescript": "^5.8.3"
