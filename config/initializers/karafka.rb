@@ -11,9 +11,6 @@ if defined?(Karafka) && !Rails.env.test?
 
   # Add custom queue names for different job priorities
   ActiveJob::Base.queue_name_prefix = Rails.env.production? ? "production" : "development"
-  
-  # Configure specific queues for different job types
-  ActionMailer::MailDeliveryJob.queue_name = :mailers
 
   # Hook into Rails application lifecycle
   Rails.application.config.after_initialize do

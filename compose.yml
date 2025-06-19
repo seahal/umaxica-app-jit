@@ -101,14 +101,10 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
     networks:
       - backend
   kafka-ui:
-    image: ghcr.io/kafbat/kafka-ui
+    image: ghcr.io/kafbat/kafka-ui:v1.2.0
     ports:
       - "8080:8080"
     depends_on:
@@ -121,6 +117,7 @@ services:
       - backend
   elasticsearch:
     image: opensearchproject/opensearch:2.11.1
+    container_name: elasticsearch
     environment:
       - cluster.name=opensearch-cluster
       - node.name=elasticsearch
@@ -239,7 +236,6 @@ volumes:
   elasticsearch-volume:
   minio-volume:
   main-vendor-volume:
-  zookeeper-volume:
 networks:
   backend:
   frontend:
