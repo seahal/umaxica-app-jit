@@ -2,8 +2,12 @@
 
 # Example consumer that prints messages payloads
 class ExampleConsumer < ApplicationConsumer
-  def consume
-    messages.each { |message| puts message.payload }
+  def consumer
+    messages.each do |message|
+      @message = message
+      puts @message.payload
+      mark_as_consumed(@message)
+    end
   end
 
   # Run anything upon partition being revoked

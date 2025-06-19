@@ -4,7 +4,7 @@ class KarafkaApp < Karafka::App
   setup do |config|
     # Kafka broker configuration
     config.kafka = {
-      'bootstrap.servers': File.exist?('/.dockerenv') ? ENV["KAFKA_BROKERS"]: 'localhost:9092',
+      'bootstrap.servers': File.exist?('/.dockerenv') ? ENV["KAFKA_BROKERS"] : 'localhost:9092',
       'security.protocol': ENV.fetch('KAFKA_SECURITY_PROTOCOL', 'PLAINTEXT'),
       'group.id': ENV.fetch('KAFKA_GROUP_ID', 'umaxica-app'),
       'auto.offset.reset': 'earliest',
@@ -78,32 +78,16 @@ class KarafkaApp < Karafka::App
   routes.draw do
     # ActiveJob integration for background job processing
     active_job_topic :default do
-      config(partitions: 3, replication_factor: 1)
+      config(partitions: 1, replication_factor: 1)
     end
 
     active_job_topic :critical do
-      config(partitions: 2, replication_factor: 1)
+      config(partitions: 1, replication_factor: 1)
     end
 
-    active_job_topic :mailers do
-      config(partitions: 2, replication_factor: 1)
+    topic :mailers do
+      config(partitions: 1, replication_factor: 1)
       consumer MailersConsumer
-    end
-
-    # Application-specific topics
-    topic :user_events do
-      config(partitions: 6, replication_factor: 1, 'cleanup.policy': 'compact')
-      consumer UserEventsConsumer
-    end
-
-    topic :notifications do
-      config(partitions: 3, replication_factor: 1)
-      consumer NotificationsConsumer
-    end
-
-    topic :audit_logs do
-      config(partitions: 3, replication_factor: 1, 'retention.ms': 604800000) # 7 days
-      consumer AuditLogsConsumer
     end
 
     # Example consumer for development/testing
@@ -125,4 +109,3 @@ Karafka::Web.setup do |config|
 end
 
 Karafka::Web.enable!
-
