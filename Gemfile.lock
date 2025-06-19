@@ -76,7 +76,9 @@ GEM
       public_suffix (>= 2.0.2, < 7.0)
     aes_key_wrap (1.1.0)
     android_key_attestation (0.3.0)
-    annotaterb (4.15.0)
+    annotaterb (4.16.0)
+      activerecord (>= 6.0.0)
+      activesupport (>= 6.0.0)
     argon2 (2.3.2)
       ffi (~> 1.15)
       ffi-compiler (~> 1.0)
@@ -1505,7 +1507,15 @@ GEM
     aws-sdk-s3tables (1.9.0)
       aws-sdk-core (~> 3, >= 3.225.0)
       aws-sigv4 (~> 1.5)
+<<<<<<< HEAD
+<<<<<<< HEAD
+    aws-sdk-sagemaker (1.312.0)
+=======
     aws-sdk-sagemaker (1.310.0)
+>>>>>>> parent of 7b6c000 ([misc] .)
+=======
+    aws-sdk-sagemaker (1.311.0)
+>>>>>>> parent of 6fb12a9 ([FEATURE] Update Kafka configuration and consumers;)
       aws-sdk-core (~> 3, >= 3.225.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-sagemakeredgemanager (1.44.0)

@@ -33,8 +33,7 @@ module Www::App
                             # secure data, so the data is not stored in Redis.
                             contact_telephone_number: @service_site_contact.telephone_number)
         # FIXME: send email
-        Email::App::ContactMailer.with({ email_address: @service_site_contact.email_address, pass_code: hotp.at(hotp_counter) }).create.deliver_now
-        # FIXME: send telephone
+        Email::App::ContactMailer.with({ email_address: @service_site_contact.email_address, pass_code: hotp.at(hotp_counter) }).create.deliver_later
         redirect_to new_www_app_inquiry_email_url(contact_id)
       else
         @service_site_contact.errors.add :base, :invalid, message: t("model.concern.cloudflare.invalid_input") unless cfv
