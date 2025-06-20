@@ -2,31 +2,24 @@
 
 class KarafkaApp < Karafka::App
   setup do |config|
-    # Kafka broker configuration
-    config.kafka = {
-      'bootstrap.servers': File.exist?('/.dockerenv') ? ENV["KAFKA_BROKERS"]: 'localhost:9092',
-      'security.protocol': ENV.fetch('KAFKA_SECURITY_PROTOCOL', 'PLAINTEXT'),
-      'group.id': ENV.fetch('KAFKA_GROUP_ID', 'umaxica-app'),
-      'auto.offset.reset': 'earliest',
-      'enable.auto.commit': false,
-      'session.timeout.ms': 30000,
-      'heartbeat.interval.ms': 10000
-    }
+    config.kafka = { 'bootstrap.servers': '127.0.0.1:9092' }
+    config.client_id = 'YOUR_APP_NAME'
 
-    # Application identification
-    config.client_id = ENV.fetch('KAFKA_CLIENT_ID', 'umaxica-app')
-
-    # Recreate consumers with each batch in development for code reload
+    # IMPORTANT: Customize this group_id with your application name.
+    # The group_id should be unique per application to properly track message consumption.
+    # Example: config.group_id = 'inventory_service_consumer'
+    #
+    # Note: Advanced features and custom routing configurations may define their own consumer
+    # groups. These should also be uniquely named per application to avoid conflicts.
+    # For the advanced features, subscription groups and consumer groups in your routing
+    # configuration, follow the same uniqueness principle.
+    #
+    # For more details on consumer groups and routing configuration, please refer to the
+    # Karafka documentation: https://karafka.io/docs
+    config.group_id = 'YOUR_APP_NAME_consumer'
+    # Recreate consumers with each batch. This will allow Rails code reload to work in the
+    # development mode. Otherwise Karafka process would not be aware of code changes
     config.consumer_persistence = !Rails.env.development?
-
-    # Concurrency settings
-    config.max_messages = 100
-    config.max_wait_time = 1000 # 1 second
-
-    # Error handling
-    config.pause_timeout = 10_000 # 10 seconds
-    config.pause_max_timeout = 30_000 # 30 seconds
-    config.pause_with_exponential_backoff = true
   end
 
   # Comment out this part if you are not using instrumentation and/or you are not
@@ -76,39 +69,15 @@ class KarafkaApp < Karafka::App
   # end
 
   routes.draw do
-    # ActiveJob integration for background job processing
-    active_job_topic :default do
-      config(partitions: 3, replication_factor: 1)
-    end
-
-    active_job_topic :critical do
-      config(partitions: 2, replication_factor: 1)
-    end
-
-    active_job_topic :mailers do
-      config(partitions: 2, replication_factor: 1)
-      consumer MailersConsumer
-    end
-
-    # Application-specific topics
-    topic :user_events do
-      config(partitions: 6, replication_factor: 1, 'cleanup.policy': 'compact')
-      consumer UserEventsConsumer
-    end
-
-    topic :notifications do
-      config(partitions: 3, replication_factor: 1)
-      consumer NotificationsConsumer
-    end
-
-    topic :audit_logs do
-      config(partitions: 3, replication_factor: 1, 'retention.ms': 604800000) # 7 days
-      consumer AuditLogsConsumer
-    end
-
-    # Example consumer for development/testing
+    # Uncomment this if you use Karafka with ActiveJob
+    # You need to define the topic per each queue name you use
+    # active_job_topic :default
     topic :example do
-      config(partitions: 1, replication_factor: 1)
+      # Uncomment this if you want Karafka to manage your topics configuration
+      # Managing topics configuration via routing will allow you to ensure config consistency
+      # across multiple environments
+      #
+      # config(partitions: 2, 'cleanup.policy': 'compact')
       consumer ExampleConsumer
     end
   end
@@ -121,8 +90,7 @@ end
 
 Karafka::Web.setup do |config|
   # You may want to set it per ENV. This value was randomly generated.
-  config.ui.sessions.secret = '54f9af8cf981a2b3cc95bfb843988b75da65dc8ad7455e48368c697dcb0915ce'
+  config.ui.sessions.secret = 'd3f03d52d9ce4924e77b65fe23c3102269fb1564d4722ee061aec37bb82e527d'
 end
 
 Karafka::Web.enable!
-

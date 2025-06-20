@@ -1,4 +1,4 @@
-require 'karafka/web'
+require "karafka/web"
 
 Rails.application.routes.draw do
   scope module: :www, as: :www do
@@ -87,7 +87,7 @@ Rails.application.routes.draw do
 
     # For Staff's webpages www.jp.example.org
     constraints host: ENV["WWW_STAFF_URL"] do
-      mount Karafka::Web::App, at: '/karafka'
+      mount Karafka::Web::App, at: "/karafka"
 
       scope module: :org, as: :org do
         # health check for html

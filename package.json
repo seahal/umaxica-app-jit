@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@types/bun": "^1.2.16",
-    "@typescript/native-preview": "^7.0.0-dev.20250617.1"
+    "@typescript/native-preview": "^7.0.0-dev.20250619.1"
   },
   "peerDependencies": {
     "@biomejs/biome": "^2.0.0",
