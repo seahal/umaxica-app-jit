@@ -79,3 +79,4 @@ node_modules
 
 /doc/*
 !/doc/.keep
+.yardoc/
