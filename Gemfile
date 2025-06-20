@@ -102,6 +102,8 @@ end
 
 group :development do
   #
+  gem 'yard'
+  #
   gem "bundler-audit", "~> 0.9.1"
   #
   gem "foreman"
