@@ -12,6 +12,6 @@ require "test_helper"
 
 class ClientRecoveryCodeTest < ActiveSupport::TestCase
   test "the truth" do
-    assert true
+    refute false
   end
 end
