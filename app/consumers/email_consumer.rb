@@ -3,8 +3,15 @@
 # Example consumer that prints messages payloads
 class EmailConsumer < ApplicationConsumer
   def consume
+    #  Karafka.producer.produce_sync(topic: 'email', payload: Marshal.dump({mailer: Email::App::RegistrationMailer, params: {abc: "abc", efg: "efg"}.transform_values{ encrypt(it) } }) )
+    #  {email_address: "", pass_code: "1234"}.transform_values{ encrypt(it) }
     messages.each do |message|
-      Email::App::EmailRegistrationMailer.with('email_address': message.payload['to']).create.deliver_now
+      # get from kafka over karafka
+      pp var = Marshal.load(message.raw_payload)
+      # decrypt
+      pp params = var.params.transform_values{ decrypt(it) }
+      # send mail
+      pp var.mailer.with(params).create.deliver_now
     end
   end
 
@@ -15,4 +22,9 @@ class EmailConsumer < ApplicationConsumer
   # Define here any teardown things you want when Karafka server stops
   # def shutdown
   # end
+
+  private
+  def decrypt(encrypted)
+    ActiveRecord::Encryption.encryptor.decrypt(encrypted)
+  end
 end

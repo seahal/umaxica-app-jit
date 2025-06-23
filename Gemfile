@@ -68,14 +68,14 @@ gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 # 認可 (Authorization)
-gem "pundit", "~> 2.5"
-gem "rolify", "~> 6.0", ">= 6.0.1"
+gem "pundit"
+gem "rolify"
 # Altanative way of Active Storage
-gem "carrierwave", "~> 3.1", ">= 3.1.2"
+gem "carrierwave"
 #
 gem "jsbundling-rails"
 #
-gem "view_component", "~> 3.22"
+gem "view_component"
 # OpenAPI
 gem "rswag"
 gem "rswag-api"
