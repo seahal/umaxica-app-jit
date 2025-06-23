@@ -9,7 +9,7 @@ module Authentication
   def logged_in?
     false
   end
-
+  
   def check_authentication
     anonymous_id = 0
     user_id = 0
