@@ -15,7 +15,7 @@ gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
-gem "redis", "~> 5.4"
+gem "redis"
 gem "hiredis-client"
 # For CORS
 gem "rack-cors"
@@ -32,39 +32,40 @@ gem "bootsnap", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing"
 # Kafka
-gem "rdkafka", "~> 0.21.0"
+gem 'karafka'
+gem 'karafka-web'
 # Elasticsearch
-gem "opensearch-ruby", "~> 3.4"
+gem "opensearch-ruby"
 # for Amazon SNS
 gem "aws-sdk"
 # for Active Storage
 gem "google-cloud-storage", require: false
 # google cloud
-gem "google-cloud-kms", "~> 2.9", ">= 2.9.2"
+gem "google-cloud-kms"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
 gem "opentelemetry-sdk"
 gem "opentelemetry-exporter-otlp"
-gem "opentelemetry-instrumentation-all", "~> 0.74.0"
+gem "opentelemetry-instrumentation-all"
 # sitemap
 gem "sitemap_generator"
 # Webauthn
-gem "webauthn", "~> 3.4"
+gem "webauthn"
 # TOTP and HTOP
-gem "rotp", "~> 6.3"
+gem "rotp"
 # QRCode Generator, QRCode is a deso wave's ...
-gem "rqrcode", "~> 3.0"
+gem "rqrcode"
 #
-gem "solid_cache", "~> 1.0"
+gem "solid_cache"
 # pagenation
 gem "kaminari"
 # Breadcrumbs
-gem "gretel", "~> 5.0", ">= 5.0.1"
+gem "gretel"
 # Social Login
 gem "omniauth"
-gem "omniauth-apple", "~> 1.3"
-gem "omniauth-google-oauth2", "~> 1.1", ">= 1.1.1"
+gem "omniauth-apple"
+gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 # 認可 (Authorization)
 gem "pundit", "~> 2.5"
