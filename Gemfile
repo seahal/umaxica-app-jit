@@ -32,8 +32,8 @@ gem "bootsnap", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing"
 # Kafka
-gem 'karafka'
-gem 'karafka-web'
+gem "karafka"
+gem "karafka-web"
 # Elasticsearch
 gem "opensearch-ruby"
 # for Amazon SNS
@@ -101,7 +101,7 @@ end
 
 group :development do
   #
-  gem 'yard'
+  gem "yard"
   #
   gem "bundler-audit", "~> 0.9.1"
   #

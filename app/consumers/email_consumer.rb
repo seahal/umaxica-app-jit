@@ -7,11 +7,11 @@ class EmailConsumer < ApplicationConsumer
     #  {email_address: "", pass_code: "1234"}.transform_values{ encrypt(it) }
     messages.each do |message|
       # get from kafka over karafka
-      pp var = Marshal.load(message.raw_payload)
+      var = Marshal.load(message.raw_payload)
       # decrypt
-      pp params = var.params.transform_values{ decrypt(it) }
+      params = var.params.transform_values { decrypt(it) }
       # send mail
-      pp var.mailer.with(params).create.deliver_now
+      var.mailer.with(params).create.deliver_now
     end
   end
 
@@ -22,9 +22,4 @@ class EmailConsumer < ApplicationConsumer
   # Define here any teardown things you want when Karafka server stops
   # def shutdown
   # end
-
-  private
-  def decrypt(encrypted)
-    ActiveRecord::Encryption.encryptor.decrypt(encrypted)
-  end
 end
