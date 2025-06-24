@@ -4,7 +4,7 @@ module Www
       # TelephonesController handles the telephone contact process for inquiries.
       # It includes methods to create a new telephone contact and validate the pass code.
       class TelephonesController < ApplicationController
-        include ::Contact
+        include ::Inquiry
         include ::Memorize
 
         def new

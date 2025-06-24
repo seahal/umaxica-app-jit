@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Contact
+module Inquiry
   extend ActiveSupport::Concern
 
   included do

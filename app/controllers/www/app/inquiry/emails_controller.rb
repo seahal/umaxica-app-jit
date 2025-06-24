@@ -4,7 +4,7 @@ module Www
       # EmailsController handles the email contact process for inquiries.
       # It includes methods to create a new email contact and validate the pass code.
       class EmailsController < ApplicationController
-        include ::Contact
+        include ::Inquiry
         include ::Memorize
 
         MAX_CONTACT_COUNT = 10

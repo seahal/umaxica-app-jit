@@ -1,36 +1,57 @@
-# # frozen_string_literal: true
-#
-# require "test_helper"
-#
-# class Www::App::RedisMemorizeTest < ActiveSupport::TestCase
-#   setup do
-#     # Initialize test dependencies
-#     @redis = Redis.new(host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost", port: 6379, db: 0)
-#     @prefix = "test_prefix"
-#     @postfix = "test_postfix"
-#     Www::App::ContactsController.new # Initialize the controller to ensure the RedisMemorize instance is created
-#     @memorize = Www::App::RedisMemorize.new(prefix: @prefix, postfix: @postfix)
-#     @test_key = "test_key"
-#     @test_value = "secret_value_123"
-#     @expected_redis_key = "#{Rails.env}.#{@prefix}.#{@postfix}.#{@test_key}"
-#
-#     # Clean up Redis before tests
-#     @redis.del(@expected_redis_key)
-#   end
-#
-#   teardown do
-#     # Clean up Redis before tests
-#     @redis.del(@expected_redis_key)
-#   end
-#
-#   test "correctly decrypts encrypted values" do
-#     # Set a value to the key
-#     @memorize["one"] = @test_value
-#     retrieved_value = @memorize["one"]
-#     assert_equal @test_value, retrieved_value
-#   end
-#
-#   test "returns nil for non-existent keys" do
-#     assert_nil @memorize["non_existent_key"]
-#   end
-# end
+# frozen_string_literal: true
+
+# INFO: This file was created for checking memorize helper
+
+require "test_helper"
+
+class RedisMemorizeTest < ActiveSupport::TestCase
+  setup do
+    @memorize = Memorize::RedisMemorize.test_instance(prefix: "test_prefix", postfix: "test_postfix")
+    @test_key = "test_key"
+    @test_value = "secret_value_123"
+    
+    # Clean up Redis before tests
+    @memorize.clear_all
+  end
+
+  teardown do
+    # Clean up Redis after tests
+    @memorize.clear_all
+  end
+
+  test "returns nil for non-existent keys" do
+    assert_nil @memorize["non_existent_key"]
+  end
+
+  test "can delete keys" do
+    @memorize[@test_key] = @test_value
+    assert @memorize.exists?(@test_key)
+    
+    result = @memorize.delete(@test_key)
+    assert result
+    assert_not @memorize.exists?(@test_key)
+    assert_nil @memorize[@test_key]
+  end
+
+  test "different instances have isolated data" do
+    other_memorize = Memorize::RedisMemorize.test_instance(prefix: "other", postfix: "instance")
+    
+    @memorize[@test_key] = @test_value
+    other_memorize[@test_key] = "different_value"
+    
+    assert_equal @test_value, @memorize[@test_key]
+    assert_equal "different_value", other_memorize[@test_key]
+    
+    # Clean up
+    other_memorize.clear_all
+  end
+
+  test "direct assignment syntax works" do
+    # This is the syntax you wanted to work in tests
+    @memorize[:abc] = 'efg'
+    assert_equal 'efg', @memorize[:abc]
+    
+    @memorize["string_key"] = "string_value"
+    assert_equal "string_value", @memorize["string_key"]
+  end
+end

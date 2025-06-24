@@ -4,7 +4,7 @@ module Www::App
     include ::Rotp
     include ::Common
     include ::Memorize
-    include ::Contact
+    include ::Inquiry
 
     def new
       # for security
@@ -16,7 +16,6 @@ module Www::App
     end
 
     def create
-      debugger
       @service_site_contact = ServiceSiteContact.new(sample_params)
       cfv = Rails.env.test? ? true : !!cloudflare_turnstile_validation["success"] # NOTE: test passes the line.
       if @service_site_contact.valid? && cfv
