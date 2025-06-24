@@ -12,34 +12,9 @@ module Www
         before_action :ensure_contact_count, only: :create
 
         def new
-          init_contact_count_cookie
-
-          if allow_new_contact_email?
-            @service_site_contact = ServiceSiteContact.new
-          else
-            increment_contact_count
-            show_error_page
-          end
         end
 
         def create
-          pass_code = params.dig(:service_site_contact, :email_pass_code)
-          @service_site_contact = ServiceSiteContact.new(email_pass_code: pass_code)
-
-          unless valid_hotp?(pass_code)
-            @service_site_contact.errors.add :base, :invalid, message: t("model.concern.otp.invalid_input")
-            increment_contact_count
-            return render :new, status: :unprocessable_entity
-          end
-
-          if allow_create_contact_email?
-            set_contact_email_checked
-            reset_contact_count
-            redirect_to new_www_app_contact_telephone_url(params[:contact_id])
-          else
-            increment_contact_count
-            render :new, status: :unprocessable_entity
-          end
         end
 
         private

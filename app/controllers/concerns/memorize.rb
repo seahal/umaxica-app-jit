@@ -18,7 +18,7 @@ module Memorize
     def initialize(prefix: nil, postfix: nil)
       @originality_prefix = prefix.to_s
       @originality_postfix = postfix.to_s
-      redis_config = RedisClient.config(host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost", port: 6379, db: 0)
+      redis_config = RedisClient.config(driver: :hiredis, host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost", port: 6379, db: 2)
       @redis = redis_config.new_pool(timeout: 1, size: Integer(ENV.fetch("RAILS_MAX_THREADS", 5)))
 
       # ActiveSupport::MessageEncryptorのインスタンスを作成
