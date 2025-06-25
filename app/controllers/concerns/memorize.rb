@@ -57,7 +57,7 @@ module Memorize
       pattern = redis_key("*")
       keys_to_delete = @redis.call("KEYS", pattern)
       return 0 if keys_to_delete.empty?
-      
+
       @redis.call("DEL", *keys_to_delete)
       keys_to_delete.length
     end
@@ -75,9 +75,9 @@ module Memorize
 
     def default_redis_pool
       redis_config = RedisClient.config(
-        driver: :hiredis, 
-        host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost", 
-        port: 6379, 
+        driver: :hiredis,
+        host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost",
+        port: 6379,
         db: 2
       )
       redis_config.new_pool(timeout: 1, size: Integer(ENV.fetch("RAILS_MAX_THREADS", 5)))

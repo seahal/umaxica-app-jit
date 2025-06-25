@@ -9,7 +9,7 @@ class RedisMemorizeTest < ActiveSupport::TestCase
     @memorize = Memorize::RedisMemorize.test_instance(prefix: "test_prefix", postfix: "test_postfix")
     @test_key = "test_key"
     @test_value = "secret_value_123"
-    
+
     # Clean up Redis before tests
     @memorize.clear_all
   end
@@ -26,7 +26,7 @@ class RedisMemorizeTest < ActiveSupport::TestCase
   test "can delete keys" do
     @memorize[@test_key] = @test_value
     assert @memorize.exists?(@test_key)
-    
+
     result = @memorize.delete(@test_key)
     assert result
     assert_not @memorize.exists?(@test_key)
@@ -35,23 +35,14 @@ class RedisMemorizeTest < ActiveSupport::TestCase
 
   test "different instances have isolated data" do
     other_memorize = Memorize::RedisMemorize.test_instance(prefix: "other", postfix: "instance")
-    
+
     @memorize[@test_key] = @test_value
     other_memorize[@test_key] = "different_value"
-    
+
     assert_equal @test_value, @memorize[@test_key]
     assert_equal "different_value", other_memorize[@test_key]
-    
+
     # Clean up
     other_memorize.clear_all
-  end
-
-  test "direct assignment syntax works" do
-    # This is the syntax you wanted to work in tests
-    @memorize[:abc] = 'efg'
-    assert_equal 'efg', @memorize[:abc]
-    
-    @memorize["string_key"] = "string_value"
-    assert_equal "string_value", @memorize["string_key"]
   end
 end

@@ -1,6 +1,6 @@
-if ENV['RAILS_ENV'] == 'test'
-  require 'simplecov'
-  SimpleCov.start 'rails'
+if ENV["RAILS_ENV"] == "test"
+  require "simplecov"
+  SimpleCov.start "rails"
 end
 
 ENV["RAILS_ENV"] ||= "test"
