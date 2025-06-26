@@ -1,0 +1,10 @@
+pre-commit:
+  commands:
+    rubocop:
+      glob: "*.{rb,rake,ru,gemspec}"
+      run: bundle exec rubocop -A
+
+pre-push:
+  commands:
+    tests:
+      run: bin/rails test all
