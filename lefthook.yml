@@ -4,13 +4,17 @@ pre-commit:
     audit:
       run: bundle exec bundle audit
     brakeman:
-      run: bun audit
+      run: bundle exec brakeman --no-pager
     rubocop:
       run: bundle exec rubocop -A
+    erb-lint:
+      run: bundle exec erblint app/views/
     biome-format:
       run: bun run format
     biome-lint:
       run: bun run lint
+    typecheck:
+      run: bun run typecheck
 
 pre-push:
   parallel: true
