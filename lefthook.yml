@@ -19,7 +19,7 @@ pre-commit:
 pre-push:
   parallel: true
   commands:
-    tests:
+    rails:
       run: bin/rails test all
     bun:
       run: bun test
