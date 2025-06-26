@@ -1,5 +1,7 @@
 pre-commit:
   commands:
+    audit:
+      run: bundle exec bundle audit
     rubocop:
       glob: "*.{rb,rake,ru,gemspec}"
       run: bundle exec rubocop -A
