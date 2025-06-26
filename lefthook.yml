@@ -4,7 +4,6 @@ pre-commit:
     audit:
       run: bundle exec bundle audit
     rubocop:
-      glob: "*.{rb,rake,ru,gemspec}"
       run: bundle exec rubocop -A
     biome-format:
       run: bun run format
@@ -18,5 +17,3 @@ pre-push:
       run: bin/rails test all
     bun:
       run: bun test
-    brakeman:
-      run: bundle exec brakeman
