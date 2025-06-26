@@ -2527,7 +2527,7 @@ PLATFORMS
 
 DEPENDENCIES
   annotaterb
-  argon2 (~> 2.3, >= 2.3.2)
+  argon2
   aws-sdk
   bootsnap
   brakeman
@@ -2582,7 +2582,7 @@ DEPENDENCIES
   rubocop
   rubocop-rails-omakase
   selenium-webdriver
-  sha3 (~> 2.2)
+  sha3
   simplecov
   sitemap_generator
   solid_cache

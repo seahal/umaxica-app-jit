@@ -5,21 +5,22 @@
     "build": "bun bun.config.js",
     "format": "bun x @biomejs/biome format app/ --write ",
     "lint": "bun x @biomejs/biome lint app/ --fix",
-    "typecheck": "bun x tsc --noEmit"
+    "typecheck": "bun x tsgo --noEmit"
   },
   "devDependencies": {
     "@types/bun": "^1.2.17",
-    "@typescript/native-preview": "^7.0.0-dev.20250624.1"
+    "@typescript/native-preview": "^7.0.0-dev.20250625.1",
+    "@biomejs/biome": "^2.0.5"
   },
   "peerDependencies": {
-    "@biomejs/biome": "^2.0.0",
-    "@types/bun": "^1.2.13",
     "dotenv": "^16.5.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "@rails/request.js": "^0.0.12",
+    "@types/react": "^19.1.8",
     "bun": "^1.2.17",
+    "hono": "^4.8.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   }
