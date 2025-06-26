@@ -3,6 +3,8 @@ pre-commit:
   commands:
     audit:
       run: bundle exec bundle audit
+    brakeman:
+      run: bun audit
     rubocop:
       run: bundle exec rubocop -A
     biome-format:
