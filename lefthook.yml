@@ -1,13 +1,22 @@
 pre-commit:
+  parallel: true
   commands:
     audit:
       run: bundle exec bundle audit
     rubocop:
       glob: "*.{rb,rake,ru,gemspec}"
       run: bundle exec rubocop -A
+    biome-format:
+      run: bun run format
+    biome-lint:
+      run: bun run lint
+
 pre-push:
+  parallel: true
   commands:
     tests:
       run: bin/rails test all
     bun:
       run: bun test
+    brakeman:
+      run: bundle exec brakeman

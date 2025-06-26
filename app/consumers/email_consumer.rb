@@ -7,11 +7,12 @@ class EmailConsumer < ApplicationConsumer
     #  {email_address: "", pass_code: "1234"}.transform_values{ encrypt(it) }
     messages.each do |message|
       # get from kafka over karafka
-      var = Marshal.load(message.raw_payload)
+      # FIXME: vulne
+      # var = Marshal.load(message.raw_payload)
       # decrypt
-      params = var.params.transform_values { decrypt(it) }
+      # params = var.params.transform_values { decrypt(it) }
       # send mail
-      var.mailer.with(params).create.deliver_now
+      # var.mailer.with(params).create.deliver_now
     end
   end
 
