@@ -27,6 +27,6 @@
     "noPropertyAccessFromIndexSignature": false
   },
   "include": [
-    "app/javascript/**/*"
+    "src/**/*"
   ]
 }
