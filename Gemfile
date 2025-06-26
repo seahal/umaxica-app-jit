@@ -80,10 +80,8 @@ gem "view_component"
 gem "rswag"
 gem "rswag-api"
 gem "rswag-ui"
-#
+
 gem "requestjs-rails"
-
-
 group :development, :test do
   # to avoid n+1 queries
   gem "bullet", "~> 8.0"
