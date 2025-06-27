@@ -73,7 +73,7 @@ gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
 #
-gem "jsbundling-rails" # FIXME: think about this gem remove or not. 
+# gem "jsbundling-rails" # FIXME: think about this gem remove or not.
 #
 gem "view_component"
 # OpenAPI
@@ -88,8 +88,7 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
   # environment variables
-  ## FIXME: .env file must not be included sign_in production.
-  gem "dotenv-rails", "~> 3.1", ">= 3.1.2"  #
+  gem "dotenv-rails", "~> 3.1", ">= 3.1.2" # FIXME: .env file must not be included sign_in production.
   # coverage
   gem "simplecov", require: false
   #
