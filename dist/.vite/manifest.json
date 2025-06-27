@@ -1,0 +1,17 @@
+{
+  "src/HelloWorld.tsx": {
+    "file": "helloworld-CdRU2bGK.js",
+    "name": "helloworld",
+    "src": "src/HelloWorld.tsx",
+    "isEntry": true
+  },
+  "src/application.jsx": {
+    "file": "application-skbw0_2U.js",
+    "name": "application",
+    "src": "src/application.jsx",
+    "isEntry": true,
+    "imports": [
+      "src/HelloWorld.tsx"
+    ]
+  }
+}

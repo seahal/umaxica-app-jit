@@ -1,0 +1,18 @@
+{
+  "all": {
+    "sourceCodeDir": "src",
+    "entrypointsDir": "src",
+    "publicOutputDir": "public/assets",
+    "watchAdditionalPaths": [
+      "app/views/**/*",
+      "app/components/**/*"
+    ]
+  },
+  "development": {
+    "autoBuild": true,
+    "port": 3036
+  },
+  "production": {
+    "publicOutputDir": "public/assets"
+  }
+}
