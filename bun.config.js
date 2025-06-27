@@ -1,5 +1,5 @@
 export default {
-  entrypoints: ["app/javascript/application.js", "app/javascript/components/HelloWorld.tsx"],
+  entrypoints: ["src/application.jsx", "src/HelloWorld.tsx"],
   outdir: "app/assets/builds",
   sourcemap: "linked",
   target: "browser",
@@ -8,5 +8,7 @@ export default {
   loader: {
     ".tsx": "tsx",
     ".ts": "ts",
+    ".jsx": "jsx",
+    ".js": "js",
   },
 };

@@ -6,6 +6,8 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "www/app/main" %>
+  <%# Vite build assets from src/ %>
+  <%= vite_javascript_tag "application", "data-turbo-track": "reload" %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
 </head>
 
@@ -22,6 +24,9 @@
 
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>
+
+  <%# React components root %>
+  <div id="react-root"></div>
 </main>
 
 <nav>

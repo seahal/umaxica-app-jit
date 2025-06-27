@@ -74,6 +74,7 @@ gem "rolify"
 gem "carrierwave"
 #
 gem "jsbundling-rails"
+# gem "vite_rails"
 #
 gem "view_component"
 # OpenAPI

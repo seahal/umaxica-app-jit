@@ -8,7 +8,7 @@ pre-commit:
     rubocop:
       run: bundle exec rubocop -A
     erb-lint:
-      run: bundle exec erblint app/views/
+      run: bundle exec erb_lint app/views/
     biome-format:
       run: bun run format
     biome-lint:

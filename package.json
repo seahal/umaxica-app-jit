@@ -2,16 +2,17 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "build": "bun bun.config.js",
+    "build": "bun x vite build",
     "format": "bun x @biomejs/biome format app/ --write ",
     "lint": "bun x @biomejs/biome lint app/ --fix",
     "typecheck": "bun x tsgo --noEmit"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.5",
+    "@biomejs/biome": "^2.0.6",
     "@types/bun": "^1.2.17",
-    "@typescript/native-preview": "^7.0.0-dev.20250626.1",
-    "glob": "^11.0.3"
+    "@typescript/native-preview": "^7.0.0-dev.20250627.1",
+    "glob": "^11.0.3",
+    "vite-plugin-ruby": "^5.1.1"
   },
   "peerDependencies": {
     "dotenv": "^16.5.0",
