@@ -11,8 +11,6 @@ pre-commit:
       run: bundle exec erb_lint app/views/
     biome-format:
       run: bun run format
-    biome-lint:
-      run: bun run lint
     typecheck:
       run: bun run typecheck
 

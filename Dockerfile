@@ -39,11 +39,9 @@ ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
 ARG BUN_VERSION
-
 ENV COMMIT_HASH=${COMMIT_HASH}
 ENV HOME=/main/
 WORKDIR /main/
-
 # Install development-specific dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
@@ -56,20 +54,16 @@ RUN apt-get update -qq && \
         xserver-xorg-core \
         xvfb && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
-
 # Install Node.js and Bun
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs && \
     npm install -g bun@${BUN_VERSION} && \
     rm -rf /var/lib/apt/lists/*
-
 # Copy dependency files first for better caching
 COPY Gemfile Gemfile.lock package.json bun.lock /main/
-
 # Install dependencies
 RUN gem install bundler && \
     bundle install --gemfile /main/Gemfile --jobs $(nproc)
-
 # Create user and set permissions
 RUN if [ -z "$GITHUB_ACTIONS" ]; then \
         groupadd -g ${DOCKER_GID} ${DOCKER_GROUP} && \
@@ -80,7 +74,6 @@ RUN if [ -z "$GITHUB_ACTIONS" ]; then \
     else \
         chown -R ${DOCKER_USER}:${DOCKER_GROUP} /main; \
     fi
-
 USER ${DOCKER_USER}
 
 # Asset builder stage using Bun

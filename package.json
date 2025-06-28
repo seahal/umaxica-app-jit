@@ -2,7 +2,8 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "build": "bun x vite build",
+    "server": "bunx --bun vite",
+    "build": "tsc -b && bunx --bun vite build",
     "format": "bun x @biomejs/biome format app/ --write ",
     "lint": "bun x @biomejs/biome lint app/ --fix",
     "typecheck": "bun x tsgo --noEmit"
@@ -25,6 +26,6 @@
     "hono": "^4.8.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router": "^7.6.2"
+    "react-router": "^7.6.3"
   }
 }

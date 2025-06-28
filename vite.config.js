@@ -6,20 +6,25 @@ export default defineConfig({
             // ブラウザ経由でアクセスするオリジン
             origin: 'http://www.app.localdomain:3334',
         },
+        fs: {
+            allow: ['..', '.', 'dist']
+        }
     },
+    publicDir: 'dist',
     build: {
-        // Rails assets ディレクトリに出力
-        outDir: 'dist',
-        // manifest.json を生成して Rails から参照できるようにする
-        manifest: true,
-        rollupOptions: {
-            input: {
-                application: 'src/application.jsx',
-                helloworld: 'src/HelloWorld.tsx',
-            },
+        outDir: 'app/assets/javascript',
+        lib: {
+            entry: 'src/application.jsx',
+            name: 'App',
+            fileName: 'main',
+            formats: ['iife']
         },
-        // アセットファイル名をシンプルに
-        assetsDir: '',
+        rollupOptions: {
+            external: [],
+            output: {
+                globals: {}
+            }
+        },
     },
     esbuild: {
         loader: 'tsx',

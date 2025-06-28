@@ -1,5 +1,5 @@
 export default {
-  entrypoints: ["src/application.jsx", "src/HelloWorld.tsx"],
+  entrypoints: [ "src/HelloWorld.tsx"],
   outdir: "app/assets/builds",
   sourcemap: "linked",
   target: "browser",
@@ -11,4 +11,5 @@ export default {
     ".jsx": "jsx",
     ".js": "js",
   },
+    test: { coverage: true }
 };

@@ -13,13 +13,7 @@ Things you may want to cover:
   - Linux => Run on it.
   - Ruby => Of course, we are on Ruby.
 * Configuration
-    - Edit `/etc/hosts` files to separate .com or .net.
-    - ```
-      # See hosts(5) for details.
-      127.0.0.1    localhost api.com.localdomain api.app.localdomain api.org.localdomain www.app.localdomain www.org.localdomain www.com\
-.localdomain news.app.localdomain news.org.localdomain news.com.localdomain docs.app.localdomain docs.org.localdomain docs.com.loc\
-aldomain
-    ```
+  * ...
 * Database creation
     - `bin/rails db:create`
 * Database initialization

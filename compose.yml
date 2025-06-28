@@ -15,7 +15,7 @@ services:
     volumes:
       - main_tmp:/main/tmp
       - main_vendor:/main/vendor
-      - main_node_modules:/main/node_modules
+      - main_modules:/main/node_modules
       - ./:/main
     networks:
       - backend
@@ -243,9 +243,9 @@ volumes:
   kafka-broker-volume:
   elasticsearch-volume:
   minio-volume:
-  main_node_modules:
-  main_vendor:
   main_tmp:
+  main_vendor:
+  main_modules:
 networks:
   backend:
   frontend:
