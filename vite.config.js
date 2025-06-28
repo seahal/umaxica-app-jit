@@ -1,33 +1,26 @@
 import { defineConfig } from 'vite'
 
-export default defineConfig({
-    server: {
-        cors: {
-            // ブラウザ経由でアクセスするオリジン
-            origin: 'http://www.app.localdomain:3334',
-        },
-        fs: {
-            allow: ['..', '.', 'dist']
-        }
+
+export default defineConfig
+({
+  server
+: {
+    cors
+: {
+    origin
+    : 'http://dist.net.localhost:3000/',
     },
-    publicDir: 'dist',
-    build: {
-        outDir: 'app/assets/javascript',
-        lib: {
-            entry: 'src/application.jsx',
-            name: 'App',
-            fileName: 'main',
-            formats: ['iife']
-        },
-        rollupOptions: {
-            external: [],
-            output: {
-                globals: {}
-            }
-        },
+  },
+  build
+: {
+    // outDir に .vite/manifest.json を出力
+    manifest
+: true,
+    rollupOptions
+: {
+      // デフォルトの .html エントリーを上書き
+      input
+: '/dist/main.js',
     },
-    esbuild: {
-        loader: 'tsx',
-        include: /src\/.*\.[jt]sx?$/,
-    },
+  },
 })
