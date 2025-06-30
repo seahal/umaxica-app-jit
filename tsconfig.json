@@ -17,11 +17,20 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
+<<<<<<< HEAD
       "@/*": ["app/javascript/*"]
     }
   },
   "include": [
     "app/javascript/**/*"
+=======
+      "@/*": ["app/*"]
+    }
+  },
+  "include": [
+    "app/**/*",
+    "test/**/*"
+>>>>>>> feature
   ],
   "exclude": [
     "node_modules",

@@ -45,6 +45,9 @@ const isWatchMode = process.argv.includes('--watch');
     console.log("Watching for changes...");
     const watcher = fs.watch(
       path.join(process.cwd(), "app/javascript"), 
+=======
+      path.join(process.cwd(), "app"), 
+>>>>>>> feature
       { recursive: true }, 
       async (eventType, filename) => {
         if (filename && (filename.endsWith('.js') || filename.endsWith('.jsx') || filename.endsWith('.ts') || filename.endsWith('.tsx'))) {
