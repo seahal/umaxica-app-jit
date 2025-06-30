@@ -17,7 +17,7 @@ Rails.application.routes.draw do
     constraints host: ENV["API_SERVICE_URL"] do
       scope module: :app, as: :app do
         # health check for html
-        resource :health, only: :show, format: :html
+        resource :health, only: :show, format: "html"
         # version
         namespace :v1 do
           resource :staging, only: :show, format: "json"
@@ -29,6 +29,10 @@ Rails.application.routes.draw do
           end
           namespace :persona do
             resources :avatars
+          end
+          namespace :inquiry do
+            resources :email_addresses, only: %i[show]
+            resources :telephone_numbers, only: %i[show]
           end
         end
       end

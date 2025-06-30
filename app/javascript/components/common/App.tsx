@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-const App = () => {
+const App: React.FC = () => {
 	const [count, setCount] = useState(0);
 
 	return (
