@@ -1,4 +1,3 @@
-
 function World() {
 	return (
 		<div className="World">
