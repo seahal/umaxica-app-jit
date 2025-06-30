@@ -1,24 +1,23 @@
 {
-  "name": "app",
-  "private": true,
+  "name": "my-app",
+  "type": "module",
   "scripts": {
-    "build": "bun run bun.config.js",
-    "dev": "bun run bun.config.js --watch",
-    "format": "bun x @biomejs/biome format app/javascript/ --write",
-    "lint": "bun x @biomejs/biome lint app/javascript/ --fix",
-    "typecheck": "bun x tsc --noEmit",
-    "test": "bun test test/"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.0.6",
-    "@types/bun": "^1.2.17",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "typescript": "^5.8.3"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "$npm_execpath run build && vite preview",
+    "deploy": "$npm_execpath run build && wrangler deploy",
+    "typecheck": "bunx tsgo --noEmit",
+    "format": "bunx @biomejs/biome format app/javascript --write"
   },
   "dependencies": {
-    "@rails/request.js": "^0.0.12",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "hono": "^4.8.3"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.7.5",
+    "@types/bun": "^1.2.17",
+    "@typescript/native-preview": "^7.0.0-dev.20250630.1",
+    "vite": "^6.3.5",
+    "vite-ssr-components": "^0.3.0",
+    "wrangler": "^4.22.0"
   }
 }

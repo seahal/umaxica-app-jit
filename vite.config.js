@@ -1,19 +1,6 @@
-import { defineConfig } from 'vite'
-
-
+import { cloudflare } from '@cloudflare/vite-plugin';
+import { defineConfig } from 'vite';
+import ssrPlugin from 'vite-ssr-components/plugin';
 export default defineConfig({
-  server: {
-    cors: {
-      // ブラウザ経由でアクセスするオリジン
-      origin: 'http://my-backend.example.com',
-    },
-  },
-  build: {
-    // outDir に .vite/manifest.json を出力
-    manifest: true,
-    rollupOptions: {
-      // デフォルトの .html エントリーを上書き
-      input: './src/application.tsx',
-    },
-  },
-})
+    plugins: [cloudflare(), ssrPlugin()]
+});

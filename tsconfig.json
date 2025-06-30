@@ -1,32 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
+    "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "types": ["vite/client", "bun-types"],
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["app/javascript/*"]
-    }
+    "jsxImportSource": "hono/jsx"
   },
-  "include": [
-    "app/javascript/**/*",
-    "test/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "app/assets/builds",
-    "app/javascript/components/www/*/layout.tsx"
-  ]
 }
