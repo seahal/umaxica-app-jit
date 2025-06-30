@@ -510,12 +510,10 @@ function ze() {
 				typeof e == "function" ? e : null);
 	}
 	var C = {
-			isMounted: function () {
-				return !1;
-			},
-			enqueueForceUpdate: function () {},
-			enqueueReplaceState: function () {},
-			enqueueSetState: function () {},
+			isMounted: () => !1,
+			enqueueForceUpdate: () => {},
+			enqueueReplaceState: () => {},
+			enqueueSetState: () => {},
 		},
 		k = Object.assign,
 		J = {};
@@ -563,12 +561,7 @@ function ze() {
 	}
 	function ye(e) {
 		var o = { "=": "=0", ":": "=2" };
-		return (
-			"$" +
-			e.replace(/[=:]/g, function (a) {
-				return o[a];
-			})
-		);
+		return "$" + e.replace(/[=:]/g, (a) => o[a]);
 	}
 	var ee = /\/+/g;
 	function B(e, o) {
@@ -589,11 +582,11 @@ function ze() {
 						? e.then(te, te)
 						: ((e.status = "pending"),
 							e.then(
-								function (o) {
+								(o) => {
 									e.status === "pending" &&
 										((e.status = "fulfilled"), (e.value = o));
 								},
-								function (o) {
+								(o) => {
 									e.status === "pending" &&
 										((e.status = "rejected"), (e.reason = o));
 								},
@@ -637,9 +630,7 @@ function ze() {
 				Q(p)
 					? ((a = ""),
 						f != null && (a = f.replace(ee, "$&/") + "/"),
-						x(p, o, a, "", function (_e) {
-							return _e;
-						}))
+						x(p, o, a, "", (_e) => _e))
 					: p != null &&
 						(q(p) &&
 							(p = ve(
@@ -680,23 +671,18 @@ function ze() {
 		if (e == null) return e;
 		var c = [],
 			p = 0;
-		return (
-			x(e, c, "", "", function (y) {
-				return o.call(a, y, p++);
-			}),
-			c
-		);
+		return x(e, c, "", "", (y) => o.call(a, y, p++)), c;
 	}
 	function me(e) {
 		if (e._status === -1) {
 			var o = e._result;
 			(o = o()),
 				o.then(
-					function (a) {
+					(a) => {
 						(e._status === 0 || e._status === -1) &&
 							((e._status = 1), (e._result = a));
 					},
-					function (a) {
+					(a) => {
 						(e._status === 0 || e._status === -1) &&
 							((e._status = 2), (e._result = a));
 					},
@@ -709,7 +695,7 @@ function ze() {
 	var ne =
 		typeof reportError == "function"
 			? reportError
-			: function (e) {
+			: (e) => {
 					if (
 						typeof window == "object" &&
 						typeof window.ErrorEvent == "function"
@@ -739,7 +725,7 @@ function ze() {
 	return (
 		(l.Children = {
 			map: N,
-			forEach: function (e, o, a) {
+			forEach: (e, o, a) => {
 				N(
 					e,
 					function () {
@@ -748,23 +734,17 @@ function ze() {
 					a,
 				);
 			},
-			count: function (e) {
+			count: (e) => {
 				var o = 0;
 				return (
-					N(e, function () {
+					N(e, () => {
 						o++;
 					}),
 					o
 				);
 			},
-			toArray: function (e) {
-				return (
-					N(e, function (o) {
-						return o;
-					}) || []
-				);
-			},
-			only: function (e) {
+			toArray: (e) => N(e, (o) => o) || [],
+			only: (e) => {
 				if (!q(e))
 					throw Error(
 						"React.Children.only expected to receive a single React element child.",
@@ -781,16 +761,10 @@ function ze() {
 		(l.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = v),
 		(l.__COMPILER_RUNTIME = {
 			__proto__: null,
-			c: function (e) {
-				return v.H.useMemoCache(e);
-			},
+			c: (e) => v.H.useMemoCache(e),
 		}),
-		(l.cache = function (e) {
-			return function () {
-				return e.apply(null, arguments);
-			};
-		}),
-		(l.cloneElement = function (e, o, a) {
+		(l.cache = (e) => () => e.apply(null, arguments)),
+		(l.cloneElement = (e, o, a) => {
 			if (e == null)
 				throw Error(
 					"The argument must be a React element, but you passed " + e + ".",
@@ -816,22 +790,20 @@ function ze() {
 			}
 			return Y(e.type, p, void 0, void 0, y, c);
 		}),
-		(l.createContext = function (e) {
-			return (
-				(e = {
-					$$typeof: d,
-					_currentValue: e,
-					_currentValue2: e,
-					_threadCount: 0,
-					Provider: null,
-					Consumer: null,
-				}),
-				(e.Provider = e),
-				(e.Consumer = { $$typeof: u, _context: e }),
-				e
-			);
-		}),
-		(l.createElement = function (e, o, a) {
+		(l.createContext = (e) => (
+			(e = {
+				$$typeof: d,
+				_currentValue: e,
+				_currentValue2: e,
+				_threadCount: 0,
+				Provider: null,
+				Consumer: null,
+			}),
+			(e.Provider = e),
+			(e.Consumer = { $$typeof: u, _context: e }),
+			e
+		)),
+		(l.createElement = (e, o, a) => {
 			var c,
 				p = {},
 				y = null;
@@ -852,20 +824,20 @@ function ze() {
 				for (c in ((f = e.defaultProps), f)) p[c] === void 0 && (p[c] = f[c]);
 			return Y(e, y, void 0, void 0, null, p);
 		}),
-		(l.createRef = function () {
-			return { current: null };
-		}),
-		(l.forwardRef = function (e) {
-			return { $$typeof: h, render: e };
-		}),
+		(l.createRef = () => ({ current: null })),
+		(l.forwardRef = (e) => ({ $$typeof: h, render: e })),
 		(l.isValidElement = q),
-		(l.lazy = function (e) {
-			return { $$typeof: R, _payload: { _status: -1, _result: e }, _init: me };
-		}),
-		(l.memo = function (e, o) {
-			return { $$typeof: T, type: e, compare: o === void 0 ? null : o };
-		}),
-		(l.startTransition = function (e) {
+		(l.lazy = (e) => ({
+			$$typeof: R,
+			_payload: { _status: -1, _result: e },
+			_init: me,
+		})),
+		(l.memo = (e, o) => ({
+			$$typeof: T,
+			type: e,
+			compare: o === void 0 ? null : o,
+		})),
+		(l.startTransition = (e) => {
 			var o = v.T,
 				a = {};
 			v.T = a;
@@ -883,26 +855,14 @@ function ze() {
 				v.T = o;
 			}
 		}),
-		(l.unstable_useCacheRefresh = function () {
-			return v.H.useCacheRefresh();
-		}),
-		(l.use = function (e) {
-			return v.H.use(e);
-		}),
-		(l.useActionState = function (e, o, a) {
-			return v.H.useActionState(e, o, a);
-		}),
-		(l.useCallback = function (e, o) {
-			return v.H.useCallback(e, o);
-		}),
-		(l.useContext = function (e) {
-			return v.H.useContext(e);
-		}),
-		(l.useDebugValue = function () {}),
-		(l.useDeferredValue = function (e, o) {
-			return v.H.useDeferredValue(e, o);
-		}),
-		(l.useEffect = function (e, o, a) {
+		(l.unstable_useCacheRefresh = () => v.H.useCacheRefresh()),
+		(l.use = (e) => v.H.use(e)),
+		(l.useActionState = (e, o, a) => v.H.useActionState(e, o, a)),
+		(l.useCallback = (e, o) => v.H.useCallback(e, o)),
+		(l.useContext = (e) => v.H.useContext(e)),
+		(l.useDebugValue = () => {}),
+		(l.useDeferredValue = (e, o) => v.H.useDeferredValue(e, o)),
+		(l.useEffect = (e, o, a) => {
 			var c = v.H;
 			if (typeof a == "function")
 				throw Error(
@@ -910,39 +870,17 @@ function ze() {
 				);
 			return c.useEffect(e, o);
 		}),
-		(l.useId = function () {
-			return v.H.useId();
-		}),
-		(l.useImperativeHandle = function (e, o, a) {
-			return v.H.useImperativeHandle(e, o, a);
-		}),
-		(l.useInsertionEffect = function (e, o) {
-			return v.H.useInsertionEffect(e, o);
-		}),
-		(l.useLayoutEffect = function (e, o) {
-			return v.H.useLayoutEffect(e, o);
-		}),
-		(l.useMemo = function (e, o) {
-			return v.H.useMemo(e, o);
-		}),
-		(l.useOptimistic = function (e, o) {
-			return v.H.useOptimistic(e, o);
-		}),
-		(l.useReducer = function (e, o, a) {
-			return v.H.useReducer(e, o, a);
-		}),
-		(l.useRef = function (e) {
-			return v.H.useRef(e);
-		}),
-		(l.useState = function (e) {
-			return v.H.useState(e);
-		}),
-		(l.useSyncExternalStore = function (e, o, a) {
-			return v.H.useSyncExternalStore(e, o, a);
-		}),
-		(l.useTransition = function () {
-			return v.H.useTransition();
-		}),
+		(l.useId = () => v.H.useId()),
+		(l.useImperativeHandle = (e, o, a) => v.H.useImperativeHandle(e, o, a)),
+		(l.useInsertionEffect = (e, o) => v.H.useInsertionEffect(e, o)),
+		(l.useLayoutEffect = (e, o) => v.H.useLayoutEffect(e, o)),
+		(l.useMemo = (e, o) => v.H.useMemo(e, o)),
+		(l.useOptimistic = (e, o) => v.H.useOptimistic(e, o)),
+		(l.useReducer = (e, o, a) => v.H.useReducer(e, o, a)),
+		(l.useRef = (e) => v.H.useRef(e)),
+		(l.useState = (e) => v.H.useState(e)),
+		(l.useSyncExternalStore = (e, o, a) => v.H.useSyncExternalStore(e, o, a)),
+		(l.useTransition = () => v.H.useTransition()),
 		(l.version = "19.1.0"),
 		l
 	);

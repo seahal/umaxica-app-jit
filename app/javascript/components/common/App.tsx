@@ -1,7 +1,6 @@
-import type React from "react";
 import { useState } from "react";
 
-const App: React.FC = () => {
+const App = () => {
 	const [count, setCount] = useState(0);
 
 	return (
@@ -16,16 +15,16 @@ const App: React.FC = () => {
 		>
 			<h2>🎉 React is working with Bun!</h2>
 			<div style={{ margin: "20px 0" }}>
-				<p>Counter: {count}</p>
+				<p>Counter:s {count}</p>
 				<button
 					type="button"
 					onClick={() => setCount(count + 1)}
 					style={{
 						padding: "10px 20px",
-						backgroundColor: "#007bff",
+						backgroundColor: "#007b00",
 						color: "white",
 						border: "none",
-						borderRadius: "4px",
+						borderRadius: "40px",
 						cursor: "pointer",
 						marginRight: "10px",
 					}}
@@ -40,7 +39,7 @@ const App: React.FC = () => {
 						backgroundColor: "#6c757d",
 						color: "white",
 						border: "none",
-						borderRadius: "4px",
+						borderRadius: "10px",
 						cursor: "pointer",
 					}}
 				>
@@ -48,7 +47,7 @@ const App: React.FC = () => {
 				</button>
 			</div>
 			<p style={{ fontSize: "14px", color: "#6c757d" }}>
-				このコンポーネントは Rails + Bun + React で動作しています3
+				このコンポーネントは Rails + Bun + React で動作しています
 			</p>
 		</div>
 	);

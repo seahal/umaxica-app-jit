@@ -4,31 +4,16 @@
   "scripts": {
     "build": "bun run bun.config.js",
     "dev": "bun run bun.config.js --watch",
-<<<<<<< HEAD
     "format": "bun x @biomejs/biome format app/javascript/ --write",
     "lint": "bun x @biomejs/biome lint app/javascript/ --fix",
-    "typecheck": "bun x tsc --noEmit"
-=======
-    "format": "bun x @biomejs/biome format app/ --write",
-    "lint": "bun x @biomejs/biome lint app/ --fix",
     "typecheck": "bun x tsc --noEmit",
     "test": "bun test test/"
->>>>>>> feature
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.6",
     "@types/bun": "^1.2.17",
-<<<<<<< HEAD
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-=======
-    "@typescript/native-preview": "^7.0.0-dev.20250630.1",
-    "glob": "^11.0.3",
-    "vite-plugin-ruby": "^5.1.1"
-  },
-  "peerDependencies": {
-    "dotenv": "^16.5.0",
->>>>>>> feature
     "typescript": "^5.8.3"
   },
   "dependencies": {
