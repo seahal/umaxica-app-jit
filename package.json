@@ -2,11 +2,12 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "server": "bunx --bun vite",
-    "build": "tsc -b && bunx --bun vite build",
-    "format": "bun x @biomejs/biome format app/ --write ",
+    "build": "bun run bun.config.js",
+    "dev": "bun run bun.config.js --watch",
+    "format": "bun x @biomejs/biome format app/ --write",
     "lint": "bun x @biomejs/biome lint app/ --fix",
-    "typecheck": "bun x tsgo --noEmit"
+    "typecheck": "bun x tsc --noEmit",
+    "test": "bun test test/"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.6",
