@@ -73,7 +73,7 @@ gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
 #
-# gem "jsbundling-rails" # FIXME: think about this gem remove or not.
+gem "jsbundling-rails" # FIXME: think about this gem remove or not.
 #
 gem "view_component"
 # OpenAPI

@@ -6,11 +6,12 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "www/app/main" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
 </head>
 
 <body class="px-4">
 <header>
-  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>:4444/">Umaxica(www, app)</a></h1>
+  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Umaxica(www, app)</a></h1>
   <p>
     <%= link_to_if !@user&.active?, "logout?", new_www_app_registration_path %>
     <%= link_to_unless @user&.active?, "login?", new_www_app_registration_path %>
@@ -43,7 +44,7 @@
 
 <footer>
   <ul>
-    <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>:4444/">Home</a></li>
+    <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Home</a></li>
     <li><%= link_to 'Cookie', edit_www_app_preference_cookie_path %></li>
     <li>Support</li>
     <li>Privacy</li>

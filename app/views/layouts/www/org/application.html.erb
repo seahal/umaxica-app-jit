@@ -6,6 +6,7 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "www/org/main" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
  </head>
 
 <body class="px-4">
@@ -22,6 +23,9 @@
     </ul>
     <%= breadcrumbs pretext: "You are here: ", separator: " &rsaquo; " %>
   </nav>
+
+  <%# React components root %>
+  <div id="react-root"></div>
 </main>
 
 <nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
