@@ -1,0 +1,24 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: timelines
+#
+#  id               :bigint           not null, primary key
+#  description      :string
+#  title            :string
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  entity_status_id :string
+#  parent_id        :binary
+#  prev_id          :binary
+#  staff_id         :binary
+#  succ_id          :binary
+#
+one:
+  parent_id:
+  succ_id:
+  parent_id:
+  title: MyString
+  description: MyString
+

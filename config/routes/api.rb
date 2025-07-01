@@ -31,8 +31,8 @@ Rails.application.routes.draw do
             resources :avatars
           end
           namespace :inquiry do
-            resources :email_addresses, only: %i[show]
-            resources :telephone_numbers, only: %i[show]
+            resources :valid_email_addresses, only: %i[show]
+            resources :valid_telephone_numbers, only: %i[show]
           end
         end
       end

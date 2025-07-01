@@ -9,7 +9,7 @@
       "ESNext",
       "DOM"
     ],
-    "types": ["vite/client", "bun-types"],
+    "types": ["bun-types"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   },
