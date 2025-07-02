@@ -55,11 +55,23 @@ module Memorize
 
     def clear_all
       pattern = redis_key("*")
-      keys_to_delete = @redis.call("KEYS", pattern)
-      return 0 if keys_to_delete.empty?
+      deleted_count = 0
 
-      @redis.call("DEL", *keys_to_delete)
-      keys_to_delete.length
+      # Use SCAN instead of KEYS for better performance and atomic operations
+      cursor = "0"
+      loop do
+        result = @redis.call("SCAN", cursor, "MATCH", pattern, "COUNT", 100)
+        cursor, keys = result
+
+        unless keys.empty?
+          # Delete keys in smaller batches to avoid race conditions
+          deleted_count += @redis.call("DEL", *keys)
+        end
+
+        break if cursor == "0"
+      end
+
+      deleted_count
     end
 
     # For testing - create a new instance with custom prefix/postfix

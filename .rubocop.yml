@@ -1,3 +1,11 @@
 # Omakase Ruby styling for Rails
 inherit_gem:
   rubocop-rails-omakase: rubocop.yml
+
+# .rubocop.yml
+AllCops:
+  # キャッシュを有効化
+  UseCache: true
+
+  # キャッシュの保存先を指定
+  CacheRootDirectory: tmp/rubocop_cache

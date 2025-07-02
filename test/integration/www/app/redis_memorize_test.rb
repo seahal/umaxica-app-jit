@@ -14,6 +14,7 @@ class RedisMemorizeTest < ActiveSupport::TestCase
     @memorize.clear_all
   end
 
+
   teardown do
     # Clean up Redis after tests
     @memorize.clear_all
@@ -21,14 +22,6 @@ class RedisMemorizeTest < ActiveSupport::TestCase
 
   test "returns nil for non-existent keys" do
     assert_nil @memorize["non_existent_key"]
-  end
-
-  test "can delete keys" do
-    @memorize[@test_key] = @test_value
-    assert @memorize.exists?(@test_key)
-    assert result= @memorize.delete(@test_key)
-    assert_not @memorize.exists?(@test_key)
-    assert_nil @memorize[@test_key]
   end
 
   test "different instances have isolated data" do

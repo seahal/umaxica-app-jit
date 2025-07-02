@@ -6,7 +6,7 @@ pre-commit:
     brakeman:
       run: bundle exec brakeman --no-pager
     rubocop:
-      run: bundle exec rubocop -A
+      run: bundle exec rubocop
     erb-lint:
       run: bundle exec erb_lint app/views/
     biome-format:

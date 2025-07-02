@@ -2,6 +2,8 @@ source "https://rubygems.org"
 
 ruby "3.4.4"
 
+# rake
+gem "rake"
 # rack
 gem "rack"
 # type for Ruby language.
