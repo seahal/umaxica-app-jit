@@ -5,11 +5,13 @@ set -e
 bundle install
 bun install
 
-# for Database setup
+# open up
 bin/rails tmp:clear
+
+# for Database setup
 bin/rails db:create
 bin/rails db:migrate
-# bin/rails db:seed
+bin/rails db:seed
 
 # for Karafka
 bundle exec karafka-web migrate
