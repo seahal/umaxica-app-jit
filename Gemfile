@@ -75,7 +75,6 @@ gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
 #
-gem "jsbundling-rails" # FIXME: think about this gem remove or not.
 gem "importmap-rails"
 #
 gem "view_component"
@@ -85,9 +84,9 @@ gem "rswag-api"
 gem "rswag-ui"
 #
 gem "tailwindcss-rails"
-
-
+#
 gem "requestjs-rails"
+
 group :development, :test do
   # to avoid n+1 queries
   gem "bullet", "~> 8.0"
