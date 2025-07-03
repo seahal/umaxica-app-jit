@@ -1,4 +1,11 @@
+import React from "react";
+
 const HelloWorld = () => {
-	return _jsx("div", { children: _jsx("h1", { children: "Hello, World!" }) });
+	return React.createElement(
+		"div",
+		null,
+		React.createElement("h1", null, "Hello, World!"),
+	);
 };
+
 export default HelloWorld;
