@@ -13,6 +13,10 @@ pre-commit:
       run: bun run format
     typecheck:
       run: bun run typecheck
+    npm-audit:
+      run: ./bin/importmap audit
+    npm-outdated:
+      run: ./bin/importmap outdated
 
 pre-push:
   parallel: true

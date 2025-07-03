@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+# package install
+bundle install
+bun install
+
 # for Database setup
 bin/rails tmp:clear
 bin/rails db:create
