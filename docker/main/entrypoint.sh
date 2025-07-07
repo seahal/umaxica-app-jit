@@ -19,4 +19,4 @@ bundle exec karafka-web migrate
 # run servers
 bin/dev
 
-exec "$@"
+exec $$
