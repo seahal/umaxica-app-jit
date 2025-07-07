@@ -37,5 +37,9 @@ module Jit
 
     # ActiveJob
     config.active_job.queue_adapter = :karafka
+
+    # SMS Provider Configuration
+    config.sms_provider = ENV.fetch("SMS_PROVIDER", "aws_sns")
+    config.aws_region = ENV.fetch("AWS_REGION", "ap-northeast-1")
   end
 end

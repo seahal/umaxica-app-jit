@@ -24,16 +24,11 @@ module Www
           id = SecureRandom.uuid_v7
 
           if res["success"] && @user_telephone.valid?
-            # FIXME: use kafka!
-            Aws::SNS::Client.new(
-              access_key_id: Rails.application.credentials.AWS.ACCESS_KEY_ID,
-              secret_access_key: Rails.application.credentials.AWS.SECRET_ACCESS_KEY,
-              region: "ap-northeast-1"
-            ).publish({
-                        phone_number: Rails.application.credentials.TELEPHONE_FROM_NUMBER,
-                        message: "PassCode => #{num}",
-                        subject: "PassCode => #{num}"
-                      })
+            SmsService.send_message(
+              to: Rails.application.credentials.TELEPHONE_FROM_NUMBER,
+              message: "PassCode => #{num}",
+              subject: "PassCode => #{num}"
+            )
 
             session[:user_telephone_registration] = {
               id: id,

@@ -127,4 +127,7 @@ Rails.application.configure do
 
   # static file serve
   config.public_file_server.enabled = true
+
+  # SMS Provider Configuration - Use test provider in development
+  config.sms_provider = ENV.fetch("SMS_PROVIDER", "test")
 end
