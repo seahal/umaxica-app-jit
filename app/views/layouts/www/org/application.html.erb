@@ -7,9 +7,9 @@
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "www/org/main" %>
   <%= javascript_importmap_tags %>
+
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
  </head>
-
 <body class="px-4">
 <header>
   <h1 class="container mx-auto mt-28 px-5 flex"><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">Umaxica(www, org)</a></h1>
@@ -17,16 +17,15 @@
 
 <hr>
 
-<main class="container mx-auto mt-28 px-5 block"><%= yield %>
+<main class="container mx-auto mt-28 px-5 block">
+  <%= yield %>
+
   <nav>
     <ul>
       <li></li>
     </ul>
     <%= breadcrumbs pretext: "You are here: ", separator: " &rsaquo; " %>
   </nav>
-
-  <%# React components root %>
-  <div id="react-root"></div>
 </main>
 
 <nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
