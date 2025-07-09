@@ -1,5 +1,5 @@
 module Docs
-  module App
+  module Org
     class RootsController < ApplicationController
       def index
       end

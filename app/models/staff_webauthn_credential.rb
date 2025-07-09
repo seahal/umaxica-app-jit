@@ -14,7 +14,7 @@ class StaffWebauthnCredential < IdentifiersRecord
   }
 
   scope :active, -> { where(active: true) }
-  
+
   def increment_sign_count!
     increment!(:sign_count)
   end
