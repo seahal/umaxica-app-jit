@@ -21,7 +21,7 @@ module Www::App::MemorizeHelper
 end
 
 
-class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
+class Help::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   include Www::App::MemorizeHelper
 
   setup do
@@ -35,10 +35,10 @@ class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new" do
-    get new_www_app_inquiry_url
+    get new_help_app_inquiry_url
     assert_response :success
     assert_select "h1", I18n.t("controller.www.app.contacts.new.page_title")
-    assert_select "form[action=?][method=?]", www_app_inquiries_path, "post" do
+    assert_select "form[action=?][method=?]", help_app_inquiries_path, "post" do
       assert_select "input[type=?][name=?]", "checkbox", "service_site_contact[confirm_policy]"
       assert_select "input[type=?][name=?]", "hidden", "service_site_contact[confirm_policy]"
       assert_select "label[for=?]", "service_site_contact_email_address"
@@ -67,7 +67,7 @@ class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   test "should get create" do
     email_address = "sample@example.com"
     telephone_number = "+819012345678"
-    post www_app_inquiries_path, params: { service_site_contact: { confirm_policy: 1,
+    post help_app_inquiries_path, params: { service_site_contact: { confirm_policy: 1,
                                                                  email_address: email_address,
                                                                  telephone_number: telephone_number } }
     # FIXME: REWRITE!www_app_contacts_url
@@ -77,7 +77,7 @@ class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
 
   test "invalid first post" do
     assert_no_difference("ServiceSiteContact.count") do
-      post www_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
+      post help_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
                                                                    email_address: "",
                                                                    telephone_number: "" } }
       #      assert_select "h2", "5 error prohibited this sample from being saved:"
@@ -85,7 +85,7 @@ class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
       assert_response :unprocessable_content
     end
     assert_no_difference("ServiceSiteContact.count") do
-      post www_app_inquiries_url, params: { service_site_contact: { confirm_policy: 1,
+      post help_app_inquiries_url, params: { service_site_contact: { confirm_policy: 1,
                                                                    email_address: "",
                                                                    telephone_number: "" } }
       #      assert_select "h2", "4 error prohibited this sample from being saved:"
@@ -93,7 +93,7 @@ class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
       assert_response :unprocessable_content
     end
     assert_no_difference("ServiceSiteContact.count") do
-      post www_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
+      post help_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
                                                                    email_address: "sample@example.net",
                                                                    telephone_number: "" } }
       #      assert_select "h2", "3 error prohibited this sample from being saved:"
@@ -101,7 +101,7 @@ class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
       assert_response :unprocessable_content
     end
     assert_no_difference("ServiceSiteContact.count") do
-      post www_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
+      post help_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
                                                                    email_address: "",
                                                                    telephone_number: "+817012345678" } }
       #      assert_select "h2", "3 error prohibited this sample from being saved:"

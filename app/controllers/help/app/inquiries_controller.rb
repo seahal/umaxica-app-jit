@@ -1,4 +1,4 @@
-module Www::App
+module Help::App
   class InquiriesController < ApplicationController
     include ::Cloudflare
     include ::Rotp

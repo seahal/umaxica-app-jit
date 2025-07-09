@@ -7,13 +7,6 @@ Rails.application.routes.draw do
         resource :health, only: :show, format: :html
         # show stating env
         resource :staging, only: :show, format: :html
-        # # contact page
-        # resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
-        #   scope module: :contact do
-        #     resource :email, only: [ :new, :create ]
-        #     resource :telephone, only: [ :new, :create ]
-        #   end
-        # end
         # settings
         resource :preference, only: [ :show ]
         namespace :preference do
@@ -33,13 +26,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
           # show stating env
           resource :staging, only: :show
-          # contact page
-          resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
-            scope module: :inquiry do
-              resource :email, only: [ :new, :create ]
-              resource :telephone, only: [ :new, :create ]
-            end
-          end
           # Sign up pages
           resource :registration, only: :new
           namespace :registration do
@@ -92,13 +78,6 @@ Rails.application.routes.draw do
         resource :health, only: :show
         # show stating env
         resource :staging, only: :show, format: :html
-        # contact page
-        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
-          scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
-          end
-        end
         # registration staff page
         resource :registration, only: [ :new, :create, :edit, :update ] do
           resource :emails, only: [ :new, :create, :edit, :update ]
