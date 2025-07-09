@@ -2,11 +2,11 @@
 
 require "test_helper"
 
-module News
+module Help
   module App
     class HealthsControllerTest < ActionDispatch::IntegrationTest
       test "should get show" do
-        get docs_app_health_url
+        get help_app_health_url
         assert_response :success
         assert_equal "OK", @response.body
       end

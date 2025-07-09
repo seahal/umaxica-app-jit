@@ -9,4 +9,6 @@ Rails.application.routes.draw do
   draw :news
   # endpoint for docs
   draw :docs
+  # endpoint for help
+  draw :help
 end

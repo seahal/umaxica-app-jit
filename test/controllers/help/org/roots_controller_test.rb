@@ -2,11 +2,11 @@
 
 require "test_helper"
 
-module News
+module Help
   module Org
     class RootsControllerTest < ActionDispatch::IntegrationTest
       test "should get show" do
-        get news_org_root_url
+        get help_org_root_url
         assert_response :success
       end
     end

@@ -79,12 +79,15 @@ Rails.application.configure do
   # added by user
 
   ## to avoid errors
-  config.hosts << "www.app.localhost"
-  config.hosts << "www.com.localhost"
-  config.hosts << "www.org.localhost"
   config.hosts << "api.app.localhost"
   config.hosts << "api.com.localhost"
   config.hosts << "api.org.localhost"
+  config.hosts << "www.app.localhost"
+  config.hosts << "www.com.localhost"
+  config.hosts << "www.org.localhost"
+  config.hosts << "help.app.localhost"
+  config.hosts << "help.com.localhost"
+  config.hosts << "help.org.localhost"
   config.hosts << "docs.app.localhost"
   config.hosts << "docs.com.localhost"
   config.hosts << "docs.org.localhost"
