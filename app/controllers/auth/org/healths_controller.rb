@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Www
-  module App
+module Auth
+  module Org
     class HealthsController < ApplicationController
       include ::Health
     end

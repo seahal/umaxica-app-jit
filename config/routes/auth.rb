@@ -40,53 +40,52 @@ Rails.application.routes.draw do
         end
       end
     end
-  end
 
-  # For Staff's webpages www.jp.example.org
-  constraints host: ENV["AUTH_STAFF_URL"] do
-    scope module: :org, as: :org do
-      # health check for html
-      resource :health, only: :show
-      # show stating env
-      resource :staging, only: :show, format: :html
-      # registration staff page
-      resource :registration, only: [:new, :create, :edit, :update] do
-        resource :emails, only: [:new, :create, :edit, :update]
-        resource :telephone, only: [:new, :create, :edit, :update]
-      end
-      # Sign up pages
-      resource :authentication, only: :new do
-        resources :emails, only: %i[create edit update]
-      end
-      namespace :setting do
-        resources :totp, only: [:index, :new, :create, :edit, :update]
-        resources :passkeys, only: [:index, :edit, :update, :new]
-        resources :emails, only: [:index]
-        resources :apples, only: [:show]
-        resources :googles, only: [:show]
-      end
-      #
-      resource :withdrawal, only: %i[new create edit update]
-      # for owner
-      resources :owner
-      # for customer services
-      resources :customer
-      # docs
-      resources :docs
-      # news
-      resources :news
-      namespace :www do
-        namespace :com do
-          resources :docs, only: %i[new]
+    # For Staff's webpages auth.org.localhost
+    constraints host: ENV["AUTH_STAFF_URL"] do
+      scope module: :org, as: :auth_org do
+        # health check for html
+        resource :health, only: :show
+        # show stating env
+        resource :staging, only: :show, format: :html
+        # registration staff page
+        resource :registration, only: [:new, :create, :edit, :update] do
+          resource :emails, only: [:new, :create, :edit, :update]
+          resource :telephone, only: [:new, :create, :edit, :update]
         end
-        namespace :app do
-          resources :docs, only: %i[new]
+        # Sign up pages
+        resource :authentication, only: :new do
+          resources :emails, only: %i[create edit update]
         end
-        namespace :org do
-          resources :docs, only: %i[new]
+        namespace :setting do
+          resources :totp, only: [:index, :new, :create, :edit, :update]
+          resources :passkeys, only: [:index, :edit, :update, :new]
+          resources :emails, only: [:index]
+          resources :apples, only: [:show]
+          resources :googles, only: [:show]
+        end
+        #
+        resource :withdrawal, only: %i[new create edit update]
+        # for owner
+        resources :owner
+        # for customer services
+        resources :customer
+        # docs
+        resources :docs
+        # news
+        resources :news
+        namespace :www do
+          namespace :com do
+            resources :docs, only: %i[new]
+          end
+          namespace :app do
+            resources :docs, only: %i[new]
+          end
+          namespace :org do
+            resources :docs, only: %i[new]
+          end
         end
       end
     end
   end
 end
-
