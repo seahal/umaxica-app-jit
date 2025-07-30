@@ -9,7 +9,7 @@ class UserWebauthnCredential < IdentifiersRecord
   validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   # WebAuthn認証器のタイプ
-  enum authenticator_type: {
+  enum :authenticator_type, {
     platform: 0,      # Touch ID, Face ID, Windows Hello等
     roaming: 1        # YubiKey, セキュリティキー等
   }

@@ -94,6 +94,8 @@ Rails.application.configure do
   config.hosts << "news.app.localhost"
   config.hosts << "news.com.localhost"
   config.hosts << "news.org.localhost"
+  config.hosts << "auth.app.localhost"
+  config.hosts << "auth.org.localhost"
 
   # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
   config.after_initialize do

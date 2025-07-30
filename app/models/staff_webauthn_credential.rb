@@ -8,7 +8,7 @@ class StaffWebauthnCredential < IdentifiersRecord
   validates :nickname, presence: true
   validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
-  enum authenticator_type: {
+  enum :authenticator_type, {
     platform: 0,
     roaming: 1
   }
