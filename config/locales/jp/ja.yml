@@ -34,6 +34,12 @@ ja:
           apple:
             new:
               page_title: 'apple id で登録します'
+        setting:
+          passkeys:
+            index:
+              page_title: 'パスキー'
+            new:
+              page_title: 'パスキー'
   www:
     app:
       registration:
