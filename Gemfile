@@ -52,7 +52,7 @@ gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
 # sitemap
 gem "sitemap_generator"
-# Webauthn
+# Webauthn for fido2
 gem "webauthn"
 # TOTP and HTOP
 gem "rotp"

@@ -15,5 +15,5 @@ class User < IdentifiersRecord
   has_one :user_google_auth
   has_many :user_sessions
   has_many :user_time_based_one_time_password
-  has_many :passkeys, dependent: :destroy
+  has_many :webauthns, dependent: :destroy
 end

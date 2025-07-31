@@ -5,10 +5,8 @@ WebAuthn.configure do |config|
 
   if Rails.env.development?
     allowed_origins = [
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
-      "http://localhost:3333",
-      "http://127.0.0.1:3333",
+      "http://auth.org.localhost:3000",
+      "http://auth.app.localhost:3000",
       "https://auth.umaxica.app",
       "https://auth.umaxica.org"
     ]
@@ -20,9 +18,9 @@ WebAuthn.configure do |config|
     auth_service_url = ENV["AUTH_SERVICE_URL"]
     auth_staff_url = ENV["AUTH_STAFF_URL"]
 
-    allowed_origins = [ 
-      corporate_url, 
-      service_url, 
+    allowed_origins = [
+      corporate_url,
+      service_url,
       staff_url,
       auth_service_url,
       auth_staff_url
@@ -30,7 +28,8 @@ WebAuthn.configure do |config|
   elsif Rails.env.test?
     allowed_origins = [
       "http://test.example.com",
-      "http://localhost:3000"
+      "http://localhost:3000",
+      "http://localhost:3333"
     ]
   end
 
