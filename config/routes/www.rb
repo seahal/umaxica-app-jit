@@ -26,26 +26,8 @@ Rails.application.routes.draw do
           resource :health, only: :show
           # show stating env
           resource :staging, only: :show
-          # Sign up pages
-          resource :registration, only: :new
-          namespace :registration do
-            resources :emails, only: %i[new create edit update]
-            resources :telephones, only: %i[new create edit update]
-            resource :google, only: %i[new create]
-            resource :apple, only: %i[new create]
-          end
           # Withdrawal
           resource :withdrawal, only: %i[new create edit update]
-          # Sign In/Out pages
-          resource :authentication, only: %i[new edit destroy]
-          namespace :authentication do
-            resource :email, only: %i[new create]
-            resource :telephone, only: %i[new create]
-            resource :passkey, only: %i[new create]
-            resource :recovery_code, only: %i[new create]
-            resource :google, only: %i[new create]
-            resource :apple, only: %i[new create]
-          end
           # Settings with logined user
           resource :setting, only: %i[show]
           namespace :setting do

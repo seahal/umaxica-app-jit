@@ -29,7 +29,7 @@ module Www
             @utbotp.valid?
             totp = ROTP::TOTP.new(@utbotp.private_key)
             @png = RQRCode::QRCode.new(totp.provisioning_uri("umaxica")).as_png()
-            render :new, status: :unprocessable_entity
+            render :new, status: :unprocessable_content
           end
         end
       end

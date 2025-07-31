@@ -89,7 +89,7 @@ module Inquiry
   # Display error page
   def show_error_page
     clear_contact_session
-    render template: "www/app/inquiries/error", status: :unprocessable_entity and return
+    render template: "www/app/inquiries/error", status: :unprocessable_content and return
   end
 
   # Initialize cookies
@@ -148,7 +148,7 @@ module Inquiry
     end
 
     clear_contact_session
-    render :new, status: :unprocessable_entity
+    render :new, status: :unprocessable_content
   end
 
   # Increment attempt counter
@@ -185,7 +185,7 @@ module Inquiry
       session_not_expired?
     ].all?
 
-    render :edit, status: :unprocessable_entity unless valid_session
+    render :edit, status: :unprocessable_content unless valid_session
   end
 
   # Validate session for show page

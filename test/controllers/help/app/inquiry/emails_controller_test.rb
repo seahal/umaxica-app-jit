@@ -12,6 +12,6 @@ class Help::App::Inquiry::EmailsControllerTest < ActionDispatch::IntegrationTest
   #   refute session[:contact_email_checked]
   #   refute session[:contact_telephone_checked]
   #   refute session[:contact_expires_in]
-  #   assert_response :unprocessable_entity
+  #   assert_response :unprocessable_content
   # end
 end

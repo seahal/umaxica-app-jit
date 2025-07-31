@@ -5,7 +5,7 @@ class Www::App::Setting::RecoveryCodesControllerTest < ActionDispatch::Integrati
     get www_app_setting_recovery_codes_url
     assert_select "h1", "Www::App::Setting::Recoveries#index"
     assert_select "p", "Find me in app/views/www/app/setting/recoveries/index.html.erb"
-    assert_select "a[href=?]",   new_www_app_setting_recovery_code_path
+    assert_select "a[href=?]", new_www_app_setting_recovery_code_path
     assert_select "a", "new recovery code"
     assert_response :success
   end

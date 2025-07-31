@@ -52,7 +52,7 @@ module Www
             redirect_to edit_www_app_contact_url(params[:contact_id])
           else
             @service_site_contact.errors.add :base, :invalid, message: t("model.concern.otp.invalid_input") if hotp_result.blank?
-            render :new, status: :unprocessable_entity
+            render :new, status: :unprocessable_content
           end
         end
       end

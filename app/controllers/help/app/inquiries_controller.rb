@@ -42,7 +42,7 @@ module Help::App
       else
         @service_site_contact.errors.add :base, :invalid, message: t("model.concern.cloudflare.invalid_input") unless cfv
         clear_contact_session
-        render :new, status: :unprocessable_entity
+        render :new, status: :unprocessable_content
       end
     end
 

@@ -1,6 +1,6 @@
-<h1>Www::App::Authentication::Passcodes#new</h1>
-<p>Find me in app/views/www/app/authentication/passcodes/new.html.erb</p>
-<%= form_with model: @user_recover_code, url: www_app_setting_recovery_codes_path do |f| %>
+<h1>Auth::App::Authentication::RecoveryCodes#new</h1>
+<p>Find me in app/views/auth/app/authentication/recovery_codes/new.html.erb</p>
+<%= form_with model: @user_recover_code, url: auth_app_authentication_recovery_code_path do |f| %>
 
   <% if @user_recover_code.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
@@ -30,5 +30,5 @@
 <% end %>
 
 <ul>
-  <li><%= link_to t('www.app.authentication.new.back'), new_www_app_authentication_path %></li>
+  <li><%= link_to t('www.app.authentication.new.back'), new_auth_app_authentication_path %></li>
 </ul>
