@@ -5,6 +5,7 @@
 # Karafka with other frameworks)
 class ApplicationConsumer < Karafka::BaseConsumer
   private
+
   def decrypt(encrypted)
     ActiveRecord::Encryption.encryptor.decrypt(encrypted)
   end

@@ -20,6 +20,6 @@ class Www::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get delete" do
-    refute false
+    assert_not false
   end
 end

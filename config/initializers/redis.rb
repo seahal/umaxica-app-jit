@@ -2,7 +2,7 @@
 
 # Redis configuration for the application
 REDIS_CLIENT = Redis.new(
-  url: ENV.fetch("REDIS_URL", File.exist?("/.dockerenv") ? ENV["REDIS_NORMAL_URL"]: "redis://localhost:6379/0"),
+  url: ENV.fetch("REDIS_URL", File.exist?("/.dockerenv") ? ENV["REDIS_NORMAL_URL"] : "redis://localhost:6379/0"),
   driver: :hiredis
 )
 

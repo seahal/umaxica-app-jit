@@ -11,7 +11,7 @@ end
 unless ENV["PUMA_DISABLE_SSL"]
   # don't use pkg_config('openssl') if '--with-openssl-dir' is used
   has_openssl_dir = dir_config('openssl').any? ||
-    RbConfig::CONFIG['configure_args']&.include?('openssl')
+                    RbConfig::CONFIG['configure_args']&.include?('openssl')
 
   found_pkg_config = !has_openssl_dir && pkg_config('openssl')
 
@@ -21,7 +21,7 @@ unless ENV["PUMA_DISABLE_SSL"]
   elsif have_library('libcrypto', 'BIO_read') && have_library('libssl', 'SSL_CTX_new')
     true
   elsif %w[crypto libeay32].find { |crypto| have_library(crypto, 'BIO_read') } &&
-      %w[ssl ssleay32].find { |ssl| have_library(ssl, 'SSL_CTX_new') }
+        %w[ssl ssleay32].find { |ssl| have_library(ssl, 'SSL_CTX_new') }
     true
   else
     puts '** Puma will be compiled without SSL support'

@@ -15,7 +15,7 @@ module Www
             session[:contact_id] == params[:contact_id],
             session[:contact_email_checked] == true,
             session[:contact_telephone_checked] == false,
-            Time.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.now,
+            Time.zone.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.zone.now,
             session[:contact_count] < 10
           ].all?
             # make forms which for telephoen
@@ -51,7 +51,8 @@ module Www
             session[:contact_count] = 0
             redirect_to edit_www_app_contact_url(params[:contact_id])
           else
-            @service_site_contact.errors.add :base, :invalid, message: t("model.concern.otp.invalid_input") if hotp_result.blank?
+            @service_site_contact.errors.add :base, :invalid,
+                                             message: t("model.concern.otp.invalid_input") if hotp_result.blank?
             render :new, status: :unprocessable_content
           end
         end

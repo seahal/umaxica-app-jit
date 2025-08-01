@@ -34,20 +34,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_203010) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.string "external_id"
-    t.text "public_key"
-    t.string "nickname"
-    t.integer "sign_count"
-    t.integer "authenticator_type"
-    t.boolean "active"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["external_id"], name: "index_passkeys_on_external_id", unique: true
-    t.index ["user_id"], name: "index_passkeys_on_user_id"
-  end
-
   create_table "staff_emails", id: :binary, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
@@ -82,13 +68,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_203010) do
   end
 
   create_table "staffs", id: :binary, force: :cascade do |t|
-    t.string "otp_private_key"
+    t.string "webauthn_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "user_emails", id: :binary, force: :cascade do |t|
     t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -119,6 +110,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_203010) do
   end
 
   create_table "users", id: :binary, force: :cascade do |t|
+    t.string "webauthn_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -127,11 +119,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_203010) do
     t.binary "user_id", null: false
     t.binary "webauthn_id", null: false
     t.text "public_key", null: false
-    t.integer "sign_count", default: 0, null: false
     t.string "description", null: false
+    t.bigint "sign_count", default: 0, null: false
+    t.uuid "external_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_webauthns_on_user_id"
-    t.index ["webauthn_id"], name: "index_webauthns_on_webauthn_id", unique: true
   end
 end

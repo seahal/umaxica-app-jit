@@ -20,7 +20,7 @@ require "rubygems"
 if Gem.win_platform?
   begin
     require "devkit" if RUBY_PLATFORM.include?("mingw")
-  rescue LoadError => e
+  rescue LoadError
   end
   File.write("Makefile", "all install::\n")
   File.write("nio4r_ext.so", "")

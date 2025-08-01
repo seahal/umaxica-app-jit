@@ -27,6 +27,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_24_163410) do
   end
 
   create_table "entity_statuses", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "timelines", force: :cascade do |t|

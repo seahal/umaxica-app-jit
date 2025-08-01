@@ -18,7 +18,10 @@ module Memorize
     def initialize(prefix: nil, postfix: nil, redis_config: nil, encryptor: nil)
       @originality_prefix = prefix.to_s
       @originality_postfix = postfix.to_s
-      @redis = redis_config&.new_pool(timeout: 1, size: Integer(ENV.fetch("RAILS_MAX_THREADS", 5))) || default_redis_pool
+      @redis = redis_config&.new_pool(timeout: 1,
+                                      size: Integer(ENV.fetch(
+                                                      "RAILS_MAX_THREADS", 5
+                                                    ))) || default_redis_pool
       @encryptor = encryptor || default_encryptor
     end
 
@@ -41,7 +44,6 @@ module Memorize
       else
         @redis.call("SET", redis_key(key), encrypted_value)
       end
-      value
     end
 
     def delete(key)

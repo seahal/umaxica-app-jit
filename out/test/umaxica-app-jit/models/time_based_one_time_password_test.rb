@@ -45,7 +45,8 @@ class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
   end
 
   test "check the field encryption" do
-    tbotp = TimeBasedOneTimePassword.create(private_key: "EXAMPLE", first_token: 123456, id: "00000000-0000-0000-0000-0000000000100")
+    tbotp = TimeBasedOneTimePassword.create(private_key: "EXAMPLE", first_token: 123456,
+                                            id: "00000000-0000-0000-0000-0000000000100")
     assert tbotp.encrypted_attribute? :private_key
     refute tbotp.encrypted_attribute? :id
   end

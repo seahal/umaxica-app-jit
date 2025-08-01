@@ -26,7 +26,7 @@ class RedisMemorizeTest < ActiveSupport::TestCase
   test "can delete keys" do
     @memorize[@test_key] = @test_value
     assert @memorize.exists?(@test_key)
-    assert result= @memorize.delete(@test_key)
+    assert @memorize.delete(@test_key)
     assert_not @memorize.exists?(@test_key)
     assert_nil @memorize[@test_key]
   end

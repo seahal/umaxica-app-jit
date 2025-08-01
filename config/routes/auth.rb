@@ -25,10 +25,10 @@ Rails.application.routes.draw do
         end
         # Settings with logined user
         namespace :setting do
-          resources :passkeys, only: [:index, :edit, :update, :new]
-          resources :tokens, only: [:show, :destroy]
-          resource :apple, only: [:show]
-          resource :google, only: [:show]
+          resources :passkeys, only: [ :index, :edit, :update, :new ]
+          resources :tokens, only: [ :show, :destroy ]
+          resource :apple, only: [ :show ]
+          resource :google, only: [ :show ]
         end
       end
     end
@@ -39,22 +39,21 @@ Rails.application.routes.draw do
         # health check for html
         resource :health, only: :show
         # registration staff page
-        resource :registration, only: [:new, :create, :edit, :update] do
-          resource :emails, only: [:new, :create, :edit, :update]
-          resource :telephone, only: [:new, :create, :edit, :update]
+        resource :registration, only: [ :new, :create, :edit, :update ] do
+          resource :emails, only: [ :new, :create, :edit, :update ]
+          resource :telephone, only: [ :new, :create, :edit, :update ]
         end
         # Sign up pages
         resource :authentication, only: :new do
           resources :emails, only: %i[create edit update]
         end
         namespace :setting do
-          resources :totp, only: [:index, :new, :create, :edit, :update]
-          resources :passkeys, only: [:index, :edit, :update, :new]
-          resources :emails, only: [:index]
-          resources :apples, only: [:show]
-          resources :googles, only: [:show]
+          resources :totp, only: [ :index, :new, :create, :edit, :update ]
+          resources :passkeys, only: [ :index, :edit, :update, :new ]
+          resources :emails, only: [ :index ]
+          resources :apples, only: [ :show ]
+          resources :googles, only: [ :show ]
         end
-        #
         resource :withdrawal, only: %i[new create edit update]
         # for owner
         resources :owner

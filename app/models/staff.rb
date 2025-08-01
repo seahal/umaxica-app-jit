@@ -4,11 +4,11 @@
 #
 # Table name: staffs
 #
-#  id              :binary           not null, primary key
-#  otp_private_key :string
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
+#  id          :binary           not null, primary key
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  webauthn_id :string
 #
 class Staff < IdentifiersRecord
-  has_many :emails, foreign_key: "address"
+  has_many :emails, foreign_key: "address", dependent: :destroy, inverse_of: :staff
 end

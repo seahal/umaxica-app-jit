@@ -17,8 +17,8 @@ gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
-gem "redis"
 gem "hiredis-client"
+gem "redis"
 # For CORS
 gem "rack-cors"
 # To Avoid attacks from crackers
@@ -47,9 +47,9 @@ gem "google-cloud-kms"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
-gem "opentelemetry-sdk"
 gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
+gem "opentelemetry-sdk"
 # sitemap
 gem "sitemap_generator"
 # Webauthn for fido2
@@ -58,7 +58,6 @@ gem "webauthn"
 gem "rotp"
 # QRCode Generator, QRCode is a deso wave's ...
 gem "rqrcode"
-#
 gem "solid_cache"
 # pagenation
 gem "kaminari"
@@ -74,18 +73,14 @@ gem "pundit"
 gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
-#
 gem "importmap-rails"
-#
 gem "view_component"
 # OpenAPI
+gem "requestjs-rails"
 gem "rswag"
 gem "rswag-api"
 gem "rswag-ui"
-#
 gem "tailwindcss-rails"
-#
-gem "requestjs-rails"
 
 group :development, :test do
   # to avoid n+1 queries
@@ -95,19 +90,15 @@ group :development, :test do
   # environment variables
   gem "dotenv-rails", "~> 3.1", ">= 3.1.2" # FIXME: .env file must not be included sign_in production.
   # coverage
-  gem "simplecov", require: false
-  #
   gem "guard"
   gem "guard-minitest", require: false
+  gem "simplecov", require: false
 end
 
 group :development do
-  #
-  gem "yard"
-  #
   gem "bundler-audit", "~> 0.9.1"
-  #
   gem "foreman"
+  gem "yard"
   # Preview email in the default browser instead of sending it.
   gem "letter_opener"
   # Live Reload

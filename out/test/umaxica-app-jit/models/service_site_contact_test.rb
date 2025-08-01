@@ -23,7 +23,8 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
         email_pass_code: 123456,
         telephone_pass_code: 123456,
         title: "good title",
-        description: "good description")
+        description: "good description"
+      )
     end
 
     test "good #{model}'s email pattern" do

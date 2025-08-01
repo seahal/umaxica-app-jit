@@ -5,7 +5,7 @@ module Www::App::MemorizeHelper
 
   # Memorize helper for this controller test
   def memorize
-    @test_memorize ||= Memorize::RedisMemorize.test_instance(
+    @memorize ||= Memorize::RedisMemorize.test_instance(
       prefix: "controller_test",
       postfix: self.class.name
     )
@@ -19,7 +19,6 @@ module Www::App::MemorizeHelper
     memorize.clear_all
   end
 end
-
 
 class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   include Www::App::MemorizeHelper
@@ -42,7 +41,8 @@ class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
       assert_select "input[type=?][name=?]", "checkbox", "service_site_contact[confirm_policy]"
       assert_select "input[type=?][name=?]", "hidden", "service_site_contact[confirm_policy]"
       assert_select "label[for=?]", "service_site_contact_email_address"
-      assert_select "label[for=?]", "service_site_contact_confirm_policy", I18n.t("controller.www.app.contacts.new.confirm_policy")
+      assert_select "label[for=?]", "service_site_contact_confirm_policy",
+                    I18n.t("controller.www.app.contacts.new.confirm_policy")
       assert_select "label[for=?]", "service_site_contact_telephone_number"
       assert_select "input[type=?][name=?]", "text", "service_site_contact[telephone_number]"
       assert_select "div.cf-turnstile", 1
@@ -68,8 +68,8 @@ class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
     email_address = "sample@example.com"
     telephone_number = "+819012345678"
     post www_app_inquiries_path, params: { service_site_contact: { confirm_policy: 1,
-                                                                 email_address: email_address,
-                                                                 telephone_number: telephone_number } }
+                                                                   email_address: email_address,
+                                                                   telephone_number: telephone_number } }
     # FIXME: REWRITE!www_app_contacts_url
     # assert_redirected_to  new_www_app_inquiry_email_url(session[:contact_id])
     assert 1
@@ -78,32 +78,32 @@ class Www::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   test "invalid first post" do
     assert_no_difference("ServiceSiteContact.count") do
       post www_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
-                                                                   email_address: "",
-                                                                   telephone_number: "" } }
+                                                                    email_address: "",
+                                                                    telephone_number: "" } }
       #      assert_select "h2", "5 error prohibited this sample from being saved:"
       assert_equal "create", @controller.action_name
       assert_response :unprocessable_content
     end
     assert_no_difference("ServiceSiteContact.count") do
       post www_app_inquiries_url, params: { service_site_contact: { confirm_policy: 1,
-                                                                   email_address: "",
-                                                                   telephone_number: "" } }
+                                                                    email_address: "",
+                                                                    telephone_number: "" } }
       #      assert_select "h2", "4 error prohibited this sample from being saved:"
       assert_equal "create", @controller.action_name
       assert_response :unprocessable_content
     end
     assert_no_difference("ServiceSiteContact.count") do
       post www_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
-                                                                   email_address: "sample@example.net",
-                                                                   telephone_number: "" } }
+                                                                    email_address: "sample@example.net",
+                                                                    telephone_number: "" } }
       #      assert_select "h2", "3 error prohibited this sample from being saved:"
       assert_equal "create", @controller.action_name
       assert_response :unprocessable_content
     end
     assert_no_difference("ServiceSiteContact.count") do
       post www_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
-                                                                   email_address: "",
-                                                                   telephone_number: "+817012345678" } }
+                                                                    email_address: "",
+                                                                    telephone_number: "+817012345678" } }
       #      assert_select "h2", "3 error prohibited this sample from being saved:"
       assert_equal "create", @controller.action_name
       assert_response :unprocessable_content

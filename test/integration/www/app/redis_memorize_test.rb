@@ -14,7 +14,6 @@ class RedisMemorizeTest < ActiveSupport::TestCase
     @memorize.clear_all
   end
 
-
   teardown do
     # Clean up Redis after tests
     @memorize.clear_all

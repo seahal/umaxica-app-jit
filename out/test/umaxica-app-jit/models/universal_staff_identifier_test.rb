@@ -25,7 +25,6 @@ class UniversalStaffIdentifierTest < ActiveSupport::TestCase
     assert_not_nil identifier.id
   end
 
-
   test "should allow nil otp_private_key" do
     identifier = UniversalStaffIdentifier.new(
       id: SecureRandom.uuid_v7,

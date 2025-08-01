@@ -9,6 +9,7 @@ module Redirect
   def generate_redirect_url(url)
     parsed_uri = URI.parse(url)
     return Base64.urlsafe_encode64(url) if HOST_URI.any? { it == parsed_uri.host }
+
     raise URI::InvalidURIError
   end
 
@@ -18,12 +19,13 @@ module Redirect
     parsed_uri = URI.parse(Base64.urlsafe_decode64(url))
 
     # checking url
-    if HOST_URI.any? { it == parsed_uri.host.split(".")[-2..-1].join(".").downcase } && %w[http https].include?(parsed_uri.scheme)
+    if HOST_URI.any? {
+ it == parsed_uri.host.split(".")[-2..-1].join(".").downcase
+    } && %w[http https].include?(parsed_uri.scheme)
       redirect_to uri
     else
       head :not_found
     end
-
   rescue NoMethodError # Exclude strings that are not URIs in the first place
     head :not_found
   rescue URI::InvalidURIError # "iiii" とか防止

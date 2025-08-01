@@ -29,7 +29,6 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
     assert_not_nil otp.id
   end
 
-
   test "should set timestamps on create" do
     otp = HmacBasedOneTimePassword.create!(valid_attributes)
 
@@ -87,7 +86,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
   test "should validate private_key length constraint" do
     # Test with over 1024 characters
     oversized_key = SecureRandom.hex(513) # 1026 characters
-    otp = HmacBasedOneTimePassword.new(
+    HmacBasedOneTimePassword.new(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       private_key: oversized_key

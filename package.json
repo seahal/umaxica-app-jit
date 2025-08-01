@@ -10,7 +10,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/bun": "^1.2.19",
-    "@typescript/native-preview": "^7.0.0-dev.20250731.1",
+    "@typescript/native-preview": "^7.0.0-dev.20250801.1",
     "wrangler": "^4.27.0"
   }
 }

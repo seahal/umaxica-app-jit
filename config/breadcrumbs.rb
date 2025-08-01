@@ -7,12 +7,12 @@ crumb :app_preference do
   parent :app
 end
 
-crumb :app_preference_cookie do |user|
+crumb :app_preference_cookie do |_user|
   link I18n.t("controller.www.app.preference.cookie.edit.page_title"), "/preference/cookie/edit"
   parent :app_preference
 end
 
-crumb :app_preference_email do |user|
+crumb :app_preference_email do |_user|
   link I18n.t("controller.www.app.preference.email.new.page_title"), "/preference/cookie/edit"
   parent :app_preference
 end

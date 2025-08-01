@@ -23,7 +23,8 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
         email_pass_code: 123456,
         telephone_pass_code: 123456,
         title: "good title",
-        description: "good description")
+        description: "good description"
+      )
     end
 
     test "good #{model}'s email pattern" do
@@ -36,7 +37,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     test "valid #{model}'s confirmation check" do
       assert @good_pattern.valid?
       @good_pattern.confirm_policy = false
-      refute @good_pattern.valid?
+      assert_not @good_pattern.valid?
       @good_pattern.confirm_policy = nil
       assert @good_pattern.valid?
     end
@@ -44,7 +45,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     test "invalid #{model}'s email patterns" do
       [ nil, "", "example..com", "exampleexample.com", "xample@#example.jp", "@example.com" ].each do
         @good_pattern.email_address = it
-        refute @good_pattern.valid?
+        assert_not @good_pattern.valid?
       end
     end
 
@@ -58,41 +59,41 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     test "invalid #{model}'s telephone number patterns" do
       [ "", nil, "+810901234", "81901234" ].each do
         @good_pattern.email_address = it
-        refute @good_pattern.valid?
+        assert_not @good_pattern.valid?
       end
     end
 
     test "valid #{model}'s telephone number patterns" do
       [ "+811" ].each do
         @good_pattern.email_address = it
-        refute @good_pattern.valid?
+        assert_not @good_pattern.valid?
       end
     end
 
     test "good #{model}'s email otp password pattern" do
       assert model.new(email_pass_code: 123456).valid?
       assert model.new(email_pass_code: nil).valid?
-      refute model.new(email_pass_code: 12345).valid?
-      refute model.new(email_pass_code: 1234567).valid?
-      refute model.new(email_pass_code: 0).valid?
-      refute model.new(email_pass_code: 1).valid?
+      assert_not model.new(email_pass_code: 12345).valid?
+      assert_not model.new(email_pass_code: 1234567).valid?
+      assert_not model.new(email_pass_code: 0).valid?
+      assert_not model.new(email_pass_code: 1).valid?
       assert model.new(email_pass_code: nil, telephone_pass_code: 123456).valid?
     end
 
     test "good #{model}'s telephone otp password pattern" do
       assert model.new(telephone_pass_code: 123456).valid?
       assert model.new(telephone_pass_code: nil).valid?
-      refute model.new(telephone_pass_code: 12345).valid?
-      refute model.new(telephone_pass_code: 1234567).valid?
-      refute model.new(telephone_pass_code: 0).valid?
-      refute model.new(telephone_pass_code: 1).valid?
+      assert_not model.new(telephone_pass_code: 12345).valid?
+      assert_not model.new(telephone_pass_code: 1234567).valid?
+      assert_not model.new(telephone_pass_code: 0).valid?
+      assert_not model.new(telephone_pass_code: 1).valid?
       assert model.new(email_pass_code: 123456, telephone_pass_code: nil).valid?
     end
 
     test "bad #{model}'s title pattern" do
       [ "", "a" * 7, "a" * 256 ].each do
         @good_pattern.title = it
-        refute @good_pattern.valid?
+        assert_not @good_pattern.valid?
       end
     end
 
@@ -106,7 +107,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     test "bad #{model}'s description pattern" do
       [ "", "a" * 7, "a" * 1024 ].each do
         @good_pattern.description = it
-        refute @good_pattern.valid?
+        assert_not @good_pattern.valid?
       end
     end
 

@@ -8,6 +8,7 @@ module Rotp
   def send_otp_code_using_email(pass_code: nil, email_address: nil)
     raise unless pass_code
     raise unless email_address
+
     Email::App::ContactMailer.with({ email_address: email_address, pass_code: pass_code }).create.deliver_now
   end
 

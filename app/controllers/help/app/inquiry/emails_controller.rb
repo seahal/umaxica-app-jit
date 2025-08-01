@@ -52,7 +52,7 @@ module Www
         end
 
         def session_expires_in_future?
-          Time.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.current
+          Time.zone.parse(session[:contact_expires_in] || "1970-01-01T00:00:00") > Time.current
         end
 
         def set_contact_email_checked

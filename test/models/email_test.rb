@@ -72,18 +72,18 @@ class AccountTest < ActiveSupport::TestCase
       m.pass_code = 123456
       assert m.valid?
       m.pass_code = 12345
-      refute m.valid?
+      assert_not m.valid?
       m.pass_code = 1234567
-      refute m.valid?
+      assert_not m.valid?
       m.pass_code = 0
-      refute m.valid?
+      assert_not m.valid?
       m.pass_code = nil
-      refute m.valid?
+      assert_not m.valid?
     end
 
     test "email(#{model}) : Address and pass_code cannot both be nil." do
       m = model.new(address: nil, pass_code: nil)
-      refute m.valid?
+      assert_not m.valid?
     end
   end
 end

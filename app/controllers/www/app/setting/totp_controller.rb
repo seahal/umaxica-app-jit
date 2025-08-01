@@ -13,7 +13,6 @@ module Www
           totp = ROTP::TOTP.new(session[:private_key])
           # put qrcode of totp objects
           @png = RQRCode::QRCode.new(totp.provisioning_uri("umaxica")).as_png() # ToDo: <= set account_id
-          #
           @utbotp = TimeBasedOneTimePassword.new
         end
 

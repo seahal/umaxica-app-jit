@@ -12,7 +12,6 @@ Rails.application.routes.draw do
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
         end
-        #
         resource :registration, only: [ :new, :create, :edit, :update ] do
           resource :emails, only: [ :new, :create, :edit, :update ]
           resource :telephone, only: [ :new, :create, :edit, :update ]
@@ -83,7 +82,6 @@ Rails.application.routes.draw do
           resources :emails, only: [ :create, :new ]
           resources :telephones, only: [ :create, :new ]
         end
-        #
         resource :withdrawal, only: %i[new create edit update]
         # for owner
         resources :owner

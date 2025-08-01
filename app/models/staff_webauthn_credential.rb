@@ -16,7 +16,7 @@ class StaffWebauthnCredential < IdentifiersRecord
   scope :active, -> { where(active: true) }
 
   def increment_sign_count!
-    increment!(:sign_count)
+    update!(sign_count: sign_count + 1)
   end
 
   def deactivate!

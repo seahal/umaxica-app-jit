@@ -6,10 +6,10 @@ module SmsProviders
       validate_params(to: to, message: message, subject: subject)
 
       client.publish({
-        phone_number: to,
-        message: message,
-        subject: subject || "SMS"
-      })
+                       phone_number: to,
+                       message: message,
+                       subject: subject || "SMS"
+                     })
     end
 
     private

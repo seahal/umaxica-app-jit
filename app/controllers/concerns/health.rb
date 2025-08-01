@@ -11,7 +11,7 @@ module Health
 
     # FIXME: hidoi!
     raise unless OpenSearch::Client.new(
-      host: File.exist?("/.dockerenv") ? ENV["OPENSEARCH_DEFAULT_URL"]: "localhost:9200",
+      host: File.exist?("/.dockerenv") ? ENV["OPENSEARCH_DEFAULT_URL"] : "localhost:9200",
       user: Rails.application.credentials.OPENSEARCH.USERNAME,
       password: Rails.application.credentials.OPENSEARCH.PASSWORD,
       transport_options: { ssl: { verify: false } },

@@ -5,8 +5,8 @@ module Auth
     module Setting
       class PasskeysController < ApplicationController
         include WebAuthn
-        
-        before_action :set_passkey, only: [:show, :edit, :update, :destroy]
+
+        before_action :set_passkey, only: [ :show, :edit, :update, :destroy ]
 
         def index
           @passkeys = current_user.passkeys.active
@@ -28,7 +28,7 @@ module Auth
 
         def update
           if @passkey.update(passkey_params)
-            redirect_to auth_app_setting_passkey_path(@passkey), notice: 'Passkey updated successfully.'
+            redirect_to auth_app_setting_passkey_path(@passkey), notice: "Passkey updated successfully."
           else
             render :edit
           end
@@ -36,7 +36,7 @@ module Auth
 
         def destroy
           @passkey.deactivate!
-          redirect_to auth_app_setting_passkeys_path, notice: 'Passkey removed successfully.'
+          redirect_to auth_app_setting_passkeys_path, notice: "Passkey removed successfully."
         end
 
         private

@@ -9,7 +9,6 @@ module Help::App
     def new
       # for security
       reset_session
-      #
       clear_contact_session
       session[:contact_expires_in] = 2.hours.from_now
       @service_site_contact = ServiceSiteContact.new
@@ -36,11 +35,13 @@ module Help::App
                             # secure data, so the data is not stored in Redis.
                             contact_telephone_number: @service_site_contact.telephone_number)
         # FIXME: send email
-        Email::App::ContactMailer.with({ email_address: @service_site_contact.email_address, pass_code: hotp.at(hotp_counter) }).create.deliver_later
+        Email::App::ContactMailer.with({ email_address: @service_site_contact.email_address,
+                                         pass_code: hotp.at(hotp_counter) }).create.deliver_later
 
         redirect_to new_www_app_inquiry_email_url(contact_id)
       else
-        @service_site_contact.errors.add :base, :invalid, message: t("model.concern.cloudflare.invalid_input") unless cfv
+        @service_site_contact.errors.add :base, :invalid,
+                                         message: t("model.concern.cloudflare.invalid_input") unless cfv
         clear_contact_session
         render :new, status: :unprocessable_content
       end

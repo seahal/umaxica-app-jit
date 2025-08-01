@@ -9,3 +9,9 @@ AllCops:
 
   # キャッシュの保存先を指定
   CacheRootDirectory: tmp/rubocop_cache
+
+Rails:
+  Enabled: true
+
+Security:
+  Enabled: true
