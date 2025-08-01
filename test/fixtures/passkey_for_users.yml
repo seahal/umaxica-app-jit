@@ -2,7 +2,7 @@
 
 # == Schema Information
 #
-# Table name: webauthns
+# Table name: passkey_for_users
 #
 #  id          :uuid             not null, primary key
 #  description :string           not null

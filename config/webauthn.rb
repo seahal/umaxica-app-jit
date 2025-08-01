@@ -30,7 +30,7 @@ WebAuthn.configure do |config|
   config.allowed_origins = allowed_origins
 
   # Relying Party name for display purposes
-  config.rp_name = ENV.fetch("WEBAUTHN_RP_NAME", "Umaxica")
+  # config.rp_name = ENV.fetch("WEBAUTHN_RP_NAME", "Umaxica")
 
   # Configure timeout for user interaction (2 minutes)
   config.credential_options_timeout = 120_000

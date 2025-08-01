@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_31_203010) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -30,6 +30,28 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_203010) do
 
   create_table "client_telephones", id: :binary, force: :cascade do |t|
     t.string "number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "passkey_for_staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.binary "user_id", null: false
+    t.binary "webauthn_id", null: false
+    t.text "public_key", null: false
+    t.string "description", null: false
+    t.bigint "sign_count", default: 0, null: false
+    t.uuid "external_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "passkey_for_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.binary "user_id", null: false
+    t.binary "webauthn_id", null: false
+    t.text "public_key", null: false
+    t.string "description", null: false
+    t.bigint "sign_count", default: 0, null: false
+    t.uuid "external_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

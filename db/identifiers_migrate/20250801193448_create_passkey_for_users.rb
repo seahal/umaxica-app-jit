@@ -1,6 +1,6 @@
-class CreateWebauthns < ActiveRecord::Migration[8.0]
+class CreatePasskeyForUsers < ActiveRecord::Migration[8.0]
   def change
-    create_table :webauthns, id: :uuid do |t|
+    create_table :passkey_for_users, id: :uuid do |t|
       t.binary :user_id, null: false
       t.binary :webauthn_id, null: false
       t.text :public_key, null: false

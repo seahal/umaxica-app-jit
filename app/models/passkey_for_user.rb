@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: webauthns
+# Table name: passkey_for_users
 #
 #  id          :uuid             not null, primary key
 #  description :string           not null
@@ -12,10 +12,6 @@
 #  user_id     :binary           not null
 #  webauthn_id :binary           not null
 #
-class Webauthn < IdentifiersRecord
+class PasskeyForUser < IdentifierRecord
   belongs_to :user
-
-  def increment_sign_count!
-    update!(sign_count: sign_count + 1)
-  end
 end
