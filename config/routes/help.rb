@@ -6,10 +6,10 @@ Rails.application.routes.draw do
         # health check for html
         resource :health, only: :show
         # contact page
-        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
+        resources :inquiries, only: [:new, :create, :edit, :update, :show] do
           scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
+            resource :email, only: [:new, :create]
+            resource :telephone, only: [:new, :create]
           end
         end
       end
@@ -21,10 +21,10 @@ Rails.application.routes.draw do
         # health check for html
         resource :health, only: :show
         # contact page
-        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
+        resources :inquiries, only: [:new, :create, :edit, :update, :show] do
           scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
+            resource :email, only: [:new, :create]
+            resource :telephone, only: [:new, :create]
           end
         end
       end
@@ -37,10 +37,10 @@ Rails.application.routes.draw do
         # health check for html
         resource :health, only: :show
         # contact page
-        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
+        resources :inquiries, only: [:new, :create, :edit, :update, :show] do
           scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
+            resource :email, only: [:new, :create]
+            resource :telephone, only: [:new, :create]
           end
         end
       end

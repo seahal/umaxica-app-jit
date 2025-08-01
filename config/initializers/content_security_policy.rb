@@ -9,13 +9,13 @@
 Rails.application.configure do
   config.content_security_policy do |policy|
     policy.default_src :self, :https
-    policy.font_src    :self, :https, :data
-    policy.img_src     :self, :https, :data, "*.googleusercontent.com"
-    policy.object_src  :none
-    policy.script_src  :self, :https, :unsafe_inline, "challenges.cloudflare.com"
-    policy.style_src   :self, :https, :unsafe_inline
+    policy.font_src :self, :https, :data
+    policy.img_src :self, :https, :data, "*.googleusercontent.com"
+    policy.object_src :none
+    policy.script_src :self, :https, :unsafe_inline, "challenges.cloudflare.com"
+    policy.style_src :self, :https, :unsafe_inline
     policy.connect_src :self, :https, "challenges.cloudflare.com"
-    policy.frame_src   "challenges.cloudflare.com"
+    policy.frame_src "challenges.cloudflare.com"
     # Allow WebAuthn and Google/Apple OAuth
     policy.form_action :self, "accounts.google.com", "appleid.apple.com"
     # Specify URI for violation reports

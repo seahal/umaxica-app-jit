@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
     t.string "address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "client_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -32,6 +33,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
     t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "passkey_for_staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -60,6 +62,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
     t.string "address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "staff_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
@@ -80,6 +83,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
     t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "staff_time_based_one_time_passwords", id: false, force: :cascade do |t|
@@ -93,12 +97,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
     t.string "webauthn_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "user_emails", id: :binary, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "user_google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -124,6 +130,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
     t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "user_time_based_one_time_passwords", id: false, force: :cascade do |t|
@@ -135,16 +142,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
     t.string "webauthn_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "webauthns", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.binary "user_id", null: false
-    t.binary "webauthn_id", null: false
-    t.text "public_key", null: false
-    t.string "description", null: false
-    t.bigint "sign_count", default: 0, null: false
-    t.uuid "external_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 end

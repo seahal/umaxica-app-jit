@@ -6,6 +6,7 @@
 #  address    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  uuid_id    :uuid             not null
 #
 class UserEmail < IdentifiersRecord
   include SetId

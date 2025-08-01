@@ -5,6 +5,7 @@
 #  id          :binary           not null, primary key
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  uuid_id     :uuid             not null
 #  webauthn_id :string
 #
 require "test_helper"

@@ -59,5 +59,5 @@ WebAuthn.configure do |config|
   # Configure supported algorithms
   # ES256 (ECDSA with SHA-256) is widely supported and recommended
   # PS256 and RS256 provide RSA alternatives
-  config.algorithms = [ "ES256", "PS256", "RS256" ]
+  config.algorithms = ["ES256", "PS256", "RS256"]
 end
