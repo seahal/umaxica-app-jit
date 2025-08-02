@@ -6,7 +6,7 @@ module Auth
       class TotpsController < ApplicationController
         def index
         end
-        
+
         def show
         end
       end

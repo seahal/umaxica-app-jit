@@ -2,7 +2,7 @@ module Auth
   module App
     module Registration
       class GooglesController < ApplicationController
-        rescue_from 'OmniAuth::Error' do |exception|
+        rescue_from "OmniAuth::Error" do |exception|
           Rails.logger.error "OmniAuth Error: #{exception.message}"
           flash[:error] = "認証エラーが発生しました。もう一度お試しください。"
           redirect_to new_auth_app_registration_path
@@ -13,19 +13,19 @@ module Auth
         end
 
         def create
-          auth_hash = request.env['omniauth.auth']
-          
+          auth_hash = request.env["omniauth.auth"]
+
           if auth_hash.present? && valid_auth_hash?(auth_hash)
             begin
               @user_info = extract_user_info(auth_hash)
-              
+
               # ここでユーザー登録処理を実装
               # 例: User.find_or_create_by(email: @user_info[:email]) do |user|
               #       user.name = @user_info[:name]
               #       user.provider = @user_info[:provider]
               #       user.uid = @user_info[:uid]
               #     end
-              
+
               Rails.logger.info "Google OAuth successful for email: #{@user_info[:email]}"
               render :success
             rescue => e
@@ -54,7 +54,7 @@ module Auth
         end
 
         def valid_auth_hash?(auth_hash)
-          auth_hash.provider == 'google_oauth2' &&
+          auth_hash.provider == "google_oauth2" &&
           auth_hash.uid.present? &&
           auth_hash.info.email.present?
         end

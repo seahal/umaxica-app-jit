@@ -73,7 +73,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
   end
 
   create_table "staff_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "password_digest"
+    t.uuid "staff_id"
+    t.string "recovery_code_digest"
     t.date "expires_in"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -120,7 +121,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
   end
 
   create_table "user_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "password_digest"
+    t.uuid "user_id"
+    t.string "recovery_code_digest"
     t.date "expires_in"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

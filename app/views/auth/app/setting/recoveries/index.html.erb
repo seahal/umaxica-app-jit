@@ -1,1 +1,14 @@
-abc
+<p style="color: green"><%= notice %></p>
+
+<h1>User Recovery Codes</h1>
+
+<div id="user_recovery_codes">
+  <% @user_recovery_codes.each do |user_recovery_code| %>
+    <%= render "user_recovery_code", user_recovery_code: user_recovery_code %>
+    <p>
+      <%= link_to "Show this user recovery code", auth_app_setting_recovery_path(user_recovery_code) %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New user recovery code", new_auth_app_setting_recovery_path %>

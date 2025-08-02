@@ -1,10 +1,10 @@
 <div>
-  <h1 class="font-bold text-4xl">settei</h1>
+  <h1 class="font-bold text-4xl"><%= t('controller.auth.app.setting.show.page_title') %></h1>
   <p>Find me in app/views/net/registrations/new.html.erb</p>
 
   <ul>
-    <li><%= link_to 'TOTPs', auth_app_setting_totps_path %></li>
-    <li><%= link_to 'PASSKEY', auth_app_setting_passkeys_path %></li>
-    <li><%= link_to 'RECOVERY', auth_app_setting_recoveries_path %></li>
+    <li><%= link_to t('controller.auth.app.setting.totp.index.totp'), auth_app_setting_totps_path %></li>
+    <li><%= link_to t('controller.auth.app.setting.totp.index.passkey'), auth_app_setting_passkeys_path %></li>
+    <li><%= link_to t('controller.auth.app.setting.totp.index.recovery'), auth_app_setting_recoveries_path %></li>
   </ul>
 </div>

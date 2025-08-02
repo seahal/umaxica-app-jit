@@ -9,6 +9,21 @@ ja:
   controller:
     auth:
       app:
+        setting:
+          show:
+            page_title: 'konomi'
+          passkey:
+            index:
+              page_title: 'aapasskey'
+          recovery:
+            index:
+              page_title: 'recovery '
+          totp:
+            index:
+              page_title: 'TOTP no ichiran'
+              passkey: 'Passkey'
+              totp: 'TOTP'
+              recovery: 'Recovery'
         registration:
           google:
             new:
