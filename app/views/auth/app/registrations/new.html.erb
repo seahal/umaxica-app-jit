@@ -6,7 +6,10 @@
     <li><%= link_to '新規登録(email)', new_auth_app_registration_email_path %></li>
     <li><%= link_to '新規登録(telephone)', new_auth_app_registration_telephone_path %></li>
     <li><%= link_to '新規登録(apple)', new_auth_app_registration_apple_path %></li>
-    <li><%= link_to '新規登録(google)', new_auth_app_registration_google_path %></li>
     <li><%= link_to 'Sign in ?', new_auth_app_authentication_path %></li>
   </ul>
+
+  <%= form_with url: "/auth/google_oauth2", method: :post, local: true do |f| %>
+    <%= f.submit "Googleでログイン" %>
+  <% end %>
 </div>

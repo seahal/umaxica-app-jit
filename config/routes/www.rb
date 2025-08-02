@@ -8,13 +8,13 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # settings
-        resource :preference, only: [:show]
+        resource :preference, only: [ :show ]
         namespace :preference do
-          resource :cookie, only: [:edit, :update]
+          resource :cookie, only: [ :edit, :update ]
         end
-        resource :registration, only: [:new, :create, :edit, :update] do
-          resource :emails, only: [:new, :create, :edit, :update]
-          resource :telephone, only: [:new, :create, :edit, :update]
+        resource :registration, only: [ :new, :create, :edit, :update ] do
+          resource :emails, only: [ :new, :create, :edit, :update ]
+          resource :telephone, only: [ :new, :create, :edit, :update ]
         end
       end
 
@@ -30,21 +30,21 @@ Rails.application.routes.draw do
           # Settings with logined user
           resource :setting, only: %i[show]
           namespace :setting do
-            resources :totp, only: [:index, :new, :create, :edit, :update]
-            resources :passkeys, only: [:index, :edit, :update, :new]
+            resources :totp, only: [ :index, :new, :create, :edit, :update ]
+            resources :passkeys, only: [ :index, :edit, :update, :new ]
             resources :recovery_codes, only: %i[index new create edit update destroy show]
-            resources :tokens, only: [:show, :destroy]
-            resources :emails, only: [:index]
-            resource :apple, only: [:show]
-            resource :google, only: [:show]
+            resources :tokens, only: [ :show, :destroy ]
+            resources :emails, only: [ :index ]
+            resource :apple, only: [ :show ]
+            resource :google, only: [ :show ]
           end
           # Settings without login
           resource :preference, only: %i[show]
           namespace :preference do
             # for ePrivacy settings.
-            resource :cookie, only: [:edit, :update]
-            resources :emails, only: [:edit, :update, :new]
-            resources :telephones, only: [:create, :new]
+            resource :cookie, only: [ :edit, :update ]
+            resources :emails, only: [ :edit, :update, :new ]
+            resources :telephones, only: [ :create, :new ]
           end
         end
       end
@@ -60,27 +60,27 @@ Rails.application.routes.draw do
         # show stating env
         resource :staging, only: :show, format: :html
         # registration staff page
-        resource :registration, only: [:new, :create, :edit, :update] do
-          resource :emails, only: [:new, :create, :edit, :update]
-          resource :telephone, only: [:new, :create, :edit, :update]
+        resource :registration, only: [ :new, :create, :edit, :update ] do
+          resource :emails, only: [ :new, :create, :edit, :update ]
+          resource :telephone, only: [ :new, :create, :edit, :update ]
         end
         # Sign up pages
         resource :authentication, only: :new do
           resources :emails, only: %i[create edit update]
         end
         namespace :setting do
-          resources :totp, only: [:index, :new, :create, :edit, :update]
-          resources :passkeys, only: [:index, :edit, :update, :new]
-          resources :emails, only: [:index]
-          resources :apples, only: [:show]
-          resources :googles, only: [:show]
+          resources :totp, only: [ :index, :new, :create, :edit, :update ]
+          resources :passkeys, only: [ :index, :edit, :update, :new ]
+          resources :emails, only: [ :index ]
+          resources :apples, only: [ :show ]
+          resources :googles, only: [ :show ]
         end
         # Settings without login
-        resource :preference, only: [:show]
+        resource :preference, only: [ :show ]
         namespace :preference do
-          resource :cookie, only: [:edit, :update]
-          resources :emails, only: [:create, :new]
-          resources :telephones, only: [:create, :new]
+          resource :cookie, only: [ :edit, :update ]
+          resources :emails, only: [ :create, :new ]
+          resources :telephones, only: [ :create, :new ]
         end
         resource :withdrawal, only: %i[new create edit update]
         # for owner

@@ -7,6 +7,12 @@ ja:
       otp:
         invalid_input: 'Pass Code の値に問題があります'
   controller:
+    auth:
+      app:
+        registration:
+          google:
+            new:
+              jump_obj: 'sign in with google'
     www:
       app:
         preference:
@@ -43,9 +49,6 @@ ja:
   www:
     app:
       registration:
-        google:
-          new:
-            page_title: 'google id で登録します'
         email:
           new:
             page_title: 'email で登録します'

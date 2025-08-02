@@ -6,9 +6,7 @@ WebAuthn.configure do |config|
   if Rails.env.development?
     allowed_origins = [
       "http://auth.org.localhost:3000",
-      "http://auth.app.localhost:3000",
-      "https://auth.umaxica.app",
-      "https://auth.umaxica.org"
+      "http://auth.app.localhost:3000"
     ]
   elsif Rails.env.production?
     # Production origins from environment variables
@@ -21,7 +19,6 @@ WebAuthn.configure do |config|
     ].compact
   elsif Rails.env.test?
     allowed_origins = [
-      "http://test.example.com",
       "http://localhost:3000",
       "http://localhost:3333"
     ]
@@ -59,5 +56,5 @@ WebAuthn.configure do |config|
   # Configure supported algorithms
   # ES256 (ECDSA with SHA-256) is widely supported and recommended
   # PS256 and RS256 provide RSA alternatives
-  config.algorithms = ["ES256", "PS256", "RS256"]
+  config.algorithms = [ "ES256", "PS256", "RS256" ]
 end
