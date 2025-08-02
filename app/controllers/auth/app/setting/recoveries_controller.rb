@@ -3,9 +3,11 @@
 module Auth
   module App
     module Setting
-      class PasskeysController < ApplicationController
+      class RecoveriesController < ApplicationController
         def index
-          
+        end
+        
+        def show
         end
       end
     end

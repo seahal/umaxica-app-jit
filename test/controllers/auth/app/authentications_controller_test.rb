@@ -9,7 +9,7 @@ class Www::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", new_auth_app_authentication_apple_path
     assert_select "a[href=?]", new_auth_app_authentication_google_path
     assert_select "a[href=?]", new_auth_app_authentication_passkey_path
-    assert_select "a[href=?]", new_auth_app_authentication_recovery_code_path
+    assert_select "a[href=?]", new_auth_app_authentication_recovery_path
     assert_select "a[href=?]", new_auth_app_registration_path
   end
 

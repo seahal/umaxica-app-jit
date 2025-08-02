@@ -53,7 +53,7 @@ module Www
           else
             @service_site_contact.errors.add :base, :invalid,
                                              message: t("model.concern.otp.invalid_input") if hotp_result.blank?
-            render :new, status: :unprocessable_content
+            render :show, status: :unprocessable_content
           end
         end
       end

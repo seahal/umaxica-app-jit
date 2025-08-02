@@ -19,16 +19,16 @@ Rails.application.routes.draw do
           resource :email, only: %i[new create]
           resource :telephone, only: %i[new create]
           resource :passkey, only: %i[new create]
-          resource :recovery_code, only: %i[new create]
+          resource :recovery, only: %i[new create]
           resource :google, only: %i[new create]
           resource :apple, only: %i[new create]
         end
         # Settings with logined user
+        resource :setting, only: %i[show]
         namespace :setting do
           resources :passkeys, only: [ :index, :edit, :update, :new ]
-          resources :tokens, only: [ :show, :destroy ]
-          resource :apple, only: [ :show ]
-          resource :google, only: [ :show ]
+          resources :recoveries, only: [ :index, :show, :destroy ]
+          resources :totps, only: [ :index, :show, :destroy ]
         end
       end
     end

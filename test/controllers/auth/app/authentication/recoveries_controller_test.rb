@@ -2,7 +2,7 @@ require "test_helper"
 
 class Www::App::Authentication::RecoveryCodesControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
-    get new_auth_app_authentication_recovery_code_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
+    get new_auth_app_authentication_recovery_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
     assert_select "h1", "Auth::App::Authentication::RecoveryCodes#new"
     assert_select "p", "Find me in app/views/auth/app/authentication/recovery_codes/new.html.erb"
     assert_select "form" do |_element|
