@@ -35,7 +35,7 @@ module Auth
 
           respond_to do |format|
             if @user_recovery_code.save
-              format.html { redirect_to auth_app_setting_recovery_path(@user_recovery_code), notice: "User recovery code was successfully created." }
+              format.html { redirect_to auth_app_setting_recovery_path(@user_recovery_code), notice: t("messages.user_recovery_code_successfully_created") }
               format.json { render :show, status: :created, location: auth_app_setting_recovery_path(@user_recovery_code) }
             else
               session[:user_recovery_code] = generate_base58_string
@@ -49,7 +49,7 @@ module Auth
         def update
           respond_to do |format|
             if @user_recovery_code.update(user_recovery_code_params)
-              format.html { redirect_to auth_app_setting_recovery_path(@user_recovery_code), notice: "User recovery code was successfully updated." }
+              format.html { redirect_to auth_app_setting_recovery_path(@user_recovery_code), notice: t("messages.user_recovery_code_successfully_updated") }
               format.json { render :show, status: :ok, location: auth_app_setting_recovery_path(@user_recovery_code) }
             else
               format.html { render :edit, status: :unprocessable_content }
@@ -63,7 +63,7 @@ module Auth
           @user_recovery_code.destroy!
 
           respond_to do |format|
-            format.html { redirect_to auth_app_setting_recoveries_path, status: :see_other, notice: "User recovery code was successfully destroyed." }
+            format.html { redirect_to auth_app_setting_recoveries_path, status: :see_other, notice: t("messages.user_recovery_code_successfully_destroyed") }
             format.json { head :no_content }
           end
         end

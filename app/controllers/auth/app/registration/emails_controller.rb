@@ -56,7 +56,7 @@ module Auth
             Email::App::EmailRegistrationMailer.with({ hotp_token: num,
                                                        mail_address: @user_email.address }).create.deliver_now
 
-            redirect_to edit_www_app_registration_email_path(id), notice: "Email was successfully created."
+            redirect_to edit_www_app_registration_email_path(id), notice: t("messages.email_successfully_created")
           else
             render :new, status: :unprocessable_content
           end
@@ -78,7 +78,7 @@ module Auth
           ].all?
             @user_email.save!
             session[:user_email_registration] = nil
-            redirect_to "/", notice: "Sample was successfully updated."
+            redirect_to "/", notice: t("messages.sample_successfully_updated")
           else
             render :edit, status: :unprocessable_content
           end

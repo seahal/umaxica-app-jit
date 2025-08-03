@@ -4,7 +4,7 @@ module Auth
       class GooglesController < ApplicationController
         rescue_from "OmniAuth::Error" do |exception|
           Rails.logger.error "OmniAuth Error: #{exception.message}"
-          flash[:error] = "認証エラーが発生しました。もう一度お試しください。"
+          flash[:error] = t("messages.auth_error_occurred")
           redirect_to new_auth_app_registration_path
         end
 
@@ -30,13 +30,13 @@ module Auth
               render :success
             rescue => e
               Rails.logger.error "User registration error: #{e.message}"
-              flash[:error] = "ユーザー登録中にエラーが発生しました。"
+              flash[:error] = t("messages.user_registration_error")
               redirect_to new_auth_app_registration_path
             end
           else
             # 認証失敗時の処理
             Rails.logger.warn "Invalid or missing auth_hash"
-            flash[:error] = "アクセスをブロック: 認証エラーです"
+            flash[:error] = t("messages.access_blocked_auth_error")
             redirect_to new_auth_app_registration_path
           end
         end

@@ -101,6 +101,22 @@ ja:
           new:
             title: 'TOTP no shinki'
   hello: "やぁ、せかい"
+  messages:
+    user_registration_error: "ユーザー登録中にエラーが発生しました。"
+    access_blocked_auth_error: "アクセスをブロック: 認証エラーです"
+    telephone_successfully_created: "Telephone was successfully created."
+    sample_successfully_updated: "Sample was successfully updated."
+    abc_successfully_created: "Abc was successfully created."
+    abc_successfully_updated: "Abc was successfully updated."
+    abc_successfully_destroyed: "Abc was successfully destroyed."
+    user_recovery_code_successfully_created: "User recovery code was successfully created."
+    user_recovery_code_successfully_updated: "User recovery code was successfully updated."
+    user_recovery_code_successfully_destroyed: "User recovery code was successfully destroyed."
+    totp_successfully_created: "TOTP was successfully created."
+    passkey_updated_successfully: "Passkey updated successfully."
+    passkey_removed_successfully: "Passkey removed successfully."
+    email_successfully_created: "Email was successfully created."
+    auth_error_occurred: "認証エラーが発生しました。もう一度お試しください。"
   activerecord:
     errors:
       messages:

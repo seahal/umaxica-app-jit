@@ -54,7 +54,7 @@ module Auth
               expires_at: 12.minutes.from_now.to_i
             }
 
-            redirect_to edit_www_app_registration_telephone_path(id), notice: "Telephone was successfully created."
+            redirect_to edit_www_app_registration_telephone_path(id), notice: t("messages.telephone_successfully_created")
           else
             render :new, status: :unprocessable_content
           end
@@ -76,7 +76,7 @@ module Auth
           ].all?
             @user_telephone.save!
             session[:user_telephone_registration] = nil
-            redirect_to "/", notice: "Sample was successfully updated."
+            redirect_to "/", notice: t("messages.sample_successfully_updated")
           else
             render :edit, status: :unprocessable_content
           end

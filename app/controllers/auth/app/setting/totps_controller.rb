@@ -23,7 +23,7 @@ module Auth
 
           if ROTP::TOTP.new(@utbotp.private_key).verify(@utbotp.first_token) && @utbotp.save
             session[:private_key] = nil
-            redirect_to www_app_setting_totp_index_path, notice: "TOTP was successfully created."
+            redirect_to www_app_setting_totp_index_path, notice: t("messages.totp_successfully_created")
           else
             @utbotp.valid?
             totp = ROTP::TOTP.new(@utbotp.private_key)

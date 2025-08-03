@@ -28,7 +28,7 @@ module Auth
 
         def update
           if @passkey.update(passkey_params)
-            redirect_to auth_org_setting_passkey_path(@passkey), notice: "Passkey updated successfully."
+            redirect_to auth_org_setting_passkey_path(@passkey), notice: t("messages.passkey_updated_successfully")
           else
             render :edit
           end
@@ -36,7 +36,7 @@ module Auth
 
         def destroy
           @passkey.deactivate!
-          redirect_to auth_org_setting_passkeys_path, notice: "Passkey removed successfully."
+          redirect_to auth_org_setting_passkeys_path, notice: t("messages.passkey_removed_successfully")
         end
 
         private
