@@ -125,7 +125,7 @@ module Inquiry
     current_window = (Time.now.to_i / (30 * 60)).to_i
 
     # Check with current and previous two windows
-    [current_window, current_window - 1].any? do |window|
+    [ current_window, current_window - 1 ].any? do |window|
       data_to_hash = "#{context}:#{window}"
       hmac = OpenSSL::HMAC.digest("SHA256", master_key, data_to_hash)
       code = hmac[0...4].unpack("L")[0] % 1_000_000

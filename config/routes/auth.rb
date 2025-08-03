@@ -31,6 +31,8 @@ Rails.application.routes.draw do
           resources :passkeys, only: [ :index, :edit, :update, :new ]
           resources :recoveries
           resources :totps, only: [ :index, :new, :create, :edit, :update, :show, :destroy ]
+          resources :telephones
+          resources :emails
         end
       end
     end

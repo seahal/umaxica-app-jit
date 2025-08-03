@@ -14,7 +14,7 @@
 require "test_helper"
 
 class AccountTest < ActiveSupport::TestCase
-  [ StaffEmail, UserEmail, ClientEmail ].each do |model|
+  [ StaffEmail, UserEmail ].each do |model|
     test "good #{model}'s email pattern" do
       assert model.create(address: "eg@example.com").valid?
     end

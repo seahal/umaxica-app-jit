@@ -36,10 +36,10 @@ module Auth
           render plain: t("www.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in_user?
 
-          @user_email = UserEmail.new(params.expect(user_email: [:address, :confirm_policy]))
+          @user_email = UserEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32 # NOTE: you would wonder why this code was written ...
-          otp_count_number = [Time.now.to_i, SecureRandom.random_number(1 << 64)].map(&:to_s).join.to_i
+          otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
           hotp = ROTP::HOTP.new(otp_private_key)
           num = hotp.at(otp_count_number)
           id = SecureRandom.uuid_v7

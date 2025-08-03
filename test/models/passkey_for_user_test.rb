@@ -9,8 +9,12 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  external_id :uuid             not null
-#  user_id     :binary           not null
-#  webauthn_id :binary           not null
+#  user_id     :bigint           not null
+#  webauthn_id :uuid             not null
+#
+# Indexes
+#
+#  index_passkey_for_users_on_user_id  (user_id)
 #
 require "test_helper"
 

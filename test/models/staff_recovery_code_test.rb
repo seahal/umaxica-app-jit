@@ -7,7 +7,11 @@
 #  recovery_code_digest :string
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  staff_id             :uuid
+#  staff_id             :bigint
+#
+# Indexes
+#
+#  index_staff_recovery_codes_on_staff_id  (staff_id)
 #
 require "test_helper"
 

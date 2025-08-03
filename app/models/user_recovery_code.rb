@@ -7,7 +7,11 @@
 #  recovery_code_digest :string
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  user_id              :uuid
+#  user_id              :bigint
+#
+# Indexes
+#
+#  index_user_recovery_codes_on_user_id  (user_id)
 #
 class UserRecoveryCode < IdentifiersRecord
   attr_accessor :confirm_create_recovery_code, :recovery_code

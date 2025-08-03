@@ -1,8 +1,8 @@
 class CreatePasskeyForUsers < ActiveRecord::Migration[8.0]
   def change
     create_table :passkey_for_users, id: :uuid do |t|
-      t.binary :user_id, null: false
-      t.binary :webauthn_id, null: false
+      t.references :user, null: false
+      t.uuid :webauthn_id, null: false
       t.text :public_key, null: false
       t.string :description, null: false
       t.bigint :sign_count, null: false, default: 0

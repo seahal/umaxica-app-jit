@@ -2,7 +2,7 @@
 
 module Redirect
   extend ActiveSupport::Concern
-  HOST_URI = ["app.www.localdomain"].map(&:downcase)
+  HOST_URI = [ "app.www.localdomain" ].map(&:downcase)
 
   private
 

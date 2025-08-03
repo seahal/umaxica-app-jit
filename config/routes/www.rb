@@ -12,10 +12,6 @@ Rails.application.routes.draw do
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
         end
-        resource :registration, only: [ :new, :create, :edit, :update ] do
-          resource :emails, only: [ :new, :create, :edit, :update ]
-          resource :telephone, only: [ :new, :create, :edit, :update ]
-        end
       end
 
       # service page
@@ -50,8 +46,6 @@ Rails.application.routes.draw do
         resource :staging, only: :show, format: :html
         namespace :setting do
           resources :emails, only: [ :index ]
-          resources :apples, only: [ :show ]
-          resources :googles, only: [ :show ]
         end
         # Settings without login
         resource :preference, only: [ :show ]

@@ -8,6 +8,11 @@
 #  address    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  staff_id   :bigint
+#
+# Indexes
+#
+#  index_staff_emails_on_staff_id  (staff_id)
 #
 class StaffEmail < IdentifiersRecord
   include SetId
