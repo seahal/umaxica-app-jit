@@ -14,7 +14,7 @@ Rails:
   Enabled: true
 Security:
   Enabled: true
-  
+
 Security/CompoundHash: # new in 1.28
   Enabled: true
 Security/IoMethods: # new in 1.22
