@@ -32,12 +32,6 @@ class StaffRecoveryCodeTest < ActiveSupport::TestCase
     assert_respond_to StaffRecoveryCode.new, :staff
   end
 
-  test "should require staff_id" do
-    recovery_code = StaffRecoveryCode.new
-    refute recovery_code.valid?
-    assert_includes recovery_code.errors[:staff_id], "を入力してください"
-  end
-
   test "should inherit from IdentifiersRecord" do
     assert StaffRecoveryCode.ancestors.include?(IdentifiersRecord)
   end

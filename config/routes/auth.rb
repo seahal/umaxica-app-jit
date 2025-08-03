@@ -33,6 +33,8 @@ Rails.application.routes.draw do
           resources :totps, only: [ :index, :new, :create, :edit, :update, :show, :destroy ]
           resources :telephones
           resources :emails
+          resource :apple, only: [ :show ]
+          resource :google, only: [ :show ]
         end
       end
     end

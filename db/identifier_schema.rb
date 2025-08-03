@@ -10,10 +10,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_03_215056) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "apple_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "provider"
+    t.string "uid"
+    t.string "email"
+    t.string "name"
+    t.text "access_token"
+    t.text "refresh_token"
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_apple_auths_on_user_id"
+  end
+
+  create_table "google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "provider"
+    t.string "uid"
+    t.string "email"
+    t.string "name"
+    t.string "image_url"
+    t.text "access_token"
+    t.text "refresh_token"
+    t.datetime "expires_at"
+    t.text "raw_info"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_google_auths_on_user_id"
+  end
 
   create_table "passkey_for_staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.bigint "staff_id", null: false
@@ -142,4 +172,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "apple_auths", "users"
+  add_foreign_key "google_auths", "users"
 end
