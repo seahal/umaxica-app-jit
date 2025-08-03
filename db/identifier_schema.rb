@@ -16,7 +16,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
   enable_extension "pgcrypto"
 
   create_table "passkey_for_staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.bigint "staff_id", null: false
     t.binary "webauthn_id", null: false
     t.text "public_key", null: false
     t.string "description", null: false
@@ -24,7 +24,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
     t.uuid "external_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_passkey_for_staffs_on_user_id"
+    t.index ["staff_id"], name: "index_passkey_for_staffs_on_staff_id"
   end
 
   create_table "passkey_for_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -55,7 +55,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
   end
 
   create_table "staff_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "staff_id"
+    t.bigint "staff_id", null: false
     t.string "recovery_code_digest"
     t.date "expires_in"
     t.datetime "created_at", null: false
@@ -116,7 +116,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
   end
 
   create_table "user_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "user_id"
+    t.bigint "user_id", null: false
     t.string "recovery_code_digest"
     t.date "expires_in"
     t.datetime "created_at", null: false

@@ -73,4 +73,27 @@
 - 特に最初の3つは、アプリケーションの基本機能に直接影響するため、早急な対応が必要です
 - セキュリティ関連の修正は慎重に行い、十分なテストを実施してください
 
+## 🎯 明日からの実装予定 (2025-08-04〜)
+
+### 1. Omniauth設定 - Google/Apple OAuth統合
+- Google OAuth設定とコールバック実装
+- Apple OAuth設定とコールバック実装
+- 既存の`UserGoogleAuth`, `UserAppleAuth`モデルとの連携
+- OAuth認証フロー完成
+
+### 2. リカバリページ完成
+- 復旧フロー実装
+- `UserRecoveryCode`, `StaffRecoveryCode`との連携
+- リカバリコード生成・検証機能
+- ユーザー向け復旧UI完成
+
+### 3. Passkey実装完了
+- WebAuthn認証システム仕上げ
+- `PasskeyForUser`, `PasskeyForStaff`モデル完成
+- パスキー登録・認証フロー
+- 多要素認証統合
+
+---
+
 作成日: 2025-06-11
+更新日: 2025-08-03
