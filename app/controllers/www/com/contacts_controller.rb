@@ -5,11 +5,11 @@ module Www
         #       render plain: localize_time(Time.now)
       end
 
+      def edit
+      end
       def create
       end
 
-      def edit
-      end
 
       def update
       end

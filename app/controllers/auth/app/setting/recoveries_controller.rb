@@ -4,7 +4,7 @@ module Auth
   module App
     module Setting
       class RecoveriesController < ApplicationController
-        BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+        BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
         BASE58_SIZE = BASE58.size
 
         before_action :set_user_recovery_code, only: %i[ show edit update destroy ]
@@ -77,7 +77,7 @@ module Auth
 
         # Only allow a list of trusted parameters through.
         def user_recovery_code_params
-          params.expect(user_recovery_code: [:confirm_create_recovery_code])
+          params.expect(user_recovery_code: [ :confirm_create_recovery_code ])
         end
 
         def generate_base58_string

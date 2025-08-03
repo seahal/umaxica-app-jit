@@ -19,12 +19,12 @@ module Auth
           @passkey = StaffWebauthnCredential.new
         end
 
+        def edit
+        end
         def create
           # WebAuthn credential registration for staff
         end
 
-        def edit
-        end
 
         def update
           if @passkey.update(passkey_params)
@@ -46,7 +46,7 @@ module Auth
         end
 
         def passkey_params
-          params.require(:staff_webauthn_credential).permit(:nickname)
+          params.expect(staff_webauthn_credential: [ :nickname ])
         end
 
         def current_staff

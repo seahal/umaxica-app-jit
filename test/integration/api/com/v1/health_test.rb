@@ -15,7 +15,7 @@ module Com
         get api_com_v1_health_url
         assert_response :success
         assert_nothing_raised do
-          assert_equal "OK", JSON.parse(response.body)["status"]
+          assert_equal "OK", response.parsed_body["status"]
         end
       end
 
@@ -23,7 +23,7 @@ module Com
         get api_com_v1_health_url(format: :json)
         assert_response :success
         assert_nothing_raised do
-          assert_equal "OK", JSON.parse(response.body)["status"]
+          assert_equal "OK", response.parsed_body["status"]
         end
       end
     end

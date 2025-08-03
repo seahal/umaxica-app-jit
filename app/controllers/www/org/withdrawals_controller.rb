@@ -4,11 +4,11 @@ module Www
       def new
       end
 
+      def edit
+      end
       def create
       end
 
-      def edit
-      end
 
       def update
       end

@@ -42,7 +42,7 @@ class UserRecoveryCodeTest < ActiveSupport::TestCase
 
   test "should not require confirm_create_recovery_code on update" do
     @user_recovery_code.save!
-    
+
     # Update without confirmation should be valid
     @user_recovery_code.expires_in = Date.current + 60.days
     @user_recovery_code.confirm_create_recovery_code = false

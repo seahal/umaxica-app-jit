@@ -42,7 +42,7 @@ module Auth
 
       # Only allow a list of trusted parameters through.
       def sample_params
-        params.expect(time_based_one_time_password: [:first_token])
+        params.expect(time_based_one_time_password: [ :first_token ])
       end
     end
   end

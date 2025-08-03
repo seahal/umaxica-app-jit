@@ -1,1 +1,0 @@
-json.partial! "user_recovery_code", user_recovery_code: @user_recovery_code

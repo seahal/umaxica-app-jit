@@ -17,6 +17,19 @@ module Auth
           @user_email = UserEmail.new
         end
 
+        def edit
+          render plain: t("www.app.registration.email.edit.you_have_already_logged_in"),
+                 status: :bad_request and return if logged_in_staff? || logged_in_user?
+          render plain: t("www.app.registration.email.edit.forbidden_action"),
+                 status: :bad_request and return if session[:user_email_registration].nil?
+
+          if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"] && session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
+            @user_email = UserEmail.new
+          else
+            redirect_to new_www_app_registration_email_path,
+                        notice: t("www.app.registration.email.edit.your_session_was_expired")
+          end
+        end
         def create
           # FIXME: write test code!
           render plain: t("www.app.authentication.email.new.you_have_already_logged_in"),
@@ -49,19 +62,6 @@ module Auth
           end
         end
 
-        def edit
-          render plain: t("www.app.registration.email.edit.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_staff? || logged_in_user?
-          render plain: t("www.app.registration.email.edit.forbidden_action"),
-                 status: :bad_request and return if session[:user_email_registration].nil?
-
-          if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"] && session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
-            @user_email = UserEmail.new
-          else
-            redirect_to new_www_app_registration_email_path,
-                        notice: t("www.app.registration.email.edit.your_session_was_expired")
-          end
-        end
 
         def update
           # FIXME: write test code!

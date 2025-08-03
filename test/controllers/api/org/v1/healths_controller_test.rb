@@ -12,7 +12,7 @@ module Org
 
       test "should not get show when required json file" do
         get api_org_v1_health_url
-        assert JSON.parse(response.body)
+        assert response.parsed_body
       end
     end
   end

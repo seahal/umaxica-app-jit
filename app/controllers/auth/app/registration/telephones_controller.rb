@@ -11,6 +11,20 @@ module Auth
           session[:user_telephone_registration] = nil
         end
 
+        def edit
+          render plain: t("www.app.registration.telephone.edit.you_have_already_logged_in"),
+                 status: :bad_request and return if logged_in_staff? || logged_in_user?
+          render plain: t("www.app.registration.telephone.edit.forbidden_action"),
+                 status: :bad_request and return if session[:user_telephone_registration].nil?
+
+          if [ session[:user_telephone_registration]["id"] == params["id"],
+               session[:user_telephone_registration]["expires_at"].to_i > Time.now.to_i ].all?
+            @user_telephone = UserTelephone.new
+          else
+            redirect_to new_www_app_registration_telephone_path,
+                        notice: t("www.app.registration.telephone.edit.your_session_was_expired")
+          end
+        end
         def create
           render plain: t("www.app.authentication.telephone.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in_staff? || logged_in_user?
@@ -46,20 +60,6 @@ module Auth
           end
         end
 
-        def edit
-          render plain: t("www.app.registration.telephone.edit.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_staff? || logged_in_user?
-          render plain: t("www.app.registration.telephone.edit.forbidden_action"),
-                 status: :bad_request and return if session[:user_telephone_registration].nil?
-
-          if [ session[:user_telephone_registration]["id"] == params["id"],
-               session[:user_telephone_registration]["expires_at"].to_i > Time.now.to_i ].all?
-            @user_telephone = UserTelephone.new
-          else
-            redirect_to new_www_app_registration_telephone_path,
-                        notice: t("www.app.registration.telephone.edit.your_session_was_expired")
-          end
-        end
 
         def update
           # FIXME: write test code!

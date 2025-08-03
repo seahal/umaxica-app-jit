@@ -23,7 +23,7 @@ class UserRecoveryCode < IdentifiersRecord
   end
 
   def set_recovery_code_digest
-    require 'digest'
+    require "digest"
     self.recovery_code_digest = Digest::SHA256.hexdigest(recovery_code)
   end
 end

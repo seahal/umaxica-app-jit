@@ -11,16 +11,19 @@ ja:
       app:
         setting:
           show:
-            page_title: 'konomi'
+            page_title: '設定'
           passkey:
             index:
-              page_title: 'aapasskey'
+              page_title: 'パスキーの一覧'
+              return_page: '戻る'
           recovery:
             index:
-              page_title: 'recovery '
+              page_title: 'リカバリーコードの一覧'
+              return_page: '戻る'
           totp:
             index:
-              page_title: 'TOTP no ichiran'
+              page_title: 'TOTP の一覧'
+              return_page: '戻る'
               passkey: 'Passkey'
               totp: 'TOTP'
               recovery: 'Recovery'

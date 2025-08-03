@@ -40,7 +40,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
     otp = HmacBasedOneTimePassword.create!(valid_attributes)
     original_time = otp.last_otp_at
 
-    new_time = Time.current + 1.hour
+    new_time = 1.hour.from_now
     otp.update!(last_otp_at: new_time)
 
     assert_not_equal original_time.to_i, otp.last_otp_at.to_i
@@ -120,7 +120,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
     otp2 = HmacBasedOneTimePassword.find(otp.id)
 
     time1 = Time.current
-    time2 = Time.current + 1.second
+    time2 = 1.second.from_now
 
     otp1.update!(last_otp_at: time1)
     otp2.update!(last_otp_at: time2)

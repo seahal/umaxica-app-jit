@@ -54,7 +54,7 @@ class EventPublisher
 
       Karafka.producer.produce_sync(message)
 
-      Rails.logger.debug "Published message to topic '#{topic}': #{data}"
+      Rails.logger.debug { "Published message to topic '#{topic}': #{data}" }
     rescue StandardError => e
       Rails.logger.error "Failed to publish message to topic '#{topic}': #{e.message}"
       Rails.logger.error e.backtrace.join("\n")

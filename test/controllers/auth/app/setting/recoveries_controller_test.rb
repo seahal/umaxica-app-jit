@@ -22,12 +22,12 @@ module Auth
 
         test "should not create user_recovery_code without confirmation" do
           assert_no_difference("UserRecoveryCode.count") do
-            post auth_app_setting_recoveries_url, 
-                 params: { 
-                   user_recovery_code: { 
+            post auth_app_setting_recoveries_url,
+                 params: {
+                   user_recovery_code: {
                      confirm_create_recovery_code: "0"
-                   } 
-                 }, 
+                   }
+                 },
                  headers: { "Host" => @host }
           end
 

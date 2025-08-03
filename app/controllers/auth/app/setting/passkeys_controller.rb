@@ -71,9 +71,8 @@ module Auth
 
         # Only allow a list of trusted parameters through.
         def abc_params
-          params.expect(abc: [:staff, :password_diget])
+          params.expect(abc: [ :staff, :password_diget ])
         end
-
       end
     end
   end

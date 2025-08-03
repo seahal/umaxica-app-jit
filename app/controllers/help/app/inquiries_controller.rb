@@ -6,6 +6,8 @@ module Help::App
     include ::Memorize
     include ::Inquiry
 
+    def show
+    end
     def new
       # for security
       reset_session
@@ -14,6 +16,8 @@ module Help::App
       @service_site_contact = ServiceSiteContact.new
     end
 
+    def edit
+    end
     def create
       @service_site_contact = ServiceSiteContact.new(sample_params)
       cfv = Rails.env.test? ? true : !!cloudflare_turnstile_validation["success"] # NOTE: test passes the line.
@@ -47,14 +51,10 @@ module Help::App
       end
     end
 
-    def edit
-    end
 
     def update
     end
 
-    def show
-    end
 
     private
 
