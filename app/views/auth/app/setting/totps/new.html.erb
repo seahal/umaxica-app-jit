@@ -1,6 +1,6 @@
 <h1><%= t('www.app.setting.totp.new.title') %></h1>
 
-<%= form_with model: @utbotp, url: www_app_setting_totp_index_path do |form| %>
+<%= form_with model: @utbotp, url: auth_app_setting_totps_path do |form| %>
   <div>
     <%= image_tag "data:image/png;base64, #{Base64.strict_encode64(@png.to_s)}", alt: "QR Code" %>
   </div>
@@ -25,5 +25,5 @@
   <%= form.submit %>
 <% end %>
 
-<p><%= link_to 'new totp', www_app_setting_totp_index_path %></p>
+<p><%= link_to 'back to index', auth_app_setting_totps_path %></p>
 </div>

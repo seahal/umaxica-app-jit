@@ -1,14 +1,10 @@
-<p style="color: green"><%= notice %></p>
+<h1>Www::App::Setting::Recoveries#index</h1>
+<p>Find me in app/views/www/app/setting/recoveries/index.html.erb</p>
 
-<h1>User Recovery Codes</h1>
-
-<div id="user_recovery_codes">
-  <% @user_recovery_codes.each do |user_recovery_code| %>
-    <%= render "user_recovery_code", user_recovery_code: user_recovery_code %>
-    <p>
-      <%= link_to "Show this user recovery code", auth_app_setting_recovery_path(user_recovery_code) %>
-    </p>
+<ul>
+  <% @user_recover_code.each do |urc| %>
+    <li><%= urc.created_at %>, <%= link_to 'edit', auth_app_setting_recovery_path(urc.id) %></li>
   <% end %>
-</div>
+</ul>
 
-<%= link_to "New user recovery code", new_auth_app_setting_recovery_path %>
+<p><%= link_to 'new recovery code', new_auth_app_setting_recovery_path %></p>

@@ -1,0 +1,26 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: client_recovery_codes
+#
+#  id              :uuid             not null, primary key
+#  expires_in      :date
+#  password_digest :string
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#
+
+one:
+  id: "550e8400-e29b-41d4-a716-446655440402"
+  password_digest: "$argon2id$v=19$m=19456,t=2,p=1$abc123xyz789$1234567890abcdef"
+  expires_in: <%= 30.days.from_now.to_date %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+two:
+  id: "550e8400-e29b-41d4-a716-446655440403"
+  password_digest: "$argon2id$v=19$m=19456,t=2,p=1$def456uvw012$fedcba0987654321"
+  expires_in: <%= 30.days.from_now.to_date %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

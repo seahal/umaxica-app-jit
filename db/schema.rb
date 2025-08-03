@@ -15,7 +15,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_21_125748) do
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "hmac_based_one_time_passwords", id: :binary, force: :cascade do |t|
+  create_table "hmac_based_one_time_passwords", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "private_key", limit: 1024, null: false
     t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "created_at", null: false
@@ -41,31 +41,31 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_21_125748) do
     t.index ["universal_user_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_user_identifier_id_identifier_regi_1475aa39aa"
   end
 
-  create_table "time_based_one_time_passwords", id: :binary, force: :cascade do |t|
+  create_table "time_based_one_time_passwords", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "private_key", limit: 1024, null: false
     t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "universal_email_identifiers", id: :binary, force: :cascade do |t|
+  create_table "universal_email_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "universal_staff_identifiers", id: :binary, force: :cascade do |t|
+  create_table "universal_staff_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "otp_private_key"
     t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "universal_telephone_identifiers", id: :binary, force: :cascade do |t|
+  create_table "universal_telephone_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "universal_user_identifiers", id: :binary, force: :cascade do |t|
+  create_table "universal_user_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "otp_private_key"
     t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "created_at", null: false

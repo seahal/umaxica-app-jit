@@ -4,14 +4,17 @@
 #
 # Table name: staffs
 #
-#  id          :binary           not null, primary key
+#  id          :uuid             not null, primary key
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  uuid_id     :uuid             not null
 #  webauthn_id :string
 #
 one:
-  id: "e6c146b6-e4f5-4056-888c-338a16ab81ce"
+  id: "550e8400-e29b-41d4-a716-446655440010"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
 
 two:
-  id: "f7d257c7-f5g6-5167-999d-449b27bc93df"
+  id: "550e8400-e29b-41d4-a716-446655440011"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

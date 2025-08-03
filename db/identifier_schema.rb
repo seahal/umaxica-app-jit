@@ -10,16 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_01_193507) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "client_emails", id: :binary, force: :cascade do |t|
+  create_table "client_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "client_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -29,11 +28,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "client_telephones", id: :binary, force: :cascade do |t|
+  create_table "client_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "passkey_for_staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -58,11 +56,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_emails", id: :binary, force: :cascade do |t|
+  create_table "staff_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "staff_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
@@ -80,11 +77,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_telephones", id: :binary, force: :cascade do |t|
+  create_table "staff_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "staff_time_based_one_time_passwords", id: false, force: :cascade do |t|
@@ -94,18 +90,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "staffs", id: :binary, force: :cascade do |t|
+  create_table "staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "webauthn_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
-  create_table "user_emails", id: :binary, force: :cascade do |t|
+  create_table "user_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "user_google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -128,11 +122,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_telephones", id: :binary, force: :cascade do |t|
+  create_table "user_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 
   create_table "user_time_based_one_time_passwords", id: false, force: :cascade do |t|
@@ -140,10 +133,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_01_194525) do
     t.binary "time_based_one_time_password_id", null: false
   end
 
-  create_table "users", id: :binary, force: :cascade do |t|
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "webauthn_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "uuid_id", default: -> { "gen_random_uuid()" }, null: false
   end
 end

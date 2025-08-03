@@ -4,7 +4,7 @@
 #
 # Table name: universal_staff_identifiers
 #
-#  id              :binary           not null, primary key
+#  id              :uuid             not null, primary key
 #  last_otp_at     :datetime         not null
 #  otp_private_key :string
 #  created_at      :datetime         not null

@@ -29,15 +29,6 @@ Rails.application.routes.draw do
           resource :withdrawal, only: %i[new create edit update]
           # Settings with logined user
           resource :setting, only: %i[show]
-          namespace :setting do
-            resources :totp, only: [ :index, :new, :create, :edit, :update ]
-            resources :passkeys, only: [ :index, :edit, :update, :new ]
-            resources :recovery_codes, only: %i[index new create edit update destroy show]
-            resources :tokens, only: [ :show, :destroy ]
-            resources :emails, only: [ :index ]
-            resource :apple, only: [ :show ]
-            resource :google, only: [ :show ]
-          end
           # Settings without login
           resource :preference, only: %i[show]
           namespace :preference do

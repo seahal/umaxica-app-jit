@@ -14,3 +14,25 @@
 #  user_id     :binary           not null
 #  webauthn_id :binary           not null
 #
+
+one:
+  id: "550e8400-e29b-41d4-a716-446655440050"
+  description: "Test passkey 1"
+  public_key: "test_public_key_1"
+  sign_count: 0
+  external_id: "550e8400-e29b-41d4-a716-446655440060"
+  user_id: "550e8400-e29b-41d4-a716-446655440020"
+  webauthn_id: "550e8400-e29b-41d4-a716-446655440070"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+two:
+  id: "550e8400-e29b-41d4-a716-446655440051"
+  description: "Test passkey 2"
+  public_key: "test_public_key_2"
+  sign_count: 0
+  external_id: "550e8400-e29b-41d4-a716-446655440061"
+  user_id: "550e8400-e29b-41d4-a716-446655440021"
+  webauthn_id: "550e8400-e29b-41d4-a716-446655440071"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

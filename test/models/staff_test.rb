@@ -2,10 +2,9 @@
 #
 # Table name: staffs
 #
-#  id          :binary           not null, primary key
+#  id          :uuid             not null, primary key
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  uuid_id     :uuid             not null
 #  webauthn_id :string
 #
 require "test_helper"
@@ -19,10 +18,6 @@ class StaffTest < ActiveSupport::TestCase
     assert @staff.valid?
   end
 
-  test "should have binary id" do
-    assert @staff.id.is_a?(String)
-    assert @staff.id.encoding == Encoding::ASCII_8BIT
-  end
 
   test "should have timestamps" do
     assert_not_nil @staff.created_at

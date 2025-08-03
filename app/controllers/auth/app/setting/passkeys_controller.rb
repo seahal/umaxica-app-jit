@@ -63,6 +63,7 @@ module Auth
         end
 
         private
+
         # Use callbacks to share common setup or constraints between actions.
         def set_abc
           @abc = Abc.find(params.expect(:id))
@@ -70,11 +71,10 @@ module Auth
 
         # Only allow a list of trusted parameters through.
         def abc_params
-          params.expect(abc: [ :staff, :password_diget ])
+          params.expect(abc: [:staff, :password_diget])
         end
 
-
+      end
     end
   end
-  end
-  end
+end
