@@ -55,8 +55,8 @@ module Auth
 
         def valid_auth_hash?(auth_hash)
           auth_hash.provider == "google_oauth2" &&
-          auth_hash.uid.present? &&
-          auth_hash.info.email.present?
+            auth_hash.uid.present? &&
+            auth_hash.info.email.present?
         end
       end
     end

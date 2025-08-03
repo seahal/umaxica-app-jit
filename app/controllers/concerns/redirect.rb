@@ -2,7 +2,7 @@
 
 module Redirect
   extend ActiveSupport::Concern
-  HOST_URI = [ "app.www.localdomain" ].map(&:downcase)
+  HOST_URI = ["app.www.localdomain"].map(&:downcase)
 
   private
 
@@ -20,7 +20,7 @@ module Redirect
 
     # checking url
     if HOST_URI.any? {
- it == parsed_uri.host.split(".")[-2..-1].join(".").downcase
+      it == parsed_uri.host.split(".")[-2..-1].join(".").downcase
     } && %w[http https].include?(parsed_uri.scheme)
       redirect_to uri
     else

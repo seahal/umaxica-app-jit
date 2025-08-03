@@ -17,7 +17,7 @@ module Auth
         private
 
         def passkey_params
-          params.expect(passkey: [ :nickname, :credential_response ])
+          params.expect(passkey: [:nickname, :credential_response])
         end
       end
     end

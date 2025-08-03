@@ -8,6 +8,7 @@ module Help::App
 
     def show
     end
+
     def new
       # for security
       reset_session
@@ -18,6 +19,7 @@ module Help::App
 
     def edit
     end
+
     def create
       @service_site_contact = ServiceSiteContact.new(sample_params)
       cfv = Rails.env.test? ? true : !!cloudflare_turnstile_validation["success"] # NOTE: test passes the line.
@@ -51,10 +53,8 @@ module Help::App
       end
     end
 
-
     def update
     end
-
 
     private
 
@@ -65,8 +65,9 @@ module Help::App
 
     # Only allow a list of trusted parameters through.
     def sample_params
-      params.expect(service_site_contact: [ :confirm_policy, :telephone_number, :email_address ])
+      params.expect(service_site_contact: [:confirm_policy, :telephone_number, :email_address])
     end
+
     # end
   end
 end

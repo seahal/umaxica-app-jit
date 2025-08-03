@@ -1,5 +1,5 @@
-module Www
-  module Org
+module Auth
+  module App
     class WithdrawalsController < ApplicationController
       def new
       end

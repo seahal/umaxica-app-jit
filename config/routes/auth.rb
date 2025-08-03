@@ -23,6 +23,8 @@ Rails.application.routes.draw do
           resource :google, only: %i[new create]
           resource :apple, only: %i[new create]
         end
+        # Withdrawal
+        resource :withdrawal, only: %i[new create edit update]
         # Settings with logined user
         resource :setting, only: %i[show]
         namespace :setting do
@@ -54,6 +56,7 @@ Rails.application.routes.draw do
           resources :apples, only: [ :show ]
           resources :googles, only: [ :show ]
         end
+        #
         resource :withdrawal, only: %i[new create edit update]
         # for owner
         resources :owner

@@ -25,8 +25,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
           # show stating env
           resource :staging, only: :show
-          # Withdrawal
-          resource :withdrawal, only: %i[new create edit update]
           # Settings with logined user
           resource :setting, only: %i[show]
           # Settings without login
@@ -50,18 +48,7 @@ Rails.application.routes.draw do
         resource :health, only: :show
         # show stating env
         resource :staging, only: :show, format: :html
-        # registration staff page
-        resource :registration, only: [ :new, :create, :edit, :update ] do
-          resource :emails, only: [ :new, :create, :edit, :update ]
-          resource :telephone, only: [ :new, :create, :edit, :update ]
-        end
-        # Sign up pages
-        resource :authentication, only: :new do
-          resources :emails, only: %i[create edit update]
-        end
         namespace :setting do
-          resources :totp, only: [ :index, :new, :create, :edit, :update ]
-          resources :passkeys, only: [ :index, :edit, :update, :new ]
           resources :emails, only: [ :index ]
           resources :apples, only: [ :show ]
           resources :googles, only: [ :show ]
@@ -73,7 +60,6 @@ Rails.application.routes.draw do
           resources :emails, only: [ :create, :new ]
           resources :telephones, only: [ :create, :new ]
         end
-        resource :withdrawal, only: %i[new create edit update]
         # for owner
         resources :owner
         # for customer services
