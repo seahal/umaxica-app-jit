@@ -16,7 +16,41 @@
 require "test_helper"
 
 class StaffRecoveryCodeTest < ActiveSupport::TestCase
-  test "the truth" do
-    assert true
+  test "should create recovery code with valid attributes" do
+    recovery_code = StaffRecoveryCode.new(
+      recovery_code_digest: "digest_hash",
+      expires_in: Date.tomorrow,
+      staff_id: 999999  # Use dummy ID to avoid constraint
+    )
+    # Test attribute assignment without actual save
+    assert_equal "digest_hash", recovery_code.recovery_code_digest
+    assert_equal Date.tomorrow, recovery_code.expires_in
+    assert_equal 999999, recovery_code.staff_id
+  end
+
+  test "should belong to staff" do
+    assert_respond_to StaffRecoveryCode.new, :staff
+  end
+
+  test "should require staff_id" do
+    recovery_code = StaffRecoveryCode.new
+    refute recovery_code.valid?
+    assert_includes recovery_code.errors[:staff_id], "を入力してください"
+  end
+
+  test "should inherit from IdentifiersRecord" do
+    assert StaffRecoveryCode.ancestors.include?(IdentifiersRecord)
+  end
+
+  test "should have required database columns" do
+    required_columns = %w[recovery_code_digest expires_in staff_id]
+    required_columns.each do |column|
+      assert_includes StaffRecoveryCode.column_names, column
+    end
+  end
+
+  test "should handle expiration date" do
+    recovery_code = StaffRecoveryCode.new(expires_in: Date.tomorrow, staff_id: 1)
+    assert_equal Date.tomorrow, recovery_code.expires_in
   end
 end

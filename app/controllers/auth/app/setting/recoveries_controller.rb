@@ -31,16 +31,15 @@ module Auth
         # POST /recoveries or /recoveries.json
         def create
           @user_recovery_code = UserRecoveryCode.new(user_recovery_code_params)
-          @user_recovery_code.recovery_code = session[:user_recovery_code]
+          argon2 = Argon2::Password.new()
+          @user_recovery_code.recovery_code_digest = argon2.create(session[:user_recovery_code])
+          @user_recovery_code.user_id = User.first.id # FIXME: user_id is not good!
 
           respond_to do |format|
             if @user_recovery_code.save
               format.html { redirect_to auth_app_setting_recovery_path(@user_recovery_code), notice: t("messages.user_recovery_code_successfully_created") }
-              format.json { render :show, status: :created, location: auth_app_setting_recovery_path(@user_recovery_code) }
             else
-              session[:user_recovery_code] = generate_base58_string
               format.html { render :new, status: :unprocessable_content }
-              format.json { render json: @user_recovery_code.errors, status: :unprocessable_content }
             end
           end
         end

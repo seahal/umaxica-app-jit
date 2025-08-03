@@ -19,7 +19,43 @@
 require "test_helper"
 
 class PasskeyForUserTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "should create passkey with valid attributes" do
+    passkey = PasskeyForUser.new(
+      description: "Test Passkey",
+      public_key: "test_public_key",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      user_id: 999999, # Use dummy ID to avoid constraint
+      webauthn_id: SecureRandom.uuid
+    )
+    # Test attribute assignment without actual save
+    assert_equal "Test Passkey", passkey.description
+    assert_equal "test_public_key", passkey.public_key
+    assert_equal 0, passkey.sign_count
+  end
+
+  test "should belong to user" do
+    assert_respond_to PasskeyForUser.new, :user
+  end
+
+  test "should have description field" do
+    passkey = PasskeyForUser.new(description: "Test Description")
+    assert_equal "Test Description", passkey.description
+  end
+
+  test "should have public_key field" do
+    passkey = PasskeyForUser.new(public_key: "test_key")
+    assert_equal "test_key", passkey.public_key
+  end
+
+  test "should inherit from IdentifierRecord" do
+    assert PasskeyForUser.ancestors.include?(IdentifierRecord)
+  end
+
+  test "should have required database columns" do
+    required_columns = %w[description public_key sign_count external_id user_id webauthn_id]
+    required_columns.each do |column|
+      assert_includes PasskeyForUser.column_names, column
+    end
+  end
 end

@@ -16,6 +16,10 @@
   <% end %>
 
   <div>
+    <p> <%= session[:user_recovery_code] %> </p>
+  </div>
+
+  <div>
     <%= f.checkbox :confirm_create_recovery_code %>
     <%= f.label :confirm_create_recovery_code, 'create' %>
   </div>

@@ -14,4 +14,7 @@
 #  index_staff_recovery_codes_on_staff_id  (staff_id)
 #
 class StaffRecoveryCode < IdentifiersRecord
+  belongs_to :staff
+  
+  validates :staff_id, presence: true
 end
