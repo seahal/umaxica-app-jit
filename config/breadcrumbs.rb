@@ -21,7 +21,7 @@ crumb :com do
   link "Home", "/"
 end
 crumb :com_preference do
-  link I18n.t("controller.www.app.preference.show.page_title"), www_com_preference_path
+  link I18n.t("controller.www.app.preference.show.page_title"), apex_com_preference_path
   parent :com
 end
 

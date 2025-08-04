@@ -6,12 +6,45 @@ module AccessToken
 
   public
 
+
   # TODO: Implement!
-  def set_access_token(user_or_staff)
+  def sign_up(user_of_staff)
+    # set cookie
+    reset_session
   end
 
   # TODO: Implement!
-  def logged_in_user?
+  def log_in(user_of_staff)
+    reset_session
+  end
+
+  # TODO: Implement!
+  def log_out(user_of_staff)
+    # set cookie
+  end
+
+  # TODO: Implement!
+  def signed_in?
+    false
+  end
+
+  # TODO: Implement!
+  def signed_up?
+    false
+  end
+
+  # TODO: Implement!
+  def am_i_user?
+    false
+  end
+
+  # TODO: Implement!
+  def am_i_staff?
+    false
+  end
+
+  # TODO: Implement!
+  def am_i_owner?
     false
   end
 
