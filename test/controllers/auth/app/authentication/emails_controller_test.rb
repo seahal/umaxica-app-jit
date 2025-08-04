@@ -14,7 +14,7 @@ class Www::App::Session::EmailsControllerTest < ActionDispatch::IntegrationTest
       assert_select "input[type=?][name=?]", "email", "user_email[address]"
       # cloudflare tunstile
       assert_select "div.cf-turnstile"
-      # submitボタンの存在
+      # Check existence of submit button
       assert_select "input[type=?]", "submit"
     end
     assert_not cookies[:htop_private_key].nil?

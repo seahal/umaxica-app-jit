@@ -18,7 +18,7 @@ class Www::App::Registration::TelephonesControllerTest < ActionDispatch::Integra
       assert_select "input[type=?][name=?]", "checkbox", "user_telephone[confirm_using_mfa]"
       # cloudflare tunstile
       assert_select "div.cf-turnstile", 1..1
-      # submitボタンの存在
+      # Check existence of submit button
       assert_select "input[type=?]", "submit"
     end
     assert_select "a[href=?]", new_auth_app_registration_path

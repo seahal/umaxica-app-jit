@@ -23,7 +23,7 @@ class Www::App::Registration::EmailsControllerTest < ActionDispatch::Integration
       assert_select "input[type=?][name=?]", "checkbox", "user_email[confirm_policy]"
       # cloudflare tunstile
       assert_select "div.cf-turnstile", 1..1
-      # submitボタンの存在
+      # Check existence of submit button
       assert_select "input[type=?]", "submit"
     end
   end

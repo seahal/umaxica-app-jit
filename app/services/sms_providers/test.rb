@@ -7,7 +7,7 @@ module SmsProviders
 
       Rails.logger.info "[SMS Test Provider] Sending SMS to #{to}: #{message}"
 
-      # テスト環境や開発環境で実際にSMSを送信せずにログに記録
+      # Log SMS in test and development environments without actually sending
       {
         to: to,
         message: message,

@@ -98,7 +98,7 @@ module Memorize
     end
 
     def default_encryptor
-      # ActiveSupport::MessageEncryptorのインスタンスを作成
+      # Create an instance of ActiveSupport::MessageEncryptor
       secret_key_base = Rails.application.credentials.secret_key_base || ENV.fetch("SECRET_KEY_BASE", "development_key")
       key_generator = ActiveSupport::KeyGenerator.new(secret_key_base)
       key_len = ActiveSupport::MessageEncryptor.key_len

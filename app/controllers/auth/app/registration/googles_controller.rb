@@ -19,8 +19,8 @@ module Auth
             begin
               @user_info = extract_user_info(auth_hash)
 
-              # ここでユーザー登録処理を実装
-              # 例: User.find_or_create_by(email: @user_info[:email]) do |user|
+              # Implement user registration process here
+              # Example: User.find_or_create_by(email: @user_info[:email]) do |user|
               #       user.name = @user_info[:name]
               #       user.provider = @user_info[:provider]
               #       user.uid = @user_info[:uid]
@@ -34,7 +34,7 @@ module Auth
               redirect_to new_auth_app_registration_path
             end
           else
-            # 認証失敗時の処理
+            # Handle authentication failure
             Rails.logger.warn "Invalid or missing auth_hash"
             flash[:error] = t("messages.access_blocked_auth_error")
             redirect_to new_auth_app_registration_path
