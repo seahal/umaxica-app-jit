@@ -36,6 +36,9 @@ Rails.application.routes.draw do
           resource :apple, only: [ :show ]
           resource :google, only: [ :show ]
         end
+        namespace :token do
+          resources :refreshs, only: [ :update ]
+        end
       end
     end
 

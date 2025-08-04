@@ -9,14 +9,14 @@ module Auth
         before_action :set_passkey, only: [ :show, :edit, :update, :destroy ]
 
         def index
-          @passkeys = current_staff.staff_webauthn_credentials.active
+          render plain: "Not implemented"
         end
 
         def show
         end
 
         def new
-          @passkey = StaffWebauthnCredential.new
+          render plain: "Not implemented"
         end
 
         def edit

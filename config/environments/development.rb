@@ -79,12 +79,14 @@ Rails.application.configure do
   # added by user
 
   ## to avoid errors
+  config.hosts << "app.localhost"
+  config.hosts << "com.localhost"
+  config.hosts << "org.localhost"
   config.hosts << "api.app.localhost"
   config.hosts << "api.com.localhost"
   config.hosts << "api.org.localhost"
-  config.hosts << "www.app.localhost"
-  config.hosts << "www.com.localhost"
-  config.hosts << "www.org.localhost"
+  config.hosts << "auth.app.localhost"
+  config.hosts << "auth.org.localhost"
   config.hosts << "help.app.localhost"
   config.hosts << "help.com.localhost"
   config.hosts << "help.org.localhost"
@@ -94,8 +96,6 @@ Rails.application.configure do
   config.hosts << "news.app.localhost"
   config.hosts << "news.com.localhost"
   config.hosts << "news.org.localhost"
-  config.hosts << "auth.app.localhost"
-  config.hosts << "auth.org.localhost"
 
   # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
   config.after_initialize do

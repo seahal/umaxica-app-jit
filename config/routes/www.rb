@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     # for client site
     constraints host: ENV["WWW_CORPORATE_URL"] do
       scope module: :com, as: :com do
+        root to: "roots#index"
         # health check for html
         resource :health, only: :show, format: :html
         # show stating env
@@ -17,12 +18,11 @@ Rails.application.routes.draw do
       # service page
       constraints host: ENV["WWW_SERVICE_URL"] do
         scope module: :app, as: :app do
+          root to: "roots#index"
           # endpoint of health check
           resource :health, only: :show
           # show stating env
           resource :staging, only: :show
-          # Settings with logined user
-          resource :setting, only: %i[show]
           # Settings without login
           resource :preference, only: %i[show]
           namespace :preference do
@@ -40,13 +40,12 @@ Rails.application.routes.draw do
       mount Karafka::Web::App, at: "/karafka"
 
       scope module: :org, as: :org do
+        root to: "roots#index"
+
         # health check for html
         resource :health, only: :show
         # show stating env
         resource :staging, only: :show, format: :html
-        namespace :setting do
-          resources :emails, only: [ :index ]
-        end
         # Settings without login
         resource :preference, only: [ :show ]
         namespace :preference do
