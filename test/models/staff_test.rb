@@ -18,7 +18,6 @@ class StaffTest < ActiveSupport::TestCase
     assert @staff.valid?
   end
 
-
   test "should have timestamps" do
     assert_not_nil @staff.created_at
     assert_not_nil @staff.updated_at

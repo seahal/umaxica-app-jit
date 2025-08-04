@@ -33,8 +33,8 @@ module Auth
               format.html { redirect_to @abc, notice: t("messages.abc_successfully_created") }
               format.json { render :show, status: :created, location: @abc }
             else
-              format.html { render :new, status: :unprocessable_entity }
-              format.json { render json: @abc.errors, status: :unprocessable_entity }
+              format.html { render :new, status: :unprocessable_content }
+              format.json { render json: @abc.errors, status: :unprocessable_content }
             end
           end
         end
@@ -46,8 +46,8 @@ module Auth
               format.html { redirect_to @abc, notice: t("messages.abc_successfully_updated") }
               format.json { render :show, status: :ok, location: @abc }
             else
-              format.html { render :edit, status: :unprocessable_entity }
-              format.json { render json: @abc.errors, status: :unprocessable_entity }
+              format.html { render :edit, status: :unprocessable_content }
+              format.json { render json: @abc.errors, status: :unprocessable_content }
             end
           end
         end

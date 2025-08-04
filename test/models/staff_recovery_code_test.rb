@@ -20,7 +20,7 @@ class StaffRecoveryCodeTest < ActiveSupport::TestCase
     recovery_code = StaffRecoveryCode.new(
       recovery_code_digest: "digest_hash",
       expires_in: Date.tomorrow,
-      staff_id: 999999  # Use dummy ID to avoid constraint
+      staff_id: 999999 # Use dummy ID to avoid constraint
     )
     # Test attribute assignment without actual save
     assert_equal "digest_hash", recovery_code.recovery_code_digest

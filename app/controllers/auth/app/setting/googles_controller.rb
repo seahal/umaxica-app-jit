@@ -3,7 +3,6 @@ module Auth
     module Setting
       class GooglesController < ApplicationController
         def show
-
         end
       end
     end

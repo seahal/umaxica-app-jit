@@ -3,7 +3,6 @@ module Auth
     module Setting
       class ApplesController < ApplicationController
         def show
-
         end
       end
     end
