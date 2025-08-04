@@ -1,3 +1,5 @@
+# FIXME: move to refresh_token and access_token models.
+
 module Authentication
   extend ActiveSupport::Concern
 
@@ -29,11 +31,5 @@ module Authentication
       secure: Rails.env.production? ? true : false,
       expires: refresh_token_expires_at
     }
-    # cookies.signed[:identity_token] = {
-    #   value: { account_ids: [], common_account_id: nil },
-    #   httponly: false,
-    #   secure: Rails.env.production? ? true : false,
-    #   expires: refresh_token_expires_at
-    # }
   end
 end

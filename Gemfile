@@ -82,7 +82,7 @@ gem "rswag-ui"
 # TailwindCSS
 gem "tailwindcss-rails"
 # JWT
-gem 'jwt'
+gem "jwt"
 
 
 group :development, :test do

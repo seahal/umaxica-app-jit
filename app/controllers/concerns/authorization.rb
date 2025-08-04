@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# NOTE:
+# FIXME: move to refresh_token and access_token models.
 
 module Authorization
   extend ActiveSupport::Concern
@@ -30,12 +30,6 @@ module Authorization
       value: { id: nil, user_id:, staff_id:, last_mfa_time:, created_at: Time.zone.now,
                expires_at: refresh_token_expires_at },
       httponly: true,
-      secure: Rails.env.production? ? true : false,
-      expires: refresh_token_expires_at
-    }
-    cookies.signed[:identity_token] = {
-      value: { account_ids: [], common_account_id: nil },
-      httponly: false,
       secure: Rails.env.production? ? true : false,
       expires: refresh_token_expires_at
     }
