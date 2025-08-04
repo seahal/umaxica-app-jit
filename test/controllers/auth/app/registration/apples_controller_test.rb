@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Www::App::Registration::ApplesControllerTest < ActionDispatch::IntegrationTest
+class Auth::App::Registration::ApplesControllerTest < ActionDispatch::IntegrationTest
   test "should get new 2" do
     get new_auth_app_registration_apple_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
     assert_select "h1", I18n.t("controller.www.app.registration.apple.new.page_title")

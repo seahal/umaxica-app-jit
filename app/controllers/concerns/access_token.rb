@@ -6,7 +6,6 @@ module AccessToken
 
   public
 
-
   # TODO: Implement!
   def sign_up(user_of_staff)
     # set cookie

@@ -15,5 +15,5 @@ class TimeBasedOneTimePassword < UniversalRecord
   encrypts :private_key, downcase: true
 
   validates :first_token, presence: true, length: { is: 6 },
-                          numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

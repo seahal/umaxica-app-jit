@@ -10,8 +10,8 @@ class UserWebauthnCredential < IdentifiersRecord
 
   # WebAuthn authenticator types
   enum :authenticator_type, {
-    platform: 0,      # Touch ID, Face ID, Windows Hello, etc.
-    roaming: 1        # YubiKey, Security keys, etc.
+    platform: 0, # Touch ID, Face ID, Windows Hello, etc.
+    roaming: 1 # YubiKey, Security keys, etc.
   }
 
   scope :active, -> { where(active: true) }

@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Www::App::Registration::EmailsControllerTest < ActionDispatch::IntegrationTest
+class Auth::App::Registration::EmailsControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_auth_app_registration_email_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
     assert_response :success

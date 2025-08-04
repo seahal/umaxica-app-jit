@@ -2,9 +2,7 @@
 
 require "test_helper"
 
-module Auth
-  module Org
-    class HealthsControllerTest < ActionDispatch::IntegrationTest
+class Auth::Org::HealthsControllerTest < ActionDispatch::IntegrationTest
       test "should get show" do
         get auth_org_health_url
         assert_response :success
@@ -22,6 +20,4 @@ module Auth
           get auth_org_health_url(format: :json)
         end
       end
-    end
-  end
 end

@@ -2,9 +2,7 @@
 
 require "test_helper"
 
-module Org
-  module V1
-    class HealthsControllerTest < ActionDispatch::IntegrationTest
+class Api::Org::V1::HealthsControllerTest < ActionDispatch::IntegrationTest
       test "should get show" do
         get api_org_v1_health_url
         assert_response :success
@@ -14,6 +12,4 @@ module Org
         get api_org_v1_health_url
         assert response.parsed_body
       end
-    end
-  end
 end

@@ -12,6 +12,7 @@ Rails.application.routes.draw do
         resource :preference, only: [ :show ]
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
+          resource :region, only: [ :edit, :update ]
         end
       end
 
@@ -28,8 +29,7 @@ Rails.application.routes.draw do
           namespace :preference do
             # for ePrivacy settings.
             resource :cookie, only: [ :edit, :update ]
-            resources :emails, only: [ :edit, :update, :new ]
-            resources :telephones, only: [ :create, :new ]
+            resource :region, only: [ :edit, :update ]
           end
         end
       end
@@ -50,8 +50,7 @@ Rails.application.routes.draw do
         resource :preference, only: [ :show ]
         namespace :preference do
           resource :cookie, only: [ :edit, :update ]
-          resources :emails, only: [ :create, :new ]
-          resources :telephones, only: [ :create, :new ]
+          resource :region, only: [ :edit, :update ]
         end
         # for owner
         resources :owner

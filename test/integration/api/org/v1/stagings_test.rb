@@ -2,9 +2,7 @@
 
 require "test_helper"
 
-module Org
-  module V1
-    class StagingsTest < ActionDispatch::IntegrationTest
+class Api::Org::V1::StagingsTest < ActionDispatch::IntegrationTest
       test "should get show" do
         get api_org_v1_staging_url
         assert_response :success
@@ -12,6 +10,4 @@ module Org
         assert_equal false, json["staging"]
         assert_equal ENV.fetch("COMMIT_HASH", ""), json["id"]
       end
-    end
-  end
 end

@@ -2,10 +2,7 @@
 
 require "test_helper"
 
-module Auth
-  module App
-    module Setting
-      class TotpsControllerTest < ActionDispatch::IntegrationTest
+class Auth::App::Setting::TotpsControllerTest < ActionDispatch::IntegrationTest
         setup do
           @host = ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
         end
@@ -14,7 +11,4 @@ module Auth
           get auth_app_setting_totps_url, headers: { "Host" => @host }
           assert_response :success
         end
-      end
-    end
-  end
 end

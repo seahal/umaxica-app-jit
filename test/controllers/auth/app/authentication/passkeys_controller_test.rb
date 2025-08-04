@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Www::App::Session::PasskeysControllerTest < ActionDispatch::IntegrationTest
+class Auth::App::Authentication::PasskeysControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_auth_app_authentication_passkey_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
     assert_response :success

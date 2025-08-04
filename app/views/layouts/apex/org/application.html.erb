@@ -9,10 +9,11 @@
   <%= javascript_importmap_tags %>
 
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
- </head>
+</head>
 <body class="px-4">
 <header>
-  <h1 class="container mx-auto mt-28 px-5 flex"><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">Umaxica(www, org)</a></h1>
+  <h1 class="container mx-auto mt-28 px-5 flex">
+    <a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">Umaxica(www, org)</a></h1>
 </header>
 
 <hr>
@@ -57,7 +58,8 @@
     <li>Privacy</li>
     <li>Accessibility</li>
     <li>© <%= Time.now.year %> Umaxica</li>
-  </ul><p>© <%= Time.now.year %> Umaxica.</p>
+  </ul>
+  <p>© <%= Time.now.year %> Umaxica.</p>
 </footer>
 
 </body>

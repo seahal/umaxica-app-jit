@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Www::App::Authentication::RecoveryCodesControllerTest < ActionDispatch::IntegrationTest
+class Auth::App::Authentication::RecoveryCodesControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_auth_app_authentication_recovery_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
     assert_select "h1", "Auth::App::Authentication::RecoveryCodes#new"

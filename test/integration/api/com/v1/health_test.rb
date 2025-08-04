@@ -2,9 +2,7 @@
 
 require "test_helper"
 
-module Com
-  module V1
-    class HealthTest < ActionDispatch::IntegrationTest
+class Api::Com::V1::HealthTest < ActionDispatch::IntegrationTest
       test "should get show" do
         assert_raise do
           get api_com_v1_health_url(format: :html)
@@ -26,6 +24,4 @@ module Com
           assert_equal "OK", response.parsed_body["status"]
         end
       end
-    end
-  end
 end

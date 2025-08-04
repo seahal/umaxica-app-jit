@@ -2,9 +2,7 @@
 
 require "test_helper"
 
-module Help
-  module App
-    class HealthsControllerTest < ActionDispatch::IntegrationTest
+class Help::App::HealthsControllerTest < ActionDispatch::IntegrationTest
       test "should get show" do
         get help_app_health_url
         assert_response :success
@@ -22,6 +20,4 @@ module Help
           get docs_app_health_url(format: :json)
         end
       end
-    end
-  end
 end

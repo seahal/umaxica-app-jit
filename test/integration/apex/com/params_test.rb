@@ -2,8 +2,7 @@
 
 require "test_helper"
 
-module Com
-  class HealthTest < ActionDispatch::IntegrationTest
+class Apex::Com::HealthTest < ActionDispatch::IntegrationTest
     # NOTE: following tests are nothing to do with health check controller
     # test "check default params" do
     #   get www_com_health_url, params: { tz: "jst", lang: "ja" }
@@ -77,5 +76,4 @@ module Com
     #   get www_com_health_url, params: { tz: "utc", lang: "kr" }
     #   assert_select "a[href=?]", "/?tz=utc"
     # end
-  end
 end

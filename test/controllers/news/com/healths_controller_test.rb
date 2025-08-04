@@ -2,9 +2,7 @@
 
 require "test_helper"
 
-module News
-  module Com
-    class HealthsControllerTest < ActionDispatch::IntegrationTest
+class News::Com::HealthsControllerTest < ActionDispatch::IntegrationTest
       test "should get show" do
         get news_com_health_url
         assert_response :success
@@ -24,6 +22,4 @@ module News
           get news_com_health_url(format: :json)
         end
       end
-    end
-  end
 end

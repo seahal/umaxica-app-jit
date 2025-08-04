@@ -2,8 +2,7 @@
 
 require "test_helper"
 
-module App
-  class HealthsControllerTest < ActionDispatch::IntegrationTest
+class Apex::App::HealthsControllerTest < ActionDispatch::IntegrationTest
     test "should get show" do
       get apex_app_health_url
       assert_response :success
@@ -23,5 +22,4 @@ module App
         get apex_app_health_url(format: :json)
       end
     end
-  end
 end

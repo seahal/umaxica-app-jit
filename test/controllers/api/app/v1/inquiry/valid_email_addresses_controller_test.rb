@@ -1,10 +1,6 @@
 require "test_helper"
 
-module Api
-  module App
-    module V1
-      module Inquiry
-        class ValidEmailAddressControllerTest < ActionDispatch::IntegrationTest
+class Api::App::V1::Inquiry::ValidEmailAddressControllerTest < ActionDispatch::IntegrationTest
           test "should get show" do
             get api_app_v1_inquiry_valid_email_address_url Base64.urlsafe_encode64("one@example.com")
             assert_equal "application/json", @response.media_type
@@ -23,8 +19,4 @@ module Api
               get api_app_v1_inquiry_valid_email_address_url " 1 2 3"
             end
           end
-        end
-      end
-    end
-  end
 end

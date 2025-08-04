@@ -2,12 +2,10 @@
 
 require "test_helper"
 
-module Org
-  class StagingsControllerTest < ActionDispatch::IntegrationTest
+class Apex::Org::StagingsControllerTest < ActionDispatch::IntegrationTest
     test "should get show" do
       get apex_org_staging_url
       assert_response :success
       assert_select "p", "HASH =>#{ENV['COMMIT_HASH']}"
     end
-  end
 end

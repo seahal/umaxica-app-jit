@@ -2,10 +2,9 @@
 
 require "test_helper"
 
-module Www::Com
+module Apex::App
   class ApplicationHelperTest < ActionView::TestCase
-    test "sample" do
-      # assert_equal Time.new, to_localtime(Time.new)
+    test "cloudflare" do
       assert true
     end
   end

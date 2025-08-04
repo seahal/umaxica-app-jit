@@ -2,7 +2,7 @@
 
 module Redirect
   extend ActiveSupport::Concern
-  ALLOWED_HOSTS = [ "app.www.localdomain" ].map(&:downcase).freeze
+  ALLOWED_HOSTS = ["app.www.localdomain"].map(&:downcase).freeze
 
   private
 
@@ -48,7 +48,7 @@ module Redirect
     # Check for exact match or subdomain match
     ALLOWED_HOSTS.any? do |allowed_host|
       host_downcase == allowed_host ||
-      host_downcase.end_with?(".#{allowed_host}")
+        host_downcase.end_with?(".#{allowed_host}")
     end
   end
 end

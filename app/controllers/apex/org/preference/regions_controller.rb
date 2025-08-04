@@ -1,11 +1,10 @@
 module Apex
   module Org
     module Preference
-      class EmailsController < ApplicationController
-        def new
+      class RegionsController < ApplicationController
+        def show
         end
-
-        def create
+        def edit
         end
       end
     end

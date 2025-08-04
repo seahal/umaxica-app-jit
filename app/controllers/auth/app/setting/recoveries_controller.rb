@@ -76,7 +76,7 @@ module Auth
 
         # Only allow a list of trusted parameters through.
         def user_recovery_code_params
-          params.expect(user_recovery_code: [ :confirm_create_recovery_code ])
+          params.expect(user_recovery_code: [:confirm_create_recovery_code])
         end
 
         def generate_base58_string

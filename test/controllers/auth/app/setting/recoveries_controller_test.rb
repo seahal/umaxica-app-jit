@@ -2,10 +2,7 @@
 
 require "test_helper"
 
-module Auth
-  module App
-    module Setting
-      class RecoveriesControllerTest < ActionDispatch::IntegrationTest
+class Auth::App::Setting::RecoveriesControllerTest < ActionDispatch::IntegrationTest
         setup do
           @host = ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
         end
@@ -33,7 +30,4 @@ module Auth
         #
         #   assert_response :unprocessable_content
         # end
-      end
-    end
-  end
 end

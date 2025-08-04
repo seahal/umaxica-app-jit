@@ -1,7 +1,8 @@
 <%= form_with(model: user_recovery_code, url: user_recovery_code.persisted? ? auth_app_setting_recovery_path(user_recovery_code) : auth_app_setting_recoveries_path, local: true) do |form| %>
   <% if user_recovery_code.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(user_recovery_code.errors.count, "error") %> prohibited this user recovery code from being saved:</h2>
+      <h2><%= pluralize(user_recovery_code.errors.count, "error") %> prohibited this user recovery code from being
+        saved:</h2>
 
       <ul>
         <% user_recovery_code.errors.each do |error| %>
