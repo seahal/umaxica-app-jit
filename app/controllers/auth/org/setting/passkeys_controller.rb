@@ -6,7 +6,7 @@ module Auth
       class PasskeysController < ApplicationController
         include WebAuthn
 
-        before_action :set_passkey, only: [:show, :edit, :update, :destroy]
+        before_action :set_passkey, only: [ :show, :edit, :update, :destroy ]
 
         def index
           render plain: "Not implemented"
@@ -46,7 +46,7 @@ module Auth
         end
 
         def passkey_params
-          params.expect(staff_webauthn_credential: [:nickname])
+          params.expect(staff_webauthn_credential: [ :nickname ])
         end
 
         def current_staff

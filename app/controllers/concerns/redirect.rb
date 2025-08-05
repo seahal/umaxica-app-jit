@@ -2,7 +2,7 @@
 
 module Redirect
   extend ActiveSupport::Concern
-  ALLOWED_HOSTS = ["app.www.localdomain"].map(&:downcase).freeze
+  ALLOWED_HOSTS = [ "app.www.localdomain" ].map(&:downcase).freeze
 
   private
 

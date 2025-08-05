@@ -1,10 +1,12 @@
 module Apex
-  module Com
+  module App
     module Preference
       class RegionsController < ApplicationController
-        def show
-        end
         def edit
+          render html: "not implemented"
+        end
+
+        def update
         end
       end
     end

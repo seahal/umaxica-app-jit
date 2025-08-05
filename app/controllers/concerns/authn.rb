@@ -1,6 +1,10 @@
-module AccessToken
+# FIXME: move to refresh_token and access_token models.
+
+module Authn
   extend ActiveSupport::Concern
 
+  # set url params
+  #
   JWT_ALGORITHM = "ES256"
   ACCESS_TOKEN_EXPIRY = 15.minutes
 
@@ -9,6 +13,8 @@ module AccessToken
   # TODO: Implement!
   def sign_up(user_of_staff)
     # set cookie
+
+    # this method needs to be implemented
     reset_session
   end
 
@@ -29,22 +35,43 @@ module AccessToken
 
   # TODO: Implement!
   def signed_up?
-    false
+    raise
   end
 
   # TODO: Implement!
   def am_i_user?
-    false
+    raise
   end
 
   # TODO: Implement!
   def am_i_staff?
-    false
+    raise
   end
 
   # TODO: Implement!
   def am_i_owner?
-    false
+    raise
+  end
+
+  def check_authentication
+    user_id = 0
+    staff_id = 0
+    last_mfa_time = nil
+    refresh_token_expires_at = 1.year.from_now
+
+    cookies.encrypted[:access_token] = {
+      value: { id: nil, user_id:, staff_id:, created_at: Time.zone.now, expires_at: nil },
+      httponly: true,
+      secure: Rails.env.production? ? true : false,
+      expires: 30.seconds.from_now
+    }
+    cookies.encrypted[:refresh_token] = {
+      value: { id: nil, user_id:, staff_id:, last_mfa_time:, created_at: Time.zone.now,
+               expires_at: refresh_token_expires_at },
+      httponly: true,
+      secure: Rails.env.production? ? true : false,
+      expires: refresh_token_expires_at
+    }
   end
 
   def generate_access_token(user_or_staff)
@@ -114,5 +141,29 @@ module AccessToken
                           public_key_der = Base64.decode64(public_key_base64)
                           OpenSSL::PKey::EC.new(public_key_der)
                         end
+  end
+
+  private
+
+  # generate uuid
+  def check_authentication
+    user_id = 0
+    staff_id = 0
+    last_mfa_time = nil
+    refresh_token_expires_at = 1.year.from_now
+
+    cookies.encrypted[:access_token] = {
+      value: { id: nil, user_id:, staff_id:, created_at: Time.zone.now, expires_at: nil },
+      httponly: true,
+      secure: Rails.env.production? ? true : false,
+      expires: 30.seconds.from_now
+    }
+    cookies.encrypted[:refresh_token] = {
+      value: { id: nil, user_id:, staff_id:, last_mfa_time:, created_at: Time.zone.now,
+               expires_at: refresh_token_expires_at },
+      httponly: true,
+      secure: Rails.env.production? ? true : false,
+      expires: refresh_token_expires_at
+    }
   end
 end

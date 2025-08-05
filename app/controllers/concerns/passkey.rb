@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-module WebAuthn
+module Passkey
   extend ActiveSupport::Concern
 end

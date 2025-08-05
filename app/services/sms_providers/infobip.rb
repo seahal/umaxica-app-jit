@@ -10,7 +10,7 @@ module SmsProviders
         body: {
           messages: [
             {
-              destinations: [{ to: to }],
+              destinations: [ { to: to } ],
               from: sender_id,
               text: message
             }

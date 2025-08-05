@@ -6,18 +6,18 @@ class Auth::Org::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get edit" do
-    # TODO: Implement edit action test
-    assert_not false
-  end
+  # test "should get edit" do
+  #   # TODO: Implement edit action test
+  #   # skip "Implementation pending"
+  # end
 
-  test "should post create" do
-    # TODO: Implement create action test
-    assert_not false
-  end
+  # test "should post create" do
+  #   # TODO: Implement create action test
+  #   # skip "Implementation pending"
+  # end
 
-  test "should patch update" do
-    # TODO: Implement update action test
-    assert_not false
-  end
+  # test "should patch update" do
+  #   # TODO: Implement update action test
+  #   # skip "Implementation pending"
+  # end
 end

@@ -18,11 +18,11 @@ module Health
       log: true
     )
 
-    @status, @body = if !![IdentifiersRecord].all? { it.connection.execute("SELECT 1;") }
-                       [200, "OK"]
-                     else
-                       [500, "NG"]
-                     end
+    @status, @body = if !![ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
+                       [ 200, "OK" ]
+    else
+                       [ 500, "NG" ]
+    end
 
     case request.path
     when "/health"

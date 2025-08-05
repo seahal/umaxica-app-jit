@@ -77,6 +77,7 @@ gem "importmap-rails"
 gem "view_component"
 # OpenAPI
 gem "rswag"
+gem "ostruct", "~> 0.6.3"
 gem "rswag-api"
 gem "rswag-ui"
 # TailwindCSS
