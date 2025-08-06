@@ -8,34 +8,68 @@ module Authn
   JWT_ALGORITHM = "ES256"
   ACCESS_TOKEN_EXPIRY = 15.minutes
 
-  public
+  included do
+    helper_method :signed_in?
+  end
 
   # TODO: Implement!
   def sign_up(user_of_staff)
-    # set cookie
-
-    # this method needs to be implemented
+    # to avoid session saisei kougeki
     reset_session
+
+    # create user or staff
+    user = User.create
+
+    # logged in
+    begin
+      log_in(user)
+    rescue
+      user.destroy
+    end
   end
 
   # TODO: Implement!
-  def log_in(user_of_staff)
+  def log_in(user_or_staff)
     reset_session
+
+    token = UserToken.create(user_id: user_or_staff.id)
+    credentials = generate_access_token(token)
+
+    # ACCESS_TOKEN: JWTは短期間（15分）
+    cookies[:access_token] = {
+      value: credentials,
+      httponly: true,
+      secure: Rails.env.production?,
+      expires: ACCESS_TOKEN_EXPIRY.from_now
+    }
+    # REFRESH_TOKEN: 長期間（1年）
+    cookies.encrypted[:refresh_token] = {
+      value: token.id,
+      httponly: true,
+      secure: Rails.env.production?,
+      expires: 1.year.from_now
+    }
+
+    # todo: redirect to
   end
 
   # TODO: Implement!
-  def log_out(user_of_staff)
+  def log_out
     # set cookie
+    cookies.delete :access_token
+    cookies.delete :refresh_token
   end
 
   # TODO: Implement!
   def signed_in?
-    false
-  end
-
-  # TODO: Implement!
-  def signed_up?
-    raise
+    return false if cookies[:access_token].blank?
+    
+    begin
+      verify_access_token(cookies[:access_token])
+      true
+    rescue JWT::ExpiredSignature, JWT::VerificationError
+      false
+    end
   end
 
   # TODO: Implement!
@@ -144,26 +178,4 @@ module Authn
   end
 
   private
-
-  # generate uuid
-  def check_authentication
-    user_id = 0
-    staff_id = 0
-    last_mfa_time = nil
-    refresh_token_expires_at = 1.year.from_now
-
-    cookies.encrypted[:access_token] = {
-      value: { id: nil, user_id:, staff_id:, created_at: Time.zone.now, expires_at: nil },
-      httponly: true,
-      secure: Rails.env.production? ? true : false,
-      expires: 30.seconds.from_now
-    }
-    cookies.encrypted[:refresh_token] = {
-      value: { id: nil, user_id:, staff_id:, last_mfa_time:, created_at: Time.zone.now,
-               expires_at: refresh_token_expires_at },
-      httponly: true,
-      secure: Rails.env.production? ? true : false,
-      expires: refresh_token_expires_at
-    }
-  end
 end

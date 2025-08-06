@@ -5,26 +5,28 @@ Rails.application.config.middleware.use OmniAuth::Builder do
            {
              scope: "email,profile",
              state: true,
-             callback_path: "/registration/google",
+             callback_path: "/auth/google_oauth2/callback",
+             prompt: "select_account",
+             access_type: "offline",
              setup: lambda do |env|
                strategy = env["omniauth.strategy"]
                request = Rack::Request.new(env)
-               strategy.options.callback_url = "#{request.scheme}://#{request.host_with_port}/registration/google"
+               strategy.options.callback_url = "#{request.scheme}://#{request.host_with_port}/auth/google_oauth2/callback"
              end
            }
-  # provider :apple,
-  #          Rails.application.credentials[:OMNI_AUTH][:APPLE][:CLIENT_ID],
-  #          "",
-  #          {
-  #            scope: "email name",
-  #            team_id: Rails.application.credentials[:OMNI_AUTH][:APPLE][:TEAM_ID],
-  #            key_id: Rails.application.credentials[:OMNI_AUTH][:APPLE][:KEY_ID],
-  #            pem: Rails.application.credentials[:OMNI_AUTH][:APPLE][:APPLE_PRIVATE_KEY],
-  #            callback_path: "/registration/apple",
-  #            setup: lambda do |env|
-  #              strategy = env["omniauth.strategy"]
-  #              request = Rack::Request.new(env)
-  #              strategy.options.callback_url = "#{request.scheme}://#{request.host_with_port}/registration/apple"
-  #            end
-  #          }
+  provider :apple,
+           Rails.application.credentials[:OMNI_AUTH][:APPLE][:CLIENT_ID],
+           "",
+           {
+             scope: "email name",
+             team_id: Rails.application.credentials[:OMNI_AUTH][:APPLE][:TEAM_ID],
+             key_id: Rails.application.credentials[:OMNI_AUTH][:APPLE][:KEY_ID],
+             pem: Rails.application.credentials[:OMNI_AUTH][:APPLE][:APPLE_PRIVATE_KEY],
+             callback_path: "/auth/apple/callback",
+             setup: lambda do |env|
+               strategy = env["omniauth.strategy"]
+               request = Rack::Request.new(env)
+               strategy.options.callback_url = "#{request.scheme}://#{request.host_with_port}/auth/apple/callback"
+             end
+           }
 end

@@ -73,6 +73,7 @@ Rails.application.routes.draw do
         resources :docs
         # news
         resources :news
+        # OAuth required pages
         namespace :www do
           namespace :com do
             resources :docs, only: %i[new]

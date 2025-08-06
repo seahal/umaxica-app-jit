@@ -3,4 +3,8 @@ module Auth::App::RootsHelper
     # TODO: implement!
     false
   end
+
+  def logged_out?
+    !logged_in?
+  end
 end

@@ -1,6 +1,8 @@
 module Auth
   module App
     class WithdrawalsController < ApplicationController
+      # note: you would surprise to think that new is not good for this method,
+      #       but you should think that create delete flag to this
       def new
       end
 

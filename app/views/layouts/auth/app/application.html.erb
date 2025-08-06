@@ -14,10 +14,10 @@
 <header>
   <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Umaxica(auth, app)</a></h1>
   <p>
-    <% if logged_in? %>
+    <% if signed_in? %>
       <%= link_to "log out?", edit_auth_app_authentication_path %>
     <% else %>
-      <%= link_to "login?", new_auth_app_authentication_path %>
+      <%= link_to "log in?", new_auth_app_authentication_path %>
     <% end %>
   </p>
 </header>

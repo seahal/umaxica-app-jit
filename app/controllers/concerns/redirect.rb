@@ -2,10 +2,30 @@
 
 module Redirect
   extend ActiveSupport::Concern
-  ALLOWED_HOSTS = [ "app.www.localdomain" ].map(&:downcase).freeze
+  ALLOWED_HOSTS = [ ENV["WWW_CORPORATE_URL"],
+                   ENV["WWW_SERVICE_URL"],
+                   ENV["WWW_STAFF_URL"],
+                   ENV["API_CORPORATE_URL"],
+                   ENV["API_SERVICE_URL"],
+                   ENV["API_STAFF_URL"],
+                   ENV["AUTH_SERVICE_URL"],
+                   ENV["AUTH_STAFF_URL"],
+                   ENV["DOCS_CORPORATE_URL"],
+                   ENV["DOCS_SERVICE_URL"],
+                   ENV["DOCS_STAFF_URL"],
+                   ENV["NEWS_CORPORATE_URL"],
+                   ENV["NEWS_SERVICE_URL"],
+                   ENV["NEWS_STAFF_URL"],
+                   ENV["HELP_CORPORATE_URL"],
+                   ENV["HELP_SERVICE_URL"],
+                   ENV["HELP_STAFF_URL"],
+                   ENV["EDGE_CORPORATE_URL"],
+                   ENV["EDGE_SERVICE_URL"],
+                   ENV["EDGE_STAFF_URL"] ].compact.map(&:downcase).freeze
 
   private
 
+  # TODO: rewrite!
   def generate_redirect_url(url)
     return nil if url.blank?
 
@@ -17,10 +37,9 @@ module Redirect
     else
       nil
     end
-  rescue URI::InvalidURIError
-    nil
   end
 
+  # TODO: rewrite!
   def jump_to_generated_url(encoded_url)
     return redirect_to "/" if encoded_url.blank?
 
@@ -30,7 +49,7 @@ module Redirect
 
       # Double-check the URL is still safe after decoding
       if allowed_host?(parsed_uri.host) && %w[http https].include?(parsed_uri.scheme)
-        redirect_to parsed_uri.to_s
+        redirect_to parsed_uri.to_s, allow_other_host: true
       else
         head :not_found
       end

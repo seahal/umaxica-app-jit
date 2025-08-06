@@ -1,6 +1,7 @@
 module Auth::App
   class AuthenticationsController < ApplicationController
     include ::Redirect
+    include ::Authn
 
     def new
       raise if signed_in?
@@ -11,8 +12,8 @@ module Auth::App
     end
 
     def destroy
-      raise unless logged_in?
-      # TODO: Implement!
+      raise unless signed_in?
+      log_out
 
       # Redirect to login page
       flash[:success] = "logged out!"

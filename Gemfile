@@ -68,6 +68,8 @@ gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
+##
+gem 'googleauth'
 # 認可 (Authorization)
 gem "pundit"
 gem "rolify"
