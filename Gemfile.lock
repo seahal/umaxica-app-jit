@@ -84,7 +84,7 @@ GEM
       ffi-compiler (~> 1.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1142.0)
+    aws-partitions (1.1143.0)
     aws-sdk (3.3.0)
       aws-sdk-resources (~> 3)
     aws-sdk-accessanalyzer (1.76.0)
@@ -159,7 +159,7 @@ GEM
     aws-sdk-apprunner (1.61.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-appstream (1.114.0)
+    aws-sdk-appstream (1.115.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-appsync (1.110.0)
@@ -246,7 +246,7 @@ GEM
     aws-sdk-braket (1.56.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-budgets (1.90.0)
+    aws-sdk-budgets (1.91.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-chatbot (1.28.0)
@@ -493,7 +493,7 @@ GEM
     aws-sdk-ebs (1.62.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-ec2 (1.545.0)
+    aws-sdk-ec2 (1.546.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-ec2instanceconnect (1.61.0)
@@ -943,7 +943,7 @@ GEM
     aws-sdk-omics (1.52.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-opensearchserverless (1.42.0)
+    aws-sdk-opensearchserverless (1.43.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-opensearchservice (1.73.0)
@@ -1027,7 +1027,7 @@ GEM
     aws-sdk-qapps (1.20.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-qbusiness (1.45.0)
+    aws-sdk-qbusiness (1.46.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-qconnect (1.38.0)
@@ -1943,31 +1943,31 @@ GEM
     gretel (5.0.1)
       actionview (>= 6.1)
       railties (>= 6.1)
-    grpc (1.74.0)
+    grpc (1.74.1)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.74.0-aarch64-linux-gnu)
+    grpc (1.74.1-aarch64-linux-gnu)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.74.0-aarch64-linux-musl)
+    grpc (1.74.1-aarch64-linux-musl)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.74.0-arm64-darwin)
+    grpc (1.74.1-arm64-darwin)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.74.0-x86-linux-gnu)
+    grpc (1.74.1-x86-linux-gnu)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.74.0-x86-linux-musl)
+    grpc (1.74.1-x86-linux-musl)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.74.0-x86_64-darwin)
+    grpc (1.74.1-x86_64-darwin)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.74.0-x86_64-linux-gnu)
+    grpc (1.74.1-x86_64-linux-gnu)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.74.0-x86_64-linux-musl)
+    grpc (1.74.1-x86_64-linux-musl)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
     grpc-google-iam-v1 (1.11.0)
@@ -2654,7 +2654,6 @@ DEPENDENCIES
   foreman
   google-cloud-kms
   google-cloud-storage
-  googleauth
   gretel
   hiredis-client
   image_processing
@@ -2665,7 +2664,6 @@ DEPENDENCIES
   karafka
   karafka-web
   letter_opener
-  omniauth
   omniauth-apple
   omniauth-google-oauth2
   omniauth-rails_csrf_protection

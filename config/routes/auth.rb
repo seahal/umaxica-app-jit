@@ -10,8 +10,8 @@ Rails.application.routes.draw do
         namespace :registration do
           resources :emails, only: %i[new create edit update]
           resources :telephones, only: %i[new create edit update]
-          resource :apple, only: %i[new create]
-          resource :google, only: %i[new create]
+          resources :apples, only: %i[new]
+          resources :googles, only: %i[new]
         end
         # Sign In/Out pages
         resource :authentication, only: %i[new edit destroy]
@@ -20,9 +20,12 @@ Rails.application.routes.draw do
           resource :telephone, only: %i[new create]
           resource :passkey, only: %i[new create]
           resource :recovery, only: %i[new create]
-          resource :google, only: %i[new create]
           resource :apple, only: %i[new create]
+          resource :google, only: %i[new]
         end
+        # OAuth required pages
+        get "auth/:provider/callback", to: "sessions#create"
+        get "auth/failure", to: redirect("/") # TODO: Fix this
         # Withdrawal
         resource :withdrawal, only: %i[new create edit update]
         # Settings with logined user
@@ -30,7 +33,7 @@ Rails.application.routes.draw do
         namespace :setting do
           resources :passkeys, only: [ :index, :edit, :update, :new ]
           resources :recoveries
-          resources :totps, only: [ :index, :new, :create, :edit, :update, :show, :destroy ]
+          resources :totps
           resources :telephones
           resources :emails
           resource :apple, only: [ :show ]
@@ -53,15 +56,11 @@ Rails.application.routes.draw do
           resource :telephone, only: [ :new, :create, :edit, :update ]
         end
         # Sign up pages
-        resource :authentication, only: :new do
-          resources :emails, only: %i[create edit update]
-        end
+        resource :authentication
         namespace :setting do
           resources :totp, only: [ :index, :new, :create, :edit, :update ]
           resources :passkeys, only: [ :index, :edit, :update, :new ]
           resources :emails, only: [ :index ]
-          resources :apples, only: [ :show ]
-          resources :googles, only: [ :show ]
         end
         #
         resource :withdrawal, only: %i[new create edit update]

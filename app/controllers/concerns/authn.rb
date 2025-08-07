@@ -9,7 +9,7 @@ module Authn
   ACCESS_TOKEN_EXPIRY = 15.minutes
 
   included do
-    helper_method :signed_in?
+    helper_method :logged_in?
   end
 
   # TODO: Implement!
@@ -61,9 +61,9 @@ module Authn
   end
 
   # TODO: Implement!
-  def signed_in?
+  def logged_in?
     return false if cookies[:access_token].blank?
-    
+
     begin
       verify_access_token(cookies[:access_token])
       true

@@ -242,10 +242,33 @@ FACEBOOK_CLIENT_ID=your_client_id
 FACEBOOK_CLIENT_SECRET=your_client_secret
 ```
 
+## Known Issues & Limitations
+
+### Apple Sign In HTTPS Requirement
+Apple Sign In requires HTTPS for production and callback URLs. Currently blocked for local development:
+
+- **Issue**: Apple requires HTTPS for callback URLs (`https://domain.com/auth/apple/callback`)
+- **Current State**: Local development uses HTTP (`http://localhost:3000/auth/apple/callback`)
+- **Impact**: Apple Sign In cannot be tested locally without SSL setup
+- **Workaround**: Use ngrok or similar tools for HTTPS tunneling during development
+- **Resolution**: Deploy to production/staging environment with proper SSL certificates
+
+**Action Items:**
+1. Set up staging environment with HTTPS
+2. Configure Apple Developer Console with production callback URLs
+3. Test Apple Sign In on staging before production deployment
+4. Consider ngrok setup for local development if needed
+
+### Other Provider Status
+- **Google OAuth**: ✅ Working (supports HTTP for localhost)
+- **Apple OAuth**: ❌ Blocked by HTTPS requirement
+- **Future providers**: Need individual HTTPS requirement assessment
+
 ## Next Steps
 
-1. Review and approve this architecture plan
-2. Begin Phase 1 implementation
-3. Set up development environment with OAuth credentials
-4. Create comprehensive test suite
-5. Document API endpoints and integration guides
+1. **PRIORITY**: Set up staging/production environment with HTTPS for Apple Sign In testing
+2. Review and approve this architecture plan
+3. Begin Phase 1 implementation (focusing on Google first)
+4. Set up development environment with OAuth credentials
+5. Create comprehensive test suite
+6. Document API endpoints and integration guides

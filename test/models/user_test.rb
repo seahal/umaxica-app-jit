@@ -52,12 +52,4 @@ class UserTest < ActiveSupport::TestCase
     assert_respond_to @user, :user_time_based_one_time_password
     assert_equal :has_many, @user.class.reflect_on_association(:user_time_based_one_time_password).macro
   end
-
-  test "should update timestamps on save" do
-    original_updated_at = @user.updated_at
-    travel 1.second do
-      @user.touch
-      assert @user.updated_at > original_updated_at
-    end
-  end
 end

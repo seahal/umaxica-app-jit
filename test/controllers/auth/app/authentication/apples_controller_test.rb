@@ -1,9 +1,15 @@
 require "test_helper"
 
 class Auth::App::Authentication::ApplesControllerTest < ActionDispatch::IntegrationTest
-  test "should get new" do
+  test "should redirect to apple auth" do
     get new_auth_app_authentication_apple_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
-    assert_response :success
-    assert_select "a[href=?]", new_auth_app_authentication_path, I18n.t("www.app.authentication.new.back")
+    assert_response :redirect
+    assert_redirected_to "/auth/apple"
+  end
+
+  test "create should redirect to apple auth" do
+    post auth_app_authentication_apple_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
+    assert_response :redirect
+    assert_redirected_to "/auth/apple"
   end
 end

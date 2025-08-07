@@ -12,7 +12,7 @@ class Auth::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", new_auth_app_authentication_recovery_path
     assert_select "a[href=?]", new_auth_app_registration_path
   end
-
+  //
   test "should get edit" do
     skip
     get edit_auth_app_authentication_url

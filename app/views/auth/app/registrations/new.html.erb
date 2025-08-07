@@ -1,15 +1,12 @@
 <div>
-  <h1 class="font-bold text-4xl">App::Registrations#new</h1>
+  <h1 class="font-bold text-4xl">registration</h1>
   <p>Find me in app/views/net/registrations/new.html.erb</p>
 
   <ul>
     <li><%= link_to '新規登録(email)', new_auth_app_registration_email_path %></li>
     <li><%= link_to '新規登録(telephone)', new_auth_app_registration_telephone_path %></li>
-    <li><%= link_to '新規登録(apple)', new_auth_app_registration_apple_path %></li>
-    <li><%= link_to 'Sign in ?', new_auth_app_authentication_path %></li>
+    <li><%= button_to "Google でログイン", "/auth/google_oauth2", method: :post, data: { turbo: false } %></li>
+    <li><%= button_to "Apple でログイン", "/auth/apple", method: :post, data: { turbo: false } %></li>
+    <li><%= link_to 'log up?', new_auth_app_authentication_path %></li>
   </ul>
-
-  <%= form_with url: "/auth/google_oauth2", method: :post, local: true do |f| %>
-    <%= f.submit "Googleでログイン" %>
-  <% end %>
 </div>

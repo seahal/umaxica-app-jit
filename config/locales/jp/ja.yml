@@ -31,6 +31,9 @@ ja:
           google:
             new:
               jump_obj: 'sign in with google'
+        authentication:
+          destroy:
+            jump_obj: 'sign in with email'
     www:
       app:
         preference:
