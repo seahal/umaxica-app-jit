@@ -4,9 +4,6 @@ module Auth
   module App
     module Setting
       class PasskeysController < ApplicationController
-        #    before_action :authenticate_user!
-        # before_action :set_passkey, only: %i[ show edit update destroy ]
-
         # GET /passkeys or /passkeys.json
         def index
         end
@@ -19,20 +16,21 @@ module Auth
         def new
         end
 
-        # GET /passkeys/challenge - WebAuthn registration challenge
+        # Post /passkeys/challenge - WebAuthn registration challenge
         def challenge
-          options = WebAuthn::Credential.options_for_create(
+          current_user = User.last
+
+          creation_options = WebAuthn::Credential.options_for_create(
             user: {
-              id: current_user.id,
-              name: current_user.email || current_user.id,
-              display_name: current_user.email || current_user.id
-            },
-            exclude: current_user.user_passkeys.pluck(:webauthn_id)
+              id: current_user.webauthn_id,
+              name: 'sample',
+              display_name: 'sample'
+            }
           )
-
-          session[:creation_challenge] = options.challenge
-
-          render json: options
+          
+          session[:webauthn_create_challenge] = creation_options.challenge
+          
+          render json: {challenge: creation_options.challenge}
         end
 
         # POST /passkeys/verify - Verify WebAuthn registration

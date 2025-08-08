@@ -33,7 +33,7 @@ Rails.application.routes.draw do
         namespace :setting do
           resources :passkeys, only: [ :index, :edit, :update, :new ] do
             collection do
-              get :challenge
+              post :challenge
               post :verify
             end
           end
@@ -66,7 +66,7 @@ Rails.application.routes.draw do
           resources :totp, only: [ :index, :new, :create, :edit, :update ]
           resources :passkeys, only: [ :index, :edit, :update, :new ] do
             collection do
-              get :challenge
+              post :challenge
               post :verify
             end
           end

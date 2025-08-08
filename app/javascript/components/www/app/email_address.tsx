@@ -1,5 +1,5 @@
 const EmailAddress = () => {
-    return <div>Email Address</div>;
+	return <div>Email Address</div>;
 };
 
 export default EmailAddress;
