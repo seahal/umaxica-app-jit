@@ -1,17 +1,18 @@
+# test/test_helper.rb の先頭から
+require "simplecov"
+SimpleCov.start "rails" do
+  enable_coverage :branch
+  add_filter %w[/bin/ /db/ /config/ /test/]
+  track_files "app/**/*.rb"
+end
+
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 
-  require "simplecov"
-  SimpleCov.start "rails"
-
-
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with specified workers
     parallelize(workers: :number_of_processors)
-
-    # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
   end
 end

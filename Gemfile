@@ -58,13 +58,14 @@ gem "webauthn"
 gem "rotp"
 # QRCode Generator, QRCode is a deso wave's ...
 gem "rqrcode"
+# Solid Cache
 gem "solid_cache"
 # pagenation
 gem "kaminari"
 # Breadcrumbs
 gem "gretel"
 # Social Login
-# gem "omniauth"
+gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"

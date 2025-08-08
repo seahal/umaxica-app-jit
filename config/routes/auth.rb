@@ -31,7 +31,12 @@ Rails.application.routes.draw do
         # Settings with logined user
         resource :setting, only: %i[show]
         namespace :setting do
-          resources :passkeys, only: [ :index, :edit, :update, :new ]
+          resources :passkeys, only: [ :index, :edit, :update, :new ] do
+            collection do
+              get :challenge
+              post :verify
+            end
+          end
           resources :recoveries
           resources :totps
           resources :telephones
@@ -59,7 +64,12 @@ Rails.application.routes.draw do
         resource :authentication
         namespace :setting do
           resources :totp, only: [ :index, :new, :create, :edit, :update ]
-          resources :passkeys, only: [ :index, :edit, :update, :new ]
+          resources :passkeys, only: [ :index, :edit, :update, :new ] do
+            collection do
+              get :challenge
+              post :verify
+            end
+          end
           resources :emails, only: [ :index ]
         end
         #

@@ -2,7 +2,6 @@
 
 <%= form_with url: auth_app_authentication_path, method: :destroy do |f| %>
   <%= f.submit %>
-
 <% end %>
 
 <%= button_to "削除?", auth_app_authentication_path(notice), method: :delete %>

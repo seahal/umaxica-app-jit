@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_03_215056) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_08_064848) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -84,6 +84,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_03_215056) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "staff_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "staff_id", null: false
+    t.string "external_id"
+    t.text "public_key"
+    t.integer "sign_count"
+    t.string "user_handle"
+    t.string "name"
+    t.string "transports"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["external_id"], name: "index_staff_passkeys_on_external_id"
+    t.index ["staff_id"], name: "index_staff_passkeys_on_staff_id"
+  end
+
   create_table "staff_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.bigint "staff_id", null: false
     t.string "recovery_code_digest"
@@ -145,6 +159,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_03_215056) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "user_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "external_id"
+    t.text "public_key"
+    t.integer "sign_count"
+    t.string "user_handle"
+    t.string "name"
+    t.string "transports"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["external_id"], name: "index_user_passkeys_on_external_id"
+    t.index ["user_id"], name: "index_user_passkeys_on_user_id"
+  end
+
   create_table "user_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "recovery_code_digest"
@@ -175,4 +203,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_03_215056) do
 
   add_foreign_key "apple_auths", "users"
   add_foreign_key "google_auths", "users"
+  add_foreign_key "staff_passkeys", "staffs"
+  add_foreign_key "user_passkeys", "users"
 end

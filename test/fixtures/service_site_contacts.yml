@@ -28,7 +28,7 @@ two:
   id: "550e8400-e29b-41d4-a716-446655440397"
   title: "Support request example"
   description: "This is another sample contact inquiry for support."
-  email_address: "support@example.com" 
+  email_address: "support@example.com"
   telephone_number: "+81908765432"
   ip_address: "10.0.0.1/32"
   created_at: <%= Time.current %>

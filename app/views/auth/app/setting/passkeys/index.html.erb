@@ -1,3 +1,9 @@
-<h1 class="font-bold text-4xl"><%= t('controller.auth.app.setting.passkey.index.page_title') %></h1>
-<p>Find me in app/views/www/app/setting/security_keys/index.html.erb</p>
-<p><%= link_to t('controller.auth.app.setting.passkey.index.return_page'), auth_app_setting_path %></p>
+<ul>
+  <li>
+    <%= link_to t('controller.auth.app.setting.passkey.new'), new_auth_app_setting_passkey_path,
+                class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+  </li>
+  <li>
+    <%= link_to t('controller.auth.app.setting.passkey.index.return_page'), auth_app_setting_path,
+                class: "text-indigo-600 hover:text-indigo-900" %></li>
+</ul>

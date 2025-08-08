@@ -204,7 +204,7 @@ GEM
     aws-sdk-backupsearch (1.9.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-batch (1.120.0)
+    aws-sdk-batch (1.121.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-bcmdataexports (1.24.0)
@@ -288,7 +288,7 @@ GEM
     aws-sdk-cloudformation (1.137.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-cloudfront (1.124.0)
+    aws-sdk-cloudfront (1.125.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-cloudfrontkeyvaluestore (1.26.0)
@@ -330,7 +330,7 @@ GEM
     aws-sdk-codeartifact (1.65.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-codebuild (1.160.0)
+    aws-sdk-codebuild (1.161.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-codecatalyst (1.39.0)
@@ -586,7 +586,7 @@ GEM
     aws-sdk-gamelift (1.109.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-gameliftstreams (1.8.0)
+    aws-sdk-gameliftstreams (1.9.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-geomaps (1.11.0)
@@ -604,7 +604,7 @@ GEM
     aws-sdk-globalaccelerator (1.82.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-glue (1.229.0)
+    aws-sdk-glue (1.230.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-gluedatabrew (1.58.0)
@@ -619,7 +619,7 @@ GEM
     aws-sdk-groundstation (1.70.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-guardduty (1.123.0)
+    aws-sdk-guardduty (1.124.0)
       aws-sdk-core (~> 3, >= 3.228.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-health (1.84.0)
@@ -1786,7 +1786,7 @@ GEM
       image_processing (~> 1.1)
       marcel (~> 1.0.0)
       ssrf_filter (~> 1.0)
-    cbor (0.5.9.9)
+    cbor (0.5.10.1)
     childprocess (5.1.0)
       logger (~> 1.5)
     chunky_png (1.4.0)
@@ -2664,6 +2664,7 @@ DEPENDENCIES
   karafka
   karafka-web
   letter_opener
+  omniauth
   omniauth-apple
   omniauth-google-oauth2
   omniauth-rails_csrf_protection

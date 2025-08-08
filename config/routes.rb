@@ -1,16 +1,10 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # for apex page
-  draw :apex
-  # api endpoint url
-  draw :api
-  # endpoint for auth
-  draw :auth
-  # endpoint for docs
-  draw :docs
-  # endpoint for news
-  draw :news
-  # endpoint for help
-  draw :help
+  draw :apex # for apex page
+  draw :api  # api endpoint url
+  draw :auth # endpoint for auth
+  draw :docs # endpoint for docs
+  draw :news # endpoint for news
+  draw :help # endpoint for help
 end

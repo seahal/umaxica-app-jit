@@ -26,7 +26,6 @@ class UserTokenTest < ActiveSupport::TestCase
     assert_equal 36, @user_token.id.length
   end
 
-
   test "should have created_at and updated_at timestamps" do
     @user_token.save!
     assert_not_nil @user_token.created_at
