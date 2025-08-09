@@ -1,61 +1,63 @@
-# frozen_string_literal: true
-
 module Auth
   module App
     module Setting
       class PasskeysController < ApplicationController
-        # GET /passkeys or /passkeys.json
-        def index
-        end
+        before_action :authenticate_user! # ← 本番は必須
 
-        # GET /passkeys/1 or /passkeys/1.json
-        def show
-        end
-
-        # GET /passkeys/new
-        def new
-        end
-
-        # Post /passkeys/challenge - WebAuthn registration challenge
+        # POST /setting/passkeys/challenge
         def challenge
-          current_user = User.last
+          session.delete(:webauthn_create_challenge)
+
+          user = User.last
+          return render(json: { error: "unauthorized" }, status: :unauthorized) unless user
+
+          # webauthn_id を確実に持たせる（初回のみ生成）
+          user.update!(webauthn_id: SecureRandom.random_bytes(32)) unless user.webauthn_id.present?
+
+          exclude = if user.respond_to?(:user_passkeys)
+                      user.user_passkeys.pluck(:webauthn_id) # = credentialId(base64url)
+                    else
+                      []
+                    end
 
           creation_options = WebAuthn::Credential.options_for_create(
             user: {
-              id: current_user.webauthn_id,
-              name: 'sample',
-              display_name: 'sample'
-            }
+              id: user.webauthn_id, # gemがJSON化時にbase64url化してくれる
+              name: (user.try(:email) || "user@example.com").to_s,
+              display_name: (user.try(:name) || user.try(:email) || "User").to_s
+            },
+            authenticator_selection: { user_verification: "preferred" },
+            attestation: "none",
+            exclude: exclude
           )
-          
+
           session[:webauthn_create_challenge] = creation_options.challenge
-          
-          render json: {challenge: creation_options.challenge}
+          render json: creation_options, status: :ok
+        rescue WebAuthn::Error => e
+          render json: { error: e.message }, status: :unprocessable_entity
         end
 
         # POST /passkeys/verify - Verify WebAuthn registration
         def verify
-          webauthn_credential = WebAuthn::Credential.from_create(params.require(:credential))
+          user = User.last
 
-          begin
-            webauthn_credential.verify(session[:creation_challenge])
+          challenge = session.delete(:webauthn_create_challenge)
 
-            @passkey = current_user.user_passkeys.build(
-              webauthn_id: webauthn_credential.id,
-              public_key: webauthn_credential.public_key,
-              sign_count: webauthn_credential.sign_count,
-              description: params[:description] || "Passkey"
-            )
+          # フロントが { credential: {...} } で送っている前提
+          # cred = WebAuthn::Credential.from_create(params.require(:credential).permit!.to_h)
 
-            if @passkey.save
-              session.delete(:creation_challenge)
-              render json: { success: true, message: "Passkey registered successfully" }
-            else
-              render json: { success: false, errors: @passkey.errors.full_messages }
-            end
-          rescue WebAuthn::Error => e
-            render json: { success: false, error: e.message }, status: :unprocessable_entity
-          end
+          # チャレンジ・origin・rp_id・署名などをgemが検証
+          # cred.verify(challenge)
+
+          # 保存（列名はあなたのモデルに合わせて）
+          # passkey = user.user_passkeys.build(
+          #   webauthn_id: cred.id,         # credentialId（base64url文字列）
+          #   public_key:  cred.public_key, # OpenSSL::PKey で検証に使う
+          #   sign_count:  cred.sign_count,
+          #   description: params[:description].presence || "Passkey",
+          # # aaguid: cred.aaguid # 欲しければ
+          #   )
+          render json: { status: 'ok' }
         end
 
         # GET /passkeys/1/edit
@@ -113,7 +115,7 @@ module Auth
 
         # Only allow a list of trusted parameters through.
         def passkey_params
-          params.expect(passkey: [ :description, :public_key, :external_id, :webauthn_id, :sign_count ])
+          params.expect(passkey: [:description, :public_key, :external_id, :webauthn_id, :sign_count])
         end
 
         def authenticate_user!
