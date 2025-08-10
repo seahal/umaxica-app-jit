@@ -8,11 +8,11 @@ module Auth::App
     end
 
     def edit
-      raise unless logged_in?
+      # raise unless logged_in?
     end
 
     def destroy
-      raise unless logged_in?
+      #raise unless logged_in?
       log_out
 
       # Redirect to login page

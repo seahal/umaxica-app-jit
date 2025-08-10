@@ -8,7 +8,7 @@ module Auth
         def new
           # FIXME: write test code!
           render plain: t("www.app.authentication.email.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_user?
+                 status: :bad_request and return if logged_in?
 
           # # to avoid session attack
           session[:user_email_registration] = nil
@@ -19,7 +19,7 @@ module Auth
 
         def edit
           render plain: t("www.app.registration.email.edit.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_staff? || logged_in_user?
+                 status: :bad_request and return if logged_in?
           render plain: t("www.app.registration.email.edit.forbidden_action"),
                  status: :bad_request and return if session[:user_email_registration].nil?
 

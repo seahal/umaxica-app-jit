@@ -12,13 +12,13 @@ module Auth
           return render(json: { error: "unauthorized" }, status: :unauthorized) unless user
 
           # webauthn_id を確実に持たせる（初回のみ生成）
-          user.update!(webauthn_id: SecureRandom.random_bytes(32)) unless user.webauthn_id.present?
+          user.update!(webauthn_id: SecureRandom.random_bytes(32)) if user.webauthn_id.blank?
 
           exclude = if user.respond_to?(:user_passkeys)
                       user.user_passkeys.pluck(:webauthn_id) # = credentialId(base64url)
-                    else
+          else
                       []
-                    end
+          end
 
           creation_options = WebAuthn::Credential.options_for_create(
             user: {
@@ -34,7 +34,7 @@ module Auth
           session[:webauthn_create_challenge] = creation_options.challenge
           render json: creation_options, status: :ok
         rescue WebAuthn::Error => e
-          render json: { error: e.message }, status: :unprocessable_entity
+          render json: { error: e.message }, status: :unprocessable_content
         end
 
         # POST /passkeys/verify - Verify WebAuthn registration
@@ -57,7 +57,7 @@ module Auth
           #   description: params[:description].presence || "Passkey",
           # # aaguid: cred.aaguid # 欲しければ
           #   )
-          render json: { status: 'ok' }
+          render json: { status: "ok" }
         end
 
         # GET /passkeys/1/edit
@@ -115,7 +115,7 @@ module Auth
 
         # Only allow a list of trusted parameters through.
         def passkey_params
-          params.expect(passkey: [:description, :public_key, :external_id, :webauthn_id, :sign_count])
+          params.expect(passkey: [ :description, :public_key, :external_id, :webauthn_id, :sign_count ])
         end
 
         def authenticate_user!

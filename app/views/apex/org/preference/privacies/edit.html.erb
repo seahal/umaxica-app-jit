@@ -1,0 +1,16 @@
+<h1>Privacy Settings</h1>
+<%= form_with url: apex_org_preference_privacy_url, method: :patch do |f| %>
+  <div class="privacy-preferences">
+    <%= f.select :privacy_level, options_for_select([
+      ['Public', 'public'],
+      ['Private', 'private'],
+      ['Strict', 'strict']
+    ], @privacy_level) %>
+    <%= f.label :privacy_level, "Privacy Level" %>
+  </div>
+  <div class="privacy-preferences">
+    <%= f.check_box :allow_analytics, { checked: @allow_analytics } %>
+    <%= f.label :allow_analytics, "Allow Analytics" %>
+  </div>
+  <div><%= f.submit %></div>
+<% end %>

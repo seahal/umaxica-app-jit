@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: personas
+#
+#  id            :uuid             not null, primary key
+#  avatar        :jsonb
+#  name          :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  identifier_id :uuid
+#
+
+one:
+  id: "550e8400-e29b-41d4-a716-446655440398"
+  name: "John Doe"
+  avatar: null
+  identifier_id: "550e8400-e29b-41d4-a716-446655440240"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+two:
+  id: "550e8400-e29b-41d4-a716-446655440399"
+  name: "Jane Smith"
+  avatar: null
+  identifier_id: "550e8400-e29b-41d4-a716-446655440241"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

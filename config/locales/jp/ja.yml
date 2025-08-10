@@ -105,6 +105,7 @@ ja:
             title: 'TOTP no shinki'
   hello: "やぁ、せかい"
   messages:
+    region_settings_updated_successfully: "地域設定が正常に更新されました。"
     user_registration_error: "ユーザー登録中にエラーが発生しました。"
     access_blocked_auth_error: "アクセスをブロック: 認証エラーです"
     telephone_successfully_created: "Telephone was successfully created."

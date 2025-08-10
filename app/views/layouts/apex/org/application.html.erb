@@ -57,9 +57,9 @@
     <li>Terms</li>
     <li>Privacy</li>
     <li>Accessibility</li>
-    <li>© <%= Time.now.year %> Umaxica</li>
+    <li>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></li>
   </ul>
-  <p>© <%= Time.now.year %> Umaxica.</p>
+  <p>© <%= Time.now.year %> <%= ENV.fetch('NAME') %>.</p>
 </footer>
 
 </body>

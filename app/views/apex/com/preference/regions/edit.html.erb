@@ -1,0 +1,30 @@
+<h1>Region Settings</h1>
+<%= form_with url: apex_com_preference_region_url, method: :patch do |f| %>
+  <div class="region-selection">
+    <%= f.select :region, options_for_select([
+      ['United States', 'US'],
+      ['Japan', 'JP'],
+      ['United Kingdom', 'GB'],
+      ['Germany', 'DE'],
+      ['France', 'FR'],
+      ['Canada', 'CA'],
+      ['Australia', 'AU'],
+      ['South Korea', 'KR']
+    ], @region) %>
+    <%= f.label :region, "Select Region" %>
+  </div>
+  <div class="country-selection">
+    <%= f.select :country, options_for_select([
+      ['United States', 'US'],
+      ['Japan', 'JP'],
+      ['United Kingdom', 'GB'],
+      ['Germany', 'DE'],
+      ['France', 'FR'],
+      ['Canada', 'CA'],
+      ['Australia', 'AU'],
+      ['South Korea', 'KR']
+    ], @country) %>
+    <%= f.label :country, "Select Country" %>
+  </div>
+  <div><%= f.submit %></div>
+<% end %>

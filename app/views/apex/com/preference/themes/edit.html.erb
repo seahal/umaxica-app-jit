@@ -1,0 +1,14 @@
+<h1>Theme Settings</h1>
+<%= form_with url: apex_com_preference_theme_url, method: :patch do |f| %>
+  <div class="theme-selection">
+    <%= f.radio_button :theme, "light", { checked: @theme == "light" } %>
+    <%= f.label :theme_light, "Light Theme" %>
+
+    <%= f.radio_button :theme, "dark", { checked: @theme == "dark" } %>
+    <%= f.label :theme_dark, "Dark Theme" %>
+
+    <%= f.radio_button :theme, "auto", { checked: @theme == "auto" } %>
+    <%= f.label :theme_auto, "Auto (System Default)" %>
+  </div>
+  <div><%= f.submit %></div>
+<% end %>
