@@ -19,7 +19,7 @@ module Apex
             redirect_to edit_apex_com_preference_email_path
           else
             flash[:alert] = I18n.t("apex.com.preferences.emails.none_selected")
-            render :edit, status: :unprocessable_entity
+            render :edit, status: :unprocessable_content
           end
         end
       end

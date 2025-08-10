@@ -18,7 +18,7 @@ module Apex
             redirect_to edit_apex_app_preference_email_path
           else
             flash[:alert] = I18n.t("apex.app.preferences.emails.invalid")
-            render :edit, status: :unprocessable_entity
+            render :edit, status: :unprocessable_content
           end
         end
       end

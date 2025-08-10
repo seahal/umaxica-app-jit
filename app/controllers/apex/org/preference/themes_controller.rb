@@ -18,7 +18,7 @@ module Apex
           else
             flash[:alert] = I18n.t("apex.org.preferences.themes.invalid")
             set_edit_variables
-            render :edit, status: :unprocessable_entity
+            render :edit, status: :unprocessable_content
           end
         end
 

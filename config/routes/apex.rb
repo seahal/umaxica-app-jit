@@ -13,10 +13,6 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
-          # timezone configuration
-          resource :timezone, only: [ :edit, :update ]
-          # language preferences
-          resource :language, only: [ :edit, :update ]
           # email preferences
           resource :email, only: [ :edit, :update ]
           # theme/dark mode settings
@@ -40,10 +36,6 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
-          # timezone configuration
-          resource :timezone, only: [ :edit, :update ]
-          # language preferences
-          resource :language, only: [ :edit, :update ]
           # email preferences
           resource :email, only: [ :edit, :update ]
           # theme/dark mode settings
@@ -65,10 +57,6 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
-          # timezone configuration
-          resource :timezone, only: [ :edit, :update ]
-          # language preferences
-          resource :language, only: [ :edit, :update ]
           # email preferences
           resource :email, only: [ :edit, :update ]
           # theme/dark mode settings

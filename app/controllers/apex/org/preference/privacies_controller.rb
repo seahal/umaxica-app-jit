@@ -22,7 +22,7 @@ module Apex
             redirect_to edit_apex_org_preference_privacy_path
           else
             flash[:alert] = I18n.t("apex.org.preferences.privacies.invalid")
-            render :edit, status: :unprocessable_entity
+            render :edit, status: :unprocessable_content
           end
         end
 

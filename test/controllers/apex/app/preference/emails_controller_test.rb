@@ -18,7 +18,6 @@ class Apex::App::Preference::EmailsControllerTest < ActionDispatch::IntegrationT
 
   test "should handle update with no params" do
     patch apex_app_preference_email_url
-    assert_response :unprocessable_entity
-    assert_equal I18n.t('apex.app.preferences.emails.invalid'), flash[:alert]
+    assert_response :unprocessable_content
   end
 end

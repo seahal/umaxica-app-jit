@@ -14,12 +14,12 @@ class Apex::Com::Preference::EmailsControllerTest < ActionDispatch::IntegrationT
       promotional: false
     }
     assert_response :redirect
-    assert_equal "Email preferences updated successfully", flash[:notice]
+    assert_equal "メール設定が正常に更新されました", flash[:notice]
   end
 
   test "should handle update with no params" do
     patch apex_com_preference_email_url
-    assert_response :unprocessable_entity
-    assert_equal "No preferences selected", flash[:alert]
+    assert_response :unprocessable_content
+    assert_equal "設定が選択されていません", flash[:alert]
   end
 end

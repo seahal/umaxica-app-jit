@@ -34,7 +34,7 @@ module Apex
           redirect_to apex_org_customers_path
         else
           flash[:alert] = I18n.t("apex.org.customers.name_email_required")
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       end
 
@@ -46,7 +46,7 @@ module Apex
           redirect_to apex_org_customer_path(@customer[:id])
         else
           flash[:alert] = I18n.t("apex.org.customers.invalid_data")
-          render :edit, status: :unprocessable_entity
+          render :edit, status: :unprocessable_content
         end
       end
 
