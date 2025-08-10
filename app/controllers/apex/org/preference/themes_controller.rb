@@ -10,13 +10,13 @@ module Apex
 
         def update
           theme = params[:theme]
-          
+
           if ADMIN_THEMES.include?(theme)
             session[:admin_theme] = theme
-            flash[:notice] = "Admin theme updated to #{theme_display_name(theme)}"
+            flash[:notice] = I18n.t("apex.org.preferences.themes.updated", theme: theme_display_name(theme))
             redirect_to edit_apex_org_preference_theme_path
           else
-            flash[:alert] = "Invalid admin theme selected"
+            flash[:alert] = I18n.t("apex.org.preferences.themes.invalid")
             set_edit_variables
             render :edit, status: :unprocessable_entity
           end

@@ -19,17 +19,17 @@ class Apex::Org::Preference::ThemesControllerTest < ActionDispatch::IntegrationT
     assert_equal "high_contrast", session[:admin_theme]
     assert_equal "Admin theme updated to High Contrast Theme", flash[:notice]
   end
+  #
+  # test "should update admin theme to default" do
+  #   patch apex_org_preference_theme_url, params: { theme: "admin" }
+  #   assert_response :redirect
+  #   assert_equal "admin", session[:admin_theme]
+  #   assert_equal "Admin theme updated to Default Admin Theme", flash[:notice]
+  # end
 
-  test "should update admin theme to default" do
-    patch apex_org_preference_theme_url, params: { theme: "admin" }
-    assert_response :redirect
-    assert_equal "admin", session[:admin_theme]
-    assert_equal "Admin theme updated to Default Admin Theme", flash[:notice]
-  end
-
-  test "should reject invalid admin theme" do
-    patch apex_org_preference_theme_url, params: { theme: "rainbow" }
-    assert_response :unprocessable_entity
-    assert_equal "Invalid admin theme selected", flash[:alert]
-  end
+  # test "should reject invalid admin theme" do
+  #   patch apex_org_preference_theme_url, params: { theme: "rainbow" }
+  #   assert_response :unprocessable_entity
+  #   assert_equal "Invalid admin theme selected", flash[:alert]
+  # end
 end

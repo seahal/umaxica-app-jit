@@ -1,7 +1,7 @@
 module Apex
   module Org
     class CustomersController < ApplicationController
-      before_action :set_customer, only: [:show, :edit, :update, :destroy]
+      before_action :set_customer, only: [ :show, :edit, :update, :destroy ]
 
       def index
         @customers = [
@@ -28,30 +28,30 @@ module Apex
 
       def create
         customer_params = params.permit(:name, :email, :status)
-        
+
         if customer_params[:name].present? && customer_params[:email].present?
-          flash[:notice] = "Customer #{customer_params[:name]} created successfully"
+          flash[:notice] = I18n.t("apex.org.customers.created", name: customer_params[:name])
           redirect_to apex_org_customers_path
         else
-          flash[:alert] = "Name and email are required"
+          flash[:alert] = I18n.t("apex.org.customers.name_email_required")
           render :new, status: :unprocessable_entity
         end
       end
 
       def update
         customer_params = params.permit(:name, :email, :status)
-        
+
         if customer_params.present?
-          flash[:notice] = "Customer updated successfully"
+          flash[:notice] = I18n.t("apex.org.customers.updated")
           redirect_to apex_org_customer_path(@customer[:id])
         else
-          flash[:alert] = "Invalid customer data"
+          flash[:alert] = I18n.t("apex.org.customers.invalid_data")
           render :edit, status: :unprocessable_entity
         end
       end
 
       def destroy
-        flash[:notice] = "Customer #{@customer[:name]} deleted successfully"
+        flash[:notice] = I18n.t("apex.org.customers.deleted", name: @customer[:name])
         redirect_to apex_org_customers_path
       end
 

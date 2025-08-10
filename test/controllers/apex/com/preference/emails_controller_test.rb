@@ -7,8 +7,8 @@ class Apex::Com::Preference::EmailsControllerTest < ActionDispatch::IntegrationT
   end
 
   test "should update email preferences with valid params" do
-    patch apex_com_preference_email_url, params: { 
-      newsletter: true, 
+    patch apex_com_preference_email_url, params: {
+      newsletter: true,
       product_updates: false,
       security_alerts: true,
       promotional: false

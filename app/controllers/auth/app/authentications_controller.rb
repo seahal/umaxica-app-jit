@@ -12,7 +12,7 @@ module Auth::App
     end
 
     def destroy
-      #raise unless logged_in?
+      # raise unless logged_in?
       log_out
 
       # Redirect to login page

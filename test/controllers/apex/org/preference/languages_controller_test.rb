@@ -10,14 +10,14 @@ class Apex::Org::Preference::LanguagesControllerTest < ActionDispatch::Integrati
     patch apex_org_preference_language_url, params: { language: "ja" }
     assert_response :redirect
     assert_equal "ja", session[:admin_language]
-    assert_match /Admin language updated to 日本語/, flash[:notice]
+    assert_match(/Admin language updated to 日本語/, flash[:notice])
   end
 
   test "should update admin language to korean" do
     patch apex_org_preference_language_url, params: { language: "ko" }
     assert_response :redirect
     assert_equal "ko", session[:admin_language]
-    assert_match /Admin language updated to 한국어/, flash[:notice]
+    assert_match(/Admin language updated to 한국어/, flash[:notice])
   end
 
   test "should reject invalid admin language code" do

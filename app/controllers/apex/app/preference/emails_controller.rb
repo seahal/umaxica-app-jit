@@ -12,12 +12,12 @@ module Apex
 
         def update
           email_params = params.permit(:notifications, :marketing, :security_alerts)
-          
+
           if email_params.present?
-            flash[:notice] = "Email preferences updated successfully"
+            flash[:notice] = I18n.t("apex.app.preferences.emails.updated")
             redirect_to edit_apex_app_preference_email_path
           else
-            flash[:alert] = "Invalid email preferences"
+            flash[:alert] = I18n.t("apex.app.preferences.emails.invalid")
             render :edit, status: :unprocessable_entity
           end
         end

@@ -3,6 +3,55 @@ en:
   hello: "Hello world 2"
   messages:
     region_settings_updated_successfully: "Region settings updated successfully."
+  apex:
+    app:
+      preferences:
+        emails:
+          updated: "Email preferences updated successfully"
+          invalid: "Invalid email preferences"
+        languages:
+          updated: "Language updated to %{language}"
+          unsupported: "Unsupported language selected"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          updated: "Timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected"
+    com:
+      preferences:
+        emails:
+          updated: "Email preferences updated successfully"
+          none_selected: "No preferences selected"
+        languages:
+          updated: "Language preference updated to %{language}"
+          unsupported: "Unsupported language selected"
+        themes:
+          updated: "Corporate theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          updated: "Timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected"
+    org:
+      customers:
+        created: "Customer %{name} created successfully"
+        updated: "Customer updated successfully"
+        deleted: "Customer %{name} deleted successfully"
+        name_email_required: "Name and email are required"
+        invalid_data: "Invalid customer data"
+      preferences:
+        languages:
+          updated: "Admin language updated to %{language}"
+          unsupported: "Unsupported admin language selected"
+        themes:
+          updated: "Admin theme updated to %{theme}"
+          invalid: "Invalid admin theme selected"
+        timezones:
+          updated: "Admin timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected for admin interface"
+        privacies:
+          updated: "Privacy settings updated successfully"
+          invalid: "Invalid privacy settings"
   activerecord:
     errors:
       messages:

@@ -10,14 +10,14 @@ class Apex::Com::Preference::LanguagesControllerTest < ActionDispatch::Integrati
     patch apex_com_preference_language_url, params: { language: "ja" }
     assert_response :redirect
     assert_equal "ja", session[:language]
-    assert_match /Language preference updated/, flash[:notice]
+    assert_match(/Language preference updated/, flash[:notice])
   end
 
   test "should update language to chinese" do
     patch apex_com_preference_language_url, params: { language: "zh" }
     assert_response :redirect
     assert_equal "zh", session[:language]
-    assert_match /Language preference updated to 中文/, flash[:notice]
+    assert_match(/Language preference updated to 中文/, flash[:notice])
   end
 
   test "should reject invalid language code" do

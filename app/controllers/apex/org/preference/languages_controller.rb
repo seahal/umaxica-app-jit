@@ -10,13 +10,13 @@ module Apex
 
         def update
           language_code = params[:language]
-          
+
           if ADMIN_LANGUAGES.include?(language_code)
             session[:admin_language] = language_code
-            flash[:notice] = "Admin language updated to #{language_name(language_code)}"
+            flash[:notice] = I18n.t("apex.org.preferences.languages.updated", language: language_name(language_code))
             redirect_to edit_apex_org_preference_language_path
           else
-            flash[:alert] = "Unsupported admin language selected"
+            flash[:alert] = I18n.t("apex.org.preferences.languages.unsupported")
             set_edit_variables
             render :edit, status: :unprocessable_entity
           end

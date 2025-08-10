@@ -13,15 +13,15 @@ module Apex
         end
 
         def update
-          privacy_params = params.permit(:data_sharing, :analytics_tracking, 
-                                       :third_party_cookies, :personalized_ads, 
+          privacy_params = params.permit(:data_sharing, :analytics_tracking,
+                                       :third_party_cookies, :personalized_ads,
                                        :data_retention)
-          
+
           if privacy_params.present? && valid_retention_period?
-            flash[:notice] = "Privacy settings updated successfully"
+            flash[:notice] = I18n.t("apex.org.preferences.privacies.updated")
             redirect_to edit_apex_org_preference_privacy_path
           else
-            flash[:alert] = "Invalid privacy settings"
+            flash[:alert] = I18n.t("apex.org.preferences.privacies.invalid")
             render :edit, status: :unprocessable_entity
           end
         end

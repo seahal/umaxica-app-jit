@@ -108,6 +108,55 @@ ja:
     region_settings_updated_successfully: "地域設定が正常に更新されました。"
     user_registration_error: "ユーザー登録中にエラーが発生しました。"
     access_blocked_auth_error: "アクセスをブロック: 認証エラーです"
+  apex:
+    app:
+      preferences:
+        emails:
+          updated: "メール設定が正常に更新されました"
+          invalid: "メール設定が無効です"
+        languages:
+          updated: "言語を%{language}に更新しました"
+          unsupported: "サポートされていない言語が選択されました"
+        themes:
+          updated: "テーマを%{theme}に更新しました"
+          invalid: "無効なテーマが選択されました"
+        timezones:
+          updated: "タイムゾーンを%{timezone}に更新しました"
+          invalid: "無効なタイムゾーンが選択されました"
+    com:
+      preferences:
+        emails:
+          updated: "メール設定が正常に更新されました"
+          none_selected: "設定が選択されていません"
+        languages:
+          updated: "言語設定を%{language}に更新しました"
+          unsupported: "サポートされていない言語が選択されました"
+        themes:
+          updated: "企業テーマを%{theme}に更新しました"
+          invalid: "無効なテーマが選択されました"
+        timezones:
+          updated: "タイムゾーンを%{timezone}に更新しました"
+          invalid: "無効なタイムゾーンが選択されました"
+    org:
+      customers:
+        created: "顧客%{name}が正常に作成されました"
+        updated: "顧客が正常に更新されました"
+        deleted: "顧客%{name}が正常に削除されました"
+        name_email_required: "名前とメールアドレスが必要です"
+        invalid_data: "無効な顧客データです"
+      preferences:
+        languages:
+          updated: "管理言語を%{language}に更新しました"
+          unsupported: "サポートされていない管理言語が選択されました"
+        themes:
+          updated: "管理テーマを%{theme}に更新しました"
+          invalid: "無効な管理テーマが選択されました"
+        timezones:
+          updated: "管理タイムゾーンを%{timezone}に更新しました"
+          invalid: "管理インターフェースで無効なタイムゾーンが選択されました"
+        privacies:
+          updated: "プライバシー設定が正常に更新されました"
+          invalid: "無効なプライバシー設定です"
     telephone_successfully_created: "Telephone was successfully created."
     sample_successfully_updated: "Sample was successfully updated."
     abc_successfully_created: "Abc was successfully created."

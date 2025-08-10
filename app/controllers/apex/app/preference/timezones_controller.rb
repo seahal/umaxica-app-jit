@@ -8,13 +8,13 @@ module Apex
 
         def update
           timezone = params[:timezone]
-          
+
           if timezone.present? && ActiveSupport::TimeZone[timezone].present?
             session[:timezone] = timezone
-            flash[:notice] = "Timezone updated to #{ActiveSupport::TimeZone[timezone]}"
+            flash[:notice] = I18n.t("apex.app.preferences.timezones.updated", timezone: ActiveSupport::TimeZone[timezone])
             redirect_to edit_apex_app_preference_timezone_path
           else
-            flash[:alert] = "Invalid timezone selected"
+            flash[:alert] = I18n.t("apex.app.preferences.timezones.invalid")
             set_edit_variables
             render :edit, status: :unprocessable_entity
           end
