@@ -10,14 +10,20 @@ class Help::App::HealthsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get show with postfix" do
-    get docs_app_health_url(format: :html)
+    get help_app_health_url(format: :html)
     assert_response :success
     assert_equal "OK", @response.body
   end
 
-  test "should not get show when required json file" do
+  test "should get show with postfix json" do
+    get help_app_health_url(format: :json)
+    assert_response :success
+    assert_equal "OK", @response.parsed_body["status"]
+  end
+
+  test "should not get show when required yaml file" do
     assert_raise do
-      get docs_app_health_url(format: :json)
+      get help_app_health_url(format: :yaml)
     end
   end
 end

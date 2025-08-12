@@ -33,9 +33,9 @@ module Apex
 
         def theme_display_name(theme)
           {
-            "light" => "Light Theme",
-            "dark" => "Dark Theme",
-            "corporate" => "Corporate Theme"
+            "light" => I18n.t("themes.light"),
+            "dark" => I18n.t("themes.dark"),
+            "corporate" => I18n.t("themes.corporate")
           }[theme] || theme.humanize
         end
       end

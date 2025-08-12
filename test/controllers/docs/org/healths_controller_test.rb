@@ -4,22 +4,28 @@ require "test_helper"
 
 class Docs::Org::HealthsControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
-    get docs_com_health_url
+    get docs_org_health_url
     assert_response :success
     assert_equal "OK", @response.body
     # assert_select "a[href=?]", www_com_root_path, count: 0
   end
 
   test "should get show with postfix" do
-    get docs_com_health_url(format: :html)
+    get docs_org_health_url(format: :html)
     assert_response :success
     assert_equal "OK", @response.body
     # assert_select "a[href=?]", www_com_root_path, count: 0
   end
 
-  test "should not get show when required json file" do
+  test "should get show with postfix json" do
+    get docs_org_health_url(format: :json)
+    assert_response :success
+    assert_equal "OK", @response.parsed_body["status"]
+  end
+
+  test "should not get show when required yaml file" do
     assert_raise do
-      get docs_com_health_url(format: :json)
+      get docs_org_health_url(format: :yaml)
     end
   end
 end

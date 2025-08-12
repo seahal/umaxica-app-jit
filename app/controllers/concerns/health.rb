@@ -29,9 +29,7 @@ module Health
       render html: @body, status: @status
     when "/health.html"
       render html: @body, status: @status
-    when "/v1/health"
-      render json: { status: @body }, status: @status
-    when "/v1/health.json"
+    when "/health.json"
       render json: { status: @body }, status: @status
     else
       raise

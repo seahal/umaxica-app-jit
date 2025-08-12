@@ -3,6 +3,25 @@ en:
   hello: "Hello world 2"
   messages:
     region_settings_updated_successfully: "Region settings updated successfully."
+  common:
+    ok: "OK"
+  errors:
+    unauthorized: "Unauthorized access"
+    not_implemented: "Feature not yet implemented"
+  auth:
+    default_user_name: "User"
+    default_passkey_name: "Passkey"
+    default_passkey_description: "My Passkey"
+  languages:
+    english: "English"
+    japanese: "日本語"
+    spanish: "Español"
+    french: "Français"
+    german: "Deutsch"
+  themes:
+    light: "Light Theme"
+    dark: "Dark Theme"
+    corporate: "Corporate Theme"
   apex:
     app:
       preferences:

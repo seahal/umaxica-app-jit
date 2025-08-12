@@ -15,9 +15,15 @@ class Auth::Org::HealthsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "OK", @response.body
   end
 
-  test "should not get show when required json file" do
+  test "should get show with postfix json" do
+    get auth_org_health_url(format: :json)
+    assert_response :success
+    assert_equal "OK", @response.parsed_body["status"]
+  end
+
+  test "should not get show when required yaml file" do
     assert_raise do
-      get auth_org_health_url(format: :json)
+      get auth_org_health_url(format: :yaml)
     end
   end
 end

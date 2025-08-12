@@ -3,7 +3,7 @@ module Auth
     class SessionsController < ApplicationController
       def create
         # FIXME: write loggin code!
-        render plain: "OK"
+        render plain: I18n.t("common.ok")
       end
     end
   end

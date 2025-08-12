@@ -73,11 +73,11 @@ module Apex
 
         def language_name(code)
           {
-            "en" => "English",
-            "ja" => "日本語",
-            "es" => "Español",
-            "fr" => "Français",
-            "de" => "Deutsch"
+            "en" => I18n.t("languages.english"),
+            "ja" => I18n.t("languages.japanese"),
+            "es" => I18n.t("languages.spanish"),
+            "fr" => I18n.t("languages.french"),
+            "de" => I18n.t("languages.german")
           }[code] || code
         end
       end

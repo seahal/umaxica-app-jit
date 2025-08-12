@@ -9,14 +9,14 @@ module Auth
         before_action :set_passkey, only: [ :show, :edit, :update, :destroy ]
 
         def index
-          render plain: "Not implemented"
+          render plain: I18n.t("errors.not_implemented")
         end
 
         def show
         end
 
         def new
-          render plain: "Not implemented"
+          render plain: I18n.t("errors.not_implemented")
         end
 
         def edit

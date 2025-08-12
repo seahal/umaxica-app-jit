@@ -9,7 +9,7 @@ module Auth
           session.delete(:webauthn_create_challenge)
 
           user = User.last
-          return render(json: { error: "unauthorized" }, status: :unauthorized) unless user
+          return render(json: { error: I18n.t("errors.unauthorized") }, status: :unauthorized) unless user
 
           # webauthn_id を確実に持たせる（初回のみ生成）
           user.update!(webauthn_id: SecureRandom.random_bytes(32)) if user.webauthn_id.blank?
@@ -24,7 +24,7 @@ module Auth
             user: {
               id: user.webauthn_id, # gemがJSON化時にbase64url化してくれる
               name: (user.try(:email) || "user@example.com").to_s,
-              display_name: (user.try(:name) || user.try(:email) || "User").to_s
+              display_name: (user.try(:name) || user.try(:email) || I18n.t("auth.default_user_name")).to_s
             },
             authenticator_selection: { user_verification: "preferred" },
             attestation: "none",
@@ -54,7 +54,7 @@ module Auth
           #   webauthn_id: cred.id,         # credentialId（base64url文字列）
           #   public_key:  cred.public_key, # OpenSSL::PKey で検証に使う
           #   sign_count:  cred.sign_count,
-          #   description: params[:description].presence || "Passkey",
+          #   description: params[:description].presence || I18n.t("auth.default_passkey_name"),
           # # aaguid: cred.aaguid # 欲しければ
           #   )
           render json: { status: "ok" }

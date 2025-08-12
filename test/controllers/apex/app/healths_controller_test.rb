@@ -17,9 +17,15 @@ class Apex::App::HealthsControllerTest < ActionDispatch::IntegrationTest
     # assert_select "a[href=?]", apex_app_root_path, count: 0
   end
 
-  test "should not get show when required json file" do
+  test "should get show with postfix json" do
+    get apex_app_health_url(format: :json)
+    assert_response :success
+    assert_equal "OK", @response.parsed_body["status"]
+  end
+
+  test "should not get show when required yaml file" do
     assert_raise do
-      get apex_app_health_url(format: :json)
+      get apex_app_health_url(format: :yaml)
     end
   end
 end
