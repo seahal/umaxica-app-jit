@@ -2,9 +2,9 @@
 <%= form_with url: apex_app_preference_language_url, method: :patch do |f| %>
   <div class="language-selection">
     <%= f.select :language, options_for_select([
-      ['English', 'en'],
-      ['Japanese', 'ja']
-    ], @language) %>
+                                                 ['English', 'en'],
+                                                 ['Japanese', 'ja']
+                                               ], @language) %>
     <%= f.label :language, "Select Language" %>
   </div>
   <div><%= f.submit %></div>

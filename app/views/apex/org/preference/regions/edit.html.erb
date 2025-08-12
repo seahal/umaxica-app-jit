@@ -7,29 +7,29 @@
     <div class="region-selection">
       <%= f.label :region, t('apex.org.preferences.regions.select_region') %>
       <%= f.select :region, options_for_select([
-        ['United States', 'US'],
-        ['Japan', 'JP'],
-        ['United Kingdom', 'GB'],
-        ['Germany', 'DE'],
-        ['France', 'FR'],
-        ['Canada', 'CA'],
-        ['Australia', 'AU'],
-        ['South Korea', 'KR']
-      ], @region), { prompt: t('apex.org.preferences.regions.select_region_prompt') } %>
+                                                 ['United States', 'US'],
+                                                 ['Japan', 'JP'],
+                                                 ['United Kingdom', 'GB'],
+                                                 ['Germany', 'DE'],
+                                                 ['France', 'FR'],
+                                                 ['Canada', 'CA'],
+                                                 ['Australia', 'AU'],
+                                                 ['South Korea', 'KR']
+                                               ], @region), { prompt: t('apex.org.preferences.regions.select_region_prompt') } %>
     </div>
 
     <div class="country-selection">
       <%= f.label :country, t('apex.org.preferences.regions.select_country') %>
       <%= f.select :country, options_for_select([
-        ['United States', 'US'],
-        ['Japan', 'JP'],
-        ['United Kingdom', 'GB'],
-        ['Germany', 'DE'],
-        ['France', 'FR'],
-        ['Canada', 'CA'],
-        ['Australia', 'AU'],
-        ['South Korea', 'KR']
-      ], @country), { prompt: t('apex.org.preferences.regions.select_country_prompt') } %>
+                                                  ['United States', 'US'],
+                                                  ['Japan', 'JP'],
+                                                  ['United Kingdom', 'GB'],
+                                                  ['Germany', 'DE'],
+                                                  ['France', 'FR'],
+                                                  ['Canada', 'CA'],
+                                                  ['Australia', 'AU'],
+                                                  ['South Korea', 'KR']
+                                                ], @country), { prompt: t('apex.org.preferences.regions.select_country_prompt') } %>
     </div>
   </div>
 

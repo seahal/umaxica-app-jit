@@ -60,10 +60,10 @@ module Apex
       def set_customer
         customer_id = params[:id].to_i
         @customer = {
-          1 => { id: 1, name: "Acme Corp", email: "contact@acme.com", status: "active" },
-          2 => { id: 2, name: "Beta Inc", email: "info@beta.com", status: "inactive" },
-          3 => { id: 3, name: "Gamma LLC", email: "hello@gamma.com", status: "active" }
-        }[customer_id] || { id: customer_id, name: "Unknown", email: "", status: "unknown" }
+                      1 => { id: 1, name: "Acme Corp", email: "contact@acme.com", status: "active" },
+                      2 => { id: 2, name: "Beta Inc", email: "info@beta.com", status: "inactive" },
+                      3 => { id: 3, name: "Gamma LLC", email: "hello@gamma.com", status: "active" }
+                    }[customer_id] || { id: customer_id, name: "Unknown", email: "", status: "unknown" }
       end
     end
   end

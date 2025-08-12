@@ -103,7 +103,7 @@ btn?.addEventListener("click", async () => {
         // 4) サーバに保存依頼
         const second = fetch("/setting/passkeys/verify", {
             method: "POST",
-            headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken() },
+            headers: {"Content-Type": "application/json", "X-CSRF-Token": csrfToken()},
             credentials: "same-origin",
             body: JSON.stringify(payload)
         });

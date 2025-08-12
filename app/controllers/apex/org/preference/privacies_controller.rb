@@ -14,8 +14,8 @@ module Apex
 
         def update
           privacy_params = params.permit(:data_sharing, :analytics_tracking,
-                                       :third_party_cookies, :personalized_ads,
-                                       :data_retention)
+                                         :third_party_cookies, :personalized_ads,
+                                         :data_retention)
 
           if privacy_params.present? && valid_retention_period?
             flash[:notice] = I18n.t("apex.org.preferences.privacies.updated")

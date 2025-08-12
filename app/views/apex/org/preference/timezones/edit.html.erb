@@ -2,11 +2,11 @@
 <%= form_with url: apex_org_preference_timezone_url, method: :patch do |f| %>
   <div class="timezone-selection">
     <%= f.select :timezone, options_for_select([
-      ['UTC', 'UTC'],
-      ['Asia/Tokyo', 'Asia/Tokyo'],
-      ['America/New_York', 'America/New_York'],
-      ['Europe/London', 'Europe/London']
-    ], @timezone) %>
+                                                 ['UTC', 'UTC'],
+                                                 ['Asia/Tokyo', 'Asia/Tokyo'],
+                                                 ['America/New_York', 'America/New_York'],
+                                                 ['Europe/London', 'Europe/London']
+                                               ], @timezone) %>
     <%= f.label :timezone, "Select Timezone" %>
   </div>
   <div><%= f.submit %></div>
