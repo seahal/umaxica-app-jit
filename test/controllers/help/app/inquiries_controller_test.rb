@@ -36,13 +36,13 @@ class Help::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_help_app_inquiry_url
     assert_response :success
-    assert_select "h1", I18n.t("controller.www.app.contacts.new.page_title")
+    assert_select "h1", I18n.t("controller.help.app.contacts.new.page_title")
     assert_select "form[action=?][method=?]", help_app_inquiries_path, "post" do
       assert_select "input[type=?][name=?]", "checkbox", "service_site_contact[confirm_policy]"
       assert_select "input[type=?][name=?]", "hidden", "service_site_contact[confirm_policy]"
       assert_select "label[for=?]", "service_site_contact_email_address"
       assert_select "label[for=?]", "service_site_contact_confirm_policy",
-                    I18n.t("controller.www.app.contacts.new.confirm_policy")
+                    I18n.t("controller.help.app.contacts.new.confirm_policy")
       assert_select "label[for=?]", "service_site_contact_telephone_number"
       assert_select "input[type=?][name=?]", "text", "service_site_contact[telephone_number]"
       assert_select "div.cf-turnstile", 1
@@ -148,7 +148,7 @@ class Help::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   # #   follow_redirect!
   # #   assert_equal "new", @controller.action_name
   # #   assert_equal "emails", @controller.controller_name
-  # #   assert_select "h1", I18n.t("controller.www.app.contacts.new.page_title")
+  # #   assert_select "h1", I18n.t("controller.help.app.contacts.new.page_title")
   # #   assert_select "p", "Find me in app/views/www/app/contacts/new.html.erb"
   # #   assert_select "form[action=?][method=?]", www_app_contact_email_path, "post" do
   # #     assert_select "label[for=?]", "service_site_contact_email_pass_code"

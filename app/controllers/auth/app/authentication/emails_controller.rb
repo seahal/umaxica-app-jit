@@ -3,7 +3,7 @@ module Auth
     module Authentication
       class EmailsController < ApplicationController
         def new
-          render plain: t("www.app.authentication.email.new.you_have_already_logged_in"),
+          render plain: t("auth.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
           # set cookie with private key of htop
@@ -18,7 +18,7 @@ module Auth
         end
 
         def create
-          render plain: t("www.app.authentication.email.create.you_have_already_logged_in"),
+          render plain: t("auth.app.authentication.email.create.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
           if cookies.encrypted[:htop_private_key]

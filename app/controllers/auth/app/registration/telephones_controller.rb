@@ -12,9 +12,9 @@ module Auth
         end
 
         def edit
-          render plain: t("www.app.registration.telephone.edit.you_have_already_logged_in"),
+          render plain: t("auth.app.registration.telephone.edit.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in_staff? || logged_in_user?
-          render plain: t("www.app.registration.telephone.edit.forbidden_action"),
+          render plain: t("auth.app.registration.telephone.edit.forbidden_action"),
                  status: :bad_request and return if session[:user_telephone_registration].nil?
 
           if [ session[:user_telephone_registration]["id"] == params["id"],
@@ -22,12 +22,12 @@ module Auth
             @user_telephone = UserTelephone.new
           else
             redirect_to new_www_app_registration_telephone_path,
-                        notice: t("www.app.registration.telephone.edit.your_session_was_expired")
+                        notice: t("auth.app.registration.telephone.edit.your_session_was_expired")
           end
         end
 
         def create
-          render plain: t("www.app.authentication.telephone.new.you_have_already_logged_in"),
+          render plain: t("auth.app.authentication.telephone.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in_staff? || logged_in_user?
 
           @user_telephone = UserTelephone.new(params.expect(user_telephone: [ :number, :confirm_policy,
@@ -63,7 +63,7 @@ module Auth
 
         def update
           # FIXME: write test code!
-          render plain: t("www.app.authentication.telephone.new.you_have_already_logged_in"),
+          render plain: t("auth.app.authentication.telephone.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in_staff? || logged_in_user?
 
           @user_telephone = UserTelephone.new(number: session[:user_telephone_registration]["number"],

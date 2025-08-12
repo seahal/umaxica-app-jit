@@ -137,3 +137,7 @@ Rails/WhereNotWithMultipleConditions: # new in 2.17
   Enabled: true
 Rails/WhereRange: # new in 2.25
   Enabled: true
+Rails/FindByOrAssignmentMemoization: # new in 2.33
+  Enabled: true
+Rails/OrderArguments: # new in 2.33
+  Enabled: true

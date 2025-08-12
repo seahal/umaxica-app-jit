@@ -14,12 +14,12 @@ class Auth::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
   test "should get edit" do
     get edit_auth_app_authentication_url
     # assert_response :internal_server_error
-    assert_select "h1", I18n.t("www.app.authentication.edit.title")
+    assert_select "h1", I18n.t("auth.app.authentication.edit.title")
   end
 
   test "should not get edit when not logged in" do
     get edit_auth_app_authentication_url
     # assert_response :internal_server_error
-    assert_select "h1", I18n.t("www.app.authentication.edit.title")
+    assert_select "h1", I18n.t("auth.app.authentication.edit.title")
   end
 end

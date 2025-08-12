@@ -1,5 +1,5 @@
 <div>
-  <h1 class="font-bold text-4xl"><%= t('www.app.registration.email.new.page_title') %></h1>
+  <h1 class="font-bold text-4xl"><%= t('auth.app.registration.email.new.page_title') %></h1>
 
   <%= form_with model: @user_email, url: auth_app_registration_emails_path, method: 'post' do |form| %>
     <% if @user_email.errors.any? %>

@@ -119,11 +119,21 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get apex_org_root_url
     assert_response :success
 
-    # Ensure response is consistent across requests
+    # Ensure response structure is consistent across requests
     first_response = response.body
+    assert_match(/csp-nonce/, first_response)
+    assert_match(/UMAXICA/, first_response)
+
     get apex_org_root_url
     second_response = response.body
-    assert_equal first_response, second_response
+    assert_response :success
+    assert_match(/csp-nonce/, second_response)
+    assert_match(/UMAXICA/, second_response)
+
+    # Both responses should have the same basic structure (excluding dynamic content like timestamps)
+    first_title = first_response.scan(/<title>.*?<\/title>/).first
+    second_title = second_response.scan(/<title>.*?<\/title>/).first
+    assert_equal first_title, second_title
   end
 
   # test "should simulate different admin load scenarios" do

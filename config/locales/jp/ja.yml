@@ -46,6 +46,8 @@ ja:
               passkey: 'Passkey'
               totp: 'TOTP'
               recovery: 'Recovery'
+            new:
+              title: 'TOTP no shinki'
         registration:
           google:
             new:
@@ -53,7 +55,7 @@ ja:
         authentication:
           destroy:
             jump_obj: 'sign in with email'
-    www:
+    apex:
       app:
         preference:
           show:
@@ -65,6 +67,22 @@ ja:
           email:
             new:
               page_title: 'emailの設定'
+      com:
+        preference:
+          show:
+            page_title: 'konomi'
+          cookie:
+            edit:
+              accept_tracking_cookies: 'トラッキングの許可について'
+      org:
+        preference:
+          show:
+            page_title: 'konomi'
+          cookie:
+            edit:
+              accept_tracking_cookies: 'トラッキングの許可について'
+    help:
+      app:
         contacts:
           new:
             page_title: 'お問い合わせページ'
@@ -76,29 +94,13 @@ ja:
             page_title: 'エラーが生じました'
             page_description: 'はじめからやりなおしてください'
             back_to_contact_root_page: 'もどる'
-        registration:
-          apple:
-            new:
-              page_title: 'apple id で登録します'
-        setting:
-          passkeys:
-            index:
-              page_title: 'パスキー'
-            new:
-              page_title: 'パスキー'
-  www:
+  hello: "やぁ、せかい"
+  messages:
+    region_settings_updated_successfully: "地域設定が正常に更新されました。"
+    user_registration_error: "ユーザー登録中にエラーが発生しました。"
+    access_blocked_auth_error: "アクセスをブロック: 認証エラーです"
+  auth:
     app:
-      registration:
-        email:
-          new:
-            page_title: 'email で登録します'
-            you_have_already_logged_in: 'あなたはログインしています'
-          create:
-            you_have_already_logged_in: 'あなたはログインしています'
-          edit:
-            you_have_already_logged_in: 'あなたはログインしています'
-            forbidden_action: '最初からやり直してください'
-            your_session_was_expired: '有効期間が切れたので、最初からやり直してください'
       authentication:
         edit:
           title: 'ログアウトしますか？'
@@ -111,22 +113,29 @@ ja:
             registration: '登録しますか？'
           create:
             you_have_already_logged_in: 'あなたはログインしています'
-      preference:
-        cookie:
+        telephone:
+          new:
+            you_have_already_logged_in: 'あなたはログインしています'
+      registration:
+        email:
+          new:
+            page_title: 'email で登録します'
+            you_have_already_logged_in: 'あなたはログインしています'
+          create:
+            you_have_already_logged_in: 'あなたはログインしています'
           edit:
-            h1: 'クッキーの設定'
-            accept_tracking_cookies: 'トラッキングの許可について'
+            you_have_already_logged_in: 'あなたはログインしています'
+            forbidden_action: '最初からやり直してください'
+            your_session_was_expired: '有効期間が切れたので、最初からやり直してください'
+        telephone:
+          edit:
+            you_have_already_logged_in: 'あなたはログインしています'
+            forbidden_action: '最初からやり直してください'
+            your_session_was_expired: '有効期間が切れたので、最初からやり直してください'
       setting:
         totp:
-          index:
-            title: 'TOTP no ichiran'
           new:
             title: 'TOTP no shinki'
-  hello: "やぁ、せかい"
-  messages:
-    region_settings_updated_successfully: "地域設定が正常に更新されました。"
-    user_registration_error: "ユーザー登録中にエラーが発生しました。"
-    access_blocked_auth_error: "アクセスをブロック: 認証エラーです"
   apex:
     app:
       preferences:
@@ -135,6 +144,25 @@ ja:
         region_settings: "地域設定"
         email_preferences: "メール設定"
         theme_settings: "テーマ設定"
+        regions:
+          title: "地域・言語設定"
+          region_section: "地域設定"
+          language_section: "言語設定"
+          timezone_section: "タイムゾーン設定"
+        themes:
+          updated: "テーマを%{theme}に更新しました"
+          invalid: "無効なテーマが選択されました"
+      preference:
+        cookie:
+          edit:
+            h1: 'クッキーの設定'
+            accept_tracking_cookies: 'トラッキングの許可について'
+        themes:
+          updated: "テーマを%{theme}に更新しました"
+          invalid: "無効なテーマが選択されました"
+        emails:
+          updated: "メール設定が正常に更新されました"
+          invalid: "メール設定が無効です"
         regions:
           title: "地域・言語設定"
           region_section: "地域設定"
@@ -169,6 +197,21 @@ ja:
         region_settings: "地域設定"
         email_preferences: "メール設定"
         theme_settings: "テーマ設定"
+        emails:
+          updated: "メール設定が正常に更新されました"
+          none_selected: "設定が選択されていません"
+        themes:
+          updated: "企業テーマを%{theme}に更新しました"
+          invalid: "無効なテーマが選択されました"
+        regions:
+          title: "企業地域・言語設定"
+          region_section: "地域設定"
+          language_section: "言語設定"
+          timezone_section: "タイムゾーン設定"
+      preference:
+        cookie:
+          edit:
+            accept_tracking_cookies: 'トラッキングの許可について'
         regions:
           title: "企業地域・言語設定"
           region_section: "地域設定"
@@ -209,6 +252,18 @@ ja:
         region_settings: "地域設定"
         email_preferences: "メール設定"
         theme_settings: "テーマ設定"
+        regions:
+          title: "管理地域・言語設定"
+          region_section: "地域設定"
+          language_section: "管理言語設定"
+          timezone_section: "管理タイムゾーン設定"
+        themes:
+          updated: "管理テーマを%{theme}に更新しました"
+          invalid: "無効な管理テーマが選択されました"
+      preference:
+        cookie:
+          edit:
+            accept_tracking_cookies: 'トラッキングの許可について'
         regions:
           title: "管理地域・言語設定"
           region_section: "地域設定"
