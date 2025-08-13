@@ -4,6 +4,7 @@ class Auth::Org::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
   test "should get index" do
     get auth_org_setting_passkeys_url
     assert_response :success
+    assert_equal I18n.t("errors.not_implemented"), @response.body
   end
 
   # test "should get show" do
@@ -14,6 +15,7 @@ class Auth::Org::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
   test "should get new" do
     get new_auth_org_setting_passkey_url
     assert_response :success
+    assert_equal I18n.t("errors.not_implemented"), @response.body
   end
 
   # test "should get edit" do

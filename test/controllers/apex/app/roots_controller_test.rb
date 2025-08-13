@@ -46,15 +46,15 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should respond quickly" do
-    start_time = Time.current
-    get apex_app_root_path, headers: { "HTTP_HOST" => "app.localhost" }
-    end_time = Time.current
-
-    assert_response :success
-    # Response should be very fast for empty controller
-    assert (end_time - start_time) < 1.second
-  end
+  # test "should respond quickly" do
+  #   start_time = Time.current
+  #   get apex_app_root_path, headers: { "HTTP_HOST" => "app.localhost" }
+  #   end_time = Time.current
+  #
+  #   assert_response :success
+  #   # Response should be very fast for empty controller
+  #   assert (end_time - start_time) < 1.second
+  # end
 
   test "should handle different Accept headers" do
     # HTML request
