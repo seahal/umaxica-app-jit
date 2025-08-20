@@ -24,4 +24,3 @@ class EventPublisherTest < ActiveSupport::TestCase
   #   assert_equal "Skipped Kafka message publishing in test environment", msg
   # end
 end
-
