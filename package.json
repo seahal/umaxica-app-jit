@@ -9,8 +9,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/bun": "^1.2.20",
-    "@typescript/native-preview": "^7.0.0-dev.20250820.1",
-    "wrangler": "^4.31.0"
+    "@types/bun": "^1.2.21",
+    "@typescript/native-preview": "^7.0.0-dev.20250826.1",
+    "wrangler": "^4.33.0"
   }
 }
