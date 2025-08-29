@@ -11,6 +11,13 @@
     ],
     "types": ["bun-types"],
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "noEmit": true
   },
+  "include": [
+    "app/javascript/**/*"
+  ]
 }

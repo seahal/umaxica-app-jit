@@ -74,7 +74,7 @@ gem "pundit"
 gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
-gem "importmap-rails"
+gem "jsbundling-rails"
 gem "view_component"
 # OpenAPI
 gem "rswag"

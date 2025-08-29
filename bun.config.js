@@ -5,6 +5,13 @@ const config = {
   sourcemap: "external",
   entrypoints: ["app/javascript/application.js"],
   outdir: path.join(process.cwd(), "app/assets/builds"),
+  target: "browser",
+  loader: {
+    ".js": "jsx",
+    ".jsx": "jsx",
+    ".ts": "tsx",
+    ".tsx": "tsx"
+  }
 };
 
 const build = async (config) => {
