@@ -16,7 +16,7 @@ class Api::App::V1::Inquiry::ValidTelephoneNumbersControllerTest < ActionDispatc
   end
 
   test "should not get invalid data" do
-    assert_raise do
+    assert_raises(ArgumentError) do
       get api_app_v1_inquiry_valid_telephone_number_url " 1 2 3"
     end
   end

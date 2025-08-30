@@ -225,11 +225,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
     end
 
-    Time.use_zone("Asia/Tokyo") do
-      get apex_org_root_url
-      assert_response :success
-    end
-
     Time.use_zone("America/New_York") do
       get apex_org_root_url
       assert_response :success

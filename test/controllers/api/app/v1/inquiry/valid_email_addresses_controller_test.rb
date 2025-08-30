@@ -15,7 +15,7 @@ class Api::App::V1::Inquiry::ValidEmailAddressControllerTest < ActionDispatch::I
   end
 
   test "should not get invalid data" do
-    assert_raise do
+    assert_raises(ArgumentError) do
       get api_app_v1_inquiry_valid_email_address_url " 1 2 3"
     end
   end

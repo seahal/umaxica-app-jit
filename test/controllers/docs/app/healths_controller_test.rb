@@ -24,7 +24,7 @@ class Docs::App::HealthsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should not get show when required json file" do
-    assert_raise do
+    assert_raises(RuntimeError) do
       get docs_app_health_url(format: :yaml)
     end
   end

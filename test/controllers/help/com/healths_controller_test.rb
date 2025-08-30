@@ -24,7 +24,7 @@ class Help::Com::HealthsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should not get show when required yaml file" do
-    assert_raise do
+    assert_raises(RuntimeError) do
       get help_com_health_url(format: :yaml)
     end
   end

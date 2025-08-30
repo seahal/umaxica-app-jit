@@ -119,7 +119,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     end
 
     test "none is invalid of #{model}'s pattern" do
-      assert_raise do
+      assert_raises(RuntimeError) do
         ServiceSiteContact.create
       end
     end
