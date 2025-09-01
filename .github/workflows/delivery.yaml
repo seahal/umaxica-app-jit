@@ -19,8 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      ECR_REPOSITORY: 841162677945.dkr.ecr.ap-northeast-1.amazonaws.com/umaxica/jit
-      AWS_REGION: ap-northeast-1
+      GAR_LOCATION: asia-northeast1
+      GAR_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GAR_REPOSITORY: umaxica-jit
+      IMAGE_NAME: jit
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,34 +35,33 @@ jobs:
         run: bundle config set without 'test development' && bundle install
       - name: compile assets pipeline
         run: SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Login to Amazon ECR
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker $GAR_LOCATION-docker.pkg.dev
       - name: Build production Docker image
         run: |
+          IMAGE_URI=$GAR_LOCATION-docker.pkg.dev/$GAR_PROJECT_ID/$GAR_REPOSITORY/$IMAGE_NAME
           docker build --target production \
-            -t docker.io/my-organization/my-app:${{ github.sha }} \
+            -t $IMAGE_URI:${{ github.sha }} \
+            -t $IMAGE_URI:latest \
             --build-arg COMMIT_HASH=${{ github.sha }} .
 #      - name: Run Trivy vulnerability scanner
 #        uses: aquasecurity/trivy-action@0.28.0
 #        with:
-#         image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+#         image-ref: '${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GAR_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
 #         format: 'table'
 #         exit-code: '1'
 #         ignore-unfixed: true
 #         vuln-type: 'os,library'
 #         severity: 'CRITICAL,HIGH'
-      - name: Tag and push to Amazon ECR
+      - name: Push to Google Cloud Artifact Registry
         run: |
-          docker tag docker.io/my-organization/my-app:${{ github.sha }} $ECR_REPOSITORY:latest
-          docker tag docker.io/my-organization/my-app:${{ github.sha }} $ECR_REPOSITORY:${{ github.sha }}
-          docker push $ECR_REPOSITORY:latest
-          docker push $ECR_REPOSITORY:${{ github.sha }}
+          IMAGE_URI=$GAR_LOCATION-docker.pkg.dev/$GAR_PROJECT_ID/$GAR_REPOSITORY/$IMAGE_NAME
+          docker push $IMAGE_URI:latest
+          docker push $IMAGE_URI:${{ github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '23.x'
