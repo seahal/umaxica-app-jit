@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UMAXICA <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "www/app/main" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+</head>
+
+<body class="px-4">
+<header>
+  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Umaxica(auth, app)</a></h1>
+  <p>
+    <% if logged_in? %>
+      <%= link_to "log out?", edit_auth_app_authentication_path %>
+    <% else %>
+      <%= link_to "log in?", new_auth_app_authentication_path %>
+    <% end %>
+  </p>
+</header>
+
+<hr>
+
+<% flash.each do |message_type, message| %>
+  <%= message %>
+<% end %>
+
+<main class="container mx-auto mt-28 px-5 block">
+  <%= yield %>
+</main>
+
+<nav>
+  <% breadcrumbs.tap do |links| %>
+    <% if links.any? %>
+      <ul>
+        <% links.each do |link| %>
+          <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
+        <% end %>
+    <% end %>
+    <li>...</li>
+    </ul>
+  <% end %>
+</nav>
+
+<hr>
+
+<footer>
+  <ul>
+    <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Home</a></li>
+    <li><%= link_to 'Cookie', edit_apex_app_preference_cookie_url %></li>
+    <li><%= link_to 'Document', docs_app_root_url %></li>
+    <li><%= link_to 'News', news_app_root_url %></li>
+    <li><%= link_to 'apex', apex_app_root_url %></li>
+    <li><%= link_to 'Help Center', help_app_root_url %></li>
+  </ul>
+  <p>© 2025 <%= ENV.fetch('NAME') %>.</p>
+</footer>
+
+</body>
+</html>

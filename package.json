@@ -3,22 +3,19 @@
   "private": true,
   "scripts": {
     "build": "bun bun.config.js",
-    "format": "bun x @biomejs/biome format app/ --write ",
-    "lint": "bun x @biomejs/biome lint app/ --fix",
-    "typecheck": "bun x tsc --noEmit"
-  },
-  "devDependencies": {
-    "@types/bun": "^1.2.16",
-    "@typescript/native-preview": "^7.0.0-dev.20250617.1"
-  },
-  "peerDependencies": {
-    "@biomejs/biome": "^2.0.0",
-    "@types/bun": "^1.2.13",
-    "dotenv": "^16.5.0",
-    "typescript": "^5.8.3"
+    "typecheck": "bun x tsgo --noEmit",
+    "format": "bun x @biomejs/biome format app/javascript",
+    "lint": "bun x @biomejs/biome lint app/javascript"
   },
   "dependencies": {
-    "@rails/request.js": "^0.0.12",
-    "bun": "^1.2.16"
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.21",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@typescript/native-preview": "^7.0.0-dev.20250831.1",
+    "wrangler": "^4.33.1"
   }
 }

@@ -4,12 +4,17 @@
 #
 # Table name: users
 #
-#  id         :binary           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id          :uuid             not null, primary key
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  webauthn_id :string
 #
 one:
-  id: "e6c146b6-e4f5-4056-888c-338a16ab82ce"
+  id: "550e8400-e29b-41d4-a716-446655440020"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
 
 two:
-  id: "f7d257c7-f5g6-5167-999d-449b27bc93df"
+  id: "550e8400-e29b-41d4-a716-446655440021"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

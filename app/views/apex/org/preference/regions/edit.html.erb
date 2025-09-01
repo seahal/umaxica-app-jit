@@ -1,0 +1,58 @@
+<h1><%= t('apex.org.preferences.regions.title') %></h1>
+
+<%= form_with url: apex_org_preference_region_url, method: :patch do |f| %>
+  <div class="region-section">
+    <h2><%= t('apex.org.preferences.regions.region_section') %></h2>
+
+    <div class="region-selection">
+      <%= f.label :region, t('apex.org.preferences.regions.select_region') %>
+      <%= f.select :region, options_for_select([
+                                                 ['United States', 'US'],
+                                                 ['Japan', 'JP'],
+                                                 ['United Kingdom', 'GB'],
+                                                 ['Germany', 'DE'],
+                                                 ['France', 'FR'],
+                                                 ['Canada', 'CA'],
+                                                 ['Australia', 'AU'],
+                                                 ['South Korea', 'KR']
+                                               ], @region), { prompt: t('apex.org.preferences.regions.select_region_prompt') } %>
+    </div>
+
+    <div class="country-selection">
+      <%= f.label :country, t('apex.org.preferences.regions.select_country') %>
+      <%= f.select :country, options_for_select([
+                                                  ['United States', 'US'],
+                                                  ['Japan', 'JP'],
+                                                  ['United Kingdom', 'GB'],
+                                                  ['Germany', 'DE'],
+                                                  ['France', 'FR'],
+                                                  ['Canada', 'CA'],
+                                                  ['Australia', 'AU'],
+                                                  ['South Korea', 'KR']
+                                                ], @country), { prompt: t('apex.org.preferences.regions.select_country_prompt') } %>
+    </div>
+  </div>
+
+  <div class="language-section">
+    <h2><%= t('apex.org.preferences.regions.language_section') %></h2>
+
+    <div class="language-selection">
+      <%= f.label :language, t('apex.org.preferences.regions.select_language') %>
+      <%= f.select :language, options_from_collection_for_select(@available_languages, :first, :last, @current_language), { prompt: t('apex.org.preferences.regions.select_language_prompt') } %>
+    </div>
+  </div>
+
+  <div class="timezone-section">
+    <h2><%= t('apex.org.preferences.regions.timezone_section') %></h2>
+
+    <div class="timezone-selection">
+      <%= f.label :timezone, t('apex.org.preferences.regions.select_timezone') %>
+      <%= f.select :timezone, options_from_collection_for_select(@available_timezones, :first, :last, @current_timezone), { prompt: t('apex.org.preferences.regions.select_timezone_prompt') } %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit t('apex.org.preferences.regions.update_settings'), class: 'btn btn-primary' %>
+    <%= link_to t('apex.org.preferences.regions.cancel'), apex_org_preference_url, class: 'btn btn-secondary' %>
+  </div>
+<% end %>

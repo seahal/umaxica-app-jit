@@ -11,9 +11,12 @@ services:
     tty: true
     stdin_open: true
     ports:
-      - "3333:3000"
+      - "3300:3000"
     volumes:
-      - ./:/main:delegated
+      - main_tmp:/main/tmp
+      - main_vendor:/main/vendor
+      - main_modules:/main/node_modules
+      - ./:/main
     networks:
       - backend
       - frontend
@@ -101,6 +104,11 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
     networks:
       - backend
   kafka-ui:
@@ -235,7 +243,9 @@ volumes:
   kafka-broker-volume:
   elasticsearch-volume:
   minio-volume:
-  main-vendor-volume:
+  main_tmp:
+  main_vendor:
+  main_modules:
 networks:
   backend:
   frontend:

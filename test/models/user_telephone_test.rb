@@ -2,10 +2,15 @@
 #
 # Table name: user_telephones
 #
-#  id         :binary           not null, primary key
+#  id         :uuid             not null, primary key
 #  number     :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  user_id    :bigint
+#
+# Indexes
+#
+#  index_user_telephones_on_user_id  (user_id)
 #
 require "test_helper"
 

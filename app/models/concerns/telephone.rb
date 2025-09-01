@@ -18,6 +18,6 @@ module Telephone
     validates :pass_code, numericality: { only_integer: true },
               length: { is: 6 },
               presence: true,
-              unless: Proc.new { |a| a.pass_code.nil? && !a.number.nil?  }
+              unless: Proc.new { |a| a.pass_code.nil? && !a.number.nil? }
   end
 end

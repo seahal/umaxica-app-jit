@@ -4,7 +4,7 @@
 #
 # Table name: hmac_based_one_time_passwords
 #
-#  id          :binary           not null, primary key
+#  id          :uuid             not null, primary key
 #  last_otp_at :datetime         not null
 #  private_key :string(1024)     not null
 #  created_at  :datetime         not null
@@ -29,7 +29,6 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
     assert_not_nil otp.id
   end
 
-
   test "should set timestamps on create" do
     otp = HmacBasedOneTimePassword.create!(valid_attributes)
 
@@ -41,7 +40,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
     otp = HmacBasedOneTimePassword.create!(valid_attributes)
     original_time = otp.last_otp_at
 
-    new_time = Time.current + 1.hour
+    new_time = 1.hour.from_now
     otp.update!(last_otp_at: new_time)
 
     assert_not_equal original_time.to_i, otp.last_otp_at.to_i
@@ -87,7 +86,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
   test "should validate private_key length constraint" do
     # Test with over 1024 characters
     oversized_key = SecureRandom.hex(513) # 1026 characters
-    otp = HmacBasedOneTimePassword.new(
+    HmacBasedOneTimePassword.new(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       private_key: oversized_key
@@ -121,7 +120,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
     otp2 = HmacBasedOneTimePassword.find(otp.id)
 
     time1 = Time.current
-    time2 = Time.current + 1.second
+    time2 = 1.second.from_now
 
     otp1.update!(last_otp_at: time1)
     otp2.update!(last_otp_at: time2)

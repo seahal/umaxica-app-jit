@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Www::App::ApplicationHelper
-  #
   def to_localetime(time, tz = "utc")
     raise if time.nil?
 

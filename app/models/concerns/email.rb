@@ -17,6 +17,6 @@ module Email
     validates :pass_code, numericality: { only_integer: true },
               length: { is: 6 },
               presence: true,
-              unless: Proc.new { |a| a.pass_code.nil? && !a.address.nil?  }
+              unless: Proc.new { |a| a.pass_code.nil? && !a.address.nil? }
   end
 end

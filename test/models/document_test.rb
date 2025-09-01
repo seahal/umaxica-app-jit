@@ -2,7 +2,7 @@
 #
 # Table name: documents
 #
-#  id               :bigint           not null, primary key
+#  id               :uuid             not null, primary key
 #  description      :string
 #  title            :string
 #  created_at       :datetime         not null

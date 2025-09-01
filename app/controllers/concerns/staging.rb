@@ -9,12 +9,12 @@ module Staging
     if ENV["STAGING"].blank? && Rails.env.production?
       respond_to do |format|
         format.html { @git_hash = "" }
-        format.json { render status: 200, json: { staging: true } }
+        format.json { render status: :ok, json: { staging: true } }
       end
     else
       respond_to do |format|
         format.html { @git_hash = ENV.fetch("COMMIT_HASH", nil) }
-        format.json { render status: 200, json: { staging: false, id: ENV.fetch("COMMIT_HASH", nil) || "" } }
+        format.json { render status: :ok, json: { staging: false, id: ENV.fetch("COMMIT_HASH", nil) || "" } }
       end
     end
   end

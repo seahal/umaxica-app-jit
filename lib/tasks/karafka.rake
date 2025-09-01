@@ -41,7 +41,6 @@ namespace :karafka do
       end
 
       puts "\nTopics setup completed!"
-
     rescue StandardError => e
       puts "Error connecting to Kafka: #{e.message}"
       puts "Make sure Kafka is running and accessible at: #{ENV.fetch('KAFKA_BROKERS', 'localhost:9092')}"
@@ -64,7 +63,6 @@ namespace :karafka do
       topics = kafka.topics
       puts "Available topics:"
       topics.each { |topic| puts "  - #{topic}" }
-
     rescue StandardError => e
       puts "Error connecting to Kafka: #{e.message}"
       exit 1
@@ -86,7 +84,6 @@ namespace :karafka do
       # Try to fetch metadata
       kafka.brokers
       puts "✓ Successfully connected to Kafka brokers: #{ENV.fetch('KAFKA_BROKERS', 'localhost:9092')}"
-
     rescue StandardError => e
       puts "✗ Failed to connect to Kafka: #{e.message}"
       puts "Check if Kafka is running and accessible at: #{ENV.fetch('KAFKA_BROKERS', 'localhost:9092')}"
@@ -107,7 +104,6 @@ namespace :karafka do
 
       EventPublisher.publish_to_topic(:example, message_data)
       puts "✓ Test message sent to 'example' topic"
-
     rescue StandardError => e
       puts "✗ Failed to send test message: #{e.message}"
       exit 1

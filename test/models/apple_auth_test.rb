@@ -1,0 +1,31 @@
+# == Schema Information
+#
+# Table name: apple_auths
+#
+#  id            :uuid             not null, primary key
+#  access_token  :text
+#  email         :string
+#  expires_at    :datetime
+#  name          :string
+#  provider      :string
+#  refresh_token :text
+#  uid           :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  user_id       :uuid             not null
+#
+# Indexes
+#
+#  index_apple_auths_on_user_id  (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
+require "test_helper"
+
+class AppleAuthTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end

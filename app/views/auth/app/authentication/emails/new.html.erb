@@ -1,0 +1,40 @@
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<div>
+  <h1 class="font-bold text-4xl"><%= t('auth.app.authentication.email.new.page_title') %></h1>
+
+  <%= form_with model: @user_email, url: auth_app_authentication_email_path do |form| %>
+
+    <% if @user_email.errors.any? %>
+      <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+        <h2><%= pluralize(@user_email.errors.count, "error") %> prohibited this sample from being saved:</h2>
+
+        <ul class="list-disc ml-6">
+          <% @user_email.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :account_identifiable_information %>
+      <%= form.text_field :account_identifiable_information %>
+    </div>
+
+    <div>
+      <%= form.label :address %>
+      <%= form.email_field :address %>
+    </div>
+
+    <div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>
+
+    <%= form.submit %>
+  <% end %>
+
+  <ul>
+    <li><%= link_to t('auth.app.authentication.new.back'), new_auth_app_authentication_path %></li>
+    <li><%= link_to t('auth.app.authentication.email.new.registration'), new_auth_app_registration_email_path %></li>
+  </ul>
+
+</div>

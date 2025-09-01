@@ -27,7 +27,12 @@ module Common
   end
 
   # convert utc to local time
-  def localize_time(time, zone = "Tokyo")
+  def localize_time(time, _zone = "Tokyo")
     time.in_time_zone("Tokyo")
+  end
+
+  # text encryption using ActiveRecord encryption
+  def text_encryption(text)
+    ActiveRecord::Encryption.encryptor.encrypt(text)
   end
 end

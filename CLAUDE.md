@@ -161,6 +161,7 @@ Key environment variables required:
 - `API_CORPORATE_URL`, `API_SERVICE_URL`, `API_STAFF_URL` - API URLs  
 - `POSTGRESQL_*` - Database connection settings
 - `RAILS_MAX_THREADS` - Threading configuration
+- `RACK_ATTACK_API_KEY` - API key for Rack::Attack authentication
 
 ## Important Notes
 

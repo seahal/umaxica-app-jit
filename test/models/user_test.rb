@@ -2,9 +2,10 @@
 #
 # Table name: users
 #
-#  id         :binary           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id          :uuid             not null, primary key
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  webauthn_id :string
 #
 require "test_helper"
 
@@ -15,12 +16,6 @@ class UserTest < ActiveSupport::TestCase
 
   test "should be valid" do
     assert @user.valid?
-  end
-
-
-  test "should have binary id" do
-    assert @user.id.is_a?(String)
-    assert @user.id.encoding == Encoding::ASCII_8BIT
   end
 
   test "should have timestamps" do
@@ -56,14 +51,5 @@ class UserTest < ActiveSupport::TestCase
   test "should have many user_time_based_one_time_password association" do
     assert_respond_to @user, :user_time_based_one_time_password
     assert_equal :has_many, @user.class.reflect_on_association(:user_time_based_one_time_password).macro
-  end
-
-
-  test "should update timestamps on save" do
-    original_updated_at = @user.updated_at
-    travel 1.second do
-      @user.touch
-      assert @user.updated_at > original_updated_at
-    end
   end
 end

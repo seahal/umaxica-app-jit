@@ -15,18 +15,14 @@ module Memorize
   end
 
   class RedisMemorize
-    def initialize(prefix: nil, postfix: nil)
+    def initialize(prefix: nil, postfix: nil, redis_config: nil, encryptor: nil)
       @originality_prefix = prefix.to_s
       @originality_postfix = postfix.to_s
-      redis_config = RedisClient.config(host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost", port: 6379, db: 0)
-      @redis = redis_config.new_pool(timeout: 1, size: Integer(ENV.fetch("RAILS_MAX_THREADS", 5)))
-
-      # ActiveSupport::MessageEncryptorのインスタンスを作成
-      secret_key_base = Rails.application.credentials.secret_key_base || ENV.fetch("SECRET_KEY_BASE", "development_key")
-      key_generator = ActiveSupport::KeyGenerator.new(secret_key_base)
-      key_len = ActiveSupport::MessageEncryptor.key_len
-      secret = key_generator.generate_key("redis_memorize_encryption", key_len)
-      @encryptor = ActiveSupport::MessageEncryptor.new(secret)
+      @redis = redis_config&.new_pool(timeout: 1,
+                                      size: Integer(ENV.fetch(
+                                        "RAILS_MAX_THREADS", 5
+                                      ))) || default_redis_pool
+      @encryptor = encryptor || default_encryptor
     end
 
     def [](key)
@@ -41,15 +37,73 @@ module Memorize
       end
     end
 
-    def []=(key, value, expires_in = 2.hours)
+    def []=(key, value, expires_in: 2.hours)
       encrypted_value = @encryptor.encrypt_and_sign(value.to_s)
-      @redis.call("SET", redis_key(key), encrypted_value, "EX", expires_in.to_i)
+      if expires_in
+        @redis.call("SET", redis_key(key), encrypted_value, "EX", expires_in.to_i)
+      else
+        @redis.call("SET", redis_key(key), encrypted_value)
+      end
+    end
+
+    def delete(key)
+      result = @redis.call("DEL", redis_key(key))
+      result > 0
+    end
+
+    def exists?(key)
+      @redis.call("EXISTS", redis_key(key)) > 0
+    end
+
+    def clear_all
+      pattern = redis_key("*")
+      deleted_count = 0
+
+      # Use SCAN instead of KEYS for better performance and atomic operations
+      cursor = "0"
+      loop do
+        result = @redis.call("SCAN", cursor, "MATCH", pattern, "COUNT", 100)
+        cursor, keys = result
+
+        unless keys.empty?
+          # Delete keys in smaller batches to avoid race conditions
+          deleted_count += @redis.call("DEL", *keys)
+        end
+
+        break if cursor == "0"
+      end
+
+      deleted_count
+    end
+
+    # For testing - create a new instance with custom prefix/postfix
+    def self.test_instance(prefix: "test", postfix: "instance")
+      new(prefix: prefix, postfix: postfix)
     end
 
     private
 
     def redis_key(key)
       "#{Rails.env}.#{@originality_prefix}.#{@originality_postfix}.#{key}"
+    end
+
+    def default_redis_pool
+      redis_config = RedisClient.config(
+        driver: :hiredis,
+        host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost",
+        port: 6379,
+        db: 2
+      )
+      redis_config.new_pool(timeout: 1, size: Integer(ENV.fetch("RAILS_MAX_THREADS", 5)))
+    end
+
+    def default_encryptor
+      # Create an instance of ActiveSupport::MessageEncryptor
+      secret_key_base = Rails.application.credentials.secret_key_base || ENV.fetch("SECRET_KEY_BASE", "development_key")
+      key_generator = ActiveSupport::KeyGenerator.new(secret_key_base)
+      key_len = ActiveSupport::MessageEncryptor.key_len
+      secret = key_generator.generate_key("redis_memorize_encryption", key_len)
+      ActiveSupport::MessageEncryptor.new(secret)
     end
   end
 end

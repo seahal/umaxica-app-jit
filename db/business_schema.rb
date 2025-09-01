@@ -14,7 +14,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_24_163410) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "documents", force: :cascade do |t|
+  create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.binary "parent_id"
     t.binary "prev_id"
     t.binary "succ_id"
@@ -27,16 +27,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_24_163410) do
   end
 
   create_table "entity_statuses", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "timelines", force: :cascade do |t|
-    t.binary "parent_id"
-    t.binary "succ_id"
-    t.binary "prev_id"
+  create_table "timelines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "parent_id"
+    t.uuid "succ_id"
+    t.uuid "prev_id"
     t.string "title"
     t.string "description"
     t.string "entity_status_id"
-    t.binary "staff_id"
+    t.uuid "staff_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

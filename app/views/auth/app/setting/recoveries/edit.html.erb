@@ -1,0 +1,10 @@
+<h1>Editing user recovery code</h1>
+
+<%= render "form", user_recovery_code: @user_recovery_code %>
+
+<br>
+
+<div>
+  <%= link_to "Show this user recovery code", auth_app_setting_recovery_path(@user_recovery_code) %> |
+  <%= link_to "Back to user recovery codes", auth_app_setting_recoveries_path %>
+</div>

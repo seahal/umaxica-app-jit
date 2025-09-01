@@ -77,46 +77,34 @@ Rails.application.configure do
   config.assets.quiet = true
 
   # added by user
-  # session
-  # config.session_store :redis_session_store,
-  #                      #   on_redis_down: ->(*a) { logger.error("Redis down! #{a.inspect}") },
-  #                      key: "_jit_session",
-  #                      redis: {
-  #                       driver: :hiredis,
-  #                       expire_after: 120.minutes,
-  #                       key_prefix: "jit:session:",
-  #                       url: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "redis://localhost:6379/"
-  #                      }
-  # rub  config.session_store :redis_store,
-  # servers: [ File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "redis://localhost:6379/0/session" ],
-  # servers: [ "redis://localhost:6379/0/session" ],
-  # expire_after: 90.minutes,
-  # key: "#{Rails.application.class}_session",
-  # threadsafe: true,
-  # secure: true
 
   ## to avoid errors
-  config.hosts << "www.app.localdomain"
-  config.hosts << "www.com.localdomain"
-  config.hosts << "www.org.localdomain"
-  config.hosts << "api.app.localdomain"
-  config.hosts << "api.com.localdomain"
-  config.hosts << "api.org.localdomain"
-  config.hosts << "docs.app.localdomain"
-  config.hosts << "docs.com.localdomain"
-  config.hosts << "docs.org.localdomain"
-  config.hosts << "news.app.localdomain"
-  config.hosts << "news.com.localdomain"
-  config.hosts << "news.org.localdomain"
+  config.hosts << "app.localhost"
+  config.hosts << "com.localhost"
+  config.hosts << "org.localhost"
+  config.hosts << "api.app.localhost"
+  config.hosts << "api.com.localhost"
+  config.hosts << "api.org.localhost"
+  config.hosts << "auth.app.localhost"
+  config.hosts << "auth.org.localhost"
+  config.hosts << "help.app.localhost"
+  config.hosts << "help.com.localhost"
+  config.hosts << "help.org.localhost"
+  config.hosts << "docs.app.localhost"
+  config.hosts << "docs.com.localhost"
+  config.hosts << "docs.org.localhost"
+  config.hosts << "news.app.localhost"
+  config.hosts << "news.com.localhost"
+  config.hosts << "news.org.localhost"
 
   # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
   config.after_initialize do
-    Bullet.enable        = true
-    Bullet.alert         = true
+    Bullet.enable = true
+    Bullet.alert = true
     Bullet.bullet_logger = true
-    Bullet.console       = true
-    Bullet.rails_logger  = true
-    Bullet.add_footer    = true
+    Bullet.console = true
+    Bullet.rails_logger = true
+    Bullet.add_footer = true
   end
 
   ## file watcher
@@ -141,4 +129,10 @@ Rails.application.configure do
   config.active_record.encryption.primary_key = ENV["ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY"]
   config.active_record.encryption.deterministic_key = ENV["ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY"]
   config.active_record.encryption.key_derivation_salt = ENV["ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT"]
+
+  # static file serve
+  config.public_file_server.enabled = true
+
+  # SMS Provider Configuration - Use test provider in development
+  config.sms_provider = ENV.fetch("SMS_PROVIDER", "test")
 end

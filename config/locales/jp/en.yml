@@ -1,6 +1,136 @@
 ---
 en:
   hello: "Hello world 2"
+  messages:
+    region_settings_updated_successfully: "Region settings updated successfully."
+  common:
+    ok: "OK"
+  errors:
+    unauthorized: "Unauthorized access"
+    not_implemented: "Feature not yet implemented"
+  auth:
+    default_user_name: "User"
+    default_passkey_name: "Passkey"
+    default_passkey_description: "My Passkey"
+  languages:
+    english: "English"
+    japanese: "日本語"
+    spanish: "Español"
+    french: "Français"
+    german: "Deutsch"
+  themes:
+    light: "Light Theme"
+    dark: "Dark Theme"
+    corporate: "Corporate Theme"
+  apex:
+    app:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region Settings"
+        email_preferences: "Email Preferences"
+        theme_settings: "Theme Settings"
+        regions:
+          title: "Regional & Language Settings"
+          region_section: "Regional Settings"
+          language_section: "Language Preferences"
+          timezone_section: "Timezone Settings"
+          select_region: "Select Region"
+          select_country: "Select Country"
+          select_language: "Select Language"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_country_prompt: "Choose your country..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+        emails:
+          updated: "Email preferences updated successfully"
+          invalid: "Invalid email preferences"
+        languages:
+          updated: "Language updated to %{language}"
+          unsupported: "Unsupported language selected"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          updated: "Timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected"
+    com:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region Settings"
+        email_preferences: "Email Preferences"
+        theme_settings: "Theme Settings"
+        regions:
+          title: "Corporate Regional & Language Settings"
+          region_section: "Regional Settings"
+          language_section: "Language Preferences"
+          timezone_section: "Timezone Settings"
+          select_region: "Select Region"
+          select_country: "Select Country"
+          select_language: "Select Language"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_country_prompt: "Choose your country..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+        emails:
+          updated: "Email preferences updated successfully"
+          none_selected: "No preferences selected"
+        languages:
+          updated: "Language preference updated to %{language}"
+          unsupported: "Unsupported language selected"
+        themes:
+          updated: "Corporate theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          updated: "Timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected"
+    org:
+      customers:
+        created: "Customer %{name} created successfully"
+        updated: "Customer updated successfully"
+        deleted: "Customer %{name} deleted successfully"
+        name_email_required: "Name and email are required"
+        invalid_data: "Invalid customer data"
+      preferences:
+        title: "Admin Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region Settings"
+        email_preferences: "Email Preferences"
+        theme_settings: "Theme Settings"
+        regions:
+          title: "Admin Regional & Language Settings"
+          region_section: "Regional Settings"
+          language_section: "Admin Language Preferences"
+          timezone_section: "Admin Timezone Settings"
+          select_region: "Select Region"
+          select_country: "Select Country"
+          select_language: "Select Admin Language"
+          select_timezone: "Select Admin Timezone"
+          select_region_prompt: "Choose your region..."
+          select_country_prompt: "Choose your country..."
+          select_language_prompt: "Choose admin language..."
+          select_timezone_prompt: "Choose admin timezone..."
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+        languages:
+          updated: "Admin language updated to %{language}"
+          unsupported: "Unsupported admin language selected"
+        themes:
+          updated: "Admin theme updated to %{theme}"
+          invalid: "Invalid admin theme selected"
+        timezones:
+          updated: "Admin timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected for admin interface"
+        privacies:
+          updated: "Privacy settings updated successfully"
+          invalid: "Invalid privacy settings"
   activerecord:
     errors:
       messages:
