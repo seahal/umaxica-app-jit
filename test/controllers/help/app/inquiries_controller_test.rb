@@ -77,7 +77,7 @@ class Help::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
 
   # test "invalid first post" do
   #   assert_no_difference("ServiceSiteContact.count") do
-  #     post help_app_inquiries_url, params: { service_site_contact: { confirm_policy: 0,
+  #     post help_app_inquiries_url, params: { servic.e_site_contact: { confirm_policy: 0,
   #                                                                    email_address: "",
   #                                                                    telephone_number: "" } }
   #     #      assert_select "h2", "5 error prohibited this sample from being saved:"

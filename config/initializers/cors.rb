@@ -7,6 +7,34 @@
 
 # Read more: https://github.com/cyu/rack-cors
 
+module CorsUtils
+  # Extracts domain (and variants) from a URL string safely.
+  def self.extract_domain(url)
+    return [] if url.blank?
+
+    begin
+      uri = URI.parse(url)
+      domains = [ uri.host ]
+
+      # Add with and without www prefix
+      if uri.host&.start_with?("www.")
+        domains << uri.host.sub("www.", "")
+      else
+        domains << "www.#{uri.host}" if uri.host
+      end
+
+      # Add with port if specified
+      if uri.port && [ 80, 443 ].exclude?(uri.port)
+        domains = domains.map { |domain| "#{domain}:#{uri.port}" }
+      end
+
+      domains.compact
+    rescue URI::InvalidURIError
+      []
+    end
+  end
+end
+
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   # =============================================================================
   # DEVELOPMENT CONFIGURATION
@@ -35,7 +63,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       corporate_domains = [
         ENV["WWW_CORPORATE_URL"],
         ENV["API_CORPORATE_URL"]
-      ].compact.map { |url| extract_domain(url) }.flatten
+      ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
       corporate_domains.include?(source) ||
       (Rails.env.development? && source&.include?("localhost"))
@@ -61,7 +89,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       service_domains = [
         ENV["WWW_SERVICE_URL"],
         ENV["API_SERVICE_URL"]
-      ].compact.map { |url| extract_domain(url) }.flatten
+      ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
       service_domains.include?(source) ||
       (Rails.env.development? && source&.include?("localhost"))
@@ -87,7 +115,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       staff_domains = [
         ENV["WWW_STAFF_URL"],
         ENV["API_STAFF_URL"]
-      ].compact.map { |url| extract_domain(url) }.flatten
+      ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
       staff_domains.include?(source) ||
       (Rails.env.development? && source&.include?("localhost"))
@@ -137,7 +165,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
         ENV["WWW_CORPORATE_URL"],
         ENV["WWW_SERVICE_URL"],
         ENV["WWW_STAFF_URL"]
-      ].compact.map { |url| extract_domain(url) }.flatten
+      ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
       all_domains.include?(source) ||
       (Rails.env.development? && source&.include?("localhost"))
@@ -148,35 +176,6 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       methods: [ :get, :post, :put, :patch, :delete, :options ],
       credentials: true,
       max_age: 0 # No caching for security-sensitive endpoints
-  end
-
-  # =============================================================================
-  # HELPER METHODS
-  # =============================================================================
-
-  def self.extract_domain(url)
-    return [] if url.blank?
-
-    begin
-      uri = URI.parse(url)
-      domains = [ uri.host ]
-
-      # Add with and without www prefix
-      if uri.host&.start_with?("www.")
-        domains << uri.host.sub("www.", "")
-      else
-        domains << "www.#{uri.host}" if uri.host
-      end
-
-      # Add with port if specified
-      if uri.port && [ 80, 443 ].exclude?(uri.port)
-        domains = domains.map { |domain| "#{domain}:#{uri.port}" }
-      end
-
-      domains.compact
-    rescue URI::InvalidURIError
-      []
-    end
   end
 end
 
