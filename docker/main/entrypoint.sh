@@ -17,6 +17,6 @@ bin/rails db:seed
 bundle exec karafka-web migrate
 
 # run servers
-bin/dev
+# bin/dev
 
 exec $$

@@ -74,15 +74,14 @@ gem "pundit"
 gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
-gem "jsbundling-rails"
 gem "view_component"
 # OpenAPI
 gem "rswag"
 gem "ostruct", "~> 0.6.3"
 gem "rswag-api"
 gem "rswag-ui"
-# TailwindCSS
-gem "tailwindcss-rails"
+#
+gem "jsbundling-rails"
 # JWT
 gem "jwt"
 
