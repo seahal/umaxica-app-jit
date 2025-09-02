@@ -150,10 +150,8 @@ ENV RAILS_ENV="development" \
     WEB_CONCURRENCY="2" \
     TZ=UTC \
     COMMIT_HASH=${COMMIT_HASH} \
-    # Memory optimization
     LD_PRELOAD="libjemalloc.so.2" \
     MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true" \
-    # Security headers
     RUBY_YJIT_ENABLE="1"
 
 # Create non-root user first
