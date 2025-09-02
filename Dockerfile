@@ -204,4 +204,4 @@ USER ${DOCKER_USER}
 EXPOSE 3000
 
 # Default command - Use PORT environment variable for Cloud Run compatibility
-CMD ["sh", "-c", "bundle exec rails server -b 0.0.0.0 -p ${PORT:-3000}"]
+CMD ["sh", "-c", "RAILS_ENV=production bundle exec rails server -b 0.0.0.0 -p ${PORT:-3000}"]

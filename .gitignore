@@ -82,3 +82,8 @@ node_modules
 .yardoc/
 /.ruby-lsp/
 .dist/
+
+
+/config/credentials/development.key
+/config/credentials/production.key
+/config/credentials/test.key

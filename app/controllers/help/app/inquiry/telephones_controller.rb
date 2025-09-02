@@ -1,4 +1,4 @@
-module Www
+module Help
   module App
     module Inquiry
       # TelephonesController handles the telephone contact process for inquiries.
