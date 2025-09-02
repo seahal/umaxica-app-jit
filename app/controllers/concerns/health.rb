@@ -3,6 +3,11 @@
 module Health
   extend ActiveSupport::Concern
 
+  # TODO(human): Implement lightweight health check for Cloud Run
+  # Create a method that provides quick health response without external dependencies
+  # This should check Rails.application.initialized? and return 200 OK quickly
+  # Use environment variables or request parameters to determine when to use this vs full check
+
   def show
     expires_in 1.second, public: true # this page wouldn't include private data
 
