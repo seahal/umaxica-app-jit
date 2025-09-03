@@ -84,7 +84,7 @@ GEM
       ffi-compiler (~> 1.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1153.0)
+    aws-partitions (1.1154.0)
     aws-sdk (3.3.0)
       aws-sdk-resources (~> 3)
     aws-sdk-accessanalyzer (1.78.0)
@@ -499,7 +499,7 @@ GEM
     aws-sdk-ebs (1.64.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-ec2 (1.554.0)
+    aws-sdk-ec2 (1.555.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-ec2instanceconnect (1.63.0)
@@ -910,7 +910,7 @@ GEM
     aws-sdk-mwaa (1.64.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-neptune (1.91.0)
+    aws-sdk-neptune (1.92.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-neptunedata (1.32.0)
@@ -931,7 +931,7 @@ GEM
     aws-sdk-networkmonitor (1.26.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-notifications (1.12.0)
+    aws-sdk-notifications (1.13.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-notificationscontacts (1.11.0)
@@ -1723,7 +1723,7 @@ GEM
     aws-sdk-workdocs (1.80.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-workmail (1.89.0)
+    aws-sdk-workmail (1.90.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-workmailmessageflow (1.58.0)
@@ -2262,7 +2262,7 @@ GEM
     opentelemetry-instrumentation-delayed_job (0.23.0)
       opentelemetry-api (~> 1.0)
       opentelemetry-instrumentation-base (~> 0.23.0)
-    opentelemetry-instrumentation-ethon (0.23.0)
+    opentelemetry-instrumentation-ethon (0.23.1)
       opentelemetry-api (~> 1.0)
       opentelemetry-instrumentation-base (~> 0.23.0)
     opentelemetry-instrumentation-excon (0.24.0)
@@ -2680,7 +2680,7 @@ DEPENDENCIES
   rack-attack
   rack-cors
   rack-mini-profiler
-  rails (~> 8.0, >= 8.0.2)
+  rails
   rails_live_reload
   rake
   rbs

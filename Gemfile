@@ -9,7 +9,7 @@ gem "rack"
 # type for Ruby language.
 gem "rbs"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0", ">= 8.0.2"
+gem "rails"
 # Use PostgreSQL as the database for Active Record
 gem "pg"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -84,6 +84,8 @@ gem "rswag-ui"
 gem "jsbundling-rails"
 # JWT
 gem "jwt"
+# environment variables
+gem "dotenv-rails", "~> 3.1", ">= 3.1.2" # FIXME: .env file must not be included sign_in production.
 
 
 group :development, :test do
@@ -91,8 +93,6 @@ group :development, :test do
   gem "bullet"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
-  # environment variables
-  gem "dotenv-rails", "~> 3.1", ">= 3.1.2" # FIXME: .env file must not be included sign_in production.
   # coverage
   gem "simplecov", require: false
 end

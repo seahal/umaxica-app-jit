@@ -86,19 +86,6 @@ development:
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUSINESS_SUB"]: 'localhost' %>
     migrations_paths: db/businesses_migrate
-  message:
-    <<: *default
-    database: development_message_db
-    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_PUB"]: 'localhost' %>
-    migrations_paths: db/messages_migrate
-  message_replica:
-    <<: *default
-    replica: true
-    database: development_message_db
-    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
-    migrations_paths: db/messages_migrate
   notification:
     <<: *default
     database: development_notification_db
@@ -110,7 +97,7 @@ development:
     replica: true
     database: development_notification_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>
+    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_NOTIFICATION_SUB"]: 'localhost' %>
     migrations_paths: db/notifications_migrate
   cache:
     <<: *default
@@ -134,10 +121,10 @@ development:
   speciality_replica:
     <<: *default
     replica: true
-    migrations_paths: db/specialities_migrate
+    database: development_speciality_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_SPECIALITY_SUB"]: 'localhost' %>
-    migrations_paths: db/specialitys_migrate
+    migrations_paths: db/specialities_migrate
   storage:
     <<: *default
     database: development_storage_db
@@ -222,32 +209,6 @@ test:
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_SUB"]: 'localhost' %>
     migrations_paths: db/tokens_migrate
-  business:
-    <<: *default
-    database: test_business_db
-    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUSINESS_PUB"]: 'localhost' %>
-    migrations_paths: db/entities_migrate
-  business_replica:
-    <<: *default
-    replica: true
-    database: test_business_db
-    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_BUSINESS_SUB"]: 'localhost' %>
-    migrations_paths: db/entities_migrate
-  message:
-    <<: *default
-    database: test_message_db
-    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_PUB"]: 'localhost' %>
-    migrations_paths: db/messages_migrate
-  message_replica:
-    <<: *default
-    replica: true
-    database: test_message_db
-    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
-    host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_MESSAGE_SUB"]: 'localhost' %>
-    migrations_paths: db/messages_migrate
   notification:
     <<: *default
     database: test_notification_db
@@ -316,8 +277,153 @@ test:
 
 # FIXME: please implement below code
 production:
-  none:
+  universal:
     <<: *default
-    database: production_db
-    port: 5432
-    host: localhost
+    database: production_universal_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
+    password: ''
+    migrations_paths: db/universals_migrate
+  universal_replica:
+    <<: *default
+    replica: true
+    database: production_universal_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
+    password: ''
+    migrations_paths: db/universals_migrate
+  contact:
+    <<: *default
+    database: production_contact_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_CONTACT_PUB"] %>
+    password: ''
+    migrations_paths: db/contacts_migrate
+  contact_replica:
+    <<: *default
+    replica: true
+    database: production_contact_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_CONTACT_SUB"] %>
+    password: ''
+    migrations_paths: db/contacts_migrate
+  identifier:
+    <<: *default
+    database: production_identifier_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_IDENTIFIER_PUB"] %>
+    password: ''
+    migrations_paths: db/identifiers_migrate
+  identifier_replica:
+    <<: *default
+    replica: true
+    database: production_identifier_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_IDENTIFIER_SUB"] %>
+    password: ''
+    migrations_paths: db/identifiers_migrate
+  profile:
+    <<: *default
+    database: production_profile_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_PROFILE_PUB"] %>
+    password: ''
+    migrations_paths: db/profiles_migrate
+  profile_replica:
+    <<: *default
+    replica: true
+    database: production_profile_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_PROFILE_SUB"] %>
+    password: ''
+    migrations_paths: db/profiles_migrate
+  token:
+    <<: *default
+    database: production_token_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_TOKEN_PUB"] %>
+    password: ''
+    migrations_paths: db/tokens_migrate
+  token_replica:
+    <<: *default
+    replica: true
+    database: production_token_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_TOKEN_SUB"] %>
+    password: ''
+    migrations_paths: db/tokens_migrate
+  business:
+    <<: *default
+    database: production_business_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] %>
+    password: ''
+    migrations_paths: db/businesses_migrate
+  business_replica:
+    <<: *default
+    replica: true
+    database: production_business_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
+    password: ''
+    migrations_paths: db/businesses_migrate
+  notification:
+    <<: *default
+    database: production_notification_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] %>
+    password: ''
+    migrations_paths: db/notifications_migrate
+  notification_replica:
+    <<: *default
+    replica: true
+    database: production_notification_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] %>
+    password: ''
+    migrations_paths: db/notifications_migrate
+  speciality:
+    <<: *default
+    database: production_speciality_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
+    password: ''
+    migrations_paths: db/specialities_migrate
+  speciality_replica:
+    <<: *default
+    replica: true
+    database: production_speciality_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
+    password: ''
+    migrations_paths: db/specialities_migrate
+  cache:
+    <<: *default
+    database: production_cache_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_CACHE_PUB"] %>
+    password: ''
+    migrations_paths: db/caches_migrate
+  cache_replica:
+    <<: *default
+    replica: true
+    database: production_cache_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
+    password: ''
+    migrations_paths: db/caches_migrate
+  storage:
+    <<: *default
+    database: production_storage_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_STORAGE_PUB"] %>
+    password: ''
+    migrations_paths: db/storages_migrate
+  storage_replica:
+    <<: *default
+    replica: true
+    database: production_storage_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= ENV["POSTGRESQL_STORAGE_SUB"] %>
+    password: ''
+    migrations_paths: db/storages_migrate
