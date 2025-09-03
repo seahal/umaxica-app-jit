@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
   scope module: :apex, as: :apex do
+    # TODO(human): Refactor this routes file to eliminate duplication
+    # Create a helper method to define common routes for each domain
+    # The common pattern: root, health, preference (with cookie/region/email/theme), staging (com only)
     # for corporate site
-    constraints host: ENV["WWW_CORPORATE_URL"] do
+
+    constraints host: ENV["APEX_CORPORATE_URL"] do
       scope module: :com, as: :com do
         root to: "roots#index"
         # health check for html
@@ -24,7 +28,7 @@ Rails.application.routes.draw do
     end
 
     # service page
-    constraints host: ENV["WWW_SERVICE_URL"] do
+    constraints host: ENV["APEX_SERVICE_URL"] do
       scope module: :app, as: :app do
         root to: "roots#index"
         # endpoint of health check
@@ -45,7 +49,7 @@ Rails.application.routes.draw do
     end
 
     # For Staff's webpages example.org
-    constraints host: ENV["WWW_STAFF_URL"] do
+    constraints host: ENV["APEX_STAFF_URL"] do
       scope module: :org, as: :org do
         root to: "roots#index"
         # health check for html

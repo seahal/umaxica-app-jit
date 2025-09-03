@@ -14,6 +14,9 @@ module Health
     # In test environment, avoid hitting external services and DB checks.
     if Rails.env.test?
       @status, @body = [ 200, "OK" ]
+    elsif Rails.env.production?
+      # Keep health checks lightweight and avoid external dependencies in production
+      @status, @body = [ 200, "OK" ]
     else
       # FIXME: much more validations requires
       # @status, @body = if !! [UniversalsRecord, IdentitiesRecord, NotificationsRecord, CoresRecord, SessionsRecord, StoragesRecord, MessagesRecord].all?{ it.connection.execute("SELECT 1;") }
@@ -24,7 +27,7 @@ module Health
         user: Rails.application.credentials.OPENSEARCH.USERNAME,
         password: Rails.application.credentials.OPENSEARCH.PASSWORD,
         transport_options: { ssl: { verify: false } },
-        log: true
+        log: false
       )
 
       @status, @body = if !![ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
@@ -35,11 +38,9 @@ module Health
     end
 
     case request.path
-    when "/health"
+    when /\/health(?:\.html)?$/
       render html: @body, status: @status
-    when "/health.html"
-      render html: @body, status: @status
-    when "/health.json"
+    when /\/health\.json$/
       render json: { status: @body }, status: @status
     else
       raise

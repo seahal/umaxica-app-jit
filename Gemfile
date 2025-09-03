@@ -85,7 +85,8 @@ gem "jsbundling-rails"
 # JWT
 gem "jwt"
 # environment variables
-gem "dotenv-rails", "~> 3.1", ">= 3.1.2" # FIXME: .env file must not be included sign_in production.
+## Load dotenv only in development and test. Never in production.
+
 
 
 group :development, :test do
@@ -95,6 +96,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
   # coverage
   gem "simplecov", require: false
+  # environment variables
+  gem "dotenv-rails", "~> 3.1", ">= 3.1.2"
 end
 
 group :development do

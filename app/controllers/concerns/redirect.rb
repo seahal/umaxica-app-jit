@@ -2,9 +2,23 @@
 
 module Redirect
   extend ActiveSupport::Concern
-  ALLOWED_HOSTS = [ ENV["WWW_CORPORATE_URL"],
-                   ENV["WWW_SERVICE_URL"],
-                   ENV["WWW_STAFF_URL"],
+
+  def self.normalize_host(val)
+    return nil if val.blank?
+    str = val.to_s.strip
+    begin
+      uri = URI.parse(str)
+      host = uri.host.presence || str.split("/").first
+    rescue URI::InvalidURIError
+      host = str
+    end
+    # strip scheme remnants and spaces
+    host.to_s.downcase.sub(%r{^https?://}i, "").split("/").first
+  end
+
+  ALLOWED_HOSTS = [ ENV["APEX_CORPORATE_URL"],
+                   ENV["APEX_SERVICE_URL"],
+                   ENV["APEX_STAFF_URL"],
                    ENV["API_CORPORATE_URL"],
                    ENV["API_SERVICE_URL"],
                    ENV["API_STAFF_URL"],
@@ -21,7 +35,7 @@ module Redirect
                    ENV["HELP_STAFF_URL"],
                    ENV["EDGE_CORPORATE_URL"],
                    ENV["EDGE_SERVICE_URL"],
-                   ENV["EDGE_STAFF_URL"] ].compact.map(&:downcase).freeze
+                   ENV["EDGE_STAFF_URL"] ].compact.map { |v| normalize_host(v) }.compact.freeze
 
   private
 
@@ -66,8 +80,7 @@ module Redirect
 
     # Check for exact match or subdomain match
     ALLOWED_HOSTS.any? do |allowed_host|
-      host_downcase == allowed_host ||
-        host_downcase.end_with?(".#{allowed_host}")
+      host_downcase == allowed_host || host_downcase.end_with?(".#{allowed_host}")
     end
   end
 end

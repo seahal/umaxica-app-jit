@@ -5,9 +5,9 @@ class RedirectTest < ActiveSupport::TestCase
 
   setup do
     @original_env = ENV.to_h
-    ENV["WWW_SERVICE_URL"] = "app.www.localdomain"
-    ENV["WWW_CORPORATE_URL"] = "com.www.localdomain"
-    ENV["WWW_STAFF_URL"] = "org.www.localdomain"
+    ENV["APEX_SERVICE_URL"] = "app.www.localdomain"
+    ENV["APEX_CORPORATE_URL"] = "com.www.localdomain"
+    ENV["APEX_STAFF_URL"] = "org.www.localdomain"
     ENV["API_SERVICE_URL"] = "app.api.localdomain"
     ENV["API_CORPORATE_URL"] = "com.api.localdomain"
     ENV["API_STAFF_URL"] = "org.api.localdomain"
@@ -28,9 +28,9 @@ class RedirectTest < ActiveSupport::TestCase
 
     # Force reload of the constant
     Redirect.send(:remove_const, :ALLOWED_HOSTS) if Redirect.const_defined?(:ALLOWED_HOSTS)
-    Redirect.const_set(:ALLOWED_HOSTS, [ ENV["WWW_CORPORATE_URL"],
-                                        ENV["WWW_SERVICE_URL"],
-                                        ENV["WWW_STAFF_URL"],
+    Redirect.const_set(:ALLOWED_HOSTS, [ ENV["APEX_CORPORATE_URL"],
+                                        ENV["APEX_SERVICE_URL"],
+                                        ENV["APEX_STAFF_URL"],
                                         ENV["API_CORPORATE_URL"],
                                         ENV["API_SERVICE_URL"],
                                         ENV["API_STAFF_URL"],

@@ -2,8 +2,7 @@
 
 module Api
   module App
-    class ApplicationController < ActionController::Base
-      allow_browser versions: :modern
+    class ApplicationController < ActionController::API
     end
   end
 end
