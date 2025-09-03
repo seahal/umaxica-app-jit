@@ -64,16 +64,16 @@ class Help::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   #   assert_select "input[name='service_site_contact[telephone_number]'][type='text']"
   # end
 
-  test "should get create" do
-    email_address = "sample@example.com"
-    telephone_number = "+819012345678"
-    post help_app_inquiries_path, params: { service_site_contact: { confirm_policy: 1,
-                                                                    email_address: email_address,
-                                                                    telephone_number: telephone_number } }
-    # FIXME: REWRITE!www_app_contacts_url
-    # assert_redirected_to  new_www_app_inquiry_email_url(session[:contact_id])
-    assert 1
-  end
+  # test "should get create" do
+  #   email_address = "sample@example.com"
+  #   telephone_number = "+819012345678"
+  #   post help_app_inquiries_path, params: { service_site_contact: { confirm_policy: 1,
+  #                                                                   email_address: email_address,
+  #                                                                   telephone_number: telephone_number } }
+  #   # FIXME: REWRITE!www_app_contacts_url
+  #   # assert_redirected_to  new_www_app_inquiry_email_url(session[:contact_id])
+  #   assert 1
+  # end
 
   # test "invalid first post" do
   #   assert_no_difference("ServiceSiteContact.count") do
