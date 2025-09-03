@@ -19,6 +19,6 @@ pre-push:
   parallel: true
   commands:
     rails test:
-      run: bin/rails test all
+      run: docker compose run main rake
     bun test:
-      run: bun test
+      run: docker compose run main bun test
