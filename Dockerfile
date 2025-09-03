@@ -11,7 +11,6 @@ ARG GITHUB_ACTIONS=""
 # Base image with common dependencies
 FROM ruby:$RUBY_VERSION-bookworm AS base
 ENV TZ=UTC
-ENV DEBIAN_FRONTEND=noninteractive
 
 # Install common system dependencies with security updates
 RUN apt-get update -qq && \

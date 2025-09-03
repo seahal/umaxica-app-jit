@@ -9,7 +9,7 @@ gem "rack"
 # type for Ruby language.
 gem "rbs"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails"
+gem "rails", "~> 8.0", ">= 8.0.2"
 # Use PostgreSQL as the database for Active Record
 gem "pg"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -74,30 +74,24 @@ gem "pundit"
 gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
+gem "jsbundling-rails"
 gem "view_component"
 # OpenAPI
 gem "rswag"
 gem "ostruct", "~> 0.6.3"
 gem "rswag-api"
 gem "rswag-ui"
-#
-gem "jsbundling-rails"
 # JWT
 gem "jwt"
-# environment variables
-## Load dotenv only in development and test. Never in production.
-
 
 
 group :development, :test do
   # to avoid n+1 queries
   gem "bullet"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
-  # environment variables
-  gem "dotenv-rails", "~> 3.1", ">= 3.1.2"
 end
 
 group :development do
