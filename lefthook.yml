@@ -1,7 +1,7 @@
 pre-commit:
   parallel: true
   commands:
-    audit:
+    audit(gem):
       run: bundle exec bundle audit
     brakeman:
       run: bundle exec brakeman --no-pager
@@ -13,10 +13,12 @@ pre-commit:
       run: bun run format
     typecheck:
       run: bun run typecheck
+    audit(bun):
+      run: bun audit
 pre-push:
   parallel: true
   commands:
-    rails:
+    rails test:
       run: bin/rails test all
-    bun:
+    bun test:
       run: bun test
