@@ -1,0 +1,129 @@
+{
+	"name": "umaxica-app-jit",
+	"dockerComposeFile": ["../compose.yml"],
+	"service": "main",
+	"workspaceFolder": "/main",
+	"remoteUser": "main",
+	"forwardPorts": [3333, 3000, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601],
+	"portsAttributes": {
+		"3333": {
+			"label": "Rails Server (Docker)",
+			"onAutoForward": "notify"
+		},
+		"5433": {
+			"label": "PostgreSQL Primary"
+		},
+		"5434": {
+			"label": "PostgreSQL Replica"
+		},
+		"6379": {
+			"label": "Redis"
+		},
+		"9092": {
+			"label": "Kafka"
+		},
+		"3000": {
+			"label": "Rails Server (Local)",
+			"protocol": "http"
+		},
+		"9200": {
+			"label": "Elasticsearch"
+		},
+		"9000": {
+			"label": "Minio API"
+		},
+		"9001": {
+			"label": "Minio Console",
+			"protocol": "http"
+		},
+		"8080": {
+			"label": "Kafka UI",
+			"protocol": "http"
+		},
+		"5601": {
+			"label": "OpenSearch Dashboards",
+			"protocol": "http"
+		}
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/git:1": {
+			"ppa": true,
+			"version": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Shopify.ruby-lsp",
+				"Shopify.ruby-extensions-pack",
+				"bradlc.vscode-tailwindcss",
+				"ms-vscode.vscode-typescript-next",
+				"biomejs.biome",
+				"ms-azuretools.vscode-docker",
+				"cweijan.vscode-postgresql-client2",
+				"GitHub.vscode-pull-request-github",
+				"ms-vscode.vscode-json",
+				"ms-vscode.vscode-yaml",
+				"humao.rest-client",
+				"streetsidesoftware.code-spell-checker",
+				"ms-vscode.remote-explorer"
+			],
+			"settings": {
+				"extensions.verifySignature": false,
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"editor.formatOnSave": true,
+				"editor.codeActionsOnSave": {
+					"source.fixAll.biome": "explicit"
+				},
+				"files.associations": {
+					"*.erb": "erb",
+					"Procfile*": "shellscript",
+					"compose.yml": "yaml",
+					"*.yml": "yaml"
+				},
+				"[ruby]": {
+					"editor.defaultFormatter": "Shopify.ruby-lsp"
+				},
+				"[javascript]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
+				"[typescript]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
+				"ruby.lsp.enabledFeatures": {
+					"codeActions": true,
+					"diagnostics": true,
+					"documentHighlights": true,
+					"documentLink": true,
+					"documentSymbols": true,
+					"foldingRanges": true,
+					"formatting": true,
+					"hover": true,
+					"inlayHint": true,
+					"onTypeFormatting": true,
+					"selectionRanges": true,
+					"semanticHighlighting": true,
+					"completion": true,
+					"codeLens": true,
+					"definition": true,
+					"workspaceSymbol": true,
+					"signatureHelp": true,
+					"typeHierarchy": true
+				}
+			}
+		}
+	},
+	"containerEnv": {
+		"RAILS_ENV": "development",
+		"RACK_ENV": "development"
+	},
+	"postCreateCommand": "bundle install && bun install",
+	"postStartCommand": "sudo chown -R main:group /main && echo 'Development environment ready!'",
+	"initializeCommand": "echo 'Initializing Umaxica Rails Development Environment...'",
+	"onCreateCommand": "echo 'Devcontainer created successfully'",
+	"updateContentCommand": "bundle install && bun install",
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+	]
+}

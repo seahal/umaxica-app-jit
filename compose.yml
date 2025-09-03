@@ -27,6 +27,10 @@ services:
       - kafka
       - redis
       - minio
+    environment:
+      # TODO(human): Add development environment variables here
+      - RAILS_ENV=development
+      - RACK_ENV=development
   minio:
     image: minio/minio
     ports:
