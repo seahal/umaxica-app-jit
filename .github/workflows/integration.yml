@@ -205,14 +205,15 @@ jobs:
       - name: 'Build production image for scanning'
         run: |
           docker build --target production -t umaxica:ci-${{ github.sha }} .
+          mkdir -p sarif
 
       - name: 'Trivy FS scan (repository)'
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: 'fs'
           scan-ref: '.'
           format: 'sarif'
-          output: 'trivy-fs.sarif'
+          output: 'sarif/trivy-fs.sarif'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
@@ -222,7 +223,7 @@ jobs:
         with:
           image-ref: 'umaxica:ci-${{ github.sha }}'
           format: 'sarif'
-          output: 'trivy-image.sarif'
+          output: 'sarif/trivy-image.sarif'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
@@ -232,16 +233,12 @@ jobs:
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: |
-            trivy-fs.sarif
-            trivy-image.sarif
+          sarif_file: sarif
 
       - name: 'Upload Trivy reports as artifacts'
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trivy-reports
-          path: |
-            trivy-fs.sarif
-            trivy-image.sarif
+          path: sarif/*.sarif
           retention-days: 7
