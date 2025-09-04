@@ -207,7 +207,7 @@ jobs:
           docker build --target production -t umaxica:ci-${{ github.sha }} .
 
       - name: 'Trivy FS scan (repository)'
-        uses: aquasecurity/trivy-action@v0.24.0
+        uses: aquasecurity/trivy-action@0.24.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -218,7 +218,7 @@ jobs:
           exit-code: '0'
 
       - name: 'Trivy Image scan (production image)'
-        uses: aquasecurity/trivy-action@v0.24.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           image-ref: 'umaxica:ci-${{ github.sha }}'
           format: 'sarif'
