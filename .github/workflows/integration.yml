@@ -186,9 +186,7 @@ jobs:
             bun audit || npm audit --audit-level=moderate &&
             echo '=== Checking license compatibility ===' &&
           bundle exec license_finder || echo 'License finder not configured' &&
-          echo '=== Security analysis complete ==='
-        "
-
+          echo '=== Security analysis complete ===' "
   # Container image vulnerability scan with Trivy
   container-security:
     name: 'Container Security (Trivy)'

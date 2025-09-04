@@ -73,7 +73,6 @@ gem "pundit"
 gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
-gem "jsbundling-rails"
 gem "view_component"
 # OpenAPI
 gem "rswag"
@@ -82,6 +81,8 @@ gem "rswag-api"
 gem "rswag-ui"
 # JWT
 gem "jwt"
+#
+gem "jsbundling-rails"
 
 
 group :development, :test do
@@ -115,10 +116,4 @@ group :development do
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
   gem "annotaterb"
-end
-
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
 end
