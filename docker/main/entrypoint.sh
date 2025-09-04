@@ -47,9 +47,18 @@ if [ "$CI" = "true" ]; then
 else
   echo "=== Running in development mode ==="
   
-  # package install
-  bundle install
-  bun install
+#!/bin/bash
+set -euo pipefail
+
+# Ensure writable directories exist
+mkdir -p /main/tmp /main/vendor /main/node_modules
+
+# Configure bundler to install gems under project vendor path (no system writes)
+bundle config set --local path '/main/vendor/bundle' || true
+
+# Install dependencies without modifying lockfile in dev unless needed
+bundle check || bundle install --jobs "${BUNDLE_JOBS:-4}"
+bun install
 
   # open up
   bin/rails tmp:clear
@@ -62,8 +71,6 @@ else
   # for Karafka
   bundle exec karafka-web migrate
 
-  # run servers
-  bin/dev
-
-  exec $$
+# run servers (replace shell with dev process)
+exec bin/dev
 fi
