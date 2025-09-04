@@ -94,5 +94,5 @@ Rails.application.configure do
   config.public_file_server.enabled = false
 
   # Rack Attack preferences
-  Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: "#{ENV['REDIS_RACK_ATTACK_URL']}")
+  Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: Rails.application.credentials.dig(:REDIS, :REDIS_RACK_ATTACK_URL))
 end

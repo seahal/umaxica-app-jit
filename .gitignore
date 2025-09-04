@@ -30,10 +30,6 @@
 !/tmp/storage/.keep
 /public/assets
 
-# Ignore master key for decrypting credentials and more.
-/config/master.key
-
-
 # Ignore vendor files for not to increase repository size huge
 /vendor
 
@@ -82,3 +78,10 @@ node_modules
 .yardoc/
 /.ruby-lsp/
 .dist/
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
+/config/credentials/development.key
+/config/credentials/production.key
+/config/credentials/test.key
+/config/credentials/staging.key

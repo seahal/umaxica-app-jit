@@ -88,12 +88,16 @@ module Memorize
     end
 
     def default_redis_pool
-      redis_config = RedisClient.config(
-        driver: :hiredis,
-        host: File.exist?("/.dockerenv") ? ENV["REDIS_SESSION_URL"] : "localhost",
-        port: 6379,
-        db: 2
-      )
+      if File.exist?("/.dockerenv")
+        redis_url = Rails.application.credentials.dig(:REDIS, :REDIS_SESSION_URL) || "redis://redis:6379/2"
+        redis_config = RedisClient.config(url: redis_url)
+      else
+        redis_config = RedisClient.config(
+          host: "localhost",
+          port: 6379,
+          db: 2
+        )
+      end
       redis_config.new_pool(timeout: 1, size: Integer(ENV.fetch("RAILS_MAX_THREADS", 5)))
     end
 

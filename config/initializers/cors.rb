@@ -14,7 +14,14 @@ module CorsUtils
 
     begin
       uri = URI.parse(url)
-      domains = [ uri.host ]
+      host = uri.host
+      if host.blank?
+        # Fallback: treat input as host[:port]
+        host = url.to_s.strip.sub(%r{^https?://}i, "").split("/").first
+      end
+      return [] if host.blank?
+
+      domains = [ host ]
 
       # Add with and without www prefix
       if uri.host&.start_with?("www.")
@@ -24,8 +31,9 @@ module CorsUtils
       end
 
       # Add with port if specified
-      if uri.port && [ 80, 443 ].exclude?(uri.port)
-        domains = domains.map { |domain| "#{domain}:#{uri.port}" }
+      port = uri.port if uri.respond_to?(:port) && uri.port && [ 80, 443 ].exclude?(uri.port)
+      if port
+        domains = domains.map { |domain| "#{domain}:#{port}" }
       end
 
       domains.compact
@@ -61,7 +69,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins ->(source, env) {
       corporate_domains = [
-        ENV["WWW_CORPORATE_URL"],
+        ENV["APEX_CORPORATE_URL"],
         ENV["API_CORPORATE_URL"]
       ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
@@ -87,7 +95,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins ->(source, env) {
       service_domains = [
-        ENV["WWW_SERVICE_URL"],
+        ENV["APEX_SERVICE_URL"],
         ENV["API_SERVICE_URL"]
       ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
@@ -113,7 +121,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins ->(source, env) {
       staff_domains = [
-        ENV["WWW_STAFF_URL"],
+        ENV["APEX_STAFF_URL"],
         ENV["API_STAFF_URL"]
       ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
@@ -162,9 +170,9 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins ->(source, env) {
       all_domains = [
-        ENV["WWW_CORPORATE_URL"],
-        ENV["WWW_SERVICE_URL"],
-        ENV["WWW_STAFF_URL"]
+        ENV["APEX_CORPORATE_URL"],
+        ENV["APEX_SERVICE_URL"],
+        ENV["APEX_STAFF_URL"]
       ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
       all_domains.include?(source) ||
@@ -186,8 +194,8 @@ end
 if Rails.env.development? || ENV["CORS_DEBUG"] == "true"
   Rails.application.config.after_initialize do
     Rails.logger.info "[CORS] Configured domains:"
-    Rails.logger.info "[CORS] Corporate: #{ENV['WWW_CORPORATE_URL']} / #{ENV['API_CORPORATE_URL']}"
-    Rails.logger.info "[CORS] Service: #{ENV['WWW_SERVICE_URL']} / #{ENV['API_SERVICE_URL']}"
-    Rails.logger.info "[CORS] Staff: #{ENV['WWW_STAFF_URL']} / #{ENV['API_STAFF_URL']}"
+    Rails.logger.info "[CORS] Corporate: #{ENV['APEX_CORPORATE_URL']} / #{ENV['API_CORPORATE_URL']}"
+    Rails.logger.info "[CORS] Service: #{ENV['APEX_SERVICE_URL']} / #{ENV['API_SERVICE_URL']}"
+    Rails.logger.info "[CORS] Staff: #{ENV['APEX_STAFF_URL']} / #{ENV['API_STAFF_URL']}"
   end
 end

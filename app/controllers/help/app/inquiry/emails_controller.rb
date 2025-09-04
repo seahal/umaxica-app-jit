@@ -1,4 +1,4 @@
-module Www
+module Help
   module App
     module Inquiry
       # EmailsController handles the email contact process for inquiries.

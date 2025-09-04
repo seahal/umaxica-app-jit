@@ -45,6 +45,7 @@ tmp/storage/*
 node_modules/
 vendor/cache/
 .bundle
+.bun/
 
 # Assets and builds
 app/assets/builds/*
@@ -119,12 +120,22 @@ Dockerfile*
 docker-compose*
 compose.yml
 compose.yaml
+docker/
+gke/
 
 # CI/CD
 .github/
 .gitlab-ci.yml
 .travis.yml
 .circleci/
+
+# Local caches and tooling
+.ruby-lsp/
+.wrangler/
+.crush/
+.claude/
+dependency/
+memo/
 
 
 #

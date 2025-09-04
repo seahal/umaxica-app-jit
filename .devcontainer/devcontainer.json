@@ -4,11 +4,12 @@
 	"service": "main",
 	"workspaceFolder": "/main",
 	"remoteUser": "main",
-	"forwardPorts": [3333, 3000, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601],
+	"forwardPorts": [3300, 3000, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601],
 	"portsAttributes": {
-		"3333": {
+		"3300": {
 			"label": "Rails Server (Docker)",
-			"onAutoForward": "notify"
+			"onAutoForward": "notify",
+			"protocol": "http"
 		},
 		"5433": {
 			"label": "PostgreSQL Primary"

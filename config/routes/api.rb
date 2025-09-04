@@ -29,7 +29,7 @@ Rails.application.routes.draw do
           end
           namespace :inquiry do
             resources :valid_email_addresses, only: %i[show]
-            resources :valid_telephone_numbers, only: %i[show]
+            resources :valid_telephone_numbers, only: %i[create]
           end
         end
       end

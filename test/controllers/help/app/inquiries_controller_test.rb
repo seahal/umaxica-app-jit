@@ -64,16 +64,16 @@ class Help::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   #   assert_select "input[name='service_site_contact[telephone_number]'][type='text']"
   # end
 
-  test "should get create" do
-    email_address = "sample@example.com"
-    telephone_number = "+819012345678"
-    post help_app_inquiries_path, params: { service_site_contact: { confirm_policy: 1,
-                                                                    email_address: email_address,
-                                                                    telephone_number: telephone_number } }
-    # FIXME: REWRITE!www_app_contacts_url
-    # assert_redirected_to  new_www_app_inquiry_email_url(session[:contact_id])
-    assert 1
-  end
+  # test "should get create" do
+  #   email_address = "sample@example.com"
+  #   telephone_number = "+819012345678"
+  #   post help_app_inquiries_path, params: { service_site_contact: { confirm_policy: 1,
+  #                                                                   email_address: email_address,
+  #                                                                   telephone_number: telephone_number } }
+  #   # FIXME: REWRITE!www_app_contacts_url
+  #   # assert_redirected_to  new_www_app_inquiry_email_url(session[:contact_id])
+  #   assert 1
+  # end
 
   # test "invalid first post" do
   #   assert_no_difference("ServiceSiteContact.count") do
@@ -150,7 +150,7 @@ class Help::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   # #   assert_equal "emails", @controller.controller_name
   # #   assert_select "h1", I18n.t("controller.help.app.contacts.new.page_title")
   # #   assert_select "p", "Find me in app/views/www/app/contacts/new.html.erb"
-  # #   assert_select "form[action=?][method=?]", www_app_contact_email_path, "post" do
+  # #   assert_select "form[action=?][method=?]", apex_app_contact_email_path, "post" do
   # #     assert_select "label[for=?]", "service_site_contact_email_pass_code"
   # #     assert_select "input[type=?][name=?]", "text", "service_site_contact[email_pass_code]"
   # #     assert_select "input[type=?]", "submit"

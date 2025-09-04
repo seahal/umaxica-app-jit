@@ -17,7 +17,6 @@ gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
-gem "hiredis-client"
 gem "redis"
 # For CORS
 gem "rack-cors"
@@ -74,17 +73,16 @@ gem "pundit"
 gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
-gem "jsbundling-rails"
 gem "view_component"
 # OpenAPI
 gem "rswag"
 gem "ostruct", "~> 0.6.3"
 gem "rswag-api"
 gem "rswag-ui"
-# TailwindCSS
-gem "tailwindcss-rails"
 # JWT
 gem "jwt"
+#
+gem "jsbundling-rails"
 
 
 group :development, :test do
@@ -92,8 +90,6 @@ group :development, :test do
   gem "bullet"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
-  # environment variables
-  gem "dotenv-rails", "~> 3.1", ">= 3.1.2" # FIXME: .env file must not be included sign_in production.
   # coverage
   gem "simplecov", require: false
 end
@@ -120,10 +116,4 @@ group :development do
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
   gem "annotaterb"
-end
-
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
 end

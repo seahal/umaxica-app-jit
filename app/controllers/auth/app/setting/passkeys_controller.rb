@@ -2,6 +2,7 @@ module Auth
   module App
     module Setting
       class PasskeysController < ApplicationController
+        skip_forgery_protection only: [ :challenge, :verify ]
         before_action :authenticate_user! # ← 本番は必須
 
         # POST /setting/passkeys/challenge

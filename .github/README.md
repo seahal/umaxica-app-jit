@@ -21,17 +21,17 @@ Things you may want to cover:
 * How to run the test suite
     - `bin/rails test all`
 * Services (job queues, cache servers, search engines, etc.)
-    - Elasticsearch
-    - Redis
+    - Redis(ValKey)
     - Kafka
-    - S3(minio)
+    - PostgreSQL
+    - Google Cloud Storage (S3)
     - Terraform
     * Kubernetes
     * [OpenTelemetry](https://opentelemetry.io/)
 * Deployment instructions
     - When you are free, look at 'bin/rails notes'
 * Using Services
-  * Amazon Web Service
+  * Google Cloud Platform
     * ses
     * AWS End User Messaging
     * ecr
@@ -57,7 +57,6 @@ Things you may want to cover:
   * `yamlfmt`
   * [Lefthook](https://github.com/evilmartians/lefthook)
   * [tflint](https://github.com/terraform-linters/tflint)
-  * [asdf](https://asdf-vm.com/)
   * [hadolint](https://github.com/hadolint/hadolint)
   * [Fastly]()
   * bun

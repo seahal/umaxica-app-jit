@@ -1,293 +1,244 @@
 # Continuous Integration Pipeline for Umaxica Rails Application
 name: 'Continuous Integration'
+
 # Trigger events for CI pipeline
 on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+
 # Prevent multiple runs of the same workflow
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 # Required permissions for GitHub Actions
 permissions:
   contents: read
-  issues: write
-  checks: write
-  pull-requests: write
+
 # Default shell for all run commands
 defaults:
   run:
     shell: bash
+
 # Global environment variables
 env:
   RAILS_ENV: test
-  RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
   NODE_ENV: test
   CI: true
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
 jobs:
-  # Main testing job with all dependencies
+  # Main testing job using Docker Compose
   test:
-    name: 'Run Tests and Quality Checks'
+    name: 'Run Tests and Quality Checks with Docker Compose'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    # Test matrix for multiple Ruby versions
+    timeout-minutes: 30
+    
+    # Test matrix for multiple Ruby versions  
     strategy:
       fail-fast: false
       matrix:
         ruby-version: ['3.4.4']
         node-version: ['22']
-    # Service containers for dependencies
-    services:
-      # PostgreSQL database service
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: test_db
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 5432:5432
-      # Redis cache service
-      redis:
-        image: redis:7-alpine
-        options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 6379:6379
-      # OpenSearch (Elasticsearch alternative) service
-      opensearch:
-        image: opensearchproject/opensearch:2.12.0
-        env:
-          discovery.type: single-node
-          plugins.security.disabled: true
-          OPENSEARCH_INITIAL_ADMIN_PASSWORD: admin
-        options: >-
-          --health-cmd "curl -f http://localhost:9200/_cluster/health" --health-interval 30s --health-timeout 10s --health-retries 5
-        ports:
-          - 9200:9200
-      # Zookeeper service for Kafka
-      zookeeper:
-        image: confluentinc/cp-zookeeper:7.4.0
-        env:
-          ZOOKEEPER_CLIENT_PORT: 2181
-          ZOOKEEPER_TICK_TIME: 2000
-      # Kafka message broker service
-      kafka:
-        image: confluentinc/cp-kafka:7.4.0
-        env:
-          KAFKA_BROKER_ID: 1
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-        options: >-
-          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092" --health-interval 30s --health-timeout 10s --health-retries 5
-        ports:
-          - 9092:9092
+        
     steps:
       # Step 1: Get the source code
       - name: 'Checkout source code'
         uses: actions/checkout@v4
-      # Step 2: Install system-level dependencies
-      - name: 'Install system dependencies'
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y \
-            libpq-dev \
-            libvips-dev \
-            libxml2-dev \
-            libyaml-dev \
-            build-essential
-      # Step 3: Configure domain hosts for multi-domain application
+        
+      # Step 2: Set up Docker Buildx for advanced features
+      - name: 'Set up Docker Buildx'
+        uses: docker/setup-buildx-action@v3
+        
+      # Step 3: Configure application domains for Docker Compose
       - name: 'Configure application domains'
         run: |
-          echo '127.0.0.1 com.api.localdomain' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 net.api.localdomain' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 org.api.localdomain' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 app.api.localdomain' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 com.www.localdomain' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 net.www.localdomain' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 org.www.localdomain' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 app.www.localdomain' | sudo tee -a /etc/hosts
-      # Step 4: Setup Ruby environment and install gems
-      - name: 'Setup Ruby and install gems'
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby-version }}
-          bundler-cache: true
-      # Step 5: Setup Node.js environment
-      - name: 'Setup Node.js'
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      # Step 6: Setup Bun for JavaScript package management
-      - name: 'Setup Bun package manager'
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: '1.2.8'
-      # Step 7: Install JavaScript dependencies
-      - name: 'Install JavaScript dependencies'
-        run: |
-          bun install --frozen-lockfile
-      # Step 8: Build JavaScript and CSS assets
-      - name: 'Build frontend assets'
-        run: |
-          bun run build
-      # Step 9: Setup test databases (multi-database architecture)
-      - name: 'Setup test databases'
+          echo '127.0.0.1 com.test.local' | sudo tee -a /etc/hosts
+          echo '127.0.0.1 app.test.local' | sudo tee -a /etc/hosts
+          echo '127.0.0.1 org.test.local' | sudo tee -a /etc/hosts
+          echo '127.0.0.1 api.com.test.local' | sudo tee -a /etc/hosts
+          echo '127.0.0.1 api.app.test.local' | sudo tee -a /etc/hosts
+          echo '127.0.0.1 api.org.test.local' | sudo tee -a /etc/hosts
+          
+      # Step 4: Run the complete CI pipeline with Docker Compose
+      - name: 'Run CI Pipeline with Docker Compose'
         env:
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
-          REDIS_URL: redis://localhost:6379/0
+          GITHUB_SHA: ${{ github.sha }}
+          CI: true
+          RAILS_ENV: test
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
-          # Create additional databases for multi-database setup
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE universal_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE identifier_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE contact_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE profile_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE token_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE business_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE message_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE notification_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE cache_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE speciality_test;"
-          PGPASSWORD=password psql -h localhost -U postgres -c "CREATE DATABASE storage_test;"
+          echo "Starting CI pipeline with Docker Compose..."
 
-          # Run Rails database setup
-          bin/rails db:create
-          bin/rails db:migrate
-          bin/rails db:seed
-      # Step 10: Run security vulnerability scans
-      - name: 'Run security checks'
-        run: |
-          # Brakeman - Ruby security scanner
-          bundle exec brakeman -z -q
-
-          # Bundle Audit - Check for vulnerable gems
-          bundle exec bundle audit check --update
-      # Step 11: Run code quality and style checks
-      - name: 'Run code quality checks'
-        run: |
-          # RuboCop - Ruby style guide checker
-          bundle exec rubocop --fail-fast
-
-          # ERB Lint - Check ERB templates for best practices
-          bundle exec erb_lint --lint-all
-      # Step 12: Run unit and integration tests
-      - name: 'Run unit and integration tests'
-        env:
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
-          REDIS_URL: redis://localhost:6379/0
-          ELASTICSEARCH_URL: http://localhost:9200
-          KAFKA_BROKERS: localhost:9092
-        run: |
-          bin/rails test
-      # Step 13: Run system tests (browser-based tests)
-      - name: 'Run system tests'
-        env:
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
-          REDIS_URL: redis://localhost:6379/0
-          ELASTICSEARCH_URL: http://localhost:9200
-          KAFKA_BROKERS: localhost:9092
-        run: |
-          # Setup virtual display for headless browser testing
-          export DISPLAY=:99
-          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-
-          # Run system tests with browser automation
-          bin/rails test:system
-      # Step 14: Generate and upload test coverage report
-      - name: 'Upload test coverage report'
+          # Start the CI environment using main service in CI mode
+          docker compose up --build --abort-on-container-exit --exit-code-from main main primary redis
+          
+      # Step 5: Extract test artifacts from Docker volumes
+      - name: 'Collect artifacts from workspace'
         if: always()
+        run: |
+          mkdir -p artifacts
+          # coverage and logs are written into the mounted workspace by main service
+          if [ -d coverage ]; then
+            cp -a coverage artifacts/coverage || true
+          fi
+          if [ -f log/test.log ]; then
+            cp -a log/test.log artifacts/test.log || true
+          fi
+          
+      # Step 6: Upload test coverage report  
+      - name: 'Upload test coverage report'
+        if: always() && hashFiles('artifacts/coverage/**') != ''
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report-ruby-${{ matrix.ruby-version }}
-          path: coverage/
+          path: artifacts/coverage/
           retention-days: 30
-      # Step 15: Upload test failure logs and screenshots
+          
+      # Step 7: Upload test failure logs
       - name: 'Upload test failure artifacts'
-        if: failure()
+        if: failure() && hashFiles('artifacts/test.log') != ''
         uses: actions/upload-artifact@v4
         with:
           name: test-failure-logs-ruby-${{ matrix.ruby-version }}
-          path: |
-            log/test.log
-            tmp/screenshots/
+          path: artifacts/test.log
           retention-days: 7
+          
+      # Step 8: Cleanup Docker Compose services
+      - name: 'Cleanup Docker Compose'
+        if: always()
+        run: |
+          docker compose down --volumes --remove-orphans || true
+
   # Separate job for Rails project analysis
   rails-analysis:
     name: 'Rails Project Analysis'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     needs: test
+    
     steps:
       # Get source code
       - name: 'Checkout source code'
         uses: actions/checkout@v4
-      # Setup Ruby for Rails commands
-      - name: 'Setup Ruby environment'
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.4.4'
-          bundler-cache: true
-      # Analyze Rails application structure and routes
-      - name: 'Generate Rails project information'
+        
+      # Set up Docker Buildx
+      - name: 'Set up Docker Buildx'
+        uses: docker/setup-buildx-action@v3
+        
+      # Run Rails analysis using main service
+      - name: 'Run Rails analysis'
+        env:
+          GITHUB_SHA: ${{ github.sha }}
         run: |
-          echo "=== Rails Application Information ==="
-          bundle exec rails about
+          # Run Rails analysis using main service
+          docker compose run --rm -e RAILS_ENV=development -e RAILS_ANALYSIS=true main bash -c "
+            echo '=== Installing dependencies ===' &&
+            bundle install --jobs \$(nproc) &&
+            echo '=== Rails Application Information ===' &&
+            bundle exec rails about &&
+            echo '=== Rails Routes Analysis ===' &&
+            bundle exec rails routes --unused || true &&
+            echo '=== Code Statistics ===' &&
+            bundle exec rails stats &&
+            echo '=== TODOs and Notes in Code ===' &&
+            bundle exec rails notes || true &&
+            echo '=== Checking for unused routes ===' &&
+            if bundle exec rails routes --unused | grep -q 'No unused routes found'; then
+              echo '✅ No unused routes found'
+            else
+              echo '⚠️ Unused routes detected:'
+              bundle exec rails routes --unused
+            fi
+          "
 
-          echo "=== Rails Routes Analysis ==="
-          bundle exec rails routes --unused || true
-
-          echo "=== Code Statistics ==="
-          bundle exec rails stats
-
-          echo "=== TODOs and Notes in Code ==="
-          bundle exec rails notes || true
-      # Check for unused routes that should be cleaned up
-      - name: 'Check for unused routes'
-        run: |
-          if bundle exec rails routes --unused | grep -q "No unused routes found"; then
-            echo "✅ No unused routes found"
-          else
-            echo "⚠️ Unused routes detected:"
-            bundle exec rails routes --unused
-          fi
   # Separate job for dependency security analysis
   dependency-security:
     name: 'Dependency Security Analysis'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    
     steps:
       # Get source code
       - name: 'Checkout source code'
         uses: actions/checkout@v4
-      # Setup Ruby for dependency analysis
-      - name: 'Setup Ruby environment'
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.4.4'
-          bundler-cache: true
-      # Setup Node.js for JavaScript dependency analysis
-      - name: 'Setup Node.js environment'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-      # Check Ruby gems for known vulnerabilities
-      - name: 'Scan Ruby dependencies for vulnerabilities'
+        
+      # Set up Docker Buildx
+      - name: 'Set up Docker Buildx'
+        uses: docker/setup-buildx-action@v3
+        
+      # Run security analysis using main service
+      - name: 'Run dependency security analysis'
+        env:
+          GITHUB_SHA: ${{ github.sha }}
         run: |
-          bundle exec bundle audit check --update
-      # Check JavaScript packages for known vulnerabilities
-      - name: 'Scan JavaScript dependencies for vulnerabilities'
+          # Run security analysis using main service
+          docker compose run --rm -e CI=true main bash -c "
+            echo '=== Installing dependencies ===' &&
+            bundle install --jobs \$(nproc) &&
+            bun install --frozen-lockfile &&
+            echo '=== Scanning Ruby dependencies for vulnerabilities ===' &&
+            bundle exec bundle audit check --update &&
+            echo '=== Scanning JavaScript dependencies for vulnerabilities ===' &&
+            bun audit || npm audit --audit-level=moderate &&
+            echo '=== Checking license compatibility ===' &&
+          bundle exec license_finder || echo 'License finder not configured' &&
+          echo '=== Security analysis complete ===' "
+  # Container image vulnerability scan with Trivy
+  container-security:
+    name: 'Container Security (Trivy)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: 'Checkout source code'
+        uses: actions/checkout@v4
+
+      - name: 'Set up Docker Buildx'
+        uses: docker/setup-buildx-action@v3
+
+      - name: 'Build production image for scanning'
         run: |
-          npm audit --audit-level=moderate
-      # Check license compatibility (optional)
-      - name: 'Check license compatibility'
-        run: |-
-          bundle exec license_finder || echo "License finder not configured"
+          docker build --target production -t umaxica:ci-${{ github.sha }} .
+          mkdir -p sarif
+
+      - name: 'Trivy FS scan (repository)'
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'sarif/trivy-fs.sarif'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+      - name: 'Trivy Image scan (production image)'
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: 'umaxica:ci-${{ github.sha }}'
+          format: 'sarif'
+          output: 'sarif/trivy-image.sarif'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+      - name: 'Upload SARIF to code scanning'
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif
+
+      - name: 'Upload Trivy reports as artifacts'
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-reports
+          path: sarif/*.sarif
+          retention-days: 7
