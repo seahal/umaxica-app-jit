@@ -150,7 +150,7 @@ class Help::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
   # #   assert_equal "emails", @controller.controller_name
   # #   assert_select "h1", I18n.t("controller.help.app.contacts.new.page_title")
   # #   assert_select "p", "Find me in app/views/www/app/contacts/new.html.erb"
-  # #   assert_select "form[action=?][method=?]", www_app_contact_email_path, "post" do
+  # #   assert_select "form[action=?][method=?]", apex_app_contact_email_path, "post" do
   # #     assert_select "label[for=?]", "service_site_contact_email_pass_code"
   # #     assert_select "input[type=?][name=?]", "text", "service_site_contact[email_pass_code]"
   # #     assert_select "input[type=?]", "submit"

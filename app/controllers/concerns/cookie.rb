@@ -9,6 +9,6 @@ module Cookie
 
   def update
     cookies.permanent.signed[:accept_tracking_cookies] = params[:accept_tracking_cookies] == "1" ? true : false
-    redirect_to edit_www_app_preference_cookie_path
+    redirect_to edit_apex_app_preference_cookie_path
   end
 end

@@ -2,8 +2,7 @@
 
 # Redis configuration for the application
 REDIS_CLIENT = Redis.new(
-  url: ENV.fetch("REDIS_URL", File.exist?("/.dockerenv") ? ENV["REDIS_NORMAL_URL"] : "redis://localhost:6379/0"),
-  driver: :hiredis
+  url: ENV.fetch("REDIS_URL", File.exist?("/.dockerenv") ? Rails.application.credentials.dig(:REDIS, :REDIS_NORMAL_URL) : "redis://localhost:6379/0")
 )
 
 # Test Redis connection on startup (skip in test)

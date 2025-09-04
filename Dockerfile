@@ -139,7 +139,7 @@ ARG DOCKER_USER=rails
 ARG DOCKER_GROUP=rails
 
 # Set environment variables
-ENV RAILS_ENV="development" \
+ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \

@@ -27,4 +27,6 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
   #     assert_select "input[type=?]", "submit"
   #   end
   # end
+
+  # TODO(human)
 end

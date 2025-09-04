@@ -21,7 +21,7 @@ module Auth
               session[:user_telephone_registration]["expires_at"].to_i > Time.now.to_i ].all?
             @user_telephone = UserTelephone.new
           else
-            redirect_to new_www_app_registration_telephone_path,
+            redirect_to new_apex_app_registration_telephone_path,
                         notice: t("auth.app.registration.telephone.edit.your_session_was_expired")
           end
         end
@@ -55,7 +55,7 @@ module Auth
               expires_at: 12.minutes.from_now.to_i
             }
 
-            redirect_to edit_www_app_registration_telephone_path(id), notice: t("messages.telephone_successfully_created")
+            redirect_to edit_apex_app_registration_telephone_path(id), notice: t("messages.telephone_successfully_created")
           else
             render :new, status: :unprocessable_content
           end

@@ -11,7 +11,7 @@ services:
     tty: true
     stdin_open: true
     ports:
-      - "3300:3000"
+      - "127.0.0.1:3300:3000"
     volumes:
       - ./:/main
     networks:
@@ -61,7 +61,6 @@ services:
       - EDGE_CORPORATE_URL=localhost:5170
       - EDGE_SERVICE_URL=localhost:5171
       - EDGE_STAFF_URL=localhost:5172
-      
       # Database Configuration
       - POSTGRESQL_USER=root
       - POSTGRESQL_PASSWORD=password
@@ -88,30 +87,21 @@ services:
       - POSTGRESQL_SPECIALITY_SUB=replica
       - POSTGRESQL_STORAGE_PUB=primary
       - POSTGRESQL_STORAGE_SUB=replica
-      
-      # Redis Configuration
-      - REDIS_NORMAL_URL=redis://redis:6379/0
-      - REDIS_RACK_ATTACK_URL=redis://redis:6379/1
-      - REDIS_SESSION_URL=redis://redis:6379/2
-      
       # Kafka Configuration
       - KAFKA_BROKERS=kafka:29092
-      
       # Search Configuration
       - OPENSEARCH_DEFAULT_URL=http://elasticsearch:9200
-      
       # Mail Configuration
       - RESEND_SMTP_ENDPOINT=smtp.resend.com
       - RESEND_SMTP_USER_NAME=resend
-      
       # Object Storage Configuration
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
   minio:
     image: minio/minio
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "127.0.0.1:${MINIO_API_PORT:-19000}:9000"
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-19001}:9001"
     volumes:
       - minio-volume:/data
     environment:
@@ -134,7 +124,7 @@ services:
       POSTGRES_DB: db
     tmpfs: /var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5435:5432"
     volumes:
       - ./docker/psql-pub/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./docker/psql-pub/pg_hba.conf:/etc/postgresql/pg_hba.conf
@@ -151,7 +141,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust # NOTE: Development only
       POSTGRES_DB: db
     ports:
-      - "5434:5432"
+      - "127.0.0.1:5436:5432"
     tmpfs: /var/lib/postgresql/data
     volumes:
       - ./docker/psql-sub/entrypoint.sh:/entrypoint.sh
@@ -162,7 +152,7 @@ services:
   redis:
     image: valkey/valkey:8.1.1-alpine3.21
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6380:6379"
     networks:
       - backend
     volumes:
@@ -176,13 +166,13 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.9.0
     ports:
-      - "9092:9092"
+      - "127.0.0.1:${KAFKA_BROKER_PORT:-19092}:9092"
     depends_on:
       - zookeeper
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:${KAFKA_BROKER_PORT:-19092},PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -194,7 +184,7 @@ services:
   kafka-ui:
     image: ghcr.io/kafbat/kafka-ui:v1.2.0
     ports:
-      - "8080:8080"
+      - "127.0.0.1:${KAFKA_UI_PORT:-18080}:8080"
     depends_on:
       - kafka
     restart: always
@@ -226,8 +216,8 @@ services:
     volumes:
       - elasticsearch-volume:/usr/share/opensearch/data
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - "127.0.0.1:${ES_HTTP_PORT:-19200}:9200"
+      - "127.0.0.1:${ES_TCP_PORT:-19300}:9300"
     networks:
       - backend
     restart: unless-stopped
@@ -249,7 +239,7 @@ services:
       OPENSEARCH_REQUEST_TIMEOUT: 120000
       OPENSEARCH_PING_TIMEOUT: 30000
     ports:
-      - "5601:5601"
+      - "127.0.0.1:${ES_DASHBOARDS_PORT:-15601}:5601"
     networks:
       - backend
     depends_on:

@@ -44,7 +44,7 @@ module Help::App
         Email::App::ContactMailer.with({ email_address: @service_site_contact.email_address,
                                          pass_code: hotp.at(hotp_counter) }).create.deliver_later
 
-        redirect_to new_www_app_inquiry_email_url(contact_id)
+        redirect_to new_apex_app_inquiry_email_url(contact_id)
       else
         @service_site_contact.errors.add :base, :invalid,
                                          message: t("model.concern.cloudflare.invalid_input") unless cfv
