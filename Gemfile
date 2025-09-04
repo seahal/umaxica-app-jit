@@ -9,7 +9,8 @@ gem "rack"
 # type for Ruby language.
 gem "rbs"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0", ">= 8.0.2"
+# gem "rails", "~> 8.0", ">= 8.0.2"
+gem "rails", "8.1.0.beta1"
 # Use PostgreSQL as the database for Active Record
 gem "pg"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -87,7 +88,7 @@ gem "jsbundling-rails"
 
 group :development, :test do
   # to avoid n+1 queries
-  gem "bullet"
+  # gem "bullet"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
   # coverage

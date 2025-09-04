@@ -160,16 +160,16 @@ ActiveSupport::Notifications.subscribe("rack.attack") do |name, start, finish, r
   if payload.respond_to?(:env)
     # Old format: payload is a Rack::Request object
     req = payload
-    match_type = req.env['rack.attack.match_type']
+    match_type = req.env["rack.attack.match_type"]
     ip = req.ip
     method = req.request_method
     path = req.fullpath
   else
     # New format: payload is a Hash
-    match_type = payload[:request]&.env&.[]('rack.attack.match_type') || payload['rack.attack.match_type']
-    ip = payload[:request]&.ip || payload['REMOTE_ADDR']
-    method = payload[:request]&.request_method || payload['REQUEST_METHOD']
-    path = payload[:request]&.fullpath || payload['PATH_INFO']
+    match_type = payload[:request]&.env&.[]("rack.attack.match_type") || payload["rack.attack.match_type"]
+    ip = payload[:request]&.ip || payload["REMOTE_ADDR"]
+    method = payload[:request]&.request_method || payload["REQUEST_METHOD"]
+    path = payload[:request]&.fullpath || payload["PATH_INFO"]
   end
 
   Rails.logger.warn "[Rack::Attack] #{match_type}: #{ip} #{method} #{path}"
