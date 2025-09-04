@@ -12,7 +12,7 @@ module Auth
           return render(json: { error: I18n.t("errors.unauthorized") }, status: :unauthorized) unless user
 
           # webauthn_id を確実に持たせる（初回のみ生成）
-          user.update!(webauthn_id: SecureRandom.random_ytes(32)) if user.webauthn_id.blank?
+          user.update!(webauthn_id: SecureRandom.random_bytes(32)) if user.webauthn_id.blank?
 
           exclude = if user.respond_to?(:user_passkeys)
                       user.user_passkeys.pluck(:webauthn_id) # = credentialId(base64url)
