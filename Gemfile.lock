@@ -2465,9 +2465,6 @@ GEM
     uri (1.0.3)
     useragent (0.16.11)
     version_gem (1.1.9)
-    view_component (4.0.2)
-      activesupport (>= 7.1.0, < 8.1)
-      concurrent-ruby (~> 1)
     waterdrop (2.8.7)
       karafka-core (>= 2.4.9, < 3.0.0)
       karafka-rdkafka (>= 0.20.0)
@@ -2553,7 +2550,6 @@ DEPENDENCIES
   sitemap_generator
   solid_cache
   tzinfo-data
-  view_component
   web-console
   webauthn
   yard

@@ -6,7 +6,7 @@ services:
       target: development
       args:
         COMMIT_HASH: 'abcdef'
-    command: [ '/bin/sh', './docker/main/entrypoint.sh' ]
+    command: [ '/bin/bash', './docker/main/entrypoint.sh' ]
     restart: always
     tty: true
     stdin_open: true
@@ -15,9 +15,6 @@ services:
       - "127.0.0.1:3300:3000"
     volumes:
       - ./:/main
-      - main_tmp:/main/tmp
-      - main_vendor:/main/vendor
-      - main_modules:/main/node_modules
     networks:
       - backend
       - frontend
@@ -33,6 +30,8 @@ services:
       - RAILS_ENV=development
       - RACK_ENV=development
       - RAILS_MAX_THREADS=5
+      # Redis (use local Redis service inside Compose)
+      - REDIS_URL=redis://redis:6379/0
       - BUNDLE_PATH=/main/vendor/bundle
       - BUNDLE_JOBS=4
       # App Configuration

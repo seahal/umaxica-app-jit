@@ -155,8 +155,24 @@ end
 # LOGGING AND NOTIFICATIONS
 # =============================================================================
 
-ActiveSupport::Notifications.subscribe("rack.attack") do |name, start, finish, request_id, req|
-  Rails.logger.warn "[Rack::Attack] #{req.env['rack.attack.match_type']}: #{req.ip} #{req.request_method} #{req.fullpath}"
+ActiveSupport::Notifications.subscribe("rack.attack") do |name, start, finish, request_id, payload|
+  # Handle both old and new notification payload formats
+  if payload.respond_to?(:env)
+    # Old format: payload is a Rack::Request object
+    req = payload
+    match_type = req.env['rack.attack.match_type']
+    ip = req.ip
+    method = req.request_method
+    path = req.fullpath
+  else
+    # New format: payload is a Hash
+    match_type = payload[:request]&.env&.[]('rack.attack.match_type') || payload['rack.attack.match_type']
+    ip = payload[:request]&.ip || payload['REMOTE_ADDR']
+    method = payload[:request]&.request_method || payload['REQUEST_METHOD']
+    path = payload[:request]&.fullpath || payload['PATH_INFO']
+  end
+
+  Rails.logger.warn "[Rack::Attack] #{match_type}: #{ip} #{method} #{path}"
 
   # You can add additional logging or alerting here
   # Example: send to monitoring service, Slack, etc.

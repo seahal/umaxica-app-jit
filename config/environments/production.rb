@@ -94,5 +94,15 @@ Rails.application.configure do
   config.public_file_server.enabled = false
 
   # Rack Attack preferences
-  Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: Rails.application.credentials.dig(:REDIS, :REDIS_RACK_ATTACK_URL))
+  rack_attack_url = Rails.application.credentials.dig(:REDIS, :REDIS_RACK_ATTACK_URL)
+  if rack_attack_url&.include?("upstash.io")
+    # Upstash requires SSL, convert to rediss:// and add SSL config
+    rack_attack_url = rack_attack_url.sub(/^redis:\/\//, "rediss://")
+    Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(
+      url: rack_attack_url,
+      ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
+    )
+  else
+    Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: rack_attack_url)
+  end
 end

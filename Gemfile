@@ -73,7 +73,7 @@ gem "pundit"
 gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
-gem "view_component"
+# gem "view_component"
 # OpenAPI
 gem "rswag"
 gem "ostruct", "~> 0.6.3"
