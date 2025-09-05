@@ -95,7 +95,14 @@ Rails.application.configure do
 
   # Rack Attack preferences
   rack_attack_url = Rails.application.credentials.dig(:REDIS, :REDIS_RACK_ATTACK_URL)
-  if rack_attack_url&.include?("upstash.io")
+  allowed_hosts = [ "upstash.io" ]
+  begin
+    rack_attack_parsed = rack_attack_url && URI.parse(rack_attack_url)
+    rack_attack_host = rack_attack_parsed&.host
+  rescue URI::InvalidURIError
+    rack_attack_host = nil
+  end
+  if rack_attack_host && allowed_hosts.include?(rack_attack_host)
     # Upstash requires SSL, convert to rediss:// and add SSL config
     rack_attack_url = rack_attack_url.sub(/^redis:\/\//, "rediss://")
     Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(
