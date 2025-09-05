@@ -12,7 +12,7 @@ module Auth
           # generate totp object
           totp = ROTP::TOTP.new(session[:private_key])
           # put qrcode of totp objects
-          @png = RQRCode::QRCode.new(totp.provisioning_uri("umaxica")).as_png() # ToDo: <= set account_id
+          @png = RQRCode::QRCode.new(totp.provisioning_uri("umaxica")).as_png # ToDo: <= set account_id
           @utbotp = TimeBasedOneTimePassword.new
         end
 
@@ -27,7 +27,7 @@ module Auth
           else
             @utbotp.valid?
             totp = ROTP::TOTP.new(@utbotp.private_key)
-            @png = RQRCode::QRCode.new(totp.provisioning_uri("umaxica")).as_png()
+            @png = RQRCode::QRCode.new(totp.provisioning_uri("umaxica")).as_png
             render :new, status: :unprocessable_content
           end
         end

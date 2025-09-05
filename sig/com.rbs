@@ -1,3 +1,0 @@
-module Com
-  def system_ok?: -> bool
-end

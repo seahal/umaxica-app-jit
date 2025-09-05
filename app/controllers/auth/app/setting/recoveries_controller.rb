@@ -31,7 +31,7 @@ module Auth
         # POST /recoveries or /recoveries.json
         def create
           @user_recovery_code = UserRecoveryCode.new(user_recovery_code_params)
-          argon2 = Argon2::Password.new()
+          argon2 = Argon2::Password.new
           @user_recovery_code.recovery_code_digest = argon2.create(session[:user_recovery_code])
           @user_recovery_code.user_id = User.first.id # FIXME: user_id is not good!
 

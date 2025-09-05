@@ -2346,8 +2346,6 @@ GEM
     rb-fsevent (0.11.2)
     rb-inotify (0.11.1)
       ffi (~> 1.0)
-    rbs (3.9.4)
-      logger
     rdoc (6.14.2)
       erb
       psych (>= 4.0.0)
@@ -2424,7 +2422,7 @@ GEM
     safety_net_attestation (0.4.0)
       jwt (~> 2.0)
     securerandom (0.4.1)
-    sha3 (2.2.2)
+    sha3 (2.2.3)
     signet (0.21.0)
       addressable (~> 2.8)
       faraday (>= 0.17.5, < 3.a)
@@ -2535,7 +2533,6 @@ DEPENDENCIES
   rails (= 8.1.0.beta1)
   rails_live_reload
   rake
-  rbs
   redis
   rolify
   rotp

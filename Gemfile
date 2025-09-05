@@ -6,19 +6,19 @@ ruby "3.4.5"
 gem "rake"
 # rack
 gem "rack"
-# type for Ruby language.
-gem "rbs"
-# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-# gem "rails", "~> 8.0", ">= 8.0.2"
+# Rails
 gem "rails", "8.1.0.beta1"
-# Use PostgreSQL as the database for Active Record
-gem "pg"
-# Use the Puma web server [https://github.com/puma/puma]
+# Use Postgres as the database for Active Record
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
+gem "pg"
+# Use the Puma web server [https://github.com/puma/puma]
 gem "redis"
+# Kafka
+gem "karafka"
+gem "karafka-web"
 # For CORS
 gem "rack-cors"
 # To Avoid attacks from crackers
@@ -33,9 +33,6 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 gem "bootsnap", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing"
-# Kafka
-gem "karafka"
-gem "karafka-web"
 # Elasticsearch
 gem "opensearch-ruby"
 # for Amazon SNS
