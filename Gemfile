@@ -57,7 +57,7 @@ gem "rotp"
 gem "rqrcode"
 # Solid Cache
 gem "solid_cache"
-# pagenation
+# pagination
 gem "kaminari"
 # Breadcrumbs
 gem "gretel"
