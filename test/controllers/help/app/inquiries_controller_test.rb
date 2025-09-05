@@ -1,36 +1,14 @@
 require "test_helper"
 
-module Www::App::MemorizeHelper
-  private
-
-  # Memorize helper for this controller test
-  def memorize
-    @memorize ||= Memorize::RedisMemorize.test_instance(
-      prefix: "controller_test",
-      postfix: self.class.name
-    )
-  end
-
-  def setup_memorize
-    memorize.clear_all
-  end
-
-  def teardown_memorize
-    memorize.clear_all
-  end
-end
-
 class Help::App::InquiriesControllerTest < ActionDispatch::IntegrationTest
-  include Www::App::MemorizeHelper
+  include Memorize
 
   setup do
     Rails.cache.clear
-    setup_memorize
   end
 
   teardown do
     Rails.cache.clear
-    teardown_memorize
   end
 
   # test "should get new" do

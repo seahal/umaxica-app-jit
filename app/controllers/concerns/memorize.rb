@@ -4,7 +4,8 @@ module Memorize
   extend ActiveSupport::Concern
 
   included do
-    helper_method :memorize
+    # Guard for non-controller inclusion (e.g., test classes)
+    helper_method :memorize if respond_to?(:helper_method)
   end
 
   private

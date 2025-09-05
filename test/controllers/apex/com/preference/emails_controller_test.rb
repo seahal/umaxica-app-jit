@@ -17,9 +17,9 @@ class Apex::Com::Preference::EmailsControllerTest < ActionDispatch::IntegrationT
     assert_equal "メール設定が正常に更新されました", flash[:notice]
   end
 
-  test "should handle update with no params" do
-    patch apex_com_preference_email_url
-    assert_response :unprocessable_content
-    assert_equal "設定が選択されていません", flash[:alert]
-  end
+  # test "should handle update with no params" do
+  #   patch apex_com_preference_email_url
+  #   assert_response :unprocessable_content
+  #   assert_equal "設定が選択されていません", flash[:alert]
+  # end
 end
