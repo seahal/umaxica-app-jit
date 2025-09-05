@@ -15,6 +15,9 @@ fi
 
 echo "=== Running in development mode ==="
 
+# TODO(human): Add initial sync process from /sync to /main for tmpfs setup
+# Copy necessary files from host (/sync) to tmpfs (/main) excluding directly mounted dirs
+
 # Ensure writable directories exist
 mkdir -p ./tmp ./vendor ./node_modules
 

@@ -13,6 +13,9 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "127.0.0.1:3300:3000"
+    tmpfs:
+      - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
+      - /main/log:size=512M,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
       - ./:/main
     networks:
@@ -21,7 +24,6 @@ services:
     depends_on:
       - primary
       - replica
-      - elasticsearch
       - kafka
       - redis
       - minio
@@ -198,58 +200,6 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
     networks:
       - backend
-  elasticsearch:
-    image: opensearchproject/opensearch:2.11.1
-    container_name: elasticsearch
-    environment:
-      - cluster.name=opensearch-cluster
-      - node.name=elasticsearch
-      - discovery.type=single-node
-      - bootstrap.memory_lock=false
-      - "OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m"
-      - DISABLE_SECURITY_PLUGIN=true
-      - DISABLE_INSTALL_DEMO_CONFIG=true
-      - "network.host=0.0.0.0"
-      - "http.host=0.0.0.0"
-      - "transport.host=localhost"
-      - "http.port=9200"
-      - "transport.tcp.port=9300"
-    ulimits:
-      nofile:
-        soft: 65536
-        hard: 65536
-    volumes:
-      - elasticsearch-volume:/usr/share/opensearch/data
-    ports:
-      - "127.0.0.1:${ES_HTTP_PORT:-19200}:9200"
-      - "127.0.0.1:${ES_TCP_PORT:-19300}:9300"
-    networks:
-      - backend
-    restart: unless-stopped
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=10s || exit 1" ]
-      interval: 30s
-      timeout: 15s
-      retries: 10
-      start_period: 120s
-  elasticsearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:2.11.1
-    container_name: elasticsearch-dashboards
-    environment:
-      OPENSEARCH_HOSTS: '["http://elasticsearch:9200"]'
-      DISABLE_SECURITY_DASHBOARDS_PLUGIN: 'true'
-      SERVER_HOST: '0.0.0.0'
-      SERVER_PORT: 5601
-      LOGGING_LEVEL: info
-      OPENSEARCH_REQUEST_TIMEOUT: 120000
-      OPENSEARCH_PING_TIMEOUT: 30000
-    ports:
-      - "127.0.0.1:${ES_DASHBOARDS_PORT:-15601}:5601"
-    networks:
-      - backend
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
   # grafana:
   #   image: grafana/grafana:latest
   #   ports:
@@ -307,7 +257,8 @@ services:
   #     - "3200:3200"   # tempo
   #     - "9095:9095" # tempo grpc
   #     - "4317:4317"  # otlp grpc
-  #     - "4318:4318"  # otlp http
+  #     - "4318:4318"  # otlp http:
+  #  minio-volume:
   #     - "9411:9411"   # zipkin
   #   depends_on:
   #     - main
@@ -316,11 +267,7 @@ volumes:
   psql-sub-volume:
   redis-volume:
   kafka-broker-volume:
-  elasticsearch-volume:
   minio-volume:
-  main_tmp:
-  main_vendor:
-  main_modules:
 networks:
   backend:
   frontend:
