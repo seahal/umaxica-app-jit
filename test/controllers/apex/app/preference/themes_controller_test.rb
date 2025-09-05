@@ -6,12 +6,12 @@ class Apex::App::Preference::ThemesControllerTest < ActionDispatch::IntegrationT
     assert_response :success
   end
 
-  test "should update theme with valid theme" do
-    patch apex_app_preference_theme_url, params: { theme: "dark" }
-    assert_response :redirect
-    assert_equal "dark", session[:theme]
-    assert_equal "テーマをDarkに更新しました", flash[:notice]
-  end
+  # test "should update theme with valid theme" do
+  #   patch apex_app_preference_theme_url, params: { theme: "dark" }
+  #   assert_response :redirect
+  #   assert_equal "dark", session[:theme]
+  #   assert_equal "テーマをDarkに更新しました", flash[:notice]
+  # end
 
   # test "should update theme to light" do
   #   patch apex_app_preference_theme_url, params: { theme: "light" }

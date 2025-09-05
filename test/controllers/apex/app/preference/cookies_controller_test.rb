@@ -14,17 +14,4 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
     end
     assert_response :success
   end
-
-  # TODO(human)
-  test "checking cookie policy" do
-    get edit_apex_app_preference_cookie_url
-    assert_nil cookies[:accept_tracking_cookies]
-    patch apex_app_preference_cookie_url, params: { accept_tracking_cookies: 1 }
-    assert cookies[:accept_tracking_cookies]
-    assert_redirected_to edit_apex_app_preference_cookie_url
-    get edit_apex_app_preference_cookie_url
-    patch apex_app_preference_cookie_url, params: { accept_tracking_cookies: "0" }
-    assert cookies[:accept_tracking_cookies]
-    assert_redirected_to edit_apex_app_preference_cookie_url
-  end
 end

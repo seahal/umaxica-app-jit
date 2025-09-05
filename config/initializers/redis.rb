@@ -1,19 +1,30 @@
 # frozen_string_literal: true
 
 # Redis configuration for the application
-REDIS_CLIENT = Redis.new(
-  url: ENV.fetch("REDIS_URL", File.exist?("/.dockerenv") ? Rails.application.credentials.dig(:REDIS, :REDIS_NORMAL_URL) : "redis://localhost:6379/0")
-)
+default_redis_url =
+  if ENV["REDIS_DEFAULT_URL"].present?
+    ENV["REDIS_DEFAULT_URL"]
+  elsif File.exist?("/.dockerenv")
+    Rails.application.credentials.dig(:REDIS, :REDIS_NORMAL_URL)
+  end
 
-# Test Redis connection on startup (skip in test)
+# Configure SSL for production Redis (Upstash requires SSL)
+redis_config = { url: default_redis_url }
+
+if Rails.env.production?
+  redis_config[:ssl_params] = { verify_mode: OpenSSL::SSL::VERIFY_NONE }
+end
+
+REDIS_CLIENT = Redis.new(redis_config)
+
+# Connection smoke test (skip in test)
 unless Rails.env.test?
   begin
     REDIS_CLIENT.ping
     Rails.logger.info "✅ Redis connected successfully"
-  rescue Redis::ConnectionError => e
-    Rails.logger.error "❌ Redis connection failed: #{e.message}"
-    # Don't break app boot outside of test/production
+  rescue StandardError => e
+    Rails.logger.error "❌ Redis connection failed: #{e.class}: #{e.message} (url=#{default_redis_url})"
+    # Fail fast only in development to surface local setup issues
     raise e if Rails.env.development?
-    # In production and other envs, allow graceful degradation
   end
 end

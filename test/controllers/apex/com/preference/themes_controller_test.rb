@@ -17,7 +17,6 @@ class Apex::Com::Preference::ThemesControllerTest < ActionDispatch::IntegrationT
     patch apex_com_preference_theme_url, params: { theme: "corporate" }
     assert_response :redirect
     assert_equal "corporate", session[:theme]
-    #  assert_equal "Corporate theme updated to Corporate Theme", flash[:notice]
   end
 
   # test "should update theme to light" do

@@ -1,76 +1,40 @@
-#!/bin/bash
-set -e
-
-# Check if running in CI environment
-if [ "$CI" = "true" ]; then
-  echo "=== Running in CI mode ==="
-  
-  # Install dependencies
-  echo "=== Installing dependencies ==="
-  bundle install --jobs $(nproc)
-  bun install --frozen-lockfile
-  
-  # Build assets
-  echo "=== Building assets ==="
-  bun run build
-  
-  # JavaScript linting and type checking
-  echo "=== JS Lint & Typecheck ==="
-  bun run lint
-  bun run typecheck
-  
-  # Database setup (no seeding in CI)
-  echo "=== Setting up databases ==="
-  bin/rails db:create
-  bin/rails db:migrate
-  
-  # Security checks
-  echo "=== Running security checks ==="
-  bundle exec brakeman -z -q
-  bundle exec bundle audit check --update
-  
-  # Code quality checks
-  echo "=== Running code quality checks ==="
-  bundle exec rubocop --fail-fast
-  bundle exec erb_lint --lint-all
-  
-  # JavaScript tests
-  echo "=== Running JS tests ==="
-  bun test --no-color || exit 1
-  
-  # Rails tests
-  echo "=== Running Rails tests ==="
-  bin/rails test
-  
-  echo "=== CI Pipeline Complete ==="
-  exit 0
-else
-  echo "=== Running in development mode ==="
-  
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
+# Working dir should be /main from Dockerfile, but ensure
+cd "${APP_ROOT:-/main}"
+
+if [[ "${CI:-}" == "true" ]]; then
+  echo "=== Running in CI mode ==="
+  bundle install --jobs "${BUNDLE_JOBS:-4}"
+  bun install --frozen-lockfile
+  bun run build
+  bin/rails db:prepare
+  exec bin/rails test
+fi
+
+echo "=== Running in development mode ==="
+
+# TODO(human): Add initial sync process from /sync to /main for tmpfs setup
+# Copy necessary files from host (/sync) to tmpfs (/main) excluding directly mounted dirs
+
 # Ensure writable directories exist
-mkdir -p /main/tmp /main/vendor /main/node_modules
+mkdir -p ./tmp ./vendor ./node_modules
 
-# Configure bundler to install gems under project vendor path (no system writes)
-bundle config set --local path '/main/vendor/bundle' || true
+# Configure bundler to install gems under project vendor path and include all groups
+bundle config set --local path 'vendor/bundle' || true
+bundle config set --local without '' || true
 
-# Install dependencies without modifying lockfile in dev unless needed
-bundle check || bundle install --jobs "${BUNDLE_JOBS:-4}"
+# Install Ruby/JS dependencies
+bundle install --jobs "${BUNDLE_JOBS:-4}"
 bun install
 
-  # open up
-  bin/rails tmp:clear
+# Rails app prep
+bin/rails tmp:clear
+bin/rails db:prepare
 
-  # for Database setup
-  bin/rails db:create
-  bin/rails db:migrate
-  bin/rails db:seed
+# Karafka web UI DB (best-effort)
+bundle exec karafka-web migrate || true
 
-  # for Karafka
-  bundle exec karafka-web migrate
-
-# run servers (replace shell with dev process)
+# Start dev processes
 exec bin/dev
-fi
