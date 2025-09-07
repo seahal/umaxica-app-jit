@@ -6,4 +6,3 @@ class IdentifierRecordTest < ActiveSupport::TestCase
     assert IdentifierRecord.abstract_class?
   end
 end
-

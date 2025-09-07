@@ -6,4 +6,3 @@ class BusinessesRecordTest < ActiveSupport::TestCase
     assert BusinessesRecord.abstract_class?
   end
 end
-

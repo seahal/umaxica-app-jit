@@ -60,8 +60,8 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   test "does not expose sensitive keywords" do
     get news_org_root_path, headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
     assert_response :success
-    refute_includes response.body, "password"
-    refute_includes response.body, "secret"
-    refute_includes response.body, "api_key"
+    assert_not_includes response.body, "password"
+    assert_not_includes response.body, "secret"
+    assert_not_includes response.body, "api_key"
   end
 end

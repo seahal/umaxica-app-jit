@@ -70,7 +70,7 @@ class GoogleAuthTest < ActiveSupport::TestCase
   test "should allow all fields to be present" do
     google_auth = GoogleAuth.new(@valid_attributes)
     assert google_auth.valid?
-    
+
     google_auth.save!
     assert_equal @valid_attributes[:uid], google_auth.uid
     assert_equal @valid_attributes[:email], google_auth.email
@@ -85,7 +85,7 @@ class GoogleAuthTest < ActiveSupport::TestCase
     }
     google_auth = GoogleAuth.new(minimal_attributes)
     assert google_auth.valid?
-    
+
     google_auth.save!
     assert_nil google_auth.email
     assert_nil google_auth.name

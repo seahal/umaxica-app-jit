@@ -6,4 +6,3 @@ class ProfilesRecordTest < ActiveSupport::TestCase
     assert ProfilesRecord.abstract_class?
   end
 end
-
