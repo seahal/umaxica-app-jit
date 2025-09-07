@@ -4,8 +4,8 @@
   "scripts": {
     "build": "bun bun.config.js",
     "typecheck": "bun x tsgo --noEmit",
-    "format": "bun x @biomejs/biome format app/javascript",
-    "lint": "bun x @biomejs/biome lint app/javascript"
+    "format": "bun x @biomejs/biome format --write app/javascript",
+    "lint": "bun x @biomejs/biome lint --fix app/javascript"
   },
   "dependencies": {
     "react": "^19.1.1",
