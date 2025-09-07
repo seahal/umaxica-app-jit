@@ -4,20 +4,6 @@ set -euo pipefail
 # Working dir should be /main from Dockerfile, but ensure
 cd "${APP_ROOT:-/main}"
 
-if [[ "${CI:-}" == "true" ]]; then
-  echo "=== Running in CI mode ==="
-  bundle install --jobs "${BUNDLE_JOBS:-4}"
-  bun install --frozen-lockfile
-  bun run build
-  bin/rails db:prepare
-  exec bin/rails test
-fi
-
-echo "=== Running in development mode ==="
-
-# TODO(human): Add initial sync process from /sync to /main for tmpfs setup
-# Copy necessary files from host (/sync) to tmpfs (/main) excluding directly mounted dirs
-
 # Ensure writable directories exist
 mkdir -p ./tmp ./vendor ./node_modules
 
@@ -31,7 +17,9 @@ bun install
 
 # Rails app prep
 bin/rails tmp:clear
-bin/rails db:prepare
+bin/rails db:create
+bin/rails db:migrate
+bin/rails db:seed
 
 # Karafka web UI DB (best-effort)
 bundle exec karafka-web migrate || true

@@ -6,4 +6,3 @@ class SpecialitiesRecordTest < ActiveSupport::TestCase
     assert SpecialitiesRecord.abstract_class?
   end
 end
-

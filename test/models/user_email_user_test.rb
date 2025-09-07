@@ -34,7 +34,7 @@ class UserEmailUserTest < ActiveSupport::TestCase
   test "should have inverse relationship with user_email_users" do
     email_association = UserEmailUser.reflect_on_association(:email)
     user_association = UserEmailUser.reflect_on_association(:user)
-    
+
     assert_equal :user_email_users, email_association.options[:inverse_of]
     assert_equal :user_email_users, user_association.options[:inverse_of]
   end

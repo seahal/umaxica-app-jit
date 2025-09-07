@@ -41,4 +41,3 @@ class CachesRecordTest < ActiveSupport::TestCase
     assert_not_nil config
   end
 end
-

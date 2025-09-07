@@ -1,3 +1,0 @@
-module Common
-  def system_ok?: -> bool
-end

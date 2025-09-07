@@ -1,5 +1,0 @@
-module Com
-  class HealthsController
-    def system_ok?: -> bool
-  end
-end

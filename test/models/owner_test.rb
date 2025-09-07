@@ -5,4 +5,3 @@ class OwnerTest < ActiveSupport::TestCase
     assert Owner < ApplicationRecord
   end
 end
-

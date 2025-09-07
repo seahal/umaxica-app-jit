@@ -6,4 +6,3 @@ class StoragesRecordTest < ActiveSupport::TestCase
     assert StoragesRecord.abstract_class?
   end
 end
-

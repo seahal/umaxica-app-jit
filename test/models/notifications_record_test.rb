@@ -6,4 +6,3 @@ class NotificationsRecordTest < ActiveSupport::TestCase
     assert NotificationsRecord.abstract_class?
   end
 end
-
