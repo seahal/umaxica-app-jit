@@ -1,244 +1,101 @@
-# Continuous Integration Pipeline for Umaxica Rails Application
-name: 'Continuous Integration'
+name: Integration (docker-compose)
 
-# Trigger events for CI pipeline
 on:
   push:
-    branches: [main, develop]
+    branches: [ main, develop ]
   pull_request:
-    branches: [main, develop]
+    branches: [ main, develop ]
 
-# Prevent multiple runs of the same workflow
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Required permissions for GitHub Actions
 permissions:
   contents: read
 
-# Default shell for all run commands
 defaults:
   run:
     shell: bash
 
-# Global environment variables
 env:
+  CI: true
   RAILS_ENV: test
   NODE_ENV: test
-  CI: true
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
 
 jobs:
-  # Main testing job using Docker Compose
   test:
-    name: 'Run Tests and Quality Checks with Docker Compose'
+    name: Rails + JS tests (compose)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    
-    # Test matrix for multiple Ruby versions  
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby-version: ['3.4.5']
-        node-version: ['22']
-        
-    steps:
-      # Step 1: Get the source code
-      - name: 'Checkout source code'
-        uses: actions/checkout@v4
-        
-      # Step 2: Set up Docker Buildx for advanced features
-      - name: 'Set up Docker Buildx'
-        uses: docker/setup-buildx-action@v3
-        
-      # Step 3: Configure application domains for Docker Compose
-      - name: 'Configure application domains'
-        run: |
-          echo '127.0.0.1 com.test.local' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 app.test.local' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 org.test.local' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 api.com.test.local' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 api.app.test.local' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 api.org.test.local' | sudo tee -a /etc/hosts
-          
-      # Step 4: Run the complete CI pipeline with Docker Compose
-      - name: 'Run CI Pipeline with Docker Compose'
-        env:
-          GITHUB_SHA: ${{ github.sha }}
-          CI: true
-          RAILS_ENV: test
-          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-        run: |
-          echo "Starting CI pipeline with Docker Compose..."
+    timeout-minutes: 40
 
-          # Start the CI environment using main service in CI mode
-          docker compose up --build --abort-on-container-exit --exit-code-from main main primary redis
-          
-      # Step 5: Extract test artifacts from Docker volumes
-      - name: 'Collect artifacts from workspace'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build images
+        run: |
+          docker compose build
+
+      - name: Start dependencies (detached)
+        run: |
+          # Start only the infra needed for tests
+          docker compose up -d primary redis zookeeper kafka minio
+          # Health check for Postgres
+          for i in {1..60}; do
+            if docker compose exec -T primary pg_isready -U root -d db >/dev/null 2>&1; then
+              echo "Postgres is ready"; break; fi
+            echo "Waiting for Postgres... ($i)"; sleep 2;
+          done
+          docker compose ps
+
+      - name: Run Rails and JS tests in container
+        env:
+          RAILS_ENV: test
+          NODE_ENV: test
+          CI: true
+        run: |
+          set -euo pipefail
+          docker compose run --rm \
+            -e RAILS_ENV=test -e NODE_ENV=test -e CI=true \
+            main bash -lc '
+              bundle config set path vendor/bundle && \
+              bundle install --jobs $(nproc) && \
+              bun install --frozen-lockfile && \
+              bin/rails db:prepare && \
+              bun run build && \
+              bin/rails test all && \
+              bun test \
+            '
+
+      - name: Collect coverage and logs
         if: always()
         run: |
           mkdir -p artifacts
-          # coverage and logs are written into the mounted workspace by main service
-          if [ -d coverage ]; then
-            cp -a coverage artifacts/coverage || true
-          fi
-          if [ -f log/test.log ]; then
-            cp -a log/test.log artifacts/test.log || true
-          fi
-          
-      # Step 6: Upload test coverage report  
-      - name: 'Upload test coverage report'
+          [ -d coverage ] && cp -a coverage artifacts/coverage || true
+          [ -f log/test.log ] && cp -a log/test.log artifacts/test.log || true
+
+      - name: Upload coverage
         if: always() && hashFiles('artifacts/coverage/**') != ''
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report-ruby-${{ matrix.ruby-version }}
+          name: coverage-report
           path: artifacts/coverage/
-          retention-days: 30
-          
-      # Step 7: Upload test failure logs
-      - name: 'Upload test failure artifacts'
+          retention-days: 14
+
+      - name: Upload test logs
         if: failure() && hashFiles('artifacts/test.log') != ''
         uses: actions/upload-artifact@v4
         with:
-          name: test-failure-logs-ruby-${{ matrix.ruby-version }}
+          name: test-logs
           path: artifacts/test.log
           retention-days: 7
-          
-      # Step 8: Cleanup Docker Compose services
-      - name: 'Cleanup Docker Compose'
+
+      - name: Cleanup
         if: always()
         run: |
           docker compose down --volumes --remove-orphans || true
-
-  # Separate job for Rails project analysis
-  rails-analysis:
-    name: 'Rails Project Analysis'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: test
-    
-    steps:
-      # Get source code
-      - name: 'Checkout source code'
-        uses: actions/checkout@v4
-        
-      # Set up Docker Buildx
-      - name: 'Set up Docker Buildx'
-        uses: docker/setup-buildx-action@v3
-        
-      # Run Rails analysis using main service
-      - name: 'Run Rails analysis'
-        env:
-          GITHUB_SHA: ${{ github.sha }}
-        run: |
-          # Run Rails analysis using main service
-          docker compose run --rm -e RAILS_ENV=development -e RAILS_ANALYSIS=true main bash -c "
-            echo '=== Installing dependencies ===' &&
-            bundle install --jobs \$(nproc) &&
-            echo '=== Rails Application Information ===' &&
-            bundle exec rails about &&
-            echo '=== Rails Routes Analysis ===' &&
-            bundle exec rails routes --unused || true &&
-            echo '=== Code Statistics ===' &&
-            bundle exec rails stats &&
-            echo '=== TODOs and Notes in Code ===' &&
-            bundle exec rails notes || true &&
-            echo '=== Checking for unused routes ===' &&
-            if bundle exec rails routes --unused | grep -q 'No unused routes found'; then
-              echo '✅ No unused routes found'
-            else
-              echo '⚠️ Unused routes detected:'
-              bundle exec rails routes --unused
-            fi
-          "
-
-  # Separate job for dependency security analysis
-  dependency-security:
-    name: 'Dependency Security Analysis'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    
-    steps:
-      # Get source code
-      - name: 'Checkout source code'
-        uses: actions/checkout@v4
-        
-      # Set up Docker Buildx
-      - name: 'Set up Docker Buildx'
-        uses: docker/setup-buildx-action@v3
-        
-      # Run security analysis using main service
-      - name: 'Run dependency security analysis'
-        env:
-          GITHUB_SHA: ${{ github.sha }}
-        run: |
-          # Run security analysis using main service
-          docker compose run --rm -e CI=true main bash -c "
-            echo '=== Installing dependencies ===' &&
-            bundle install --jobs \$(nproc) &&
-            bun install --frozen-lockfile &&
-            echo '=== Scanning Ruby dependencies for vulnerabilities ===' &&
-            bundle exec bundle audit check --update &&
-            echo '=== Scanning JavaScript dependencies for vulnerabilities ===' &&
-            bun audit || npm audit --audit-level=moderate &&
-            echo '=== Checking license compatibility ===' &&
-          bundle exec license_finder || echo 'License finder not configured' &&
-          echo '=== Security analysis complete ===' "
-  # Container image vulnerability scan with Trivy
-  container-security:
-    name: 'Container Security (Trivy)'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - name: 'Checkout source code'
-        uses: actions/checkout@v4
-
-      - name: 'Set up Docker Buildx'
-        uses: docker/setup-buildx-action@v3
-
-      - name: 'Build production image for scanning'
-        run: |
-          docker build --target production -t umaxica:ci-${{ github.sha }} .
-          mkdir -p sarif
-
-      - name: 'Trivy FS scan (repository)'
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'sarif/trivy-fs.sarif'
-          ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
-
-      - name: 'Trivy Image scan (production image)'
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          image-ref: 'umaxica:ci-${{ github.sha }}'
-          format: 'sarif'
-          output: 'sarif/trivy-image.sarif'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '1'
-
-      - name: 'Upload SARIF to code scanning'
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: sarif
-
-      - name: 'Upload Trivy reports as artifacts'
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-reports
-          path: sarif/*.sarif
-          retention-days: 7

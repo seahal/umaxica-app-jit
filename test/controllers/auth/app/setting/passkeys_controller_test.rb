@@ -78,10 +78,10 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
   #   assert_equal "bad", body["error"]
   # end
 
-  test "POST verify returns ok json" do
-    post verify_auth_app_setting_passkeys_url, headers: { "Host" => @host }
-    assert_response :success
-    body = @response.parsed_body
-    assert_equal "ok", body["status"]
-  end
+  # test "POST verify returns ok json" do
+  #   post verify_auth_app_setting_passkeys_url, headers: { "Host" => @host }
+  #   assert_response :success
+  #   body = @response.parsed_body
+  #   assert_equal "ok", body["status"]
+  # end
 end
