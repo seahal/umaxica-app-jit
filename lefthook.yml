@@ -1,8 +1,10 @@
 pre-commit:
   parallel: true
   commands:
-    audit(gem):
+    audit(bundler):
       run: bundle exec bundle audit
+    audit(bun):
+      run: bun audit --update
     brakeman:
       run: bundle exec brakeman --no-pager
     rubocop:
@@ -13,8 +15,6 @@ pre-commit:
       run: bun run format
     typecheck:
       run: bun run typecheck
-    audit(bun):
-      run: bun audit --update
 pre-push:
   parallel: true
   commands:

@@ -6,6 +6,10 @@ require "rails/all"
 
 Bundler.require(*Rails.groups)
 
+# Ensure custom middleware is loaded only if present
+subdomain_static_files_path = File.expand_path("../lib/subdomain_static_files.rb", __dir__)
+require_relative "../lib/subdomain_static_files" if File.exist?(subdomain_static_files_path)
+
 module Jit
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -26,8 +30,16 @@ module Jit
 
     ### Added by user
 
-    # CORS
+    # CORS / Rack protection
     config.middleware.use Rack::Attack
+
+    # Serve subdomain-aware static files before default static handler (non-production only)
+    if defined?(SubdomainStaticFiles) && !Rails.env.production?
+      config.middleware.insert_before ActionDispatch::Static, SubdomainStaticFiles, {
+        public_path: Rails.public_path,
+        default_path: "default"
+      }
+    end
 
     # USE UTC
     config.time_zone = "UTC"

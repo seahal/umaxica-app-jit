@@ -1,2 +1,3 @@
 #!/usr/bin/env ruby
-exec "./bin/rails", "server", *ARGV
+port = ENV.fetch("PORT", "3000")
+exec "./bin/rails", "server", "-b", "0.0.0.0", "-p", port, *ARGV
