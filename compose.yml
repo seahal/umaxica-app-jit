@@ -12,7 +12,7 @@ services:
     stdin_open: true
     user: "${UID:-1000}:${GID:-1000}"
     ports:
-      - "127.0.0.1:3300:3000"
+      - "3300:3000"
     tmpfs:
       - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
       - /main/log:size=512M,uid=${UID:-1000},gid=${GID:-1000}
