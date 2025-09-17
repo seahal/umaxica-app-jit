@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "ruby-lsp": "^0.0.1-security"
   },
   "devDependencies": {
     "@types/bun": "^1.2.22",

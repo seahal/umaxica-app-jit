@@ -4,15 +4,16 @@
     "": {
       "name": "app",
       "dependencies": {
-        "react": "latest",
-        "react-dom": "latest",
+        "react": "^19.1.1",
+        "react-dom": "^19.1.1",
+        "ruby-lsp": "^0.0.1-security",
       },
       "devDependencies": {
-        "@types/bun": "latest",
-        "@types/react": "latest",
-        "@types/react-dom": "latest",
-        "@typescript/native-preview": "latest",
-        "wrangler": "latest",
+        "@types/bun": "^1.2.22",
+        "@types/react": "^19.1.13",
+        "@types/react-dom": "^19.1.9",
+        "@typescript/native-preview": "^7.0.0-dev.20250917.1",
+        "wrangler": "^4.37.1",
       },
     },
   },
@@ -216,6 +217,8 @@
     "react": ["react@19.1.1", "", {}, "sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ=="],
 
     "react-dom": ["react-dom@19.1.1", "", { "dependencies": { "scheduler": "^0.26.0" }, "peerDependencies": { "react": "^19.1.1" } }, "sha512-Dlq/5LAZgF0Gaz6yiqZCf6VCcZs1ghAJyrsu84Q/GT0gV+mCxbfmKNoGRKBYMJ8IEdGPqu49YWXD02GCknEDkw=="],
+
+    "ruby-lsp": ["ruby-lsp@0.0.1-security", "", {}, "sha512-37tofsCtnkoU1Q7sDYHWw4N0CrdPtD7Z1StaxzSKbNffEf2juzavM7RPnq/U7qsjJiOfDEm2/VZieiKZ1RMwag=="],
 
     "scheduler": ["scheduler@0.26.0", "", {}, "sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA=="],
 

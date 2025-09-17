@@ -1,10 +1,26 @@
 {
 	"name": "umaxica-app-jit",
-	"dockerComposeFile": ["../compose.yml"],
+	"dockerComposeFile": [
+		"./compose.yml"
+	],
 	"service": "main",
 	"workspaceFolder": "/main",
 	"remoteUser": "main",
-	"forwardPorts": [3300, 3000, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601],
+	"forwardPorts": [
+		3000,
+		3300,
+		5432,
+		5433,
+		5434,
+		6379,
+		9092,
+		9200,
+		9000,
+		9001,
+		8080,
+		5601,
+		63342
+	],
 	"portsAttributes": {
 		"3300": {
 			"label": "Rails Server (Docker)",
@@ -44,6 +60,10 @@
 		"5601": {
 			"label": "OpenSearch Dashboards",
 			"protocol": "http"
+		},
+		"63342": {
+			"label": "JetBrains Backend",
+			"onAutoForward": "silent"
 		}
 	},
 	"features": {
@@ -113,6 +133,12 @@
 					"typeHierarchy": true
 				}
 			}
+		},
+		"jetbrains": {
+			"remoteId": "intellij",
+			"plugins": [
+				"org.jetbrains.plugins.ruby"
+			]
 		}
 	},
 	"containerEnv": {
