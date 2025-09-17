@@ -2,11 +2,12 @@ name: 'jit'
 services:
   main:
     build:
-      context: ./
+      context: ../
+      dockerfile: .devcontainer/Dockerfile
       target: development
       args:
         COMMIT_HASH: 'abcdef'
-    command: [ '/bin/bash', './docker/main/entrypoint.sh' ]
+    command: [ '/bin/bash', '.devcontainer/docker/main/entrypoint.sh' ]
     restart: always
     tty: true
     stdin_open: true
@@ -17,7 +18,7 @@ services:
       - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
       - /main/log:size=512M,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
-      - ./:/main
+      - ../:/main
     networks:
       - backend
       - frontend

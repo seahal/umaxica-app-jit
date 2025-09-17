@@ -10,7 +10,9 @@ ARG GITHUB_ACTIONS=""
 
 # Base image with common dependencies
 FROM ruby:$RUBY_VERSION-bookworm AS base
-ENV TZ=UTC
+ENV TZ=UTC \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
 # Install common system dependencies with security updates
 RUN apt-get update -qq && \
@@ -27,6 +29,7 @@ RUN apt-get update -qq && \
         libyaml-dev \
         postgresql-client \
         tzdata \
+        unzip \
         zlib1g-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
@@ -47,12 +50,39 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
         bash \
         dbus \
+        fontconfig \
         lsb-release \
         openssl \
         sudo \
         udev \
+        unzip \
         xserver-xorg-core \
-        xvfb && \
+        xvfb \
+        zip \
+        libasound2 \
+        libatk-bridge2.0-0 \
+        libatk1.0-0 \
+        libdrm2 \
+        libgbm1 \
+        libglib2.0-0 \
+        libgtk-3-0 \
+        libnss3 \
+        libnspr4 \
+        libpango-1.0-0 \
+        libpangocairo-1.0-0 \
+        libsecret-1-0 \
+        libx11-xcb1 \
+        libxcomposite1 \
+        libxcursor1 \
+        libxdamage1 \
+        libxext6 \
+        libxfixes3 \
+        libxi6 \
+        libxkbcommon0 \
+        libxrandr2 \
+        libxrender1 \
+        libxss1 \
+        libxtst6 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 # Install Bun consistently with asset_builder stage
@@ -60,7 +90,7 @@ RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}" && \
     mv ~/.bun/bin/bun /usr/local/bin/bun && \
     chmod +x /usr/local/bin/bun
 # Copy dependency files first for better caching
-COPY --chown=${DOCKER_USER}:${DOCKER_GROUP} Gemfile Gemfile.lock package.json bun.lock /main/
+COPY --chown=${DOCKER_USER}:${DOCKER_GROUP} ../Gemfile ../Gemfile.lock ../package.json ../bun.lock /main
 # Install dependencies
 RUN gem install bundler && \
     bundle install --gemfile /main/Gemfile --jobs $(nproc)
@@ -127,78 +157,3 @@ RUN bundle config set --local deployment 'true' && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     # Preserve karafka-rdkafka ext directory but remove other gem ext directories for space
     find "${BUNDLE_PATH}"/ruby/*/gems/*/ext -name "*" -not -path "*/karafka-rdkafka*/ext*" -delete 2>/dev/null || true
-
-# Production environment
-FROM ruby:$RUBY_VERSION-slim-bookworm AS production
-
-# Build arguments and environment variables
-ARG COMMIT_HASH
-ARG DOCKER_UID=1001
-ARG DOCKER_GID=1001
-ARG DOCKER_USER=rails
-ARG DOCKER_GROUP=rails
-
-# Set environment variables
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development:test" \
-    RAILS_SERVE_STATIC_FILES="true" \
-    RAILS_LOG_TO_STDOUT="true" \
-    RAILS_MAX_THREADS="5" \
-    WEB_CONCURRENCY="2" \
-    TZ=UTC \
-    COMMIT_HASH=${COMMIT_HASH} \
-    LD_PRELOAD="libjemalloc.so.2" \
-    MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true" \
-    RUBY_YJIT_ENABLE="1"
-
-# Create non-root user first
-RUN groupadd -g ${DOCKER_GID} ${DOCKER_GROUP} && \
-    useradd -u ${DOCKER_UID} -g ${DOCKER_GROUP} -m -s /bin/bash ${DOCKER_USER}
-
-WORKDIR /rails
-
-# Install minimal runtime dependencies including Kafka libraries
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-        ca-certificates \
-        curl \
-        libjemalloc2 \
-        libpq5 \
-        librdkafka1 \
-        libvips42 \
-        postgresql-client \
-        tzdata && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
-
-# Copy built gems from ruby_builder
-COPY --from=ruby_builder --chown=${DOCKER_USER}:${DOCKER_GROUP} /usr/local/bundle /usr/local/bundle
-
-# The karafka-rdkafka gem ext directory is now preserved from ruby_builder stage
-# Runtime dependencies should work correctly with the bundled libraries
-
-# Skip asset precompilation and defer to deployment pipeline
-# The complex Karafka dependencies make Docker builds fragile
-RUN echo "Asset precompilation deferred to deployment pipeline to avoid Karafka dependency issues"
-
-# Copy built assets from asset_builder
-COPY --from=asset_builder --chown=${DOCKER_USER}:${DOCKER_GROUP} /app/app/assets/builds /rails/app/assets/builds
-
-# Copy application code
-COPY --chown=${DOCKER_USER}:${DOCKER_GROUP} . /rails/
-
-# Create necessary directories and set permissions
-RUN mkdir -p /rails/tmp/pids /rails/log /rails/storage && \
-    chown -R ${DOCKER_USER}:${DOCKER_GROUP} /rails && \
-    chmod +x /rails/bin/*
-
-# Switch to non-root user for asset precompilation and runtime
-USER ${DOCKER_USER}
-
-# Expose port
-EXPOSE 3000
-
-# Default command - Use PORT environment variable for Cloud Run compatibility
-CMD ["sh", "-c", "bundle exec rails server -b 0.0.0.0 -p ${PORT:-3000}"]
