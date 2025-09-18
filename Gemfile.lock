@@ -1811,6 +1811,7 @@ GEM
       net-http (>= 0.5.0)
     faraday-retry (2.3.2)
       faraday (~> 2.0)
+    ffi (1.17.2)
     ffi (1.17.2-x86_64-linux-gnu)
     ffi-compiler (1.3.2)
       ffi (>= 1.15.5)
@@ -1873,6 +1874,9 @@ GEM
       google-cloud-errors (~> 1.0)
       grpc-google-iam-v1 (~> 1.11)
     google-logging-utils (0.2.0)
+    google-protobuf (4.32.1)
+      bigdecimal
+      rake (>= 13)
     google-protobuf (4.32.1-x86_64-linux-gnu)
       bigdecimal
       rake (>= 13)
@@ -1893,6 +1897,9 @@ GEM
     gretel (5.0.1)
       actionview (>= 6.1)
       railties (>= 6.1)
+    grpc (1.75.0)
+      google-protobuf (>= 3.25, < 5.0)
+      googleapis-common-protos-types (~> 1.0)
     grpc (1.75.0-x86_64-linux-gnu)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
@@ -1951,6 +1958,12 @@ GEM
     karafka-core (2.5.6)
       karafka-rdkafka (>= 0.20.0)
       logger (>= 1.6.0)
+    karafka-rdkafka (0.21.0)
+      ffi (~> 1.15)
+      json (> 2.0)
+      logger
+      mini_portile2 (~> 2.6)
+      rake (> 12)
     karafka-rdkafka (0.21.0-x86_64-linux-gnu)
       ffi (~> 1.15)
       json (> 2.0)
@@ -2005,6 +2018,9 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
+    nokogiri (1.18.10)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
     oauth2 (2.0.17)
@@ -2269,6 +2285,7 @@ GEM
     parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
+    pg (1.6.2)
     pg (1.6.2-x86_64-linux)
     pp (0.6.2)
       prettyprint
@@ -2489,6 +2506,7 @@ GEM
     zeitwerk (2.7.3)
 
 PLATFORMS
+  ruby
   x86_64-linux-gnu
 
 DEPENDENCIES

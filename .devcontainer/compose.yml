@@ -1,13 +1,14 @@
-name: 'jit'
+name: "jit"
 services:
   main:
     build:
-      context: ../
+      context: ..
       dockerfile: .devcontainer/Dockerfile
-      target: development
       args:
-        COMMIT_HASH: 'abcdef'
-    command: [ '/bin/bash', '.devcontainer/docker/main/entrypoint.sh' ]
+        COMMIT_HASH: "abcdef"
+        DOCKER_UID: ${UID:-1000}
+        DOCKER_GID: ${GID:-1000}
+    command: ["/bin/bash", ".devcontainer/docker/main/entrypoint.sh"]
     restart: always
     tty: true
     stdin_open: true

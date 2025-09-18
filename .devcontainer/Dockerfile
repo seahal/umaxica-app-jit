@@ -12,7 +12,8 @@ ARG GITHUB_ACTIONS=""
 FROM ruby:$RUBY_VERSION-bookworm AS base
 ENV TZ=UTC \
     LANG=C.UTF-8 \
-    LC_ALL=C.UTF-8
+    LC_ALL=C.UTF-8 \
+    BUNDLE_FORCE_RUBY_PLATFORM=1
 
 # Install common system dependencies with security updates
 RUN apt-get update -qq && \

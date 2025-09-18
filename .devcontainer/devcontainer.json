@@ -136,14 +136,20 @@
 		},
 		"jetbrains": {
 			"remoteId": "intellij",
+			"backend": "intellij",
 			"plugins": [
 				"org.jetbrains.plugins.ruby"
-			]
+			],
+			"containerEnv": {
+				"DEVCONTAINER_IDE": "jetbrains",
+				"DEVCONTAINER_AUTO_START_BIN_DEV": "0"
+			}
 		}
 	},
 	"containerEnv": {
 		"RAILS_ENV": "development",
-		"RACK_ENV": "development"
+		"RACK_ENV": "development",
+		"DEVCONTAINER_AUTO_START_BIN_DEV": "1"
 	},
 	"postCreateCommand": "bundle install && bun install",
 	"postStartCommand": "sudo chown -R main:group /main && echo 'Development environment ready!'",
