@@ -155,7 +155,7 @@
 	"postStartCommand": "sudo chown -R main:group /main && echo 'Development environment ready!'",
 	"initializeCommand": "echo 'Initializing Umaxica Rails Development Environment...'",
 	"onCreateCommand": "echo 'Devcontainer created successfully'",
-	"updateContentCommand": "bundle install && bun install && bundle exec rake db:setup",
+	"updateContentCommand": "bundle install && bun install",
 	"mounts": [
 		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
 	]

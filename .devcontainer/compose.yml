@@ -4,7 +4,6 @@ services:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
-      target: development
       args:
         COMMIT_HASH: "abcdef"
         DOCKER_UID: ${UID:-1000}
@@ -17,8 +16,8 @@ services:
     ports:
       - "3300:3000"
     tmpfs:
-      - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
       - /main/log:size=512M,uid=${UID:-1000},gid=${GID:-1000}
+      - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
       - ../:/main
     networks:

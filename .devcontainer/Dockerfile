@@ -9,7 +9,7 @@ ARG DOCKER_GROUP=group
 ARG GITHUB_ACTIONS=""
 
 # Base image with common dependencies
-FROM ruby:$RUBY_VERSION-bookworm AS base
+FROM ruby:$RUBY_VERSION-trixie AS base
 ENV TZ=UTC \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
@@ -94,6 +94,7 @@ RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}" && \
 COPY --chown=${DOCKER_USER}:${DOCKER_GROUP} ../Gemfile ../Gemfile.lock ../package.json ../bun.lock /main
 # Install dependencies
 RUN gem install bundler && \
+    bundle config set --local path /main/vendor/bundle && \
     bundle install --gemfile /main/Gemfile --jobs $(nproc)
 # Create user and set permissions
 RUN if [ -z "$GITHUB_ACTIONS" ]; then \

@@ -1,7 +1,6 @@
-# syntax=docker/dockerfile:1.7
 ARG RUBY_VERSION=3.4.6
 
-FROM ruby:${RUBY_VERSION}-slim-bookworm AS base
+FROM ruby:${RUBY_VERSION}-slim-trixie AS base
 
 ENV APP_HOME=/app \
     LANG=C.UTF-8 \
