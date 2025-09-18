@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.4.5"
+ruby "3.4.6"
 
 # rake
 gem "rake"
@@ -82,6 +82,11 @@ gem "jwt"
 #
 gem "jsbundling-rails"
 
+
+group :development do
+  gem "ruby-lsp"
+  gem "solargraph"
+end
 
 group :development, :test do
   # to avoid n+1 queries

@@ -4,6 +4,7 @@ services:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
+      target: development
       args:
         COMMIT_HASH: "abcdef"
         DOCKER_UID: ${UID:-1000}
@@ -36,7 +37,6 @@ services:
       - RAILS_MAX_THREADS=5
       # Redis (use local Redis service inside Compose)
       - REDIS_URL=redis://redis:6379/0
-      - BUNDLE_PATH=/main/vendor/bundle
       - BUNDLE_JOBS=4
       # App Configuration
       - NAME=UMAXICA
