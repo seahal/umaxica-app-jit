@@ -1,13 +1,14 @@
-name: 'jit'
+name: "jit"
 services:
   main:
     build:
-      context: ../
-      dockerfile: .devcontainer/Dockerfile
-      target: development
+      context: .
+      dockerfile: ./Dockerfile.development
       args:
-        COMMIT_HASH: 'abcdef'
-    command: [ '/bin/bash', '.devcontainer/docker/main/entrypoint.sh' ]
+        COMMIT_HASH: "abcdef"
+        DOCKER_UID: ${UID:-1000}
+        DOCKER_GID: ${GID:-1000}
+    command: ["/bin/bash", "docker/main/entrypoint.sh"]
     restart: always
     tty: true
     stdin_open: true
@@ -15,10 +16,12 @@ services:
     ports:
       - "3300:3000"
     tmpfs:
-      - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
       - /main/log:size=512M,uid=${UID:-1000},gid=${GID:-1000}
+      - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
-      - ../:/main
+      - ./:/main
+      - gem-volume:/main/vendor
+      - bun-volume:/main/node_modules
     networks:
       - backend
       - frontend
@@ -35,7 +38,6 @@ services:
       - RAILS_MAX_THREADS=5
       # Redis (use local Redis service inside Compose)
       - REDIS_URL=redis://redis:6379/0
-      - BUNDLE_PATH=/main/vendor/bundle
       - BUNDLE_JOBS=4
       # App Configuration
       - NAME=UMAXICA
@@ -269,6 +271,8 @@ volumes:
   redis-volume:
   kafka-broker-volume:
   minio-volume:
+  bun-volume:
+  gem-volume:
 networks:
   backend:
   frontend:
