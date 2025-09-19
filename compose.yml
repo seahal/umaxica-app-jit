@@ -19,7 +19,7 @@ services:
       - /main/log:size=512M,uid=${UID:-1000},gid=${GID:-1000}
       - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
-      - ./:/main:cached
+      - ./:/main
       - gem-volume:/main/vendor
       - bun-volume:/main/node_modules
     networks:
