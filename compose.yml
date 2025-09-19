@@ -2,13 +2,13 @@ name: "jit"
 services:
   main:
     build:
-      context: ..
-      dockerfile: .devcontainer/Dockerfile
+      context: .
+      dockerfile: ./Dockerfile.development
       args:
         COMMIT_HASH: "abcdef"
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
-    command: ["/bin/bash", ".devcontainer/docker/main/entrypoint.sh"]
+    command: ["/bin/bash", "docker/main/entrypoint.sh"]
     restart: always
     tty: true
     stdin_open: true
@@ -19,7 +19,9 @@ services:
       - /main/log:size=512M,uid=${UID:-1000},gid=${GID:-1000}
       - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
-      - ../:/main
+      - ./:/main:cached
+      - gem-volume:/main/vendor
+      - bun-volume:/main/node_modules
     networks:
       - backend
       - frontend
@@ -269,6 +271,8 @@ volumes:
   redis-volume:
   kafka-broker-volume:
   minio-volume:
+  bun-volume:
+  gem-volume:
 networks:
   backend:
   frontend:

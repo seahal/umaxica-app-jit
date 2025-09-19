@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.4.6"
 
 # rake
-gem "rake"
+gem "rake", '13.2.1'
 # rack
 gem "rack"
 # Rails
