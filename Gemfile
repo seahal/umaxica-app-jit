@@ -119,4 +119,6 @@ group :development do
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
   gem "annotaterb"
+  #
+  gem "license_finder", require: false
 end
