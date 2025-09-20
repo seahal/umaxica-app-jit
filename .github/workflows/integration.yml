@@ -88,7 +88,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -111,11 +110,28 @@ jobs:
           bin/rails db:prepare
       - name: Run security checks
         run: |
+          set -euo pipefail
+          trap 'rm -f package-lock.json' EXIT
+
           # Brakeman security scanner
           bundle exec brakeman -z -q
 
           # Bundle audit for vulnerable gems
           bundle exec bundle audit check --update
+
+          # npm audit requires a lockfile; generate one temporarily
+          npm install --package-lock-only
+          npm audit --audit-level=moderate
+
+          # License compatibility check (non-blocking)
+          bundle exec license_finder || true
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.29.0
+        with:
+          scan-type: fs
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          exit-code: '1'
       - name: Run code quality checks
         run: |
           # RuboCop for code style
@@ -166,68 +182,3 @@ jobs:
             log/test.log
             tmp/screenshots/
           retention-days: 7
-  rails-info:
-    name: Rails Project Analysis
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: setup-and-test
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.4.6'
-          bundler-cache: true
-      - name: Rails project information
-        run: |
-          echo "=== Rails Application Information ==="
-          bundle exec rails about
-
-          echo "=== Rails Routes Analysis ==="
-          bundle exec rails routes --unused || true
-
-          echo "=== Code Statistics ==="
-          bundle exec rails stats
-
-          echo "=== TODOs and Notes ==="
-          bundle exec rails notes || true
-      - name: Check for unused routes
-        run: |
-          if bundle exec rails routes --unused | grep -q "No unused routes found"; then
-            echo "✅ No unused routes found"
-          else
-            echo "⚠️ Unused routes detected:"
-            bundle exec rails routes --unused
-          fi
-  dependency-check:
-    name: Dependency Security Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.4.6'
-          bundler-cache: true
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-      - name: Generate npm lockfile for audit
-        run: npm install --package-lock-only
-      - name: Ruby dependency vulnerability check
-        run: |
-          bundle exec bundle audit check --update
-      - name: JavaScript dependency vulnerability check
-        run: |
-          npm audit --audit-level=moderate
-      - name: Clean up npm lockfile
-        if: always()
-        run: rm -f package-lock.json
-      - name: License compatibility check
-        run: |-
-          bundle exec license_finder || true
