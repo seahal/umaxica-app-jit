@@ -117,8 +117,8 @@ jobs:
         run: bundle exec rubocop --fail-fast
       - name: Run ERB Lint
         run: bundle exec erb_lint --lint-all
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
       - name: Run Rails tests
         env:
           DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
