@@ -1,101 +1,233 @@
-name: Integration (docker-compose)
-
+# CI/CD Pipeline for Umaxica App
+name: 'CI'
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
-
+    branches: [main, develop]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 permissions:
   contents: read
-
+  issues: write
+  checks: write
+  pull-requests: write
 defaults:
   run:
     shell: bash
-
 env:
-  CI: true
   RAILS_ENV: test
+  RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
   NODE_ENV: test
-  DOCKER_BUILDKIT: 1
-  COMPOSE_DOCKER_CLI_BUILD: 1
-
+  CI: true
+  BUNDLE_WITH: development
 jobs:
-  test:
-    name: Rails + JS tests (compose)
+  setup-and-test:
+    name: Setup and Test
     runs-on: ubuntu-latest
-    timeout-minutes: 40
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build images
-        run: |
-          docker compose build
-
-      - name: Start dependencies (detached)
-        run: |
-          # Start only the infra needed for tests
-          docker compose up -d primary redis zookeeper kafka minio
-          # Health check for Postgres
-          for i in {1..60}; do
-            if docker compose exec -T primary pg_isready -U root -d db >/dev/null 2>&1; then
-              echo "Postgres is ready"; break; fi
-            echo "Waiting for Postgres... ($i)"; sleep 2;
-          done
-          docker compose ps
-
-      - name: Run Rails and JS tests in container
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['3.4.6']
+        node-version: ['22']
+    services:
+      postgres:
+        image: postgres:16
         env:
-          RAILS_ENV: test
-          NODE_ENV: test
-          CI: true
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6379:6379
+      zookeeper:
+        image: confluentinc/cp-zookeeper:7.4.0
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+      kafka:
+        image: confluentinc/cp-kafka:7.4.0
+        env:
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+        options: >-
+          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092" --health-interval 30s --health-timeout 10s --health-retries 5
+        ports:
+          - 9092:9092
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install system dependencies
         run: |
-          set -euo pipefail
-          docker compose run --rm \
-            -e RAILS_ENV=test -e NODE_ENV=test -e CI=true \
-            main bash -lc '
-              bundle config set path vendor/bundle && \
-              bundle install --jobs $(nproc) && \
-              bun install --frozen-lockfile && \
-              bin/rails db:prepare && \
-              bun run build && \
-              bin/rails test all && \
-              bun test \
-            '
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            libpq-dev \
+            libvips-dev \
+            libxml2-dev \
+            libyaml-dev \
+            build-essential
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.2.22'
+      - name: Install JavaScript dependencies
+        run: |
+          bun install --frozen-lockfile
+      - name: Build JavaScript assets
+        run: |
+          bun run build
+      - name: Run JavaScript tests
+        run: |
+          bun test
+      - name: Setup test databases
+        env:
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379/0
+        run: |
+          # Run Rails database setup without seeding guarded data
+          bin/rails db:prepare
+      - name: Run security checks
+        run: |
+          # Brakeman security scanner
+          bundle exec brakeman -z -q
 
-      - name: Collect coverage and logs
+          # Bundle audit for vulnerable gems
+          bundle exec bundle audit check --update
+      - name: Run code quality checks
+        run: |
+          # RuboCop for code style
+          bundle exec rubocop --fail-fast
+
+          # ERB Lint for template quality
+          bundle exec erb_lint --lint-all
+      - name: Run unit tests
+        env:
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379/0
+          ELASTICSEARCH_URL: http://localhost:9200
+          KAFKA_BROKERS: localhost:9092
+        run: |
+          bin/rails test
+      - name: Run system tests
+        env:
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379/0
+          ELASTICSEARCH_URL: http://localhost:9200
+          KAFKA_BROKERS: localhost:9092
+        run: |
+          # Setup display for system tests
+          export DISPLAY=:99
+          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+
+          bin/rails test:system
+      - name: Generate test coverage report
         if: always()
         run: |
-          mkdir -p artifacts
-          [ -d coverage ] && cp -a coverage artifacts/coverage || true
-          [ -f log/test.log ] && cp -a log/test.log artifacts/test.log || true
-
-      - name: Upload coverage
-        if: always() && hashFiles('artifacts/coverage/**') != ''
+          if [ -d "coverage" ]; then
+            echo "Test coverage generated in coverage/"
+            ls -la coverage/
+          fi
+      - name: Upload test coverage
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: artifacts/coverage/
-          retention-days: 14
-
+          name: coverage-report-${{ matrix.ruby-version }}
+          path: coverage/
+          retention-days: 30
       - name: Upload test logs
-        if: failure() && hashFiles('artifacts/test.log') != ''
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-logs
-          path: artifacts/test.log
+          name: test-logs-${{ matrix.ruby-version }}
+          path: |
+            log/test.log
+            tmp/screenshots/
           retention-days: 7
-
-      - name: Cleanup
-        if: always()
+  rails-info:
+    name: Rails Project Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: setup-and-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4.6'
+          bundler-cache: true
+      - name: Rails project information
         run: |
-          docker compose down --volumes --remove-orphans || true
+          echo "=== Rails Application Information ==="
+          bundle exec rails about
+
+          echo "=== Rails Routes Analysis ==="
+          bundle exec rails routes --unused || true
+
+          echo "=== Code Statistics ==="
+          bundle exec rails stats
+
+          echo "=== TODOs and Notes ==="
+          bundle exec rails notes || true
+      - name: Check for unused routes
+        run: |
+          if bundle exec rails routes --unused | grep -q "No unused routes found"; then
+            echo "✅ No unused routes found"
+          else
+            echo "⚠️ Unused routes detected:"
+            bundle exec rails routes --unused
+          fi
+  dependency-check:
+    name: Dependency Security Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4.6'
+          bundler-cache: true
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Generate npm lockfile for audit
+        run: npm install --package-lock-only
+      - name: Ruby dependency vulnerability check
+        run: |
+          bundle exec bundle audit check --update
+      - name: JavaScript dependency vulnerability check
+        run: |
+          npm audit --audit-level=moderate
+      - name: Clean up npm lockfile
+        if: always()
+        run: rm -f package-lock.json
+      - name: License compatibility check
+        run: |-
+          bundle exec license_finder || true
