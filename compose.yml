@@ -28,7 +28,7 @@ services:
         volume:
           nocopy: true        # 初回コピーを抑止（任意）
       - type: volume
-        source: bun-volume
+        source: node-volume
         target: /main/node_modules
         volume:
           nocopy: true
@@ -281,7 +281,7 @@ volumes:
   redis-volume:
   kafka-broker-volume:
   minio-volume:
-  bun-volume:
+  node-volume:
   gem-volume:
 networks:
   backend:

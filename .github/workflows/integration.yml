@@ -22,9 +22,6 @@ env:
   RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
   NODE_ENV: test
   BUNDLE_WITH: test
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: password
-  POSTGRES_DB: test_db
 jobs:
   setup-and-test:
     name: Setup and Test
@@ -42,6 +39,10 @@ jobs:
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         ports:
           - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
       redis:
         image: redis:7-alpine
         options: >-
@@ -87,7 +88,6 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.2.22'
-      - name: Install JavaScript dependencies
         run: |
           bun install --frozen-lockfile
       - name: Build JavaScript assets
@@ -108,8 +108,7 @@ jobs:
       - name: Run bundle-audit
         run: bundle exec bundle audit check --update
       - name: Run bun audit
-        run: |
-          bun audit
+        run: bun audit
       - name: Run license_finder
         run: bundle exec license_finder
         continue-on-error: true
