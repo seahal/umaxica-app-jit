@@ -2,19 +2,19 @@ pre-commit:
   parallel: true
   commands:
     audit(bundler):
-      run: bundle exec bundle audit
+      run: docker compose run main bundle exec bundle audit
     audit(bun):
-      run: bun audit --update
+      run: docker compose run main bun audit --update
     brakeman:
-      run: bundle exec brakeman --no-pager
+      run: docker compose run main bundle exec brakeman --no-pager
     rubocop:
-      run: bundle exec rubocop
+      run: docker compose run main bundle exec rubocop
     erb-lint:
-      run: bundle exec erb_lint app/views/
+      run: docker compose run main bundle exec erb_lint app/views/
     biome-format:
-      run: bun run format
+      run: docker compose run main bun run format
     typecheck:
-      run: bun run typecheck
+      run: docker compose run main bun run typecheck
 pre-push:
   parallel: true
   commands:

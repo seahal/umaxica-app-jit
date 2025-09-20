@@ -19,9 +19,19 @@ services:
       - /main/log:size=512M,uid=${UID:-1000},gid=${GID:-1000}
       - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
-      - ./:/main
-      - gem-volume:/main/vendor
-      - bun-volume:/main/node_modules
+      - type: bind
+        source: .
+        target: /main
+      - type: volume
+        source: gem-volume
+        target: /main/vendor
+        volume:
+          nocopy: true        # 初回コピーを抑止（任意）
+      - type: volume
+        source: bun-volume
+        target: /main/node_modules
+        volume:
+          nocopy: true
     networks:
       - backend
       - frontend
