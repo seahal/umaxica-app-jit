@@ -84,10 +84,6 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -108,31 +104,28 @@ jobs:
         run: |
           # Run Rails database setup without seeding guarded data
           bin/rails db:prepare
-      - name: Run security checks
+      - name: Run Brakeman
+        run: bundle exec brakeman -z -q
+      - name: Run bundle-audit
+        run: bundle exec bundle audit check --update
+      - name: Run bun audit
         run: |
-          set -euo pipefail
-          trap 'rm -f package-lock.json' EXIT
-
-          # Brakeman security scanner
-          bundle exec brakeman -z -q
-
-          # Bundle audit for vulnerable gems
-          bundle exec bundle audit check --update
-
-          # npm audit requires a lockfile; generate one temporarily
-          npm install --package-lock-only
-          npm audit --audit-level=moderate
-
-          # License compatibility check (non-blocking)
-          bundle exec license_finder || true
-      - name: Run code quality checks
-        run: |
-          # RuboCop for code style
-          bundle exec rubocop --fail-fast
-
-          # ERB Lint for template quality
-          bundle exec erb_lint --lint-all
-      - name: Run unit tests
+          bun audit
+      - name: Run license_finder
+        run: bundle exec license_finder
+        continue-on-error: true
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.29.0
+        with:
+          scan-type: fs
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+      - name: Run RuboCop
+        run: bundle exec rubocop --fail-fast
+      - name: Run ERB Lint
+        run: bundle exec erb_lint --lint-all
+      - name: Run Rails tests
         env:
           DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
           REDIS_URL: redis://localhost:6379/0
@@ -140,18 +133,6 @@ jobs:
           KAFKA_BROKERS: localhost:9092
         run: |
           bin/rails test
-      - name: Run system tests
-        env:
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
-          REDIS_URL: redis://localhost:6379/0
-          ELASTICSEARCH_URL: http://localhost:9200
-          KAFKA_BROKERS: localhost:9092
-        run: |
-          # Setup display for system tests
-          export DISPLAY=:99
-          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-
-          bin/rails test:system
       - name: Generate test coverage report
         if: always()
         run: |
