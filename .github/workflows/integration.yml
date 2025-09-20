@@ -22,6 +22,8 @@ env:
   RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
   NODE_ENV: test
   BUNDLE_WITH: test
+  POSTGRESQL_USER: postgres
+  POSTGRESQL_PASSWORD: password
 jobs:
   setup-and-test:
     name: Setup and Test
@@ -100,8 +102,8 @@ jobs:
           DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
           REDIS_URL: redis://localhost:6379/0
         run: |
-          # Run Rails database setup without seeding guarded data
           bin/rails db:prepare
+          bin/rails db:migrate
       - name: Run Brakeman
         run: bundle exec brakeman -z -q
       - name: Run bundle-audit
