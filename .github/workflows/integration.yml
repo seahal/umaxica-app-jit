@@ -102,7 +102,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
           REDIS_URL: redis://localhost:6379/0
         run: |
-          bin/rails db:prepare
+          bin/rails db:create
           bin/rails db:migrate
       - name: Run Brakeman
         run: bundle exec brakeman -z -q
