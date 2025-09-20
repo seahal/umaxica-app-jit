@@ -26,7 +26,7 @@ services:
         source: gem-volume
         target: /main/vendor
         volume:
-          nocopy: true        # 初回コピーを抑止（任意）
+          nocopy: true
       - type: volume
         source: node-volume
         target: /main/node_modules
