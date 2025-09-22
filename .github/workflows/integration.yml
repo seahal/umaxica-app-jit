@@ -179,14 +179,11 @@ jobs:
       - name: Run license_finder
         run: bundle exec license_finder
       - name: Build JavaScript assets
-        run: |
-          bun run build
+        run: bun run build
       - name: Run JavaScript tests
-        run: |
-          bun test
+        run: bun test
       - name: Run Rails tests
-        run: |
-          bin/rails test
+        run: bin/rails test
       - name: Generate test coverage report
         if: always()
         run: |
