@@ -84,8 +84,8 @@ gem "jsbundling-rails"
 
 
 group :development do
-  gem "ruby-lsp"
-  gem "solargraph"
+  # gem "ruby-lsp"
+  # gem "solargraph"
 end
 
 group :development, :test do

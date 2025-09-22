@@ -15,7 +15,7 @@ bun install
 
 # Rails app prep
 bin/rails tmp:clear
-bin/rails db:prepare
+bin/rails db:create
 bin/rails db:migrate
 bin/rails db:seed
 
