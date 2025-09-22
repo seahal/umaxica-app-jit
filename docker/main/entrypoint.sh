@@ -6,6 +6,8 @@ cd "${APP_ROOT:-/main}"
 
 # Ensure writable directories exist
 mkdir -p ./tmp ./vendor ./node_modules
+sudo chown -R 1000:1000 ./vendor
+sudo chown -R 1000:1000 ./node_modules
 
 # Install Ruby/JS dependencies
 bundle install --jobs "${BUNDLE_JOBS:-4}"
@@ -13,7 +15,7 @@ bun install
 
 # Rails app prep
 bin/rails tmp:clear
-bin/rails db:prepare
+bin/rails db:create
 bin/rails db:migrate
 bin/rails db:seed
 

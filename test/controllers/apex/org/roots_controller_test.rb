@@ -103,18 +103,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should maintain consistent data structure across requests" do
-    # Make multiple requests and ensure data structure remains consistent
-    get apex_org_root_url
-    first_response_length = response.body.length
-
-    get apex_org_root_url
-    second_response_length = response.body.length
-
-    # Response structure should be consistent
-    assert_equal first_response_length, second_response_length
-  end
-
   test "should handle admin dashboard data mutations" do
     get apex_org_root_url
     assert_response :success

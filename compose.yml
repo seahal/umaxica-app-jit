@@ -19,9 +19,19 @@ services:
       - /main/log:size=512M,uid=${UID:-1000},gid=${GID:-1000}
       - /main/tmp:size=2G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
-      - ./:/main
-      - gem-volume:/main/vendor
-      - bun-volume:/main/node_modules
+      - type: bind
+        source: .
+        target: /main
+      - type: volume
+        source: gem-volume
+        target: /main/vendor
+        volume:
+          nocopy: true
+      - type: volume
+        source: node-volume
+        target: /main/node_modules
+        volume:
+          nocopy: true
     networks:
       - backend
       - frontend
@@ -42,10 +52,6 @@ services:
       # App Configuration
       - NAME=UMAXICA
       - PORT=3000
-      # Active Record Encryption
-      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=yiPQNMtjJOZ5dOC9JnzW68zp9DUs5Jum
-      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=QXV9b9HnerqaJ71d4EPJLvBGUkCteppN
-      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=L1ddJpO64JUJXoycn4GZ9PPkV7eg8trv
       # Identifiers
       - SINGLETON_DEFAULT_SALT=hoge
       - IDENTIFIER_REGION_CODE=392
@@ -271,7 +277,7 @@ volumes:
   redis-volume:
   kafka-broker-volume:
   minio-volume:
-  bun-volume:
+  node-volume:
   gem-volume:
 networks:
   backend:

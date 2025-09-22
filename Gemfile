@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.4.6"
 
 # rake
-gem "rake", '13.2.1'
+gem "rake", "13.2.1"
 # rack
 gem "rack"
 # Rails
@@ -84,8 +84,8 @@ gem "jsbundling-rails"
 
 
 group :development do
-  gem "ruby-lsp"
-  gem "solargraph"
+  # gem "ruby-lsp"
+  # gem "solargraph"
 end
 
 group :development, :test do
@@ -119,4 +119,6 @@ group :development do
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
   gem "annotaterb"
+  #
+  gem "license_finder", require: false
 end

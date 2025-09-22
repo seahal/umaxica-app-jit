@@ -13,7 +13,7 @@ require_relative "../lib/subdomain_static_files" if File.exist?(subdomain_static
 module Jit
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.0
+    config.load_defaults 8.1
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -29,17 +29,20 @@ module Jit
     # config.eager_load_paths << Rails.root.join("extras")
 
     ### Added by user
+    config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
+    config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
+    config.active_record.encryption.key_derivation_salt = Rails.application.credentials.active_record_encryption.key_derivation_salt
 
     # CORS / Rack protection
     config.middleware.use Rack::Attack
 
     # Serve subdomain-aware static files before default static handler (non-production only)
-    if defined?(SubdomainStaticFiles) && !Rails.env.production?
-      config.middleware.insert_before ActionDispatch::Static, SubdomainStaticFiles, {
-        public_path: Rails.public_path,
-        default_path: "default"
-      }
-    end
+    # if defined?(SubdomainStaticFiles) && !Rails.env.production?
+    #   config.middleware.insert_before ActionDispatch::Static, SubdomainStaticFiles, {
+    #     public_path: Rails.public_path,
+    #     default_path: "default"
+    #   }
+    # end
 
     # USE UTC
     config.time_zone = "UTC"

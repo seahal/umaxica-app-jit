@@ -1,101 +1,206 @@
-name: Integration (docker-compose)
-
+# CI/CD Pipeline for Umaxica App
+name: 'CI'
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
-
+    branches: [main, develop]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 permissions:
   contents: read
-
+  issues: write
+  checks: write
+  pull-requests: write
 defaults:
   run:
     shell: bash
-
 env:
   CI: true
   RAILS_ENV: test
+  RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
   NODE_ENV: test
-  DOCKER_BUILDKIT: 1
-  COMPOSE_DOCKER_CLI_BUILD: 1
-
+  BUNDLE_WITH: test
+  POSTGRESQL_USER: postgres
+  POSTGRESQL_PASSWORD: password
 jobs:
-  test:
-    name: Rails + JS tests (compose)
+  setup-and-test:
+    name: Setup and Test
     runs-on: ubuntu-latest
-    timeout-minutes: 40
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build images
-        run: |
-          docker compose build
-
-      - name: Start dependencies (detached)
-        run: |
-          # Start only the infra needed for tests
-          docker compose up -d primary redis zookeeper kafka minio
-          # Health check for Postgres
-          for i in {1..60}; do
-            if docker compose exec -T primary pg_isready -U root -d db >/dev/null 2>&1; then
-              echo "Postgres is ready"; break; fi
-            echo "Waiting for Postgres... ($i)"; sleep 2;
-          done
-          docker compose ps
-
-      - name: Run Rails and JS tests in container
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['3.4.6']
+        node-version: ['22']
+    env:
+      # Rails Configuration
+      RAILS_ENV: test
+      RACK_ENV: test
+      RAILS_MAX_THREADS: 5
+      # Redis (use local Redis service inside Compose)
+      REDIS_URL: redis://redis:6379/0
+      BUNDLE_JOBS: 4
+      # App Configuration
+      NAME: UMAXICA
+      PORT: 3000
+      # Identifiers
+      SINGLETON_DEFAULT_SALT: hoge
+      IDENTIFIER_REGION_CODE: '392'
+      IDENTIFIER_INSTANCE_ID: '0123456789'
+      # Domain URLs
+      APEX_CORPORATE_URL: com.localhost
+      APEX_SERVICE_URL: app.localhost
+      APEX_STAFF_URL: org.localhost
+      API_CORPORATE_URL: api.com.localhost
+      API_SERVICE_URL: api.app.localhost
+      API_STAFF_URL: api.org.localhost
+      AUTH_SERVICE_URL: auth.app.localhost
+      AUTH_STAFF_URL: auth.org.localhost
+      DOCS_CORPORATE_URL: docs.com.localhost
+      DOCS_SERVICE_URL: docs.app.localhost
+      DOCS_STAFF_URL: docs.org.localhost
+      NEWS_CORPORATE_URL: news.com.localhost
+      NEWS_SERVICE_URL: news.app.localhost
+      NEWS_STAFF_URL: news.org.localhost
+      HELP_CORPORATE_URL: help.com.localhost
+      HELP_SERVICE_URL: help.app.localhost
+      HELP_STAFF_URL: help.org.localhost
+      EDGE_CORPORATE_URL: localhost:5170
+      EDGE_SERVICE_URL: localhost:5171
+      EDGE_STAFF_URL: localhost:5172
+      # Database Configuration
+      POSTGRESQL_USER: root
+      POSTGRESQL_PASSWORD: password
+      POSTGRESQL_PORT: 5432
+      POSTGRESQL_UNIVERSAL_PUB: primary
+      POSTGRESQL_UNIVERSAL_SUB: replica
+      POSTGRESQL_CONTACT_PUB: primary
+      POSTGRESQL_CONTACT_SUB: replica
+      POSTGRESQL_IDENTIFIER_PUB: primary
+      POSTGRESQL_IDENTIFIER_SUB: replica
+      POSTGRESQL_PROFILE_PUB: primary
+      POSTGRESQL_PROFILE_SUB: replica
+      POSTGRESQL_TOKEN_PUB: primary
+      POSTGRESQL_TOKEN_SUB: replica
+      POSTGRESQL_BUSINESS_PUB: primary
+      POSTGRESQL_BUSINESS_SUB: replica
+      POSTGRESQL_MESSAGE_PUB: primary
+      POSTGRESQL_MESSAGE_SUB: replica
+      POSTGRESQL_NOTIFICATION_PUB: primary
+      POSTGRESQL_NOTIFICATION_SUB: replica
+      POSTGRESQL_CACHE_PUB: primary
+      POSTGRESQL_CACHE_SUB: replica
+      POSTGRESQL_SPECIALITY_PUB: primary
+      POSTGRESQL_SPECIALITY_SUB: replica
+      POSTGRESQL_STORAGE_PUB: primary
+      POSTGRESQL_STORAGE_SUB: replica
+      # Kafka Configuration
+      KAFKA_BROKERS: kafka:29092
+      # Mail Configuration
+      RESEND_SMTP_ENDPOINT: smtp.resend.com
+      RESEND_SMTP_USER_NAME: resend
+      # Object Storage Configuration
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    services:
+      postgres:
+        image: postgres:16
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5432:5432
         env:
-          RAILS_ENV: test
-          NODE_ENV: test
-          CI: true
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6379:6379
+      zookeeper:
+        image: confluentinc/cp-zookeeper:7.4.0
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+      kafka:
+        image: confluentinc/cp-kafka:7.4.0
+        env:
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+        options: >-
+          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092" --health-interval 30s --health-timeout 10s --health-retries 5
+        ports:
+          - 9092:9092
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install system dependencies
         run: |
-          set -euo pipefail
-          docker compose run --rm \
-            -e RAILS_ENV=test -e NODE_ENV=test -e CI=true \
-            main bash -lc '
-              bundle config set path vendor/bundle && \
-              bundle install --jobs $(nproc) && \
-              bun install --frozen-lockfile && \
-              bin/rails db:prepare && \
-              bun run build && \
-              bin/rails test all && \
-              bun test \
-            '
-
-      - name: Collect coverage and logs
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            libpq-dev \
+            libvips-dev \
+            libxml2-dev \
+            libyaml-dev \
+            build-essential
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.2.22'
+      - run: bun install --frozen-lockfile
+      - name: Setup test databases
+        run: |
+          bin/rails db:create
+          bin/rails db:migrate
+      - name: Run Brakeman
+        run: bundle exec brakeman -z -q
+      - name: Run bundle-audit
+        run: bundle exec bundle audit check --update
+      - name: Run bun audit
+        run: bun audit
+      - name: Run RuboCop
+        run: bundle exec rubocop --fail-fast
+      - name: Run ERB Lint
+        run: bundle exec erb_lint --lint-all
+      - name: Build JavaScript assets
+        run: bun run build
+      - name: Run JavaScript tests
+        run: bun test
+      - name: Run Rails tests
+        run: bin/rails test
+      - name: Generate test coverage report
         if: always()
         run: |
-          mkdir -p artifacts
-          [ -d coverage ] && cp -a coverage artifacts/coverage || true
-          [ -f log/test.log ] && cp -a log/test.log artifacts/test.log || true
-
-      - name: Upload coverage
-        if: always() && hashFiles('artifacts/coverage/**') != ''
+          if [ -d "coverage" ]; then
+            echo "Test coverage generated in coverage/"
+            ls -la coverage/
+          fi
+      - name: Upload test coverage
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: artifacts/coverage/
-          retention-days: 14
-
+          name: coverage-report-${{ matrix.ruby-version }}
+          path: coverage/
+          retention-days: 30
       - name: Upload test logs
-        if: failure() && hashFiles('artifacts/test.log') != ''
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-logs
-          path: artifacts/test.log
+          name: test-logs-${{ matrix.ruby-version }}
+          path: |
+            log/test.log
+            tmp/screenshots/
           retention-days: 7
-
-      - name: Cleanup
-        if: always()
-        run: |
-          docker compose down --volumes --remove-orphans || true
