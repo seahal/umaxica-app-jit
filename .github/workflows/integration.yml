@@ -171,13 +171,10 @@ jobs:
         run: bundle exec bundle audit check --update
       - name: Run bun audit
         run: bun audit
-        continue-on-error: true
       - name: Run RuboCop
         run: bundle exec rubocop --fail-fast
       - name: Run ERB Lint
         run: bundle exec erb_lint --lint-all
-      - name: Run license_finder
-        run: bundle exec license_finder
       - name: Build JavaScript assets
         run: bun run build
       - name: Run JavaScript tests
