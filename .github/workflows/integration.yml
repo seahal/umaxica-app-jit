@@ -98,8 +98,6 @@ jobs:
       POSTGRESQL_STORAGE_SUB: replica
       # Kafka Configuration
       KAFKA_BROKERS: kafka:29092
-      # Search Configuration
-      OPENSEARCH_DEFAULT_URL: http://elasticsearch:9200
       # Mail Configuration
       RESEND_SMTP_ENDPOINT: smtp.resend.com
       RESEND_SMTP_USER_NAME: resend
@@ -178,8 +176,8 @@ jobs:
         run: bundle exec rubocop --fail-fast
       - name: Run ERB Lint
         run: bundle exec erb_lint --lint-all
-#      - name: Run license_finder
-#        run: bundle exec license_finder
+      - name: Run license_finder
+        run: bundle exec license_finder
       - name: Build JavaScript assets
         run: |
           bun run build
