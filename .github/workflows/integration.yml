@@ -90,6 +90,10 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.2.22'
+
+      - name: Configure hosts
+        run: |
+          echo 'com.api.localhost net.api.localhost org.api.localhost app.api.localhost com.www.localhost app.www.localhost org.www.localhost app.www.localhost localhost' | sudo tee -a /etc/hosts
       - run: bun install --frozen-lockfile
       - name: Build JavaScript assets
         run: |
