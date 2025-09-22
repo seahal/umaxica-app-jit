@@ -188,8 +188,6 @@ jobs:
             echo "Test coverage generated in coverage/"
             ls -la coverage/
           fi
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4
