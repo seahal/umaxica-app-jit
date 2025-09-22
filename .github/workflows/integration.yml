@@ -166,7 +166,6 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.2.22'
-
       - name: Configure hosts
         run: |
           echo 'com.api.localhost net.api.localhost org.api.localhost app.api.localhost com.www.localhost app.www.localhost org.www.localhost app.www.localhost localhost' | sudo tee -a /etc/hosts
@@ -200,11 +199,6 @@ jobs:
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
       - name: Run Rails tests
-        env:
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
-          REDIS_URL: redis://localhost:6379/0
-          ELASTICSEARCH_URL: http://localhost:9200
-          KAFKA_BROKERS: localhost:9092
         run: |
           bin/rails test
       - name: Generate test coverage report
