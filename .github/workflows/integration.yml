@@ -36,8 +36,8 @@ jobs:
         node-version: ['22']
     env:
       # Rails Configuration
-      RAILS_ENV: development
-      RACK_ENV: development
+      RAILS_ENV: test
+      RACK_ENV: test
       RAILS_MAX_THREADS: 5
       # Redis (use local Redis service inside Compose)
       REDIS_URL: redis://redis:6379/0
@@ -45,10 +45,6 @@ jobs:
       # App Configuration
       NAME: UMAXICA
       PORT: 3000
-      # Active Record Encryption
-      ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: yiPQNMtjJOZ5dOC9JnzW68zp9DUs5Jum
-      ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: QXV9b9HnerqaJ71d4EPJLvBGUkCteppN
-      ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: L1ddJpO64JUJXoycn4GZ9PPkV7eg8trv
       # Identifiers
       SINGLETON_DEFAULT_SALT: hoge
       IDENTIFIER_REGION_CODE: '392'
