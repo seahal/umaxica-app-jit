@@ -163,12 +163,7 @@ jobs:
         with:
           bun-version: '1.2.22'
       - run: bun install --frozen-lockfile
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Setup test databases
-        env:
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
-          REDIS_URL: redis://localhost:6379/0
         run: |
           bin/rails db:create
           bin/rails db:migrate
@@ -201,6 +196,8 @@ jobs:
             echo "Test coverage generated in coverage/"
             ls -la coverage/
           fi
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4
