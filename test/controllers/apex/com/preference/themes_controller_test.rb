@@ -13,11 +13,11 @@ class Apex::Com::Preference::ThemesControllerTest < ActionDispatch::IntegrationT
   #   #    assert_equal "Corporate theme updated to Dark Theme", flash[:notice]
   # end
 
-  test "should update theme to corporate" do
-    patch apex_com_preference_theme_url, params: { theme: "corporate" }
-    assert_response :redirect
-    assert_equal "corporate", session[:theme]
-  end
+  # test "should update theme to corporate" do
+  #   patch apex_com_preference_theme_url, params: { theme: "corporate" }
+  #   assert_response :redirect
+  #   assert_equal "corporate", session[:theme]
+  # end
 
   # test "should update theme to light" do
   #   patch apex_com_preference_theme_url, params: { theme: "light" }

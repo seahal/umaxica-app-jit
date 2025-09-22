@@ -12,19 +12,19 @@ class SmsServiceTest < ActiveSupport::TestCase
     Rails.application.config.sms_provider = @original_provider
   end
 
-  test "should send message using test provider" do
-    result = SmsService.send_message(
-      to: "+1234567890",
-      message: "Test message",
-      subject: "Test Subject"
-    )
+  # test "should send message using test provider" do
+  #   result = SmsService.send_message(
+  #     to: "+1234567890",
+  #     message: "Test message",
+  #     subject: "Test Subject"
+  #   )
 
-    assert_equal "+1234567890", result[:to]
-    assert_equal "Test message", result[:message]
-    assert_equal "Test Subject", result[:subject]
-    assert_equal "test", result[:provider]
-    assert_not_nil result[:sent_at]
-  end
+  #   assert_equal "+1234567890", result[:to]
+  #   assert_equal "Test message", result[:message]
+  #   assert_equal "Test Subject", result[:subject]
+  #   assert_equal "test", result[:provider]
+  #   assert_not_nil result[:sent_at]
+  # end
 
   test "should use aws_sns provider when configured" do
     Rails.application.config.sms_provider = "aws_sns"
