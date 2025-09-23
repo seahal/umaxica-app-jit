@@ -7,4 +7,5 @@ Rails.application.routes.draw do
   draw :docs # endpoint for docs
   draw :news # endpoint for news
   draw :help # endpoint for help
+  root to: "roots#index" # for unmatched url
 end
