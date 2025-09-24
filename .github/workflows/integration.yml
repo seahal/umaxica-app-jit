@@ -72,8 +72,8 @@ jobs:
       EDGE_STAFF_URL: localhost:5172
       # Database Configuration
       POSTGRESQL_USER: root
-      POSTGRESQL_PASSWORD: password
       POSTGRESQL_PORT: 5432
+      POSTGRESQL_PASSWORD: password
       POSTGRESQL_UNIVERSAL_PUB: primary
       POSTGRESQL_UNIVERSAL_SUB: replica
       POSTGRESQL_CONTACT_PUB: primary
