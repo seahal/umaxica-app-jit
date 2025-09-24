@@ -83,7 +83,7 @@ jobs:
       POSTGRESQL_PROFILE_PUB: primary
       POSTGRESQL_PROFILE_SUB: replica
       POSTGRESQL_TOKEN_PUB: primary
-      POSTGRESQL_TOKEN_SUB: replica
+      POSTGRESQL_TOKEN_SUB: replica5
       POSTGRESQL_BUSINESS_PUB: primary
       POSTGRESQL_BUSINESS_SUB: replica
       POSTGRESQL_MESSAGE_PUB: primary
