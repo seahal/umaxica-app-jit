@@ -105,8 +105,6 @@ services:
       - POSTGRESQL_STORAGE_SUB=replica
       # Kafka Configuration
       - KAFKA_BROKERS=kafka:29092
-      # Search Configuration
-      - OPENSEARCH_DEFAULT_URL=http://elasticsearch:9200
       # Mail Configuration
       - RESEND_SMTP_ENDPOINT=smtp.resend.com
       - RESEND_SMTP_USER_NAME=resend
