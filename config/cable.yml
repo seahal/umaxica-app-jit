@@ -7,5 +7,5 @@ test:
 production:
   encrypt: true
   adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
+  url: default_redis_url = Rails.application.credentials.dig(:REDIS, :REDIS_CABLE_URL)
   channel_prefix: learn_production
