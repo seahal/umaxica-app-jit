@@ -1,6 +1,47 @@
 # frozen_string_literal: true
 
 require "active_support/core_ext/integer/time"
+require "json"
+require "time"
+
+class CloudRunJsonLogFormatter < ::Logger::Formatter
+  SEVERITY_MAP = {
+    "DEBUG" => "DEBUG",
+    "INFO" => "INFO",
+    "WARN" => "WARNING",
+    "ERROR" => "ERROR",
+    "FATAL" => "CRITICAL",
+    "UNKNOWN" => "DEFAULT"
+  }.freeze
+
+  def call(severity, time, progname, msg)
+    payload = {
+      severity: SEVERITY_MAP.fetch(severity) { severity },
+      timestamp: time.utc.iso8601(3),
+      progname: progname,
+      pid: Process.pid
+    }
+
+    if respond_to?(:current_tags) && current_tags.any?
+      payload[:tags] = current_tags
+    end
+
+    case msg
+    when Hash
+      payload.merge!(msg.transform_keys(&:to_s))
+    when Exception
+      payload[:error] = {
+        class: msg.class.name,
+        message: msg.message,
+        backtrace: msg.backtrace
+      }.compact
+    else
+      payload[:message] = msg2str(msg)
+    end
+
+    "#{payload.compact.to_json}\n"
+  end
+end
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -35,9 +76,16 @@ Rails.application.configure do
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
-  # Log to STDOUT with the current request id as a default log tag.
+  # Log to STDOUT using a JSON formatter for Cloud Run visibility.
+  STDOUT.sync = true
+  STDERR.sync = true
+
+  config.log_formatter = CloudRunJsonLogFormatter.new
+
+  logger           = ActiveSupport::Logger.new $stdout
+  logger.formatter = config.log_formatter
+  config.logger    = ActiveSupport::TaggedLogging.new logger
   config.log_tags = [ :request_id ]
-  config.logger = ActiveSupport::TaggedLogging.logger($stdout)
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!).
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
