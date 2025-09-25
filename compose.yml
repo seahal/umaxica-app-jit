@@ -79,7 +79,6 @@ services:
       - EDGE_STAFF_URL=localhost:5172
       # Database Configuration
       - POSTGRESQL_USER=root
-      - POSTGRESQL_PASSWORD=password
       - POSTGRESQL_PORT=5432
       - POSTGRESQL_UNIVERSAL_PUB=primary
       - POSTGRESQL_UNIVERSAL_SUB=replica
@@ -105,8 +104,6 @@ services:
       - POSTGRESQL_STORAGE_SUB=replica
       # Kafka Configuration
       - KAFKA_BROKERS=kafka:29092
-      # Search Configuration
-      - OPENSEARCH_DEFAULT_URL=http://elasticsearch:9200
       # Mail Configuration
       - RESEND_SMTP_ENDPOINT=smtp.resend.com
       - RESEND_SMTP_USER_NAME=resend

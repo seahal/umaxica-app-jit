@@ -1,48 +1,5 @@
 # frozen_string_literal: true
 
-require "active_support/core_ext/integer/time"
-require "json"
-require "time"
-
-class CloudRunJsonLogFormatter < ::Logger::Formatter
-  SEVERITY_MAP = {
-    "DEBUG" => "DEBUG",
-    "INFO" => "INFO",
-    "WARN" => "WARNING",
-    "ERROR" => "ERROR",
-    "FATAL" => "CRITICAL",
-    "UNKNOWN" => "DEFAULT"
-  }.freeze
-
-  def call(severity, time, progname, msg)
-    payload = {
-      severity: SEVERITY_MAP.fetch(severity) { severity },
-      timestamp: time.utc.iso8601(3),
-      progname: progname,
-      pid: Process.pid
-    }
-
-    if respond_to?(:current_tags) && current_tags.any?
-      payload[:tags] = current_tags
-    end
-
-    case msg
-    when Hash
-      payload.merge!(msg.transform_keys(&:to_s))
-    when Exception
-      payload[:error] = {
-        class: msg.class.name,
-        message: msg.message,
-        backtrace: msg.backtrace
-      }.compact
-    else
-      payload[:message] = msg2str(msg)
-    end
-
-    "#{payload.compact.to_json}\n"
-  end
-end
-
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -79,11 +36,7 @@ Rails.application.configure do
   # Log to STDOUT using a JSON formatter for Cloud Run visibility.
   STDOUT.sync = true
   STDERR.sync = true
-
-  config.log_formatter = CloudRunJsonLogFormatter.new
-
   logger           = ActiveSupport::Logger.new $stdout
-  logger.formatter = config.log_formatter
   config.logger    = ActiveSupport::TaggedLogging.new logger
   config.log_tags = [ :request_id ]
 
@@ -142,22 +95,23 @@ Rails.application.configure do
   config.public_file_server.enabled = false
 
   # Rack Attack preferences
-  rack_attack_url = Rails.application.credentials.dig(:REDIS, :REDIS_RACK_ATTACK_URL)
-  allowed_hosts = [ "upstash.io" ]
-  begin
-    rack_attack_parsed = rack_attack_url && URI.parse(rack_attack_url)
-    rack_attack_host = rack_attack_parsed&.host
-  rescue URI::InvalidURIError
-    rack_attack_host = nil
-  end
-  if rack_attack_host && allowed_hosts.include?(rack_attack_host)
-    # Upstash requires SSL, convert to rediss:// and add SSL config
-    rack_attack_url = rack_attack_url.sub(/^redis:\/\//, "rediss://")
-    Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(
-      url: rack_attack_url,
-      ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
-    )
-  else
-    Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: rack_attack_url)
-  end
+  # rack_attack_url = Rails.application.credentials.dig(:REDIS, :REDIS_RACK_ATTACK_URL)
+  # allowed_hosts = [ "upstash.io" ]
+  # begin
+  #   rack_attack_parsed = rack_attack_url && URI.parse(rack_attack_url)
+  #   rack_attack_host = rack_attack_parsed&.host
+  # rescue URI::InvalidURIError
+  #   rack_attack_host = nil
+  # end
+  # if rack_attack_host && allowed_hosts.include?(rack_attack_host)
+  #   # Upstash requires SSL, convert to rediss:// and add SSL config
+  #   rack_attack_url = rack_attack_url.sub(/^redis:\/\//, "rediss://")
+  #   Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(
+  #     url: rack_attack_url,
+  #     ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
+  #   )
+  # else
+  #   Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: rack_attack_url)
+  # end
+  config.middleware.use Rack::Attack
 end
