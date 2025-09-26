@@ -117,6 +117,16 @@ ja:
           new:
             you_have_already_logged_in: 'あなたはログインしています'
       registration:
+        new:
+          page_title: '登録'
+          page_description: 'このテンプレートは app/views/auth/app/registrations/new.html.erb にあります'
+          links:
+            email: 'メールで新規登録'
+            telephone: '電話で新規登録'
+            sign_up: 'サインアップしますか？'
+          buttons:
+            google: 'Google でログイン'
+            apple: 'Apple でログイン'
         email:
           new:
             page_title: 'email で登録します'
