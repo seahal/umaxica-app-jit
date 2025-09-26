@@ -12,6 +12,18 @@ en:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
+    app:
+      registration:
+        new:
+          page_title: "Registration"
+          page_description: "Find me in app/views/auth/app/registrations/new.html.erb"
+          links:
+            email: "Sign up with Email"
+            telephone: "Sign up with Telephone"
+            sign_up: "Sign up?"
+          buttons:
+            google: "Log in with Google"
+            apple: "Log in with Apple"
   languages:
     english: "English"
     japanese: "日本語"
