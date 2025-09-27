@@ -15,6 +15,7 @@ bun install
 
 # Rails app prep
 bin/rails tmp:clear
+bin/rails db:prepare
 bin/rails db:create
 bin/rails db:migrate
 bin/rails db:seed
@@ -22,5 +23,4 @@ bin/rails db:seed
 # Karafka web UI DB (best-effort)
 bundle exec karafka-web migrate || true
 
-# ???
-sleep 100000000
+bin/dev

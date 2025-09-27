@@ -13,6 +13,4 @@ Rails.application.routes.draw do
   draw :news
   # endpoint for help
   draw :help
-  # for unmatched url
-  #  root to: "roots#index"
 end
