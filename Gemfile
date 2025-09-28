@@ -81,6 +81,8 @@ gem "rswag-ui"
 gem "jwt"
 #
 gem "jsbundling-rails"
+#
+gem "fastly", "~> 14.0"
 
 
 group :development, :test do

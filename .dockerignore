@@ -51,6 +51,7 @@ vendor/cache/
 app/assets/builds/*
 !app/assets/builds/.keep
 public/assets
+!public/assets/.manifest.json
 public/packs/
 public/packs-test/
 
