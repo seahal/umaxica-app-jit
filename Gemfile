@@ -83,11 +83,6 @@ gem "jwt"
 gem "jsbundling-rails"
 
 
-group :development do
-  # gem "ruby-lsp"
-  # gem "solargraph"
-end
-
 group :development, :test do
   # to avoid n+1 queries
   # gem "bullet"
@@ -98,7 +93,7 @@ group :development, :test do
 end
 
 group :development do
-  gem "bundler-audit", "~> 0.9.1"
+  gem "bundler-audit"
   gem "foreman"
   gem "yard"
   # Preview email in the default browser instead of sending it.

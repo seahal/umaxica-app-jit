@@ -2522,6 +2522,7 @@ GEM
 
 PLATFORMS
   ruby
+  x86_64-linux
   x86_64-linux-gnu
 
 DEPENDENCIES
@@ -2530,7 +2531,7 @@ DEPENDENCIES
   aws-sdk
   bootsnap
   brakeman
-  bundler-audit (~> 0.9.1)
+  bundler-audit
   carrierwave
   debug
   erb_lint
@@ -2589,4 +2590,4 @@ RUBY VERSION
    ruby 3.4.6p54
 
 BUNDLED WITH
-   2.7.1
+   2.7.2
