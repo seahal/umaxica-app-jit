@@ -8,7 +8,7 @@ pre-commit:
     brakeman:
       run: docker compose run main bundle exec brakeman --no-pager
     rubocop:
-      run: docker compose run main bundle exec rubocop
+      run: docker compose run main bundle exec rubocop -A
     erb-lint:
       run: docker compose run main bundle exec erb_lint app/views/
     biome-format:
