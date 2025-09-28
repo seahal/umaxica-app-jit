@@ -111,6 +111,9 @@ substitutions:
   _CB_SERVICE_IMAGE: 'us-central1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage'
   _CB_CLOUD_RUN_SERVICE: 'replace-with-cloud-run-service'
   _CB_CLOUD_RUN_REGION: 'us-central1'
+# Restrict logging to Cloud Logging to avoid needing a GCS bucket when using a custom service account.
+options:
+  logging: CLOUD_LOGGING_ONLY
 availableSecrets:
   secretManager:
     - versionName: 'projects/${PROJECT_ID}/secrets/rails-secret-key-base/versions/latest'
