@@ -1,3 +1,5 @@
-web: bin/rails s -p 3000
+#web: bin/rails s -p 3000
+#karafka: bundle exec karafka server
+web: rm -f tmp/pids/server.pid && RUBY_DEBUG_OPEN=true bin/rails s -p 3000 -b '0.0.0.0'
 karafka: bundle exec karafka server
 js: bun run build --watch
