@@ -65,6 +65,7 @@
 .node_repl_history
 .npm/
 .ash_history
+.emacs.d/
 
 # Vite Ruby
 /public/vite*
@@ -85,4 +86,3 @@ node_modules
 /config/credentials/development.key
 /config/credentials/production.key
 /config/credentials/test.key
-/config/credentials/staging.key

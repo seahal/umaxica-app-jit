@@ -2,7 +2,7 @@
 # Shared build arguments
 # ============================================================================
 ARG RUBY_VERSION=3.4.6
-ARG BUN_VERSION=1.2.22
+ARG BUN_VERSION=1.2.23
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
 ARG DOCKER_USER=main
@@ -145,15 +145,24 @@ RUN apt-get update \
 
 FROM production-base AS production-build
 
+ARG BUN_VERSION
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
       build-essential \
+      curl \
       git \
       libpq-dev \
       libvips-dev \
       libyaml-dev \
       pkg-config \
+      unzip \
     && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}" \
+    && mv /root/.bun/bin/bun /usr/local/bin/bun \
+    && chmod +x /usr/local/bin/bun \
+    && rm -rf /root/.bun
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} \
@@ -161,9 +170,15 @@ RUN bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} \
     && bundle clean --force \
     && rm -rf /usr/local/bundle/cache
 
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile \
+    && rm -rf /root/.bun/cache
+
 COPY . .
 
-RUN mkdir -p tmp/pids log \
+RUN bun run build \
+    && rm -rf node_modules \
+    && mkdir -p tmp/pids log \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
     && rm -f tmp/pids/server.pid
