@@ -5,6 +5,7 @@
 	],
 	"service": "main",
 	"workspaceFolder": "/main",
+	"overrideCommand": false,
 	"remoteUser": "main",
 	"forwardPorts": [
 		3000,

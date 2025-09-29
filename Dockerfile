@@ -20,7 +20,6 @@ ENV TZ=UTC \
     BUNDLE_FORCE_RUBY_PLATFORM=1
 
 RUN apt-get update -qq \
-    && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
       build-essential \
       ca-certificates \
@@ -178,7 +177,7 @@ COPY . .
 
 RUN bun run build \
     && rm -rf node_modules \
-    && mkdir -p tmp/pids log \
+    && install -d tmp/pids log \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
     && rm -f tmp/pids/server.pid
@@ -192,6 +191,8 @@ ENV PORT=3000 \
 
 COPY --from=production-build --chown=rails:rails /usr/local/bundle /usr/local/bundle
 COPY --from=production-build --chown=rails:rails /app /app
+
+RUN chown -R rails:rails tmp log
 
 USER rails
 
