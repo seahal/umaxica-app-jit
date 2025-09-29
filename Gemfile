@@ -117,5 +117,5 @@ group :development do
   #
   gem "license_finder", require: false
   #
-  gem 'solargraph'
+  gem "solargraph"
 end
