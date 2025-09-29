@@ -1,4 +1,12 @@
 # test/test_helper.rb
+require "simplecov"
+
+SimpleCov.start "rails" do
+  enable_coverage :branch
+  add_filter %r{^/config/}
+  add_filter %r{^/test/}
+end
+
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
