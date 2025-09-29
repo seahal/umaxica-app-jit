@@ -39,8 +39,6 @@ gem "opensearch-ruby"
 gem "aws-sdk"
 # for Active Storage
 gem "google-cloud-storage", require: false
-# google cloud
-gem "google-cloud-kms"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
@@ -74,15 +72,15 @@ gem "carrierwave"
 # gem "view_component"
 # OpenAPI
 gem "rswag"
-gem "ostruct", "~> 0.6.3"
+gem "ostruct"
 gem "rswag-api"
 gem "rswag-ui"
 # JWT
 gem "jwt"
 #
 gem "jsbundling-rails"
-#
-gem "fastly", "~> 14.0"
+# for fastly cache purge
+gem "fastly"
 
 
 group :development, :test do
