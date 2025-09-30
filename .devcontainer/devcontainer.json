@@ -2,11 +2,11 @@
 	"name": "umaxica-app-jit",
 	"dockerComposeFile": ["../compose.yml"],
 	"service": "main",
-	"workspaceFolder": "/main",
+	"workspaceFolder": "/home/jit/main",
 	"overrideCommand": false,
 	"remoteUser": "main",
 	"forwardPorts": [
-		3000, 3300, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601,
+		3000, 3333, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601,
 		63342
 	],
 	"portsAttributes": {

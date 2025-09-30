@@ -22,20 +22,20 @@ services:
     volumes:
       - type: bind
         source: .
-        target: /main
+        target: /home/jit/main
       - type: volume
         source: gem-volume
-        target: /main/vendor
+        target: /home/jit/main/vendor
         volume:
           nocopy: true
       - type: volume
         source: node-volume
-        target: /main/node_modules
+        target: /home/jit/main/node_modules
         volume:
           nocopy: true
       - type: volume
         source: bun-volume
-        target: /main/.bun
+        target: /home/jit/main/.bun
         volume:
           nocopy: true
     networks:
