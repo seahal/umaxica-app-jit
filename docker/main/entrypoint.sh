@@ -22,4 +22,5 @@ bin/rails db:seed
 # Karafka web UI DB (best-effort)
 bundle exec karafka-web migrate || true
 
-bin/dev
+#
+sleep sleep
