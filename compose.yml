@@ -33,6 +33,11 @@ services:
         target: /main/node_modules
         volume:
           nocopy: true
+      - type: volume
+        source: bun-volume
+        target: /main/.bun
+        volume:
+          nocopy: true
     networks:
       - backend
       - frontend
@@ -277,6 +282,7 @@ volumes:
   minio-volume:
   node-volume:
   gem-volume:
+  bun-volume:
 networks:
   backend:
   frontend:

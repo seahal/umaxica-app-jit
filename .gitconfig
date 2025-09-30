@@ -18,4 +18,4 @@
     templatedir = ~/git-templates/git-secretes
     defaultBranch = main
 [credential]
-	helper = "!f() { /main/.vscode-server/bin/e3a5acfb517a443235981655413d566533107e92/node /tmp/vscode-remote-containers-50700e2d-9583-460f-82e2-1d6400867179.js git-credential-helper $*; }; f"
+	helper = "!f() { /main/.vscode-server/bin/e3a5acfb517a443235981655413d566533107e92/node /tmp/vscode-remote-containers-f941406b-f3d5-43fe-8464-c248dcdd6c23.js git-credential-helper $*; }; f"

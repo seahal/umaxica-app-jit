@@ -23,4 +23,4 @@ bin/rails db:seed
 bundle exec karafka-web migrate || true
 
 #
-sleep sleep
+sleep infinity
