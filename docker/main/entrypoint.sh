@@ -5,17 +5,21 @@ set -euo pipefail
 cd "${APP_ROOT:-/main}"
 
 # Ensure writable directories exist
-mkdir -p ./tmp ./vendor ./node_modules
+mkdir -p ./tmp ./vendor ./node_modules ./.bun
 sudo chown -R 1000:1000 ./vendor
 sudo chown -R 1000:1000 ./node_modules
+sudo chown -R 1000:1000 ./.bun
 
 # Install Ruby/JS dependencies
 bundle install --jobs "${BUNDLE_JOBS:-4}"
 bun install
 
+# Development setup
+sudo chown -R 1000:1000 /usr/local/bundle/
+gem install ruby-lsp
+
 # Rails app prep
 bin/rails tmp:clear
-bin/rails db:prepare
 bin/rails db:create
 bin/rails db:migrate
 bin/rails db:seed
@@ -23,4 +27,5 @@ bin/rails db:seed
 # Karafka web UI DB (best-effort)
 bundle exec karafka-web migrate || true
 
-bin/dev
+#
+sleep infinity

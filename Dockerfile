@@ -20,7 +20,6 @@ ENV TZ=UTC \
     BUNDLE_FORCE_RUBY_PLATFORM=1
 
 RUN apt-get update -qq \
-    && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
       build-essential \
       ca-certificates \
@@ -31,6 +30,8 @@ RUN apt-get update -qq \
       libvips \
       libxml2-dev \
       libyaml-dev \
+      nodejs \
+      npm \
       postgresql-client \
       tzdata \
       unzip \
@@ -90,15 +91,17 @@ RUN apt-get update -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}" \
-    && mv ~/.bun/bin/bun /usr/local/bin/bun \
-    && chmod +x /usr/local/bin/bun
+RUN npm install -g bun@"${BUN_VERSION}" \
+    && npm cache clean --force
 
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
 RUN gem install bundler \
     && bundle config set --local path vendor/bundle \
     && bundle install --jobs "$(nproc)"
+
+RUN mkdir -p /usr/local/bundle \
+    && chown -R "${DOCKER_UID}:${DOCKER_GID}" /usr/local/bundle
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
       groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
@@ -155,14 +158,14 @@ RUN apt-get update \
       libpq-dev \
       libvips-dev \
       libyaml-dev \
+      nodejs \
+      npm \
       pkg-config \
       unzip \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}" \
-    && mv /root/.bun/bin/bun /usr/local/bin/bun \
-    && chmod +x /usr/local/bin/bun \
-    && rm -rf /root/.bun
+RUN npm install -g bun@"${BUN_VERSION}" \
+    && npm cache clean --force
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} \
@@ -178,7 +181,7 @@ COPY . .
 
 RUN bun run build \
     && rm -rf node_modules \
-    && mkdir -p tmp/pids log \
+    && install -d tmp/pids log \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
     && rm -f tmp/pids/server.pid
@@ -192,6 +195,8 @@ ENV PORT=3000 \
 
 COPY --from=production-build --chown=rails:rails /usr/local/bundle /usr/local/bundle
 COPY --from=production-build --chown=rails:rails /app /app
+
+RUN chown -R rails:rails tmp log
 
 USER rails
 

@@ -87,7 +87,7 @@ GEM
       ffi-compiler (~> 1.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1166.0)
+    aws-partitions (1.1167.0)
     aws-sdk (3.3.0)
       aws-sdk-resources (~> 3)
     aws-sdk-accessanalyzer (1.78.0)
@@ -222,7 +222,7 @@ GEM
     aws-sdk-bcmrecommendedactions (1.1.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-bedrock (1.62.0)
+    aws-sdk-bedrock (1.63.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-bedrockagent (1.65.0)
@@ -243,7 +243,7 @@ GEM
     aws-sdk-bedrockdataautomationruntime (1.14.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-bedrockruntime (1.59.0)
+    aws-sdk-bedrockruntime (1.60.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-billing (1.14.0)
@@ -643,7 +643,7 @@ GEM
     aws-sdk-identitystore (1.57.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-imagebuilder (1.88.0)
+    aws-sdk-imagebuilder (1.89.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-importexport (1.65.0)
@@ -1704,7 +1704,7 @@ GEM
     aws-sdk-voiceid (1.48.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-vpclattice (1.36.0)
+    aws-sdk-vpclattice (1.37.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-waf (1.84.0)
@@ -1815,7 +1815,12 @@ GEM
     fastly (14.0.0)
       typhoeus (~> 1.0, >= 1.0.1)
     ffi (1.17.2)
+    ffi (1.17.2-aarch64-linux-gnu)
+    ffi (1.17.2-aarch64-linux-musl)
+    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x86_64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
+    ffi (1.17.2-x86_64-linux-musl)
     ffi-compiler (1.3.2)
       ffi (>= 1.15.5)
       rake
@@ -1855,7 +1860,22 @@ GEM
     google-protobuf (4.32.1)
       bigdecimal
       rake (>= 13)
+    google-protobuf (4.32.1-aarch64-linux-gnu)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.1-aarch64-linux-musl)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.1-arm64-darwin)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.1-x86_64-darwin)
+      bigdecimal
+      rake (>= 13)
     google-protobuf (4.32.1-x86_64-linux-gnu)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.1-x86_64-linux-musl)
       bigdecimal
       rake (>= 13)
     googleapis-common-protos-types (1.21.0)
@@ -1913,16 +1933,28 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    karafka (2.5.0)
+    karafka (2.5.1)
       base64 (~> 0.2)
-      karafka-core (>= 2.5.2, < 2.6.0)
-      karafka-rdkafka (>= 0.19.5)
-      waterdrop (>= 2.8.3, < 3.0.0)
+      karafka-core (>= 2.5.6, < 2.6.0)
+      karafka-rdkafka (>= 0.22.0)
+      waterdrop (>= 2.8.9, < 3.0.0)
       zeitwerk (~> 2.3)
     karafka-core (2.5.7)
       karafka-rdkafka (>= 0.20.0)
       logger (>= 1.6.0)
     karafka-rdkafka (0.22.0)
+      ffi (~> 1.15)
+      json (> 2.0)
+      logger
+      mini_portile2 (~> 2.6)
+      rake (> 12)
+    karafka-rdkafka (0.22.0-aarch64-linux-gnu)
+      ffi (~> 1.15)
+      json (> 2.0)
+      logger
+      mini_portile2 (~> 2.6)
+      rake (> 12)
+    karafka-rdkafka (0.22.0-arm64-darwin)
       ffi (~> 1.15)
       json (> 2.0)
       logger
@@ -1934,9 +1966,15 @@ GEM
       logger
       mini_portile2 (~> 2.6)
       rake (> 12)
-    karafka-web (0.11.2)
+    karafka-rdkafka (0.22.0-x86_64-linux-musl)
+      ffi (~> 1.15)
+      json (> 2.0)
+      logger
+      mini_portile2 (~> 2.6)
+      rake (> 12)
+    karafka-web (0.11.3)
       erubi (~> 1.4)
-      karafka (>= 2.5.0.rc2, < 2.6.0)
+      karafka (>= 2.5.0, < 2.6.0)
       karafka-core (>= 2.5.0, < 2.6.0)
       roda (~> 3.68, >= 3.69)
       tilt (~> 2.0)
@@ -1993,7 +2031,17 @@ GEM
     nokogiri (1.18.10)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    nokogiri (1.18.10-aarch64-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.10-aarch64-linux-musl)
+      racc (~> 1.4)
+    nokogiri (1.18.10-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.18.10-x86_64-darwin)
+      racc (~> 1.4)
     nokogiri (1.18.10-x86_64-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
     oauth2 (2.0.17)
       faraday (>= 0.17.3, < 4.0)
@@ -2027,7 +2075,7 @@ GEM
     openssl (3.3.0)
     openssl-signature_algorithm (1.3.0)
       openssl (> 2.0)
-    opentelemetry-api (1.6.0)
+    opentelemetry-api (1.7.0)
     opentelemetry-common (0.22.0)
       opentelemetry-api (~> 1.0)
     opentelemetry-exporter-otlp (0.30.0)
@@ -2073,10 +2121,9 @@ GEM
     opentelemetry-instrumentation-active_support (0.8.0)
       opentelemetry-api (~> 1.0)
       opentelemetry-instrumentation-base (~> 0.23.0)
-    opentelemetry-instrumentation-all (0.82.0)
+    opentelemetry-instrumentation-all (0.80.0)
       opentelemetry-instrumentation-active_model_serializers (~> 0.22.0)
-      opentelemetry-instrumentation-anthropic (~> 0.1.0)
-      opentelemetry-instrumentation-aws_lambda (~> 0.4.0)
+      opentelemetry-instrumentation-aws_lambda (~> 0.3.0)
       opentelemetry-instrumentation-aws_sdk (~> 0.8.0)
       opentelemetry-instrumentation-bunny (~> 0.22.0)
       opentelemetry-instrumentation-concurrent_ruby (~> 0.22.0)
@@ -2096,7 +2143,7 @@ GEM
       opentelemetry-instrumentation-lmdb (~> 0.23.0)
       opentelemetry-instrumentation-mongo (~> 0.23.0)
       opentelemetry-instrumentation-mysql2 (~> 0.29.0)
-      opentelemetry-instrumentation-net_http (~> 0.24.0)
+      opentelemetry-instrumentation-net_http (~> 0.23.0)
       opentelemetry-instrumentation-pg (~> 0.30.0)
       opentelemetry-instrumentation-que (~> 0.9.0)
       opentelemetry-instrumentation-racecar (~> 0.4.0)
@@ -2111,10 +2158,7 @@ GEM
       opentelemetry-instrumentation-sidekiq (~> 0.26.0)
       opentelemetry-instrumentation-sinatra (~> 0.26.0)
       opentelemetry-instrumentation-trilogy (~> 0.61.0)
-    opentelemetry-instrumentation-anthropic (0.1.0)
-      opentelemetry-api (~> 1.6.0)
-      opentelemetry-instrumentation-base (~> 0.23.0)
-    opentelemetry-instrumentation-aws_lambda (0.4.0)
+    opentelemetry-instrumentation-aws_lambda (0.3.0)
       opentelemetry-api (~> 1.0)
       opentelemetry-instrumentation-base (~> 0.23.0)
     opentelemetry-instrumentation-aws_sdk (0.8.2)
@@ -2182,7 +2226,7 @@ GEM
       opentelemetry-helpers-sql
       opentelemetry-helpers-sql-obfuscation
       opentelemetry-instrumentation-base (~> 0.23.0)
-    opentelemetry-instrumentation-net_http (0.24.0)
+    opentelemetry-instrumentation-net_http (0.23.1)
       opentelemetry-api (~> 1.0)
       opentelemetry-instrumentation-base (~> 0.23.0)
     opentelemetry-instrumentation-pg (0.30.1)
@@ -2258,7 +2302,12 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.6.2)
+    pg (1.6.2-aarch64-linux)
+    pg (1.6.2-aarch64-linux-musl)
+    pg (1.6.2-arm64-darwin)
+    pg (1.6.2-x86_64-darwin)
     pg (1.6.2-x86_64-linux)
+    pg (1.6.2-x86_64-linux-musl)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -2486,9 +2535,15 @@ GEM
     zeitwerk (2.7.3)
 
 PLATFORMS
+  aarch64-linux
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm64-darwin
   ruby
-  x86_64-linux
+  universal-darwin
+  x86_64-darwin
   x86_64-linux-gnu
+  x86_64-linux-musl
 
 DEPENDENCIES
   annotaterb

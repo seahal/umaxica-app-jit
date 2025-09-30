@@ -65,7 +65,7 @@ bundle exec rails db:migrate
 ### Development Server
 ```bash
 # Start all services (web server, Karafka, asset building)
-foreman start -f Procfile.dev
+foreman start -f Procfile.dev.dev
 
 # Or individually:
 bundle exec rails server -p 3000 -b '0.0.0.0'

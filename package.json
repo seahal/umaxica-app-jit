@@ -8,15 +8,17 @@
     "lint": "bun x @biomejs/biome lint --fix app/javascript"
   },
   "dependencies": {
+    "npm": "^11.6.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "ruby-lsp": "^0.0.1-security"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.4",
     "@types/bun": "^1.2.23",
-    "@types/react": "^19.1.15",
+    "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
-    "@typescript/native-preview": "^7.0.0-dev.20250928.1",
-    "wrangler": "^4.40.2"
+    "@typescript/native-preview": "^7.0.0-dev.20250930.1",
+    "wrangler": "^4.40.3"
   }
 }

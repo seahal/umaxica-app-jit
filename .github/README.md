@@ -31,29 +31,31 @@ Things you may want to cover:
 * Deployment instructions
     - When you are free, look at 'bin/rails notes'
 * Using Services
-  * Google Cloud Platform
-    * ses
-    * AWS End User Messaging
-    * ecr
-    * eks
-    * cloudfront
-      * functions
+  * Google Cloud
+    * CloudRun
+    * CloudBuild
+    * CloudCDN
+    * Social Login
   * CloudFlare
     * Registers
     * Turnstile
-    * Workers
+    * R2
   * Fastly
     * CDN
-    * Compute
+  * Resend
+    * Email
+  * Amazon Web Service
+    * SES
   * Terraform
     * TCP Terraform
+  * Apple
+    * Social Login
 * Secrets
   * You have to set `.env.local` and `.envrc` on your own environment. This is because it contains confidential.
   * "You can use the AWS CLI command, and then you should run aws configure --profile umaxica."
   * You should use [git-secrets](https://github.com/awslabs/git-secrets).
   * We began to use Rails' Credentials, but we were unsure how to use them.
 * Tools
-  * `envrc`
   * `yamlfmt`
   * [Lefthook](https://github.com/evilmartians/lefthook)
   * [tflint](https://github.com/terraform-linters/tflint)

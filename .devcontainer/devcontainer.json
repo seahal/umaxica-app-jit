@@ -1,28 +1,16 @@
 {
 	"name": "umaxica-app-jit",
-	"dockerComposeFile": [
-		"../compose.yml"
-	],
+	"dockerComposeFile": ["../compose.yml"],
 	"service": "main",
 	"workspaceFolder": "/main",
+	"overrideCommand": false,
 	"remoteUser": "main",
 	"forwardPorts": [
-		3000,
-		3300,
-		5432,
-		5433,
-		5434,
-		6379,
-		9092,
-		9200,
-		9000,
-		9001,
-		8080,
-		5601,
+		3000, 3300, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601,
 		63342
 	],
 	"portsAttributes": {
-		"3300": {
+		"3333": {
 			"label": "Rails Server (Docker)",
 			"onAutoForward": "notify",
 			"protocol": "http"
@@ -43,9 +31,6 @@
 			"label": "Rails Server (Local)",
 			"protocol": "http"
 		},
-		"9200": {
-			"label": "Elasticsearch"
-		},
 		"9000": {
 			"label": "Minio API"
 		},
@@ -55,10 +40,6 @@
 		},
 		"8080": {
 			"label": "Kafka UI",
-			"protocol": "http"
-		},
-		"5601": {
-			"label": "OpenSearch Dashboards",
 			"protocol": "http"
 		},
 		"63342": {
@@ -71,7 +52,8 @@
 		"ghcr.io/devcontainers/features/git:1": {
 			"ppa": true,
 			"version": "latest"
-		}
+		},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:latest": {}
 	},
 	"customizations": {
 		"vscode": {
@@ -88,7 +70,9 @@
 				"ms-vscode.vscode-yaml",
 				"humao.rest-client",
 				"streetsidesoftware.code-spell-checker",
-				"ms-vscode.remote-explorer"
+				"ms-vscode.remote-explorer",
+				"ninoseki.vscode-mogami",
+				"rubocop.vscode-rubocop"
 			],
 			"settings": {
 				"extensions.verifySignature": false,
@@ -137,9 +121,7 @@
 		"jetbrains": {
 			"remoteId": "intellij",
 			"backend": "intellij",
-			"plugins": [
-				"org.jetbrains.plugins.ruby"
-			],
+			"plugins": ["org.jetbrains.plugins.ruby"],
 			"containerEnv": {
 				"DEVCONTAINER_IDE": "jetbrains",
 				"DEVCONTAINER_AUTO_START_BIN_DEV": "0"
@@ -157,6 +139,8 @@
 	"onCreateCommand": "echo 'Devcontainer created successfully'",
 	"updateContentCommand": "bundle install && bun install",
 	"mounts": [
-		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+		"source=${localEnv:HOME}/.claude,target=/main/.claude,type=bind",
+		"source=${localEnv:HOME}/.codex,target=/main/.codex,type=bind"
 	]
 }
