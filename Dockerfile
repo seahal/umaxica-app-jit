@@ -21,21 +21,21 @@ ENV TZ=UTC \
 
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
-      build-essential \
-      ca-certificates \
-      curl \
-      git \
-      gnupg \
-      libpq-dev \
-      libvips \
-      libxml2-dev \
-      libyaml-dev \
-      nodejs \
-      npm \
-      postgresql-client \
-      tzdata \
-      unzip \
-      zlib1g-dev \
+    build-essential \
+    ca-certificates \
+    curl \
+    git \
+    gnupg \
+    libpq-dev \
+    libvips \
+    libxml2-dev \
+    libyaml-dev \
+    nodejs \
+    npm \
+    postgresql-client \
+    tzdata \
+    unzip \
+    zlib1g-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
@@ -53,41 +53,41 @@ WORKDIR /main
 
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
-      bash \
-      dbus \
-      fontconfig \
-      lsb-release \
-      openssl \
-      sudo \
-      udev \
-      unzip \
-      xserver-xorg-core \
-      xvfb \
-      zip \
-      libasound2 \
-      libatk-bridge2.0-0 \
-      libatk1.0-0 \
-      libdrm2 \
-      libgbm1 \
-      libglib2.0-0 \
-      libgtk-3-0 \
-      libnss3 \
-      libnspr4 \
-      libpango-1.0-0 \
-      libpangocairo-1.0-0 \
-      libsecret-1-0 \
-      libx11-xcb1 \
-      libxcomposite1 \
-      libxcursor1 \
-      libxdamage1 \
-      libxext6 \
-      libxfixes3 \
-      libxi6 \
-      libxkbcommon0 \
-      libxrandr2 \
-      libxrender1 \
-      libxss1 \
-      libxtst6 \
+    bash \
+    dbus \
+    fontconfig \
+    lsb-release \
+    openssl \
+    sudo \
+    udev \
+    unzip \
+    xserver-xorg-core \
+    xvfb \
+    zip \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libdrm2 \
+    libgbm1 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libnss3 \
+    libnspr4 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libsecret-1-0 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
+    libxkbcommon0 \
+    libxrandr2 \
+    libxrender1 \
+    libxss1 \
+    libxtst6 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
@@ -104,14 +104,17 @@ RUN mkdir -p /usr/local/bundle \
     && chown -R "${DOCKER_UID}:${DOCKER_GID}" /usr/local/bundle
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
-      groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
-      useradd -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
-      echo "${DOCKER_USER}:hogehoge" | chpasswd; \
-      echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
-      chown -R "${DOCKER_UID}:${DOCKER_GID}" /main; \
+    groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
+    useradd -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
+    echo "${DOCKER_USER}:hogehoge" | chpasswd; \
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" /main; \
     else \
-      chown -R "${DOCKER_UID}:${DOCKER_GID}" /main; \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" /main; \
     fi
+
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | bash \
+    && apt install lefthook
 
 USER ${DOCKER_USER}
 
@@ -139,11 +142,11 @@ RUN groupadd --system rails \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-      ca-certificates \
-      libpq5 \
-      libvips \
-      libyaml-0-2 \
-      tzdata \
+    ca-certificates \
+    libpq5 \
+    libvips \
+    libyaml-0-2 \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 FROM production-base AS production-build
@@ -152,16 +155,16 @@ ARG BUN_VERSION
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-      build-essential \
-      curl \
-      git \
-      libpq-dev \
-      libvips-dev \
-      libyaml-dev \
-      nodejs \
-      npm \
-      pkg-config \
-      unzip \
+    build-essential \
+    curl \
+    git \
+    libpq-dev \
+    libvips-dev \
+    libyaml-dev \
+    nodejs \
+    npm \
+    pkg-config \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g bun@"${BUN_VERSION}" \

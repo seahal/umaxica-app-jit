@@ -5,10 +5,9 @@ set -euo pipefail
 cd "${APP_ROOT:-/main}"
 
 # Ensure writable directories exist
-mkdir -p ./tmp ./vendor ./node_modules ./.bun
+mkdir -p ./tmp ./vendor ./node_modules
 sudo chown -R 1000:1000 ./vendor
 sudo chown -R 1000:1000 ./node_modules
-sudo chown -R 1000:1000 ./.bun
 
 # Install Ruby/JS dependencies
 bundle install --jobs "${BUNDLE_JOBS:-4}"
