@@ -67,6 +67,10 @@
 .ash_history
 .emacs.d/
 .codex/
+.claude.json
+.claude.json.backup
+.claude/settings.local.json
+.claude/
 
 # Vite Ruby
 /public/vite*

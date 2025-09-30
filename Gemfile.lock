@@ -1746,7 +1746,6 @@ GEM
     aws-sigv2 (1.3.1)
     aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
-    backport (1.2.0)
     base64 (0.3.0)
     benchmark (0.4.1)
     better_html (2.2.0)
@@ -1790,7 +1789,6 @@ GEM
       irb (~> 1.10)
       reline (>= 0.3.8)
     declarative (0.0.20)
-    diff-lcs (1.6.2)
     digest-crc (0.7.0)
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.1)
@@ -1817,7 +1815,12 @@ GEM
     fastly (14.0.0)
       typhoeus (~> 1.0, >= 1.0.1)
     ffi (1.17.2)
+    ffi (1.17.2-aarch64-linux-gnu)
+    ffi (1.17.2-aarch64-linux-musl)
+    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x86_64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
+    ffi (1.17.2-x86_64-linux-musl)
     ffi-compiler (1.3.2)
       ffi (>= 1.15.5)
       rake
@@ -1857,7 +1860,22 @@ GEM
     google-protobuf (4.32.1)
       bigdecimal
       rake (>= 13)
+    google-protobuf (4.32.1-aarch64-linux-gnu)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.1-aarch64-linux-musl)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.1-arm64-darwin)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.1-x86_64-darwin)
+      bigdecimal
+      rake (>= 13)
     google-protobuf (4.32.1-x86_64-linux-gnu)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.1-x86_64-linux-musl)
       bigdecimal
       rake (>= 13)
     googleapis-common-protos-types (1.21.0)
@@ -1884,7 +1902,6 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    jaro_winkler (1.6.1)
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
@@ -1931,7 +1948,25 @@ GEM
       logger
       mini_portile2 (~> 2.6)
       rake (> 12)
+    karafka-rdkafka (0.22.0-aarch64-linux-gnu)
+      ffi (~> 1.15)
+      json (> 2.0)
+      logger
+      mini_portile2 (~> 2.6)
+      rake (> 12)
+    karafka-rdkafka (0.22.0-arm64-darwin)
+      ffi (~> 1.15)
+      json (> 2.0)
+      logger
+      mini_portile2 (~> 2.6)
+      rake (> 12)
     karafka-rdkafka (0.22.0-x86_64-linux-gnu)
+      ffi (~> 1.15)
+      json (> 2.0)
+      logger
+      mini_portile2 (~> 2.6)
+      rake (> 12)
+    karafka-rdkafka (0.22.0-x86_64-linux-musl)
       ffi (~> 1.15)
       json (> 2.0)
       logger
@@ -1943,10 +1978,6 @@ GEM
       karafka-core (>= 2.5.0, < 2.6.0)
       roda (~> 3.68, >= 3.69)
       tilt (~> 2.0)
-    kramdown (2.5.1)
-      rexml (>= 3.3.9)
-    kramdown-parser-gfm (1.1.0)
-      kramdown (~> 2.0)
     language_server-protocol (3.17.0.5)
     launchy (3.1.1)
       addressable (~> 2.8)
@@ -2000,7 +2031,17 @@ GEM
     nokogiri (1.18.10)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    nokogiri (1.18.10-aarch64-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.10-aarch64-linux-musl)
+      racc (~> 1.4)
+    nokogiri (1.18.10-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.18.10-x86_64-darwin)
+      racc (~> 1.4)
     nokogiri (1.18.10-x86_64-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
     oauth2 (2.0.17)
       faraday (>= 0.17.3, < 4.0)
@@ -2010,7 +2051,6 @@ GEM
       rack (>= 1.2, < 4)
       snaky_hash (~> 2.0, >= 2.0.3)
       version_gem (~> 1.1, >= 1.1.9)
-    observer (0.1.2)
     omniauth (2.1.3)
       hashie (>= 3.4.6)
       rack (>= 2.2.3)
@@ -2035,7 +2075,7 @@ GEM
     openssl (3.3.0)
     openssl-signature_algorithm (1.3.0)
       openssl (> 2.0)
-    opentelemetry-api (1.6.0)
+    opentelemetry-api (1.7.0)
     opentelemetry-common (0.22.0)
       opentelemetry-api (~> 1.0)
     opentelemetry-exporter-otlp (0.30.0)
@@ -2081,10 +2121,9 @@ GEM
     opentelemetry-instrumentation-active_support (0.8.0)
       opentelemetry-api (~> 1.0)
       opentelemetry-instrumentation-base (~> 0.23.0)
-    opentelemetry-instrumentation-all (0.82.0)
+    opentelemetry-instrumentation-all (0.80.0)
       opentelemetry-instrumentation-active_model_serializers (~> 0.22.0)
-      opentelemetry-instrumentation-anthropic (~> 0.1.0)
-      opentelemetry-instrumentation-aws_lambda (~> 0.4.0)
+      opentelemetry-instrumentation-aws_lambda (~> 0.3.0)
       opentelemetry-instrumentation-aws_sdk (~> 0.8.0)
       opentelemetry-instrumentation-bunny (~> 0.22.0)
       opentelemetry-instrumentation-concurrent_ruby (~> 0.22.0)
@@ -2104,7 +2143,7 @@ GEM
       opentelemetry-instrumentation-lmdb (~> 0.23.0)
       opentelemetry-instrumentation-mongo (~> 0.23.0)
       opentelemetry-instrumentation-mysql2 (~> 0.29.0)
-      opentelemetry-instrumentation-net_http (~> 0.24.0)
+      opentelemetry-instrumentation-net_http (~> 0.23.0)
       opentelemetry-instrumentation-pg (~> 0.30.0)
       opentelemetry-instrumentation-que (~> 0.9.0)
       opentelemetry-instrumentation-racecar (~> 0.4.0)
@@ -2119,10 +2158,7 @@ GEM
       opentelemetry-instrumentation-sidekiq (~> 0.26.0)
       opentelemetry-instrumentation-sinatra (~> 0.26.0)
       opentelemetry-instrumentation-trilogy (~> 0.61.0)
-    opentelemetry-instrumentation-anthropic (0.1.0)
-      opentelemetry-api (~> 1.6.0)
-      opentelemetry-instrumentation-base (~> 0.23.0)
-    opentelemetry-instrumentation-aws_lambda (0.4.0)
+    opentelemetry-instrumentation-aws_lambda (0.3.0)
       opentelemetry-api (~> 1.0)
       opentelemetry-instrumentation-base (~> 0.23.0)
     opentelemetry-instrumentation-aws_sdk (0.8.2)
@@ -2190,7 +2226,7 @@ GEM
       opentelemetry-helpers-sql
       opentelemetry-helpers-sql-obfuscation
       opentelemetry-instrumentation-base (~> 0.23.0)
-    opentelemetry-instrumentation-net_http (0.24.0)
+    opentelemetry-instrumentation-net_http (0.23.1)
       opentelemetry-api (~> 1.0)
       opentelemetry-instrumentation-base (~> 0.23.0)
     opentelemetry-instrumentation-pg (0.30.1)
@@ -2266,7 +2302,12 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.6.2)
+    pg (1.6.2-aarch64-linux)
+    pg (1.6.2-aarch64-linux-musl)
+    pg (1.6.2-arm64-darwin)
+    pg (1.6.2-x86_64-darwin)
     pg (1.6.2-x86_64-linux)
+    pg (1.6.2-x86_64-linux-musl)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -2343,8 +2384,6 @@ GEM
     rb-fsevent (0.11.2)
     rb-inotify (0.11.1)
       ffi (~> 1.0)
-    rbs (3.9.5)
-      logger
     rdoc (6.14.2)
       erb
       psych (>= 4.0.0)
@@ -2360,8 +2399,6 @@ GEM
       trailblazer-option (>= 0.1.1, < 0.2.0)
       uber (< 0.2.0)
     retriable (3.1.2)
-    reverse_markdown (3.0.0)
-      nokogiri
     rexml (3.4.4)
     roda (3.96.0)
       rack
@@ -2417,10 +2454,6 @@ GEM
       rubocop (>= 1.72)
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
-    ruby-lsp (0.26.1)
-      language_server-protocol (~> 3.17.0)
-      prism (>= 1.2, < 2.0)
-      rbs (>= 3, < 5)
     ruby-progressbar (1.13.0)
     ruby-vips (2.2.5)
       ffi (~> 1.12)
@@ -2447,27 +2480,6 @@ GEM
     snaky_hash (2.0.3)
       hashie (>= 0.1.0, < 6)
       version_gem (>= 1.1.8, < 3)
-    solargraph (0.57.0)
-      backport (~> 1.2)
-      benchmark (~> 0.4)
-      bundler (~> 2.0)
-      diff-lcs (~> 1.4)
-      jaro_winkler (~> 1.6, >= 1.6.1)
-      kramdown (~> 2.3)
-      kramdown-parser-gfm (~> 1.1)
-      logger (~> 1.6)
-      observer (~> 0.1)
-      ostruct (~> 0.6)
-      parser (~> 3.0)
-      prism (~> 1.4)
-      rbs (>= 3.6.1, <= 4.0.0.dev.4)
-      reverse_markdown (~> 3.0)
-      rubocop (~> 1.76)
-      thor (~> 1.0)
-      tilt (~> 2.0)
-      yard (~> 0.9, >= 0.9.24)
-      yard-activesupport-concern (~> 0.0)
-      yard-solargraph (~> 0.1)
     solid_cache (1.0.7)
       activejob (>= 7.2)
       activerecord (>= 7.2)
@@ -2520,16 +2532,18 @@ GEM
     xml-simple (1.1.9)
       rexml
     yard (0.9.37)
-    yard-activesupport-concern (0.0.1)
-      yard (>= 0.8)
-    yard-solargraph (0.1.0)
-      yard (~> 0.9)
     zeitwerk (2.7.3)
 
 PLATFORMS
+  aarch64-linux
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm64-darwin
   ruby
-  x86_64-linux
+  universal-darwin
+  x86_64-darwin
   x86_64-linux-gnu
+  x86_64-linux-musl
 
 DEPENDENCIES
   annotaterb
@@ -2583,11 +2597,9 @@ DEPENDENCIES
   rswag-ui
   rubocop
   rubocop-rails-omakase
-  ruby-lsp
   sha3
   simplecov
   sitemap_generator
-  solargraph
   solid_cache
   tzinfo-data
   web-console

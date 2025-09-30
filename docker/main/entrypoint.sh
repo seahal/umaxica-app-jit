@@ -14,6 +14,10 @@ sudo chown -R 1000:1000 ./.bun
 bundle install --jobs "${BUNDLE_JOBS:-4}"
 bun install
 
+# Development setup
+sudo chown -R 1000:1000 /usr/local/bundle/
+gem install ruby-lsp
+
 # Rails app prep
 bin/rails tmp:clear
 bin/rails db:create

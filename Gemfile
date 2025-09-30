@@ -116,7 +116,4 @@ group :development do
   gem "annotaterb"
   #
   gem "license_finder", require: false
-  #
-  gem "solargraph", require: false
-  gem "ruby-lsp", require: false
 end
