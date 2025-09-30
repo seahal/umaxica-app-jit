@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd /home/jit/main
-
 # Ensure writable directories exist
 mkdir -p ./tmp ./vendor ./node_modules
 sudo chown -R 1000:1000 ./vendor

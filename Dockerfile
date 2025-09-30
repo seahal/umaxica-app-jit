@@ -48,8 +48,7 @@ ARG DOCKER_GROUP
 ARG BUN_VERSION
 ARG GITHUB_ACTIONS
 ENV COMMIT_HASH="${COMMIT_HASH}"
-ENV HOME=/home/jit \
-    PATH=~/.npm-global/bin:$PATH
+ENV HOME=/home/jit
 WORKDIR /home/jit/main
 
 RUN apt-get update -qq \
@@ -95,7 +94,9 @@ RUN apt-get update -qq \
 RUN npm install -g bun@"${BUN_VERSION}" \
     && npm cache clean --force
 
-COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock .npmrc ./
+RUN cd $HOME/main
+
+COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
 RUN gem install bundler \
     && bundle config set --local path vendor/bundle \
@@ -104,11 +105,6 @@ RUN gem install bundler \
 RUN mkdir -p /usr/local/bundle \
     && chown -R "${DOCKER_UID}:${DOCKER_GID}" /usr/local/bundle
 
-RUN mkdir -p /main/.npm-global \
-    && chown -R "${DOCKER_UID}:${DOCKER_GID}" /main/.npm-global
-
-RUN mkdir -p ~/.npm-global \
-    && npm config set prefix '~/.npm-global'
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
@@ -120,14 +116,7 @@ RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
     fi
 
-#RUN curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | bash \
-#    && apt install lefthook
-# RUN npm install -g @openai/codex
-
 USER ${DOCKER_USER}
-
-ENV NPM_CONFIG_PREFIX=/main/.npm-global \
-    PATH=/main/.npm-global/bin:${PATH}
 
 # ============================================================================
 # Production image (multi-stage build)
