@@ -117,6 +117,6 @@ group :development do
   #
   gem "license_finder", require: false
   #
-  gem "ruby-lsp"
-  gem "solargraph"
+  gem "solargraph", require: false
+  gem "ruby-lsp", require: false
 end
