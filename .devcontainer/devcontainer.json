@@ -89,7 +89,8 @@
 				"ms-vscode.vscode-yaml",
 				"humao.rest-client",
 				"streetsidesoftware.code-spell-checker",
-				"ms-vscode.remote-explorer"
+			    "ms-vscode.remote-explorer",
+			    "ninoseki.vscode-mogami"
 			],
 			"settings": {
 				"extensions.verifySignature": false,

@@ -66,6 +66,7 @@
 .npm/
 .ash_history
 .emacs.d/
+.codex/
 
 # Vite Ruby
 /public/vite*
