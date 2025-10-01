@@ -8,11 +8,18 @@ pre-commit:
     brakeman:
       run: bundle exec brakeman --no-pager
     rubocop:
+      stage_fixed: true
       run: bundle exec rubocop -A
     erb-lint:
+      stage_fixed: true
       run: bundle exec erb_lint app/views/
     biome-format:
+      stage_fixed: true
       run: bun run format
+    lint:
+      run: bun run lint
+      stage_fixed: true
+      glob: "*.{js,jsx,ts,tsx}"
     typecheck:
       run: bun run typecheck
 pre-push:
