@@ -7,31 +7,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get apex_org_root_url
     assert_response :success
   end
-
-  # test "should display admin dashboard with metrics" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Check that response body contains expected dashboard elements
-  #   assert_match /dashboard/i, response.body
-  # end
-
-  # test "should load system metrics with proper values" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Check that response contains system metrics information
-  #   assert_match /system/i, response.body
-  # end
-  #
-  # test "should show recent activities with timestamps" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Check that response contains activity information
-  #   assert_match /activity|activities/i, response.body
-  # end
-
   test "should provide quick actions for admin navigation" do
     get apex_org_root_url
     assert_response :success
@@ -69,22 +44,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_empty response.body
     assert response.body.length > 100
   end
-  #
-  # test "should have valid system metrics format" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Check that response contains percentage or metrics information
-  #   assert_match /\d+%|\bCPU\b|\bmemory\b/i, response.body
-  # end
-  #
-  # test "should have activities with required fields" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Check that response contains activity-related content
-  #   assert_match /login|user|admin/i, response.body
-  # end
 
   test "should have quick actions with required fields" do
     get apex_org_root_url
@@ -124,15 +83,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal first_title, second_title
   end
 
-  # test "should simulate different admin load scenarios" do
-  #   # Test under different simulated load conditions
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Response should contain admin-related content
-  #   assert_match /admin|dashboard|user/i, response.body
-  # end
-
   test "should handle timezone considerations for activities" do
     get apex_org_root_url
     assert_response :success
@@ -140,14 +90,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     # Response should contain time-related information
     assert_match /time|ago|recent/i, response.body
   end
-
-  # test "should provide actionable quick actions" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Response should contain actionable elements
-  #   assert_match /admin|action|management|setting/i, response.body
-  # end
 
   test "should handle memory intensive operations" do
     # Simulate multiple rapid requests that might consume memory
@@ -159,14 +101,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     # Ensure last request still works properly
     assert_not_empty response.body
   end
-
-  # test "should generate realistic activity timestamps" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Response should contain activity information
-  #   assert_match /activity|login|update/i, response.body
-  # end
 
   test "should handle different user agent strings" do
     user_agents = [
@@ -198,14 +132,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_empty response.body
   end
 
-  # test "should provide meaningful system status indicators" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Response should contain system status information
-  #   assert_match /\d+%|status|normal|cpu|memory/i, response.body
-  # end
-
   test "should handle requests during different times of day" do
     # Simulate requests at different times (though controller doesn't use current time)
     Time.use_zone("UTC") do
@@ -235,30 +161,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  # test "should maintain data integrity under concurrent access" do
-  #   # Simulate concurrent admin dashboard access
-  #   threads = []
-  #   results = []
-  #
-  #   10.times do
-  #     threads << Thread.new do
-  #       get apex_org_root_url
-  #       results << {
-  #         status: response.status,
-  #         body_length: response.body.length
-  #       }
-  #     end
-  #   end
-  #
-  #   threads.each(&:join)
-  #
-  #   # All requests should succeed with consistent data
-  #   results.each do |result|
-  #     assert_equal 200, result[:status]
-  #     assert result[:body_length] > 0
-  #   end
-  # end
-
   test "should handle edge cases in admin data" do
     get apex_org_root_url
     assert_response :success
@@ -267,13 +169,4 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_empty response.body
     assert response.body.is_a?(String)
   end
-
-  # test "should provide admin dashboard suitable for monitoring" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Dashboard should provide enough information for monitoring systems
-  #   assert_match /dashboard|admin|user|system|activity/i, response.body
-  #   assert response.body.length > 500  # Should have substantial content
-  # end
 end

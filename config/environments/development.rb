@@ -111,9 +111,6 @@ Rails.application.configure do
   ## file watcher
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-  # Rack Attack preferences
-  # Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: Rails.application.credentials.dig(:REDIS, :REDIS_RACK_ATTACK_URL))
-
   ## Email Settings
   ### Set localhost to be used by links generated in mailer templates.
   config.action_mailer.delivery_method = :smtp
