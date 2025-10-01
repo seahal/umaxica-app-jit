@@ -5,6 +5,15 @@
   ],
   "service": "main",
   "workspaceFolder": "/home/jit/main",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "..",
+    "target": "development",
+    "args": {
+      "DOCKER_UID": "1000",
+      "DOCKER_GID": "1000"
+    }
+  },
   "overrideCommand": false,
   "remoteUser": "jit",
   "remoteEnv": {
