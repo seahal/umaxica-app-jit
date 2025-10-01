@@ -23,9 +23,6 @@ class Apex::Net::RootsControllerTest < ActionDispatch::IntegrationTest
     # Test HTML format
     get apex_org_root_url, headers: { "Accept" => "text/html" }
     assert_response :success
-
-    # Test that other formats may not be explicitly handled (controller doesn't specify)
-    # This is just to ensure the controller behaves consistently
   end
 
   test "should assign all required instance variables" do
@@ -45,22 +42,6 @@ class Apex::Net::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_empty response.body
     assert response.body.length > 100
   end
-  #
-  # test "should have valid system metrics format" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Check that response contains percentage or metrics information
-  #   assert_match /\d+%|\bCPU\b|\bmemory\b/i, response.body
-  # end
-  #
-  # test "should have activities with required fields" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Check that response contains activity-related content
-  #   assert_match /login|user|admin/i, response.body
-  # end
 
   test "should have quick actions with required fields" do
     get apex_org_root_url
@@ -100,15 +81,6 @@ class Apex::Net::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal first_title, second_title
   end
 
-  # test "should simulate different admin load scenarios" do
-  #   # Test under different simulated load conditions
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Response should contain admin-related content
-  #   assert_match /admin|dashboard|user/i, response.body
-  # end
-
   test "should handle timezone considerations for activities" do
     get apex_org_root_url
     assert_response :success
@@ -116,14 +88,6 @@ class Apex::Net::RootsControllerTest < ActionDispatch::IntegrationTest
     # Response should contain time-related information
     assert_match /time|ago|recent/i, response.body
   end
-
-  # test "should provide actionable quick actions" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Response should contain actionable elements
-  #   assert_match /admin|action|management|setting/i, response.body
-  # end
 
   test "should handle memory intensive operations" do
     # Simulate multiple rapid requests that might consume memory
@@ -135,15 +99,6 @@ class Apex::Net::RootsControllerTest < ActionDispatch::IntegrationTest
     # Ensure last request still works properly
     assert_not_empty response.body
   end
-
-  # test "should generate realistic activity timestamps" do
-  #   get apex_org_root_url
-  #   assert_response :success
-  #
-  #   # Response should contain activity information
-  #   assert_match /activity|login|update/i, response.body
-  # end
-
   test "should handle different user agent strings" do
     user_agents = [
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",

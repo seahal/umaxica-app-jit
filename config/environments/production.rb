@@ -19,7 +19,7 @@ Rails.application.configure do
   # config.publicGe_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.asset_host = "https://assets.jp.umaxica.net"
+  config.asset_host = "https://jp.asset.umaxica.net"
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   # config.active_storage.service = :local
@@ -93,25 +93,4 @@ Rails.application.configure do
   ### Added by owner
   # We've configured this production environment to prevent the delivery of public static content.
   config.public_file_server.enabled = false
-
-  # Rack Attack preferences
-  # rack_attack_url = Rails.application.credentials.dig(:REDIS, :REDIS_RACK_ATTACK_URL)
-  # allowed_hosts = [ "upstash.io" ]
-  # begin
-  #   rack_attack_parsed = rack_attack_url && URI.parse(rack_attack_url)
-  #   rack_attack_host = rack_attack_parsed&.host
-  # rescue URI::InvalidURIError
-  #   rack_attack_host = nil
-  # end
-  # if rack_attack_host && allowed_hosts.include?(rack_attack_host)
-  #   # Upstash requires SSL, convert to rediss:// and add SSL config
-  #   rack_attack_url = rack_attack_url.sub(/^redis:\/\//, "rediss://")
-  #   Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(
-  #     url: rack_attack_url,
-  #     ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
-  #   )
-  # else
-  #   Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: rack_attack_url)
-  # end
-  config.middleware.use Rack::Attack
 end
