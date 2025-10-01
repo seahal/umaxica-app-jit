@@ -4,7 +4,7 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } * 100 %>
   timeout: 5000
   username: <%= ENV["POSTGRESQL_USER"] %>
-  password: <%= ENV["POSTGRESQL_PASSWORD"] %>
+  password: 'password'
 
 
 development:
