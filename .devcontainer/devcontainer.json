@@ -160,7 +160,7 @@
   "updateContentCommand": "bundle install && bun install",
   "mounts": [
     "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
-    "source=${localEnv:HOME}/.claude,target=/main/.claude,type=bind",
-    "source=${localEnv:HOME}/.codex,target=/main/.codex,type=bind"
+    "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",
+    "source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
   ]
 }

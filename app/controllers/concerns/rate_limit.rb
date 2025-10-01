@@ -8,6 +8,6 @@ module RateLimit
   )
 
   included do
-    rate_limit to: 1000, within: 1.hour, store: RATE_LIMIT_STORE
+    rate_limit to: 1000, within: 1.hour, store: RATE_LIMIT_STORE unless Rails.env.test?
   end
 end
