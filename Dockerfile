@@ -5,7 +5,7 @@ ARG RUBY_VERSION=3.4.6
 ARG BUN_VERSION=1.2.23
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
-ARG DOCKER_USER=main
+ARG DOCKER_USER=jit
 ARG DOCKER_GROUP=group
 ARG GITHUB_ACTIONS=""
 
@@ -48,8 +48,8 @@ ARG DOCKER_GROUP
 ARG BUN_VERSION
 ARG GITHUB_ACTIONS
 ENV COMMIT_HASH="${COMMIT_HASH}"
-ENV HOME=/main
-WORKDIR /main
+ENV HOME=/home/jit
+WORKDIR /home/jit/main
 
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
@@ -94,6 +94,8 @@ RUN apt-get update -qq \
 RUN npm install -g bun@"${BUN_VERSION}" \
     && npm cache clean --force
 
+RUN cd $HOME/main
+
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
 RUN gem install bundler \
@@ -103,18 +105,16 @@ RUN gem install bundler \
 RUN mkdir -p /usr/local/bundle \
     && chown -R "${DOCKER_UID}:${DOCKER_GID}" /usr/local/bundle
 
+
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
     useradd -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
     echo "${DOCKER_USER}:hogehoge" | chpasswd; \
     echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
-    chown -R "${DOCKER_UID}:${DOCKER_GID}" /main; \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
     else \
-    chown -R "${DOCKER_UID}:${DOCKER_GID}" /main; \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
     fi
-
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | bash \
-    && apt install lefthook
 
 USER ${DOCKER_USER}
 

@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Working dir should be /main from Dockerfile, but ensure
-cd "${APP_ROOT:-/main}"
-
 # Ensure writable directories exist
 mkdir -p ./tmp ./vendor ./node_modules
 sudo chown -R 1000:1000 ./vendor
@@ -15,7 +12,7 @@ bun install
 
 # Development setup
 sudo chown -R 1000:1000 /usr/local/bundle/
-gem install ruby-lsp
+sudo chown -R 1000:1000 /usr/local/lib/node_modules/
 
 # Rails app prep
 bin/rails tmp:clear
