@@ -144,17 +144,6 @@
           "typeHierarchy": true
         }
       }
-    },
-    "jetbrains": {
-      "remoteId": "intellij",
-      "backend": "intellij",
-      "plugins": [
-        "org.jetbrains.plugins.ruby"
-      ],
-      "containerEnv": {
-        "DEVCONTAINER_IDE": "jetbrains",
-        "DEVCONTAINER_AUTO_START_BIN_DEV": "0"
-      }
     }
   },
   "containerEnv": {
