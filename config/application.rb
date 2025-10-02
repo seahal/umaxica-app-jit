@@ -33,16 +33,8 @@ module Jit
     config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
     config.active_record.encryption.key_derivation_salt = Rails.application.credentials.active_record_encryption.key_derivation_salt
 
-    # CORS / Rack protection
+    # cors / Rack protection
     # config.middleware.use Rack::Attack
-
-    # Serve subdomain-aware static files before default static handler (non-production only)
-    # if defined?(SubdomainStaticFiles) && !Rails.env.production?
-    #   config.middleware.insert_before ActionDispatch::Static, SubdomainStaticFiles, {
-    #     public_path: Rails.public_path,
-    #     default_path: "default"
-    #   }
-    # end
 
     # USE UTC
     config.time_zone = "UTC"
