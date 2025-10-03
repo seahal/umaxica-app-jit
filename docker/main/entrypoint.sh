@@ -47,18 +47,10 @@ fi
 
 # Rails app prep
 bin/rails tmp:clear
-
-if ! retry "${DB_TASK_ATTEMPTS:-5}" bin/rails db:create; then
-  echo "Warning: bin/rails db:create failed after retries. Run manually once the database is ready." >&2
-fi
-
-if ! retry "${DB_TASK_ATTEMPTS:-5}" bin/rails db:migrate; then
-  echo "Warning: bin/rails db:migrate failed after retries. Run manually once the database is ready." >&2
-fi
-
-if ! retry "${DB_TASK_ATTEMPTS:-3}" bin/rails db:seed; then
-  echo "Notice: bin/rails db:seed failed; seeds will need to be rerun manually." >&2
-fi
+bin/rails db:create
+RAILS_ENV=development bin/rails db:migrate
+RAILS_ENV=test bin/rails db:migrate
+bin/rails db:seed
 
 # Karafka web UI DB (best-effort)
 bundle exec karafka-web migrate || true
