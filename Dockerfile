@@ -6,7 +6,7 @@ ARG BUN_VERSION=1.2.23
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
 ARG DOCKER_USER=jit
-ARG DOCKER_GROUP=group
+ARG DOCKER_GROUP=umaxica
 ARG GITHUB_ACTIONS=""
 
 # ============================================================================

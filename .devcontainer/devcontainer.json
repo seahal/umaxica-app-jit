@@ -7,6 +7,7 @@
   "workspaceFolder": "/home/jit/main",
   "overrideCommand": false,
   "remoteUser": "jit",
+  "remoteUser": "umaxica",
   "remoteEnv": {
     "EDITOR": "code --wait --reuse-window"
   },
@@ -153,13 +154,7 @@
     "RACK_ENV": "development",
     "DEVCONTAINER_AUTO_START_BIN_DEV": "1"
   },
-  "postCreateCommand": "bundle install && bun install",
-  "postStartCommand": "sudo chown -R jit:group /home/jit/main || true && echo 'Development environment ready!'",
-  "initializeCommand": "echo 'Initializing Umaxica Rails Development Environment...'",
-  "onCreateCommand": "echo 'Devcontainer created successfully'",
-  "updateContentCommand": "bundle install && bun install",
   "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",
     "source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
   ]
