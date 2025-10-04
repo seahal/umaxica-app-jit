@@ -25,15 +25,55 @@ env:
   POSTGRESQL_USER: postgres
   POSTGRESQL_PASSWORD: password
 jobs:
-  setup-and-test:
-    name: Setup and Test
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4.6'
+          bundler-cache: true
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.2.22'
+      - run: bun install --frozen-lockfile
+      - name: Run Brakeman
+        run: bundle exec brakeman -z -q
+      - name: Run bundle-audit
+        run: bundle exec bundle audit check --update
+      - name: Run bun audit
+        run: bun audit
+
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libpq-dev libvips-dev libxml2-dev libyaml-dev build-essential
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4.6'
+          bundler-cache: true
+      - name: Run RuboCop
+        run: bundle exec rubocop --fail-fast
+      - name: Run ERB Lint
+        run: bundle exec erb_lint --lint-all
+
+  test:
+    name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby-version: ['3.4.6']
-        node-version: ['24']
     env:
       # Rails Configuration
       RAILS_ENV: test
@@ -154,7 +194,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby-version }}
+          ruby-version: '3.4.6'
           bundler-cache: true
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -165,16 +205,6 @@ jobs:
         run: |
           bin/rails db:create
           bin/rails db:migrate
-      - name: Run Brakeman
-        run: bundle exec brakeman -z -q
-      - name: Run bundle-audit
-        run: bundle exec bundle audit check --update
-      - name: Run bun audit
-        run: bun audit
-      - name: Run RuboCop
-        run: bundle exec rubocop --fail-fast
-      - name: Run ERB Lint
-        run: bundle exec erb_lint --lint-all
       - name: Build JavaScript assets
         run: bun run build
       - name: Run JavaScript tests
@@ -192,14 +222,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report-${{ matrix.ruby-version }}
+          name: coverage-report
           path: coverage/
           retention-days: 30
       - name: Upload test logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-logs-${{ matrix.ruby-version }}
+          name: test-logs
           path: |
             log/test.log
             tmp/screenshots/

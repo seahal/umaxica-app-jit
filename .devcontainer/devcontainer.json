@@ -5,6 +5,7 @@
   ],
   "service": "main",
   "workspaceFolder": "/home/jit/main",
+<<<<<<< HEAD
   "build": {
     "dockerfile": "../Dockerfile",
     "context": "..",
@@ -16,6 +17,11 @@
   },
   "overrideCommand": false,
   "remoteUser": "jit",
+=======
+  "overrideCommand": false,
+  "remoteUser": "jit",
+  "remoteUser": "umaxica",
+>>>>>>> develop
   "remoteEnv": {
     "EDITOR": "code --wait --reuse-window"
   },
@@ -144,6 +150,20 @@
           "typeHierarchy": true
         }
       }
+<<<<<<< HEAD
+=======
+    },
+    "jetbrains": {
+      "remoteId": "intellij",
+      "backend": "intellij",
+      "plugins": [
+        "org.jetbrains.plugins.ruby"
+      ],
+      "containerEnv": {
+        "DEVCONTAINER_IDE": "jetbrains",
+        "DEVCONTAINER_AUTO_START_BIN_DEV": "0"
+      }
+>>>>>>> develop
     }
   },
   "containerEnv": {
@@ -151,6 +171,7 @@
     "RACK_ENV": "development",
     "DEVCONTAINER_AUTO_START_BIN_DEV": "1"
   },
+<<<<<<< HEAD
   "postCreateCommand": "bundle install && bun install",
   "postStartCommand": "sudo chown -R jit:group /home/jit/main || true && echo 'Development environment ready!'",
   "initializeCommand": "echo 'Initializing Umaxica Rails Development Environment...'",
@@ -158,6 +179,9 @@
   "updateContentCommand": "bundle install && bun install",
   "mounts": [
     "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+=======
+  "mounts": [
+>>>>>>> develop
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",
     "source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
   ]
