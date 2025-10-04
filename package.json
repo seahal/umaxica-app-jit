@@ -18,7 +18,7 @@
     "@types/bun": "^1.2.23",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "@typescript/native-preview": "^7.0.0-dev.20251002.1",
-    "wrangler": "^4.41.0"
+    "@typescript/native-preview": "^7.0.0-dev.20251003.1",
+    "wrangler": "^4.42.0"
   }
 }
