@@ -17,10 +17,6 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
-          # email preferences
-          resource :email, only: [ :edit, :update ]
-          # theme/dark mode settings
-          resource :theme, only: [ :edit, :update ]
         end
         # Basic resources
         resource :staging, only: [ :show ]
@@ -40,10 +36,6 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
-          # email preferences
-          resource :email, only: [ :edit, :update ]
-          # theme/dark mode settings
-          resource :theme, only: [ :edit, :update ]
         end
       end
     end
@@ -61,14 +53,10 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
-          # email preferences
-          resource :email, only: [ :edit, :update ]
-          # theme/dark mode settings
-          resource :theme, only: [ :edit, :update ]
         end
       end
 
-      # For Staff's webpages example.org
+      # For Network's webpages example.org
       constraints host: ENV["APEX_NETWORK_URL"] do
         scope module: :net, as: :net do
           root to: "roots#index"
