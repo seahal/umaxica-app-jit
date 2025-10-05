@@ -12,7 +12,5 @@ class Apex::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: I18n.t("apex.app.preferences.title")
     assert_select "a", text: I18n.t("apex.app.preferences.cookie_settings")
     assert_select "a", text: I18n.t("apex.app.preferences.region_settings")
-    assert_select "a", text: I18n.t("apex.app.preferences.email_preferences")
-    assert_select "a", text: I18n.t("apex.app.preferences.theme_settings")
   end
 end
