@@ -29,12 +29,11 @@ module Jit
     # config.eager_load_paths << Rails.root.join("extras")
 
     ### Added by user
-    config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
-    config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
-    config.active_record.encryption.key_derivation_salt = Rails.application.credentials.active_record_encryption.key_derivation_salt
-
-    # cors / Rack protection
-    # config.middleware.use Rack::Attack
+    if [ "test", "production", "development" ].include? Rails.env
+      config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
+      config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
+      config.active_record.encryption.key_derivation_salt = Rails.application.credentials.active_record_encryption.key_derivation_salt
+    end
 
     # USE UTC
     config.time_zone = "UTC"

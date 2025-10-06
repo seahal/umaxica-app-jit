@@ -12,5 +12,6 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get docs_app_root_url(format: :html)
     assert_response :success
     assert_select("html[lang=?]", "ja")
+    assert_not_select("html[lang=?]", "")
   end
 end

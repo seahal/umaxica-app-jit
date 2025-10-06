@@ -11,5 +11,6 @@ class Auth::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     get new_auth_app_registration_url(format: :html)
     assert_response :success
     assert_select("html[lang=?]", "ja")
+    assert_not_select("html[lang=?]", "")
   end
 end

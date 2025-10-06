@@ -42,7 +42,7 @@ module Auth
 
           if res["success"] && @user_telephone.valid?
             SmsService.send_message(
-              to: Rails.application.credentials.TELEPHONE_FROM_NUMBER,
+              to: Rails.application.credentials.dig(:TELEPHONE_FROM_NUMBER),
               message: "PassCode => #{num}",
               subject: "PassCode => #{num}"
             )

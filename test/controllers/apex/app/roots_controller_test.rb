@@ -25,6 +25,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get apex_app_root_url(format: :html)
     assert_response :success
     assert_select("html[lang=?]", "ja")
+    assert_not_select("html[lang=?]", "")
   end
 
   test "should load without any instance variables" do

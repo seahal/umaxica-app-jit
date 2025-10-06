@@ -34,10 +34,6 @@ steps:
           unzip
         rm -rf /var/lib/apt/lists/*
 
-        export BUN_INSTALL="/root/.bun"
-        curl -fsSL https://bun.sh/install | BUN_INSTALL="$BUN_INSTALL" bash
-        export PATH="$BUN_INSTALL/bin:$PATH"
-
         gem install --no-document bundler
         bundle config set path vendor/bundle
         bundle config set jobs "$(nproc)"
