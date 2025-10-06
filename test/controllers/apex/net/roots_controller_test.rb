@@ -166,4 +166,10 @@ class Apex::Net::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_empty response.body
     assert response.body.is_a?(String)
   end
+
+  test "should get html which must have html which contains lang param." do
+    get apex_net_root_url(format: :html)
+    assert_response :success
+    assert_select("html[lang=?]", "ja")
+  end
 end
