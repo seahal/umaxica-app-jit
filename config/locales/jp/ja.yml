@@ -12,13 +12,9 @@ ja:
   languages:
     english: "English"
     japanese: "日本語"
-    spanish: "Español"
-    french: "Français"
-    german: "Deutsch"
   themes:
     light: "ライトテーマ"
     dark: "ダークテーマ"
-    corporate: "コーポレートテーマ"
   model:
     concern:
       cloudflare:
@@ -307,7 +303,7 @@ ja:
           select_region: "地域を選択"
           select_language: "言語を選択"
           select_timezone: "タイムゾーンを選択"
-          cancel: 'modoru'
+          cancel: '戻る'
           select_region_selector:
             USA: "アメリカ合衆国"
             JAPAN: "日本"

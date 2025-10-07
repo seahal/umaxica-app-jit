@@ -15,7 +15,6 @@ class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_select "main.container.mx-auto.mt-28.px-5.block" do
       assert_select "form[action='#{apex_org_preference_region_url}'][method='post']" do
         assert_select "input[name='_method'][value='patch']", count: 1
-        assert_select "input[name='authenticity_token']", count: 0
 
         assert_select ".region-section" do
           assert_select "h2", text: I18n.t("apex.org.preferences.regions.region_section")

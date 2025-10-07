@@ -27,9 +27,6 @@ en:
   languages:
     english: "English"
     japanese: "日本語"
-    spanish: "Español"
-    french: "Français"
-    german: "Deutsch"
   themes:
     light: "Light Theme"
     dark: "Dark Theme"
