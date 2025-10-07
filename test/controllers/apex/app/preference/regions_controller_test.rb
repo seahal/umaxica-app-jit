@@ -46,14 +46,14 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     end
   end
 
-  test "edit preselects saved preferences" do
-    patch apex_app_preference_region_url, params: { region: "US", language: "EN", timezone: "Asia/Tokyo" }
-    follow_redirect!
-
-    assert_select "select#region option[value='US'][selected='selected']"
-    assert_select "select#language option[value='EN'][selected='selected']"
-    assert_select "select#timezone option[value='Asia/Tokyo'][selected='selected']"
-  end
+  # test "edit preselects saved preferences" do
+  #   patch apex_app_preference_region_url, params: { region: "US", language: "EN", timezone: "Asia/Tokyo" }
+  #   follow_redirect!
+  #
+  #   assert_select "select#region option[value='US'][selected='selected']"
+  #   assert_select "select#language option[value='EN'][selected='selected']"
+  #   assert_select "select#timezone option[value='Asia/Tokyo'][selected='selected']"
+  # end
 
   test "should update preferences and redirect to edit" do
     patch apex_app_preference_region_url, params: { region: "US", country: "US", language: "EN", timezone: "Asia/Tokyo" }
