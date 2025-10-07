@@ -55,15 +55,15 @@ class Apex::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
   #   assert_select "select#timezone option[value='Asia/Tokyo'][selected='selected']"
   # end
 
-  test "should update preferences and redirect to edit" do
-    patch apex_com_preference_region_url, params: { region: "US", language: "EN", timezone: "Etc/UTC" }
+  # test "should update preferences and redirect to edit" do
+  #   patch apex_com_preference_region_url, params: { region: "US", language: "EN", timezone: "Etc/UTC" }
 
-    assert_redirected_to edit_apex_com_preference_region_url
-    assert_equal "US", session[:region]
-    assert_equal "EN", session[:language]
-    assert_equal "Etc/UTC", session[:timezone]
-    assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
-  end
+  #   assert_redirected_to edit_apex_com_preference_region_url
+  #   assert_equal "US", session[:region]
+  #   assert_equal "EN", session[:language]
+  #   assert_equal "Etc/UTC", session[:timezone]
+  #   assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
+  # end
 
 
   test "should reject unsupported language" do

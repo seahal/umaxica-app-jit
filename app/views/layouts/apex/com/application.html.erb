@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= session[:language]&.downcase || 'ja' %>">
 <head>
-  <title>UMAXICA <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
+  <title><%= ENV.fetch('NAME') %> <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
@@ -11,7 +11,7 @@
 
 <body class="px-4">
 <header>
-  <h1><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica(www, com)</a></h1></header>
+  <h1><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/"><%= ENV.fetch('NAME') %> (apex, com)</a></h1></header>
 
 <hr>
 
@@ -43,7 +43,7 @@
     <li>Security</li>
     <li>Accessibility</li>
   </ul>
-  <p>© <%= Time.now.year %> <%= ENV.fetch('NAME') %>.</p>
+  <p>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></p>
 </footer>
 
 </body>

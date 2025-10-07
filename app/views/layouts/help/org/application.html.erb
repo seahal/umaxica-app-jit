@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <title>UMAXICA <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
+  <title><%= ENV.fetch('NAME') %> <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
@@ -11,7 +11,7 @@
 <body class="px-4">
 <header>
   <h1 class="container mx-auto mt-28 px-5 flex">
-    <a href="http://<%= ENV['NEWS_STAFF_URL'] %>/">Umaxica(help, org)</a></h1>
+    <a href="http://<%= ENV['NEWS_STAFF_URL'] %>/"><%= ENV.fetch('NAME') %> (help, org)</a></h1>
 </header>
 
 <hr>
@@ -22,7 +22,7 @@
   <nav>
     <ul>
       <li></li>
-    </ul>
+    </ul>UMAXICA
     <%= breadcrumbs pretext: "You are here: ", separator: " &rsaquo; " %>
   </nav>
 </main>
