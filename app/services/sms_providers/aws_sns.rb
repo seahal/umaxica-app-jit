@@ -16,8 +16,8 @@ module SmsProviders
 
     def client
       @client ||= Aws::SNS::Client.new(
-        access_key_id: Rails.application.credentials.AWS.ACCESS_KEY_ID,
-        secret_access_key: Rails.application.credentials.AWS.SECRET_ACCESS_KEY,
+        access_key_id: Rails.application.credentials.dig(:AWS, :ACCESS_KEY_ID),
+        secret_access_key: Rails.application.credentials.dig(:AWS, :SECRET_ACCESS_KEY),
         region: Rails.application.config.aws_region || "ap-northeast-1"
       )
     end

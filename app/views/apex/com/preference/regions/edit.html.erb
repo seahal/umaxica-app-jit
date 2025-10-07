@@ -7,29 +7,9 @@
     <div class="region-selection">
       <%= f.label :region, t('apex.com.preferences.regions.select_region') %>
       <%= f.select :region, options_for_select([
-                                                 ['United States', 'US'],
-                                                 ['Japan', 'JP'],
-                                                 ['China', 'CN'],
-                                                 ['United Kingdom', 'GB'],
-                                                 ['Germany', 'DE'],
-                                                 ['France', 'FR'],
-                                                 ['Canada', 'CA'],
-                                                 ['Australia', 'AU']
-                                               ], @region), { prompt: t('apex.com.preferences.regions.select_region_prompt') } %>
-    </div>
-
-    <div class="country-selection">
-      <%= f.label :country, t('apex.com.preferences.regions.select_country') %>
-      <%= f.select :country, options_for_select([
-                                                  ['United States', 'US'],
-                                                  ['Japan', 'JP'],
-                                                  ['China', 'CN'],
-                                                  ['United Kingdom', 'GB'],
-                                                  ['Germany', 'DE'],
-                                                  ['France', 'FR'],
-                                                  ['Canada', 'CA'],
-                                                  ['Australia', 'AU']
-                                                ], @country), { prompt: t('apex.com.preferences.regions.select_country_prompt') } %>
+                                                 [t('apex.com.preferences.regions.select_region_selector.USA'), 'US'],
+                                                 [t('apex.com.preferences.regions.select_region_selector.JAPAN'), 'JP'],
+                                               ], @current_region), { prompt: t('apex.com.preferences.regions.select_region_prompt') } %>
     </div>
   </div>
 
@@ -38,21 +18,20 @@
 
     <div class="language-selection">
       <%= f.label :language, t('apex.com.preferences.regions.select_language') %>
-      <%= f.select :language, options_from_collection_for_select(@available_languages, :first, :last, @current_language), { prompt: t('apex.com.preferences.regions.select_language_prompt') } %>
+      <%= f.select :language, options_for_select([[t('apex.com.preferences.regions.select_language_selector.JAPANESE'), 'JA'], [t('apex.com.preferences.regions.select_language_selector.ENGLISH'), 'EN']], @current_language), { prompt: t('apex.com.preferences.regions.select_language_prompt') } %>
     </div>
   </div>
 
   <div class="timezone-section">
     <h2><%= t('apex.com.preferences.regions.timezone_section') %></h2>
-
     <div class="timezone-selection">
       <%= f.label :timezone, t('apex.com.preferences.regions.select_timezone') %>
-      <%= f.select :timezone, options_from_collection_for_select(@available_timezones, :first, :last, @current_timezone), { prompt: t('apex.com.preferences.regions.select_timezone_prompt') } %>
+      <%= f.select :timezone, options_for_select([[t('apex.com.preferences.regions.select_timezone_selector.UTC'), "Etc/UTC"], [t('apex.com.preferences.regions.select_timezone_selector.JST'), "Asia/Tokyo"]], @current_timezone.split(' ').last), { prompt: t('apex.com.preferences.regions.select_timezone_prompt') } %>
     </div>
   </div>
 
   <div class="form-actions">
-    <%= f.submit t('apex.com.preferences.regions.update_settings'), class: 'btn btn-primary' %>
+    <%= f.submit class: 'btn btn-primary' %>
     <%= link_to t('apex.com.preferences.regions.cancel'), apex_com_preference_url, class: 'btn btn-secondary' %>
   </div>
 <% end %>

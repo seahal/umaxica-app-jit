@@ -1,0 +1,8 @@
+# Rails.application.config.session_store :cookie_store,
+#                                         expire_after: 12.hours,
+#                                        key: "__Secure-jit_session",
+#                                        secure: true,
+#                                        httponly: true,
+#                                        same_site: :lax,
+#                                        domain: nil,
+#                                        path: "/"if Rails.env.production?

@@ -64,4 +64,11 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "secret"
     assert_not_includes response.body, "api_key"
   end
+
+  test "should get html which must have html which contains lang param." do
+    get news_org_root_url(format: :html)
+    assert_response :success
+    assert_select("html[lang=?]", "ja")
+    assert_not_select("html[lang=?]", "")
+  end
 end

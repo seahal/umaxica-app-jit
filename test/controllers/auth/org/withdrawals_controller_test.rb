@@ -6,6 +6,13 @@ class Auth::Org::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should get html which must have html which contains lang param." do
+    get new_auth_org_withdrawal_url(format: :html)
+    assert_response :success
+    assert_not_select("html[lang=?]", "")
+    assert_select("html[lang=?]", "ja")
+  end
+
   # test "should get edit" do
   #   # TODO: Implement edit action test
   #   # skip "Implementation pending"

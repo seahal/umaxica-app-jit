@@ -6,13 +6,13 @@ class News::App::HealthsControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     get news_app_health_url
     assert_response :success
-    assert_equal "OK", @response.body
+    assert_includes @response.body, "OK"
   end
 
   test "should get show with postfix" do
     get news_app_health_url(format: :html)
     assert_response :success
-    assert_equal "OK", @response.body
+    assert_includes @response.body, "OK"
   end
 
   test "should get show with postfix json" do

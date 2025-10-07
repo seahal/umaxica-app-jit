@@ -29,15 +29,15 @@ module SmsProviders
     private
 
     def base_url
-      Rails.application.credentials.INFOBIP_BASE_URL || "https://api.infobip.com"
+      Rails.application.credentials.dig(:INFOBIP_BASE_URL) || "https://api.infobip.com"
     end
 
     def api_key
-      Rails.application.credentials.INFOBIP_API_KEY
+      Rails.application.credentials.dig(:INFOBIP_API_KEY)
     end
 
     def sender_id
-      Rails.application.credentials.INFOBIP_SENDER_ID || "SMS"
+      Rails.application.credentials.dig(:INFOBIP_SENDER_ID) || "SMS"
     end
 
     def http_client

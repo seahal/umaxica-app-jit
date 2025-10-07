@@ -93,4 +93,7 @@ Rails.application.configure do
   ### Added by owner
   # We've configured this production environment to prevent the delivery of public static content.
   config.public_file_server.enabled = false
+
+  # to avoid
+  #  config.require_master_key = ENV["SECRET_KEY_BASE_DUMMY"].nil?
 end

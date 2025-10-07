@@ -81,9 +81,9 @@ services:
       - HELP_CORPORATE_URL=help.com.localhost
       - HELP_SERVICE_URL=help.app.localhost
       - HELP_STAFF_URL=help.org.localhost
-      - EDGE_CORPORATE_URL=localhost:5170
-      - EDGE_SERVICE_URL=localhost:5171
-      - EDGE_STAFF_URL=localhost:5172
+      - EDGE_CORPORATE_URL=localhost:5131
+      - EDGE_SERVICE_URL=localhost:5132
+      - EDGE_STAFF_URL=localhost:5133
       # Database Configuration
       - POSTGRESQL_USER=root
       - POSTGRESQL_PORT=5432

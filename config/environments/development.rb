@@ -118,7 +118,7 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address: ENV["RESEND_SMTP_ENDPOINT"],
     user_name: ENV["RESEND_SMTP_USER_NAME"],
-    password: Rails.application.credentials.RESEND_SMTP_PASSWORD,
+    password: Rails.application.credentials.dig(:RESEND_SMTP_PASSWORD),
     port: 465,
     tls: true
   }

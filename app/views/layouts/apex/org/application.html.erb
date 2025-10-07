@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="<%= session[:language]&.downcase || 'ja' %>">
 <head>
   <title>UMAXICA <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -54,8 +54,6 @@
     <li>Support</li>
     <li>Terms</li>
     <li>Privacy</li>
-    <li>Accessibility</li>
-    <li>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></li>
   </ul>
   <p>© <%= Time.now.year %> <%= ENV.fetch('NAME') %>.</p>
 </footer>

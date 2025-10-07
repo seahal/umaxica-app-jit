@@ -21,14 +21,21 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert response.headers["Content-Type"].include?("text/html")
   end
 
-  # test "should handle GET requests only" do
-  #   get apex_app_root_path
-  #   assert_response :success
+  test "should get html which must have html which contains lang param." do
+    get apex_app_root_url(format: :html)
+    assert_response :success
+    assert_select("html[lang=?]", "ja")
+    assert_not_select("html[lang=?]", "")
+  end
+
+  # test "should get html which must have which contains configured lang param." do
+  #   get apex_app_root_url(format: :html), headers: {
+  #     "rack.session" => { language: "en" }
+  #   }
   #
-  #   # POST should not be allowed on root
-  #   assert_raises(ActionController::RoutingError) do
-  #     post apex_app_root_path
-  #   end
+  #   assert_response :success
+  #   assert_select("html[lang=?]", "en")
+  #   assert_not_select("html[lang=?]", "ja")
   # end
 
   test "should load without any instance variables" do
@@ -45,16 +52,6 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
     end
   end
-
-  # test "should respond quickly" do
-  #   start_time = Time.current
-  #   get apex_app_root_path, headers: { "HTTP_HOST" => "app.localhost" }
-  #   end_time = Time.current
-  #
-  #   assert_response :success
-  #   # Response should be very fast for empty controller
-  #   assert (end_time - start_time) < 1.second
-  # end
 
   test "should handle different Accept headers" do
     # HTML request
