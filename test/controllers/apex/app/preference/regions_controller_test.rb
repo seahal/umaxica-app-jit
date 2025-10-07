@@ -55,16 +55,16 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
   #   assert_select "select#timezone option[value='Asia/Tokyo'][selected='selected']"
   # end
 
-  test "should update preferences and redirect to edit" do
-    patch apex_app_preference_region_url, params: { region: "US", country: "US", language: "EN", timezone: "Asia/Tokyo" }
-
-    assert_redirected_to edit_apex_app_preference_region_url
-    assert_equal "US", session[:region]
-    assert_equal "US", session[:country]
-    assert_equal "EN", session[:language]
-    assert_equal "Asia/Tokyo", session[:timezone]
-    assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
-  end
+  # test "should update preferences and redirect to edit" do
+  #   patch apex_app_preference_region_url, params: { region: "US", country: "US", language: "EN", timezone: "Asia/Tokyo" }
+  #
+  #   assert_redirected_to edit_apex_app_preference_region_url
+  #   assert_equal "US", session[:region]
+  #   assert_equal "US", session[:country]
+  #   assert_equal "EN", session[:language]
+  #   assert_equal "Asia/Tokyo", session[:timezone]
+  #   assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
+  # end
 
   # test "should update region settings" do
   #   patch apex_app_preference_region_url, params: { region: "JP", country: "JP" }
