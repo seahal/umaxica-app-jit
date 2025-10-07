@@ -11,7 +11,7 @@
 
 <body class="px-4">
 <header>
-  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Umaxica(news, app)</a></h1>
+  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('NAME') %> (news, app)</a></h1>
   <p>
     <%= link_to_if !@user&.active?, "logout?", new_auth_app_registration_path %>
     <%= link_to_unless @user&.active?, "login?", new_auth_app_registration_path %>
