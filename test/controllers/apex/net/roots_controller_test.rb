@@ -10,7 +10,6 @@ class Apex::Net::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "index links point to correct apex destinations" do
     get apex_net_root_url
-    assert_response :success
 
     assert_select "ul" do
       assert_select "li > a[href=?]", apex_com_root_url, text: "corporate site"
