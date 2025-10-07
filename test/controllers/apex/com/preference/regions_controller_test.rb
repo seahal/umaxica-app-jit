@@ -6,25 +6,66 @@ class Apex::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_response :success
     assert_select "h1", text: I18n.t("apex.com.preferences.regions.title")
     assert_select "select[name='region']"
-    assert_select "select[name='country']"
     assert_select "select[name='language']"
     assert_select "select[name='timezone']"
   end
 
   test "should display all form sections" do
     get edit_apex_com_preference_region_url
-    assert_response :success
-    assert_select "h2", text: I18n.t("apex.com.preferences.regions.region_section")
-    assert_select "h2", text: I18n.t("apex.com.preferences.regions.language_section")
-    assert_select "h2", text: I18n.t("apex.com.preferences.regions.timezone_section")
+    assert_select "h1", text: I18n.t("apex.com.preferences.regions.title")
+    assert_select "main.container.mx-auto.mt-28.px-5.block" do
+      assert_select "form[action='#{apex_com_preference_region_url}'][method='post']" do
+        assert_select "input[name='_method'][value='patch']", count: 1
+        assert_select "input[name='authenticity_token']", count: 0
+
+        assert_select ".region-section" do
+          assert_select "h2", text: I18n.t("apex.com.preferences.regions.region_section")
+                   assert_select "label[for='region']", text: I18n.t("apex.com.preferences.regions.select_region")
+          assert_select "select#region option[value='US']"
+          assert_select "select#region option[value='JP']"
+        end
+
+        assert_select ".language-section" do
+          assert_select "h2", text: I18n.t("apex.com.preferences.regions.language_section")
+              assert_select ".language-selection label[for='language']", text: I18n.t("apex.com.preferences.regions.select_language")
+          assert_select "select#language option[value='JA']"
+          assert_select "select#language option[value='EN']"
+        end
+
+        assert_select ".timezone-section" do
+          assert_select "h2", text: I18n.t("apex.com.preferences.regions.timezone_section")
+                    assert_select ".timezone-selection label[for='timezone']", text: I18n.t("apex.com.preferences.regions.select_timezone")
+          assert_select "select#timezone option[value='Etc/UTC']"
+          assert_select "select#timezone option[value='Asia/Tokyo']"
+        end
+
+        assert_select ".form-actions" do
+          assert_select "input[type='submit']", count: 1
+          assert_select "a.btn.btn-secondary", text: I18n.t("apex.com.preferences.regions.cancel")
+        end
+      end
+    end
   end
 
-  # test "should update language settings including Chinese" do
-  #   patch apex_com_preference_region_url, params: { language: "zh" }
-  #   assert_response :redirect
-  #   assert_redirected_to apex_com_preference_url
-  #   assert_equal "zh", session[:language]
-  # end
+  test "edit preselects saved preferences" do
+    patch apex_com_preference_region_url, params: { region: "JP", language: "JA", timezone: "Asia/Tokyo" }
+    follow_redirect!
+
+    assert_select "select#region option[value='JP'][selected='selected']"
+    assert_select "select#language option[value='JA'][selected='selected']"
+    assert_select "select#timezone option[value='Asia/Tokyo'][selected='selected']"
+  end
+
+  test "should update preferences and redirect to edit" do
+    patch apex_com_preference_region_url, params: { region: "US", language: "EN", timezone: "Etc/UTC" }
+
+    assert_redirected_to edit_apex_com_preference_region_url
+    assert_equal "US", session[:region]
+    assert_equal "EN", session[:language]
+    assert_equal "Etc/UTC", session[:timezone]
+    assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
+  end
+
 
   test "should reject unsupported language" do
     patch apex_com_preference_region_url, params: { language: "invalid" }
@@ -35,19 +76,4 @@ class Apex::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
     patch apex_com_preference_region_url, params: { timezone: "Invalid/Timezone" }
     assert_response :unprocessable_content
   end
-
-  # test "should update multiple settings at once" do
-  #   patch apex_com_preference_region_url, params: {
-  #     region: "CN",
-  #     country: "CN",
-  #     language: "zh",
-  #     timezone: "Asia/Shanghai"
-  #   }
-  #   assert_response :redirect
-  #   assert_redirected_to apex_com_preference_url
-  #   assert_equal "CN", session[:region]
-  #   assert_equal "CN", session[:country]
-  #   assert_equal "zh", session[:language]
-  #   assert_equal "Asia/Shanghai", session[:timezone]
-  # end
 end

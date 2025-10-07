@@ -55,6 +55,15 @@ en:
           select_country_prompt: "Choose your country..."
           select_language_prompt: "Choose your language..."
           select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
           update_settings: "Update Settings"
           cancel: "Cancel"
         emails:
@@ -89,6 +98,15 @@ en:
           select_country_prompt: "Choose your country..."
           select_language_prompt: "Choose your language..."
           select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
           update_settings: "Update Settings"
           cancel: "Cancel"
         emails:
@@ -122,7 +140,6 @@ en:
           language_section: "Admin Language Preferences"
           timezone_section: "Admin Timezone Settings"
           select_region: "Select Region"
-          select_country: "Select Country"
           select_language: "Select Admin Language"
           select_timezone: "Select Admin Timezone"
           select_region_prompt: "Choose your region..."

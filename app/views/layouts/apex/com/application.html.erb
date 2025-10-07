@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="<%= session[:language]&.downcase || 'ja' %>">
 <head>
   <title>UMAXICA <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">

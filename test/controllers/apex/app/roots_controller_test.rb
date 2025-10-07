@@ -28,6 +28,16 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
+  # test "should get html which must have which contains configured lang param." do
+  #   get apex_app_root_url(format: :html), headers: {
+  #     "rack.session" => { language: "en" }
+  #   }
+  #
+  #   assert_response :success
+  #   assert_select("html[lang=?]", "en")
+  #   assert_not_select("html[lang=?]", "ja")
+  # end
+
   test "should load without any instance variables" do
     get apex_app_root_path, headers: { "HTTP_HOST" => "app.localhost" }
     assert_response :success

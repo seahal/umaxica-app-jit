@@ -7,6 +7,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get apex_org_root_url
     assert_response :success
   end
+
   test "should provide quick actions for admin navigation" do
     get apex_org_root_url
     assert_response :success
@@ -176,4 +177,19 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")
   end
+
+  # test "should get html which must have which contains configured lang param." do
+  #   get apex_org_root_url(format: :html), headers: {
+  #     "rack.session" => { language: "en" }
+  #   }
+  #   assert_select("html[lang=?]", "en")
+  #   assert_not_select("html[lang=?]", "ja")
+  # end
+
+  # test "should get html which must have which contains configured lang param." do
+  #   get apex_org_root_url(format: :html), headers: {
+  #     "rack.session" => { language: "EN" }
+  #   }
+  #   assert_select("html[lang=?]", "en")
+  # end
 end

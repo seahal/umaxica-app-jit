@@ -2,99 +2,137 @@ module Apex
   module Org
     module Preference
       class RegionsController < ApplicationController
-        ADMIN_LANGUAGES = %w[en ja es fr de zh ko].freeze
+        SELECTABLE_LANGUAGES = %w[JA EN].freeze
+        DEFAULT_LANGUAGE = "JA"
+        SELECTABLE_REGIONS = %w[JP US].freeze
+        DEFAULT_REGION = "JP"
+        SELECTABLE_TIMEZONES = %w[UTC America/New_York Asia/Tokyo].freeze
+        DEFAULT_TIMEZONE = "Asia/Tokyo"
+
+        Result = Struct.new(:updated, :error_key) do
+          def updated?
+            !!updated
+          end
+
+          def error?
+            error_key.present?
+          end
+        end
 
         def edit
           set_edit_variables
         end
 
         def update
-          updated_settings = []
+          result = apply_updates(preference_params)
 
-          if params[:region].present?
-            session[:region] = params[:region]
-            updated_settings << "region"
+          if result.error?
+            flash[:alert] = I18n.t(result.error_key)
+            set_edit_variables
+            render :edit, status: :unprocessable_content
+          else
+            flash[:notice] = t("messages.region_settings_updated_successfully") if result.updated?
+            redirect_to edit_apex_org_preference_region_url
           end
-
-          if params[:country].present?
-            session[:country] = params[:country]
-            updated_settings << "country"
-          end
-
-          if params[:language].present?
-            language_code = params[:language]
-            if ADMIN_LANGUAGES.include?(language_code)
-              session[:admin_language] = language_code
-              updated_settings << "language"
-            else
-              flash[:alert] = I18n.t("apex.org.preferences.languages.unsupported")
-              set_edit_variables
-              render :edit, status: :unprocessable_content
-              return
-            end
-          end
-
-          if params[:timezone].present?
-            timezone = params[:timezone]
-            if ActiveSupport::TimeZone[timezone].present?
-              session[:admin_timezone] = timezone
-              updated_settings << "timezone"
-            else
-              flash[:alert] = I18n.t("apex.org.preferences.timezones.invalid")
-              set_edit_variables
-              render :edit, status: :unprocessable_content
-              return
-            end
-          end
-
-          if updated_settings.any?
-            flash[:notice] = t("messages.region_settings_updated_successfully")
-          end
-
-          redirect_to apex_org_preference_url
         end
 
         private
 
         def set_edit_variables
-          @region = session[:region] || "US"
-          @country = session[:country] || "US"
-          @current_language = session[:admin_language] || "en"
-          @current_timezone = session[:admin_timezone] || "UTC"
+          @current_region = session[:region] || DEFAULT_REGION
+          @current_language = session[:language] || DEFAULT_LANGUAGE
 
-          @available_languages = ADMIN_LANGUAGES.map do |lang|
-            [ lang, language_name(lang) ]
+          timezone = resolve_timezone(session[:timezone]) || resolve_timezone(DEFAULT_TIMEZONE)
+          @current_timezone = timezone ? timezone.to_s : DEFAULT_TIMEZONE
+        end
+
+        def preference_params
+          params.permit(:region, :language, :timezone)
+        end
+
+        def apply_updates(preferences)
+          updated = false
+
+          if preferences[:region].present?
+            session[:region] = preferences[:region]
+            updated = true
           end
 
-          @available_timezones = admin_timezones.map do |tz|
-            [ tz.name, tz.to_s ]
-          end.sort_by { |tz| tz.last }
+          if preferences[:country].present?
+            session[:country] = preferences[:country]
+            updated = true
+          end
+
+          if preferences[:language].present?
+            language_result = update_language(preferences[:language])
+            return language_result if language_result.error?
+            updated ||= language_result.updated?
+          end
+
+          if preferences[:timezone].present?
+            timezone_result = update_timezone(preferences[:timezone])
+            return timezone_result if timezone_result.error?
+            updated ||= timezone_result.updated?
+          end
+
+          Result.new(updated, nil)
+        end
+
+        def update_language(language)
+          normalized = language.to_s.upcase
+
+          unless SELECTABLE_LANGUAGES.include?(normalized)
+            return Result.new(false, "apex.org.preferences.languages.unsupported")
+          end
+
+          session[:language] = normalized
+          Result.new(true, nil)
+        end
+
+        def update_timezone(timezone)
+          zone = resolve_timezone(timezone)
+          return Result.new(false, "apex.org.preferences.timezones.invalid") unless zone
+
+          session[:timezone] = zone_identifier(zone, timezone)
+          Result.new(true, nil)
+        end
+
+        def valid_timezone?(timezone)
+          resolve_timezone(timezone).present?
         end
 
         def language_name(code)
           {
-            "en" => "English (Admin)",
-            "ja" => "日本語 (管理)",
-            "es" => "Español (Admin)",
-            "fr" => "Français (Admin)",
-            "de" => "Deutsch (Admin)",
-            "zh" => "中文 (管理)",
-            "ko" => "한국어 (관리)"
+            "EN" => "English",
+            "JA" => "日本語"
           }[code] || code
         end
 
         def admin_timezones
           # Common admin timezones for global operations
-          [
-            ActiveSupport::TimeZone["UTC"],
-            ActiveSupport::TimeZone["America/New_York"],
-            ActiveSupport::TimeZone["Europe/London"],
-            ActiveSupport::TimeZone["Europe/Paris"],
-            ActiveSupport::TimeZone["Asia/Tokyo"],
-            ActiveSupport::TimeZone["Asia/Shanghai"],
-            ActiveSupport::TimeZone["Australia/Sydney"],
-            ActiveSupport::TimeZone["America/Los_Angeles"]
-          ].compact
+          SELECTABLE_TIMEZONES.filter_map { |identifier| resolve_timezone(identifier) }
+        end
+
+        def resolve_timezone(value)
+          return if value.blank?
+
+          return value if value.is_a?(ActiveSupport::TimeZone)
+
+          candidate = value.to_s
+
+          ActiveSupport::TimeZone[candidate] || ActiveSupport::TimeZone.all.find do |zone|
+            timezone_matches?(zone, candidate)
+          end
+        end
+
+        def timezone_matches?(zone, candidate)
+          [ zone.tzinfo&.identifier, zone.name, zone.to_s ].compact.any? do |option|
+            option.casecmp?(candidate)
+          end
+        end
+
+        def zone_identifier(zone, fallback)
+          zone.tzinfo&.identifier || zone.name || fallback.to_s
         end
       end
     end

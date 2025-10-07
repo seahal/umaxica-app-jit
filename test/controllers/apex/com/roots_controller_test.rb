@@ -27,4 +27,14 @@ class Apex::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")
   end
+
+  # test "should get html which must have which contains configured lang param." do
+  #   get apex_com_root_url(format: :html), headers: {
+  #     "rack.session" => { language: "EN" }
+  #   }
+  #
+  #   assert_response :success
+  #   assert_select("html[lang=?]", "en")
+  #   assert_not_select("html[lang=?]", "ja")
+  # end
 end
