@@ -121,10 +121,15 @@ USER ${DOCKER_USER}
 # ============================================================================
 # Production image (multi-stage build)
 # ============================================================================
-FROM ruby:${RUBY_VERSION}-slim-trixie AS production-base
+FROM ruby:${RUBY_VERSION}-slim-bookworm AS production-base
+ARG DOCKER_UID
+ARG DOCKER_GID
+ARG DOCKER_USER
+ARG DOCKER_GROUP
 SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
-ENV APP_HOME=/app \
-    LANG=C.UTF-8 \
+ENV HOME=/home/${DOCKER_USER}
+ENV APP_HOME=${HOME}/main
+ENV LANG=C.UTF-8 \
     RAILS_ENV=production \
     RACK_ENV=production \
     BUNDLE_WITHOUT=development:test \
@@ -137,8 +142,14 @@ ENV APP_HOME=/app \
 
 WORKDIR ${APP_HOME}
 
-RUN groupadd --system rails \
-    && useradd --system --gid rails --home "${APP_HOME}" --shell /usr/sbin/nologin rails
+RUN if ! getent group "${DOCKER_GROUP}" >/dev/null; then \
+      groupadd --gid "${DOCKER_GID}" "${DOCKER_GROUP}"; \
+    fi \
+    && if ! id -u "${DOCKER_USER}" >/dev/null 2>&1; then \
+      useradd --uid "${DOCKER_UID}" --gid "${DOCKER_GROUP}" --home "${HOME}" --shell /usr/sbin/nologin "${DOCKER_USER}"; \
+    fi \
+    && mkdir -p "${APP_HOME}" "${HOME}" \
+    && chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -147,11 +158,16 @@ RUN apt-get update \
     libvips \
     libyaml-0-2 \
     tzdata \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 FROM production-base AS production-build
 
 ARG BUN_VERSION
+ARG DOCKER_UID
+ARG DOCKER_GID
+ARG DOCKER_USER
+ARG DOCKER_GROUP
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -190,18 +206,22 @@ RUN bun run build \
     && rm -f tmp/pids/server.pid
 
 FROM production-base AS production
+ARG DOCKER_UID
+ARG DOCKER_GID
+ARG DOCKER_USER
+ARG DOCKER_GROUP
 
 ENV PORT=3000 \
     RAILS_LOG_TO_STDOUT=1 \
     RAILS_SERVE_STATIC_FILES=true \
     PATH=/usr/local/bundle/bin:${PATH}
 
-COPY --from=production-build --chown=rails:rails /usr/local/bundle /usr/local/bundle
-COPY --from=production-build --chown=rails:rails /app /app
+COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} /usr/local/bundle /usr/local/bundle
+COPY --from=production-build --chown=${DOCKER_UID}:${DOCKER_GID} ${APP_HOME} ${APP_HOME}
 
-RUN chown -R rails:rails tmp log
+RUN chown -R ${DOCKER_UID}:${DOCKER_GID} tmp log
 
-USER rails
+USER ${DOCKER_USER}
 
 EXPOSE 8080
 

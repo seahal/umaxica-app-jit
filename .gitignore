@@ -98,3 +98,7 @@ node_modules
 /.crush/
 /.dbclient/
 /.rest-client/
+
+# Ignore key files for decrypting credentials and more.
+/config/*.key
+

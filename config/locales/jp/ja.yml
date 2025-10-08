@@ -2,13 +2,6 @@
 ja:
   common:
     ok: "OK"
-  errors:
-    unauthorized: "認証されていません"
-    not_implemented: "この機能は未実装です"
-  auth:
-    default_user_name: "ユーザー"
-    default_passkey_name: "パスキー"
-    default_passkey_description: "マイパスキー"
   languages:
     english: "English"
     japanese: "日本語"
@@ -256,6 +249,7 @@ ja:
         cookie:
           edit:
             accept_tracking_cookies: 'トラッキングの許可について'
+            h1: "Example"
         regions:
           title: "企業地域・言語設定"
           region_section: "地域設定"

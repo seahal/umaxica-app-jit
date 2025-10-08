@@ -1859,7 +1859,7 @@ GEM
     google-protobuf (4.32.1)
       bigdecimal
       rake (>= 13)
-    googleapis-common-protos-types (1.21.0)
+    googleapis-common-protos-types (1.22.0)
       google-protobuf (~> 4.26)
     googleauth (1.15.0)
       faraday (>= 1.0, < 3.a)
@@ -1973,7 +1973,7 @@ GEM
       logger
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
-    minitest (5.25.5)
+    minitest (5.26.0)
     msgpack (1.8.0)
     multi_json (1.17.0)
     multi_xml (0.7.2)

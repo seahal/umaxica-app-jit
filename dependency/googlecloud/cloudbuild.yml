@@ -10,7 +10,6 @@ steps:
     env:
       - 'RAILS_ENV=production'
       - 'BUNDLE_WITHOUT=development:test'
-    secretEnv: ['SECRET_KEY_BASE']
     args:
       - '-lc'
       - |
@@ -44,7 +43,7 @@ steps:
         bun run build
 
         rm -rf public/assets
-        RAILS_ENV=production SECRET_KEY_BASE="$SECRET_KEY_BASE" bundle exec rails assets:precompile
+        SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=asset bin/rails assets:precompile 
 
   - id: 'Upload assets to R2'
     name: 'amazon/aws-cli:2.17.74'
@@ -112,8 +111,6 @@ options:
   logging: CLOUD_LOGGING_ONLY
 availableSecrets:
   secretManager:
-    - versionName: 'projects/${PROJECT_ID}/secrets/rails-secret-key-base/versions/latest'
-      env: 'SECRET_KEY_BASE'
     - versionName: 'projects/${PROJECT_ID}/secrets/cloudflare-r2-access-key-id/versions/latest'
       env: 'AWS_ACCESS_KEY_ID'
     - versionName: 'projects/${PROJECT_ID}/secrets/cloudflare-r2-secret-access-key/versions/latest'

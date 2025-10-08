@@ -1,14 +1,13 @@
 # test/test_helper.rb
-require "simplecov"
+
+if ENV['RAILS_ENV'] == 'test'
+  require 'simplecov'
+  SimpleCov.start 'rails'
+end
 
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
-
-
-SimpleCov.start "rails" do
-  enable_coverage :branch
-end
 
 module ActiveSupport
   class TestCase
