@@ -26,4 +26,4 @@ class Apex::Com::Preference::CookiesControllerTest < ActionDispatch::Integration
       assert_select "input[type=?]", "submit"
     end
   end
-  end
+end
