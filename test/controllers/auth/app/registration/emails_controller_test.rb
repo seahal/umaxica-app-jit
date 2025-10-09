@@ -1,6 +1,8 @@
 require "test_helper"
 
 class Auth::App::Registration::EmailsControllerTest < ActionDispatch::IntegrationTest
+  include ActiveSupport::Testing::TimeHelpers
+
   def host
     ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
   end

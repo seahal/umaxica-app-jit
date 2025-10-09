@@ -76,8 +76,8 @@ for host in "${!DB_HOSTS[@]}"; do
 done
 
 REDIS_READY=1
-if [[ -n "${REDIS_URL:-}" ]]; then
-  redis_endpoint="${REDIS_URL#*://}"
+if [[ -n "${VALKEY_URL:-}" ]]; then
+  redis_endpoint="${VALKEY_URL#*://}"
   redis_host="${redis_endpoint%%:*}"
   redis_port_part="${redis_endpoint#*:}"
   redis_port="${redis_port_part%%/*}"
