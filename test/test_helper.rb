@@ -11,7 +11,6 @@ require "rails/test_help"
 
 module ActiveSupport
   class TestCase
-
     fixtures :all
   end
 end

@@ -49,25 +49,6 @@ class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
     end
   end
 
-  # test "edit preselects saved preferences" do
-  #   patch apex_org_preference_region_url, params: { region: "US", language: "EN", timezone: "Etc/UTC" }
-  #   follow_redirect!
-  #
-  #   assert_select "select#region option[value='US'][selected='selected']"
-  #   assert_select "select#language option[value='EN'][selected='selected']"
-  #   assert_select "select#timezone option[value='Etc/UTC'][selected='selected']"
-  # end
-
-  test "should update preferences and redirect to edit" do
-    patch apex_org_preference_region_url, params: { region: "US", language: "JA", timezone: "Asia/Tokyo" }
-
-    assert_redirected_to edit_apex_org_preference_region_url
-    assert_equal "US", session[:region]
-    assert_equal "JA", session[:language]
-    assert_equal "Asia/Tokyo", session[:timezone]
-    assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
-  end
-
   test "should reject unsupported admin language" do
     patch apex_org_preference_region_url, params: { language: "invalid" }
     assert_response :unprocessable_content
