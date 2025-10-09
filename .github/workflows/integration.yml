@@ -82,6 +82,7 @@ jobs:
       APEX_CORPORATE_URL: com.localhost
       APEX_SERVICE_URL: app.localhost
       APEX_STAFF_URL: org.localhost
+      APEX_NETWORK_URL: net.localhost
       API_CORPORATE_URL: api.com.localhost
       API_SERVICE_URL: api.app.localhost
       API_STAFF_URL: api.org.localhost
