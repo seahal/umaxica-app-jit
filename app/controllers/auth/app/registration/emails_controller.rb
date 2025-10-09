@@ -26,7 +26,7 @@ module Auth
           if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"] && session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
             @user_email = UserEmail.new
           else
-            redirect_to new_apex_app_registration_email_path,
+            redirect_to new_auth_app_registration_email_path,
                         notice: t("auth.app.registration.email.edit.your_session_was_expired")
           end
         end
@@ -34,7 +34,7 @@ module Auth
         def create
           # FIXME: write test code!
           render plain: t("auth.app.authentication.email.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_user?
+                 status: :bad_request and return if logged_in?
 
           @user_email = UserEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
           res = cloudflare_turnstile_validation
@@ -54,10 +54,10 @@ module Auth
             }
 
             # FIXME: use kafka!
-            Email::App::EmailRegistrationMailer.with({ hotp_token: num,
-                                                       mail_address: @user_email.address }).create.deliver_now
+            Email::App::RegistrationMailer.with({ hotp_token: num,
+                                                  email_address: @user_email.address }).create.deliver_now
 
-            redirect_to edit_apex_app_registration_email_path(id), notice: t("messages.email_successfully_created")
+            redirect_to edit_auth_app_registration_email_path(id), notice: t("messages.email_successfully_created")
           else
             render :new, status: :unprocessable_content
           end

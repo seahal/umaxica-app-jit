@@ -36,8 +36,8 @@ Rails.application.configure do
   # Log to STDOUT using a JSON formatter for Cloud Run visibility.
   STDOUT.sync = true
   STDERR.sync = true
-  logger           = ActiveSupport::Logger.new $stdout
-  config.logger    = ActiveSupport::TaggedLogging.new logger
+  logger = ActiveSupport::Logger.new $stdout
+  config.logger = ActiveSupport::TaggedLogging.new logger
   config.log_tags = [ :request_id ]
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!).

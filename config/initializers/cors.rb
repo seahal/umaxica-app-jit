@@ -54,10 +54,10 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
               "localhost:5173", "localhost:4173" # For Vite/frontend dev servers
 
       resource "*",
-        headers: :any,
-        methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-        credentials: true,
-        max_age: 86400 # 24 hours
+               headers: :any,
+               methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
+               credentials: true,
+               max_age: 86400 # 24 hours
     end
   end
 
@@ -74,21 +74,21 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
       corporate_domains.include?(source) ||
-      (Rails.env.development? && source&.include?("localhost"))
+        (Rails.env.development? && source&.include?("localhost"))
     }
 
     resource "/api/com/*",
-      headers: :any,
-      methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-      credentials: true,
-      max_age: 3600, # 1 hour
-      expose: [ "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset" ]
+             headers: :any,
+             methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
+             credentials: true,
+             max_age: 3600, # 1 hour
+             expose: [ "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset" ]
 
     resource "/auth/com/*",
-      headers: :any,
-      methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-      credentials: true,
-      max_age: 3600
+             headers: :any,
+             methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
+             credentials: true,
+             max_age: 3600
   end
 
   # Service domain (app) - API access
@@ -100,21 +100,21 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
       service_domains.include?(source) ||
-      (Rails.env.development? && source&.include?("localhost"))
+        (Rails.env.development? && source&.include?("localhost"))
     }
 
     resource "/api/app/*",
-      headers: :any,
-      methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-      credentials: true,
-      max_age: 3600,
-      expose: [ "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset" ]
+             headers: :any,
+             methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
+             credentials: true,
+             max_age: 3600,
+             expose: [ "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset" ]
 
     resource "/auth/app/*",
-      headers: :any,
-      methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-      credentials: true,
-      max_age: 3600
+             headers: :any,
+             methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
+             credentials: true,
+             max_age: 3600
   end
 
   # Staff domain (org) - API access
@@ -126,21 +126,21 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
       staff_domains.include?(source) ||
-      (Rails.env.development? && source&.include?("localhost"))
+        (Rails.env.development? && source&.include?("localhost"))
     }
 
     resource "/api/org/*",
-      headers: :any,
-      methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-      credentials: true,
-      max_age: 3600,
-      expose: [ "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset" ]
+             headers: :any,
+             methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
+             credentials: true,
+             max_age: 3600,
+             expose: [ "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset" ]
 
     resource "/auth/org/*",
-      headers: :any,
-      methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-      credentials: true,
-      max_age: 3600
+             headers: :any,
+             methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
+             credentials: true,
+             max_age: 3600
   end
 
   # Public resources - allow from any domain but limited methods
@@ -148,22 +148,22 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     origins "*"
 
     resource "/health*",
-      headers: [ "Accept", "Accept-Language", "Content-Language", "Content-Type" ],
-      methods: [ :get, :head, :options ],
-      credentials: false,
-      max_age: 86400
+             headers: [ "Accept", "Accept-Language", "Content-Language", "Content-Type" ],
+             methods: [ :get, :head, :options ],
+             credentials: false,
+             max_age: 86400
 
     resource "/docs/*",
-      headers: [ "Accept", "Accept-Language", "Content-Language", "Content-Type" ],
-      methods: [ :get, :head, :options ],
-      credentials: false,
-      max_age: 86400
+             headers: [ "Accept", "Accept-Language", "Content-Language", "Content-Type" ],
+             methods: [ :get, :head, :options ],
+             credentials: false,
+             max_age: 86400
 
     resource "/news/*",
-      headers: [ "Accept", "Accept-Language", "Content-Language", "Content-Type" ],
-      methods: [ :get, :head, :options ],
-      credentials: false,
-      max_age: 86400
+             headers: [ "Accept", "Accept-Language", "Content-Language", "Content-Type" ],
+             methods: [ :get, :head, :options ],
+             credentials: false,
+             max_age: 86400
   end
 
   # WebAuthn/PassKey endpoints - more restrictive
@@ -176,14 +176,14 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       ].compact.map { |url| CorsUtils.extract_domain(url) }.flatten
 
       all_domains.include?(source) ||
-      (Rails.env.development? && source&.include?("localhost"))
+        (Rails.env.development? && source&.include?("localhost"))
     }
 
     resource "/auth/*/setting/passkeys*",
-      headers: :any,
-      methods: [ :get, :post, :put, :patch, :delete, :options ],
-      credentials: true,
-      max_age: 0 # No caching for security-sensitive endpoints
+             headers: :any,
+             methods: [ :get, :post, :put, :patch, :delete, :options ],
+             credentials: true,
+             max_age: 0 # No caching for security-sensitive endpoints
   end
 end
 

@@ -9,7 +9,7 @@
 !/.bundle/config
 
 # Ignore all environment files (except templates).
-#/.env*
+#/env*
 !/.env*.erb
 
 # Ignore all logfiles and tempfiles.
@@ -98,3 +98,7 @@ node_modules
 /.crush/
 /.dbclient/
 /.rest-client/
+
+# Ignore key files for decrypting credentials and more.
+/config/*.key
+

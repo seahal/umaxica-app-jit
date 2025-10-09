@@ -1,6 +1,7 @@
 source "https://rubygems.org"
+# source "https://gem.coop"
 
-ruby "3.4.6"
+ruby "3.4.7"
 
 # rake
 gem "rake", "13.2.1"
@@ -85,8 +86,7 @@ gem "jsbundling-rails"
 # for fastly cache purge
 gem "fastly"
 #
-gem "lograge"
-
+gem "thruster"
 
 group :development, :test do
   # to avoid n+1 queries

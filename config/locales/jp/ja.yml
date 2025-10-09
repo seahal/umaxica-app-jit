@@ -2,13 +2,6 @@
 ja:
   common:
     ok: "OK"
-  errors:
-    unauthorized: "認証されていません"
-    not_implemented: "この機能は未実装です"
-  auth:
-    default_user_name: "ユーザー"
-    default_passkey_name: "パスキー"
-    default_passkey_description: "マイパスキー"
   languages:
     english: "English"
     japanese: "日本語"
@@ -114,15 +107,28 @@ ja:
             you_have_already_logged_in: 'あなたはログインしています'
       registration:
         new:
-          page_title: '登録'
-          page_description: 'このテンプレートは app/views/auth/app/registrations/new.html.erb にあります'
+          page_title: 'アカウント登録'
+          page_description: '%{product} の利用をはじめるための登録方法を選択してください。'
+          methods:
+            title: '登録方法を選ぶ'
+            email:
+              title: 'メールアドレス'
+              description: 'メールで届く確認リンクから数分で登録を完了できます。'
+              cta: 'メールで登録する'
+            telephone:
+              title: '携帯電話番号'
+              description: 'SMSで届くワンタイムコードで本人確認を行います。'
+              cta: '電話番号で登録する'
+          social:
+            title: '他のアカウントで登録'
+            description: 'お使いのサービスと連携して %{product} のアカウントを作成します。'
+            buttons:
+              google: 'Googleで続行'
+              apple: 'Appleで続行'
+            disclaimer: '許可なく投稿や共有を行うことはありません。'
           links:
-            email: 'メールで新規登録'
-            telephone: '電話で新規登録'
-            sign_up: 'サインアップしますか？'
-          buttons:
-            google: 'Google でログイン'
-            apple: 'Apple でログイン'
+            sign_in_html: 'すでにアカウントをお持ちですか？%{link}'
+            sign_in_text: 'ログインする'
         email:
           new:
             page_title: 'email で登録します'
@@ -256,6 +262,7 @@ ja:
         cookie:
           edit:
             accept_tracking_cookies: 'トラッキングの許可について'
+            h1: "Example"
         regions:
           title: "企業地域・言語設定"
           region_section: "地域設定"
