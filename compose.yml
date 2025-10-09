@@ -45,7 +45,7 @@ services:
       - primary
       - replica
       - kafka
-      - redis
+      - valkey
       - minio
     environment:
       # Rails Configuration
@@ -53,7 +53,7 @@ services:
       - RACK_ENV=development
       - RAILS_MAX_THREADS=5
       # Redis (use local Redis service inside Compose)
-      - REDIS_URL=redis://redis:6379/0
+      - REDIS_URL=redis://valkey:6379/0
       - BUNDLE_JOBS=4
       # App Configuration
       - NAME=UMAXICA
@@ -169,14 +169,14 @@ services:
       - ./docker/psql-sub/pg_hba.conf:/etc/postgresql/pg_hba.conf
     depends_on:
       - primary
-  redis:
-    image: valkey/valkey:8.1.1-alpine3.21
+  valkey:
+    image: valkey/valkey:8.0-alpine3.22
     ports:
       - "127.0.0.1:6380:6379"
     networks:
       - backend
     volumes:
-      - redis-volume:/data
+      - valkey-volume:/data
   zookeeper:
     image: confluentinc/cp-zookeeper:7.9.0
     environment:
@@ -278,7 +278,7 @@ services:
 volumes:
   psql-pub-volume:
   psql-sub-volume:
-  redis-volume:
+  valkey-volume:
   kafka-broker-volume:
   minio-volume:
   node-volume:

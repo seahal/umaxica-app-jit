@@ -39,7 +39,7 @@ class Auth::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: "log in?"
   end
 
-  test 'check dom' do
+  test "check dom" do
     get new_auth_app_registration_url(format: :html)
 
     assert_select "head", count: 1  do
@@ -53,6 +53,7 @@ class Auth::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
         assert_select "small", text: /^©/
+        assert_select "small", text: /#{ ENV.fetch('NAME') }$/
       end
     end
   end

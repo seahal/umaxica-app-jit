@@ -90,7 +90,7 @@ module Memorize
 
     def default_redis_pool
       if File.exist?("/.dockerenv")
-        redis_url = Rails.application.credentials.dig(:REDIS, :REDIS_SESSION_URL) || "redis://redis:6379/2"
+        redis_url = Rails.application.credentials.dig(:REDIS, :REDIS_SESSION_URL) || "redis://valkey:6379/2"
         redis_config = RedisClient.config(url: redis_url)
       else
         redis_config = RedisClient.config(

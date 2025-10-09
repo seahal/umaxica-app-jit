@@ -3,10 +3,10 @@ require "test_helper"
 class Auth::Org::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_auth_org_registration_url(format: :html), headers: { "Host" => host }
-    assert_response 404
+    assert_response :not_found
   end
 
-  test 'check dom' do
+  test "check dom" do
     get new_auth_org_registration_url(format: :html)
 
     assert_select "head", count: 1  do
