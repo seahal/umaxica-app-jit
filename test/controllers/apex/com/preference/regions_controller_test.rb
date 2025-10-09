@@ -19,21 +19,21 @@ class Apex::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
 
         assert_select ".region-section" do
           assert_select "h2", text: I18n.t("apex.com.preferences.regions.region_section")
-                   assert_select "label[for='region']", text: I18n.t("apex.com.preferences.regions.select_region")
+          assert_select "label[for='region']", text: I18n.t("apex.com.preferences.regions.select_region")
           assert_select "select#region option[value='US']"
           assert_select "select#region option[value='JP']"
         end
 
         assert_select ".language-section" do
           assert_select "h2", text: I18n.t("apex.com.preferences.regions.language_section")
-              assert_select ".language-selection label[for='language']", text: I18n.t("apex.com.preferences.regions.select_language")
+          assert_select ".language-selection label[for='language']", text: I18n.t("apex.com.preferences.regions.select_language")
           assert_select "select#language option[value='JA']"
           assert_select "select#language option[value='EN']"
         end
 
         assert_select ".timezone-section" do
           assert_select "h2", text: I18n.t("apex.com.preferences.regions.timezone_section")
-                    assert_select ".timezone-selection label[for='timezone']", text: I18n.t("apex.com.preferences.regions.select_timezone")
+          assert_select ".timezone-selection label[for='timezone']", text: I18n.t("apex.com.preferences.regions.select_timezone")
           assert_select "select#timezone option[value='Etc/UTC']"
           assert_select "select#timezone option[value='Asia/Tokyo']"
         end
@@ -64,7 +64,6 @@ class Apex::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
   #   assert_equal "Etc/UTC", session[:timezone]
   #   assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
   # end
-
 
   test "should reject unsupported language" do
     patch apex_com_preference_region_url, params: { language: "invalid" }

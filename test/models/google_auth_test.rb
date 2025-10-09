@@ -28,7 +28,7 @@ require "test_helper"
 
 class GoogleAuthTest < ActiveSupport::TestCase
   setup do
-    @user = User.new  # Assume User model exists
+    @user = User.new # Assume User model exists
     @valid_attributes = {
       user: @user,
       uid: "google_123456789",

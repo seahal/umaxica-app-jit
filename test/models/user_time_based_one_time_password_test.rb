@@ -8,7 +8,20 @@
 require "test_helper"
 
 class UserTimeBasedOneTimePasswordTest < ActiveSupport::TestCase
-  test "the truth" do
-    assert true
+  test "inherits from IdentifiersRecord" do
+    assert UserTimeBasedOneTimePassword < IdentifiersRecord
+  end
+
+  test "belongs to user" do
+    association = UserTimeBasedOneTimePassword.reflect_on_association(:user)
+    assert_not_nil association
+    assert_equal :belongs_to, association.macro
+  end
+
+  test "assigns user association without persistence" do
+    user = User.new
+    record = UserTimeBasedOneTimePassword.new(user:)
+
+    assert_same user, record.user
   end
 end

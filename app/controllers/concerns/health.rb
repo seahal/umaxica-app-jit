@@ -21,7 +21,6 @@ module Health
       # FIXME: much more validations requires
       # @status, @body = if !! [UniversalsRecord, IdentitiesRecord, NotificationsRecord, CoresRecord, SessionsRecord, StoragesRecord, MessagesRecord].all?{ it.connection.execute("SELECT 1;") }
 
-
       @status, @body = if [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
                          [ 200, "OK" ]
       else

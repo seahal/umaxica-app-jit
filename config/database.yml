@@ -447,4 +447,4 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.STORAGE_REPLICA&.PASSWORD %>
     migrations_paths: db/storages_migrate
-# note: I thought that username host should be stored at secret manager.
+  # note: I thought that username host should be stored at secret manager.

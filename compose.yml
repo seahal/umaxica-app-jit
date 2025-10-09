@@ -129,7 +129,7 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
   primary:
-    image: postgres:16.6
+    image: postgres:17.5-alpine
     command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
     networks:
       - backend
@@ -150,7 +150,7 @@ services:
       - ./docker/psql-pub/pg_hba.conf:/etc/postgresql/pg_hba.conf
       - ./docker/psql-pub:/docker-entrypoint-initdb.d
   replica:
-    image: postgres:16.6
+    image: postgres:17.5-alpine
     entrypoint: /entrypoint.sh
     networks:
       - backend

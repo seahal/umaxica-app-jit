@@ -19,7 +19,7 @@ module Auth
         # Halt the request with 401 for both HTML and JSON.
         respond_to do |format|
           format.json { render json: { error: "Unauthorized" }, status: :unauthorized }
-          format.any  { head :unauthorized }
+          format.any { head :unauthorized }
         end
       end
     end
