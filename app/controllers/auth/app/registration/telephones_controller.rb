@@ -28,7 +28,7 @@ module Auth
 
         def create
           render plain: t("auth.app.authentication.telephone.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_staff? || logged_in_user?
+                 status: :bad_request and return if logged_in? || logged_in?
 
           @user_telephone = UserTelephone.new(params.expect(user_telephone: [ :number, :confirm_policy,
                                                                              :confirm_using_mfa ]))

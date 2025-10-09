@@ -1,13 +1,14 @@
 # ============================================================================
 # Shared build arguments
 # ============================================================================
-ARG RUBY_VERSION=3.4.6
+ARG RUBY_VERSION=3.4.7
 ARG BUN_VERSION=1.2.23
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
 ARG DOCKER_USER=jit
 ARG DOCKER_GROUP=umaxica
 ARG GITHUB_ACTIONS=""
+ARG CLOUDFLARE_R2_TOKEN=""
 
 # ============================================================================
 # Development image (used by docker compose)
@@ -121,7 +122,7 @@ USER ${DOCKER_USER}
 # ============================================================================
 # Production image (multi-stage build)
 # ============================================================================
-FROM ruby:${RUBY_VERSION}-slim-bookworm AS production-base
+FROM ruby:${RUBY_VERSION}-slim-trixie AS production-base
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
@@ -204,6 +205,10 @@ RUN bun run build \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
     && rm -f tmp/pids/server.pid
+
+# add code for upload assets files to cloudflare r2
+# need credentials CLOUDFLARE_R2_TOKEN
+# SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=asset bin/rails assets:precompile
 
 FROM production-base AS production
 ARG DOCKER_UID

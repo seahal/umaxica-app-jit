@@ -7,12 +7,14 @@ class Docs::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get docs_org_root_url
     assert_response :success
   end
+
   test "should get html which must have html which contains lang param." do
     get docs_org_root_url(format: :html)
     assert_response :success
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")
   end
+
   test "dom check those correct apex destinations" do
     get docs_org_root_url
 
@@ -25,7 +27,7 @@ class Docs::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
-        assert_select "p", text: /^©/
+        assert_select "small", text: /^©/
       end
     end
   end

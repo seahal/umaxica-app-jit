@@ -204,7 +204,8 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
-        assert_select "p", text: /^©/
+        assert_select 'li'
+        assert_select "small", text: /^©/
       end
     end
   end

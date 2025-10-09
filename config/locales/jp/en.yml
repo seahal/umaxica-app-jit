@@ -15,15 +15,28 @@ en:
     app:
       registration:
         new:
-          page_title: "Registration"
-          page_description: "Find me in app/views/auth/app/registrations/new.html.erb"
+          page_title: "Create your account"
+          page_description: "Choose the sign-up method that works best for your %{product} account."
+          methods:
+            title: "Choose how to get started"
+            email:
+              title: "Email address"
+              description: "Receive a verification link by email and finish registration in a few minutes."
+              cta: "Sign up with email"
+            telephone:
+              title: "Mobile phone number"
+              description: "Verify your phone with a one-time SMS code before creating your account."
+              cta: "Sign up with telephone"
+          social:
+            title: "Use an existing account"
+            description: "Link a new %{product} account with the provider you already trust."
+            buttons:
+              google: "Continue with Google"
+              apple: "Continue with Apple"
+            disclaimer: "We will never post or share anything without your permission."
           links:
-            email: "Sign up with Email"
-            telephone: "Sign up with Telephone"
-            sign_up: "Sign up?"
-          buttons:
-            google: "Log in with Google"
-            apple: "Log in with Apple"
+            sign_in_html: "Already registered? %{link}"
+            sign_in_text: "Sign in"
   languages:
     english: "English"
     japanese: "日本語"

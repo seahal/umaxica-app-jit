@@ -1,5 +1,5 @@
 module Auth
-  module App
+  module Org
     module Registration
       class EmailsController < ApplicationController
         include ::Cloudflare

@@ -1,5 +1,5 @@
 module Auth
-  module App
+  module Org
     class RegistrationsController < ApplicationController
       def new
         @registration_methods = [
