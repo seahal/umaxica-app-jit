@@ -9,6 +9,7 @@ services:
         COMMIT_HASH: "abcdef"
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
+    env_file: docker/main/env
     command: ["/bin/bash", "docker/main/entrypoint.sh"]
     restart: always
     tty: true
@@ -45,76 +46,6 @@ services:
       - kafka
       - valkey
       - minio
-    environment:
-      # Rails Configuration
-      - RAILS_ENV=development
-      - RACK_ENV=development
-      - RAILS_MAX_THREADS=5
-      # Redis (use local Redis service inside Compose)
-      - VALKEY_URL=redis://valkey:6379/0
-      - BUNDLE_JOBS=4
-      # App Configuration
-      - NAME=UMAXICA
-      - PORT=3000
-      # Identifiers
-      - SINGLETON_DEFAULT_SALT=hoge
-      - IDENTIFIER_REGION_CODE=392
-      - IDENTIFIER_INSTANCE_ID=0123456789
-      # Domain URLs
-      - APEX_CORPORATE_URL=com.localhost
-      - APEX_SERVICE_URL=app.localhost
-      - APEX_NETWORK_URL=net.localhost
-      - APEX_STAFF_URL=org.localhost
-      - API_CORPORATE_URL=api.com.localhost
-      - API_SERVICE_URL=api.app.localhost
-      - API_STAFF_URL=api.org.localhost
-      - AUTH_SERVICE_URL=auth.app.localhost
-      - AUTH_STAFF_URL=auth.org.localhost
-      - DOCS_CORPORATE_URL=docs.com.localhost
-      - DOCS_SERVICE_URL=docs.app.localhost
-      - DOCS_STAFF_URL=docs.org.localhost
-      - NEWS_CORPORATE_URL=news.com.localhost
-      - NEWS_SERVICE_URL=news.app.localhost
-      - NEWS_STAFF_URL=news.org.localhost
-      - HELP_CORPORATE_URL=help.com.localhost
-      - HELP_SERVICE_URL=help.app.localhost
-      - HELP_STAFF_URL=help.org.localhost
-      - EDGE_CORPORATE_URL=localhost:5131
-      - EDGE_SERVICE_URL=localhost:5132
-      - EDGE_STAFF_URL=localhost:5133
-      # Database Configuration
-      - POSTGRESQL_USER=root
-      - POSTGRESQL_PORT=5432
-      - POSTGRESQL_UNIVERSAL_PUB=primary
-      - POSTGRESQL_UNIVERSAL_SUB=replica
-      - POSTGRESQL_CONTACT_PUB=primary
-      - POSTGRESQL_CONTACT_SUB=replica
-      - POSTGRESQL_IDENTIFIER_PUB=primary
-      - POSTGRESQL_IDENTIFIER_SUB=replica
-      - POSTGRESQL_PROFILE_PUB=primary
-      - POSTGRESQL_PROFILE_SUB=replica
-      - POSTGRESQL_TOKEN_PUB=primary
-      - POSTGRESQL_TOKEN_SUB=replica
-      - POSTGRESQL_BUSINESS_PUB=primary
-      - POSTGRESQL_BUSINESS_SUB=replica
-      - POSTGRESQL_MESSAGE_PUB=primary
-      - POSTGRESQL_MESSAGE_SUB=replica
-      - POSTGRESQL_NOTIFICATION_PUB=primary
-      - POSTGRESQL_NOTIFICATION_SUB=replica
-      - POSTGRESQL_CACHE_PUB=primary
-      - POSTGRESQL_CACHE_SUB=replica
-      - POSTGRESQL_SPECIALITY_PUB=primary
-      - POSTGRESQL_SPECIALITY_SUB=replica
-      - POSTGRESQL_STORAGE_PUB=primary
-      - POSTGRESQL_STORAGE_SUB=replica
-      # Kafka Configuration
-      - KAFKA_BROKERS=kafka:29092
-      # Mail Configuration
-      - RESEND_SMTP_ENDPOINT=smtp.resend.com
-      - RESEND_SMTP_USER_NAME=resend
-      # Object Storage Configuration
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin
   minio:
     image: minio/minio
     ports:
