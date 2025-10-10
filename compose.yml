@@ -204,6 +204,9 @@ services:
   #     - "9411:9411"   # zipkin
   #   depends_on:
   #     - main
+networks:
+  backend:
+  frontend:
 volumes:
   psql-pub-volume:
   psql-sub-volume:
@@ -220,6 +223,3 @@ volumes:
     driver_opts:
       type: tmpfs
       device: tmpfs
-networks:
-  backend:
-  frontend:
