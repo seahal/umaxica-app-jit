@@ -2498,7 +2498,7 @@ DEPENDENCIES
   simplecov
   sitemap_generator
   solid_cache
-  thruster
+  thruster (~> 0.1.15)
   tzinfo-data
   web-console
   webauthn
