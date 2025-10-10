@@ -86,7 +86,7 @@ gem "jsbundling-rails"
 # for fastly cache purge
 gem "fastly"
 #
-gem 'thruster', '~> 0.1.15'
+gem "thruster", "~> 0.1.15"
 
 group :development, :test do
   # to avoid n+1 queries
