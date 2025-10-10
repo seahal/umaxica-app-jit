@@ -1923,7 +1923,7 @@ GEM
     karafka-core (2.5.7)
       karafka-rdkafka (>= 0.20.0)
       logger (>= 1.6.0)
-    karafka-rdkafka (0.22.0)
+    karafka-rdkafka (0.22.2)
       ffi (~> 1.15)
       json (> 2.0)
       logger
