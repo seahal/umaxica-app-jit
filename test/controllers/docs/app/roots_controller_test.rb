@@ -19,6 +19,7 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get docs_app_root_url
 
     assert_select "head", count: 1 do
+      assert_select "link[rel=?]", "icon", count: 1
       assert_select "title", count: 1, text: "#{ ENV.fetch('NAME') }"
     end
     assert_select "body", count: 1 do

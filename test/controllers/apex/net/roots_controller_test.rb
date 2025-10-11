@@ -23,6 +23,7 @@ class Apex::Net::RootsControllerTest < ActionDispatch::IntegrationTest
     get apex_net_root_url
     assert_select "head", count: 1 do
       assert_select "title", count: 1, text: "#{ ENV.fetch('NAME') }"
+      assert_select "link[rel=?]", "icon", count: 1
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do

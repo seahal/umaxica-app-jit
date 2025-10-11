@@ -11,6 +11,7 @@ class Auth::Org::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "head", count: 1 do
       assert_select "title", count: 1, text: /#{ ENV.fetch('NAME') }/
+      assert_select "link[rel=?]", "icon", count: 1
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 2 do
