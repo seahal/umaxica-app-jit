@@ -63,3 +63,14 @@ Things you may want to cover:
   * wrangler
   * [Apple]()
   * [Google]()
+* Staging Site
+  * com
+    * https://umaxica.com
+  * app
+    * https://umaxica.app
+  * org
+    * https://umaxica.org
+  * info
+    * status page => https://umaxica.info
+  * net
+    * assets cdn => https://umaxica.net
