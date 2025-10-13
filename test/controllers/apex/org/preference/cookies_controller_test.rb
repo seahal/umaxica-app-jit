@@ -9,11 +9,10 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
       assert_select "input[type='checkbox'][name='accept_functional_cookies']", count: 1
       assert_select "input[type='checkbox'][name='accept_performance_cookies']", count: 1
       assert_select "input[type='checkbox'][name='accept_targeting_cookies']", count: 1
-      assert_select "input[type='checkbox'][name='accept_tracking_cookies']", count: 1
+      assert_select "input[type='checkbox'][name='accept_tracking_cookies']", count: 0
       assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_functional_cookies")
       assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_performance_cookies")
       assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_targeting_cookies")
-      assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_tracking_cookies")
       assert_select "input[type=?]", "submit"
     end
     assert_response :success
@@ -30,12 +29,14 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
       assert_select "input[type='checkbox'][name='accept_functional_cookies']", count: 1
       assert_select "input[type='checkbox'][name='accept_performance_cookies']", count: 1
       assert_select "input[type='checkbox'][name='accept_targeting_cookies']", count: 1
-      assert_select "input[type='checkbox'][name='accept_tracking_cookies']", count: 1
+      assert_select "input[type='checkbox'][name='accept_tracking_cookies']", count: 0
       assert_select "input[type='checkbox'][name='accept_tracking_cookies'][checked]", count: 0
       assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_functional_cookies")
       assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_performance_cookies")
       assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_targeting_cookies")
-      assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_tracking_cookies")
+      assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_functional_cookies")
+      assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_performance_cookies")
+      assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_targeting_cookies")
       assert_select "input[type=?]", "submit"
     end
   end
