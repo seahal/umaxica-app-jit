@@ -10,16 +10,19 @@ Things you may want to cover:
 * Ruby version
     - Find it => `ruby -v`, and check `Gemfile` or `.ruby-version`.
 * System dependencies
-  - Linux => Run on it.
   - Ruby => Of course, we are on Ruby.
+  - Docker => Run on it.
 * Configuration
   * ...
 * Database creation
     - `bin/rails db:create`
 * Database initialization
-    - `bin/rails db:migrate` => `bin/rails db:seed`
+  - `bin/rails db:create`
+  - `bin/rails db:migrate`
+  - `bin/rails db:seed`
 * How to run the test suite
-    - `bin/rails test all`
+  - `bundle exec rails test`
+  - `bun test`
 * Services (job queues, cache servers, search engines, etc.)
     - Redis(ValKey)
     - Kafka
@@ -63,3 +66,14 @@ Things you may want to cover:
   * wrangler
   * [Apple]()
   * [Google]()
+* Pages
+  * com
+    * https://umaxica.com
+  * app
+    * https://umaxica.app
+  * org
+    * https://umaxica.org
+  * info
+    * status page => https://umaxica.info
+  * net
+    * assets cdn => https://umaxica.net

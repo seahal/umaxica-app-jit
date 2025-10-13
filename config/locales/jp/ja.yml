@@ -53,6 +53,9 @@ ja:
             edit:
               page_title: 'クッキーの設定'
               accept_tracking_cookies: 'トラッキングの許可について'
+              accept_functional_cookies: '機能性クッキーの許可について'
+              accept_performance_cookies: 'パフォーマンスクッキーの許可について'
+              accept_targeting_cookies: 'ターゲティングクッキーの許可について'
           email:
             new:
               page_title: 'emailの設定'
@@ -62,14 +65,24 @@ ja:
             page_title: 'konomi'
           cookie:
             edit:
+              page_title: 'クッキーの設定'
+              h1: 'クッキーの設定'
               accept_tracking_cookies: 'トラッキングの許可について'
+              accept_functional_cookies: '機能性クッキーの許可について'
+              accept_performance_cookies: 'パフォーマンスクッキーの許可について'
+              accept_targeting_cookies: 'ターゲティングクッキーの許可について'
       org:
         preference:
           show:
             page_title: 'konomi'
           cookie:
             edit:
+              page_title: 'クッキーの設定'
+              h1: 'クッキーの設定'
               accept_tracking_cookies: 'トラッキングの許可について'
+              accept_functional_cookies: '機能性クッキーの許可について'
+              accept_performance_cookies: 'パフォーマンスクッキーの許可について'
+              accept_targeting_cookies: 'ターゲティングクッキーの許可について'
     help:
       app:
         contacts:
@@ -188,6 +201,9 @@ ja:
           edit:
             h1: 'クッキーの設定'
             accept_tracking_cookies: 'トラッキングの許可について'
+            accept_functional_cookies: '機能性クッキーの許可について'
+            accept_performance_cookies: 'パフォーマンスクッキーの許可について'
+            accept_targeting_cookies: 'ターゲティングクッキーの許可について'
         themes:
           updated: "テーマを%{theme}に更新しました"
           invalid: "無効なテーマが選択されました"
@@ -261,8 +277,11 @@ ja:
       preference:
         cookie:
           edit:
+            h1: 'クッキーの設定'
             accept_tracking_cookies: 'トラッキングの許可について'
-            h1: "Example"
+            accept_functional_cookies: '機能性クッキーの許可について'
+            accept_performance_cookies: 'パフォーマンスクッキーの許可について'
+            accept_targeting_cookies: 'ターゲティングクッキーの許可について'
         regions:
           title: "企業地域・言語設定"
           region_section: "地域設定"
@@ -326,7 +345,11 @@ ja:
       preference:
         cookie:
           edit:
+            h1: 'クッキーの設定'
             accept_tracking_cookies: 'トラッキングの許可について'
+            accept_functional_cookies: '機能性クッキーの許可について'
+            accept_performance_cookies: 'パフォーマンスクッキーの許可について'
+            accept_targeting_cookies: 'ターゲティングクッキーの許可について'
         regions:
           title: "地域・言語設定"
           region_section: "地域設定"

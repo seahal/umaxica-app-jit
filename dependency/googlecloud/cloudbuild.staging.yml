@@ -1,0 +1,119 @@
+steps:
+  - name: 'ubuntu:24.04'
+    args:
+      - '-lc'
+      - >
+        set -euo pipefail
+        export DEBIAN_FRONTEND=noninteractive
+
+    #        # --- Build deps ---
+    #        apt-get update
+    #
+    #        apt-get install -y --no-install-recommends \
+    #          build-essential ca-certificates curl git \
+    #          libpq-dev libvips libvips-dev libyaml-dev \
+    #          libffi-dev libreadline-dev zlib1g-dev \
+    #          pkg-config tzdata libssl-dev
+    #        rm -rf /var/lib/apt/lists/*
+    #
+    #
+    #        # --- mise install ---
+    #        curl -fsSL https://mise.run | sh
+    #        export PATH="$$HOME/.local/bin:$$PATH"
+    #        export PATH="$$HOME/.local/share/mise/shims:$$PATH"
+    #
+    #        # 最新の Ruby/Node/Bun を導入
+    #        mise install ruby@latest node@latest bun@latest
+    #        mise use -g ruby@latest node@latest bun@latest
+    #
+    #        # --- Ruby deps ---
+    #
+    #        gem install --no-document bundler
+    #        bundle config set path vendor/bundle
+    #        bundle config set without 'development test'
+    #        bundle config set jobs "$$(nproc)"
+    #        bundle config set retry 3
+    #        bundle install
+    #
+    #        # --- JS deps ---
+    #        if [ -f package.json ]; then
+    #          if [ -f bun.lockb ]; then
+    #            bun install
+    #          elif [ -f package-lock.json ]; then
+    #            npm ci
+    #          else
+    #            npm i
+    #          fi
+    #        fi
+    #
+    #
+    #        # --- Assets build ---
+    #        rm -rf public/assets
+    #
+    #        SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
+    id: Build assets with mise (ruby/node/bun latest)
+    entrypoint: bash
+  - name: 'ubuntu:24.04'
+    env:
+      - AWS_DEFAULT_REGION=auto
+      - RCLONE_CONFIG_REMOTE_TYPE=s3
+      - RCLONE_CONFIG_REMOTE_PROVIDER=Cloudflare
+      - RCLONE_CONFIG_REMOTE_ACCESS_KEY_ID=${_R2_ACCESS_KEY_ID}
+      - RCLONE_CONFIG_REMOTE_ENDPOINT=${_R2_ENDPOINT}
+      - RCLONE_CONFIG_REMOTE_ACL=private
+    args:
+      - '-c'
+      - |
+        set -euo pipefail
+        
+        apt-get update
+        apt-get install -y --no-install-recommends rclone
+        rm -rf /var/lib/apt/lists/*
+        
+        rclone sync public/ remote:${_R2_BUCKET}/ --progress
+    id: Upload assets to R2
+    entrypoint: bash
+    secretEnv:
+      - AWS_SECRET_ACCESS_KEY
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '-t'
+      - $_IMAGE
+      - .
+      - '--file'
+      - Dockerfile
+    id: Docker build
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - $_IMAGE
+    id: Docker push
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    args:
+      - '-lc'
+      - |
+        set -euo pipefail
+        gcloud run deploy "$_SERVICE" \
+          --image "$_IMAGE" \
+          --region "$_REGION" \
+          --project "$PROJECT_ID" \
+          --platform managed \
+          --allow-unauthenticated
+    id: Deploy to Cloud Run
+    entrypoint: bash
+timeout: 1800s
+options:
+  logging: CLOUD_LOGGING_ONLY
+substitutions:
+  _IMAGE_NAME: rails-app
+  _SERVICE: umaxica-ja-staging
+  _R2_BUCKET: umaxica-assets
+  _R2_ENDPOINT: 'https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com'
+  _IMAGE: '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}'
+  _REGION: asia-northeast1
+  _REPO: umaxica-app
+availableSecrets:
+  secretManager:
+    - versionName: projects/897712432319/secrets/umaxica_jp_asset_clodflare_r2_secret_acess_key/versions/1
+      env: AWS_SECRET_ACCESS_KEY

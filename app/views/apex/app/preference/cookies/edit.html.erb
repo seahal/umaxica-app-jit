@@ -6,8 +6,21 @@
 
 <%= form_with url: apex_app_preference_cookie_url, method: :patch do |f| %>
   <div class="interests-selection">
-    <%= f.check_box :accept_tracking_cookies, { checked: @accept_tracking_cookies } %>
-    <%= f.label :accept_tracking_cookies, t('apex.app.preference.cookie.edit.accept_tracking_cookies') %>
+    <%= f.check_box :accept_functional_cookies, { checked: @accept_functional_cookies } %>
+    <%= f.label :accept_functional_cookies, t('apex.app.preference.cookie.edit.accept_functional_cookies') %>
   </div>
-  <div> <%= f.submit %></div>
+
+  <div class="interests-selection">
+    <%= f.check_box :accept_performance_cookies, { checked: @accept_performance_cookies } %>
+    <%= f.label :accept_performance_cookies, t('apex.app.preference.cookie.edit.accept_performance_cookies') %>
+  </div>
+
+  <div class="interests-selection">
+    <%= f.check_box :accept_targeting_cookies, { checked: @accept_targeting_cookies } %>
+    <%= f.label :accept_targeting_cookies, t('apex.app.preference.cookie.edit.accept_targeting_cookies') %>
+  </div>
+
+  <div>
+    <%= f.submit %>
+  </div>
 <% end %>
