@@ -92,6 +92,7 @@ en:
         cookie:
           edit:
             h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
             accept_tracking_cookies: "Allow tracking cookies"
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
@@ -143,6 +144,7 @@ en:
         cookie:
           edit:
             h1: "Corporate Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
             accept_tracking_cookies: "Allow tracking cookies"
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
@@ -190,6 +192,7 @@ en:
         cookie:
           edit:
             h1: "Admin Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
             accept_tracking_cookies: "Allow tracking cookies"
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"

@@ -1,6 +1,13 @@
+<% breadcrumb :app_preference_cookie %>
+
 <h1><%= t('apex.org.preference.cookie.edit.h1') %></h1>
 
 <%= form_with url: apex_org_preference_cookie_url, method: :patch do |f| %>
+  <div class="interests-selection">
+    <%= check_box_tag :accept_necessary_cookies, "1", true, disabled: true %>
+    <%= label_tag :accept_necessary_cookies, t('apex.org.preference.cookie.edit.accept_necessary_cookies') %>
+  </div>
+
   <div class="interests-selection">
     <%= f.check_box :accept_functional_cookies, { checked: @accept_functional_cookies } %>
     <%= f.label :accept_functional_cookies, t('apex.org.preference.cookie.edit.accept_functional_cookies') %>
@@ -14,11 +21,6 @@
   <div class="interests-selection">
     <%= f.check_box :accept_targeting_cookies, { checked: @accept_targeting_cookies } %>
     <%= f.label :accept_targeting_cookies, t('apex.org.preference.cookie.edit.accept_targeting_cookies') %>
-  </div>
-
-  <div class="interests-selection">
-    <%= f.check_box :accept_tracking_cookies, { checked: @accept_tracking_cookies } %>
-    <%= f.label :accept_tracking_cookies, t('apex.org.preference.cookie.edit.accept_tracking_cookies') %>
   </div>
 
   <div>

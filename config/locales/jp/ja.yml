@@ -52,6 +52,7 @@ ja:
           cookie:
             edit:
               page_title: 'クッキーの設定'
+              accept_necessary_cookies: '必要なクッキーの許可について（必須）'
               accept_tracking_cookies: 'トラッキングの許可について'
               accept_functional_cookies: '機能性クッキーの許可について'
               accept_performance_cookies: 'パフォーマンスクッキーの許可について'
@@ -67,6 +68,7 @@ ja:
             edit:
               page_title: 'クッキーの設定'
               h1: 'クッキーの設定'
+              accept_necessary_cookies: '必要なクッキーの許可について（必須）'
               accept_tracking_cookies: 'トラッキングの許可について'
               accept_functional_cookies: '機能性クッキーの許可について'
               accept_performance_cookies: 'パフォーマンスクッキーの許可について'
@@ -79,6 +81,7 @@ ja:
             edit:
               page_title: 'クッキーの設定'
               h1: 'クッキーの設定'
+              accept_necessary_cookies: '必要なクッキーの許可について（必須）'
               accept_tracking_cookies: 'トラッキングの許可について'
               accept_functional_cookies: '機能性クッキーの許可について'
               accept_performance_cookies: 'パフォーマンスクッキーの許可について'
@@ -200,6 +203,7 @@ ja:
         cookie:
           edit:
             h1: 'クッキーの設定'
+            accept_necessary_cookies: '必要なクッキーの許可について（必須）'
             accept_tracking_cookies: 'トラッキングの許可について'
             accept_functional_cookies: '機能性クッキーの許可について'
             accept_performance_cookies: 'パフォーマンスクッキーの許可について'
@@ -278,6 +282,7 @@ ja:
         cookie:
           edit:
             h1: 'クッキーの設定'
+            accept_necessary_cookies: '必要なクッキーの許可について（必須）'
             accept_tracking_cookies: 'トラッキングの許可について'
             accept_functional_cookies: '機能性クッキーの許可について'
             accept_performance_cookies: 'パフォーマンスクッキーの許可について'
@@ -346,6 +351,7 @@ ja:
         cookie:
           edit:
             h1: 'クッキーの設定'
+            accept_necessary_cookies: '必要なクッキーの許可について（必須）'
             accept_tracking_cookies: 'トラッキングの許可について'
             accept_functional_cookies: '機能性クッキーの許可について'
             accept_performance_cookies: 'パフォーマンスクッキーの許可について'
