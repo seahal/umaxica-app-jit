@@ -6,7 +6,6 @@ Rails.application.routes.draw do
         resource :health, only: :show
         # version
         namespace :v1 do
-          resource :staging, only: :show, defaults: { format: :json }
           resource :version, only: :show
           resource :status, only: :show
         end
@@ -19,7 +18,6 @@ Rails.application.routes.draw do
         resource :health, only: :show
         # version
         namespace :v1 do
-          resource :staging, only: :show, defaults: { format: :json }
           resource :status, only: :show
           namespace :beacon do
             resources :emails, only: %i[show]
@@ -42,7 +40,6 @@ Rails.application.routes.draw do
         resource :health, only: :show
         # version
         namespace :v1 do
-          resource :staging, only: :show, defaults: { format: :json }
           resource :version, only: :show
           resource :status, only: :show
         end
