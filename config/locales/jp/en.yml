@@ -88,6 +88,14 @@ en:
         timezones:
           updated: "Timezone updated to %{timezone}"
           invalid: "Invalid timezone selected"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_tracking_cookies: "Allow tracking cookies"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
     com:
       preferences:
         title: "Preferences"
@@ -131,6 +139,14 @@ en:
         timezones:
           updated: "Timezone updated to %{timezone}"
           invalid: "Invalid timezone selected"
+      preference:
+        cookie:
+          edit:
+            h1: "Corporate Cookie Preferences"
+            accept_tracking_cookies: "Allow tracking cookies"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
     org:
       customers:
         created: "Customer %{name} created successfully"
@@ -170,6 +186,14 @@ en:
         privacies:
           updated: "Privacy settings updated successfully"
           invalid: "Invalid privacy settings"
+      preference:
+        cookie:
+          edit:
+            h1: "Admin Cookie Preferences"
+            accept_tracking_cookies: "Allow tracking cookies"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
   activerecord:
     errors:
       messages:
