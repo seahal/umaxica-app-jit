@@ -6,6 +6,11 @@
 
 <%= form_with url: apex_app_preference_cookie_url, method: :patch do |f| %>
   <div class="interests-selection">
+    <%= check_box_tag :accept_necessary_cookies, "1", true, disabled: true %>
+    <%= label_tag :accept_necessary_cookies, t('apex.app.preference.cookie.edit.accept_necessary_cookies') %>
+  </div>
+
+  <div class="interests-selection">
     <%= f.check_box :accept_functional_cookies, { checked: @accept_functional_cookies } %>
     <%= f.label :accept_functional_cookies, t('apex.app.preference.cookie.edit.accept_functional_cookies') %>
   </div>
