@@ -37,6 +37,7 @@ class Apex::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   #   assert_select("html[lang=?]", "en")
   #   assert_not_select("html[lang=?]", "ja")
   # end
+  #
   test "dom check those correct apex destinations" do
     get apex_com_root_url
     assert_select "head", count: 1 do
