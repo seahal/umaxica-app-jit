@@ -1,9 +1,10 @@
 module AssetsHelper
   # Infer tenant key from request host.
-  # Returns "org" or "com"; default to "com" if not clearly org.
+  # Returns "org", "net", or "com"; default to "com" if not clearly org/net.
   def tenant_key
     host = request.host.to_s
     return "org" if host.include?("org")
+    return "net" if host.split(".").last == "net"
     "com"
   end
 

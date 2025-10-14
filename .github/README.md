@@ -76,3 +76,5 @@ Things you may want to cover:
     * https://umaxica.org
   * net
     * assets cdn => https://umaxica.net
+* Usefull documents
+  * [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
