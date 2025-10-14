@@ -5,7 +5,11 @@ steps:
       - >
         set -euo pipefail
         export DEBIAN_FRONTEND=noninteractive
-           # --- Build deps ---           a
+           # --- Build deps ---    
+           apt-get update
+           apt-get install -y --no-install-recommends \
+               build-essential curl
+           rm -rf /var/lib/apt/lists/*
         
            # --- mise install ---
            curl -fsSL https://mise.run | sh
