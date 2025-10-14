@@ -21,8 +21,9 @@ steps:
            export PATH="$$HOME/.local/share/mise/shims:$$PATH"
         
            # 最新の Ruby/Node/Bun を導入
-           mise install ruby@latest node@latest bun@latest
-           mise use -g ruby@latest node@latest bun@latest
+           mise install ruby@latest node@latest
+           mise use -g ruby@latest node@latest
+           npm -g install bun
         
            # --- Ruby deps ---
         
@@ -142,19 +143,13 @@ steps:
       - |
         set -euxo pipefail
 
-        # 参考出力（原因切り分け用）
-        gcloud --version
-        gcloud auth list
-        gcloud config set project "$PROJECT_ID"
-        gcloud config set run/region "${_REGION}"
-
         # ★サービス名を明示、--quiet で非対話
         gcloud run deploy "${_SERVICE}" \
           --image "asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:latest" \
           --region "${_REGION}" \
           --project "$PROJECT_ID" \
           --quiet
-timeout: 1800s
+timeout: 2700s
 options:
   logging: CLOUD_LOGGING_ONLY
 substitutions:
