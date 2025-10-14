@@ -8,7 +8,10 @@ steps:
            # --- Build deps ---    
            apt-get update
            apt-get install -y --no-install-recommends \
-               build-essential curl
+            build-essential ca-certificates curl git \
+            libpq-dev libvips libvips-dev libyaml-dev \
+            libffi-dev libreadline-dev zlib1g-dev \
+            pkg-config tzdata libssl-dev
            rm -rf /var/lib/apt/lists/*
         
            # --- mise install ---
