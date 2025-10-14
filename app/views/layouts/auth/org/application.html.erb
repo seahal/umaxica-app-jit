@@ -7,7 +7,7 @@
   <%= csp_meta_tag %>
   <%= tenant_stylesheet "auth" %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-  <link rel="icon" href="https://asset.umaxica.net/org/auth/favicon.ico" sizes="32x32">
+  <link rel="icon" href="https://perm.umaxica.org/jit/favicon.ico" sizes="32x32">
 </head>
 <body class="px-4">
 <header>
@@ -18,13 +18,6 @@
 
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>
-
-  <nav>
-    <ul>
-      <li></li>
-    </ul>
-    <%= breadcrumbs pretext: "You are here: ", separator: " &rsaquo; " %>
-  </nav>
 </main>
 
 <nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
