@@ -35,10 +35,11 @@ Things you may want to cover:
     - When you are free, look at 'bin/rails notes'
 * Using Services
   * Google Cloud
-    * CloudRun
-    * CloudBuild
-    * CloudCDN
-    * Social Login
+    * One
+      * CloudRun
+      * CloudBuild
+    * Two
+      * Social Login
   * CloudFlare
     * Registers
     * Turnstile
@@ -47,7 +48,7 @@ Things you may want to cover:
     * CDN
   * Resend
     * Email
-  * Amazon Web Service
+  * Amazon Web Service (AWS)
     * SES
   * Terraform
     * TCP Terraform
@@ -57,7 +58,7 @@ Things you may want to cover:
   * You ought to use [git-secrets](https://github.com/awslabs/git-secrets).
   * We use Rails' Credentials, and if you need them we show you test and dev keys.
 * Tools
-  * `yamlfmt`
+  * [yamlfmt](https://github.com/google/yamlfmt)
   * [Lefthook](https://github.com/evilmartians/lefthook)
   * [tflint](https://github.com/terraform-linters/tflint)
   * [hadolint](https://github.com/hadolint/hadolint)
@@ -73,7 +74,5 @@ Things you may want to cover:
     * https://umaxica.app
   * org
     * https://umaxica.org
-  * info
-    * status page => https://umaxica.info
   * net
     * assets cdn => https://umaxica.net
