@@ -21,9 +21,8 @@ steps:
            export PATH="$$HOME/.local/share/mise/shims:$$PATH"
         
            # 最新の Ruby/Node/Bun を導入
-           mise install ruby@latest node@latest
-           mise use -g ruby@latest node@latest
-           npm -g install bun
+           mise install ruby@latest node@latest bun@latest
+           mise use -g ruby@latest node@latest bun@latest
         
            # --- Ruby deps ---
         
