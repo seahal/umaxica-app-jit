@@ -8,7 +8,7 @@ steps:
            # --- Build deps ---    
            apt-get update
            apt-get install -y --no-install-recommends \
-               build-essential curl pg image_processing
+               build-essential curl
            rm -rf /var/lib/apt/lists/*
         
            # --- mise install ---
