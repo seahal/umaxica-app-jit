@@ -2,9 +2,9 @@
 
 require "test_helper"
 
-class Apex::App::ApplicationHelperTest < ActionView::TestCase
+class News::Com::ApplicationHelperTest < ActionView::TestCase
   setup do
-    extend Apex::App::ApplicationHelper
+    extend News::Com::ApplicationHelper
   end
 
   test "to_localetime converts to UTC by default" do
