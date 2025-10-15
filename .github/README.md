@@ -88,3 +88,6 @@ Things you may want to cover:
 * Usefull documents
   * [Officeial Rails page](https://rubyonrails.org/)
   * [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
+* Troubleshooting
+  * not move js or css files => `bin/rails assets:clobber`
+  * not run tests => `bin/rails db:create` ?

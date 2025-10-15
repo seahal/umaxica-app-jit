@@ -36,8 +36,6 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 gem "bootsnap", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing"
-# Elasticsearch
-gem "opensearch-ruby"
 # for Amazon SNS
 gem "aws-sdk"
 # for Active Storage
@@ -86,7 +84,7 @@ gem "jsbundling-rails"
 # for fastly cache purge
 gem "fastly"
 #
-gem "thruster", "~> 0.1.15"
+gem "thruster"
 
 group :development, :test do
   # to avoid n+1 queries
