@@ -10,5 +10,4 @@ module Regionalization
     def set_timezone
         Time.zone = session[:timezone] if session[:timezone].present?
     end
-
 end

@@ -1,6 +1,6 @@
 module Help::App
   class InquiriesController < ApplicationController
-    include ::Cloudflare
+    include ::CloudflareTurntile
     include ::Rotp
     include ::Common
     include ::Memorize
