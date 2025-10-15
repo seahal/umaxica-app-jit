@@ -78,6 +78,9 @@ Rails.application.configure do
 
   # added by user
 
+  ## for docker
+  # config.web_console.allowed_ips = '172.19.0.1/0'
+
   ## to avoid errors
   config.hosts << "app.localhost"
   config.hosts << "com.localhost"

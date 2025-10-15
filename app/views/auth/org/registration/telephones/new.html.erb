@@ -27,7 +27,7 @@
       <%= form.label :confirm_using_mfa, 'MFAの利用を確認する' %>
     </div>
 
-    <div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>
+    <%= render "cloudflare_turnstile" %>
 
     <%= form.submit %>
   <% end %>

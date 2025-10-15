@@ -14,7 +14,7 @@
     </div>
   <% end %>
 
-  <div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>
+  <%= render "cloudflare_turnstile" %>
 
   <div>
     <%= f.label :account_identifiable_information %>

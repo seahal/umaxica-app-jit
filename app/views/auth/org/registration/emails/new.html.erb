@@ -24,7 +24,7 @@
       <%= form.label :confirm_policy, '利用規約に同意する' %>
     </div>
 
-    <div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>
+    <%= render "cloudflare_turnstile" %>
 
     <%= form.submit %>
   <% end %>
