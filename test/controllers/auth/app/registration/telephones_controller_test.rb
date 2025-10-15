@@ -4,7 +4,8 @@ class Auth::App::Registration::TelephonesControllerTest < ActionDispatch::Integr
   test "should get new" do
     get new_auth_app_registration_telephone_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
     assert_response :success
-    assert_select "form[action=?][method=?]", auth_app_registration_telephones_path, "post" do
+    expected_action = auth_app_registration_telephones_path(default_url_query)
+    assert_select "form[action=?][method=?]", expected_action, "post" do
       # Check existence and attributes of telephone input field
       assert_select "label[for=?]", "user_telephone_number"
       assert_select "input[type=?][name=?]", "text", "user_telephone[number]"
@@ -21,7 +22,7 @@ class Auth::App::Registration::TelephonesControllerTest < ActionDispatch::Integr
       # Check existence of submit button
       assert_select "input[type=?]", "submit"
     end
-    assert_select "a[href=?]", new_auth_app_registration_path
-    assert_select "a[href=?]", new_auth_app_authentication_telephone_path
+    assert_select "a[href=?]", new_auth_app_registration_path(default_url_query)
+    assert_select "a[href=?]", new_auth_app_authentication_telephone_path(default_url_query)
   end
 end

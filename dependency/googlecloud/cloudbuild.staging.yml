@@ -24,7 +24,6 @@ steps:
            mise use -g ruby@latest node@latest bun@latest
         
            # --- Ruby deps ---
-        
            gem install --no-document bundler
            bundle config set path vendor/bundle
            bundle config set without 'development test'
@@ -33,15 +32,7 @@ steps:
            bundle install
         
            # --- JS deps ---
-           if [ -f package.json ]; then
-             if [ -f bun.lockb ]; then
-               bun install
-             elif [ -f package-lock.json ]; then
-               npm ci
-             else
-               npm i
-             fi
-           fi
+           bun install
         
            # --- Assets build ---
            rm -rf public/assets

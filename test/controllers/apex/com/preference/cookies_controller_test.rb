@@ -21,7 +21,8 @@ class Apex::Com::Preference::CookiesControllerTest < ActionDispatch::Integration
     assert_response :success
     assert_select "h1", I18n.t("apex.com.preference.cookie.edit.h1")
     assert_select "div#hello-world-component", count: 0
-    assert_select "form[action=?]", apex_com_preference_cookie_url do
+    expected_action = apex_com_preference_cookie_url(ri: "jp", tz: "jst", lx: "ja")
+    assert_select "form[action=?]", expected_action do
       assert_select "input[type='hidden'][name='authenticity_token']", count: 1
       assert_select "input[type='checkbox'][name='accept_necessary_cookies']", count: 1
       assert_select "input[type='checkbox'][name='accept_functional_cookies']", count: 1

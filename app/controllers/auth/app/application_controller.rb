@@ -5,6 +5,7 @@ module Auth
     class ApplicationController < ActionController::Base
       include ::Authn
       include ::RateLimit
+      include ::DefaultUrlOptions
       include Pundit::Authorization
 
       allow_browser versions: :modern

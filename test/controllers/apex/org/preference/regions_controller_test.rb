@@ -13,7 +13,8 @@ class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_select "select[name='language']"
     assert_select "select[name='timezone']"
     assert_select "main.container.mx-auto.mt-28.px-5.block" do
-      assert_select "form[action='#{apex_org_preference_region_url}'][method='post']" do
+      expected_action = apex_org_preference_region_url(ri: "jp", tz: "jst", lx: "ja")
+      assert_select "form[action=?][method='post']", expected_action do
         assert_select "input[name='_method'][value='patch']", count: 1
 
         assert_select ".region-section" do

@@ -14,7 +14,8 @@ class Auth::App::Authentication::RecoveryCodesControllerTest < ActionDispatch::I
       assert_select "div.cf-turnstile"
       assert_select "input[type=?]", "submit"
     end
-    assert_select "a[href=?]", new_auth_app_authentication_path, I18n.t("auth.app.authentication.new.back")
+    assert_select "a[href=?]", new_auth_app_authentication_path(default_url_query),
+                  I18n.t("auth.app.authentication.new.back")
     assert_response :success
   end
 end

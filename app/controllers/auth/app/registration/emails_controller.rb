@@ -2,7 +2,7 @@ module Auth
   module App
     module Registration
       class EmailsController < ApplicationController
-        include ::Cloudflare
+        include ::CloudflareTurnstile
         include ::Redirect
 
         def new

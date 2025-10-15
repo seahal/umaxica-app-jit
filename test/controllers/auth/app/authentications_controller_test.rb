@@ -4,11 +4,12 @@ class Auth::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_auth_app_authentication_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
     assert_response :success
-    assert_select "a[href=?]", new_auth_app_authentication_email_path
-    assert_select "a[href=?]", new_auth_app_authentication_telephone_path
-    assert_select "a[href=?]", new_auth_app_authentication_passkey_path
-    assert_select "a[href=?]", new_auth_app_authentication_recovery_path
-    assert_select "a[href=?]", new_auth_app_registration_path
+    query = default_url_query
+    assert_select "a[href=?]", new_auth_app_authentication_email_path(query)
+    assert_select "a[href=?]", new_auth_app_authentication_telephone_path(query)
+    assert_select "a[href=?]", new_auth_app_authentication_passkey_path(query)
+    assert_select "a[href=?]", new_auth_app_authentication_recovery_path(query)
+    assert_select "a[href=?]", new_auth_app_registration_path(query)
   end
   //
   test "should get edit" do

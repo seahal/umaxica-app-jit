@@ -4,8 +4,10 @@ module Auth
   module Org
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
-      allow_browser versions: :modern
+      include ::DefaultUrlOptions
       include ::RateLimit
+
+      allow_browser versions: :modern
 
       protected
 
