@@ -5,13 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   <link rel="icon" href="https://perm.umaxica.com/jit/favicon.ico" sizes="32x32">
 </head>
 
 <body class="px-4">
-<header>
-  <h1><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/"><%= ENV.fetch('NAME') %> (apex, com)</a></h1></header>
+<header class="max-w-5xl mx-auto flex items-center justify-between py-8">
+  <h1 class="text-2xl font-semibold text-zinc-900">
+    <a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/" class="hover:text-zinc-600 transition">
+      <%= ENV.fetch('NAME') %> (apex, com)
+    </a>
+  </h1>
+</header>
 
 <hr>
 
@@ -19,14 +25,16 @@
   <%= yield %>
 </main>
 
-<nav>
+<nav class="mt-14">
   <% breadcrumbs.tap do |links| %>
     <% if links.any? %>
-      <ul>
+      <ul class="flex flex-wrap items-center gap-3 text-sm text-zinc-600">
         <% links.each do |link| %>
-          <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
+          <li>
+            <%= link_to link.text, link.url, class: "#{link.current? ? 'font-semibold text-zinc-900' : 'hover:text-zinc-900 transition'}" %>
+          </li>
         <% end %>
-        <li>...</li>
+        <li class="text-zinc-400">...</li>
       </ul>
     <% end %>
   <% end %>
@@ -37,12 +45,14 @@
 <footer>
   <ul>
     <li><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>/">Home</a></li>
-    <li><%= link_to 'Support', help_com_root_path %></li>
-    <li><%= link_to 'NewsRoom', news_com_root_path %></li>
-    <li><%= link_to 'Documents', docs_com_root_path %></li>
-    <li><%= link_to 'Cookie', edit_apex_com_preference_cookie_path %></li>
+    <li><%= link_to 'Support', help_com_root_url %></li>
+    <li><%= link_to 'NewsRoom', news_com_root_url %></li>
+    <li><%= link_to 'Documents', docs_com_root_url %></li>
+    <li><%= link_to 'Cookie', edit_apex_com_preference_cookie_path, class: "hover:text-zinc-900 transition" %></li>
   </ul>
-  <small>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></small>
+  <small class="mt-6 block text-center text-xs uppercase tracking-[0.3em] text-zinc-400">
+    © <%= Time.zone.today.year %> <%= ENV.fetch('NAME') %>
+  </small>
 </footer>
 
 </body>

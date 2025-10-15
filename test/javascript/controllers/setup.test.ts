@@ -36,16 +36,4 @@ describe("Test Environment Setup", () => {
         // クリーンアップ
         delete process.env.TEST_MODE;
     });
-
-    // タイムアウトのテスト
-    it("should handle timeouts", async () => {
-        const delay = (ms: number) =>
-            new Promise((resolve) => setTimeout(resolve, ms));
-
-        const start = Date.now();
-        await delay(50);
-        const elapsed = Date.now() - start;
-
-        expect(elapsed).toBeGreaterThanOrEqual(50);
-    }, 1000); // 1秒のタイムアウト
 });

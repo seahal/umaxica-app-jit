@@ -2015,9 +2015,6 @@ GEM
     omniauth-rails_csrf_protection (1.0.2)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
-    opensearch-ruby (3.4.0)
-      faraday (>= 1.0, < 3)
-      multi_json (>= 1.0)
     openssl (3.3.1)
     openssl-signature_algorithm (1.3.0)
       openssl (> 2.0)
@@ -2467,7 +2464,6 @@ DEPENDENCIES
   omniauth-apple
   omniauth-google-oauth2
   omniauth-rails_csrf_protection
-  opensearch-ruby
   opentelemetry-exporter-otlp
   opentelemetry-instrumentation-all
   opentelemetry-sdk
@@ -2498,7 +2494,7 @@ DEPENDENCIES
   simplecov
   sitemap_generator
   solid_cache
-  thruster (~> 0.1.15)
+  thruster
   tzinfo-data
   web-console
   webauthn

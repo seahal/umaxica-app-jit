@@ -8,21 +8,30 @@ application up and running.
 Things you may want to cover:
 
 * Ruby version
-    - Find it => `ruby -v`, and check `Gemfile` or `.ruby-version`.
+    - Find it => `ruby -v`, or check `Gemfile`.
 * System dependencies
-  - Ruby => Of course, we are on Ruby.
-  - Docker => Run on it.
+  - Ruby => Of course, we run on it.
+  - Docker => Yep!
+  - Node => Some js files could not run on Bun.
+  - Bun => We use this.
 * Configuration
   * ...
 * Database creation
-    - `bin/rails db:create`
-* Database initialization
   - `bin/rails db:create`
+* Database initialization
   - `bin/rails db:migrate`
   - `bin/rails db:seed`
 * How to run the test suite
   - `bundle exec rails test`
   - `bun test`
+* How to lint/format code
+  * Ruby on Rails
+    - `bundle exec rubocop`
+    - `bundle exec erb_lint .`
+  - Bun & Co.
+    - `bun run lint`
+    - `bun run format`
+    - `bun run typecheck`
 * Services (job queues, cache servers, search engines, etc.)
     - Redis(ValKey)
     - Kafka
@@ -77,4 +86,8 @@ Things you may want to cover:
   * net
     * assets cdn => https://umaxica.net
 * Usefull documents
+  * [Officeial Rails page](https://rubyonrails.org/)
   * [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
+* Troubleshooting
+  * not move js or css files => `bin/rails assets:clobber`
+  * not run tests => `bin/rails db:create` ?
