@@ -1,4 +1,4 @@
-module Cloudflare
+module CloudflareTurnstile
   extend ActiveSupport::Concern
 
   private

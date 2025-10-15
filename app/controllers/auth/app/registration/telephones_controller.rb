@@ -2,7 +2,7 @@ module Auth
   module App
     module Registration
       class TelephonesController < ApplicationController
-        include ::Cloudflare
+        include ::CloudflareTurnstile
 
         def new
           @user_telephone = UserTelephone.new
