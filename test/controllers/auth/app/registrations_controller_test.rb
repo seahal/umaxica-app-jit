@@ -29,7 +29,7 @@ class Auth::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_select "[data-testid=?]", "registration-sign-in" do
-      assert_select "a[href=?]", new_auth_app_authentication_path
+      assert_select "a[href=?]", new_auth_app_authentication_path(default_url_query)
     end
   end
 
