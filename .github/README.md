@@ -1,7 +1,6 @@
 [![CI](https://github.com/seahal/umaxica-app-jit-ruby-on-rails/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit-ruby-on-rails/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit-server/main)
 # README
 
-
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
@@ -33,20 +32,19 @@ Things you may want to cover:
     - `bun run format`
     - `bun run typecheck`
 * Services (job queues, cache servers, search engines, etc.)
-    - Redis(ValKey)
+    - Valkey(Redis)
     - Kafka
     - PostgreSQL
-    - Google Cloud Storage (S3)
     - Terraform
-    * Kubernetes
     * [OpenTelemetry](https://opentelemetry.io/)
 * Deployment instructions
     - When you are free, look at 'bin/rails notes'
 * Using Services
   * Google Cloud
     * One
-      * CloudRun
-      * CloudBuild
+      * Cloud Run
+      * Cloud Build
+      * Cloud Storage (S3)
     * Two
       * Social Login
   * CloudFlare
