@@ -3,8 +3,9 @@
 module News
   module Org
     class ApplicationController < ActionController::Base
-      allow_browser versions: :modern
+      include ::DefaultUrlOptions
       include ::RateLimit
+      allow_browser versions: :modern
     end
   end
 end

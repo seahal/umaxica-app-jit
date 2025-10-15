@@ -13,6 +13,13 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "footer cookie link includes default query parameters" do
+    get apex_org_root_url
+    assert_response :success
+
+    assert_select "a[href*='preference/cookie/edit'][href*='lx=ja'][href*='ri=jp'][href*='tz=jst']", minimum: 1
+  end
+
   test "should have proper response content type" do
     get apex_org_root_url
     assert_response :success

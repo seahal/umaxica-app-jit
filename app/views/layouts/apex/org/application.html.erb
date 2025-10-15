@@ -47,13 +47,12 @@
 <footer>
 
   <ul>
-    <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>">home</a></li>
-    <li>
-      <%= link_to 'Cookie', edit_apex_org_preference_cookie_path %></li>
-    <li>Security</li>
-    <li>Support</li>
-    <li>Terms</li>
-    <li>Privacy</li>
+    <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>">Home</a></li>
+    <li><%= link_to 'Cookie', edit_apex_org_preference_cookie_path %></li>
+    <li><%= link_to 'Support', help_org_root_path %></li>
+    <li><%= link_to 'NewsRoom', news_org_root_path %></li>
+    <li><%= link_to 'Documents', docs_org_root_path %></li>
+    <li><%= link_to 'Cookie', edit_apex_org_preference_cookie_path %></li>
   </ul>
   <small>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></small>
 </footer>
