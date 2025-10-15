@@ -1,2 +1,2 @@
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" defer></script>
-<div class="cf-turnstile" data-sitekey="<%= Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY) %>"></div>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<div language="es" class="cf-turnstile" data-sitekey=<%= Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY) %>></div>
