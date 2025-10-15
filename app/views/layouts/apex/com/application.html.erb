@@ -36,12 +36,11 @@
 
 <footer>
   <ul>
-    <li><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>/">Umaxica</a></li>
-    <li>Support</li>
-    <li>Terms</li>
-    <li>Privacy</li>
-    <li>Security</li>
-    <li>Accessibility</li>
+    <li><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>/">Home</a></li>
+    <li><%= link_to 'Support', help_com_root_path %></li>
+    <li><%= link_to 'NewsRoom', news_com_root_path %></li>
+    <li><%= link_to 'Documents', docs_com_root_path %></li>
+    <li><%= link_to 'Cookie', edit_apex_com_preference_cookie_path %></li>
   </ul>
   <small>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></small>
 </footer>

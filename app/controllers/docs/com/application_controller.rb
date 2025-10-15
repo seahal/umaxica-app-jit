@@ -3,8 +3,9 @@
 module Docs
   module Com
     class ApplicationController < ActionController::Base
-      allow_browser versions: :modern
       include ::RateLimit
+      include ::DefaultUrlOptions
+      allow_browser versions: :modern
     end
   end
 end
