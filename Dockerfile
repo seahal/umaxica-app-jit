@@ -55,6 +55,7 @@ WORKDIR /home/jit/main
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     bash \
+    zsh \
     dbus \
     fontconfig \
     lsb-release \
@@ -101,6 +102,7 @@ COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.l
 
 RUN gem install bundler \
     && bundle config set --local path vendor/bundle \
+    && bundle config set without 'production' \
     && bundle install --jobs "$(nproc)"
 
 RUN mkdir -p /usr/local/bundle \
@@ -190,6 +192,7 @@ RUN npm install -g bun@"${BUN_VERSION}" \
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} \
     && bundle exec bootsnap precompile --gemfile \
+    && bundle config set --local without 'development test' \
     && bundle clean --force \
     && rm -rf /usr/local/bundle/cache
 
