@@ -192,6 +192,7 @@ RUN npm install -g bun@"${BUN_VERSION}" \
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} \
     && bundle exec bootsnap precompile --gemfile \
+    && bundle config set --local without 'development test' \
     && bundle clean --force \
     && rm -rf /usr/local/bundle/cache
 
