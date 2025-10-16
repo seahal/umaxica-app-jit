@@ -25,21 +25,6 @@
   <%= yield %>
 </main>
 
-<nav class="mt-14">
-  <% breadcrumbs.tap do |links| %>
-    <% if links.any? %>
-      <ul class="flex flex-wrap items-center gap-3 text-sm text-zinc-600">
-        <% links.each do |link| %>
-          <li>
-            <%= link_to link.text, link.url, class: "#{link.current? ? 'font-semibold text-zinc-900' : 'hover:text-zinc-900 transition'}" %>
-          </li>
-        <% end %>
-        <li class="text-zinc-400">...</li>
-      </ul>
-    <% end %>
-  <% end %>
-</nav>
-
 <hr>
 
 <footer>

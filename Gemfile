@@ -59,7 +59,7 @@ gem "solid_cache"
 # pagination
 gem "kaminari"
 # Breadcrumbs
-gem "gretel"
+# gem "gretel"
 # Social Login
 gem "omniauth"
 gem "omniauth-apple"
@@ -84,7 +84,7 @@ gem "jsbundling-rails"
 # for fastly cache purge
 gem "fastly"
 #
-gem "thruster"
+gem "thruster", require: false
 
 group :development, :test do
   # to avoid n+1 queries

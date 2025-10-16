@@ -115,8 +115,6 @@ bun install
 sudo chown -R "${USER_ID}:${GROUP_ID}" /usr/local/bundle/
 sudo chown -R "${USER_ID}:${GROUP_ID}" /usr/local/lib/node_modules/ || true
 
-printf '%s' "${GLIBC_VERSION}" > "${BUNDLE_GLIBC_MARKER}"
-
 # Rails app prep
 if [[ "${DB_READY}" == "1" && "${REDIS_READY}" == "1" ]]; then
   run_or_warn "bin/rails db:create" bin/rails db:create
