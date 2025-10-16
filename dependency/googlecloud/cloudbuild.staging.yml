@@ -3,40 +3,40 @@ steps:
     args:
       - '-lc'
       - |
-        set -euo pipefail export DEBIAN_FRONTEND=noninteractive
-           # --- Build deps ---    
-           apt-get update
-           apt-get install -y --no-install-recommends \
-            build-essential ca-certificates curl git \
-            libpq-dev libvips libvips-dev libyaml-dev \
-            libffi-dev libreadline-dev zlib1g-dev \
-            pkg-config tzdata libssl-dev
-           rm -rf /var/lib/apt/lists/*
+        set -euo pipefail 
+        export DEBIAN_FRONTEND=noninteractive
+        # --- Build deps ---    
+        apt-get update
+        apt-get install -y --no-install-recommends \
+          build-essential ca-certificates curl git \
+          libpq-dev libvips libvips-dev libyaml-dev \
+          libffi-dev libreadline-dev zlib1g-dev \
+          pkg-config tzdata libssl-dev
+        rm -rf /var/lib/apt/lists/*
 
-           # --- mise install ---
-           curl -fsSL https://mise.run | sh
-           export PATH="$$HOME/.local/bin:$$PATH"
-           export PATH="$$HOME/.local/share/mise/shims:$$PATH"
+        # --- mise install ---
+        curl -fsSL https://mise.run | sh
+        export PATH="$$HOME/.local/bin:$$PATH"
+        export PATH="$$HOME/.local/share/mise/shims:$$PATH"
 
-           # 最新の Ruby/Node/Bun を導入
-           mise install ruby@latest node@latest bun@latest
-           mise use -g ruby@latest node@latest bun@latest
+        # 最新の Ruby/Node/Bun を導入
+        mise install ruby@latest node@latest bun@latest
+        mise use -g ruby@latest node@latest bun@latest
 
-           # --- Ruby deps ---
-           gem install --no-document bundler
-           bundle config set path vendor/bundle
-           bundle config set without 'development test'
-           bundle config set jobs "$$(nproc)"
-           bundle config set retry 3
-           bundle install
+        # --- Ruby deps ---
+        gem install --no-document bundler
+        bundle config set path vendor/bundle
+        bundle config set without 'development test'
+        bundle config set jobs "$$(nproc)"
+        bundle config set retry 3
+        bundle install
 
-           # --- JS deps ---
-           bun install
+        # --- JS deps ---
+        bun install
 
-           # --- Assets build ---
-           rm -rf public/assets
-
-           SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
+        # --- Assets build ---
+        rm -rf public/assets
+        SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
     id: Build assets with mise (ruby/node/bun latest)
     entrypoint: bash
   - name: 'public.ecr.aws/aws-cli/aws-cli:latest'
@@ -77,8 +77,7 @@ steps:
       - '-lc'
       - |
         set -euxo pipefail
-
-        # ★サービス名を明示、--quiet で非対話
+        
         gcloud run deploy "${_SERVICE}" \
           --image "asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:latest" \
           --region "${_REGION}" \

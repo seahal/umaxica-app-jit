@@ -172,6 +172,5 @@
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",
     "source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
   ],
-  "remoteUser": "dev",
   "updateRemoteUserUID": true
 }
