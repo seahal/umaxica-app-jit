@@ -55,6 +55,7 @@ WORKDIR /home/jit/main
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     bash \
+    zsh \
     dbus \
     fontconfig \
     lsb-release \
@@ -101,6 +102,7 @@ COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.l
 
 RUN gem install bundler \
     && bundle config set --local path vendor/bundle \
+    && bundle config set without 'production' \
     && bundle install --jobs "$(nproc)"
 
 RUN mkdir -p /usr/local/bundle \
