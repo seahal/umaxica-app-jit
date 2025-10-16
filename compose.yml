@@ -18,7 +18,7 @@ services:
     ports:
       - "3333:3000"
     tmpfs:
-      - /home/jit/main/log:size=1G,uid=${UID:-1000},gid=${GID:-1000}
+      - /home/jit/main/log:size=2G,uid=${UID:-1000},gid=${GID:-1000}
       - /home/jit/main/tmp:size=4G,uid=${UID:-1000},gid=${GID:-1000}
       - /home/jit/main/.bun:size=4G,uid=${UID:-1000},gid=${GID:-1000}
       - /home/jit/main/.cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
