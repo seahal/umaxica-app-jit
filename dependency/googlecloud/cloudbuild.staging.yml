@@ -40,7 +40,7 @@ steps:
            SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
     id: Build assets with mise (ruby/node/bun latest)
     entrypoint: bash
-  - name: 'public.ecr.aws/aws-cli/aws-cli:2'
+  - name: 'public.ecr.aws/aws-cli/aws-cli:latest'
     args:
       - -lc
       - |
@@ -50,10 +50,7 @@ steps:
         # aws s3 sync ./public s3://$_R2_BUCKET \
         #   --endpoint-url "$_R2_ENDPOINT" --delete
     id: up files to cloudflare r2
-    entrypoint: bash
-
     # fuyounanohakesoune!
-
   - name: gcr.io/cloud-builders/docker
     args:
       - build
