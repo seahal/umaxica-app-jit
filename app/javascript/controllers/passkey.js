@@ -1,9 +1,4 @@
-import {
-	csrfToken,
-	toB64url,
-	fromB64url,
-	decodeCreationOptions,
-} from "./passkey_helpers.js";
+import { csrfToken } from "./passkey_helpers.js";
 
 const btn =
 	typeof document !== "undefined"
@@ -84,7 +79,7 @@ btn?.addEventListener("click", async () => {
 			console.log("payload", payload);
 
 			// 4) サーバに保存依頼
-			const second = fetch("/setting/passkeys/verify", {
+			return fetch("/setting/passkeys/verify", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -96,6 +91,6 @@ btn?.addEventListener("click", async () => {
 		})
 		.catch((err) => {
 			console.error("credential creation failed", err);
-			alert("❌ パスキー登録に失敗しました: " + err.message);
+			alert(`❌ パスキー登録に失敗しました: ${err.message}`);
 		});
 });

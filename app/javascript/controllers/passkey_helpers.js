@@ -24,7 +24,7 @@ export function fromB64url(str) {
 export function decodeCreationOptions(opts) {
 	const pk = structuredClone(opts.publicKey);
 	pk.challenge = fromB64url(pk.challenge);
-	if (pk.user && pk.user.id) pk.user.id = fromB64url(pk.user.id);
+	if (pk.user?.id) pk.user.id = fromB64url(pk.user.id);
 	if (Array.isArray(pk.excludeCredentials)) {
 		pk.excludeCredentials = pk.excludeCredentials.map((c) => ({
 			...c,

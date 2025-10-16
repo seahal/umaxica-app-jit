@@ -41,14 +41,8 @@ steps:
     id: Build assets with mise (ruby/node/bun latest)
     entrypoint: bash
   - name: 'public.ecr.aws/aws-cli/aws-cli:latest'
-    args:
-      - -lc
-      - |
-        set -euo pipefail
-        aws --version
-        # 例: Cloudflare R2 へアップロード（S3互換）
-        # aws s3 sync ./public s3://$_R2_BUCKET \
-        #   --endpoint-url "$_R2_ENDPOINT" --delete
+    args: '--version'
+    entrypoint: aws
     id: up files to cloudflare r2
     # fuyounanohakesoune!
   - name: gcr.io/cloud-builders/docker
