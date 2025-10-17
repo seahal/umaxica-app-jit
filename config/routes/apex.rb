@@ -55,15 +55,6 @@ Rails.application.routes.draw do
           resource :region, only: [ :edit, :update ]
         end
       end
-
-      # For Network's webpages example.org
-      constraints host: ENV["APEX_NETWORK_URL"] do
-        scope module: :net, as: :net do
-          root to: "roots#index"
-          # health check for html
-          resource :health, only: :show
-        end
-      end
     end
   end
 end
