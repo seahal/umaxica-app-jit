@@ -84,7 +84,6 @@ Rails.application.configure do
   ## to avoid errors
   config.hosts << "app.localhost"
   config.hosts << "com.localhost"
-  config.hosts << "net.localhost"
   config.hosts << "org.localhost"
   config.hosts << "api.app.localhost"
   config.hosts << "api.com.localhost"
