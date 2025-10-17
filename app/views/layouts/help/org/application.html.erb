@@ -31,7 +31,7 @@
     <li><%= link_to 'Document', docs_org_root_url %></li>
     <li><%= link_to 'Help Center', help_org_root_url %></li>
   </ul>
-  <p>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></p>
+  <%= render "concern/copyright" %>
 </footer>
 
 </body>

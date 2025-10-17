@@ -36,7 +36,7 @@
     <li>Accessibility</li>
     <li>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></li>
   </ul>
-  <small>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></small>
+  <%= render "concern/copyright" %>
 </footer>
 
 </body>
