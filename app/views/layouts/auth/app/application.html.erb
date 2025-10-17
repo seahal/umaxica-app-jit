@@ -11,6 +11,7 @@
 </head>
 
 <body class="px-4">
+  <%= render "concern/flash_messages" %>
 <header>
   <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('NAME') %> (auth, app)</a></h1>
   <p>
@@ -23,10 +24,6 @@
 </header>
 
 <hr>
-
-<% flash.each do |message_type, message| %>
-  <%= message %>
-<% end %>
 
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>

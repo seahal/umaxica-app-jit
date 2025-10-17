@@ -11,6 +11,7 @@
 </head>
 
 <body class="px-4">
+  <%= render "concern/flash_messages" %>
 <header>
   <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('NAME') %> (docs, app)</a></h1>
   <p>

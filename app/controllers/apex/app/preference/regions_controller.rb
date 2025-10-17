@@ -8,6 +8,12 @@ module Apex
         DEFAULT_REGION = "US"
         SELECTABLE_TIMEZONES = %w[Etc/UTC Asia/Tokyo].freeze
         DEFAULT_TIMEZONE = "Asia/Tokyo"
+        PREFERENCE_COOKIE_KEY = :apex_app_preferences
+        DEFAULT_QUERY_PREFERENCES = {
+          "lx" => "ja",
+          "ri" => "jp",
+          "tz" => "jst"
+        }.freeze
 
         Result = Struct.new(:updated, :error_key) do
           def updated?
@@ -31,6 +37,7 @@ module Apex
             set_edit_variables
             render :edit, status: :unprocessable_content
           else
+            persist_preference_cookie!
             flash[:notice] = t("messages.region_settings_updated_successfully") if result.updated?
             redirect_to edit_apex_app_preference_region_url
           end
@@ -121,6 +128,57 @@ module Apex
 
         def zone_identifier(zone, fallback)
           zone.tzinfo&.identifier || zone.name || fallback.to_s
+        end
+
+        def persist_preference_cookie!
+          cookies.permanent.signed[PREFERENCE_COOKIE_KEY] = {
+            value: cookie_preferences.to_json,
+            httponly: true,
+            secure: Rails.env.production?,
+            same_site: :lax
+          }
+        end
+
+        def cookie_preferences
+          {
+            "lx" => normalize_language_for_cookie,
+            "ri" => normalize_region_for_cookie,
+            "tz" => normalize_timezone_for_cookie
+          }.compact.presence || DEFAULT_QUERY_PREFERENCES
+        end
+
+        def normalize_language_for_cookie
+          case session[:language].to_s.downcase
+          when "en"
+            "en"
+          else
+            "ja"
+          end
+        end
+
+        def normalize_region_for_cookie
+          case session[:region].to_s.downcase
+          when "jp"
+            "jp"
+          when "us"
+            "us"
+          else
+            DEFAULT_QUERY_PREFERENCES["ri"]
+          end
+        end
+
+        def normalize_timezone_for_cookie
+          candidate = session[:timezone].presence || DEFAULT_TIMEZONE
+          candidate_string = candidate.is_a?(ActiveSupport::TimeZone) ? candidate.tzinfo&.identifier : candidate.to_s
+
+          case candidate_string
+          when /\Aasia\/tokyo\z/i
+            "jst"
+          when /\Aetc\/utc\z/i, /\Autc\z/i
+            "utc"
+          else
+            DEFAULT_QUERY_PREFERENCES["tz"]
+          end
         end
       end
     end
