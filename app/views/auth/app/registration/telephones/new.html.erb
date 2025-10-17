@@ -27,7 +27,7 @@
       <%= form.label :confirm_using_mfa, 'MFAの利用を確認する' %>
     </div>
 
-    <%= render "cloudflare_turnstile" %>
+    <%= render "concern/cloudflare_turnstile" %>
 
     <%= form.submit %>
   <% end %>
@@ -37,5 +37,3 @@
     <li><%= link_to 'log in?', new_auth_app_authentication_telephone_path %></li>
   </ul>
 </div>
-
-<%= render "cloudflare_turnstile" %>

@@ -9,6 +9,7 @@
   <link rel="icon" href="https://perm.umaxica.org/jit/favicon.ico" sizes="32x32">
 </head>
 <body class="px-4">
+  <%= render "concern/flash_messages" %>
 <header>
   <h1 class="container mx-auto mt-28 px-5 flex">
     <a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/"><%= ENV.fetch('NAME') %> (apex, org)</a></h1>

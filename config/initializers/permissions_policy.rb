@@ -20,4 +20,5 @@ Rails.application.config.permissions_policy do |policy|
   policy.serial                    :none
   policy.usb                       :none
   policy.web_share                 :self
+  policy.sync_xhr                  :self
 end

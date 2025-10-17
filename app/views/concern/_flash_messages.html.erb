@@ -1,0 +1,7 @@
+<% flash.each do |key, message| %>
+  <% Array(message).each do |text| %>
+    <div class="flash-message flash-message--<%= key %>">
+      <%= text %>
+    </div>
+  <% end %>
+<% end %>
