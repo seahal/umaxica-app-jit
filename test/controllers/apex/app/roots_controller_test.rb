@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "test_helper"
 require "json"
 require "uri"
@@ -173,9 +174,9 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get apex_app_root_path, headers: HOST_HEADER, params: DEFAULT_QUERY
     assert_response :success
     response_body = response.body
-    refute_includes response_body, "password"
-    refute_includes response_body, "secret"
-    refute_includes response_body, "api_key"
+    assert_not_includes response_body, "password"
+    assert_not_includes response_body, "secret"
+    assert_not_includes response_body, "api_key"
   end
 
   test "should handle requests from different IP addresses" do
