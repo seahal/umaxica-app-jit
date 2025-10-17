@@ -4,6 +4,3 @@ import "@hotwired/turbo-rails";
 
 // Passkeys (Auth App)
 import "./controllers/passkey.js";
-
-// ABC Controller
-import "./controllers/abc.js";
