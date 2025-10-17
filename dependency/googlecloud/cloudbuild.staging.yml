@@ -84,7 +84,7 @@ steps:
           --project "$PROJECT_ID" \
           --quiet
     entrypoint: bash
-timeout: 2700s
+timeout: 3600s
 options:
   logging: CLOUD_LOGGING_ONLY
 substitutions:

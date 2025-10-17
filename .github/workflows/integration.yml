@@ -25,42 +25,8 @@ env:
   POSTGRESQL_USER: postgres
   POSTGRESQL_PASSWORD: password
 jobs:
-  security:
-    name: Security Checks
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.4.7'
-          bundler-cache: true
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: '1.3.0'
-      - run: bun install --frozen-lockfile
-      - name: Run Brakeman
-        run: bundle exec brakeman -z -q
-      - name: Run bundle-audit
-        run: bundle exec bundle audit check --update
-      - name: Run RuboCop
-        run: bundle exec rubocop --fail-fast
-      - name: Run ERB Lint
-        run: bundle exec erb_lint --lint-all
-      - name: Run bun audit
-        run: bun audit
-      - name: Run bun format
-        run: bun run format
-      - name: Run bun lint
-        run: bun run lint
-      - name: Run bun typecheck
-        run: bun run typecheck
-
-  test:
-    name: Tests
+  integration:
+    name: Security and Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -82,7 +48,6 @@ jobs:
       APEX_CORPORATE_URL: com.localhost
       APEX_SERVICE_URL: app.localhost
       APEX_STAFF_URL: org.localhost
-      APEX_NETWORK_URL: net.localhost
       API_CORPORATE_URL: api.com.localhost
       API_SERVICE_URL: api.app.localhost
       API_STAFF_URL: api.org.localhost
@@ -190,7 +155,23 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.3.0'
-      - run: bun install --frozen-lockfile
+      - run: bun install
+      - name: Run Brakeman
+        run: bundle exec brakeman -z -q
+      - name: Run bundle-audit
+        run: bundle exec bundle audit check --update
+      - name: Run RuboCop
+        run: bundle exec rubocop --fail-fast
+      - name: Run ERB Lint
+        run: bundle exec erb_lint --lint-all
+      - name: Run bun audit
+        run: bun audit
+      - name: Run bun format
+        run: bun run format
+      - name: Run bun lint
+        run: bun run lint
+      - name: Run bun typecheck
+        run: bun run typecheck
       - name: Setup test databases
         run: |
           bin/rails db:create
