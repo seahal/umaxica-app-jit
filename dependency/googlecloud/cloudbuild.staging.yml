@@ -72,11 +72,11 @@ steps:
       - push
       - asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample
     id: Docker push
-  - name: ruby:3.4.7-slim-trixie
-    arg:
-      - |
-        ruby -v
-    id: 'db migration'
+#  - name: ruby:3.4.7-slim-trixie
+#    arg:
+#      - |
+#        ruby -v
+#    id: 'db migration'
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
     args:
       - '-lc'
