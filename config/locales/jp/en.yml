@@ -103,7 +103,7 @@ en:
         cookie_settings: "Cookie Settings"
         region_settings: "Region Settings"
         email_preferences: "Email Preferences"
-        theme_settings: "Theme Settings"
+        theme_settings: "Choose Dark or Light Theme"
         regions:
           title: "Corporate Regional & Language Settings"
           region_section: "Regional Settings"
@@ -161,7 +161,7 @@ en:
         cookie_settings: "Cookie Settings"
         region_settings: "Region Settings"
         email_preferences: "Email Preferences"
-        theme_settings: "Theme Settings"
+        theme_settings: "Choose Dark or Light Theme"
         regions:
           title: "Admin Regional & Language Settings"
           region_section: "Regional Settings"

@@ -10,6 +10,10 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
+        # api endpoint
+        namespace :v1 do
+          resource :health, only: :show
+        end
         # settings
         resource :preference, only: [ :show ]
         namespace :preference do
@@ -17,9 +21,9 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
+          # for dark/light mode
+          resource :theme, only: [ :edit, :update ]
         end
-        # Basic resources
-        resource :staging, only: [ :show ]
       end
     end
 
@@ -29,6 +33,10 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
+        # api endpoint
+        namespace :v1 do
+          resource :health, only: :show
+        end
         # Settings without login
         resource :preference, only: %i[show]
         namespace :preference do
@@ -36,6 +44,8 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
+          # for dark/light mode
+          resource :theme, only: [ :edit, :update ]
         end
       end
     end
@@ -46,6 +56,10 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
+        # api endpoint
+        namespace :v1 do
+          resource :health, only: :show
+        end
         # Settings without login
         resource :preference, only: [ :show ]
         namespace :preference do
@@ -53,6 +67,8 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
+          # for dark/light mode
+          resource :theme, only: [ :edit, :update ]
         end
       end
     end

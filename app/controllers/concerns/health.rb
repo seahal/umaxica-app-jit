@@ -8,24 +8,6 @@ module Health
   # This should check Rails.application.initialized? and return 200 OK quickly
   # Use environment variables or request parameters to determine when to use this vs full check
 
-  def show
-    # expires_in 1.second, public: true # this page wouldn't include private data
-
-    # FIXME: much more validations requires
-    # @status, @body = if !! [UniversalsRecord, IdentitiesRecord, NotificationsRecord, CoresRecord, SessionsRecord, StoragesRecord, MessagesRecord].all?{ it.connection.execute("SELECT 1;") }
-
-    @status, @body = get_status
-
-    case request.path
-    when /\/health(?:\.html)?$/
-      render html: @body, status: @status
-    when /\/health\.json$/
-      render json: { status: @body }, status: @status
-    else
-      raise
-    end
-  end
-
   private
   def get_status
     if [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
@@ -33,5 +15,15 @@ module Health
     else
       [ 500, "NG" ]
     end
+  end
+
+  def show_html
+    @status, @body = get_status
+    render html: @body, status: @status
+  end
+
+  def show_json
+    @status, @body = get_status
+    render json: { status: @body }, status: @status
   end
 end

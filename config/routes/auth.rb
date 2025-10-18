@@ -5,6 +5,10 @@ Rails.application.routes.draw do
       scope module: :app, as: :app do
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
+        # api endpoint
+        namespace :v1 do
+          resource :health, only: :show
+        end
         # Sign up pages
         resource :registration, only: :new
         namespace :registration do
@@ -57,6 +61,10 @@ Rails.application.routes.draw do
       scope module: :org, as: :org do
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
+        # api endpoint
+        namespace :v1 do
+          resource :health, only: :show
+        end
         # registration staff page
         resource :registration, only: [ :new, :create, :edit, :update ] do
           resource :emails, only: [ :new, :create, :edit, :update ]

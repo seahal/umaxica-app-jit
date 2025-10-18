@@ -171,7 +171,7 @@ ja:
         cookie_settings: "クッキー設定"
         region_settings: "地域設定"
         email_preferences: "メール設定"
-        theme_settings: "テーマ設定"
+        theme_settings: "テーマ設定（ライト／ダークの切り替え）"
         regions:
           title: "地域・言語設定"
           region_section: "地域設定"
@@ -247,7 +247,7 @@ ja:
         cookie_settings: "クッキー設定"
         region_settings: "地域設定"
         email_preferences: "メール設定"
-        theme_settings: "テーマ設定"
+        theme_settings: "テーマ設定（ライト／ダークの切り替え）"
         emails:
           updated: "メール設定が正常に更新されました"
           none_selected: "設定が選択されていません"
@@ -325,7 +325,7 @@ ja:
         cookie_settings: "クッキー設定"
         region_settings: "地域設定"
         email_preferences: "メール設定"
-        theme_settings: "テーマ設定"
+        theme_settings: "テーマ設定（ライト／ダークの切り替え）"
         regions:
           title: "地域・言語設定"
           region_section: "地域設定"

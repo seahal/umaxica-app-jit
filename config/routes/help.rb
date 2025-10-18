@@ -4,7 +4,11 @@ Rails.application.routes.draw do
       scope module: :com, as: :com do
         root to: "roots#index"
         # health check for html/json
-        resource :health, only: :show, defaults: { format: :html }
+        resource :health, only: :show
+        # api endpoint
+        namespace :v1 do
+          resource :health, only: :show
+        end
         # contact page
         resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
           scope module: :contact do
@@ -19,7 +23,11 @@ Rails.application.routes.draw do
       scope module: :app, as: :app do
         root to: "roots#index"
         # health check for html/json
-        resource :health, only: :show, defaults: { format: :html }
+        resource :health, only: :show
+        # api endpoint
+        namespace :v1 do
+          resource :health, only: :show
+        end
         # contact page
         resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
           scope module: :contact do
@@ -35,7 +43,11 @@ Rails.application.routes.draw do
       scope module: :org, as: :org do
         root to: "roots#index"
         # health check for html/json
-        resource :health, only: :show, defaults: { format: :html }
+        resource :health, only: :show
+        # api endpoint
+        namespace :v1 do
+          resource :health, only: :show
+        end
         # contact page
         resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
           scope module: :contact do

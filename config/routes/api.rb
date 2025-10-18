@@ -4,10 +4,9 @@ Rails.application.routes.draw do
       scope module: :com, as: :com do
         # health check for html/json
         resource :health, only: :show
-        # version
+        # api endpoint
         namespace :v1 do
-          resource :version, only: :show
-          resource :status, only: :show
+          resource :health, only: :show
         end
       end
     end
@@ -18,7 +17,7 @@ Rails.application.routes.draw do
         resource :health, only: :show
         # version
         namespace :v1 do
-          resource :status, only: :show
+          resource :health, only: :show
           namespace :beacon do
             resources :emails, only: %i[show]
           end
@@ -38,10 +37,9 @@ Rails.application.routes.draw do
       scope module: :org, as: :org do
         # health check for html/json
         resource :health, only: :show
-        # version
+        # api endpoint
         namespace :v1 do
-          resource :version, only: :show
-          resource :status, only: :show
+          resource :health, only: :show
         end
       end
     end
