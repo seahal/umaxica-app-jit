@@ -9,24 +9,12 @@ module Health
   # Use environment variables or request parameters to determine when to use this vs full check
 
   def show
-    expires_in 1.second, public: true # this page wouldn't include private data
+    # expires_in 1.second, public: true # this page wouldn't include private data
 
-    # In test environment, avoid hitting external services and DB checks.
-    if Rails.env.test?
-      @status, @body = [ 200, "OK" ]
-    elsif Rails.env.production?
-      # Keep health checks lightweight and avoid external dependencies in production
-      @status, @body = [ 200, "OK" ]
-    else
-      # FIXME: much more validations requires
-      # @status, @body = if !! [UniversalsRecord, IdentitiesRecord, NotificationsRecord, CoresRecord, SessionsRecord, StoragesRecord, MessagesRecord].all?{ it.connection.execute("SELECT 1;") }
+    # FIXME: much more validations requires
+    # @status, @body = if !! [UniversalsRecord, IdentitiesRecord, NotificationsRecord, CoresRecord, SessionsRecord, StoragesRecord, MessagesRecord].all?{ it.connection.execute("SELECT 1;") }
 
-      @status, @body = if [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
-                         [ 200, "OK" ]
-      else
-                         [ 500, "NG" ]
-      end
-    end
+    @status, @body = get_status
 
     case request.path
     when /\/health(?:\.html)?$/
@@ -35,6 +23,15 @@ module Health
       render json: { status: @body }, status: @status
     else
       raise
+    end
+  end
+
+  private
+  def get_status
+    if [IdentifiersRecord].all? { it.connection.execute("SELECT 1;") }
+      [200, "OK"]
+    else
+      [500, "NG"]
     end
   end
 end

@@ -3,28 +3,15 @@
 require "test_helper"
 
 class News::Com::HealthsControllerTest < ActionDispatch::IntegrationTest
-  test "should get show" do
-    get news_com_health_url
-    assert_response :success
-    assert_includes @response.body, "OK"
-    # assert_select "a[href=?]", apex_com_root_path, count: 0
+  test "responds with OK for html variants" do
+    assert_health_html_variants(:news_com_health_url)
   end
 
-  test "should get show with postfix" do
-    get news_com_health_url(format: :html)
-    assert_response :success
-    assert_includes @response.body, "OK"
+  test "responds with OK for json" do
+    assert_health_json(:news_com_health_url)
   end
 
-  test "should get show with postfix json" do
-    get news_com_health_url(format: :json)
-    assert_response :success
-    assert_equal "OK", @response.parsed_body["status"]
-  end
-
-  test "should not get show when required yaml file" do
-    assert_raises(RuntimeError) do
-      get news_com_health_url(format: :yaml)
-    end
+  test "raises when requesting yaml format" do
+    assert_health_invalid_format(:news_com_health_url, :yaml)
   end
 end

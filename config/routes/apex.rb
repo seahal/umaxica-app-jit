@@ -8,8 +8,8 @@ Rails.application.routes.draw do
     constraints host: ENV["APEX_CORPORATE_URL"] do
       scope module: :com, as: :com do
         root to: "roots#index"
-        # health check for html
-        resource :health, only: :show, format: :html
+        # health check for html/json
+        resource :health, only: :show, defaults: { format: :html }
         # settings
         resource :preference, only: [ :show ]
         namespace :preference do
@@ -27,8 +27,8 @@ Rails.application.routes.draw do
     constraints host: ENV["APEX_SERVICE_URL"] do
       scope module: :app, as: :app do
         root to: "roots#index"
-        # endpoint of health check
-        resource :health, only: :show
+        # health check for html/json
+        resource :health, only: :show, defaults: { format: :html }
         # Settings without login
         resource :preference, only: %i[show]
         namespace :preference do
@@ -44,8 +44,8 @@ Rails.application.routes.draw do
     constraints host: ENV["APEX_STAFF_URL"] do
       scope module: :org, as: :org do
         root to: "roots#index"
-        # health check for html
-        resource :health, only: :show
+        # health check for html/json
+        resource :health, only: :show, defaults: { format: :html }
         # Settings without login
         resource :preference, only: [ :show ]
         namespace :preference do

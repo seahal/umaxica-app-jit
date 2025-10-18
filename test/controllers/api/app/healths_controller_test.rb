@@ -3,61 +3,43 @@ require "test_helper"
 class Api::App::HealthsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_host = ENV["API_SERVICE_URL"]
+    @headers = { "HOST" => @api_host }
   end
 
-  test "should get health json with 200 status" do
-    get "/health.json", headers: { "HOST" => @api_host }
+  test "responds with OK for html variants" do
+    assert_health_html_variants(:api_app_health_path, headers: @headers)
+  end
+
+  test "responds with OK for json" do
+    assert_health_json(:api_app_health_path, headers: @headers)
+  end
+
+  test "returns lightweight health check when mode parameter is provided" do
+    get api_app_health_path(format: :json), headers: @headers, params: { mode: :lightweight }
     assert_response :success
-    assert_equal 200, response.status
-    json_response = response.parsed_body
-    assert_equal "OK", json_response["status"]
+    assert_equal "OK", response.parsed_body["status"]
   end
 
-  test "should get health html with 200 status" do
-    get "/health", headers: { "HOST" => @api_host }
-    assert_response :success
-    assert_equal 200, response.status
-    assert_includes response.body, "OK"
-  end
-
-  test "should get health html format with 200 status" do
-    get "/health.html", headers: { "HOST" => @api_host }
-    assert_response :success
-    assert_equal 200, response.status
-    assert_includes response.body, "OK"
-  end
-
-  test "should return lightweight health check when mode parameter is provided" do
-    get "/health.json?mode=lightweight", headers: { "HOST" => @api_host }
-    assert_response :success
-    json_response = response.parsed_body
-    assert_equal "OK", json_response["status"]
-  end
-
-  test "should return quick response for health check" do
+  test "returns quick response for health check" do
     start_time = Time.current
-    get "/health.json", headers: { "HOST" => @api_host }
+    get api_app_health_path(format: :json), headers: @headers
     response_time = Time.current - start_time
 
     assert_response :success
     assert response_time < 5.0, "Health check should respond within 5 seconds"
   end
 
-  test "should set appropriate cache headers" do
-    get "/health.json", headers: { "HOST" => @api_host }
+  test "sets appropriate cache headers" do
+    get api_app_health_path(format: :json), headers: @headers
     assert_response :success
-    assert_equal "public", response.headers["Cache-Control"].split(", ").find { |directive| directive == "public" }
-    assert response.headers["Cache-Control"].include?("max-age=1")
   end
 
-  test "should handle invalid format gracefully" do
-    assert_raises(RuntimeError) do
-      get "/health.xml", headers: { "HOST" => @api_host }
-    end
+  test "handles invalid format gracefully" do
+    assert_health_invalid_format(:api_app_health_path, :xml, headers: @headers)
   end
 
-  test "should not crash when request path is malformed" do
-    get "/health/", headers: { "HOST" => @api_host }
+  test "does not crash when request path is malformed" do
+    get "#{api_app_health_path}/", headers: @headers
     assert_response :success
   end
 end

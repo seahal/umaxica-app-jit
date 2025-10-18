@@ -3,27 +3,15 @@
 require "test_helper"
 
 class News::App::HealthsControllerTest < ActionDispatch::IntegrationTest
-  test "should get show" do
-    get news_app_health_url
-    assert_response :success
-    assert_includes @response.body, "OK"
+  test "responds with OK for html variants" do
+    assert_health_html_variants(:news_app_health_url)
   end
 
-  test "should get show with postfix" do
-    get news_app_health_url(format: :html)
-    assert_response :success
-    assert_includes @response.body, "OK"
+  test "responds with OK for json" do
+    assert_health_json(:news_app_health_url)
   end
 
-  test "should get show with postfix json" do
-    get news_app_health_url(format: :json)
-    assert_response :success
-    assert_equal "OK", @response.parsed_body["status"]
-  end
-
-  test "should not get show when required yaml file" do
-    assert_raises(RuntimeError) do
-      get news_app_health_url(format: :yaml)
-    end
+  test "raises when requesting yaml format" do
+    assert_health_invalid_format(:news_app_health_url, :yaml)
   end
 end

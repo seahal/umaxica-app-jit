@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   scope module: :api, as: :api do
     constraints host: ENV["API_CORPORATE_URL"] do
       scope module: :com, as: :com do
-        # health check for html
+        # health check for html/json
         resource :health, only: :show
         # version
         namespace :v1 do
@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
     constraints host: ENV["API_SERVICE_URL"] do
       scope module: :app, as: :app do
-        # health check for html
+        # health check for html/json
         resource :health, only: :show
         # version
         namespace :v1 do
@@ -36,7 +36,7 @@ Rails.application.routes.draw do
     # For Staff's webpages api.jp.example.org
     constraints host: ENV["API_STAFF_URL"] do
       scope module: :org, as: :org do
-        # health check for html
+        # health check for html/json
         resource :health, only: :show
         # version
         namespace :v1 do
