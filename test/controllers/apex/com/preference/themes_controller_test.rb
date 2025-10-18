@@ -6,10 +6,6 @@ module Apex
   module Com
     module Preference
       class ThemesControllerTest < ActionDispatch::IntegrationTest
-        setup do
-          host! ENV.fetch("APEX_CORPORATE_URL", "com.localhost:3333")
-        end
-
         test "renders theme edit page with light and dark options" do
           get edit_apex_com_preference_theme_path(default_url_query)
           assert_response :success
