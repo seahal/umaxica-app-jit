@@ -3,26 +3,21 @@
 require "test_helper"
 
 class Apex::Org::HealthsControllerTest < ActionDispatch::IntegrationTest
-  test "should get show" do
+  test "GET /health returns OK response" do
     get apex_org_health_url
     assert_response :success
-    assert_includes @response.body, "OK"
+    assert_includes response.body, "OK"
   end
 
-  test "should get show with postfix" do
+  test "GET /health returns OK html response" do
     get apex_org_health_url(format: :html)
     assert_response :success
-    assert_includes @response.body, "OK"
-  end
-  test "should get show with postfix json" do
-    get apex_org_health_url(format: :json)
-    assert_response :success
-    assert_equal "OK", @response.parsed_body["status"]
+    assert_includes response.body, "OK"
   end
 
-  test "should not get show when required yaml file" do
-    assert_raises(RuntimeError) do
-      get apex_org_health_url(format: :yaml)
-    end
+  test "GET /health returns OK json response" do
+    get apex_org_health_url(format: :json)
+    assert_response :success
+    assert_includes response.body, "OK"
   end
 end

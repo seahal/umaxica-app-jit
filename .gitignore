@@ -102,3 +102,5 @@ node_modules
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Ruby & JavsScript are not create /out folders.
+/out

@@ -16,11 +16,3 @@ module ActiveSupport
     fixtures :all
   end
 end
-
-class ActionDispatch::IntegrationTest
-  private
-
-  def default_url_query
-    { ri: "jp", tz: "jst", lx: "ja" }
-  end
-end

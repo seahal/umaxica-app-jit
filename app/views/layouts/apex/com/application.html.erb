@@ -37,9 +37,7 @@
     <li><%= link_to 'Documents', docs_com_root_url %></li>
     <li><%= link_to 'Cookie', edit_apex_com_preference_cookie_path, class: "hover:text-zinc-900 transition" %></li>
   </ul>
-  <small class="mt-6 block text-center text-xs uppercase tracking-[0.3em] text-zinc-400">
-    © <%= Time.zone.today.year %> <%= ENV.fetch('NAME') %>
-  </small>
+  <%= render "concern/copyright" %>
 </footer>
 
 </body>

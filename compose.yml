@@ -67,9 +67,9 @@ services:
       POSTGRES_PASSWORD: password
       TZ: UTC
       POSTGRES_HOST_AUTH_METHOD: trust # NOTE: Development only
-      POSTGRES_INITDB_WAL_LEVEL: replica # wal_level setting
-      POSTGRES_INITDB_MAX_WAL_SENDERS: 10 # max_wal_senders setting
-      POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10 # max_replication_slots setting
+      POSTGRES_INITDB_WAL_LEVEL: replica # wal_level v1
+      POSTGRES_INITDB_MAX_WAL_SENDERS: 10 # max_wal_senders v1
+      POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10 # max_replication_slots v1
       POSTGRES_DB: db
     tmpfs: /var/lib/postgresql/data
     ports:

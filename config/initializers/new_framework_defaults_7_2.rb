@@ -51,7 +51,7 @@
 # impact migration generation and other migration commands.
 #
 # Applications with existing timestamped migrations that do not adhere to the
-# expected format can disable validation by setting this config to `false`.
+# expected format can disable validation by v1 this config to `false`.
 #++
 # Rails.application.config.active_record.validate_migration_timestamps = true
 

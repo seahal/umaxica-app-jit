@@ -4,7 +4,7 @@ module Auth
       class PasskeysController < ApplicationController
         before_action :authenticate_user! # ← 本番は必須
 
-        # POST /setting/passkeys/challenge
+        # POST /v1/passkeys/challenge
         def challenge
           session.delete(:webauthn_create_challenge)
 

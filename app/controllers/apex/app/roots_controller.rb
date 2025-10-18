@@ -16,6 +16,11 @@ module Apex
         "ri" => %w[jp us],
         "tz" => %w[jst utc]
       }.freeze
+      COERCED_PREFERENCE_VALUES = {
+        "lx" => { "kr" => "ja" },
+        "ri" => { "sk" => "jp" },
+        "tz" => { "kst" => "jst" }
+      }.freeze
 
       before_action :ensure_preference_context
 
@@ -88,9 +93,15 @@ module Apex
         allowed = ALLOWED_PREFERENCE_VALUES[key]
         candidate = value.to_s.downcase
 
-        return unless allowed&.include?(candidate)
+        return candidate if allowed&.include?(candidate)
 
-        candidate
+        coerced = COERCED_PREFERENCE_VALUES.dig(key, candidate)
+        coerced ||= DEFAULT_PREFERENCES[key]
+
+        return unless coerced
+        return coerced if allowed&.include?(coerced)
+
+        nil
       end
 
       def redirect_required?(resolved)

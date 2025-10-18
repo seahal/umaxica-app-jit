@@ -8,33 +8,23 @@ module Health
   # This should check Rails.application.initialized? and return 200 OK quickly
   # Use environment variables or request parameters to determine when to use this vs full check
 
-  def show
-    expires_in 1.second, public: true # this page wouldn't include private data
-
-    # In test environment, avoid hitting external services and DB checks.
-    if Rails.env.test?
-      @status, @body = [ 200, "OK" ]
-    elsif Rails.env.production?
-      # Keep health checks lightweight and avoid external dependencies in production
-      @status, @body = [ 200, "OK" ]
-    else
-      # FIXME: much more validations requires
-      # @status, @body = if !! [UniversalsRecord, IdentitiesRecord, NotificationsRecord, CoresRecord, SessionsRecord, StoragesRecord, MessagesRecord].all?{ it.connection.execute("SELECT 1;") }
-
-      @status, @body = if [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
-                         [ 200, "OK" ]
-      else
-                         [ 500, "NG" ]
-      end
-    end
-
-    case request.path
-    when /\/health(?:\.html)?$/
-      render html: @body, status: @status
-    when /\/health\.json$/
-      render json: { status: @body }, status: @status
+  private
+  def get_status
+    # TODO: implement!
+    if [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
+      [ 200, "OK" ]
     else
       raise
     end
+  end
+
+  def show_html
+    @status, @body = get_status
+    render html: @body, status: @status
+  end
+
+  def show_json
+    @status, @body = get_status
+    render json: { status: @body }, status: @status
   end
 end

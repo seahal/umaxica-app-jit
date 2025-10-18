@@ -17,7 +17,7 @@ class KarafkaApp < Karafka::App
   Karafka.monitor.subscribe(
     Karafka::Instrumentation::LoggerListener.new(
       # Karafka, when the logger is set to info, produces logs each time it polls data from an
-      # internal messages queue. This can be extensive, so you can turn it off by setting below
+      # internal messages queue. This can be extensive, so you can turn it off by v1 below
       # to false.
       log_polling: true
     )

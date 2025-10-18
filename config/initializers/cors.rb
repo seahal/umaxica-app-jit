@@ -179,7 +179,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
         (Rails.env.development? && source&.include?("localhost"))
     }
 
-    resource "/auth/*/setting/passkeys*",
+    resource "/auth/*/v1/passkeys*",
              headers: :any,
              methods: [ :get, :post, :put, :patch, :delete, :options ],
              credentials: true,

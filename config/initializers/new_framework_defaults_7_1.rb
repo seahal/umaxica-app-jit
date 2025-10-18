@@ -55,7 +55,7 @@
 #++
 # Rails.application.config.active_record.encryption.hash_digest_class = OpenSSL::Digest::SHA256
 #
-# 3. If you don't currently have data encrypted with Active Record encryption, you can disable this setting to
+# 3. If you don't currently have data encrypted with Active Record encryption, you can disable this v1 to
 # configure the default behavior starting 7.1+:
 #++
 # Rails.application.config.active_record.encryption.support_sha1_for_non_deterministic_encryption = false
@@ -92,7 +92,7 @@
 #
 # When deploying an application with multiple replicas, old (pre-Rails 7.1)
 # replicas will not be able to deserialize `BigDecimal` arguments from this
-# serializer. Therefore, this setting should only be enabled after all replicas
+# serializer. Therefore, this v1 should only be enabled after all replicas
 # have been successfully upgraded to Rails 7.1.
 #++
 # Rails.application.config.active_job.use_big_decimal_serializer = true

@@ -174,7 +174,7 @@ export class WebAuthnAuthentication {
 
 #### 4.1 認証用パスキーコントローラー
 ```ruby
-# app/controllers/www/app/authentication/passkeys_controller.rb
+# app/controllers/www/app/authentication/healths_controller.rb
 class Www::App::Authentication::PasskeysController < Www::App::ApplicationController
   def new
     # 認証オプション生成
@@ -212,7 +212,7 @@ end
 
 #### 4.2 設定用パスキーコントローラー
 ```ruby
-# app/controllers/www/app/setting/passkeys_controller.rb
+# app/controllers/www/app/v1/healths_controller.rb
 class Www::App::Setting::PasskeysController < Www::App::ApplicationController
   before_action :authenticate_user!
   
@@ -396,7 +396,7 @@ end
 
 #### 8.2 コントローラーテスト
 ```ruby
-# test/controllers/www/app/setting/passkeys_controller_test.rb
+# test/controllers/www/app/v1/passkeys_controller_test.rb
 class Www::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
   setup do
     sign_in users(:one)

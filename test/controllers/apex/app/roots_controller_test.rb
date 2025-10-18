@@ -46,7 +46,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "utc", request.params["tz"]
   end
 
-  test "invalid params fall back to existing preferences" do
+  test "invalid params are coerced to default preferences" do
     get apex_app_root_path, headers: HOST_HEADER, params: { lx: "en", ri: "us", tz: "utc" }
     assert_response :success
 
@@ -54,9 +54,31 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     location = URI.parse(response.location)
     query = Rack::Utils.parse_query(location.query)
-    assert_equal "en", query["lx"]
-    assert_equal "us", query["ri"]
-    assert_equal "utc", query["tz"]
+    assert_equal "ja", query["lx"]
+    assert_equal "jp", query["ri"]
+    assert_equal "jst", query["tz"]
+
+    follow_redirect!
+    assert_response :success
+    assert_equal "ja", request.params["lx"]
+    assert_equal "jp", request.params["ri"]
+    assert_equal "jst", request.params["tz"]
+  end
+
+  test "known non-standard params are mapped to defaults" do
+    get apex_app_root_path, headers: HOST_HEADER, params: { lx: "kr", ri: "sk", tz: "kst" }
+    assert_response :redirect
+    location = URI.parse(response.location)
+    query = Rack::Utils.parse_query(location.query)
+    assert_equal "ja", query["lx"]
+    assert_equal "jp", query["ri"]
+    assert_equal "jst", query["tz"]
+
+    follow_redirect!
+    assert_response :success
+    assert_equal "ja", request.params["lx"]
+    assert_equal "jp", request.params["ri"]
+    assert_equal "jst", request.params["tz"]
   end
 
   test "supports all preference combinations" do
