@@ -28,10 +28,10 @@ module Health
 
   private
   def get_status
-    if [IdentifiersRecord].all? { it.connection.execute("SELECT 1;") }
-      [200, "OK"]
+    if [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
+      [ 200, "OK" ]
     else
-      [500, "NG"]
+      [ 500, "NG" ]
     end
   end
 end
