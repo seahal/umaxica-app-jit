@@ -105,9 +105,11 @@ en:
             options:
               light: "Light — bright backgrounds for well-lit spaces"
               dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
             hints:
               light: "Great when you work during the day or in bright rooms."
               dark: "Ideal for night shifts or reducing eye strain."
+              system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
     com:
       preferences:
@@ -169,9 +171,11 @@ en:
             options:
               light: "Light — bright backgrounds for well-lit offices"
               dark: "Dark — subdued colors for command centers"
+              system: "System default — mirror corporate device settings"
             hints:
               light: "Best when you present in meeting rooms or open spaces."
               dark: "Perfect for late-night reviews or monitoring screens."
+              system: "Keeps theme in sync with enterprise-managed preferences."
             submit: "Save theme preference"
     org:
       customers:
@@ -229,9 +233,11 @@ en:
             options:
               light: "Light — bright interface for office work"
               dark: "Dark — low-glare view for night duty"
+              system: "System default — inherit admin workstation setting"
             hints:
               light: "Recommended when collaborating in shared spaces."
               dark: "Gentle on the eyes during overnight monitoring."
+              system: "Automatically adapts when your device switches modes."
             submit: "Save theme preference"
   activerecord:
     errors:

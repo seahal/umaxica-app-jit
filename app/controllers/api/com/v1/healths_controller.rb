@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Apex
+module Api
   module Com
     module V1
       class HealthsController < ApplicationController
