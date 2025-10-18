@@ -97,6 +97,18 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that fits your workspace and comfort."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+            hints:
+              light: "Great when you work during the day or in bright rooms."
+              dark: "Ideal for night shifts or reducing eye strain."
+            submit: "Save theme preference"
     com:
       preferences:
         title: "Preferences"
@@ -149,6 +161,18 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that helps you focus on corporate dashboards."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit offices"
+              dark: "Dark — subdued colors for command centers"
+            hints:
+              light: "Best when you present in meeting rooms or open spaces."
+              dark: "Perfect for late-night reviews or monitoring screens."
+            submit: "Save theme preference"
     org:
       customers:
         created: "Customer %{name} created successfully"
@@ -197,6 +221,18 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Switch the console appearance for long on-call shifts."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright interface for office work"
+              dark: "Dark — low-glare view for night duty"
+            hints:
+              light: "Recommended when collaborating in shared spaces."
+              dark: "Gentle on the eyes during overnight monitoring."
+            submit: "Save theme preference"
   activerecord:
     errors:
       messages:

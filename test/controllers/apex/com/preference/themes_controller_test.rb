@@ -2,17 +2,35 @@
 
 require "test_helper"
 
-class Apex::Com::Preference::ThemesControllerTest < ActionDispatch::IntegrationTest
-  setup do
-    host! ENV.fetch("APEX_CORPORATE_URL", "com.localhost:3333")
-  end
+module Apex
+  module Com
+    module Preference
+      class ThemesControllerTest < ActionDispatch::IntegrationTest
+        setup do
+          host! ENV.fetch("APEX_CORPORATE_URL", "com.localhost:3333")
+        end
 
-  test "renders the theme edit page with theme form" do
-    get edit_apex_com_preference_theme_url
-    assert_response :success
+        test "renders theme edit page with light and dark options" do
+          get edit_apex_com_preference_theme_path(default_url_query)
+          assert_response :success
 
-    assert_select "h1", text: I18n.t("apex.app.preference.cookie.edit.h1")
-    assert_select "form"
-    assert_select "input[name=?]", "accept_necessary_cookies"
+          assert_select "h1", text: I18n.t("apex.com.preference.theme.edit.title")
+          assert_select "p.theme-description", text: I18n.t("apex.com.preference.theme.edit.description")
+
+          expected_action = apex_com_preference_theme_path
+          assert_select "form[action=?]", expected_action do
+            assert_select "legend", text: I18n.t("apex.com.preference.theme.edit.legend")
+            assert_select "input[type='hidden'][name='_method'][value='patch']", count: 1
+            assert_select "input[type='radio'][name='theme'][value='light'][checked]", count: 1
+            assert_select "input[type='radio'][name='theme'][value='dark']", count: 1
+            assert_select "label[for='theme_light_com']", text: I18n.t("apex.com.preference.theme.edit.options.light")
+            assert_select "label[for='theme_dark_com']", text: I18n.t("apex.com.preference.theme.edit.options.dark")
+            assert_select ".hint", text: I18n.t("apex.com.preference.theme.edit.hints.light")
+            assert_select ".hint", text: I18n.t("apex.com.preference.theme.edit.hints.dark")
+            assert_select "input[type='submit'][value=?]", I18n.t("apex.com.preference.theme.edit.submit")
+          end
+        end
+      end
+    end
   end
 end

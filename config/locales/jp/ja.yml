@@ -208,6 +208,18 @@ ja:
             accept_functional_cookies: '機能性クッキーの許可について'
             accept_performance_cookies: 'パフォーマンスクッキーの許可について'
             accept_targeting_cookies: 'ターゲティングクッキーの許可について'
+        theme:
+          edit:
+            title: "ライト／ダークテーマの選択"
+            description: "使用環境に合わせてライトテーマかダークテーマを選択してください。"
+            legend: "テーマを選ぶ"
+            options:
+              light: "ライトテーマ（明るい背景）"
+              dark: "ダークテーマ（暗めの背景）"
+            hints:
+              light: "日中の作業や明るい部屋での利用に向いています。"
+              dark: "夜間や目の負担を減らしたい時におすすめです。"
+            submit: "テーマ設定を保存"
         themes:
           updated: "テーマを%{theme}に更新しました"
           invalid: "無効なテーマが選択されました"
@@ -287,6 +299,18 @@ ja:
             accept_functional_cookies: '機能性クッキーの許可について'
             accept_performance_cookies: 'パフォーマンスクッキーの許可について'
             accept_targeting_cookies: 'ターゲティングクッキーの許可について'
+        theme:
+          edit:
+            title: "ライト／ダークテーマの選択"
+            description: "社内の閲覧環境に合わせてテーマを切り替えましょう。"
+            legend: "テーマを選ぶ"
+            options:
+              light: "ライトテーマ（明るい背景）"
+              dark: "ダークテーマ（暗めの背景）"
+            hints:
+              light: "プレゼンテーションや会議室での利用に最適です。"
+              dark: "監視や夜間の作業での目の疲れを軽減します。"
+            submit: "テーマ設定を保存"
         regions:
           title: "企業地域・言語設定"
           region_section: "地域設定"
@@ -356,6 +380,18 @@ ja:
             accept_functional_cookies: '機能性クッキーの許可について'
             accept_performance_cookies: 'パフォーマンスクッキーの許可について'
             accept_targeting_cookies: 'ターゲティングクッキーの許可について'
+        theme:
+          edit:
+            title: "ライト／ダークテーマの選択"
+            description: "管理画面を快適に利用できるテーマを選択してください。"
+            legend: "テーマを選ぶ"
+            options:
+              light: "ライトテーマ（明るい背景）"
+              dark: "ダークテーマ（暗めの背景）"
+            hints:
+              light: "チームでのレビューや昼間の作業に向いています。"
+              dark: "夜間の当番やモニタリング作業で見やすくなります。"
+            submit: "テーマ設定を保存"
         regions:
           title: "地域・言語設定"
           region_section: "地域設定"

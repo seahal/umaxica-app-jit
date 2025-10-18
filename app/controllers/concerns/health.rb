@@ -10,10 +10,11 @@ module Health
 
   private
   def get_status
+    # TODO: implement!
     if [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
       [ 200, "OK" ]
     else
-      [ 500, "NG" ]
+      raise
     end
   end
 
