@@ -60,11 +60,7 @@ module Apex
         raw = cookies.signed[PREFERENCE_COOKIE_KEY]
         return if raw.blank?
 
-        begin
-          parsed = JSON.parse(raw)
-        rescue JSON::ParserError
-          return
-        end
+        parsed = JSON.parse(raw)
 
         return unless parsed.is_a?(Hash)
 
@@ -100,9 +96,7 @@ module Apex
         coerced ||= DEFAULT_PREFERENCES[key]
 
         return unless coerced
-        return coerced if allowed&.include?(coerced)
-
-        nil
+        coerced if allowed&.include?(coerced)
       end
 
       def redirect_required?(resolved)

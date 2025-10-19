@@ -7,12 +7,20 @@ module Theme
 
   ALLOWED_THEMES = %w[system dark light].freeze
   DEFAULT_THEME = "system"
+  THEME_CODES = {
+    "system" => "sy",
+    "dark" => "dk",
+    "light" => "lt"
+  }.freeze
+  CODE_TO_THEME = THEME_CODES.invert.freeze
+  THEME_QUERY_KEYS = %w[lx ri tz].freeze
 
   included do
     before_action :assign_current_theme, only: :edit
   end
 
   def edit
+    @theme_query_params = theme_redirect_params
   end
 
   def update
@@ -21,11 +29,12 @@ module Theme
     if resolved_theme.nil?
       flash.now[:alert] = I18n.t("apex.#{preference_scope}.preferences.themes.invalid")
       assign_current_theme
+      @theme_query_params = theme_redirect_params
       render :edit, status: :unprocessable_content
     else
       persist_theme!(resolved_theme)
       flash[:notice] = I18n.t("apex.#{preference_scope}.preferences.themes.updated", theme: I18n.t("themes.#{resolved_theme}"))
-      redirect_to action: :edit
+      redirect_to theme_redirect_url
     end
   end
 
@@ -42,8 +51,16 @@ module Theme
   end
 
   def normalize_theme(candidate)
-    normalized = candidate.to_s.downcase
-    normalized if ALLOWED_THEMES.include?(normalized)
+    value = candidate
+    value = value.to_unsafe_h if value.respond_to?(:to_unsafe_h)
+    value = value.values.first if value.is_a?(Hash)
+    value = value.first if value.is_a?(Array)
+
+    normalized = value.to_s.downcase
+    return CODE_TO_THEME[normalized] if CODE_TO_THEME.key?(normalized)
+    return normalized if ALLOWED_THEMES.include?(normalized)
+
+    nil
   end
 
   def persist_theme!(theme)
@@ -66,6 +83,40 @@ module Theme
 
   def theme_cookie_key
     :"apex_#{preference_scope}_theme"
+  end
+
+  def theme_redirect_url
+    base_path = public_send("edit_apex_#{preference_scope}_preference_theme_path")
+    query = theme_redirect_params
+    return base_path if query.empty?
+
+    "#{base_path}?#{query.to_query}"
+  end
+
+  def theme_redirect_params
+    THEME_QUERY_KEYS.each_with_object({}) do |key, memo|
+      raw = params[key]
+      next if raw.blank?
+
+      value = extract_theme_param_value(raw)
+      memo[key] = value if value.present?
+    end
+  end
+
+  def extract_theme_param_value(raw)
+    candidate =
+      case raw
+      when ActionController::Parameters
+        raw.to_unsafe_h.values.first
+      when Hash
+        raw.values.first
+      when Array
+        raw.compact_blank.first
+      else
+        raw
+      end
+
+    candidate.to_s.presence
   end
 
   def persist_app_preferences_cookie!(theme)

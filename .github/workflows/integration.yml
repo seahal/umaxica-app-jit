@@ -255,17 +255,17 @@ jobs:
           path: coverage/
           retention-days: 30
   image-check:
-    name: Build
+    name: Security Scan
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
       - name: Build an image from Dockerfile
-        run: docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+        run: docker build . --target production -t asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }} -f Dockerfile
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          image-ref: 'asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
