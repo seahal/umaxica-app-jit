@@ -71,9 +71,9 @@ class Help::Org::ApplicationHelperTest < ActionView::TestCase
     method_arity = method(:title_generator).arity
     blank_result = if method_arity.negative? || method_arity.zero?
                      title_generator
-                   else
+    else
                      title_generator(nil)
-                   end
+    end
 
     assert_equal "HelpOrg", blank_result
     assert_equal "HelpOrg", title_generator("")

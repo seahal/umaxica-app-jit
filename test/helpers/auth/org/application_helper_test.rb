@@ -71,9 +71,9 @@ class Auth::Org::ApplicationHelperTest < ActionView::TestCase
     method_arity = method(:title_generator).arity
     blank_result = if method_arity.negative? || method_arity.zero?
                      title_generator
-                   else
+    else
                      title_generator(nil)
-                   end
+    end
 
     assert_equal "AuthOrg", blank_result
     assert_equal "AuthOrg", title_generator("")

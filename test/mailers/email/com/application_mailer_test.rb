@@ -7,17 +7,18 @@ class Email::Com::ApplicationMailerTest < ActionMailer::TestCase
 
     mailer = Class.new(Email::Com::ApplicationMailer) do
       def sample
-        mail(to: "com-user@example.com", subject: "Com Sample") do |format|
+        mail(to: "com-user@example.com", subject: I18n.t("test.email.com.application_mailer.subject")) do |format|
           format.text { render plain: "hello" }
         end
       end
     end
 
+    I18n.backend.store_translations(:en, { test: { email: { com: { application_mailer: { subject: "Com Sample" } } } } })
     email = mailer.new.sample
 
-    assert_equal [expected_from], email.from
-    assert_equal ["com-user@example.com"], email.to
-    assert_equal "Com Sample", email.subject
+    assert_equal [ expected_from ], email.from
+    assert_equal [ "com-user@example.com" ], email.to
+    assert_equal I18n.t("test.email.com.application_mailer.subject"), email.subject
     assert_equal "hello", email.body.encoded
   end
 
