@@ -16,3 +16,11 @@ module ActiveSupport
     fixtures :all
   end
 end
+
+class ActionDispatch::IntegrationTest
+  private
+
+  def signed_cookie(name)
+    ActionDispatch::Cookies::CookieJar.build(request, cookies.to_hash).signed[name]
+  end
+end
