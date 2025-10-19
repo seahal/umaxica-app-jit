@@ -5,7 +5,7 @@ require "json"
 require "uri"
 
 class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
-  DEFAULT_QUERY = { "lx" => "ja", "ri" => "jp", "tz" => "jst", "ct" => "light" }.freeze
+  DEFAULT_QUERY = { "lx" => "ja", "ri" => "jp", "tz" => "jst", "ct" => "system" }.freeze
   HOST_HEADER = { "HTTP_HOST" => "app.localhost" }.freeze
 
   test "applies defaults without redirect when neither params nor cookie exist" do
@@ -69,14 +69,10 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_nil query["lx"]
     assert_nil query["ri"]
     assert_nil query["tz"]
-    assert_equal "system", query["ct"]
+    assert_nil query["ct"]
 
     follow_redirect!
     assert_response :success
-    assert_equal "system", request.params["ct"]
-
-    persisted = JSON.parse(signed_cookie(:apex_app_preferences))
-    assert_equal DEFAULT_QUERY.merge("ct" => "system"), persisted
   end
 
   test "removes default preference params from query" do

@@ -4,6 +4,7 @@ require "test_helper"
 
 class Apex::Net::ApplicationHelperTest < ActionView::TestCase
   setup do
+    extend Apex::App::ApplicationHelper
     extend Apex::Net::ApplicationHelper
   end
 

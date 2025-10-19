@@ -1,4 +1,5 @@
 <% scope = local_assigns.fetch(:scope).to_s %>
+<% content_for :page_title, t("apex.#{scope}.preferences.theme_settings") %>
 
 <h1><%= t("apex.#{scope}.preference.theme.edit.title") %></h1>
 <p class="theme-description"><%= t("apex.#{scope}.preference.theme.edit.description") %></p>
@@ -7,26 +8,26 @@
   <fieldset class="theme-options">
     <legend><%= t("apex.#{scope}.preference.theme.edit.legend") %></legend>
 
-  <div class="theme-option">
-    <%= radio_button_tag :theme, "light", true, id: "theme_light_#{scope}" %>
-    <%= label_tag "theme_light_#{scope}", t("apex.#{scope}.preference.theme.edit.options.light") %>
-    <p class="hint"><%= t("apex.#{scope}.preference.theme.edit.hints.light") %></p>
-  </div>
+    <div class="theme-option">
+      <%= radio_button_tag :theme, "light", @theme == "light", id: "theme_light_#{scope}" %>
+      <%= label_tag "theme_light_#{scope}", t("apex.#{scope}.preference.theme.edit.options.light") %>
+      <p class="hint"><%= t("apex.#{scope}.preference.theme.edit.hints.light") %></p>
+    </div>
 
-  <div class="theme-option">
-    <%= radio_button_tag :theme, "dark", false, id: "theme_dark_#{scope}" %>
-    <%= label_tag "theme_dark_#{scope}", t("apex.#{scope}.preference.theme.edit.options.dark") %>
-    <p class="hint"><%= t("apex.#{scope}.preference.theme.edit.hints.dark") %></p>
-  </div>
+    <div class="theme-option">
+      <%= radio_button_tag :theme, "dark", @theme == "dark", id: "theme_dark_#{scope}" %>
+      <%= label_tag "theme_dark_#{scope}", t("apex.#{scope}.preference.theme.edit.options.dark") %>
+      <p class="hint"><%= t("apex.#{scope}.preference.theme.edit.hints.dark") %></p>
+    </div>
 
-  <div class="theme-option">
-    <%= radio_button_tag :theme, "system", false, id: "theme_system_#{scope}" %>
-    <%= label_tag "theme_system_#{scope}", t("apex.#{scope}.preference.theme.edit.options.system") %>
-    <p class="hint"><%= t("apex.#{scope}.preference.theme.edit.hints.system") %></p>
-  </div>
-</fieldset>
+    <div class="theme-option">
+      <%= radio_button_tag :theme, "system", @theme == "system", id: "theme_system_#{scope}" %>
+      <%= label_tag "theme_system_#{scope}", t("apex.#{scope}.preference.theme.edit.options.system") %>
+      <p class="hint"><%= t("apex.#{scope}.preference.theme.edit.hints.system") %></p>
+    </div>
+  </fieldset>
 
-<div class="form-actions">
-  <%= submit_tag t("apex.#{scope}.preference.theme.edit.submit") %>
-</div>
+  <div class="form-actions">
+    <%= submit_tag t("apex.#{scope}.preference.theme.edit.submit") %>
+  </div>
 <% end %>

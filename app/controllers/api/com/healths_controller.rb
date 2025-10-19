@@ -2,6 +2,7 @@ module Api
   module Com
     class HealthsController < ApplicationController
       include ::Health
+
       def show
         show_html
       end

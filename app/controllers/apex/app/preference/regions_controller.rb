@@ -15,7 +15,7 @@ module Apex
           "lx" => "ja",
           "ri" => "jp",
           "tz" => "jst",
-          "ct" => "light"
+          "ct" => "system"
         }.freeze
 
         Result = Struct.new(:updated, :error_key) do

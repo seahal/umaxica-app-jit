@@ -13,4 +13,9 @@ module News::Com::ApplicationHelper
 
     time.in_time_zone(zone)
   end
+
+  def title_generator(title)
+    return ENV["NAME"] if title.blank?
+    "#{ title } | #{ ENV['NAME'] }"
+  end
 end

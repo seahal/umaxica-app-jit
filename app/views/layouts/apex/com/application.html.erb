@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= session[:language]&.downcase || 'ja' %>">
 <head>
-  <title><%= ENV.fetch('NAME') %> <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
+  <title><%= title_generator(yield(:page_title)) %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
@@ -12,7 +12,7 @@
 </head>
 
 <body class="px-4">
-  <%= render "concern/flash_messages" %>
+<%= render "concern/flash_messages" %>
 
 <header class="max-w-5xl mx-auto flex items-center justify-between py-8">
   <h1 class="text-2xl font-semibold text-zinc-900">

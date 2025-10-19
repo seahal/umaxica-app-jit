@@ -63,4 +63,30 @@ class Help::Com::ApplicationHelperTest < ActionView::TestCase
 
     assert_equal "JST", result.zone
   end
+
+  test "title_generator returns NAME when title blank" do
+    original_name = ENV["NAME"]
+    ENV["NAME"] = "HelpCom"
+
+    method_arity = method(:title_generator).arity
+    blank_result = if method_arity.negative? || method_arity.zero?
+                     title_generator
+                   else
+                     title_generator(nil)
+                   end
+
+    assert_equal "HelpCom", blank_result
+    assert_equal "HelpCom", title_generator("")
+  ensure
+    original_name.nil? ? ENV.delete("NAME") : ENV["NAME"] = original_name
+  end
+
+  test "title_generator concatenates title with NAME when present" do
+    original_name = ENV["NAME"]
+    ENV["NAME"] = "HelpCom"
+
+    assert_equal "Support Center | HelpCom", title_generator("Support Center")
+  ensure
+    original_name.nil? ? ENV.delete("NAME") : ENV["NAME"] = original_name
+  end
 end

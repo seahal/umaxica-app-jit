@@ -1,3 +1,5 @@
+<% content_for :page_title, t('apex.org.preferences.cookie_settings') %>
+
 <h1><%= t('apex.org.preference.cookie.edit.h1') %></h1>
 
 <%= form_with url: apex_org_preference_cookie_url, method: :patch do |f| %>

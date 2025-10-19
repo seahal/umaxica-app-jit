@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+4# frozen_string_literal: true
 
 require "test_helper"
 
