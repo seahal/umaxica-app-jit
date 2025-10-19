@@ -13,4 +13,9 @@ module Apex::App::ApplicationHelper
 
     time.in_time_zone(zone)
   end
+
+  def title_generator(title)
+    return "#{ ENV['name'] }" if title.blank?
+    "#{ title } | #{ ENV['NAME'] }"
+  end
 end

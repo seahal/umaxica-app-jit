@@ -63,4 +63,30 @@ class News::Com::ApplicationHelperTest < ActionView::TestCase
 
     assert_equal "JST", result.zone
   end
+
+  test "title_generator returns NAME when title blank" do
+    original_name = ENV["NAME"]
+    ENV["NAME"] = "NewsCom"
+
+    method_arity = method(:title_generator).arity
+    blank_result = if method_arity.negative? || method_arity.zero?
+                     title_generator
+    else
+                     title_generator(nil)
+    end
+
+    assert_equal "NewsCom", blank_result
+    assert_equal "NewsCom", title_generator("")
+  ensure
+    original_name.nil? ? ENV.delete("NAME") : ENV["NAME"] = original_name
+  end
+
+  test "title_generator concatenates title with NAME when present" do
+    original_name = ENV["NAME"]
+    ENV["NAME"] = "NewsCom"
+
+    assert_equal "Corporate News | NewsCom", title_generator("Corporate News")
+  ensure
+    original_name.nil? ? ENV.delete("NAME") : ENV["NAME"] = original_name
+  end
 end

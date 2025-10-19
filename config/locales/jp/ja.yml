@@ -8,6 +8,7 @@ ja:
   themes:
     light: "ライトテーマ"
     dark: "ダークテーマ"
+    system: "システムテーマ"
   model:
     concern:
       cloudflare:
@@ -57,6 +58,20 @@ ja:
               accept_functional_cookies: '機能性クッキーの許可について'
               accept_performance_cookies: 'パフォーマンスクッキーの許可について'
               accept_targeting_cookies: 'ターゲティングクッキーの許可について'
+          theme:
+            edit:
+              title: "テーマ設定（ライト／ダークの切り替え）"
+              description: "表示モードを選択して作業環境に合わせましょう。"
+              legend: "テーマの選択"
+              options:
+                light: "ライト — 明るい背景で日中の作業に最適"
+                dark: "ダーク — 暗い環境で目に優しい配色"
+                system: "システム設定 — 端末の設定に合わせて自動切り替え"
+              hints:
+                light: "共有スペースや明るいオフィスでの利用におすすめです。"
+                dark: "夜間の作業や目の疲れを軽減したいときに最適です。"
+                system: "OS のテーマ変更に連動して切り替わります。"
+              submit: "テーマ設定を保存"
           email:
             new:
               page_title: 'emailの設定'
@@ -73,6 +88,20 @@ ja:
               accept_functional_cookies: '機能性クッキーの許可について'
               accept_performance_cookies: 'パフォーマンスクッキーの許可について'
               accept_targeting_cookies: 'ターゲティングクッキーの許可について'
+          theme:
+            edit:
+              title: "テーマ設定（ライト／ダークの切り替え）"
+              description: "業務ダッシュボードを最適な表示モードに切り替えます。"
+              legend: "テーマの選択"
+              options:
+                light: "ライト — 会議室や明るいオフィス向け"
+                dark: "ダーク — 管制室や夜間モニタリング向け"
+                system: "システム設定 — 端末ポリシーに合わせて自動調整"
+              hints:
+                light: "明るい会議室でのプレゼンに適しています。"
+                dark: "夜間の監視や長時間の作業でも目に優しい配色です。"
+                system: "社内デバイスの設定に合わせて自動で切り替わります。"
+              submit: "テーマ設定を保存"
       org:
         preference:
           show:
@@ -86,6 +115,20 @@ ja:
               accept_functional_cookies: '機能性クッキーの許可について'
               accept_performance_cookies: 'パフォーマンスクッキーの許可について'
               accept_targeting_cookies: 'ターゲティングクッキーの許可について'
+          theme:
+            edit:
+              title: "テーマ設定（ライト／ダークの切り替え）"
+              description: "管理コンソールの表示モードを好みに合わせて切り替えます。"
+              legend: "テーマの選択"
+              options:
+                light: "ライト — オフィスワーク向けの明るい画面"
+                dark: "ダーク — 夜間当直に最適な低輝度表示"
+                system: "システム設定 — 管理端末の設定を継承"
+              hints:
+                light: "共有スペースでの共同作業におすすめです。"
+                dark: "夜間監視や長時間の操作で目の負担を軽減します。"
+                system: "端末のテーマ切り替えに合わせて自動で変更します。"
+              submit: "テーマ設定を保存"
     help:
       app:
         contacts:

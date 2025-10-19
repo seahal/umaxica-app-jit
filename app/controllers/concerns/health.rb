@@ -9,6 +9,7 @@ module Health
   # Use environment variables or request parameters to determine when to use this vs full check
 
   private
+
   def get_status
     # TODO: implement!
     if [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }

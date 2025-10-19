@@ -10,7 +10,7 @@ module Apex
         "lx" => "ja",
         "ri" => "jp",
         "tz" => "jst",
-        "ct" => "light"
+        "ct" => "system"
       }.freeze
       ALLOWED_PREFERENCE_VALUES = {
         "lx" => %w[ja en],

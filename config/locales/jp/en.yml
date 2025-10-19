@@ -44,6 +44,7 @@ en:
     light: "Light Theme"
     dark: "Dark Theme"
     corporate: "Corporate Theme"
+    system: "System Theme"
   apex:
     app:
       preferences:

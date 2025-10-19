@@ -1,4 +1,3 @@
-
 module DefaultUrlOptions
   extend ActiveSupport::Concern
 
