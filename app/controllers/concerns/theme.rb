@@ -86,11 +86,11 @@ module Theme
   end
 
   def theme_redirect_url
-    base_path = public_send("edit_apex_#{preference_scope}_preference_theme_path")
     query = theme_redirect_params
-    return base_path if query.empty?
-
-    "#{base_path}?#{query.to_query}"
+    public_send(
+      "edit_apex_#{preference_scope}_preference_theme_path",
+      symbolize_keys(query.presence || {})
+    )
   end
 
   def theme_redirect_params
@@ -117,6 +117,10 @@ module Theme
       end
 
     candidate.to_s.presence
+  end
+
+  def symbolize_keys(hash)
+    hash.transform_keys { |key| key.respond_to?(:to_sym) ? key.to_sym : key }
   end
 
   def persist_app_preferences_cookie!(theme)

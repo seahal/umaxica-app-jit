@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= session[:language]&.downcase || 'ja' %>">
+<html lang="<%= language_setter %>">
 <head>
   <title><%= title_generator(yield(:page_title)) %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">

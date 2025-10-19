@@ -157,6 +157,12 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
+  test "sets html lang attribute based on session language" do
+    get apex_app_root_path(format: :html), headers: HOST_HEADER.merge("rack.session" => { language: "EN" })
+    assert_response :success
+    assert_select("html[lang=?]", "en")
+  end
+
   test "should load without any instance variables" do
     get apex_app_root_path, headers: HOST_HEADER
     assert_response :success
