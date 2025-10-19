@@ -1,3 +1,5 @@
+require "json"
+
 module Apex
   module App
     module Preference
@@ -12,7 +14,8 @@ module Apex
         DEFAULT_QUERY_PREFERENCES = {
           "lx" => "ja",
           "ri" => "jp",
-          "tz" => "jst"
+          "tz" => "jst",
+          "ct" => "light"
         }.freeze
 
         Result = Struct.new(:updated, :error_key) do
@@ -143,7 +146,8 @@ module Apex
           {
             "lx" => normalize_language_for_cookie,
             "ri" => normalize_region_for_cookie,
-            "tz" => normalize_timezone_for_cookie
+            "tz" => normalize_timezone_for_cookie,
+            "ct" => normalize_theme_for_cookie
           }.compact.presence || DEFAULT_QUERY_PREFERENCES
         end
 
@@ -179,6 +183,34 @@ module Apex
           else
             DEFAULT_QUERY_PREFERENCES["tz"]
           end
+        end
+
+        def normalize_theme_for_cookie
+          candidate = session[:theme].presence || existing_cookie_preferences["ct"]
+
+          case candidate.to_s.downcase
+          when "dark"
+            "dark"
+          when "system"
+            "system"
+          when "light"
+            "light"
+          else
+            DEFAULT_QUERY_PREFERENCES["ct"]
+          end
+        end
+
+        def existing_cookie_preferences
+          return @existing_cookie_preferences if defined?(@existing_cookie_preferences)
+
+          raw = cookies.signed[PREFERENCE_COOKIE_KEY]
+          @existing_cookie_preferences =
+            begin
+              parsed = JSON.parse(raw)
+              parsed.is_a?(Hash) ? parsed : {}
+            rescue JSON::ParserError, TypeError
+              {}
+            end
         end
       end
     end

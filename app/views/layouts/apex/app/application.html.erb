@@ -6,7 +6,8 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "apex/app/main" %>
-  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module", nonce: true %>
   <link rel="icon" href="https://perm.umaxica.app/jit/favicon.ico" sizes="32x32">
 </head>
 
