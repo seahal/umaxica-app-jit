@@ -22,13 +22,14 @@ module Apex
             assert_select "input[type='radio'][name='theme'][value='sy'][checked]", count: 1
             assert_select "label[for='theme_light_app']", text: I18n.t("apex.app.preference.theme.edit.options.light")
             assert_select "label[for='theme_dark_app']", text: I18n.t("apex.app.preference.theme.edit.options.dark")
-          assert_select "label[for='theme_system_app']", text: I18n.t("apex.app.preference.theme.edit.options.system")
-          assert_select ".hint", text: I18n.t("apex.app.preference.theme.edit.hints.light")
-          assert_select ".hint", text: I18n.t("apex.app.preference.theme.edit.hints.dark")
-          assert_select ".hint", text: I18n.t("apex.app.preference.theme.edit.hints.system")
-          assert_select "input[type='submit'][value=?]", I18n.t("apex.app.preference.theme.edit.submit")
+            assert_select "label[for='theme_system_app']", text: I18n.t("apex.app.preference.theme.edit.options.system")
+            assert_select ".hint", text: I18n.t("apex.app.preference.theme.edit.hints.light")
+            assert_select ".hint", text: I18n.t("apex.app.preference.theme.edit.hints.dark")
+            assert_select ".hint", text: I18n.t("apex.app.preference.theme.edit.hints.system")
+            assert_select "input[type='submit'][value=?]", I18n.t("apex.app.preference.theme.edit.submit")
+          end
+          assert_select "a", text: I18n.t("apex.app.preferences.back_to_settings")
         end
-      end
 
         # test "updates theme preference and persists to cookies" do
         #   patch apex_app_preference_theme_url, params: { theme: "dk", lx: "ja", ri: "jp", tz: "jst" }

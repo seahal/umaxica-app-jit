@@ -21,17 +21,18 @@ module Apex
             assert_select "input[type='radio'][name='theme'][value='sy'][checked]", count: 1
             assert_select "label[for='theme_light_org']", text: I18n.t("apex.org.preference.theme.edit.options.light")
             assert_select "label[for='theme_dark_org']", text: I18n.t("apex.org.preference.theme.edit.options.dark")
-          assert_select "label[for='theme_system_org']", text: I18n.t("apex.org.preference.theme.edit.options.system")
-          assert_select ".hint", text: I18n.t("apex.org.preference.theme.edit.hints.light")
-          assert_select ".hint", text: I18n.t("apex.org.preference.theme.edit.hints.dark")
-          assert_select ".hint", text: I18n.t("apex.org.preference.theme.edit.hints.system")
-          assert_select "input[type='submit'][value=?]", I18n.t("apex.org.preference.theme.edit.submit")
+            assert_select "label[for='theme_system_org']", text: I18n.t("apex.org.preference.theme.edit.options.system")
+            assert_select ".hint", text: I18n.t("apex.org.preference.theme.edit.hints.light")
+            assert_select ".hint", text: I18n.t("apex.org.preference.theme.edit.hints.dark")
+            assert_select ".hint", text: I18n.t("apex.org.preference.theme.edit.hints.system")
+            assert_select "input[type='submit'][value=?]", I18n.t("apex.org.preference.theme.edit.submit")
+          end
+
+          assert_select "a", text: I18n.t("apex.org.preferences.back_to_settings")
         end
-        # assert_select "a.btn.btn-secondary[href='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings")
-      end
 
         # test "updates admin theme preference" do
-        #   patch apex_org_preference_theme_url, params: { theme: "lt", lx: "ja", ri: "jp", tz: "jst" }
+        # patch apex_org_preference_theme_url, params: { theme: "lt", lx: "ja", ri: "jp", tz: "jst" }
         #
         #   assert_redirected_to edit_apex_org_preference_theme_url(lx: "ja", ri: "jp", tz: "jst")
         #   assert_equal I18n.t("apex.org.preferences.themes.updated", theme: I18n.t("themes.light")), flash[:notice]

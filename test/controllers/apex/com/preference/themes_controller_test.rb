@@ -21,14 +21,14 @@ module Apex
             assert_select "input[type='radio'][name='theme'][value='sy'][checked]", count: 1
             assert_select "label[for='theme_light_com']", text: I18n.t("apex.com.preference.theme.edit.options.light")
             assert_select "label[for='theme_dark_com']", text: I18n.t("apex.com.preference.theme.edit.options.dark")
-          assert_select "label[for='theme_system_com']", text: I18n.t("apex.com.preference.theme.edit.options.system")
-          assert_select ".hint", text: I18n.t("apex.com.preference.theme.edit.hints.light")
-          assert_select ".hint", text: I18n.t("apex.com.preference.theme.edit.hints.dark")
-          assert_select ".hint", text: I18n.t("apex.com.preference.theme.edit.hints.system")
-          assert_select "input[type='submit'][value=?]", I18n.t("apex.com.preference.theme.edit.submit")
+            assert_select "label[for='theme_system_com']", text: I18n.t("apex.com.preference.theme.edit.options.system")
+            assert_select ".hint", text: I18n.t("apex.com.preference.theme.edit.hints.light")
+            assert_select ".hint", text: I18n.t("apex.com.preference.theme.edit.hints.dark")
+            assert_select ".hint", text: I18n.t("apex.com.preference.theme.edit.hints.system")
+            assert_select "input[type='submit'][value=?]", I18n.t("apex.com.preference.theme.edit.submit")
+          end
+          assert_select "a", text: I18n.t("apex.com.preferences.back_to_settings")
         end
-        assert_select "a.btn.btn-secondary[href='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings"), count: 0
-      end
 
         # test "updates corporate theme preference" do
         #   patch apex_com_preference_theme_url, params: { theme: "dk", lx: "ja", ri: "jp", tz: "jst" }

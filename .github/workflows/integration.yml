@@ -92,7 +92,7 @@ jobs:
         run: bun run typecheck
 
   test-rails:
-    name: Rails Tests
+    name: Ruby on Rails Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -231,7 +231,7 @@ jobs:
             tmp/screenshots/
           retention-days: 7
   test-js:
-    name: JavaScript Tests
+    name: Bun & Co. Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
