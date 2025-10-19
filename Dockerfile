@@ -98,8 +98,6 @@ RUN apt-get update -qq \
 RUN npm install -g bun@"${BUN_VERSION}" \
     && npm cache clean --force
 
-RUN cd $HOME/main
-
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
 RUN gem install bundler \
@@ -107,8 +105,6 @@ RUN gem install bundler \
     && bundle config set without 'production' \
     && bundle install --jobs "$(nproc)"
 
-RUN mkdir -p /usr/local/bundle \
-    && chown -R "${DOCKER_UID}:${DOCKER_GID}" /usr/local/bundle
 
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \

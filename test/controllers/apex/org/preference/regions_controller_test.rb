@@ -44,8 +44,9 @@ class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
 
         assert_select ".form-actions" do
           assert_select "input[type='submit']", count: 1
-          assert_select "a.btn.btn-secondary", text: I18n.t("apex.org.preferences.regions.cancel")
         end
+
+        assert_select "a.btn.btn-secondary", text: I18n.t("apex.org.preferences.regions.cancel")
       end
     end
   end

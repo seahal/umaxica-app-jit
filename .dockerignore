@@ -141,3 +141,13 @@ memo/
 
 #
 .ruby-lsp
+.cache
+.claude.json
+.claude.json.backup
+.codex
+.gnupg
+.irb_history
+.ssh
+.vscode-server
+qodana.yaml
+wrangler.jsonc

@@ -230,7 +230,6 @@ jobs:
             log/test.log
             tmp/screenshots/
           retention-days: 7
-
   test-js:
     name: JavaScript Tests
     runs-on: ubuntu-latest
@@ -255,3 +254,20 @@ jobs:
           name: js-coverage-report
           path: coverage/
           retention-days: 30
+  image-check:
+    name: Security Scan
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Build an image from Dockerfile
+        run: docker build . --target production -t asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }} -f Dockerfile
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
