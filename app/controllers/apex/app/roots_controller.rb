@@ -4,22 +4,25 @@ require "json"
 module Apex
   module App
     class RootsController < ApplicationController
-      PREFERENCE_KEYS = %w[lx ri tz].freeze
+      PREFERENCE_KEYS = %w[lx ri tz ct].freeze
       PREFERENCE_COOKIE_KEY = :apex_app_preferences
       DEFAULT_PREFERENCES = {
         "lx" => "ja",
         "ri" => "jp",
-        "tz" => "jst"
+        "tz" => "jst",
+        "ct" => "light"
       }.freeze
       ALLOWED_PREFERENCE_VALUES = {
         "lx" => %w[ja en],
         "ri" => %w[jp us],
-        "tz" => %w[jst utc]
+        "tz" => %w[jst utc],
+        "ct" => %w[light dark system]
       }.freeze
       COERCED_PREFERENCE_VALUES = {
         "lx" => { "kr" => "ja" },
         "ri" => { "sk" => "jp" },
-        "tz" => { "kst" => "jst" }
+        "tz" => { "kst" => "jst" },
+        "ct" => { "auto" => "system", "darkmode" => "dark" }
       }.freeze
 
       before_action :ensure_preference_context
@@ -44,14 +47,12 @@ module Apex
       end
 
       def resolve_preferences
+        @cookie_preferences = read_cookie_preferences
+        param_preferences = extract_param_preferences
+
         resolved = DEFAULT_PREFERENCES.dup
-
-        cookie_values = read_cookie_preferences
-        resolved.merge!(cookie_values) if cookie_values.present?
-
-        param_values = extract_param_preferences
-        resolved.merge!(param_values) if param_values.present?
-
+        resolved.merge!(@cookie_preferences) if @cookie_preferences.present?
+        resolved.merge!(param_preferences) if param_preferences.present?
         resolved
       end
 
@@ -107,20 +108,34 @@ module Apex
       def redirect_required?(resolved)
         PREFERENCE_KEYS.any? do |key|
           expected = resolved[key]
+          default = DEFAULT_PREFERENCES[key]
+          actual_present = request.query_parameters.key?(key)
           actual = request.query_parameters[key]&.to_s&.downcase
-          expected != actual
+
+          if expected == default
+            actual_present
+          else
+            actual != expected
+          end
         end
       end
 
       def resolved_redirect_url(resolved)
-        query = request.query_parameters.except(*PREFERENCE_KEYS).merge(resolved)
+        query = request.query_parameters.except(*PREFERENCE_KEYS)
+
+        resolved.each do |key, value|
+          next if value == DEFAULT_PREFERENCES[key]
+
+          query[key] = value
+        end
+
         uri = URI.parse(request.url)
-        uri.query = query.to_query
+        uri.query = query.to_query.presence
         uri.to_s
       end
 
       def preferences_changed?(resolved)
-        current_cookie = read_cookie_preferences
+        current_cookie = @cookie_preferences
         current_cookie.blank? || PREFERENCE_KEYS.any? { |key| current_cookie[key] != resolved[key] }
       end
 

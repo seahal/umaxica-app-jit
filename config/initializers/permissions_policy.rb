@@ -3,7 +3,6 @@
 Rails.application.config.permissions_policy do |policy|
   # Hardened baseline: explicitly disable high-risk features unless required.
   policy.accelerometer             :none
-  policy.ambient_light_sensor      :none
   policy.autoplay                  :none
   policy.camera                    :self
   policy.display_capture           :none
@@ -19,6 +18,5 @@ Rails.application.config.permissions_policy do |policy|
   policy.screen_wake_lock          :none
   policy.serial                    :none
   policy.usb                       :none
-  policy.web_share                 :self
   policy.sync_xhr                  :self
 end
