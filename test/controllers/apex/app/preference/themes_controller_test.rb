@@ -29,7 +29,7 @@ module Apex
             assert_select "input[type='submit'][value=?]", I18n.t("apex.app.preference.theme.edit.submit")
           end
 
-          assert_select "a.btn.btn-secondary[href='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 0
+          assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 1
         end
 
         test "updates theme preference and persists to cookies" do
@@ -46,7 +46,7 @@ module Apex
           follow_redirect!
           assert_response :success
           assert_select "input[type='radio'][name='theme'][value='dk'][checked]", count: 1
-          assert_select "a.btn.btn-secondary[href='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
+          assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
         end
 
         test "re-renders edit on invalid theme selection" do
@@ -55,7 +55,7 @@ module Apex
           follow_redirect!
           assert_equal "light", session[:theme]
           assert_equal "light", signed_cookie(:apex_app_theme)
-          assert_select "a.btn.btn-secondary[href='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
+          assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
 
           patch apex_app_preference_theme_url, params: { theme: "neon", lx: "ja", ri: "jp", tz: "jst" }
 
@@ -64,7 +64,7 @@ module Apex
           assert_equal "light", session[:theme]
           assert_equal "light", signed_cookie(:apex_app_theme)
           assert_select "input[type='radio'][name='theme'][value='lt'][checked]", count: 1
-          assert_select "a.btn.btn-secondary[href='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
+          assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
         end
       end
     end

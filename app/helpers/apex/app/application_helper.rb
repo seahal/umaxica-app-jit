@@ -22,4 +22,12 @@ module Apex::App::ApplicationHelper
   def language_setter(language = session[:language])
     language.to_s.casecmp("en").zero? ? "en" : "ja"
   end
+
+  def show_timezone
+    "jst"
+  end
+
+  def show_language
+    "ja"
+  end
 end

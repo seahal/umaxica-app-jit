@@ -15,13 +15,10 @@ Things you may want to cover:
   - Bun => We use this.
 * Configuration
   * ...
-* Database creation
-  - `bin/rails db:create`
-* Database initialization
-  - `bin/rails db:migrate`
-  - `bin/rails db:seed`
+* Database setup
+  - `bin/rails db:prepare`
 * How to run the test suite
-  - `bundle exec rails test`
+  - `bin/rails test all`
   - `bun test`
 * How to lint/format code
   * Ruby on Rails

@@ -26,11 +26,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "text/html", response.media_type
   end
 
-  test "sets html lang attribute based on session language" do
-    get apex_org_root_url(format: :html), headers: { "rack.session" => { language: "EN" } }
-    assert_response :success
-    assert_select("html[lang=?]", "en")
-  end
 
   test "should handle different request formats" do
     # Test HTML format

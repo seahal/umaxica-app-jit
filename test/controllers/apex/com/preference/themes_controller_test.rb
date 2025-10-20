@@ -28,7 +28,7 @@ module Apex
             assert_select "input[type='submit'][value=?]", I18n.t("apex.com.preference.theme.edit.submit")
           end
 
-          assert_select "a.btn.btn-secondary[href='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings")
+          assert_select "a.btn.btn-secondary[href^='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings")
         end
 
         test "updates corporate theme preference" do
@@ -42,7 +42,7 @@ module Apex
           follow_redirect!
           assert_response :success
           assert_select "input[type='radio'][name='theme'][value='dk'][checked]", count: 1
-          assert_select "a.btn.btn-secondary[href='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings")
+          assert_select "a.btn.btn-secondary[href^='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings")
         end
 
         test "rejects invalid corporate theme selection" do
@@ -51,7 +51,7 @@ module Apex
           follow_redirect!
           assert_equal "system", session[:theme]
           assert_equal "system", signed_cookie(:apex_com_theme)
-          assert_select "a.btn.btn-secondary[href='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings")
+          assert_select "a.btn.btn-secondary[href^='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings")
 
           patch apex_com_preference_theme_url, params: { theme: "sepia", lx: "ja", ri: "jp", tz: "jst" }
 
@@ -60,7 +60,7 @@ module Apex
           assert_equal "system", session[:theme]
           assert_equal "system", signed_cookie(:apex_com_theme)
           assert_select "input[type='radio'][name='theme'][value='sy'][checked]", count: 1
-          assert_select "a.btn.btn-secondary[href='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings")
+          assert_select "a.btn.btn-secondary[href^='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings")
         end
       end
     end
