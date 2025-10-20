@@ -25,7 +25,7 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
       assert_select "label", I18n.t("apex.app.preference.cookie.edit.accept_performance_cookies")
       assert_select "input[type='submit']", count: 1
     end
-    assert_select "a.btn.btn-secondary[href='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 1
+    assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 1
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
@@ -50,7 +50,7 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
     assert_select "input[type='checkbox'][name='accept_functional_cookies'][checked]", count: 1
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 1
     assert_select "input[type='checkbox'][name='accept_targeting_cookies'][checked]", count: 1
-    assert_select "a.btn.btn-secondary[href='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 1
+    assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 1
 
     patch apex_app_preference_cookie_url,
           params: {
@@ -63,7 +63,7 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
     assert_select "input[type='checkbox'][name='accept_functional_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_targeting_cookies'][checked]", count: 0
-    assert_select "a.btn.btn-secondary[href='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 1
+    assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 1
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end

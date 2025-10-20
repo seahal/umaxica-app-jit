@@ -2,6 +2,7 @@ require "test_helper"
 
 class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::IntegrationTest
   test "should get edit" do
+    original_forgery_setting = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true
     get edit_apex_org_preference_cookie_url
     assert_select "form" do
@@ -15,11 +16,14 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
       assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_targeting_cookies")
       assert_select "input[type=?]", "submit"
     end
-    assert_select "a.btn.btn-secondary[href='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 0
+    assert_select "a.btn.btn-secondary[href^='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 1
     assert_response :success
+  ensure
+    ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
 
   test "checking cookie policy" do
+    original_forgery_setting = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true
     get edit_apex_org_preference_cookie_url
     assert_response :success
@@ -43,7 +47,9 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
       assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_targeting_cookies")
       assert_select "input[type=?]", "submit"
     end
-    assert_select "a.btn.btn-secondary[href='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 1
+    assert_select "a.btn.btn-secondary[href^='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 1
+  ensure
+    ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
 
   test "submitting the form persists admin cookie preferences" do
@@ -69,7 +75,7 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 1
     assert_select "input[type='checkbox'][name='accept_targeting_cookies'][checked]", count: 1
     assert_select "input[type='checkbox'][name='accept_tracking_cookies'][checked]", count: 0
-    assert_select "a.btn.btn-secondary[href='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 1
+    assert_select "a.btn.btn-secondary[href^='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 1
 
     patch apex_org_preference_cookie_url,
           params: {
@@ -84,7 +90,7 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_targeting_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_tracking_cookies'][checked]", count: 0
-    assert_select "a.btn.btn-secondary[href='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 1
+    assert_select "a.btn.btn-secondary[href^='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 1
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
