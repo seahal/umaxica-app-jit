@@ -15,7 +15,7 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
       assert_select "label", I18n.t("apex.org.preference.cookie.edit.accept_targeting_cookies")
       assert_select "input[type=?]", "submit"
     end
-    assert_select "a.btn.btn-secondary[href='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 1
+    assert_select "a.btn.btn-secondary[href='#{apex_org_preference_path}']", text: I18n.t("apex.org.preferences.back_to_settings"), count: 0
     assert_response :success
   end
 

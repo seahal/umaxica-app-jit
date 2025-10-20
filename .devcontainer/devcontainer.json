@@ -70,19 +70,6 @@
       "onAutoForward": "silent"
     }
   },
-  "features": {
-    "ghcr.io/devcontainers/features/github-cli:latest": {},
-    "ghcr.io/devcontainers/features/git:latest": {
-      "ppa": true,
-      "version": "latest"
-    },
-    "ghcr.io/fumito-ito/devcontainer-features/codex-cli:latest": {
-      "version": "latest"
-    },
-    "ghcr.io/thamaji/devcontainer-features/lefthook:latest": {
-      "VERSION": "latest"
-    }
-  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -172,5 +159,5 @@
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",
     "source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
   ],
-  "updateRemoteUserUID": true
+  "updateRemoteUserUID": false
 }

@@ -29,7 +29,7 @@ module Apex
             assert_select "input[type='submit'][value=?]", I18n.t("apex.app.preference.theme.edit.submit")
           end
 
-          assert_select "a.btn.btn-secondary[href='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
+          assert_select "a.btn.btn-secondary[href='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 0
         end
 
         test "updates theme preference and persists to cookies" do
