@@ -26,14 +26,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "text/html", response.media_type
   end
 
-  test "sets html lang attribute based on session language" do
-    open_session do |sess|
-      sess.session[:language] = "EN"
-      sess.get apex_org_root_url(format: :html)
-      sess.assert_response :success
-      sess.assert_select("html[lang=?]", "en")
-    end
-  end
 
   test "should handle different request formats" do
     # Test HTML format

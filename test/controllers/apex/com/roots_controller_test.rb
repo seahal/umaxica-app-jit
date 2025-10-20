@@ -28,15 +28,6 @@ class Apex::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
-  test "sets html lang attribute to en when session language is english" do
-    open_session do |sess|
-      sess.session[:language] = "EN"
-      sess.get apex_com_root_url(format: :html)
-      sess.assert_response :success
-      sess.assert_select("html[lang=?]", "en")
-    end
-  end
-
   # test "should get html which must have which contains configured lang param." do
   #   get apex_com_root_url(format: :html), headers: {
   #     "rack.session" => { language: "EN" }

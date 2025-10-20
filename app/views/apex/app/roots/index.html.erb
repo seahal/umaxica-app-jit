@@ -6,4 +6,5 @@
   <li>TimeZone: <%= params[:tz].to_s.downcase == 'utc' ? "utc" : 'jst' %></li>
   <li><%= Time.now.in_time_zone("Tokyo") %></li>
   <li><%= to_localetime Time.now, 'jst' %></li>
+  <li><%= show_timezone %></li>
 </ul>

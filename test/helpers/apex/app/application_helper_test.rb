@@ -96,4 +96,12 @@ class Apex::App::ApplicationHelperTest < ActionView::TestCase
       ENV["name"] = original_lower
     end
   end
+
+  test "show true timezone" do
+    assert_equal show_timezone, "jst"
+  end
+
+  test "show false timezone" do
+    assert_not_equal show_timezone, "kst"
+  end
 end
