@@ -2,9 +2,9 @@
 
 require "test_helper"
 
-class Auth::App::ApplicationHelperTest < ActionView::TestCase
+class Sign::App::ApplicationHelperTest < ActionView::TestCase
   setup do
-    extend Auth::App::ApplicationHelper
+    extend Sign::App::ApplicationHelper
   end
 
   test "to_localetime converts to UTC by default" do

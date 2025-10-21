@@ -5,8 +5,8 @@ Rails.application.routes.draw do
   draw :apex
   # api endpoint url
   draw :api
-  # endpoint for auth
-  draw :auth
+  # endpoint for sign
+  draw :sign
   # endpoint for docs
   draw :docs
   # endpoint for news

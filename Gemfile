@@ -82,7 +82,7 @@ gem "jwt"
 #
 gem "jsbundling-rails"
 # for fastly cache purge
-gem "fastly"
+# gem "fastly"
 #
 # gem "thruster", require: false
 

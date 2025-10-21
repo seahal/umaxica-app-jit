@@ -126,8 +126,8 @@ OauthProviders.enabled.each do |provider|
 end
 
 # OAuth callbacks
-get '/auth/:provider/callback', to: 'oauth_callbacks#create'
-get '/auth/failure', to: 'oauth_callbacks#failure'
+get '/sign/:provider/callback', to: 'oauth_callbacks#create'
+get '/sign/failure', to: 'oauth_callbacks#failure'
 ```
 
 ## Implementation Steps

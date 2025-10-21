@@ -84,7 +84,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
              max_age: 3600, # 1 hour
              expose: [ "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset" ]
 
-    resource "/auth/com/*",
+    resource "/sign/com/*",
              headers: :any,
              methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
              credentials: true,
@@ -110,7 +110,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
              max_age: 3600,
              expose: [ "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset" ]
 
-    resource "/auth/app/*",
+    resource "/sign/app/*",
              headers: :any,
              methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
              credentials: true,
@@ -136,7 +136,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
              max_age: 3600,
              expose: [ "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset" ]
 
-    resource "/auth/org/*",
+    resource "/sign/org/*",
              headers: :any,
              methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
              credentials: true,
@@ -179,7 +179,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
         (Rails.env.development? && source&.include?("localhost"))
     }
 
-    resource "/auth/*/v1/passkeys*",
+    resource "/sign/*/v1/passkeys*",
              headers: :any,
              methods: [ :get, :post, :put, :patch, :delete, :options ],
              credentials: true,

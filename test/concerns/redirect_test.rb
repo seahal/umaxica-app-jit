@@ -11,8 +11,8 @@ class RedirectTest < ActiveSupport::TestCase
     ENV["API_SERVICE_URL"] = "app.api.localdomain"
     ENV["API_CORPORATE_URL"] = "com.api.localdomain"
     ENV["API_STAFF_URL"] = "org.api.localdomain"
-    ENV["AUTH_SERVICE_URL"] = "app.auth.localdomain"
-    ENV["AUTH_STAFF_URL"] = "org.auth.localdomain"
+    ENV["SIGN_SERVICE_URL"] = "app.sign.localdomain"
+    ENV["SIGN_STAFF_URL"] = "org.sign.localdomain"
     ENV["DOCS_CORPORATE_URL"] = "com.docs.localdomain"
     ENV["DOCS_SERVICE_URL"] = "app.docs.localdomain"
     ENV["DOCS_STAFF_URL"] = "org.docs.localdomain"
@@ -34,8 +34,8 @@ class RedirectTest < ActiveSupport::TestCase
                                         ENV["API_CORPORATE_URL"],
                                         ENV["API_SERVICE_URL"],
                                         ENV["API_STAFF_URL"],
-                                        ENV["AUTH_SERVICE_URL"],
-                                        ENV["AUTH_STAFF_URL"],
+                                        ENV["SIGN_SERVICE_URL"],
+                                        ENV["SIGN_STAFF_URL"],
                                         ENV["DOCS_CORPORATE_URL"],
                                         ENV["DOCS_SERVICE_URL"],
                                         ENV["DOCS_STAFF_URL"],

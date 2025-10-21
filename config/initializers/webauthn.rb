@@ -18,7 +18,7 @@ WebAuthn.configure do |config|
   # (https://www.w3.org/TR/webauthn/#relying-party-identifier)
   # if it differs from the default one.
   #
-  # In this case the default would be "auth.example.com", but you can set it to
+  # In this case the default would be "sign.example.com", but you can set it to
   # the suffix "example.com"
   #
   # config.rp_id = "example.com"
