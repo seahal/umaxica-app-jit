@@ -10,7 +10,7 @@ class Sign::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
   #   assert_select "a[href=?]", new_sign_app_authentication_recovery_path(query)
   #   assert_select "a[href=?]", new_sign_app_registration_path(query)
   # end
-  # 
+  #
   test "should get edit" do
     get edit_sign_app_authentication_url
     # assert_response :internal_server_error

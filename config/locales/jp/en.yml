@@ -13,6 +13,19 @@ en:
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
     app:
+      authentication:
+        passkey:
+          new:
+            page_title: "Register a passkey"
+            description: "Use one of your trusted devices to add a passkey for passwordless sign-in."
+        telephone:
+          new:
+            page_title: "Sign in with your phone number"
+            description: "Provide your registered phone number to receive a one-time verification code."
+        recovery:
+          new:
+            page_title: "Use a recovery code"
+            description: "Enter one of your saved recovery codes to regain access to your account."
       registration:
         new:
           page_title: "Create your account"

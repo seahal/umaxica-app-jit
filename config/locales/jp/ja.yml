@@ -153,6 +153,10 @@ ja:
           title: ログアウトしますか？
         new:
           back: 他の方法を選びますか？
+        passkey:
+          new:
+            page_title: パスキーを登録する
+            description: 信頼できる端末を使ってパスキーを追加し、パスワードなしでサインインします。
         email:
           new:
             page_title: email でページ登録
@@ -162,7 +166,13 @@ ja:
             you_have_already_logged_in: あなたはログインしています
         telephone:
           new:
+            page_title: 電話番号でサインイン
+            description: 登録済みの電話番号を入力し、ワンタイムコードで認証します。
             you_have_already_logged_in: あなたはログインしています
+        recovery:
+          new:
+            page_title: リカバリーコードを利用する
+            description: 保存しているリカバリーコードを入力してアカウントへアクセスします。
       registration:
         new:
           page_title: アカウント登録
