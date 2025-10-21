@@ -109,7 +109,7 @@ module Apex
         end
 
         def admin_timezones
-          # Common admin timezones for global operations
+          # CommonHelper admin timezones for global operations
           SELECTABLE_TIMEZONES.filter_map { |identifier| resolve_timezone(identifier) }
         end
 
