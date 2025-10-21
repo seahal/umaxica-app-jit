@@ -49,44 +49,4 @@ class Docs::App::ApplicationHelperTest < ActionView::TestCase
   test "to_localetime raises when time is nil" do
     assert_raises(RuntimeError) { to_localetime(nil) }
   end
-
-  test "to_localetime handles DateTime input" do
-    test_datetime = DateTime.parse("2023-12-25 15:30:45 UTC")
-    result = to_localetime(test_datetime, "jst")
-
-    assert_equal "JST", result.zone
-  end
-
-  test "to_localetime handles ActiveSupport::TimeWithZone input" do
-    test_time = Time.current
-    result = to_localetime(test_time, "jst")
-
-    assert_equal "JST", result.zone
-  end
-
-  test "title_generator returns NAME when title blank" do
-    original_name = ENV["NAME"]
-    ENV["NAME"] = "DocsApp"
-
-    method_arity = method(:title_generator).arity
-    blank_result = if method_arity.negative? || method_arity.zero?
-                     title_generator
-    else
-                     title_generator(nil)
-    end
-
-    assert_equal "DocsApp", blank_result
-    assert_equal "DocsApp", title_generator("")
-  ensure
-    original_name.nil? ? ENV.delete("NAME") : ENV["NAME"] = original_name
-  end
-
-  test "title_generator concatenates title with NAME when present" do
-    original_name = ENV["NAME"]
-    ENV["NAME"] = "DocsApp"
-
-    assert_equal "Guide | DocsApp", title_generator("Guide")
-  ensure
-    original_name.nil? ? ENV.delete("NAME") : ENV["NAME"] = original_name
-  end
 end

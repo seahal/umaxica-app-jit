@@ -88,19 +88,16 @@ node_modules
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+/config/*.key
 /config/credentials/development.key
 /config/credentials/production.key
 /config/credentials/test.key
-
-# Ignore key files for decrypting credentials and more.
 /config/credentials/*.key
 
+# misc
 /.crush/
 /.dbclient/
 /.rest-client/
-
-# Ignore key files for decrypting credentials and more.
-/config/*.key
 
 # Ruby & JavsScript are not create /out folders.
 /out

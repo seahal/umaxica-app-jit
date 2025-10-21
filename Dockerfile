@@ -100,12 +100,10 @@ RUN npm install -g bun@"${BUN_VERSION}" \
 
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
-RUN gem install bundler \
-    && bundle config set --local path vendor/bundle \
-    && bundle config set without 'production' \
-    && bundle install --jobs "$(nproc)"
-
-
+#RUN gem install bundler \
+#    && bundle config set --local path vendor/bundle \
+#    && bundle config set without 'production' \
+#    && bundle install --jobs "$(nproc)"
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \

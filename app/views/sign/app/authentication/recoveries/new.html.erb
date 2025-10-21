@@ -1,0 +1,34 @@
+<h1 class="font-bold text-4xl"><%= t("sign.app.authentication.recovery.new.page_title") %></h1>
+<p class="mt-2 text-sm text-slate-600"><%= t("sign.app.authentication.recovery.new.description") %></p>
+<%= form_with model: @user_recover_code, url: sign_app_authentication_recovery_path do |f| %>
+
+  <% if @user_recover_code.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(@user_recover_code.errors.count, "error") %> prohibited this sample from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% @user_recover_code.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= render "concern/cloudflare_turnstile" %>
+
+  <div>
+    <%= f.label :account_identifiable_information %>
+    <%= f.text_field :account_identifiable_information %>
+  </div>
+
+  <div>
+    <%= f.label :recovery_code %>
+    <%= f.password_field :recovery_code %>
+  </div>
+
+  <div><%= f.submit %></div>
+<% end %>
+
+<ul>
+  <li><%= link_to t('sign.app.authentication.new.back'), new_sign_app_authentication_path %></li>
+</ul>

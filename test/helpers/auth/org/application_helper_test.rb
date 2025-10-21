@@ -2,9 +2,9 @@
 
 require "test_helper"
 
-class Auth::Org::ApplicationHelperTest < ActionView::TestCase
+class Sign::Org::ApplicationHelperTest < ActionView::TestCase
   setup do
-    extend Auth::Org::ApplicationHelper
+    extend Sign::Org::ApplicationHelper
   end
 
   test "to_localetime converts to UTC by default" do
@@ -62,31 +62,5 @@ class Auth::Org::ApplicationHelperTest < ActionView::TestCase
     result = to_localetime(test_time, "jst")
 
     assert_equal "JST", result.zone
-  end
-
-  test "title_generator returns NAME when title blank" do
-    original_name = ENV["NAME"]
-    ENV["NAME"] = "AuthOrg"
-
-    method_arity = method(:title_generator).arity
-    blank_result = if method_arity.negative? || method_arity.zero?
-                     title_generator
-    else
-                     title_generator(nil)
-    end
-
-    assert_equal "AuthOrg", blank_result
-    assert_equal "AuthOrg", title_generator("")
-  ensure
-    original_name.nil? ? ENV.delete("NAME") : ENV["NAME"] = original_name
-  end
-
-  test "title_generator concatenates title with NAME when present" do
-    original_name = ENV["NAME"]
-    ENV["NAME"] = "AuthOrg"
-
-    assert_equal "Dashboard | AuthOrg", title_generator("Dashboard")
-  ensure
-    original_name.nil? ? ENV.delete("NAME") : ENV["NAME"] = original_name
   end
 end

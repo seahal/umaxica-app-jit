@@ -8,11 +8,53 @@ en:
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
-  auth:
+  sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
     app:
+      authentication:
+        new:
+          page_title: "Choose how to sign in"
+          description: "Select the method that fits your current session."
+          back: "Prefer a different method?"
+          links:
+            email: "Email"
+            telephone: "Telephone"
+            passkey: "Passkey"
+            recovery: "Recovery code"
+            google: "Sign in with Google"
+            apple: "Sign in with Apple"
+            registration: "Need an account?"
+        passkey:
+          new:
+            page_title: "Register a passkey"
+            description: "Use one of your trusted devices to add a passkey for passwordless sign-in."
+        telephone:
+          new:
+            page_title: "Sign in with your phone number"
+            description: "Provide your registered phone number to receive a one-time verification code."
+      recovery:
+        new:
+          page_title: "Use a recovery code"
+          description: "Enter one of your saved recovery codes to regain access to your account."
+      setting:
+        show:
+          description: "Manage advanced security controls for your account."
+        recovery:
+          index:
+            description: "Review existing recovery codes and ensure they stay up to date."
+            edit_link: "Edit"
+            new_link: "Create a new recovery code"
+          new:
+            page_title: "Generate a recovery code"
+            description: "Create a fresh recovery code to regain access if you lose your primary factors."
+            confirm_label: "I understand a new recovery code will be generated"
+            submit: "Generate recovery code"
+        totp:
+          index:
+            description: "Manage time-based one-time passwords linked to your account."
+            new_link: "Create a new TOTP credential"
       registration:
         new:
           page_title: "Create your account"
@@ -37,6 +79,19 @@ en:
           links:
             sign_in_html: "Already registered? %{link}"
             sign_in_text: "Sign in"
+    org:
+      authentication:
+        new:
+          page_title: "Choose how to sign in"
+          description: "Select the method you prefer to access the staff console."
+          links:
+            email: "Email"
+            telephone: "Telephone"
+            apple: "Apple"
+            google: "Google"
+            passkey: "Passkey"
+            recovery: "Recovery code"
+            registration: "Need an account?"
   languages:
     english: "English"
     japanese: "日本語"

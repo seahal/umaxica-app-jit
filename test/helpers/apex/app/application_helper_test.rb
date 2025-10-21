@@ -70,8 +70,8 @@ class Apex::App::ApplicationHelperTest < ActionView::TestCase
     ENV["NAME"] = "TestProduct"
     ENV["name"] = "TestProduct"
 
-    assert_equal "TestProduct", title_generator(nil)
-    assert_equal "TestProduct", title_generator("")
+    assert_equal "TestProduct", get_title(nil)
+    assert_equal "TestProduct", get_title("")
   ensure
     ENV["NAME"] = original_name
     if original_lower.nil?
@@ -87,7 +87,7 @@ class Apex::App::ApplicationHelperTest < ActionView::TestCase
     ENV["NAME"] = "TestProduct"
     ENV["name"] = "TestProduct"
 
-    assert_equal "Dashboard | TestProduct", title_generator("Dashboard")
+    assert_equal "Dashboard | TestProduct", get_title("Dashboard")
   ensure
     ENV["NAME"] = original_name
     if original_lower.nil?
@@ -98,10 +98,10 @@ class Apex::App::ApplicationHelperTest < ActionView::TestCase
   end
 
   test "show true timezone" do
-    assert_equal show_timezone, "jst"
+    assert_equal get_timezone, "jst"
   end
 
   test "show false timezone" do
-    assert_not_equal show_timezone, "kst"
+    assert_not_equal get_timezone, "kst"
   end
 end

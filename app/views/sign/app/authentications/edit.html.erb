@@ -1,0 +1,7 @@
+<h1><%= t('sign.app.authentication.edit.title') %></h1>
+
+<%= form_with url: sign_app_authentication_path, method: :destroy do |f| %>
+  <%= f.submit %>
+<% end %>
+
+<%= button_to "削除?", sign_app_authentication_path(notice), method: :delete %>

@@ -15,7 +15,7 @@ ja:
       otp:
         invalid_input: Pass Code の値に問題があります
   controller:
-    auth:
+    sign:
       app:
         setting:
           show:
@@ -146,13 +146,27 @@ ja:
     region_settings_updated_successfully: 地域設定が正常に更新されました。
     user_registration_error: ユーザー登録中にエラーが発生しました。
     access_blocked_auth_error: 'アクセスをブロック: 認証エラーです'
-  auth:
+  sign:
     app:
       authentication:
+        new:
+          page_title: サインイン方法を選ぶ
+          description: 今回のサインインで利用する認証方法を選択してください。
+          back: 他の方法を選びますか？
+          links:
+            email: メールアドレス
+            telephone: 電話番号
+            passkey: パスキー
+            recovery: リカバリーコード
+            google: Googleでサインイン
+            apple: Appleでサインイン
+            registration: アカウント登録はこちら
         edit:
           title: ログアウトしますか？
-        new:
-          back: 他の方法を選びますか？
+        passkey:
+          new:
+            page_title: パスキーを登録する
+            description: 信頼できる端末を使ってパスキーを追加し、パスワードなしでサインインします。
         email:
           new:
             page_title: email でページ登録
@@ -162,7 +176,30 @@ ja:
             you_have_already_logged_in: あなたはログインしています
         telephone:
           new:
+            page_title: 電話番号でサインイン
+            description: 登録済みの電話番号を入力し、ワンタイムコードで認証します。
             you_have_already_logged_in: あなたはログインしています
+        recovery:
+          new:
+            page_title: リカバリーコードを利用する
+            description: 保存しているリカバリーコードを入力してアカウントへアクセスします。
+      setting:
+        show:
+          description: アカウントの高度なセキュリティ設定を管理します。
+        recovery:
+          index:
+            description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
+            edit_link: 編集
+            new_link: 新しいリカバリーコードを作成
+          new:
+            page_title: リカバリーコードを作成
+            description: 緊急時に備えて新しいリカバリーコードを生成します。
+            confirm_label: 新しいリカバリーコードを作成することに同意します
+            submit: リカバリーコードを生成する
+        totp:
+          index:
+            description: ワンタイムパスワード（TOTP）の設定を管理します。
+            new_link: TOTP を新規作成
       registration:
         new:
           page_title: アカウント登録
@@ -187,6 +224,19 @@ ja:
           links:
             sign_in_html: すでにアカウントをお持ちですか？%{link}
             sign_in_text: ログインする
+    org:
+      authentication:
+        new:
+          page_title: サインイン方法を選択
+          description: スタッフコンソールにアクセスするための認証方法を選んでください。
+          links:
+            email: メールアドレス
+            telephone: 電話番号
+            apple: Apple
+            google: Google
+            passkey: パスキー
+            recovery: リカバリーコード
+            registration: アカウント登録はこちら
         email:
           new:
             page_title: email で登録します

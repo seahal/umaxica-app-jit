@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title><%= title_generator(yield(:page_title)) %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "sign/org/main" %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  <link rel="icon" href="https://perm.umaxica.org/jit/favicon.ico" sizes="32x32">
+</head>
+<body class="px-4">
+<%= render "concern/flash_messages" %>
+<header>
+  <h1><a href="http://<%= ENV['EDGE_STAFF_URL'] %>/"><%= ENV.fetch('NAME') %> (sign, org)</a></h1>
+</header>
+
+<hr>
+
+<main class="container mx-auto mt-28 px-5 block">
+  <%= yield %>
+</main>
+
+<hr>
+
+<footer>
+
+  <ul>
+    <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">home</a></li>
+    <li>
+      <%= link_to 'Cookie', edit_apex_org_preference_cookie_path %></li>
+    <li>Security</li>
+    <li>Support</li>
+    <li>Terms</li>
+    <li>Privacy</li>
+    <li>Accessibility</li>
+  </ul>
+  <%= render "concern/copyright" %>
+</footer>
+
+</body>
+</html>

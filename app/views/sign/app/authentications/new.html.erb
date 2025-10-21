@@ -1,0 +1,11 @@
+<h1 class="font-bold text-4xl"><%= t("sign.app.authentication.new.page_title") %></h1>
+<p class="mt-2 text-sm text-slate-600"><%= t("sign.app.authentication.new.description") %></p>
+<ul class="mt-4 space-y-2">
+  <li><%= link_to t("sign.app.authentication.new.links.email"), new_sign_app_authentication_email_path %></li>
+  <li><%= link_to t("sign.app.authentication.new.links.telephone"), new_sign_app_authentication_telephone_path %></li>
+  <li><%= link_to t("sign.app.authentication.new.links.passkey"), new_sign_app_authentication_passkey_path %></li>
+  <li><%= link_to t("sign.app.authentication.new.links.recovery"), new_sign_app_authentication_recovery_path %></li>
+  <li><%= button_to t("sign.app.authentication.new.links.google"), "/auth/google_oauth2", method: :post, data: { turbo: false } %></li>
+  <li><%= button_to t("sign.app.authentication.new.links.apple"), "/auth/apple", method: :post, data: { turbo: false } %></li>
+  <li><%= link_to t("sign.app.authentication.new.links.registration"), new_sign_app_registration_path %></li>
+</ul>
