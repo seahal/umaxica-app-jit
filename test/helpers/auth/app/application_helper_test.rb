@@ -63,6 +63,4 @@ class Auth::App::ApplicationHelperTest < ActionView::TestCase
 
     assert_equal "JST", result.zone
   end
-
-
 end
