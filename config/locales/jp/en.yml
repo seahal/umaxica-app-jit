@@ -14,6 +14,18 @@ en:
     default_passkey_description: "My Passkey"
     app:
       authentication:
+        new:
+          page_title: "Choose how to sign in"
+          description: "Select the method that fits your current session."
+          back: "Prefer a different method?"
+          links:
+            email: "Email"
+            telephone: "Telephone"
+            passkey: "Passkey"
+            recovery: "Recovery code"
+            google: "Sign in with Google"
+            apple: "Sign in with Apple"
+            registration: "Need an account?"
         passkey:
           new:
             page_title: "Register a passkey"
@@ -50,7 +62,20 @@ en:
           links:
             sign_in_html: "Already registered? %{link}"
             sign_in_text: "Sign in"
-  languages:
+    org:
+      authentication:
+        new:
+          page_title: "Choose how to sign in"
+          description: "Select the method you prefer to access the staff console."
+          links:
+            email: "Email"
+            telephone: "Telephone"
+            apple: "Apple"
+            google: "Google"
+            passkey: "Passkey"
+            recovery: "Recovery code"
+            registration: "Need an account?"
+ languages:
     english: "English"
     japanese: "日本語"
   themes:

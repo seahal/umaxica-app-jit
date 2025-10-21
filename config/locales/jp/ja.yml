@@ -149,10 +149,20 @@ ja:
   sign:
     app:
       authentication:
+        new:
+          page_title: サインイン方法を選ぶ
+          description: 今回のサインインで利用する認証方法を選択してください。
+          back: 他の方法を選びますか？
+          links:
+            email: メールアドレス
+            telephone: 電話番号
+            passkey: パスキー
+            recovery: リカバリーコード
+            google: Googleでサインイン
+            apple: Appleでサインイン
+            registration: アカウント登録はこちら
         edit:
           title: ログアウトしますか？
-        new:
-          back: 他の方法を選びますか？
         passkey:
           new:
             page_title: パスキーを登録する
@@ -197,6 +207,19 @@ ja:
           links:
             sign_in_html: すでにアカウントをお持ちですか？%{link}
             sign_in_text: ログインする
+    org:
+      authentication:
+        new:
+          page_title: サインイン方法を選択
+          description: スタッフコンソールにアクセスするための認証方法を選んでください。
+          links:
+            email: メールアドレス
+            telephone: 電話番号
+            apple: Apple
+            google: Google
+            passkey: パスキー
+            recovery: リカバリーコード
+            registration: アカウント登録はこちら
         email:
           new:
             page_title: email で登録します

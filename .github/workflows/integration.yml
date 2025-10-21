@@ -117,8 +117,8 @@ jobs:
       API_CORPORATE_URL: api.com.localhost
       API_SERVICE_URL: api.app.localhost
       API_STAFF_URL: api.org.localhost
-      AUTH_SERVICE_URL: sign.app.localhost
-      AUTH_STAFF_URL: sign.org.localhost
+      SIGN_SERVICE_URL: sign.app.localhost
+      SIGN_STAFF_URL: sign.org.localhost
       DOCS_CORPORATE_URL: docs.com.localhost
       DOCS_SERVICE_URL: docs.app.localhost
       DOCS_STAFF_URL: docs.org.localhost
