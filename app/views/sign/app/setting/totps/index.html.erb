@@ -1,11 +1,11 @@
 <div>
   <h1 class="font-bold text-4xl"><%= t('controller.sign.app.setting.totp.index.page_title') %></h1>
-  <p>Find me in app/views/net/session/apples/new.html.erb</p>
-  <ul>
-    <% @utbotp.each do |t| %>
-      <li> <%= t.id %></li>
+  <p class="mt-2 text-sm text-slate-600"><%= t('sign.app.setting.totp.index.description') %></p>
+  <ul class="mt-4 space-y-2">
+    <% @utbotp.each do |credential| %>
+      <li class="font-mono text-sm text-slate-600"><%= credential.id %></li>
     <% end %>
   </ul>
-  <p><%= link_to 'new totp', new_sign_app_setting_totp_path %></p>
+  <p class="mt-4"><%= link_to t('sign.app.setting.totp.index.new_link'), new_sign_app_setting_totp_path, class: "text-indigo-600 hover:text-indigo-900" %></p>
   <p><%= link_to t('controller.sign.app.setting.totp.index.return_page'), sign_app_setting_path %></p>
 </div>

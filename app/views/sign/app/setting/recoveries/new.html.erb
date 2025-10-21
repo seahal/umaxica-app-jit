@@ -1,5 +1,5 @@
-<h1>Www::App::Setting::Recoveries#new</h1>
-<p>Find me in app/views/www/app/setting/recoveries/new.html.erb</p>
+<h1 class="font-bold text-4xl"><%= t("sign.app.setting.recovery.new.page_title") %></h1>
+<p class="mt-2 text-sm text-slate-600"><%= t("sign.app.setting.recovery.new.description") %></p>
 
 <%= form_with model: @user_recover_code || UserRecoveryCode.new, url: sign_app_setting_recoveries_path do |f| %>
 
@@ -16,13 +16,9 @@
   <% end %>
 
   <div>
-    <p> <%= session[:user_recovery_code] %> </p>
-  </div>
-
-  <div>
     <%= f.checkbox :confirm_create_recovery_code %>
-    <%= f.label :confirm_create_recovery_code, 'create' %>
+    <%= f.label :confirm_create_recovery_code, t("sign.app.setting.recovery.new.confirm_label") %>
   </div>
 
-  <div><%= f.submit %></div>
+  <div><%= f.submit t("sign.app.setting.recovery.new.submit") %></div>
 <% end %>

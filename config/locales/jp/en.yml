@@ -34,10 +34,27 @@ en:
           new:
             page_title: "Sign in with your phone number"
             description: "Provide your registered phone number to receive a one-time verification code."
+      recovery:
+        new:
+          page_title: "Use a recovery code"
+          description: "Enter one of your saved recovery codes to regain access to your account."
+      setting:
+        show:
+          description: "Manage advanced security controls for your account."
         recovery:
+          index:
+            description: "Review existing recovery codes and ensure they stay up to date."
+            edit_link: "Edit"
+            new_link: "Create a new recovery code"
           new:
-            page_title: "Use a recovery code"
-            description: "Enter one of your saved recovery codes to regain access to your account."
+            page_title: "Generate a recovery code"
+            description: "Create a fresh recovery code to regain access if you lose your primary factors."
+            confirm_label: "I understand a new recovery code will be generated"
+            submit: "Generate recovery code"
+        totp:
+          index:
+            description: "Manage time-based one-time passwords linked to your account."
+            new_link: "Create a new TOTP credential"
       registration:
         new:
           page_title: "Create your account"
@@ -75,7 +92,7 @@ en:
             passkey: "Passkey"
             recovery: "Recovery code"
             registration: "Need an account?"
- languages:
+  languages:
     english: "English"
     japanese: "日本語"
   themes:

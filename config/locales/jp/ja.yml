@@ -183,6 +183,23 @@ ja:
           new:
             page_title: リカバリーコードを利用する
             description: 保存しているリカバリーコードを入力してアカウントへアクセスします。
+      setting:
+        show:
+          description: アカウントの高度なセキュリティ設定を管理します。
+        recovery:
+          index:
+            description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
+            edit_link: 編集
+            new_link: 新しいリカバリーコードを作成
+          new:
+            page_title: リカバリーコードを作成
+            description: 緊急時に備えて新しいリカバリーコードを生成します。
+            confirm_label: 新しいリカバリーコードを作成することに同意します
+            submit: リカバリーコードを生成する
+        totp:
+          index:
+            description: ワンタイムパスワード（TOTP）の設定を管理します。
+            new_link: TOTP を新規作成
       registration:
         new:
           page_title: アカウント登録
