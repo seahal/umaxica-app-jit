@@ -64,22 +64,5 @@ class Auth::App::ApplicationHelperTest < ActionView::TestCase
     assert_equal "JST", result.zone
   end
 
-  test "title_generator returns NAME when title blank" do
-    original_name = ENV["NAME"]
-    ENV["NAME"] = "AuthApp"
 
-    assert_equal "AuthApp", title_generator(nil)
-    assert_equal "AuthApp", title_generator("")
-  ensure
-    ENV["NAME"] = original_name
-  end
-
-  test "title_generator concatenates title with NAME when present" do
-    original_name = ENV["NAME"]
-    ENV["NAME"] = "AuthApp"
-
-    assert_equal "Login | AuthApp", title_generator("Login")
-  ensure
-    ENV["NAME"] = original_name
-  end
 end

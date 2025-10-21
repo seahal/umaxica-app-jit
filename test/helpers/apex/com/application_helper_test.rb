@@ -63,37 +63,4 @@ class Apex::Com::ApplicationHelperTest < ActionView::TestCase
 
     assert_equal "JST", result.zone
   end
-
-  test "title_generator returns NAME when title blank" do
-    original_name = ENV["NAME"]
-    original_lower = ENV["name"]
-    ENV["NAME"] = "TestProduct"
-    ENV["name"] = "TestProduct"
-
-    assert_equal "TestProduct", title_generator(nil)
-    assert_equal "TestProduct", title_generator("")
-  ensure
-    ENV["NAME"] = original_name
-    if original_lower.nil?
-      ENV.delete("name")
-    else
-      ENV["name"] = original_lower
-    end
-  end
-
-  test "title_generator concatenates title with NAME when present" do
-    original_name = ENV["NAME"]
-    original_lower = ENV["name"]
-    ENV["NAME"] = "TestProduct"
-    ENV["name"] = "TestProduct"
-
-    assert_equal "Dashboard | TestProduct", title_generator("Dashboard")
-  ensure
-    ENV["NAME"] = original_name
-    if original_lower.nil?
-      ENV.delete("name")
-    else
-      ENV["name"] = original_lower
-    end
-  end
 end

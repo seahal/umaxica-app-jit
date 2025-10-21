@@ -20,9 +20,9 @@ services:
     tmpfs:
       - /home/jit/main/log:size=2G,uid=${UID:-1000},gid=${GID:-1000}
       - /home/jit/main/tmp:size=4G,uid=${UID:-1000},gid=${GID:-1000}
-      - /home/jit/main/.bun:size=4G,uid=${UID:-1000},gid=${GID:-1000}
-      - /home/jit/main/.cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
-      - /home/jit/main/.bundle/cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
+#      - /home/jit/main/.bun:size=4G,uid=${UID:-1000},gid=${GID:-1000}
+#      - /home/jit/main/.cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
+#      - /home/jit/main/.bundle/cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
       - type: bind
         source: .
@@ -34,7 +34,7 @@ services:
           nocopy: true
       - type: volume
         source: bundler-volume
-        target: /home/jit/main/vendor
+        target: /home/jit/main/vendor/bundle
         volume:
           nocopy: true
     networks:

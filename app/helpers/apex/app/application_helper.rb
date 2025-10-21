@@ -14,20 +14,16 @@ module Apex::App::ApplicationHelper
     time.in_time_zone(zone)
   end
 
-  def title_generator(title)
+  def get_title(title)
     return "#{ ENV['name'] }" if title.blank?
     "#{ title } | #{ ENV['NAME'] }"
   end
 
-  def language_setter(language = session[:language])
-    language.to_s.casecmp("en").zero? ? "en" : "ja"
-  end
-
-  def show_timezone
+  def get_timezone
     "jst"
   end
 
-  def show_language
+  def get_language
     "ja"
   end
 end
