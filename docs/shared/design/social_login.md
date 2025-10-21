@@ -1,38 +1,38 @@
 # Social Login Implementation Plan
 
 ## Overview
-複数のソーシャルログインプロバイダー（Google, Apple, Facebook等）に対応する拡張可能なアーキテクチャを実装する。
+Implement an extensible architecture that supports multiple social login providers (Google, Apple, Facebook, etc.).
 
 ## Current State
-- OAuth gems already installed (omniauth, omniauth-google-oauth2, omniauth-apple)
-- Database models and migrations created but not enabled
-- Controller and view stubs created but not implemented
-- Routes defined but incomplete
+- OAuth gems are installed (omniauth, omniauth-google-oauth2, omniauth-apple).
+- Database models and migrations exist but are not enabled yet.
+- Controllers and views are stubbed but not implemented.
+- Routes are defined but incomplete.
 
 ## Architecture Design
 
-### 1. 統一されたOAuthサービス層
+### 1. Unified OAuth service layer
 ```
 app/services/oauth/
-├── base_service.rb          # 共通ロジック
+├── base_service.rb          # shared logic
 ├── providers/
-│   ├── google_service.rb    # Google固有の処理
-│   ├── apple_service.rb     # Apple固有の処理
-│   └── facebook_service.rb  # 将来追加用
+│   ├── google_service.rb    # Google-specific processing
+│   ├── apple_service.rb     # Apple-specific processing
+│   └── facebook_service.rb  # placeholder for future providers
 ```
 
 **BaseService responsibilities:**
-- OAuth認証フローの共通処理
-- ユーザーデータの正規化
-- エラーハンドリング
-- ログ記録
+- Common OAuth flow handling.
+- Normalise user data.
+- Error handling.
+- Logging.
 
 **Provider-specific services:**
-- プロバイダー固有のAPI呼び出し
-- レスポンスデータの変換
-- プロバイダー特有の制約対応
+- Provider APIs.
+- Response transformation.
+- Provider-specific constraints.
 
-### 2. プロバイダー設定システム
+### 2. Provider configuration system
 ```yaml
 # config/oauth_providers.yml
 providers:
@@ -53,7 +53,7 @@ providers:
     scopes: ["email", "public_profile"]
 ```
 
-### 3. 共通コントローラーConcern
+### 3. Shared controller concern
 ```ruby
 # app/controllers/concerns/oauth_authentication.rb
 module OauthAuthentication
@@ -67,16 +67,16 @@ module OauthAuthentication
   private
   
   def oauth_callback
-    # 全プロバイダー共通の認証処理
+    # Shared authentication flow for every provider
   end
   
   def oauth_error
-    # エラーハンドリング
+    # Error handling
   end
 end
 ```
 
-### 4. 柔軟なビューコンポーネント
+### 4. Flexible view component
 ```ruby
 # app/components/oauth_button_component.rb
 class OauthButtonComponent < ViewComponent::Base
@@ -105,9 +105,9 @@ class OauthButtonComponent < ViewComponent::Base
 end
 ```
 
-### 5. 統一ルート設計
+### 5. Unified routing
 ```ruby
-# config/routes/www.rb内でのDRY化
+# DRY out config/routes/www.rb
 OauthProviders.enabled.each do |provider|
   # Registration routes
   namespace :registration do
@@ -132,12 +132,12 @@ get '/sign/failure', to: 'oauth_callbacks#failure'
 
 ## Implementation Steps
 
-### Phase 1: Core Infrastructure
+### Phase 1: Core infrastructure
 1. **Enable database migrations**
-   - Uncomment and run Google/Apple OAuth migrations
-   - Add indexes for performance
+   - Uncomment and run the Google/Apple OAuth migrations.
+   - Add indexes for performance.
 
-2. **Create Omniauth initializer**
+2. **Create the OmniAuth initializer**
    ```ruby
    # config/initializers/omniauth.rb
    Rails.application.config.middleware.use OmniAuth::Builder do
@@ -151,101 +151,49 @@ get '/sign/failure', to: 'oauth_callbacks#failure'
    ```
 
 3. **Add OAuth callback routes**
-   - Define unified callback handling
-   - Add error handling routes
+   - Define the unified callback handler.
+   - Provide error handling routes.
 
-### Phase 2: Service Layer
-1. **Create OAuth base service**
-   - Common authentication flow
-   - User creation/lookup logic
-   - Session management
+### Phase 2: Service layer
+1. **Create the OAuth base service**
+   - Shared authentication steps.
+   - User creation/lookup.
+   - Session management.
 
 2. **Implement provider-specific services**
-   - Google OAuth service
-   - Apple OAuth service
-   - Extensible for future providers
+   - Google OAuth service.
+   - Apple OAuth service.
+   - Extensible for additional providers.
 
-### Phase 3: Controller Implementation
-1. **Create OAuth concern**
-   - Shared controller logic
-   - Error handling
-   - Security measures
+### Phase 3: Controller implementation
+1. **Create the OAuth concern**
+   - Shared controller logic.
+   - Error handling.
+   - Security measures.
 
 2. **Implement controller actions**
-   - Registration flow
-   - Authentication flow
-   - Account linking
+   - Registration.
+   - Authentication.
+   - Account linking.
 
-### Phase 4: UI Components
-1. **Create OAuth button component**
-   - Flexible design system
-   - Multiple sizes and styles
-   - Provider-specific branding
+### Phase 4: UI components
+1. **Create the OAuth button component**
+   - Flexible design system.
+   - Multiple sizes and styles.
+   - Provider branding.
 
 2. **Update authentication views**
-   - Add social login options
-   - Maintain existing email/phone flows
-   - Progressive enhancement
+   - Add social login options.
+   - Preserve existing email/phone flows.
+   - Progressive enhancement.
 
-### Phase 5: Configuration & Security
-1. **Environment variables setup**
-   - Client IDs and secrets
-   - Provider-specific configuration
-   - Development vs production settings
+### Phase 5: Configuration & security
+1. **Environment variable setup**
+   - Client IDs and secrets.
+   - Provider-specific configuration.
+   - Differentiate development and production.
 
 2. **Security enhancements**
-   - CSRF protection
-   - State parameter validation
-   - Rate limiting
-
-## Benefits of This Architecture
-
-1. **Extensibility**: 新しいプロバイダーの追加が容易
-2. **Maintainability**: 共通ロジックの集約により保守性向上
-3. **Consistency**: 統一されたUI/UXとエラーハンドリング
-4. **Testability**: 各レイヤーの独立したテストが可能
-5. **Configuration**: 環境ごとの柔軟な設定管理
-
-## Testing Strategy
-
-1. **Unit Tests**
-   - Service layer logic
-   - Component rendering
-   - Model validations
-
-2. **Integration Tests**
-   - OAuth flow end-to-end
-   - Error scenarios
-   - Security measures
-
-3. **System Tests**
-   - User authentication journeys
-   - Cross-browser compatibility
-   - Mobile responsiveness
-
-## Environment Variables Required
-
-```bash
-# Google OAuth
-GOOGLE_CLIENT_ID=your_client_id
-GOOGLE_CLIENT_SECRET=your_client_secret
-
-# Apple OAuth  
-APPLE_CLIENT_ID=your_client_id
-APPLE_CLIENT_SECRET=your_client_secret
-APPLE_TEAM_ID=your_team_id
-APPLE_KEY_ID=your_key_id
-APPLE_PRIVATE_KEY=your_private_key
-
-# Facebook OAuth (future)
-FACEBOOK_CLIENT_ID=your_client_id
-FACEBOOK_CLIENT_SECRET=your_client_secret
-```
-
-## Next Steps
-
-1. Review and approve this architecture plan
-2. Begin Phase 1 implementation
-3. Set up development environment with OAuth credentials
-4. Create comprehensive test suite
-5. Document API endpoints and integration guides
+   - CSRF protection.
+   - State parameter validation.
+   - Rate limiting.

@@ -19,7 +19,7 @@ steps:
         export PATH="$$HOME/.local/bin:$$PATH"
         export PATH="$$HOME/.local/share/mise/shims:$$PATH"
 
-        # 最新の Ruby/Node/Bun を導入
+        # Install the latest Ruby, Node, and Bun
         mise install ruby@latest node@latest bun@latest
         mise use -g ruby@latest node@latest bun@latest
 

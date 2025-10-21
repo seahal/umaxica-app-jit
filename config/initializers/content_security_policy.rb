@@ -14,11 +14,11 @@ Rails.application.config.content_security_policy do |policy|
   policy.style_src   :self, :https
 end
 
-# nonceを利用する場合、以下の設定をすることで nonce の自動生成を有効にできます。
+# Enable automatic nonce generation with the following configuration when using nonces.
 # If you are using UJS then enable automatic nonce generation
 Rails.application.config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
 
-# 特定のディレクティブ(sciprtとかimg)に対して、nonce属性を有効にすることができます。
-# script-src: 'nonce-XXX' img-src: 'nonce-YYY' とかってできる
+# You can enable nonce attributes for specific directives (such as script or img).
+# Example: script-src 'nonce-XXX', img-src 'nonce-YYY'.
 # Set the nonce only to specific directives
 Rails.application.config.content_security_policy_nonce_directives = %w[script-src]

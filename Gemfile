@@ -65,7 +65,7 @@ gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
-# 認可 (Authorization)
+# Authorization
 gem "pundit"
 gem "action_policy"
 gem "rolify"

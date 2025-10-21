@@ -4,10 +4,10 @@ inherit_gem:
 
 # .rubocop.yml
 AllCops:
-  # キャッシュを有効化
+  # Enable caching
   UseCache: true
 
-  # キャッシュの保存先を指定
+  # Specify where to store cached results
   CacheRootDirectory: tmp/rubocop_cache
 
 Rails:

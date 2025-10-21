@@ -1,60 +1,60 @@
-# FIDO2 セキュリティキー実装タスクリスト
+# FIDO2 Security Key Implementation Task List
 
-## 現状分析
+## Current Analysis
 
-### 実装済み ✅
-- **WebAuthn Gem**: `webauthn` v3.4 導入済み
-- **設定ファイル**: `/config/webauthn.rb` で多ドメイン対応設定完了
-- **コントローラー構造**: スケルトン実装あり
-- **ルーティング**: 全ドメインで設定済み
-- **ビューテンプレート**: 基本構造あり
+### Completed ✅
+- **WebAuthn Gem**: `webauthn` v3.4 already installed.
+- **Configuration**: Multi-domain settings finished in `/config/webauthn.rb`.
+- **Controller structure**: Skeleton controllers exist.
+- **Routing**: Wired up for every domain.
+- **View templates**: Basic layouts in place.
 
-### 未実装 ❌
-- **データベースモデル**: WebAuthn認証情報保存用テーブルなし
-- **コントローラーロジック**: 登録・認証処理未実装
-- **JavaScript実装**: WebAuthn browser API統合なし
-- **セキュリティ統合**: 既存MFAシステムとの連携なし
+### Outstanding ❌
+- **Database models**: No tables to persist WebAuthn credentials.
+- **Controller logic**: Registration and authentication flows missing.
+- **JavaScript**: No integration with the WebAuthn browser APIs.
+- **Security integration**: Not yet connected to the existing MFA system.
 
-## 実装タスク
+## Implementation Tasks
 
-### 1. データベース設計・実装 🔴 **HIGH PRIORITY**
+### 1. Database design and implementation 🔴 **HIGH PRIORITY**
 
-#### 1.1 マイグレーション作成
+#### 1.1 Generate migrations
 ```bash
-# identifierデータベースに作成
+# Create migrations in the identifier database
 rails generate migration CreateWebauthnCredentials --database=identifier
 rails generate migration CreateStaffWebauthnCredentials --database=identifier
 ```
 
-#### 1.2 必要なテーブル構造
+#### 1.2 Required table structure
 ```ruby
-# webauthn_credentials (一般ユーザー用)
-# staff_webauthn_credentials (スタッフ用)
+# webauthn_credentials (for end users)
+# staff_webauthn_credentials (for staff)
 
-# 必要フィールド:
-- user_id/staff_id (外部キー)
+# Required columns:
+- user_id/staff_id (foreign key)
 - external_id (WebAuthn credential ID, Base64URL encoded)
-- public_key (公開鍵, binary)
-- sign_count (署名カウンター, bigint)
-- nickname (ユーザー定義名, string)
-- last_used_at (最終使用日時, datetime)
+- public_key (binary)
+- sign_count (bigint)
+- nickname (string)
+- last_used_at (datetime)
 - created_at, updated_at (datetime)
-- transports (利用可能transport, json array)
+- transports (JSON array)
 - aaguid (authenticator GUID, binary, optional)
 ```
 
-#### 1.3 インデックス設計
+#### 1.3 Index design
 ```sql
--- 高速検索用インデックス
+-- Indexes for fast lookups
 INDEX idx_webauthn_credentials_user_id (user_id)
 INDEX idx_webauthn_credentials_external_id (external_id)
 INDEX idx_staff_webauthn_credentials_staff_id (staff_id)
 INDEX idx_staff_webauthn_credentials_external_id (external_id)
 ```
 
-### 2. モデル実装 🔴 **HIGH PRIORITY**
+### 2. Model implementation 🔴 **HIGH PRIORITY**
 
-#### 2.1 WebAuthnCredential モデル
+#### 2.1 `WebauthnCredential` model
 ```ruby
 # app/models/webauthn_credential.rb
 class WebauthnCredential < IdentifiersRecord
@@ -68,7 +68,7 @@ class WebauthnCredential < IdentifiersRecord
   scope :recent, -> { order(last_used_at: :desc) }
   
   def update_sign_count!(new_count)
-    # Replay attack prevention
+    # Prevent replay attacks
     return false if new_count <= sign_count
     update!(sign_count: new_count, last_used_at: Time.current)
     true
@@ -76,26 +76,26 @@ class WebauthnCredential < IdentifiersRecord
 end
 ```
 
-#### 2.2 StaffWebauthnCredential モデル
+#### 2.2 `StaffWebauthnCredential` model
 ```ruby
 # app/models/staff_webauthn_credential.rb
 class StaffWebauthnCredential < IdentifiersRecord
   belongs_to :staff
   
-  # WebauthnCredentialと同様の実装
+  # Mirrors WebauthnCredential
 end
 ```
 
-#### 2.3 User/Staff モデル拡張
+#### 2.3 Extend User/Staff models
 ```ruby
-# app/models/user.rb に追加
+# app/models/user.rb additions
 has_many :webauthn_credentials, dependent: :destroy
 
 def webauthn_enabled?
   webauthn_credentials.exists?
 end
 
-# app/models/staff.rb に追加
+# app/models/staff.rb additions
 has_many :staff_webauthn_credentials, dependent: :destroy
 
 def webauthn_enabled?
@@ -103,24 +103,23 @@ def webauthn_enabled?
 end
 ```
 
-### 3. JavaScript WebAuthn API実装 🔴 **HIGH PRIORITY**
+### 3. JavaScript WebAuthn API implementation 🔴 **HIGH PRIORITY**
 
-#### 3.1 ディレクトリ構造
+#### 3.1 Directory structure
 ```
 app/javascript/webauthn/
-├── registration.js     # 登録フロー
-├── authentication.js  # 認証フロー
-├── management.js       # 管理機能
-└── utils.js           # 共通ユーティリティ
+├── registration.js     # Registration flow
+├── authentication.js  # Authentication flow
+├── management.js       # Management tooling
+└── utils.js            # Shared utilities
 ```
 
-#### 3.2 登録フロー JavaScript
+#### 3.2 Registration flow JavaScript
 ```javascript
 // app/javascript/webauthn/registration.js
 export class WebAuthnRegistration {
   static async register(options) {
     try {
-      // navigator.credentials.create() の実装
       const credential = await navigator.credentials.create({
         publicKey: options
       });
@@ -141,13 +140,12 @@ export class WebAuthnRegistration {
 }
 ```
 
-#### 3.3 認証フロー JavaScript
+#### 3.3 Authentication flow JavaScript
 ```javascript
 // app/javascript/webauthn/authentication.js
 export class WebAuthnAuthentication {
   static async authenticate(options) {
     try {
-      // navigator.credentials.get() の実装
       const assertion = await navigator.credentials.get({
         publicKey: options
       });
@@ -170,14 +168,13 @@ export class WebAuthnAuthentication {
 }
 ```
 
-### 4. コントローラーロジック実装 🔴 **HIGH PRIORITY**
+### 4. Controller logic 🔴 **HIGH PRIORITY**
 
-#### 4.1 認証用パスキーコントローラー
+#### 4.1 Passkey controller for authentication
 ```ruby
-# app/controllers/www/app/authentication/healths_controller.rb
+# app/controllers/www/app/authentication/passkeys_controller.rb
 class Www::App::Authentication::PasskeysController < Www::App::ApplicationController
   def new
-    # 認証オプション生成
     @options = WebAuthn::Credential.options_for_get(
       allow: user_credentials_for_authentication,
       user_verification: 'preferred'
@@ -186,11 +183,9 @@ class Www::App::Authentication::PasskeysController < Www::App::ApplicationContro
   end
 
   def create
-    # WebAuthn assertion検証
     webauthn_credential = WebAuthn::Credential.from_get(credential_params)
-    
     stored_credential = find_credential(webauthn_credential.id)
-    return render_error('認証に失敗しました') unless stored_credential
+    return render_error('Authentication failed') unless stored_credential
     
     begin
       webauthn_credential.verify(
@@ -204,15 +199,15 @@ class Www::App::Authentication::PasskeysController < Www::App::ApplicationContro
       redirect_to_after_sign_in
       
     rescue WebAuthn::Error => e
-      render_error('認証に失敗しました')
+      render_error('Authentication failed')
     end
   end
 end
 ```
 
-#### 4.2 設定用パスキーコントローラー
+#### 4.2 Passkey controller for settings
 ```ruby
-# app/controllers/www/app/v1/healths_controller.rb
+# app/controllers/www/app/setting/passkeys_controller.rb
 class Www::App::Setting::PasskeysController < Www::App::ApplicationController
   before_action :authenticate_user!
   
@@ -221,7 +216,6 @@ class Www::App::Setting::PasskeysController < Www::App::ApplicationController
   end
 
   def new
-    # 登録オプション生成
     @options = WebAuthn::Credential.options_for_create(
       user: webauthn_user_entity,
       exclude: existing_credential_ids
@@ -230,7 +224,6 @@ class Www::App::Setting::PasskeysController < Www::App::ApplicationController
   end
 
   def create
-    # WebAuthn credential検証・保存
     webauthn_credential = WebAuthn::Credential.from_create(credential_params)
     
     begin
@@ -240,35 +233,35 @@ class Www::App::Setting::PasskeysController < Www::App::ApplicationController
         external_id: webauthn_credential.id,
         public_key: webauthn_credential.public_key,
         sign_count: webauthn_credential.sign_count,
-        nickname: params[:nickname].presence || "セキュリティキー #{DateTime.current.strftime('%Y/%m/%d')}"
+        nickname: params[:nickname].presence || "Security Key #{DateTime.current.strftime('%Y/%m/%d')}"
       )
       
-      redirect_to setting_passkeys_path, notice: 'セキュリティキーを登録しました'
+      redirect_to setting_passkeys_path, notice: 'Security key registered successfully'
       
     rescue WebAuthn::Error => e
-      render_error('登録に失敗しました')
+      render_error('Registration failed')
     end
   end
 
   def destroy
     credential = current_user.webauthn_credentials.find(params[:id])
     credential.destroy!
-    redirect_to setting_passkeys_path, notice: 'セキュリティキーを削除しました'
+    redirect_to setting_passkeys_path, notice: 'Security key removed'
   end
 end
 ```
 
-### 5. ビュー実装 🟡 **MEDIUM PRIORITY**
+### 5. View implementation 🟡 **MEDIUM PRIORITY**
 
-#### 5.1 認証画面
+#### 5.1 Authentication view
 ```erb
 <!-- app/views/www/app/authentication/passkeys/new.html.erb -->
 <div class="webauthn-auth">
-  <h2>セキュリティキーで認証</h2>
-  <p>セキュリティキーをタッチして認証してください</p>
+  <h2>Authenticate with a security key</h2>
+  <p>Touch your security key to continue.</p>
   
   <button id="webauthn-auth-btn" class="btn btn-primary">
-    セキュリティキーで認証
+    Authenticate with security key
   </button>
   
   <script>
@@ -279,10 +272,9 @@ end
       authBtn.addEventListener('click', async function() {
         try {
           const assertion = await WebAuthnAuthentication.authenticate(options);
-          // サーバーに送信
           submitAuthentication(assertion);
         } catch (error) {
-          showError('認証に失敗しました: ' + error.message);
+          showError('Authentication failed: ' + error.message);
         }
       });
     });
@@ -290,33 +282,33 @@ end
 </div>
 ```
 
-#### 5.2 管理画面
+#### 5.2 Management view
 ```erb
 <!-- app/views/www/app/setting/passkeys/index.html.erb -->
 <div class="webauthn-management">
-  <h2>セキュリティキー管理</h2>
+  <h2>Security key management</h2>
   
   <div class="credentials-list">
     <% @credentials.each do |credential| %>
       <div class="credential-item">
         <span class="nickname"><%= credential.nickname %></span>
-        <span class="last-used">最終使用: <%= credential.last_used_at&.strftime('%Y/%m/%d %H:%M') || '未使用' %></span>
-        <%= link_to '削除', setting_passkey_path(credential), method: :delete, 
-                    confirm: 'このセキュリティキーを削除しますか？',
+        <span class="last-used">Last used: <%= credential.last_used_at&.strftime('%Y/%m/%d %H:%M') || 'Never' %></span>
+        <%= link_to 'Remove', setting_passkey_path(credential), method: :delete,
+                    confirm: 'Remove this security key?',
                     class: 'btn btn-danger btn-sm' %>
       </div>
     <% end %>
   </div>
   
-  <%= link_to 'セキュリティキーを追加', new_setting_passkey_path, class: 'btn btn-primary' %>
+  <%= link_to 'Add a security key', new_setting_passkey_path, class: 'btn btn-primary' %>
 </div>
 ```
 
-### 6. セキュリティ統合 🔴 **HIGH PRIORITY**
+### 6. Security integration 🔴 **HIGH PRIORITY**
 
-#### 6.1 既存MFAシステムとの統合
+#### 6.1 Tie into the existing MFA system
 ```ruby
-# app/controllers/concerns/authentication.rb に追加
+# app/controllers/concerns/authentication.rb additions
 
 def require_second_factor_or_webauthn
   return true if webauthn_authenticated?
@@ -326,44 +318,45 @@ def require_second_factor_or_webauthn
   redirect_to_mfa_selection
 end
 
+
 def webauthn_authenticated?
-  session[:webauthn_verified_at] && 
-  session[:webauthn_verified_at] > 30.minutes.ago
+  session[:webauthn_verified_at] &&
+    session[:webauthn_verified_at] > 30.minutes.ago
 end
 ```
 
-#### 6.2 セッション管理
+#### 6.2 Session management
 ```ruby
-# セキュリティキー認証成功時
+# After successful security key authentication
 session[:webauthn_verified_at] = Time.current
 session[:webauthn_credential_id] = credential.external_id
 
-# ログアウト時
+# On sign-out
 session.delete(:webauthn_verified_at)
 session.delete(:webauthn_credential_id)
 ```
 
-### 7. エラーハンドリング・ユーザビリティ 🟡 **MEDIUM PRIORITY**
+### 7. Error handling and UX 🟡 **MEDIUM PRIORITY**
 
-#### 7.1 エラーメッセージ
+#### 7.1 Error messages
 ```ruby
 # app/controllers/concerns/webauthn_errors.rb
 module WebauthnErrors
   WEBAUTHN_ERROR_MESSAGES = {
-    'NotAllowedError' => 'セキュリティキーが見つからないか、操作がキャンセルされました',
-    'InvalidStateError' => 'このセキュリティキーは既に登録されています',
-    'NotSupportedError' => 'お使いのブラウザはセキュリティキーをサポートしていません',
-    'SecurityError' => 'セキュアな接続が必要です（HTTPS）',
-    'AbortError' => '操作がタイムアウトしました'
+    'NotAllowedError' => 'Security key not found or the operation was cancelled',
+    'InvalidStateError' => 'This security key is already registered',
+    'NotSupportedError' => 'Your browser does not support security keys',
+    'SecurityError' => 'A secure connection (HTTPS) is required',
+    'AbortError' => 'The operation timed out'
   }.freeze
 
   def webauthn_error_message(error)
-    WEBAUTHN_ERROR_MESSAGES[error.name] || 'セキュリティキーの操作中にエラーが発生しました'
+    WEBAUTHN_ERROR_MESSAGES[error.name] || 'An error occurred while using the security key'
   end
 end
 ```
 
-#### 7.2 ブラウザサポート検出
+#### 7.2 Browser support detection
 ```javascript
 // app/javascript/webauthn/utils.js
 export function isWebAuthnSupported() {
@@ -371,143 +364,143 @@ export function isWebAuthnSupported() {
 }
 
 export function showWebAuthnUnsupportedMessage() {
-  alert('お使いのブラウザはセキュリティキーをサポートしていません。最新のブラウザをご利用ください。');
+  alert('Your browser does not support security keys. Please use the latest version.');
 }
 ```
 
-### 8. テスト実装 🟡 **MEDIUM PRIORITY**
+### 8. Testing 🟡 **MEDIUM PRIORITY**
 
-#### 8.1 モデルテスト
+#### 8.1 Model tests
 ```ruby
 # test/models/webauthn_credential_test.rb
 class WebauthnCredentialTest < ActiveSupport::TestCase
-  test "should validate presence of required fields" do
+  test "requires mandatory fields" do
     credential = WebauthnCredential.new
     assert_not credential.valid?
     assert_includes credential.errors[:external_id], "can't be blank"
   end
   
-  test "should prevent replay attacks" do
+  test "prevents replay attacks" do
     credential = webauthn_credentials(:one)
     assert_not credential.update_sign_count!(credential.sign_count - 1)
   end
 end
 ```
 
-#### 8.2 コントローラーテスト
+#### 8.2 Controller tests
 ```ruby
-# test/controllers/www/app/v1/passkeys_controller_test.rb
+# test/controllers/www/app/setting/passkeys_controller_test.rb
 class Www::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
   setup do
     sign_in users(:one)
   end
   
-  test "should get index" do
+  test "shows the index" do
     get setting_passkeys_url
     assert_response :success
   end
   
-  test "should create webauthn credential" do
-    # WebAuthn credential creation test
+  test "creates a webauthn credential" do
+    # Implement WebAuthn credential creation test
   end
 end
 ```
 
-### 9. 多ドメイン対応確認 🟡 **MEDIUM PRIORITY**
+### 9. Multi-domain validation 🟡 **MEDIUM PRIORITY**
 
-#### 9.1 各ドメインでの動作確認
-- **Corporate domain** (`WWW_CORPORATE_URL`): 基本的な認証機能
-- **Service domain** (`WWW_SERVICE_URL`): フル機能（登録・認証・管理）
-- **Staff domain** (`WWW_STAFF_URL`): スタッフ用認証機能
+#### 9.1 Verify behaviour on each domain
+- **Corporate domain** (`WWW_CORPORATE_URL`): Basic authentication.
+- **Service domain** (`WWW_SERVICE_URL`): Full registration/authentication/management.
+- **Staff domain** (`WWW_STAFF_URL`): Staff-facing authentication.
 
-#### 9.2 クロスドメイン設定確認
+#### 9.2 Cross-domain settings
 ```ruby
-# config/webauthn.rb の設定確認
-- allowed_origins の正確性
-- rp_id の適切な設定（base domain）
-- credential の共有可能性
+# Validate config/webauthn.rb
+- Ensure allowed_origins are correct
+- rp_id should point to the base domain
+- Decide whether credentials are shared across domains
 ```
 
-### 10. 本番環境対応 🔴 **HIGH PRIORITY**
+### 10. Production readiness 🔴 **HIGH PRIORITY**
 
-#### 10.1 環境変数設定
+#### 10.1 Environment variables
 ```bash
-# 必要な環境変数
+# Required environment variables
 WEBAUTHN_RP_NAME="Umaxica"
-WEBAUTHN_RP_ID="umaxica.com"  # base domain
+WEBAUTHN_RP_ID="umaxica.com"
 WWW_CORPORATE_URL="https://com.umaxica.com"
 WWW_SERVICE_URL="https://app.umaxica.com"
 WWW_STAFF_URL="https://org.umaxica.com"
 ```
 
-#### 10.2 HTTPS必須確認
-- 本番環境でHTTPS強制
-- SSL証明書の有効性確認
-- CSP設定の適切性確認
+#### 10.2 Enforce HTTPS
+- Force HTTPS in production.
+- Confirm SSL certificates are valid.
+- Verify the CSP configuration permits WebAuthn endpoints.
 
-#### 10.3 セキュリティヘッダー
+#### 10.3 Security headers
 ```ruby
 # config/application.rb
-config.force_ssl = true  # 本番環境で必須
+config.force_ssl = true
 
-# CSP の WebAuthn 対応確認
+# Ensure the CSP allows WebAuthn
 Content-Security-Policy: default-src 'self'; connect-src 'self' https:
 ```
 
-### 11. ドキュメント・運用 🟡 **MEDIUM PRIORITY**
+### 11. Documentation and operations 🟡 **MEDIUM PRIORITY**
 
-#### 11.1 ユーザー向けガイド
-- セキュリティキーの登録方法
-- 対応ブラウザ・デバイス一覧
-- トラブルシューティング
+#### 11.1 User guide
+- How to register a security key.
+- Supported browsers and devices.
+- Troubleshooting steps.
 
-#### 11.2 管理者向けガイド
-- WebAuthn設定の管理
-- セキュリティ監視ポイント
-- 障害対応手順
+#### 11.2 Administrator guide
+- Managing WebAuthn settings.
+- Security monitoring points.
+- Incident response procedures.
 
-#### 11.3 開発者向けドキュメント
-- API仕様
-- データベーススキーマ
-- テスト方法
+#### 11.3 Developer documentation
+- API specifications.
+- Database schema.
+- Testing instructions.
 
-## 実装優先度
+## Prioritisation
 
-### Phase 1: 基盤実装 🔴 **HIGH PRIORITY**
-1. データベース設計・実装
-2. モデル実装
-3. JavaScript WebAuthn API実装
-4. 基本的なコントローラーロジック
+### Phase 1: Foundation 🔴 **HIGH PRIORITY**
+1. Database design and migrations.
+2. Model implementation.
+3. JavaScript WebAuthn API.
+4. Core controller logic.
 
-### Phase 2: 機能完成 🟡 **MEDIUM PRIORITY**
-5. ビュー実装
-6. エラーハンドリング
-7. テスト実装
-8. 多ドメイン対応確認
+### Phase 2: Feature completion 🟡 **MEDIUM PRIORITY**
+5. View implementation.
+6. Error handling.
+7. Tests.
+8. Multi-domain verification.
 
-### Phase 3: 本番対応 🔴 **HIGH PRIORITY**
-9. 本番環境設定
-10. セキュリティ統合
-11. ドキュメント作成
+### Phase 3: Production readiness 🔴 **HIGH PRIORITY**
+9. Production environment configuration.
+10. Security integration.
+11. Documentation.
 
-## 推定工数
+## Estimated Effort
 
-- **Phase 1**: 3-4人日
-- **Phase 2**: 2-3人日
-- **Phase 3**: 1-2人日
-- **合計**: 6-9人日
+- **Phase 1**: 3–4 person-days.
+- **Phase 2**: 2–3 person-days.
+- **Phase 3**: 1–2 person-days.
+- **Total**: 6–9 person-days.
 
-## 注意事項
+## Notes
 
-### セキュリティ考慮事項
-- WebAuthn challengeの適切な管理
-- Replay attack防止（sign_count検証）
-- HTTPS環境での運用必須
-- Cross-origin設定の慎重な管理
+### Security considerations
+- Manage WebAuthn challenges carefully.
+- Prevent replay attacks via sign_count validation.
+- Operate exclusively over HTTPS.
+- Handle cross-origin configuration with caution.
 
-### 既存システムとの互換性
-- 既存のTOTP・Recovery Codeシステムとの併用
-- セッション管理システムとの統合
-- 多ドメインアーキテクチャとの整合性
+### Compatibility with existing systems
+- Coexist with TOTP and recovery-code flows.
+- Integrate with the session management layer.
+- Ensure alignment with the multi-domain architecture.
 
-このタスクリストに従って段階的に実装することで、安全で使いやすいFIDO2セキュリティキー機能を構築できます。
+Following this task list step by step will deliver a secure and user-friendly FIDO2 security key experience.

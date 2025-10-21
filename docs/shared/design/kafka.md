@@ -1,13 +1,13 @@
-# Ruby on Rails と Kafka の連携方法
+# Integrating Ruby on Rails with Kafka
 
-## 概要
-RailsアプリケーションでKafkaを利用する際の実装方法とベストプラクティス
+## Overview
+Implementation notes and best practices for using Kafka in a Rails application.
 
-## Producer（メッセージ送信）
+## Producer (sending messages)
 
-### 基本的な送信方法
+### Basic publish flow
 ```ruby
-# Rails Console での実行例
+# Example executed from Rails Console
 config = Rdkafka::Config.new({
   "bootstrap.servers" => "127.0.0.1:9092",
   "client.id" => "console-producer"
@@ -23,7 +23,7 @@ producer.flush
 producer.close
 ```
 
-### Controller からの送信
+### Publishing from a controller
 ```ruby
 class UsersController < ApplicationController
   def create
@@ -63,9 +63,9 @@ class UsersController < ApplicationController
 end
 ```
 
-### 暗号化データの送信
+### Sending encrypted payloads
 ```ruby
-# ActiveRecord::Encryption を使用
+# Using ActiveRecord::Encryption
 encryptor = ActiveRecord::Encryption.encryptor
 encrypted_data = encryptor.encrypt("sensitive data")
 
@@ -77,9 +77,9 @@ producer.produce(
 producer.flush
 ```
 
-## Consumer（メッセージ受信）
+## Consumer (receiving messages)
 
-### Rails Runner を使った Consumer 実装
+### Consumer implemented with Rails Runner
 ```ruby
 # app/consumers/kafka_consumer_runner.rb
 class KafkaConsumerRunner
@@ -130,7 +130,7 @@ class KafkaConsumerRunner
     data = JSON.parse(message.payload)
     Rails.logger.info "Processing: #{data}"
     
-    # ビジネスロジックの実行
+    # Execute business logic
     case data['event_type']
     when 'user_created'
       handle_user_created(data)
@@ -140,7 +140,7 @@ class KafkaConsumerRunner
     Rails.logger.error "Invalid JSON: #{e.message}"
   rescue => e
     Rails.logger.error "Processing error: #{e.message}"
-    raise # 再処理のためにエラーを再発生
+    raise # Re-raise so the message can be retried
   end
 
   def graceful_shutdown
@@ -150,7 +150,7 @@ class KafkaConsumerRunner
 end
 ```
 
-### 起動スクリプト
+### Launch script
 ```ruby
 # bin/kafka_consumer
 #!/usr/bin/env ruby
@@ -159,27 +159,27 @@ require_relative '../config/environment'
 KafkaConsumerRunner.start
 ```
 
-## Consumer 設計の重要な考慮事項
+## Key considerations for consumers
 
-### 1. エラーハンドリング
-- Producer側ではシンプルにエラーログのみ
-- Consumer側で冪等性と再試行を実装
+### 1. Error handling
+- Producers can log and continue.
+- Consumers must enforce idempotency and implement retries.
 
-### 2. オフセット管理
+### 2. Offset management
 ```ruby
-# 手動コミットで処理完了を保証
+# Guarantee completion with manual commits
 consumer.each do |message|
   begin
     process_message(message)
-    consumer.commit(message) # 成功時のみコミット
+    consumer.commit(message) # Commit only after success
   rescue => e
     Rails.logger.error "Processing failed: #{e.message}"
-    # 失敗時はコミットしない（再処理される）
+    # Skip commit on failure to allow reprocessing
   end
 end
 ```
 
-### 3. 冪等性の実装
+### 3. Idempotency
 ```ruby
 def process_message(message)
   message_id = extract_message_id(message)
@@ -196,7 +196,7 @@ def process_message(message)
 end
 ```
 
-### 4. 暗号化データの処理
+### 4. Handling encrypted data
 ```ruby
 def process_encrypted_message(message)
   encryptor = ActiveRecord::Encryption.encryptor
@@ -206,14 +206,14 @@ def process_encrypted_message(message)
     process_decrypted_data(JSON.parse(decrypted_payload))
   rescue ActiveRecord::Encryption::Errors::Decryption => e
     Rails.logger.error "Decryption failed: #{e.message}"
-    # デッドレターキューに送信
+    # Route to a dead-letter queue
   end
 end
 ```
 
-## Kubernetes でのデプロイ
+## Deploying on Kubernetes
 
-### Deployment 設定例
+### Sample Deployment manifest
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -247,39 +247,39 @@ spec:
             cpu: "500m"
 ```
 
-## ベストプラクティス
+## Best practices
 
 ### Producer
-- エラーハンドリングはシンプルに（ログのみ）
-- 重要でない場合は失敗を許容
-- パフォーマンスを重視
+- Keep error handling simple (log and continue).
+- Allow failures when the event is non-critical.
+- Optimise for throughput.
 
 ### Consumer
-- 手動オフセットコミット
-- 冪等性の確保
-- Graceful shutdown の実装
-- デッドレターキューの活用
-- 監視・ヘルスチェックの実装
+- Commit offsets manually.
+- Guarantee idempotency.
+- Implement graceful shutdown.
+- Use a dead-letter queue.
+- Add monitoring and health checks.
 
-### セキュリティ
-- ActiveRecord::Encryption で暗号化
-- 機密データは暗号化してから送信
-- Consumer側で適切に復号化
+### Security
+- Encrypt with ActiveRecord::Encryption.
+- Send sensitive data only after encryption.
+- Decrypt safely on the consumer side.
 
-## 依存関係
+## Dependencies
 ```ruby
 # Gemfile
-gem 'rdkafka', '~> 0.21.0'  # ruby-kafka は EOL のため rdkafka を使用
+gem 'rdkafka', '~> 0.21.0'  # ruby-kafka is EOL, use rdkafka instead
 ```
 
-## 実行方法
+## How to run
 ```bash
-# Producer（Rails Console）
+# Producer (Rails Console)
 rails console
 
 # Consumer
 bundle exec ruby bin/kafka_consumer
 
-# または Rake Task として
+# Or via a Rake task
 bundle exec rake kafka:consumer
 ```

@@ -35,14 +35,14 @@ module Authn
     token = UserToken.create(user_id: user_or_staff.id)
     credentials = generate_access_token(token)
 
-    # ACCESS_TOKEN: JWTは短期間（15分）
+    # ACCESS_TOKEN: Short-lived JWT (15 minutes)
     cookies[:access_token] = {
       value: credentials,
       httponly: true,
       secure: Rails.env.production?,
       expires: ACCESS_TOKEN_EXPIRY.from_now
     }
-    # REFRESH_TOKEN: 長期間（1年）
+    # REFRESH_TOKEN: Long-lived (1 year)
     cookies.encrypted[:refresh_token] = {
       value: token.id,
       httponly: true,

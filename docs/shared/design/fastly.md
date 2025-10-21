@@ -1,53 +1,53 @@
-# Fastly マルチテナント エラーハンドリング
+# Fastly Multi-Tenant Error Handling
 
-## 概要
+## Overview
 
-FastlyのVCLを使用して、マルチテナント対応のエラーページを配信する仕組み。
-URLを変更せず、ドメインに応じた適切なエラーページを表示する。
+Architecture for delivering tenant-specific error pages with Fastly VCL.
+Users see the correct page for their domain without a URL change.
 
-## 処理フロー
+## Request Flow
 
-### 404エラーの場合
+### When a 404 Occurs
 
-1. **ユーザーアクセス**
+1. **User request**
    ```
-   ユーザー → https://umaxica.com/naisaito にアクセス
-   ```
-
-2. **Fastly → Rails転送**
-   ```
-   Fastly → Railsアプリケーションに転送
+   User → https://umaxica.com/naisaito
    ```
 
-3. **Rails 404エラー**
+2. **Fastly forwards to Rails**
    ```
-   Rails → 404エラーを返す（存在しないページ）
-   ```
-
-4. **Fastly VCL処理**
-   ```
-   Fastly VCL → vcl_errorで404をキャッチ
+   Fastly → Rails application
    ```
 
-5. **外部静的ファイル取得**
+3. **Rails responds with 404**
    ```
-   Fastly → Cloudflareから対応する404.htmlを取得
+   Rails → returns 404 (page not found)
+   ```
+
+4. **Fastly VCL handles the error**
+   ```
+   Fastly VCL → catches 404 in vcl_error
+   ```
+
+5. **Fetch static error page**
+   ```
+   Fastly → retrieves 404.html from Cloudflare
    - umaxica.com → /com/404.html
-   - umaxica.app → /app/404.html  
+   - umaxica.app → /app/404.html
    - umaxica.org → /org/404.html
    ```
 
-6. **ユーザーへ配信**
+6. **Deliver to the user**
    ```
-   Fastly → ユーザーに404.htmlを配信（URLは変更なし）
+   Fastly → serves the 404.html page (no URL change)
    ```
 
-## VCL実装イメージ
+## VCL Implementation Sketch
 
 ```vcl
 sub vcl_error {
   if (obj.status == 404 || obj.status == 500) {
-    # ドメインに応じたエラーページパスを設定
+    # Choose the error page path by domain
     if (req.http.host == "umaxica.com") {
       set bereq.backend = cloudflare_errors;
       set bereq.url = "/com/" + obj.status + ".html";
@@ -65,15 +65,15 @@ sub vcl_error {
 }
 ```
 
-## メリット
+## Benefits
 
-- **URL不変**: ユーザーのアドレスバーは元のURLのまま
-- **独立性**: メインサイトダウン時でもエラーページは表示
-- **パフォーマンス**: 静的ファイルの高速配信
-- **ブランディング**: ドメインごとに異なるエラーページ
-- **コスト効率**: 静的ファイルホスティングは安価
+- **Stable URL**: The browser address bar remains unchanged.
+- **Resilience**: Error pages render even if the primary site is down.
+- **Performance**: Static files are delivered quickly.
+- **Branding**: Each domain can present a tailored error page.
+- **Cost efficiency**: Static-file hosting stays inexpensive.
 
-## 静的ファイル配置先候補
+## Candidate Locations for Static Files
 
 - Cloudflare Pages
 - AWS S3
@@ -81,11 +81,11 @@ sub vcl_error {
 - Netlify
 - GitHub Pages
 
-## 現在の状況
+## Current Status
 
-- ✅ Rails側にドメイン別エラーページ作成済み
+- ✅ Domain-specific error pages exist on the Rails side
   - `public/com/404.html`, `public/com/500.html`
   - `public/app/404.html`, `public/app/500.html`
   - `public/org/404.html`, `public/org/500.html`
-- ⏳ Fastly VCL設定（今後実装予定）
-- ⏳ 外部静的ファイルホスト選定・設定（今後実装予定）
+- ⏳ Fastly VCL configuration still pending
+- ⏳ Selecting and configuring the external static host remains TODO
