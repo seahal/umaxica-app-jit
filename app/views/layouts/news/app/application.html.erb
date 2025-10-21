@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="<%= get_language %>">
 <head>
-  <title><%= title_generator(yield(:page_title)) %></title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title><%= get_title(yield(:page_title)) %></title>  <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "news/app/main" %>

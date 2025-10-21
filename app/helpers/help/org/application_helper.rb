@@ -15,8 +15,16 @@ module Help::Org::ApplicationHelper
   end
 
 
-  def title_generator(title = nil)
-    return ENV["NAME"] if title.blank?
+  def get_title(title = "")
+    return "#{ ENV['NAME'] }" if title.blank?
     "#{ title } | #{ ENV['NAME'] }"
+  end
+
+  def get_timezone
+    "jst"
+  end
+
+  def get_language
+    "ja"
   end
 end

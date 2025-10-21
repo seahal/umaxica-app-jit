@@ -14,8 +14,16 @@ module Docs::App::ApplicationHelper
     time.in_time_zone(zone)
   end
 
-  def title_generator(title = nil)
-    return ENV["NAME"] if title.blank?
+  def get_title(title = "")
+    return "#{ ENV['NAME'] }" if title.blank?
     "#{ title } | #{ ENV['NAME'] }"
+  end
+
+  def get_timezone
+    "jst"
+  end
+
+  def get_language
+    "ja"
   end
 end
