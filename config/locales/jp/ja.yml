@@ -15,7 +15,7 @@ ja:
       otp:
         invalid_input: Pass Code の値に問題があります
   controller:
-    auth:
+    sign:
       app:
         setting:
           show:
@@ -146,7 +146,7 @@ ja:
     region_settings_updated_successfully: 地域設定が正常に更新されました。
     user_registration_error: ユーザー登録中にエラーが発生しました。
     access_blocked_auth_error: 'アクセスをブロック: 認証エラーです'
-  auth:
+  sign:
     app:
       authentication:
         edit:

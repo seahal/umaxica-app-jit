@@ -7,7 +7,7 @@ module Sign
 
         def new
           # FIXME: write test code!
-          render plain: t("auth.app.authentication.email.new.you_have_already_logged_in"),
+          render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
           # # to avoid session attack
@@ -18,22 +18,22 @@ module Sign
         end
 
         def edit
-          render plain: t("auth.app.registration.email.edit.you_have_already_logged_in"),
+          render plain: t("sign.app.registration.email.edit.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
-          render plain: t("auth.app.registration.email.edit.forbidden_action"),
+          render plain: t("sign.app.registration.email.edit.forbidden_action"),
                  status: :bad_request and return if session[:user_email_registration].nil?
 
           if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"] && session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
             @user_email = UserEmail.new
           else
             redirect_to new_sign_app_registration_email_path,
-                        notice: t("auth.app.registration.email.edit.your_session_was_expired")
+                        notice: t("sign.app.registration.email.edit.your_session_was_expired")
           end
         end
 
         def create
           # FIXME: write test code!
-          render plain: t("auth.app.authentication.email.new.you_have_already_logged_in"),
+          render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
           @user_email = UserEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
@@ -65,7 +65,7 @@ module Sign
 
         def update
           # FIXME: write test code!
-          render plain: t("auth.app.authentication.email.new.you_have_already_logged_in"),
+          render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in_staff? || logged_in_user?
 
           @user_email = UserEmail.new(address: session[:user_email_registration]["address"],

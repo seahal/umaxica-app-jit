@@ -12,6 +12,6 @@ class UserPasskey < ApplicationRecord
 
   def set_defaults
     self.sign_count ||= 0
-    self.description = I18n.t("auth.default_passkey_description") if description.blank?
+    self.description = I18n.t("sign.default_passkey_description") if description.blank?
   end
 end

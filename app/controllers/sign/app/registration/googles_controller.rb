@@ -9,11 +9,11 @@ module Sign
         end
 
         def new
-          redirect_to "/sign/google_oauth2", allow_other_host: true
+          redirect_to "/auth/google_oauth2", allow_other_host: true
         end
 
         def create
-          auth_hash = request.env["omniauth.sign"]
+          auth_hash = request.env["omniauth.auth"]
 
           if auth_hash.present? && valid_auth_hash?(auth_hash)
             begin

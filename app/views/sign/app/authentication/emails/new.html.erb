@@ -1,7 +1,7 @@
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <div>
-  <h1 class="font-bold text-4xl"><%= t('auth.app.authentication.email.new.page_title') %></h1>
+  <h1 class="font-bold text-4xl"><%= t('sign.app.authentication.email.new.page_title') %></h1>
 
   <%= form_with model: @user_email, url: sign_app_authentication_email_path do |form| %>
 
@@ -33,8 +33,8 @@
   <% end %>
 
   <ul>
-    <li><%= link_to t('auth.app.authentication.new.back'), new_sign_app_authentication_path %></li>
-    <li><%= link_to t('auth.app.authentication.email.new.registration'), new_sign_app_registration_email_path %></li>
+    <li><%= link_to t('sign.app.authentication.new.back'), new_sign_app_authentication_path %></li>
+    <li><%= link_to t('sign.app.authentication.email.new.registration'), new_sign_app_registration_email_path %></li>
   </ul>
 
 </div>

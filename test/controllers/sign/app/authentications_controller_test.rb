@@ -10,16 +10,16 @@ class Sign::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
   #   assert_select "a[href=?]", new_sign_app_authentication_recovery_path(query)
   #   assert_select "a[href=?]", new_sign_app_registration_path(query)
   # end
-  //
+  # 
   test "should get edit" do
     get edit_sign_app_authentication_url
     # assert_response :internal_server_error
-    assert_select "h1", I18n.t("auth.app.authentication.edit.title")
+    assert_select "h1", I18n.t("sign.app.authentication.edit.title")
   end
 
   test "should not get edit when not logged in" do
     get edit_sign_app_authentication_url
     # assert_response :internal_server_error
-    assert_select "h1", I18n.t("auth.app.authentication.edit.title")
+    assert_select "h1", I18n.t("sign.app.authentication.edit.title")
   end
 end

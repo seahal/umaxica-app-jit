@@ -8,7 +8,7 @@ en:
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
-  auth:
+  sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"

@@ -24,7 +24,7 @@ module Sign
             user: {
               id: user.webauthn_id, # gemがJSON化時にbase64url化してくれる
               name: (user.try(:email) || "user@example.com").to_s,
-              display_name: (user.try(:name) || user.try(:email) || I18n.t("auth.default_user_name")).to_s
+              display_name: (user.try(:name) || user.try(:email) || I18n.t("sign.default_user_name")).to_s
             },
             authenticator_selection: { user_verification: "preferred" },
             attestation: "none",

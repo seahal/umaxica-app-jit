@@ -1,14 +1,14 @@
-<% content_for :page_title, t("auth.app.registration.new.page_title") %>
+<% content_for :page_title, t("sign.app.registration.new.page_title") %>
 <% product_name = ENV.fetch("NAME", "Umaxica") %>
 
 <section class="space-y-12" data-testid="registration-page">
   <header class="space-y-4">
-    <h1 class="text-3xl font-bold text-slate-900 md:text-4xl"><%= t("auth.app.registration.new.page_title") %></h1>
-    <p class="max-w-2xl text-base text-slate-600"><%= t("auth.app.registration.new.page_description", product: product_name) %></p>
+    <h1 class="text-3xl font-bold text-slate-900 md:text-4xl"><%= t("sign.app.registration.new.page_title") %></h1>
+    <p class="max-w-2xl text-base text-slate-600"><%= t("sign.app.registration.new.page_description", product: product_name) %></p>
   </header>
 
   <section class="space-y-4" data-testid="registration-methods">
-    <h2 class="text-lg font-semibold text-slate-900"><%= t("auth.app.registration.new.methods.title") %></h2>
+    <h2 class="text-lg font-semibold text-slate-900"><%= t("sign.app.registration.new.methods.title") %></h2>
     <div class="grid gap-4 md:grid-cols-2">
       <% @registration_methods.each do |method| %>
         <% translation_scope = "sign.app.registration.new.methods.#{method[:key]}" %>
@@ -28,8 +28,8 @@
   </section>
 
   <section class="space-y-4" data-testid="registration-social">
-    <h2 class="text-lg font-semibold text-slate-900"><%= t("auth.app.registration.new.social.title") %></h2>
-    <p class="text-sm text-slate-600"><%= t("auth.app.registration.new.social.description", product: product_name) %></p>
+    <h2 class="text-lg font-semibold text-slate-900"><%= t("sign.app.registration.new.social.title") %></h2>
+    <p class="text-sm text-slate-600"><%= t("sign.app.registration.new.social.description", product: product_name) %></p>
     <div class="flex flex-col gap-3 md:flex-row">
       <% @social_providers.each do |provider| %>
         <% translation_scope = "sign.app.registration.new.social.buttons.#{provider[:key]}" %>
@@ -44,14 +44,14 @@
         <% end %>
       <% end %>
     </div>
-    <p class="text-xs text-slate-500"><%= t("auth.app.registration.new.social.disclaimer") %></p>
+    <p class="text-xs text-slate-500"><%= t("sign.app.registration.new.social.disclaimer") %></p>
   </section>
 
   <section data-testid="registration-sign-in">
     <p class="text-sm text-slate-700">
-      <%= t("auth.app.registration.new.links.sign_in_html",
+      <%= t("sign.app.registration.new.links.sign_in_html",
             link: link_to(
-              t("auth.app.registration.new.links.sign_in_text"),
+              t("sign.app.registration.new.links.sign_in_text"),
               new_sign_app_authentication_path,
               class: "font-medium underline"
             )).html_safe %>
