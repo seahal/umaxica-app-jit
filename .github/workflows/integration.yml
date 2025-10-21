@@ -245,14 +245,23 @@ jobs:
         run: bun install
       - name: Build JavaScript assets
         run: bun run build
-      - name: Run JavaScript tests
-        run: bun test
+      - name: Run JavaScript tests with coverage
+        run: bun test --coverage --coverage-reporter=lcov
+      - name: Prepare coverage artifact
+        if: always()
+        run: |
+          mkdir -p coverage/bun
+          if [ -f coverage/lcov.info ]; then
+            mv coverage/lcov.info coverage/bun/lcov.info
+          else
+            echo "No Bun coverage file generated"
+          fi
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: js-coverage-report
-          path: coverage/
+          path: coverage/bun/
           retention-days: 30
   image-check:
     name: Security Scan

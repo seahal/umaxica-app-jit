@@ -26,14 +26,14 @@ development:
     database: development_contact_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_PUB"]: 'localhost' %>
-    migrations_paths: db/contacts_migrate
+    migrations_paths: db/customers_migrate
   contact_replica:
     <<: *default
     replica: true
     database: development_contact_db
     port: <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5434 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_SUB"]: 'localhost' %>
-    migrations_paths: db/contacts_migrate
+    migrations_paths: db/customers_migrate
   identifier:
     <<: *default
     database: development_identifier_db
@@ -162,14 +162,14 @@ test:
     database: test_contact_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5433 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_PUB"]: 'localhost' %>
-    migrations_paths: db/contacts_migrate
+    migrations_paths: db/customers_migrate
   contact_replica:
     <<: *default
     replica: true
     database: test_contact_db
     port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432: 5434 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_CONTACT_SUB"]: 'localhost' %>
-    migrations_paths: db/contacts_migrate
+    migrations_paths: db/customers_migrate
   identifier:
     <<: *default
     database: test_identifier_db
@@ -301,7 +301,7 @@ production:
     host: <%= Rails.application.credentials&.DATABASE&.CONTACT&.HOST %>
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.CONTACT&.PASSWORD %>
-    migrations_paths: db/contacts_migrate
+    migrations_paths: db/customers_migrate
   contact_replica:
     <<: *default
     replica: true
@@ -310,7 +310,7 @@ production:
     host: <%= Rails.application.credentials&.DATABASE&.CONTACT_REPLICA&.HOST %>
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.CONTACT_REPLICA&.PASSWORD %>
-    migrations_paths: db/contacts_migrate
+    migrations_paths: db/customers_migrate
   identifier:
     <<: *default
     database: production_identifier_db
