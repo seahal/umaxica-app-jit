@@ -8,7 +8,7 @@ gem "rake", "13.2.1"
 # rack
 gem "rack"
 # Rails
-gem "rails", "8.1.0.rc1"
+gem "rails", "8.1.0"
 # Use Postgres as the database for Active Record
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -71,12 +71,11 @@ gem "action_policy"
 gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
-# gem "view_component"
 # OpenAPI
-gem "rswag"
+# gem "rswag"
 gem "ostruct"
-gem "rswag-api"
-gem "rswag-ui"
+# gem "rswag-api"
+# gem "rswag-ui"
 # JWT
 gem "jwt"
 #
@@ -85,6 +84,8 @@ gem "jsbundling-rails"
 # gem "fastly"
 #
 # gem "thruster", require: false
+#
+# gem "view_component"
 
 group :development, :test do
   # to avoid n+1 queries
