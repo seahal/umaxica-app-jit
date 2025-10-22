@@ -10,19 +10,27 @@ module Apex
         "lx" => "ja",
         "ri" => "jp",
         "tz" => "jst",
-        "ct" => "system"
+        "ct" => "sy"
       }.freeze
       ALLOWED_PREFERENCE_VALUES = {
         "lx" => %w[ja en],
         "ri" => %w[jp us],
         "tz" => %w[jst utc],
-        "ct" => %w[light dark system]
+        "ct" => %w[li dr sy]
       }.freeze
       COERCED_PREFERENCE_VALUES = {
         "lx" => { "kr" => "ja" },
         "ri" => { "sk" => "jp" },
         "tz" => { "kst" => "jst" },
-        "ct" => { "auto" => "system", "darkmode" => "dark" }
+        "ct" => {
+          "auto" => "sy",
+          "system" => "sy",
+          "darkmode" => "dr",
+          "dark" => "dr",
+          "light" => "li",
+          "dk" => "dr",
+          "lt" => "li"
+        }
       }.freeze
 
       before_action :ensure_preference_context

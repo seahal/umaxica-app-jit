@@ -81,7 +81,8 @@ gem "jwt"
 #
 gem "jsbundling-rails"
 # for fastly cache purge
-# gem "fastly"
+gem "fastly"
+# for cloudflare
 #
 # gem "thruster", require: false
 #

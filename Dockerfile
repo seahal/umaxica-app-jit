@@ -4,7 +4,7 @@
 # Shared build arguments
 # ============================================================================
 ARG RUBY_VERSION=3.4.7
-ARG BUN_VERSION=1.3.0
+ARG BUN_VERSION=1.3.1
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
 ARG DOCKER_USER=jit
@@ -100,10 +100,12 @@ RUN npm install -g bun@"${BUN_VERSION}" \
 
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
-#RUN gem install bundler \
-#    && bundle config set --local path vendor/bundle \
-#    && bundle config set without 'production' \
-#    && bundle install --jobs "$(nproc)"
+RUN bun install
+
+RUN gem install bundler \
+    && bundle config set --local path vendor/bundle \
+    && bundle config set without 'production' \
+    && bundle install --jobs "$(nproc)"
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
@@ -142,10 +144,10 @@ ENV LANG=C.UTF-8 \
 WORKDIR ${APP_HOME}
 
 RUN if ! getent group "${DOCKER_GROUP}" >/dev/null; then \
-      groupadd --gid "${DOCKER_GID}" "${DOCKER_GROUP}"; \
+    groupadd --gid "${DOCKER_GID}" "${DOCKER_GROUP}"; \
     fi \
     && if ! id -u "${DOCKER_USER}" >/dev/null 2>&1; then \
-      useradd --uid "${DOCKER_UID}" --gid "${DOCKER_GROUP}" --home "${HOME}" --shell /usr/sbin/nologin "${DOCKER_USER}"; \
+    useradd --uid "${DOCKER_UID}" --gid "${DOCKER_GROUP}" --home "${HOME}" --shell /usr/sbin/nologin "${DOCKER_USER}"; \
     fi \
     && mkdir -p "${APP_HOME}" "${HOME}" \
     && chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"
@@ -204,11 +206,6 @@ RUN bun run build \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
     && rm -f tmp/pids/server.pid
-
-# add code for upload assets files to cloudflare r2
-# need credentials CLOUDFLARE_R2_TOKEN
-# SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=asset bin/rails assets:precompile
-
 FROM production-base AS production
 ARG DOCKER_UID
 ARG DOCKER_GID
