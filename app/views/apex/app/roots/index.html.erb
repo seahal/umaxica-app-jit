@@ -1,10 +1,12 @@
 <ul>
-  <li><%= link_to "設定", apex_app_preference_url %></li>
+  <li><%= link_to "Settings", apex_app_preference_url %></li>
 </ul>
 <ul>
-  <li>現在の言語: <%= I18n.locale %></li>
-  <li>TimeZone: <%= params[:tz].to_s.downcase == 'utc' ? "utc" : 'jst' %></li>
+  <li>Current language: <%= I18n.locale %></li>
   <li><%= Time.now.in_time_zone("Tokyo") %></li>
   <li><%= to_localetime Time.now, 'jst' %></li>
-  <li><%= get_timezone %></li>
+  <li>region: <%= get_region %></li>
+  <li>TimeZone: <%= get_timezone %></li>
+  <li>language: <%= get_language %></li>
+  <li>ColorTheme: <%= get_colortheme %></li>
 </ul>

@@ -1,39 +1,39 @@
 import {describe, expect, it, beforeAll, afterAll} from "bun:test";
 
-// テスト環境のセットアップ例
+// Example test environment setup
 describe("Test Environment Setup", () => {
     beforeAll(() => {
-        // 全テスト実行前のグローバルセットアップ
+        // Global setup before running all tests
         console.log("Setting up test environment...");
     });
 
     afterAll(() => {
-        // 全テスト実行後のクリーンアップ
+        // Cleanup after running all tests
         console.log("Cleaning up test environment...");
     });
 
     it("should verify test environment", () => {
-        // テスト環境が正しく設定されているかチェック
+        // Verify that the test environment is configured correctly
         expect(typeof describe).toBe("function");
         expect(typeof it).toBe("function");
         expect(typeof expect).toBe("function");
     });
 
     it("should have access to global objects", () => {
-        // グローバルオブジェクトの確認
+        // Check availability of global objects
         expect(globalThis).toBeDefined();
         expect(process).toBeDefined();
         expect(console).toBeDefined();
     });
 
-    // 環境変数のテスト
+    // Environment variable test
     it("should handle environment variables", () => {
-        // テスト用環境変数の設定例
+        // Example of setting a test-specific environment variable
         process.env.TEST_MODE = "true";
 
         expect(process.env.TEST_MODE).toBe("true");
 
-        // クリーンアップ
+        // Clean up
         delete process.env.TEST_MODE;
     });
 });

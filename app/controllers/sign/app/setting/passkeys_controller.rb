@@ -2,7 +2,7 @@ module Sign
   module App
     module Setting
       class PasskeysController < ApplicationController
-        before_action :authenticate_user! # ← 本番は必須
+        before_action :authenticate_user! # Required in production
 
         # POST /v1/passkeys/challenge
         def challenge
@@ -11,7 +11,7 @@ module Sign
           user = User.last
           return render(json: { error: I18n.t("errors.unauthorized") }, status: :unauthorized) unless user
 
-          # webauthn_id を確実に持たせる（初回のみ生成）
+          # Ensure webauthn_id exists (generate on first use)
           user.update!(webauthn_id: SecureRandom.random_bytes(32)) if user.webauthn_id.blank?
 
           exclude = if user.respond_to?(:user_passkeys)
@@ -22,7 +22,7 @@ module Sign
 
           creation_options = WebAuthn::Credential.options_for_create(
             user: {
-              id: user.webauthn_id, # gemがJSON化時にbase64url化してくれる
+              id: user.webauthn_id, # The gem encodes to base64url when serialized to JSON
               name: (user.try(:email) || "user@example.com").to_s,
               display_name: (user.try(:name) || user.try(:email) || I18n.t("sign.default_user_name")).to_s
             },
@@ -43,19 +43,19 @@ module Sign
 
           challenge = session.delete(:webauthn_create_challenge)
 
-          # フロントが { credential: {...} } で送っている前提
+          # Assumes the frontend posts { credential: {...} }
           # cred = WebAuthn::Credential.from_create(params.require(:credential).permit!.to_h)
 
-          # チャレンジ・origin・rp_id・署名などをgemが検証
+          # The gem verifies the challenge, origin, rp_id, and signature
           # cred.verify(challenge)
 
-          # 保存（列名はあなたのモデルに合わせて）
+          # Persist the record (adjust column names for your model)
           # passkey = user.user_passkeys.build(
-          #   webauthn_id: cred.id,         # credentialId（base64url文字列）
-          #   public_key:  cred.public_key, # OpenSSL::PKey で検証に使う
+          #   webauthn_id: cred.id,         # credentialId (base64url string)
+          #   public_key:  cred.public_key, # Used by OpenSSL::PKey for verification
           #   sign_count:  cred.sign_count,
           #   description: params[:description].presence || I18n.t("sign.default_passkey_name"),
-          # # aaguid: cred.aaguid # 欲しければ
+          # # aaguid: cred.aaguid # Include if you need it
           #   )
           render json: { status: "ok" }
         end

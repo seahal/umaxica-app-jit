@@ -1,10 +1,10 @@
 <ul>
   <li>Region: <%= session[:region] %></li>
-  <li>現在の言語: <%= I18n.locale %></li>
+  <li>Current language: <%= I18n.locale %></li>
   <li>TimeZone: <%= session[:timezone] %></li>
   <li><%= I18n.t "hello" %></li>
   <li><%= Time.now %></li>
   <li><%= Time.now.in_time_zone("Tokyo") %></li>
   <li><%= to_localetime Time.now, 'jst' %></li>
-  <li><%= link_to "設定", apex_org_preference_url %></li>
+  <li><%= link_to "Settings", apex_org_preference_url %></li>
 </ul>

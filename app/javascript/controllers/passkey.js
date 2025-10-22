@@ -6,7 +6,7 @@ const btn =
 		: null;
 
 btn?.addEventListener("click", async () => {
-	// 1) サーバから options を取得
+	// 1) Request options from the server
 	const res = await fetch("/setting/passkeys/challenge", {
 		method: "POST",
 		headers: {
@@ -17,7 +17,7 @@ btn?.addEventListener("click", async () => {
 	});
 
 	if (!res.ok) {
-		console.error("server error", res.status, await res.text()); // ← HTML返ってないか確認
+		console.error("server error", res.status, await res.text()); // Check whether the response contains HTML
 		return;
 	}
 
@@ -53,13 +53,13 @@ btn?.addEventListener("click", async () => {
 
 	// challenge
 	console.log("server options:", createCredentialDefaultArgs);
-	console.log("server options:", options); // ← { publicKey: { challenge: "...", user: { id: "..." }, ... } }
+	console.log("server options:", options); // Inspect the structure returned from the server
 	console.log("challenge", options.challenge);
 	console.log("user name", options.user.name);
 	console.log("user id", options.user.id);
 	console.log("user display name", options.user.displayName);
 
-	// 3) 認証器で作成
+	// 3) Create the credential with the authenticator
 	await navigator.credentials
 		.create(createCredentialDefaultArgs)
 		.then((cred) => {
@@ -67,7 +67,7 @@ btn?.addEventListener("click", async () => {
 			const payload = {
 				credential: {
 					id: cred.id,
-					rawId: cred.rawId, // 既にbase64urlならOK（そうでなければ toB64url() して）
+					rawId: cred.rawId, // Already base64url-safe; call toB64url() if needed
 					type: cred.type,
 					response: {
 						clientDataJSON: cred.response.clientDataJSON,
@@ -78,7 +78,7 @@ btn?.addEventListener("click", async () => {
 			};
 			console.log("payload", payload);
 
-			// 4) サーバに保存依頼
+			// 4) Ask the server to store the credential
 			return fetch("/setting/passkeys/verify", {
 				method: "POST",
 				headers: {
@@ -91,6 +91,6 @@ btn?.addEventListener("click", async () => {
 		})
 		.catch((err) => {
 			console.error("credential creation failed", err);
-			alert(`❌ パスキー登録に失敗しました: ${err.message}`);
+			alert(`❌ Failed to register the passkey: ${err.message}`);
 		});
 });

@@ -12,7 +12,7 @@
 		);
 		if (policy && !policy.checked) {
 			e.preventDefault();
-			alert("利用規約への同意が必要です。");
+			alert("You must agree to the terms of service.");
 			policy.focus();
 		}
 	});

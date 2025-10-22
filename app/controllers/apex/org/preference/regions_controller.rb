@@ -104,7 +104,7 @@ module Apex
         def language_name(code)
           {
             "EN" => "English",
-            "JA" => "日本語"
+            "JA" => "Japanese"
           }[code] || code
         end
 

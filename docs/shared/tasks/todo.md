@@ -1,76 +1,76 @@
-# コードベース問題リスト - 修正が必要な項目
+# Codebase Issue List - Items Requiring Fixes
 
-## 🚨 最優先で修正が必要な問題
+## 🚨 Highest-Priority Issues
 
-### 1. ハードコードされたAPIキー (rack_attack.rb:6)
-- 問題: `"secret-string"`がハードコードされており、誰でもレート制限をバイパス可能
-- ファイル: config/initializers/rack_attack.rb
-- 修正: 環境変数または暗号化された認証情報を使用
+### 1. Hard-coded API key (rack_attack.rb:6)
+- Problem: The string `"secret-string"` is hard-coded, allowing anyone to bypass rate limiting.
+- File: config/initializers/rack_attack.rb
+- Fix: Replace with environment variables or encrypted credentials.
 
-### 2. 本番データベース設定が未完成 (database.yml:317-323)  
-- 問題: "FIXME"コメントがあり、本番環境でデータベース接続不可
-- ファイル: config/database.yml
-- 修正: 適切な接続詳細で本番データベース設定を完成
+### 2. Production database configuration incomplete (database.yml:317-323)
+- Problem: "FIXME" comments remain, preventing production from connecting to the database.
+- File: config/database.yml
+- Fix: Fill in the production database configuration with the correct connection details.
 
-### 3. 認証システムが機能していない
-- 問題: `logged_in?`メソッドが常に`false`を返し、ユーザー認証が不可能
-- ファイル: app/controllers/concerns/authentication.rb, authorization.rb
-- 修正: 適切な認証ロジックを実装
+### 3. Authentication system is not working
+- Problem: The `logged_in?` method always returns `false`, blocking user authentication.
+- Files: app/controllers/concerns/authentication.rb, authorization.rb
+- Fix: Implement proper authentication logic.
 
-## 🔒 セキュリティ上の懸念
+## 🔒 Security Concerns
 
-### 4. データベース設定の不整合 (database.yml)
-- 問題: 
-  - 間違った環境変数参照 (lines 100, 113, 140)
-  - 不正なマイグレーションパス (line 140: specialitys_migrate → specialities_migrate)
-- 修正: 環境変数参照とマイグレーションパスを修正
+### 4. Database configuration inconsistencies (database.yml)
+- Problems:
+  - Incorrect environment variable references (lines 100, 113, 140).
+  - Wrong migration path (line 140: `specialitys_migrate` → `specialities_migrate`).
+- Fix: Correct the environment variables and migration path.
 
-### 5. 開発環境での非セキュアなCookie設定
-- 問題: `secure: Rails.env.production? ? true : false`でHTTP環境で脆弱
-- 修正: 適切なSSL設定で開発環境でもセキュアなCookieを検討
+### 5. Insecure cookie settings in development
+- Problem: `secure: Rails.env.production? ? true : false` leaves cookies vulnerable on HTTP.
+- Fix: Introduce appropriate SSL settings and consider secure cookies in development.
 
-### 6. CSPでunsafe-inlineを許可 (content_security_policy.rb:15-16)
-- 問題: スクリプトとスタイルで`:unsafe_inline`を許可、XSS脆弱性
-- 修正: unsafe-inlineを削除し、適切なnonce-based CSPを実装
+### 6. CSP allows unsafe-inline (content_security_policy.rb:15-16)
+- Problem: `:unsafe_inline` is permitted for scripts and styles, opening XSS risk.
+- Fix: Remove `unsafe-inline` and use nonce-based CSP.
 
-### 7. 環境変数でのActive Record暗号化キー (development.rb:141-143)
-- 問題: キーがログやプロセスリストで露出する可能性
-- 修正: Rails暗号化認証情報を使用
+### 7. Active Record encryption keys in environment variables (development.rb:141-143)
+- Problem: Keys might leak through logs or the process list.
+- Fix: Move the keys into Rails encrypted credentials.
 
-### 8. パラメータフィルタリングの欠如
-- 問題: コントローラーで強いパラメータフィルタリングが見つからない
-- 修正: `permit`メソッドで適切なパラメータホワイトリストを実装
+### 8. Missing strong parameter filtering
+- Problem: Controllers are missing strong parameter whitelists.
+- Fix: Use the `permit` method to whitelist parameters.
 
-## 🏗 コード品質とアーキテクチャの問題
+## 🏗 Code Quality and Architecture Issues
 
-### 9. テストカバレッジが極端に低い
-- 問題: 17,500+ファイルに対してテスト95件のみ（0.5%）
-- 修正: 特にセキュリティクリティカルなコンポーネントで包括的なテストカバレッジを実装
+### 9. Extremely low test coverage
+- Problem: Only 95 tests across more than 17,500 files (~0.5%).
+- Fix: Expand coverage, concentrating on security-sensitive modules first.
 
-### 10. WebAuthn実装が未完成 (web_authn.rb)
-- 問題: 空のWebAuthn concernで実装なし
-- 修正: WebAuthn実装を完成するか、未使用コードを削除
+### 10. WebAuthn implementation incomplete (web_authn.rb)
+- Problem: The WebAuthn concern is empty.
+- Fix: Complete the WebAuthn implementation or remove unused code.
 
-### 11. セッション管理の問題 (memorize.rb)
-- 問題: カスタムRedisセッション管理でキー衝突リスクの可能性
-- 修正: 適切なセッションキーネームスペーシングと検証を実装
+### 11. Session management concerns (memorize.rb)
+- Problem: Custom Redis-based session management risks key collisions.
+- Fix: Add proper namespacing and validation for session keys.
 
-### 12. 複雑すぎるマルチデータベースアーキテクチャ
-- 問題: 10+の独立したデータベースで複雑なレプリカ設定
-- 修正: 可能な場合はデータベース統合を検討、または設定管理を改善
+### 12. Multi-database architecture is overly complex
+- Problem: More than ten separate databases with intricate replica configuration.
+- Fix: Consolidate databases where possible or improve configuration management.
 
-## 📋 推奨修正順序
+## 📋 Recommended Order of Work
 
-1. **APIキーを環境変数に移行** (最重要セキュリティ脆弱性)
-2. **本番データベース設定を完成** (デプロイ失敗を防ぐ)  
-3. **認証システムを実装** (現在機能していない)
-4. **データベース設定の不整合を修正** (レプリケーション問題を防ぐ)
-5. **重要機能のテストを追加** (質保証の向上)
+1. **Move the API key into environment variables** (critical security issue).
+2. **Complete the production database config** (prevents deployment failures).
+3. **Implement the authentication system** (currently broken).
+4. **Fix database configuration inconsistencies** (avoids replication issues).
+5. **Add tests for key functionality** (strengthens quality assurance).
 
-## 📝 注意事項
+## 📝 Notes
 
-- これらは本番環境での安定性とセキュリティに直接影響する問題です
-- 特に最初の3つは、アプリケーションの基本機能に直接影響するため、早急な対応が必要です
-- セキュリティ関連の修正は慎重に行い、十分なテストを実施してください
+- These issues directly affect production stability and security.
+- The first three items impact core functionality and require immediate attention.
+- Handle security fixes carefully and test thoroughly.
 
-作成日: 2025-06-11
+Created: 2025-06-11

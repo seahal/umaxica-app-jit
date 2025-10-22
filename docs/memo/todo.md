@@ -1,99 +1,99 @@
-# コードベース問題リスト - 修正が必要な項目
+# Codebase Issue List - Items Requiring Fixes
 
-## 🚨 最優先で修正が必要な問題
+## 🚨 Highest-Priority Issues
 
-### 1. ハードコードされたAPIキー (rack_attack.rb:6)
-- 問題: `"secret-string"`がハードコードされており、誰でもレート制限をバイパス可能
-- ファイル: config/initializers/rack_attack.rb
-- 修正: 環境変数または暗号化された認証情報を使用
+### 1. Hard-coded API key (rack_attack.rb:6)
+- Problem: The value `"secret-string"` is hard-coded, allowing anyone to bypass rate limiting.
+- File: config/initializers/rack_attack.rb
+- Fix: Use environment variables or encrypted credentials.
 
-### 2. 本番データベース設定が未完成 (database.yml:317-323)  
-- 問題: "FIXME"コメントがあり、本番環境でデータベース接続不可
-- ファイル: config/database.yml
-- 修正: 適切な接続詳細で本番データベース設定を完成
+### 2. Production database configuration incomplete (database.yml:317-323)
+- Problem: "FIXME" comments remain; production cannot connect to the database.
+- File: config/database.yml
+- Fix: Supply the correct connection details for production.
 
-### 3. 認証システムが機能していない
-- 問題: `logged_in?`メソッドが常に`false`を返し、ユーザー認証が不可能
-- ファイル: app/controllers/concerns/authentication.rb, authorization.rb
-- 修正: 適切な認証ロジックを実装
+### 3. Authentication system not functioning
+- Problem: The `logged_in?` method always returns `false`, preventing authentication.
+- Files: app/controllers/concerns/authentication.rb, authorization.rb
+- Fix: Implement proper authentication logic.
 
-## 🔒 セキュリティ上の懸念
+## 🔒 Security Concerns
 
-### 4. データベース設定の不整合 (database.yml)
-- 問題: 
-  - 間違った環境変数参照 (lines 100, 113, 140)
-  - 不正なマイグレーションパス (line 140: specialitys_migrate → specialities_migrate)
-- 修正: 環境変数参照とマイグレーションパスを修正
+### 4. Database configuration inconsistencies (database.yml)
+- Problems:
+  - Incorrect environment variable references (lines 100, 113, 140).
+  - Wrong migration path (line 140: `specialitys_migrate` → `specialities_migrate`).
+- Fix: Correct the environment variables and migration path.
 
-### 5. 開発環境での非セキュアなCookie設定
-- 問題: `secure: Rails.env.production? ? true : false`でHTTP環境で脆弱
-- 修正: 適切なSSL設定で開発環境でもセキュアなCookieを検討
+### 5. Insecure cookie settings in development
+- Problem: `secure: Rails.env.production? ? true : false` leaves cookies vulnerable on HTTP.
+- Fix: Consider enforcing secure cookies with suitable SSL settings even during development.
 
-### 6. CSPでunsafe-inlineを許可 (content_security_policy.rb:15-16)
-- 問題: スクリプトとスタイルで`:unsafe_inline`を許可、XSS脆弱性
-- 修正: unsafe-inlineを削除し、適切なnonce-based CSPを実装
+### 6. CSP allows unsafe-inline (content_security_policy.rb:15-16)
+- Problem: `:unsafe_inline` is enabled for scripts and styles, creating XSS risk.
+- Fix: Remove `unsafe-inline` and adopt nonce-based CSP.
 
-### 7. 環境変数でのActive Record暗号化キー (development.rb:141-143)
-- 問題: キーがログやプロセスリストで露出する可能性
-- 修正: Rails暗号化認証情報を使用
+### 7. Active Record encryption keys in environment variables (development.rb:141-143)
+- Problem: Keys may leak through logs or process listings.
+- Fix: Store the keys inside Rails encrypted credentials.
 
-### 8. パラメータフィルタリングの欠如
-- 問題: コントローラーで強いパラメータフィルタリングが見つからない
-- 修正: `permit`メソッドで適切なパラメータホワイトリストを実装
+### 8. Missing strong parameter filtering
+- Problem: Controllers lack strong parameter whitelisting.
+- Fix: Apply the `permit` method to enforce safe parameters.
 
-## 🏗 コード品質とアーキテクチャの問題
+## 🏗 Code Quality and Architecture Issues
 
-### 9. テストカバレッジが極端に低い
-- 問題: 17,500+ファイルに対してテスト95件のみ（0.5%）
-- 修正: 特にセキュリティクリティカルなコンポーネントで包括的なテストカバレッジを実装
+### 9. Extremely low test coverage
+- Problem: Only 95 tests for 17,500+ files (~0.5%).
+- Fix: Add comprehensive coverage, starting with security-critical components.
 
-### 10. WebAuthn実装が未完成 (web_authn.rb)
-- 問題: 空のWebAuthn concernで実装なし
-- 修正: WebAuthn実装を完成するか、未使用コードを削除
+### 10. WebAuthn implementation incomplete (web_authn.rb)
+- Problem: The WebAuthn concern is empty.
+- Fix: Complete the WebAuthn implementation or remove unused code.
 
-### 11. セッション管理の問題 (memorize.rb)
-- 問題: カスタムRedisセッション管理でキー衝突リスクの可能性
-- 修正: 適切なセッションキーネームスペーシングと検証を実装
+### 11. Session management concerns (memorize.rb)
+- Problem: Custom Redis session management risks key collisions.
+- Fix: Introduce proper namespacing and validation for session keys.
 
-### 12. 複雑すぎるマルチデータベースアーキテクチャ
-- 問題: 10+の独立したデータベースで複雑なレプリカ設定
-- 修正: 可能な場合はデータベース統合を検討、または設定管理を改善
+### 12. Overly complex multi-database architecture
+- Problem: More than 10 databases with complicated replica settings.
+- Fix: Consider consolidation or improved configuration management.
 
-## 📋 推奨修正順序
+## 📋 Recommended Order of Work
 
-1. **APIキーを環境変数に移行** (最重要セキュリティ脆弱性)
-2. **本番データベース設定を完成** (デプロイ失敗を防ぐ)  
-3. **認証システムを実装** (現在機能していない)
-4. **データベース設定の不整合を修正** (レプリケーション問題を防ぐ)
-5. **重要機能のテストを追加** (質保証の向上)
+1. **Move the API key into environment variables** (critical security issue).
+2. **Complete the production database config** (prevents deployment failures).
+3. **Implement the authentication system** (currently non-functional).
+4. **Fix database configuration inconsistencies** (avoids replication issues).
+5. **Add tests for critical features** (improves quality assurance).
 
-## 📝 注意事項
+## 📝 Notes
 
-- これらは本番環境での安定性とセキュリティに直接影響する問題です
-- 特に最初の3つは、アプリケーションの基本機能に直接影響するため、早急な対応が必要です
-- セキュリティ関連の修正は慎重に行い、十分なテストを実施してください
+- These issues directly affect stability and security in production.
+- The first three items block core application functionality and require immediate attention.
+- Handle security fixes carefully and ensure thorough testing.
 
-## 🎯 明日からの実装予定 (2025-08-04〜)
+## 🎯 Implementation Plan Starting 2025-08-04
 
-### 1. Omniauth設定 - Google/Apple OAuth統合
-- Google OAuth設定とコールバック実装
-- Apple OAuth設定とコールバック実装
-- 既存の`UserGoogleAuth`, `UserAppleAuth`モデルとの連携
-- OAuth認証フロー完成
+### 1. OmniAuth setup – Google/Apple OAuth integration
+- Configure Google OAuth and callbacks.
+- Configure Apple OAuth and callbacks.
+- Integrate with existing `UserGoogleAuth` and `UserAppleAuth` models.
+- Complete the OAuth authentication flow.
 
-### 2. リカバリページ完成
-- 復旧フロー実装
-- `UserRecoveryCode`, `StaffRecoveryCode`との連携
-- リカバリコード生成・検証機能
-- ユーザー向け復旧UI完成
+### 2. Recovery page completion
+- Implement the recovery flow.
+- Integrate with `UserRecoveryCode` and `StaffRecoveryCode`.
+- Add recovery-code generation and validation.
+- Finalise the user-facing recovery UI.
 
-### 3. Passkey実装完了
-- WebAuthn認証システム仕上げ
-- `PasskeyForUser`, `PasskeyForStaff`モデル完成
-- パスキー登録・認証フロー
-- 多要素認証統合
+### 3. Finish the Passkey implementation
+- Complete the WebAuthn authentication system.
+- Finalise `PasskeyForUser` and `PasskeyForStaff` models.
+- Finish passkey registration and authentication flows.
+- Integrate multi-factor authentication.
 
 ---
 
-作成日: 2025-06-11
-更新日: 2025-08-03
+Created: 2025-06-11
+Updated: 2025-08-03
