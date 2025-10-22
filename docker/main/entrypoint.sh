@@ -111,6 +111,11 @@ fi
 bundle install --jobs "${BUNDLE_JOBS:-4}"
 bun install
 
+# Record glibc version that the bundle was built against so we can detect drift later.
+if [[ -d vendor ]]; then
+  printf '%s' "${GLIBC_VERSION}" > "${BUNDLE_GLIBC_MARKER}"
+fi
+
 # Development setup
 sudo chown -R "${USER_ID}:${GROUP_ID}" /usr/local/bundle/
 sudo chown -R "${USER_ID}:${GROUP_ID}" /usr/local/lib/node_modules/ || true
@@ -137,4 +142,9 @@ if [[ "${REDIS_READY}" == "1" ]]; then
   run_or_warn "bin/rails tmp:clear" bin/rails tmp:clear
 fi
 
-sleep infinity
+# Hand control back to the requested command (defaults to a long-lived sleep).
+if [[ $# -eq 0 ]]; then
+  set -- sleep infinity
+fi
+
+exec "$@"

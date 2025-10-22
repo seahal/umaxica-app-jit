@@ -190,11 +190,11 @@ module Apex
 
           case candidate.to_s.downcase
           when "dark"
-            "dark"
+            "dr"
           when "system"
-            "system"
+            "sy"
           when "light"
-            "light"
+            "li"
           else
             DEFAULT_QUERY_PREFERENCES["ct"]
           end

@@ -10,7 +10,8 @@ services:
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
     env_file: docker/main/env
-    command: ["/bin/bash", "docker/main/entrypoint.sh"]
+    entrypoint: ["/bin/bash", "docker/main/entrypoint.sh"]
+    command: ["sleep", "infinity"]
     restart: always
     tty: true
     stdin_open: true
@@ -20,9 +21,9 @@ services:
     tmpfs:
       - /home/jit/main/log:size=2G,uid=${UID:-1000},gid=${GID:-1000}
       - /home/jit/main/tmp:size=4G,uid=${UID:-1000},gid=${GID:-1000}
-      - /home/jit/main/.bun:size=4G,uid=${UID:-1000},gid=${GID:-1000}
       - /home/jit/main/.cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
-      - /home/jit/main/.bundle/cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
+#      - /home/jit/main/.bun:size=4G,uid=${UID:-1000},gid=${GID:-1000}
+#      - /home/jit/main/.bundle/cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
       - type: bind
         source: .
@@ -30,13 +31,13 @@ services:
       - type: volume
         source: node-volume
         target: /home/jit/main/node_modules
-        volume:
-          nocopy: true
+#        volume:
+#          nocopy: true
       - type: volume
         source: bundler-volume
         target: /home/jit/main/vendor
-        volume:
-          nocopy: true
+#        volume:
+#          nocopy: true
     networks:
       - backend
       - frontend
