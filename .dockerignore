@@ -42,8 +42,7 @@ tmp/storage/*
 !tmp/storage/.keep
 
 # Dependencies
-node_modules/
-vendor/cache/
+#vendor/cache/
 .bundle
 .bun/
 

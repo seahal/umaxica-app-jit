@@ -15,7 +15,7 @@ module Apex
           "lx" => "ja",
           "ri" => "jp",
           "tz" => "jst",
-          "ct" => "system"
+          "ct" => "sy"
         }.freeze
 
         Result = Struct.new(:updated, :error_key) do
@@ -189,11 +189,11 @@ module Apex
           candidate = session[:theme].presence || existing_cookie_preferences["ct"]
 
           case candidate.to_s.downcase
-          when "dark"
+          when "dark", "dr", "dk"
             "dr"
-          when "system"
+          when "system", "sy"
             "sy"
-          when "light"
+          when "light", "li", "lt"
             "li"
           else
             DEFAULT_QUERY_PREFERENCES["ct"]

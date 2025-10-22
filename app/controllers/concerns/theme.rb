@@ -9,10 +9,13 @@ module Theme
   DEFAULT_THEME = "system"
   THEME_CODES = {
     "system" => "sy",
-    "dark" => "dk",
-    "light" => "lt"
+    "dark" => "dr",
+    "light" => "li"
   }.freeze
-  CODE_TO_THEME = THEME_CODES.invert.freeze
+  CODE_TO_THEME = THEME_CODES.invert.merge(
+    "dk" => "dark",
+    "lt" => "light"
+  ).freeze
   THEME_QUERY_KEYS = %w[lx ri tz].freeze
 
   included do
@@ -145,7 +148,7 @@ module Theme
       end
     end
 
-    resolved["ct"] = theme
+    resolved["ct"] = THEME_CODES.fetch(theme, theme)
 
     cookies.permanent.signed[cookie_key] = {
       value: resolved.to_json,

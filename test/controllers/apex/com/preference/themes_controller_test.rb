@@ -16,8 +16,8 @@ module Apex
           assert_select "form" do
             assert_select "legend", text: I18n.t("apex.com.preference.theme.edit.legend")
             assert_select "input[type='hidden'][name='_method'][value='patch']", count: 1
-            assert_select "input[type='radio'][name='theme'][value='lt'][checked]", count: 0
-            assert_select "input[type='radio'][name='theme'][value='dk'][checked]", count: 0
+            assert_select "input[type='radio'][name='theme'][value='li'][checked]", count: 0
+            assert_select "input[type='radio'][name='theme'][value='dr'][checked]", count: 0
             assert_select "input[type='radio'][name='theme'][value='sy'][checked]", count: 1
             assert_select "label[for='theme_light_com']", text: I18n.t("apex.com.preference.theme.edit.options.light")
             assert_select "label[for='theme_dark_com']", text: I18n.t("apex.com.preference.theme.edit.options.dark")
@@ -32,7 +32,7 @@ module Apex
         end
 
         test "updates corporate theme preference" do
-          patch apex_com_preference_theme_url, params: { theme: "dk", lx: "ja", ri: "jp", tz: "jst" }
+          patch apex_com_preference_theme_url, params: { theme: "dr", lx: "ja", ri: "jp", tz: "jst" }
 
           assert_redirected_to edit_apex_com_preference_theme_url(lx: "ja", ri: "jp", tz: "jst")
           assert_equal I18n.t("apex.com.preferences.themes.updated", theme: I18n.t("themes.dark")), flash[:notice]
@@ -41,7 +41,7 @@ module Apex
 
           follow_redirect!
           assert_response :success
-          assert_select "input[type='radio'][name='theme'][value='dk'][checked]", count: 1
+          assert_select "input[type='radio'][name='theme'][value='dr'][checked]", count: 1
           assert_select "a.btn.btn-secondary[href^='#{apex_com_preference_path}']", text: I18n.t("apex.com.preferences.back_to_settings")
         end
 

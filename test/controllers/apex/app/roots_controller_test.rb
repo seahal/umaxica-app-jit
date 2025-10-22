@@ -5,7 +5,7 @@ require "json"
 require "uri"
 
 class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
-  DEFAULT_QUERY = { "lx" => "ja", "ri" => "jp", "tz" => "jst", "ct" => "system" }.freeze
+  DEFAULT_QUERY = { "lx" => "ja", "ri" => "jp", "tz" => "jst", "ct" => "sy" }.freeze
   HOST_HEADER = { "HTTP_HOST" => "app.localhost" }.freeze
 
   test "applies defaults without redirect when neither params nor cookie exist" do
@@ -25,7 +25,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "redirects using cookie preferences when query params missing" do
-    get apex_app_root_path, headers: HOST_HEADER, params: { lx: "en", ri: "us", tz: "utc", ct: "dark" }
+    get apex_app_root_path, headers: HOST_HEADER, params: { lx: "en", ri: "us", tz: "utc", ct: "dr" }
     assert_response :success
 
     get apex_app_root_path, headers: HOST_HEADER
@@ -35,14 +35,14 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "en", query["lx"]
     assert_equal "us", query["ri"]
     assert_equal "utc", query["tz"]
-    assert_equal "dark", query["ct"]
+    assert_equal "dr", query["ct"]
 
     follow_redirect!
     assert_response :success
     assert_equal "en", request.params["lx"]
     assert_equal "us", request.params["ri"]
     assert_equal "utc", request.params["tz"]
-    assert_equal "dark", request.params["ct"]
+    assert_equal "dr", request.params["ct"]
   end
 
   test "invalid params are coerced to defaults and hidden from query" do
@@ -90,7 +90,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     languages = %w[ja en]
     regions = %w[jp us]
     timezones = %w[jst utc]
-    themes = %w[light dark system]
+    themes = %w[li dr sy]
 
     languages.product(regions, timezones, themes).each do |lx, ri, tz, ct|
       reset!

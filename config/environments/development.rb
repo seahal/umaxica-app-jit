@@ -44,7 +44,7 @@ Rails.application.configure do
   # config.action_mailer.perform_deliveries = true
 
   # Print deprecation notices to the Rails logger.
-  config.active_support.deprecation = :log
+  config.active_support.deprecation = :stderr
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
@@ -76,10 +76,12 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
-  # added by user
+  #
+  config.action_dispatch.verbose_redirect_logs = true
 
+  # added by user
   ## for docker
-  config.web_console.permitted_networks = "127.0.0.1", "::1", "172.19.0.0/16"
+  # config.web_console.permitted_networks = "127.0.0.1", "::1", "172.19.0.0/16"
 
   ## to avoid errors
   config.hosts << "app.localhost"
@@ -126,7 +128,7 @@ Rails.application.configure do
   }
 
   # static file serve
-  config.public_file_server.enabled = true
+  config.public_file_server.enabled = false
 
   # SMS Provider Configuration - Use test provider in development
   config.sms_provider = ENV.fetch("SMS_PROVIDER", "test")
