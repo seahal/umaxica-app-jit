@@ -1,0 +1,9 @@
+optimization:
+  cache_size: 512MB
+  index_threshold: 10000
+  exclude_patterns:
+    - 'node_modules/**/*'
+    - 'tmp/**/*'
+    - 'log/**/*'
+    - 'vendor/**/*'
+  memory_limit: 2048MB

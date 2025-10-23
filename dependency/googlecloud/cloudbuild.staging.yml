@@ -95,4 +95,4 @@ availableSecrets:
       env: AWS_SECRET_ACCESS_KEY
 options:
   logging: CLOUD_LOGGING_ONLY
-  machineType: 'E2-STANDARD-2'
+#  machineType: 'E2-STANDARD-2'
