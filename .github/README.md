@@ -42,6 +42,7 @@ Things you may want to cover:
       * Cloud Run
       * Cloud Build
       * Cloud Storage (S3)
+      * Artifact Registory
     * Two
       * Social Login
   * CloudFlare
@@ -74,12 +75,23 @@ Things you may want to cover:
 * Pages
   * com
     * https://umaxica.com
+    * https://help.jp.umaxica.com
+    * https://docs.jp.umaxica.com
+    * https://news.jp.umaxica.com
   * app
     * https://umaxica.app
+    * https://auth.jp.umaxica.app
+    * https://docs.jp.umaxica.app
+    * https://help.jp.umaxica.app
+    * https://news.jp.umaxica.app
   * org
     * https://umaxica.org
+    * https://auth.jp.umaxica.org
+    * https://docs.jp.umaxica.org
+    * https://help.jp.umaxica.org
+    * https://news.jp.umaxica.org
   * net
-    * assets cdn => https://data.umaxica.net
+    * https://asset.umaxica.net (assets cdn)
 * Usefull documents
   * [Officeial Rails page](https://rubyonrails.org/)
   * [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
