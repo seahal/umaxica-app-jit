@@ -88,8 +88,8 @@ jobs:
         run: bun run format
       - name: Run bun lint
         run: bun run lint
-      - name: Run bun typecheck
-        run: bun run typecheck
+      - name: Run bun type check
+        run: bun run type
 
   test-rails:
     name: Ruby on Rails Tests

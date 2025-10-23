@@ -72,7 +72,7 @@ Things you may want to cover:
   * wrangler
   * [Apple]()
   * [Google]()
-* Pages
+* Staging site is here!
   * com
     * https://umaxica.com
     * https://help.jp.umaxica.com

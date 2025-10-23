@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "bun bun.config.js",
-    "typecheck": "bun x tsgo --noEmit",
+    "type": "bun x tsgo --noEmit",
     "format": "bun x @biomejs/biome format --write app/javascript",
     "lint": "bun x @biomejs/biome lint --fix app/javascript"
   },
