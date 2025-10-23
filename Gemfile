@@ -43,9 +43,9 @@ gem "google-cloud-storage", require: false
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
+gem "opentelemetry-sdk"
 gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
-gem "opentelemetry-sdk"
 # sitemap
 gem "sitemap_generator"
 # Webauthn for fido2

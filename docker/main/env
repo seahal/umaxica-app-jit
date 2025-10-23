@@ -5,9 +5,12 @@ RAILS_MAX_THREADS=5
 # Redis (use local Redis service inside Compose)
 VALKEY_URL=redis://valkey:6379/0
 BUNDLE_JOBS=4
+RUBY_YJIT_ENABLE=1
+NODE_ENV=development
 # App Configuration
 NAME=UMAXICA
 PORT=3000
+BINDING=0.0.0.0
 # Identifiers
 SINGLETON_DEFAULT_SALT=hoge
 IDENTIFIER_REGION_CODE=392
