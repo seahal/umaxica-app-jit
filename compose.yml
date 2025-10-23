@@ -21,9 +21,9 @@ services:
     tmpfs:
       - /home/jit/main/log:size=2G,uid=${UID:-1000},gid=${GID:-1000}
       - /home/jit/main/tmp:size=4G,uid=${UID:-1000},gid=${GID:-1000}
-#      - /home/jit/main/.cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
-#      - /home/jit/main/.bun:size=4G,uid=${UID:-1000},gid=${GID:-1000}
-#      - /home/jit/main/.bundle/cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
+      - /home/jit/main/.cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
+      - /home/jit/main/.bun:size=4G,uid=${UID:-1000},gid=${GID:-1000}
+      - /home/jit/main/.bundle/cache:size=8G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
       - type: bind
         source: .
@@ -54,6 +54,10 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
+  rustfs:
+    image: rustfs/rustfs:1.0.0-alpha.65
+    volumes:
+      - rustfs-volume:/data
   primary:
     image: postgres:17.5-alpine
     command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
@@ -210,13 +214,14 @@ volumes:
   valkey-volume:
   kafka-broker-volume:
   minio-volume:
+  rustfs-volume:
   node-volume:
     driver: local
-    driver_opts:
-      type: tmpfs
-      device: tmpfs
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs
   bundler-volume:
     driver: local
-    driver_opts:
-      type: tmpfs
-      device: tmpfs
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs

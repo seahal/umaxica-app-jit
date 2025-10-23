@@ -1,100 +1,89 @@
-[![CI](https://github.com/seahal/umaxica-app-jit-ruby-on-rails/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit-ruby-on-rails/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit-server/main)
-# README
+[![CI](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit/main)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+# Umaxica App
 
-Things you may want to cover:
+Umaxica App is the monolithic Ruby on Rails application that powers the Umaxica platform. This document outlines how to get the project running locally, how to test and lint the codebase, and which services and tools are involved across environments.
 
-* Ruby version
-    - Find it => `ruby -v`, or check `Gemfile`.
-* System dependencies
-  - Ruby => Of course, we run on it.
-  - Docker => Yep!
-  - Node => Some js files could not run on Bun.
-  - Bun => We use this.
-* Configuration
-  * ...
-* Database setup
-  - `bin/rails db:prepare`
-* How to run the test suite
-  - `bin/rails test all`
-  - `bun test`
-* How to lint/format code
-  * Ruby on Rails
-    - `bundle exec rubocop`
-    - `bundle exec erb_lint .`
-  - Bun & Co.
-    - `bun run lint`
-    - `bun run format`
-    - `bun run typecheck`
-* Services (job queues, cache servers, search engines, etc.)
-    - Valkey(Redis)
-    - Kafka
-    - PostgreSQL
-    - Terraform
-    * [OpenTelemetry](https://opentelemetry.io/)
-* Deployment instructions
-    - When you are free, look at 'bin/rails notes'
-* Using Services
-  * Google Cloud
-    * One
-      * Cloud Run
-      * Cloud Build
-      * Cloud Storage (S3)
-      * Artifact Registory
-    * Two
-      * Social Login
-  * CloudFlare
-    * Registers
-    * Turnstile
-    * R2
-  * Fastly
-    * CDN
-  * Resend
-    * Email
-  * Amazon Web Service (AWS)
-    * SES
-  * Terraform
-    * TCP Terraform
-  * Apple
-    * Social Login
-* Secrets
-  * You ought to use [git-secrets](https://github.com/awslabs/git-secrets).
-  * We use Rails' Credentials, and if you need them we show you test and dev keys.
-* Tools
-  * [yamlfmt](https://github.com/google/yamlfmt)
-  * [Lefthook](https://github.com/evilmartians/lefthook)
-  * [tflint](https://github.com/terraform-linters/tflint)
-  * [hadolint](https://github.com/hadolint/hadolint)
-  * [Fastly]()
-  * bun
-  * wrangler
-  * [Apple]()
-  * [Google]()
-* Staging site is here!
-  * com
-    * https://umaxica.com
-    * https://help.jp.umaxica.com
-    * https://docs.jp.umaxica.com
-    * https://news.jp.umaxica.com
-  * app
-    * https://umaxica.app
-    * https://auth.jp.umaxica.app
-    * https://docs.jp.umaxica.app
-    * https://help.jp.umaxica.app
-    * https://news.jp.umaxica.app
-  * org
-    * https://umaxica.org
-    * https://auth.jp.umaxica.org
-    * https://docs.jp.umaxica.org
-    * https://help.jp.umaxica.org
-    * https://news.jp.umaxica.org
-  * net
-    * https://asset.umaxica.net (assets cdn)
-* Usefull documents
-  * [Officeial Rails page](https://rubyonrails.org/)
-  * [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
-* Troubleshooting
-  * not move js or css files => `bin/rails assets:clobber`
-  * not run tests => `bin/rails db:create`
+## Prerequisites
+
+- Ruby 3.4.7 (defined in the `Gemfile`)
+- Bundler 2.5+ (shipped with modern Ruby installations)
+- Bun 1.x (plus Node.js 20+ if a package requires Node APIs)
+- Docker (recommended for local infrastructure parity)
+- Access to PostgreSQL, Valkey (Redis-compatible), and Kafka instances
+
+## Initial Setup
+
+1. Install Ruby dependencies: `bundle install`
+2. Install JavaScript/TypeScript dependencies: `bun install`
+3. Prepare the database (creates, migrates, seeds as needed): `bin/rails db:prepare`
+4. If you need fresh frontend assets, run `bun run build`
+
+## Local Development
+
+- Run the full development stack (`web`, `Karafka`, watchers, etc.): `foreman start -f Procfile.dev`
+- Alternatively, launch the Rails server directly: `bin/rails s -p 3000 -b 0.0.0.0`
+- Watch and rebuild assets during development: `bun run build --watch`
+
+## Testing
+
+- Rails test suite (parallelized): `bin/rails test all`
+- JavaScript/TypeScript tests: `bun test`
+
+## Linting & Formatting
+
+- Ruby style checks: `bundle exec rubocop`
+- ERB templates: `bundle exec erb_lint .`
+- Frontend formatting and linting: `bun run format`, `bun run lint`
+- Type checking: `bun run typecheck`
+
+## Key Services & Integrations
+
+- Data and messaging: PostgreSQL, Valkey (Redis), Kafka
+- Observability: [OpenTelemetry](https://opentelemetry.io/)
+- Email: Resend, AWS SES
+- Content delivery: Cloudflare (R2, Turnstile, registrar), Fastly CDN
+- Cloud platforms:
+  - Google Cloud (Cloud Run, Cloud Build, Cloud Storage, Artifact Registry, OAuth)
+  - Apple (Social login)
+- Infrastructure as Code: Terraform (including TCP Terraform modules)
+
+## Tooling & Automation
+
+- Pre-commit automation: [Lefthook](https://github.com/evilmartians/lefthook)
+- YAML formatting: [yamlfmt](https://github.com/google/yamlfmt)
+- Terraform linting: [tflint](https://github.com/terraform-linters/tflint)
+- Dockerfile linting: [hadolint](https://github.com/hadolint/hadolint)
+- Cloudflare workflows: `wrangler`
+- Git secret scanning: [git-secrets](https://github.com/awslabs/git-secrets)
+
+## Deployment & Operations
+
+- Review `bin/rails notes` for pending deployment tasks or TODOs.
+- Terraform manages infrastructure for Google Cloud, Cloudflare, Fastly, and supporting services.
+- Monitor CI status via the integration workflow badge above.
+
+## Environments & Endpoints
+
+- Umaxica domains:
+  - `umaxica.com`, `help.jp.umaxica.com`, `docs.jp.umaxica.com`, `news.jp.umaxica.com`
+  - `umaxica.app`, `auth.jp.umaxica.app`, `docs.jp.umaxica.app`, `help.jp.umaxica.app`, `news.jp.umaxica.app`
+  - `umaxica.org`, `auth.jp.umaxica.org`, `docs.jp.umaxica.org`, `help.jp.umaxica.org`, `news.jp.umaxica.org`
+  - Asset CDN: `https://asset.umaxica.net`
+
+## Secrets & Credentials
+
+- Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.
+- Run `git-secrets --scan` (hooked via Lefthook) before committing to prevent accidental secret leakage.
+- Use `.env.example` as a template for local environment variables.
+
+## Useful References
+
+- [Official Ruby on Rails Guides](https://rubyonrails.org/)
+- [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
+
+## Troubleshooting
+
+- Frontend assets not updating: `bin/rails assets:clobber` followed by a rebuild.
+- Tests failing due to missing databases: `bin/rails db:create`
+- Dependency mismatches: verify Ruby with `ruby -v` and Bun with `bun --version`
