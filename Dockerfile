@@ -95,10 +95,13 @@ RUN apt-get update -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
+
+COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
+
 RUN npm install -g bun@"${BUN_VERSION}" \
   && npm cache clean --force
 
-COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
+RUN rm -rf /home/jit/.npm
 
 # RUN bun install
 
@@ -116,10 +119,6 @@ RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     else \
     chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
     fi
-
-RUN sudo chown -R 1000:1000 "/home/jit/.npm" && \
-    sudo chown -R 1000:1000 "/home/jit/main/node_modules"
-
 
 USER ${DOCKER_USER}
 

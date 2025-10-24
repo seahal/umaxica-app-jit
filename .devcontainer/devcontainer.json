@@ -135,7 +135,7 @@
 		"RACK_ENV": "development",
 		"DEVCONTAINER_AUTO_START_BIN_DEV": "1"
 	},
-//	"postCreateCommand": "bundle install && bun install",
+	"postCreateCommand": "",
 	// "postStartCommand": "sudo chown -R jit:group /home/jit/main || true && echo 'Development environment ready!'",
 	// "initializeCommand": "echo 'Initializing Umaxica Rails Development Environment...'",
 	// "onCreateCommand": "echo 'Devcontainer created successfully'",
@@ -145,10 +145,10 @@
 	// ],
 	"updateRemoteUserUID": false,
 	"features": {
-		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/github-cli:latest": {},
 		"ghcr.io/thamaji/devcontainer-features/lefthook:latest": {},
-		"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
-		"ghcr.io/jsburckhardt/devcontainer-features/gitleaks:1": {},
+		"ghcr.io/jsburckhardt/devcontainer-features/codex:latest": {},
+		"ghcr.io/jsburckhardt/devcontainer-features/gitleaks:latest": {},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:latest": {}
 	}
 }
