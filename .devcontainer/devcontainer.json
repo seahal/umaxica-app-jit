@@ -62,7 +62,8 @@
 				"ms-vscode.vscode-yaml",
 				"ms-vscode.remote-explorer",
 				"ninoseki.vscode-mogami",
-				"rubocop.vscode-rubocop"
+				"rubocop.vscode-rubocop",
+				"oven.bun-vscode"
 			],
 			"settings": {
 				"extensions.verifySignature": false,
