@@ -150,5 +150,12 @@
     "source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",
     "source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
   ],
-  "updateRemoteUserUID": false
+  "updateRemoteUserUID": false,
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:latest": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/thamaji/devcontainer-features/lefthook:latest": {
+      "VERSION": "latest"
+    }
+  }
 }
