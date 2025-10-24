@@ -9,16 +9,16 @@ updates:
   - package-ecosystem: "bundler" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "docker"
     # Look for a `Dockerfile` in the `root` directory
     directory: "/"
     # Check for updates once a week
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "bun"
     # Look for a `Dockerfile` in the `root` directory
     directory: "/"
     # Check for updates once a week
     schedule:
-      interval: "weekly"
+      interval: "daily"

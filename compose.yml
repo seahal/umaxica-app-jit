@@ -11,7 +11,7 @@ services:
         DOCKER_GID: ${GID:-1000}
     env_file: docker/main/env
     entrypoint: ["/bin/bash", "docker/main/entrypoint.sh"]
-#    command: ["sleep", "infinity"]
+    command: ["sleep", "infinity"]
     restart: always
     tty: true
     stdin_open: true
@@ -54,10 +54,6 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
-  rustfs:
-    image: rustfs/rustfs:1.0.0-alpha.65
-    volumes:
-      - rustfs-volume:/data
   primary:
     image: postgres:17.5-alpine
     command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'

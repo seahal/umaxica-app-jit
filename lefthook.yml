@@ -21,7 +21,7 @@ pre-commit:
       stage_fixed: true
       glob: "*.{js,jsx,ts,tsx}"
     typecheck:
-      run: bun run typecheck
+      run: bun run type
 pre-push:
   parallel: true
   commands:
