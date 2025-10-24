@@ -96,16 +96,16 @@ RUN apt-get update -qq \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
 RUN npm install -g bun@"${BUN_VERSION}" \
-    && npm cache clean --force
+  && npm cache clean --force
 
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
-RUN bun install
+# RUN bun install
 
-RUN gem install bundler \
-    && bundle config set --local path vendor/bundle \
-    && bundle config set without 'production' \
-    && bundle install --jobs "$(nproc)"
+# RUN gem install bundler \
+#    && bundle config set --local path vendor/bundle \
+#    && bundle config set without 'production' \
+#    && bundle install --jobs "$(nproc)"
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
@@ -116,6 +116,10 @@ RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     else \
     chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
     fi
+
+RUN sudo chown -R 1000:1000 "/home/jit/.npm" && \
+    sudo chown -R 1000:1000 "/home/jit/main/node_modules"
+
 
 USER ${DOCKER_USER}
 

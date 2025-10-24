@@ -23,7 +23,7 @@
 			"label": "PostgreSQL Replica"
 		},
 		"6379": {
-			"label": "Redis"
+			"label": "Valkey(Redis)"
 		},
 		"9092": {
 			"label": "Kafka"
@@ -53,6 +53,7 @@
 			"extensions": [
 				"Shopify.ruby-lsp",
 				"Shopify.ruby-extensions-pack",
+				// "castwide.solargraph",
 				"bradlc.vscode-tailwindcss",
 				"ms-vscode.vscode-typescript-next",
 				"biomejs.biome",
@@ -107,6 +108,16 @@
 					"signatureHelp": true,
 					"typeHierarchy": true
 				}
+			},
+			"terminal.integrated.defaultProfile.linux": "bash",
+			"terminal.integrated.profiles.linux": {
+				"bash": {
+					"path": "bash",
+					"icon": "terminal-bash"
+				},
+				"zsh": {
+					"path": "zsh"
+				}
 			}
 		},
 		"jetbrains": {
@@ -124,21 +135,20 @@
 		"RACK_ENV": "development",
 		"DEVCONTAINER_AUTO_START_BIN_DEV": "1"
 	},
-	"postCreateCommand": "bundle install && bun install",
-	"postStartCommand": "sudo chown -R jit:group /home/jit/main || true && echo 'Development environment ready!'",
-	"initializeCommand": "echo 'Initializing Umaxica Rails Development Environment...'",
-	"onCreateCommand": "echo 'Devcontainer created successfully'",
-	"updateContentCommand": "bundle install && bun install",
-	"mounts": [
-		"source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
-	],
+//	"postCreateCommand": "bundle install && bun install",
+	// "postStartCommand": "sudo chown -R jit:group /home/jit/main || true && echo 'Development environment ready!'",
+	// "initializeCommand": "echo 'Initializing Umaxica Rails Development Environment...'",
+	// "onCreateCommand": "echo 'Devcontainer created successfully'",
+	// "updateContentCommand": "bundle install && bun install",
+	// "mounts": [
+	// 	"source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
+	// ],
 	"updateRemoteUserUID": false,
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
-		"ghcr.io/thamaji/devcontainer-features/lefthook:latest": {
-			"VERSION": "latest"
-		},
+		"ghcr.io/thamaji/devcontainer-features/lefthook:latest": {},
 		"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
-		"ghcr.io/jsburckhardt/devcontainer-features/gitleaks:1": {}
+		"ghcr.io/jsburckhardt/devcontainer-features/gitleaks:1": {},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:latest": {}
 	}
 }
