@@ -11,7 +11,7 @@ services:
         DOCKER_GID: ${GID:-1000}
     env_file: docker/main/env
     entrypoint: ["/bin/bash", "docker/main/entrypoint.sh"]
-#    command: ["sleep", "infinity"]
+    command: ["sleep", "infinity"]
     restart: always
     tty: true
     stdin_open: true
