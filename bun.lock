@@ -11,6 +11,7 @@
       },
       "devDependencies": {
         "@biomejs/biome": "^2.2.7",
+        "@openai/codex": "^0.48.0",
         "@tailwindcss/cli": "^4.1.16",
         "@tailwindcss/container-queries": "^0.1.1",
         "@tailwindcss/forms": "^0.5.10",
@@ -105,6 +106,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, ""],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
+
+    "@openai/codex": ["@openai/codex@0.48.0", "", { "bin": { "codex": "bin/codex.js" } }, "sha512-H8AgMpC3f3N0cZ/dGN85wcqf/c7uOWXDA/+mUcoxvGgSsFNQeDE3YhdSz+L4Fupfsps5Wq4pIS+5KieBihNRYA=="],
 
     "@oven/bun-darwin-aarch64": ["@oven/bun-darwin-aarch64@1.3.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-7Rap1BHNWqgnexc4wLjjdZeVRQKtk534iGuJ7qZ42i/q1B+cxJZ6zSnrFsYmo+zreH7dUyUXL3AHuXGrl2772Q=="],
 

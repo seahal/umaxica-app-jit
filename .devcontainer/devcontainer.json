@@ -130,15 +130,15 @@
 	"onCreateCommand": "echo 'Devcontainer created successfully'",
 	"updateContentCommand": "bundle install && bun install",
 	"mounts": [
-		"source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind",
 		"source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
 	],
 	"updateRemoteUserUID": false,
 	"features": {
-		"ghcr.io/anthropics/devcontainer-features/claude-code:latest": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/thamaji/devcontainer-features/lefthook:latest": {
 			"VERSION": "latest"
-		}
+		},
+		"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
+		"ghcr.io/jsburckhardt/devcontainer-features/gitleaks:1": {}
 	}
 }
