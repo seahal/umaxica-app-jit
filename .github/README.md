@@ -1,8 +1,7 @@
 [![CI](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit/main)
 
 # Umaxica App
-
-Umaxica App is the monolithic Ruby on Rails application that powers the Umaxica platform. This document outlines how to get the project running locally, how to test and lint the codebase, and which services and tools are involved across environments.
+（ ＾ν＾） Hello, World!
 
 ## Prerequisites
 
@@ -54,7 +53,6 @@ Umaxica App is the monolithic Ruby on Rails application that powers the Umaxica 
 - YAML formatting: [yamlfmt](https://github.com/google/yamlfmt)
 - Terraform linting: [tflint](https://github.com/terraform-linters/tflint)
 - Dockerfile linting: [hadolint](https://github.com/hadolint/hadolint)
-- Cloudflare workflows: `wrangler`
 - Git secret scanning: [git-secrets](https://github.com/awslabs/git-secrets)
 
 ## Deployment & Operations
@@ -75,7 +73,6 @@ Umaxica App is the monolithic Ruby on Rails application that powers the Umaxica 
 
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.
 - Run `git-secrets --scan` (hooked via Lefthook) before committing to prevent accidental secret leakage.
-- Use `.env.example` as a template for local environment variables.
 
 ## Useful References
 
