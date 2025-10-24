@@ -24,4 +24,7 @@ sudo rm -rf /home/jit/.npm
 #bundle exec karafka-web migrate || true
 
 #
+bundle config set path 'vendor/bundle'
+
+#
 exec "$@"
