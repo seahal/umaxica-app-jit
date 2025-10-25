@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      target: development
+#      target: development
       args:
         COMMIT_HASH: "abcdef"
         DOCKER_UID: ${UID:-1000}
