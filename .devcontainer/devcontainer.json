@@ -70,6 +70,9 @@
 				"extensions.verifySignature": false,
 				"terminal.integrated.defaultProfile.linux": "bash",
 				"editor.formatOnSave": true,
+				"editor.tabSize": 2,
+				"files.trimTrailingWhitespace": true,
+				"files.insertFinalNewline": true,
 				"editor.codeActionsOnSave": {
 					"source.fixAll.biome": "explicit"
 				},
@@ -107,6 +110,11 @@
 					"workspaceSymbol": true,
 					"signatureHelp": true,
 					"typeHierarchy": true
+				},
+				"ruby.lint": {
+					"rubocop": {
+						"onSave": true
+					}
 				}
 			},
 			"terminal.integrated.defaultProfile.linux": "bash",
@@ -136,10 +144,10 @@
 		"DEVCONTAINER_AUTO_START_BIN_DEV": "1"
 	},
 	"postCreateCommand": "",
-	// "postStartCommand": "sudo chown -R jit:group /home/jit/main || true && echo 'Development environment ready!'",
-	// "initializeCommand": "echo 'Initializing Umaxica Rails Development Environment...'",
-	// "onCreateCommand": "echo 'Devcontainer created successfully'",
-	// "updateContentCommand": "bundle install && bun install",
+	"postStartCommand": "",
+	"initializeCommand": "",
+	"onCreateCommand": "",
+	"updateContentCommand": "",
 	// "mounts": [
 	// 	"source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
 	// ],
