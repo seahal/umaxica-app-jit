@@ -22,6 +22,8 @@ pre-commit:
       glob: "*.{js,jsx,ts,tsx}"
     typecheck:
       run: bun run type
+    secret-scan:
+      run: gitleaks protect
 pre-push:
   parallel: true
   commands:

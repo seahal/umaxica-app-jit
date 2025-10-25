@@ -89,6 +89,9 @@ Rails.application.configure do
   config.hosts << "org.localhost"
   config.hosts << "sign.app.localhost"
   config.hosts << "sign.org.localhost"
+  config.hosts << "www.app.localhost"
+  config.hosts << "www.com.localhost"
+  config.hosts << "www.org.localhost"
   config.hosts << "api.app.localhost"
   config.hosts << "api.com.localhost"
   config.hosts << "api.org.localhost"
@@ -103,14 +106,14 @@ Rails.application.configure do
   config.hosts << "news.org.localhost"
 
   # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
-  # config.after_initialize do
-  #   Bullet.enable = true
-  #   Bullet.alert = true
-  #   Bullet.bullet_logger = true
-  #   Bullet.console = true
-  #   Bullet.rails_logger = true
-  #   Bullet.add_footer = true
-  # end
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.alert = true
+    Bullet.bullet_logger = true
+    Bullet.console = true
+    Bullet.rails_logger = true
+    Bullet.add_footer = true
+  end
 
   ## file watcher
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker

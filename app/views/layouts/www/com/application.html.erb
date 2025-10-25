@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>UMAXICA <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "www/com/main" %>
+  <%= javascript_importmap_tags %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+</head>
+
+<body class="px-4">
+<header>
+  <h1><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica(www, com)</a></h1></header>
+
+<hr>
+
+<main class="container mx-auto mt-28 px-5 block">
+  <%= yield %>
+</main>
+
+<nav>
+  <% breadcrumbs.tap do |links| %>
+    <% if links.any? %>
+      <ul>
+        <% links.each do |link| %>
+          <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
+        <% end %>
+        <li>...</li>
+      </ul>
+    <% end %>
+  <% end %>
+</nav>
+
+<hr>
+
+<footer>
+  <ul>
+    <li><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica</a></li>
+    <li>Support</li>
+    <li>Terms</li>
+    <li>Privacy</li>
+    <li>Security</li>
+    <li>Accessibility</li>
+  </ul>
+  <p>© <%= Time.now.year %> Umaxica.</p>
+</footer>
+
+</body>
+</html>

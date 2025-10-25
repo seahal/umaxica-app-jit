@@ -83,4 +83,3 @@
 
 - Frontend assets not updating: `bin/rails assets:clobber` followed by a rebuild.
 - Tests failing due to missing databases: `bin/rails db:create`
-- Dependency mismatches: verify Ruby with `ruby -v` and Bun with `bun --version`
