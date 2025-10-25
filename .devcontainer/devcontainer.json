@@ -62,7 +62,7 @@
 				"ms-vscode.vscode-json",
 				"ms-vscode.vscode-yaml",
 				"ms-vscode.remote-explorer",
-				"ninoseki.vscode-mogami",
+				// "ninoseki.vscode-mogami",
 				"rubocop.vscode-rubocop",
 				"oven.bun-vscode"
 			],
