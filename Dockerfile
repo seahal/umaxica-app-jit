@@ -13,116 +13,6 @@ ARG GITHUB_ACTIONS=""
 ARG CLOUDFLARE_R2_TOKEN=""
 
 # ============================================================================
-# Development image (used by docker compose)
-# ============================================================================
-FROM ruby:${RUBY_VERSION}-trixie AS development-base
-SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
-ENV TZ=UTC \
-    LANG=C.UTF-8 \
-    LC_ALL=C.UTF-8 \
-    BUNDLE_FORCE_RUBY_PLATFORM=1
-
-RUN apt-get update -qq \
-    && apt-get install --no-install-recommends -y \
-    build-essential \
-    ca-certificates \
-    curl \
-    git \
-    gnupg \
-    libpq-dev \
-    libvips \
-    libxml2-dev \
-    libyaml-dev \
-    nodejs \
-    npm \
-    postgresql-client \
-    tzdata \
-    unzip \
-    zlib1g-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
-
-FROM development-base AS development
-ARG COMMIT_HASH
-ARG DOCKER_UID
-ARG DOCKER_GID
-ARG DOCKER_USER
-ARG DOCKER_GROUP
-ARG BUN_VERSION
-ARG GITHUB_ACTIONS
-ENV COMMIT_HASH="${COMMIT_HASH}"
-ENV HOME=/home/jit
-WORKDIR /home/jit/main
-
-RUN apt-get update -qq \
-    && apt-get install --no-install-recommends -y \
-    bash \
-    zsh \
-    dbus \
-    fontconfig \
-    lsb-release \
-    openssl \
-    sudo \
-    udev \
-    unzip \
-    xserver-xorg-core \
-    xvfb \
-    zip \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libdrm2 \
-    libgbm1 \
-    libglib2.0-0 \
-    libgtk-3-0 \
-    libnss3 \
-    libnspr4 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libsecret-1-0 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxkbcommon0 \
-    libxrandr2 \
-    libxrender1 \
-    libxss1 \
-    libxtst6 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
-
-
-COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
-
-RUN npm install -g bun@"${BUN_VERSION}" \
-    && npm cache clean --force
-
-RUN rm -rf /home/jit/.npm
-
-# RUN bun install
-
-# RUN gem install bundler \
-#    && bundle config set --local path vendor/bundle \
-#    && bundle config set without 'production' \
-#    && bundle install --jobs "$(nproc)"
-
-RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
-    groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
-    useradd -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
-    echo "${DOCKER_USER}:hogehoge" | chpasswd; \
-    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
-    chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
-    else \
-    chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
-    fi
-
-USER ${DOCKER_USER}
-
-# ============================================================================
 # Production image (multi-stage build)
 # ============================================================================
 FROM ruby:${RUBY_VERSION}-slim-trixie AS production-base
@@ -237,3 +127,115 @@ USER ${DOCKER_USER}
 EXPOSE 8080
 
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb", "--port", "8080"]
+
+# ============================================================================
+# Development image (used by docker compose)
+# ============================================================================
+FROM ruby:${RUBY_VERSION}-trixie AS development-base
+SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
+ENV TZ=UTC \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    BUNDLE_FORCE_RUBY_PLATFORM=1
+
+RUN apt-get update -qq \
+    && apt-get install --no-install-recommends -y \
+    build-essential \
+    ca-certificates \
+    curl \
+    git \
+    gnupg \
+    libpq-dev \
+    libvips \
+    libxml2-dev \
+    libyaml-dev \
+    nodejs \
+    npm \
+    postgresql-client \
+    tzdata \
+    unzip \
+    zlib1g-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
+
+# ============================================================================
+# ============================================================================
+FROM development-base AS development
+ARG COMMIT_HASH
+ARG DOCKER_UID
+ARG DOCKER_GID
+ARG DOCKER_USER
+ARG DOCKER_GROUP
+ARG BUN_VERSION
+ARG GITHUB_ACTIONS
+ENV COMMIT_HASH="${COMMIT_HASH}"
+ENV HOME=/home/jit
+WORKDIR /home/jit/main
+
+RUN apt-get update -qq \
+    && apt-get install --no-install-recommends -y \
+    bash \
+    zsh \
+    dbus \
+    fontconfig \
+    lsb-release \
+    openssl \
+    sudo \
+    udev \
+    unzip \
+    xserver-xorg-core \
+    xvfb \
+    zip \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libdrm2 \
+    libgbm1 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libnss3 \
+    libnspr4 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libsecret-1-0 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
+    libxkbcommon0 \
+    libxrandr2 \
+    libxrender1 \
+    libxss1 \
+    libxtst6 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
+
+
+COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
+
+RUN npm install -g bun@"${BUN_VERSION}" \
+    && npm cache clean --force
+
+RUN rm -rf /home/jit/.npm
+
+# RUN bun install
+
+# RUN gem install bundler \
+#    && bundle config set --local path vendor/bundle \
+#    && bundle config set without 'production' \
+#    && bundle install --jobs "$(nproc)"
+
+RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
+    groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
+    useradd -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
+    echo "${DOCKER_USER}:hogehoge" | chpasswd; \
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
+    else \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
+    fi
+
+USER ${DOCKER_USER}

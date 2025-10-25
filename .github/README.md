@@ -64,9 +64,9 @@
 ## Environments & Endpoints
 
 - Umaxica domains:
-  - `umaxica.com`, `help.jp.umaxica.com`, `docs.jp.umaxica.com`, `news.jp.umaxica.com`
-  - `umaxica.app`, `auth.jp.umaxica.app`, `docs.jp.umaxica.app`, `help.jp.umaxica.app`, `news.jp.umaxica.app`
-  - `umaxica.org`, `auth.jp.umaxica.org`, `docs.jp.umaxica.org`, `help.jp.umaxica.org`, `news.jp.umaxica.org`
+  - `umaxica.com`, `www.jp.umaxica.com`, `docs.jp.umaxica.com`, `news.jp.umaxica.com`
+  - `umaxica.app`, `www.jp.umaxica.app`,, `auth.jp.umaxica.app`, `docs.jp.umaxica.app`, `help.jp.umaxica.app`, `news.jp.umaxica.app`
+  - `umaxica.org`, `www.jp.umaxica.org`, `auth.jp.umaxica.org`, `docs.jp.umaxica.org`, `help.jp.umaxica.org`, `news.jp.umaxica.org`
   - Asset CDN: `https://asset.umaxica.net`
 
 ## Secrets & Credentials
