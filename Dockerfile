@@ -99,7 +99,7 @@ RUN apt-get update -qq \
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
 RUN npm install -g bun@"${BUN_VERSION}" \
-  && npm cache clean --force
+    && npm cache clean --force
 
 RUN rm -rf /home/jit/.npm
 
@@ -165,6 +165,9 @@ RUN apt-get update \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
+
+# ============================================================================
+# ============================================================================
 FROM production-base AS production-build
 
 ARG BUN_VERSION
@@ -209,6 +212,9 @@ RUN bun run build \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
     && rm -f tmp/pids/server.pid
+
+# ============================================================================
+# ============================================================================
 FROM production-base AS production
 ARG DOCKER_UID
 ARG DOCKER_GID
@@ -216,6 +222,7 @@ ARG DOCKER_USER
 ARG DOCKER_GROUP
 
 ENV PORT=3000 \
+    RUBY_YJIT_ENABLE=1 \
     RAILS_LOG_TO_STDOUT=1 \
     RAILS_SERVE_STATIC_FILES=true \
     PATH=/usr/local/bundle/bin:${PATH}
