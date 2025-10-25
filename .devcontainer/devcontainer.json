@@ -64,7 +64,8 @@
 				"ms-vscode.remote-explorer",
 				// "ninoseki.vscode-mogami",
 				"rubocop.vscode-rubocop",
-				"oven.bun-vscode"
+				"oven.bun-vscode",
+				"-sorbet.sorbet-vscode-extension"
 			],
 			"settings": {
 				"extensions.verifySignature": false,

@@ -1,3 +1,4 @@
+# .ruby-lsp.yml
 optimization:
   cache_size: 512MB
   index_threshold: 10000
