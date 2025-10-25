@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # for apex page
+  # apex page
   draw :apex
+  #
+  draw :www
   # api endpoint url
   draw :api
   # endpoint for sign
