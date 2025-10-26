@@ -17,21 +17,17 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
-  # test "shows registration methods and social providers" do
-  #   get new_sign_app_registration_url(format: :html), headers: { "Host" => host }
-  #   assert_response :success
-  #
-  #   assert_select "[data-testid=?]", "registration-method", count: 2
-  #
-  #   assert_select "[data-testid=?]", "registration-social" do
-  #     assert_select "form[action=?][method=?]", "/sign/google_oauth2", "post"
-  #     assert_select "form[action=?][method=?]", "/sign/apple", "post"
-  #   end
-  #
-  #   assert_select "[data-testid=?]", "registration-sign-in" do
-  #     assert_select "a[href=?]", new_sign_app_authentication_path
-  #   end
-  # end
+  test "shows registration methods and social providers" do
+    get new_sign_app_registration_url(format: :html), headers: { "Host" => host }
+    assert_response :success
+
+    assert_select "[data-testid=?]", "registration-method", count: 2
+
+    assert_select "[data-testid=?]", "registration-social" do
+      assert_select "form[action=?][method=?]", "/sign/google_oauth2", "post"
+      assert_select "form[action=?][method=?]", "/sign/apple", "post"
+    end
+  end
 
   test "renders localized copy with product name fallback" do
     get new_sign_app_registration_url(format: :html), headers: { "Host" => host }

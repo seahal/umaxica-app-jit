@@ -2,6 +2,15 @@
 	"name": "umaxica-app-jit",
 	"dockerComposeFile": ["../compose.yml"],
 	"service": "main",
+	"runServices": [
+		"primary",
+		"replica",
+		"valkey",
+		"kafka",
+		"zookeeper",
+		"minio",
+		"kafka-ui"
+	],
 	"workspaceFolder": "/home/jit/main",
 	"overrideCommand": false,
 	"remoteEnv": {
@@ -63,7 +72,6 @@
 				"ms-vscode.remote-explorer",
 				"rubocop.vscode-rubocop",
 				"oven.bun-vscode",
-				"-sorbet.sorbet-vscode-extension",
 				"openai.chatgpt"
 			],
 			"settings": {
@@ -146,7 +154,7 @@
 	"postCreateCommand": "",
 	"postStartCommand": "",
 	"initializeCommand": "",
-	"onCreateCommand": "",
+	"onCreateCommand": "bin/rails db:create db:migrate",
 	"updateContentCommand": "",
 	// "mounts": [
 	// 	"source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
