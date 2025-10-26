@@ -53,7 +53,6 @@
 			"extensions": [
 				"Shopify.ruby-lsp",
 				"Shopify.ruby-extensions-pack",
-				// "castwide.solargraph",
 				"bradlc.vscode-tailwindcss",
 				"ms-vscode.vscode-typescript-next",
 				"biomejs.biome",
@@ -62,10 +61,10 @@
 				"ms-vscode.vscode-json",
 				"ms-vscode.vscode-yaml",
 				"ms-vscode.remote-explorer",
-				// "ninoseki.vscode-mogami",
 				"rubocop.vscode-rubocop",
 				"oven.bun-vscode",
-				"-sorbet.sorbet-vscode-extension"
+				"-sorbet.sorbet-vscode-extension",
+				"openai.chatgpt"
 			],
 			"settings": {
 				"extensions.verifySignature": false,
