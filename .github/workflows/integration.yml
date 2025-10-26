@@ -211,12 +211,14 @@ jobs:
         with:
           ruby-version: '3.4.7'
           bundler-cache: true
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Setup test databases
         run: |
           bin/rails db:create
           bin/rails db:migrate
       - name: Run Rails tests
-        run: bin/rails test
+        run: bundle exec rails test
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4
