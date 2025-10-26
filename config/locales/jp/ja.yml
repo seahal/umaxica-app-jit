@@ -224,6 +224,9 @@ ja:
           links:
             sign_in_html: すでにアカウントをお持ちですか？%{link}
             sign_in_text: ログインする
+        email:
+          new:
+            page_title: "UMAXICA (sign, app)"
     org:
       authentication:
         new:

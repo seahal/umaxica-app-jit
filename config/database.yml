@@ -147,14 +147,14 @@ test:
   universal:
     <<: *default
     database: test_universal_db
-    port: <%= ENV['CI'].nil? ? 5432: 5433 %>
+    port: <%= ENV['CI'].nil? ? 5432: 5432 %>
     host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] || 'localhost' %>
     migrations_paths: db/universals_migrate
   universal_replica:
     <<: *default
     replica: true
     database: test_universal_db
-    port: <%= ENV['CI'].nil? ? 5432: 5434 %>
+    port: <%= ENV['CI'].nil? ? 5432: 5432 %>
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || 'localhost' %>
     migrations_paths: db/universals_migrate
   contact:
