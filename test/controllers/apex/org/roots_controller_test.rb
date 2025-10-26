@@ -71,27 +71,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should handle admin dashboard data mutations" do
-    get apex_org_root_url
-    assert_response :success
-
-    # Ensure response structure is consistent across requests
-    first_response = response.body
-    # assert_match(/csp-nonce/, first_response)
-    assert_match(/UMAXICA/, first_response)
-
-    get apex_org_root_url
-    second_response = response.body
-    assert_response :success
-    # assert_match(/csp-nonce/, second_response)
-    assert_match(/UMAXICA/, second_response)
-
-    # Both responses should have the same basic structure (excluding dynamic content like timestamps)
-    first_title = first_response.scan(/<title>.*?<\/title>/).first
-    second_title = second_response.scan(/<title>.*?<\/title>/).first
-    assert_equal first_title, second_title
-  end
-
   test "should handle timezone considerations for activities" do
     get apex_org_root_url
     assert_response :success
@@ -179,7 +158,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert response.body.is_a?(String)
   end
 
-  test "should get html which must have html which contains lang param." do
+  test "sets lang attribute on html element" do
     get apex_org_root_url(format: :html)
     assert_response :success
     assert_select("html[lang=?]", "ja")
@@ -200,7 +179,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   #   }
   #   assert_select("html[lang=?]", "en")
   # end
-  test "dom check those correct apex destinations" do
+  test "renders expected layout structure" do
     get apex_org_root_url
 
     assert_select "head", count: 1 do

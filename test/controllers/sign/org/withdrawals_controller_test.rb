@@ -6,7 +6,7 @@ class Sign::Org::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get html which must have html which contains lang param." do
+  test "sets lang attribute on html element" do
     get new_sign_org_withdrawal_url(format: :html)
     assert_response :success
     assert_not_select("html[lang=?]", "")

@@ -8,14 +8,14 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get html which must have html which contains lang param." do
+  test "sets lang attribute on html element" do
     get news_com_root_url(format: :html)
     assert_response :success
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")
   end
 
-  test "dom check those correct apex destinations" do
+  test "renders expected layout structure" do
     get news_com_root_url
 
     assert_select "head", count: 1 do

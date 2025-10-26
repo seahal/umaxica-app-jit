@@ -19,9 +19,9 @@ bundle install --jobs "${BUNDLE_JOBS:-4}"
 # sudo chown -R 1000:1000 /usr/local/lib/node_modules/
 
 ## Rails app prep
-bin/rails tmp:clear
-bin/rails db:prepare
-bin/rails db:seed
+# bin/rails tmp:clear
+# bin/rails db:prepare
+# bin/rails db:seed
 
 ## Karafka web UI DB (best-effort)
 #bundle exec karafka-web migrate || true

@@ -10,7 +10,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get html which must have html which contains lang param." do
+  test "sets lang attribute on html element" do
     get new_sign_app_registration_url(format: :html)
     assert_response :success
     assert_select("html[lang=?]", "ja")
@@ -39,7 +39,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: "log in?"
   end
 
-  test "check dom" do
+  test "renders registration layout structure" do
     get new_sign_app_registration_url(format: :html)
 
     assert_select "head", count: 1 do
