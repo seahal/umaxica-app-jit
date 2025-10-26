@@ -104,4 +104,84 @@ class Apex::App::ApplicationHelperTest < ActionView::TestCase
   test "show false timezone" do
     assert_not_equal get_timezone, "kst"
   end
+
+  # Tests for get_timezone parameter/session handling
+  test "get_timezone returns param value when present" do
+    params[:tz] = "utc"
+    assert_equal "utc", get_timezone
+  end
+
+  test "get_timezone returns session value when param absent" do
+    session[:lx] = "custom_tz"
+    assert_equal "custom_tz", get_timezone
+  end
+
+  test "get_timezone prefers param over session" do
+    params[:tz] = "param_tz"
+    session[:lx] = "session_tz"
+    assert_equal "param_tz", get_timezone
+  end
+
+  # Tests for get_language
+  test "get_language returns param value when present" do
+    params[:lx] = "en"
+    assert_equal "en", get_language
+  end
+
+  test "get_language returns session value when param absent" do
+    session[:lx] = "zh"
+    assert_equal "zh", get_language
+  end
+
+  test "get_language returns default ja when no param or session" do
+    assert_equal "ja", get_language
+  end
+
+  test "get_language prefers param over session" do
+    params[:lx] = "en"
+    session[:lx] = "zh"
+    assert_equal "en", get_language
+  end
+
+  # Tests for get_region
+  test "get_region returns param value when present" do
+    params[:ri] = "us"
+    assert_equal "us", get_region
+  end
+
+  test "get_region returns session value when param absent" do
+    session[:ri] = "cn"
+    assert_equal "cn", get_region
+  end
+
+  test "get_region returns default jp when no param or session" do
+    assert_equal "jp", get_region
+  end
+
+  test "get_region prefers param over session" do
+    params[:ri] = "us"
+    session[:ri] = "cn"
+    assert_equal "us", get_region
+  end
+
+  # Tests for get_colortheme
+  test "get_colortheme returns param value when present" do
+    params[:ct] = "dark"
+    assert_equal "dark", get_colortheme
+  end
+
+  test "get_colortheme returns session value when param absent" do
+    session[:ct] = "light"
+    assert_equal "light", get_colortheme
+  end
+
+  test "get_colortheme returns default sy when no param or session" do
+    assert_equal "sy", get_colortheme
+  end
+
+  test "get_colortheme prefers param over session" do
+    params[:ct] = "dark"
+    session[:ct] = "light"
+    assert_equal "dark", get_colortheme
+  end
 end

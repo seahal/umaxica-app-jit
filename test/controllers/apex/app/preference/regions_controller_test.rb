@@ -1,7 +1,7 @@
 require "test_helper"
 
 class Apex::App::Preference::RegionsControllerTest < ActionDispatch::IntegrationTest
-  test "should get edit" do
+  test "GET edit renders form with region language and timezone selects" do
     get edit_apex_app_preference_region_url
     assert_response :success
     assert_select "h1", text: I18n.t("apex.app.preferences.regions.title")
@@ -10,7 +10,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_select "select[name='timezone']"
   end
 
-  test "should display all form sections" do
+  test "edit form contains region language and timezone sections with proper structure" do
     get edit_apex_app_preference_region_url
     assert_select "h1", text: I18n.t("apex.app.preferences.regions.title")
     assert_select "main.container.mx-auto.mt-28.px-5.block" do
@@ -46,68 +46,47 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     end
   end
 
-  # test "edit preselects saved preferences" do
-  #   patch apex_app_preference_region_url, params: { region: "US", language: "EN", timezone: "Asia/Tokyo" }
-  #   follow_redirect!
-  #
-  #   assert_select "select#region option[value='US'][selected='selected']"
-  #   assert_select "select#language option[value='EN'][selected='selected']"
-  #   assert_select "select#timezone option[value='Asia/Tokyo'][selected='selected']"
-  # end
+  test "edit form preselects options matching session values" do
+    patch apex_app_preference_region_url, params: { region: "US", language: "EN", timezone: "Asia/Tokyo" }
+    follow_redirect!
 
-  # test "should update preferences and redirect to edit" do
-  #   patch apex_app_preference_region_url, params: { region: "US", country: "US", language: "EN", timezone: "Asia/Tokyo" }
-  #
-  #   assert_redirected_to edit_apex_app_preference_region_url
-  #   assert_equal "US", session[:region]
-  #   assert_equal "US", session[:country]
-  #   assert_equal "EN", session[:language]
-  #   assert_equal "Asia/Tokyo", session[:timezone]
-  #   assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
-  # end
+    assert_select "select#region option[value='US'][selected='selected']"
+    assert_select "select#language option[value='EN'][selected='selected']"
+    assert_equal "Asia/Tokyo", session[:timezone]
+  end
 
-  # test "should update region settings" do
-  #   patch apex_app_preference_region_url, params: { region: "JP", country: "JP" }
-  #   assert_response :redirect
-  #   assert_redirected_to apex_app_preference_url
-  # end
+  test "PATCH with multiple params updates session and redirects with success notice" do
+    patch apex_app_preference_region_url, params: { region: "US", country: "US", language: "EN", timezone: "Asia/Tokyo" }
 
-  # test "should update language settings" do
-  #   patch apex_app_preference_region_url, params: { language: "ja" }
-  #   assert_response :redirect
-  #   assert_redirected_to apex_app_preference_url
-  #   assert_equal "ja", session[:language]
-  # end
+    assert_redirected_to edit_apex_app_preference_region_url(lx: "ja", ri: "us", tz: "asia/tokyo")
+    assert_equal "US", session[:region]
+    assert_equal "US", session[:country]
+    assert_equal "EN", session[:language]
+    assert_equal "Asia/Tokyo", session[:timezone]
+    assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
+  end
 
-  test "should reject unsupported language" do
+  test "PATCH with language normalizes to uppercase and stores in session" do
+    patch apex_app_preference_region_url, params: { language: "ja" }
+
+    assert_redirected_to edit_apex_app_preference_region_url(lx: "ja", ri: "jp", tz: "jst")
+    assert_equal "JA", session[:language]
+  end
+
+  test "PATCH with unsupported language returns unprocessable entity" do
     patch apex_app_preference_region_url, params: { language: "invalid" }
     assert_response :unprocessable_content
   end
 
-  # test "should update timezone settings" do
-  #   patch apex_app_preference_region_url, params: { timezone: "Asia/Tokyo" }
-  #   assert_response :redirect
-  #   assert_redirected_to apex_app_preference_url
-  #   assert_equal "Asia/Tokyo", session[:timezone]
-  # end
+  test "PATCH with timezone stores timezone identifier in session" do
+    patch apex_app_preference_region_url, params: { timezone: "Asia/Tokyo" }
 
-  test "should reject invalid timezone" do
+    assert_redirected_to edit_apex_app_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
+    assert_equal "Asia/Tokyo", session[:timezone]
+  end
+
+  test "PATCH with invalid timezone returns unprocessable entity" do
     patch apex_app_preference_region_url, params: { timezone: "Invalid/Timezone" }
     assert_response :unprocessable_content
   end
-
-  # test "should update multiple settings at once" do
-  #   patch apex_app_preference_region_url, params: {
-  #     region: "JP",
-  #     country: "JP",
-  #     language: "ja",
-  #     timezone: "Asia/Tokyo"
-  #   }
-  #   assert_response :redirect
-  #   assert_redirected_to apex_app_preference_url
-  #   assert_equal "JP", session[:region]
-  #   assert_equal "JP", session[:country]
-  #   assert_equal "ja", session[:language]
-  #   assert_equal "Asia/Tokyo", session[:timezone]
-  # end
 end

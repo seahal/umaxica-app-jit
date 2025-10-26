@@ -6,7 +6,7 @@ class Sign::Org::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "check dom" do
+  test "renders registration layout structure" do
     get new_sign_org_registration_url(format: :html)
 
     assert_select "head", count: 1 do

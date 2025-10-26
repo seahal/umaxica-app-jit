@@ -150,7 +150,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert response.headers["Content-Type"].include?("text/html")
   end
 
-  test "should get html which must have html which contains lang param." do
+  test "sets lang attribute on html element" do
     get apex_app_root_path(format: :html), headers: HOST_HEADER
     assert_response :success
     assert_select("html[lang=?]", "ja")
@@ -290,7 +290,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_includes %w[development test production], Rails.env
   end
 
-  test "dom check those correct apex destinations" do
+  test "renders expected layout structure" do
     get apex_app_root_path, headers: HOST_HEADER
 
     assert_select "head", count: 1 do

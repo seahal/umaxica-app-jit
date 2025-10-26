@@ -76,9 +76,12 @@ en:
               google: "Continue with Google"
               apple: "Continue with Apple"
             disclaimer: "We will never post or share anything without your permission."
-          links:
-            sign_in_html: "Already registered? %{link}"
-            sign_in_text: "Sign in"
+        links:
+          sign_in_html: "Already registered? %{link}"
+          sign_in_text: "Sign in"
+        email:
+          new:
+            page_title: "UMAXICA (sign, app)"
     org:
       authentication:
         new:

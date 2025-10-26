@@ -147,22 +147,22 @@ services:
   #     GF_SECURITY_ADMIN_USER: admin
   #     GF_SECURITY_ADMIN_PASSWORD: admin
   #     GF_PATHS_PROVISIONING: /etc/grafana/provisioning
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - prometheus-volume:/prometheus
-  #   command:
-  #     - '--config.file=/etc/prometheus/prometheus.yml'
-  #     - '--storage.tsdb.path=/prometheus'
-  #     - '--web.console.libraries=/etc/prometheus/console_libraries'
-  #     - '--web.console.templates=/etc/prometheus/consoles'
-  #     - '--web.enable-lifecycle'
-  #   networks:
-  #     - observility
-  #   restart: always
-  # # Log collection
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-volume:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - observility
+    restart: always
+  # Log collection
   # loki:
   #   image: grafana/loki:latest
   #   ports:
@@ -193,6 +193,7 @@ services:
 networks:
   backend:
   frontend:
+  observility:
 volumes:
   psql-pub-volume:
   psql-sub-volume:
@@ -202,3 +203,4 @@ volumes:
   rustfs-volume:
   node-volume:
   bundler-volume:
+  prometheus-volume:

@@ -21,7 +21,7 @@ class Apex::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     # Corporate site should load successfully
   end
 
-  test "should get html which must have html which contains lang param." do
+  test "sets lang attribute on html element" do
     get apex_com_root_url(format: :html)
     assert_response :success
     assert_select("html[lang=?]", "ja")
@@ -38,7 +38,7 @@ class Apex::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   #   assert_not_select("html[lang=?]", "ja")
   # end
   #
-  test "dom check those correct apex destinations" do
+  test "renders expected layout structure" do
     get apex_com_root_url
     assert_select "head", count: 1 do
       assert_select "title", text: "#{ ENV.fetch('NAME') }", count: 1
