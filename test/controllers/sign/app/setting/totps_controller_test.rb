@@ -11,4 +11,15 @@ class Sign::App::Setting::TotpsControllerTest < ActionDispatch::IntegrationTest
     get sign_app_setting_totps_url, headers: { "Host" => @host }
     assert_response :success
   end
+
+  test "should get new" do
+    get new_sign_app_setting_totp_url, headers: { "Host" => @host }
+    assert_response :success
+    assert_not_nil session[:private_key]
+  end
+
+  test "new page renders successfully" do
+    get new_sign_app_setting_totp_url, headers: { "Host" => @host }
+    assert_response :success
+  end
 end

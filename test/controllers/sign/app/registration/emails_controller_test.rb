@@ -30,6 +30,11 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     assert_select "a[href=?]", new_sign_app_authentication_email_path, count: 0
   end
 
+  test "edit returns bad_request when not logged in and no session" do
+    get edit_sign_app_registration_email_url(id: "test-id"), headers: default_headers
+    assert_response :bad_request
+  end
+
   private
 
   def default_headers

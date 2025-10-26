@@ -22,4 +22,16 @@ class Sign::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
     # assert_response :internal_server_error
     assert_select "h1", I18n.t("sign.app.authentication.edit.title")
   end
+
+  test "destroy redirects to login page" do
+    delete sign_app_authentication_url
+
+    assert_response :redirect
+    assert_not_nil flash[:success]
+  end
+
+  test "destroy responds to DELETE request" do
+    delete sign_app_authentication_url
+    assert_response :redirect
+  end
 end
