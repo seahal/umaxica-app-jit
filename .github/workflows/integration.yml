@@ -211,8 +211,8 @@ jobs:
         with:
           ruby-version: '3.4.7'
           bundler-cache: true
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
       - name: Setup test databases
         run: |
           bin/rails db:create
