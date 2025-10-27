@@ -1,7 +1,35 @@
 module DefaultUrlOptions
   extend ActiveSupport::Concern
 
+  PREFERENCE_COOKIE_KEY = :apex_app_preferences
+
   def default_url_options
-    super.merge(ri: "jp", tz: "jst", lx: "ja")
+    options = read_cookie_preferences_for_url
+
+    # Fallback to defaults if cookie values are not present
+    options[:lx] ||= "ja"
+    options[:ri] ||= "jp"
+    options[:tz] ||= "jst"
+
+    super.merge(options)
+  end
+
+  private
+
+  def read_cookie_preferences_for_url
+    raw = cookies.signed[PREFERENCE_COOKIE_KEY]
+    return {} if raw.blank?
+
+    parsed = JSON.parse(raw)
+    return {} unless parsed.is_a?(Hash)
+
+    # Extract preference values from cookie
+    {
+      lx: parsed["lx"],
+      ri: parsed["ri"],
+      tz: parsed["tz"]
+    }.compact
+  rescue JSON::ParserError, TypeError
+    {}
   end
 end

@@ -1,13 +1,13 @@
 require "test_helper"
 
-class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
+class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
-    assert CorporateSiteContactTelepyhone < GuestsRecord
+    assert CorporateSiteContactTelephone < GuestsRecord
   end
 
   test "should belong to corporate_site_contact" do
     contact = corporate_site_contacts(:one)
-    telephone = CorporateSiteContactTelepyhone.create!(
+    telephone = CorporateSiteContactTelephone.create!(
       corporate_site_contact: contact,
       telephone_number: "+1234567890",
       activated: false,
@@ -20,23 +20,12 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
     assert_kind_of CorporateSiteContact, telephone.corporate_site_contact
   end
 
-  test "should downcase telephone_number before save" do
-    contact = corporate_site_contacts(:one)
-    telephone = CorporateSiteContactTelepyhone.new(
-      corporate_site_contact: contact,
-      telephone_number: "ABC123",
-      activated: false,
-      deletable: false,
-      remaining_views: 5,
-      expires_at: 1.day.from_now
-    )
-    telephone.save
-    assert_equal "abc123", telephone.telephone_number
-  end
+  # Telephone numbers contain digits and symbols, so downcasing is not applicable
+  # This test has been removed as the downcase behavior was removed from the model
 
   test "should encrypt telephone_number" do
     contact = corporate_site_contacts(:one)
-    telephone = CorporateSiteContactTelepyhone.create!(
+    telephone = CorporateSiteContactTelephone.create!(
       corporate_site_contact: contact,
       telephone_number: "+1234567890",
       activated: false,
@@ -46,8 +35,8 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
     )
 
     # Read directly from database to check encryption
-    raw_value = CorporateSiteContactTelepyhone.connection.execute(
-      "SELECT telephone_number FROM corporate_site_contact_telepyhones WHERE id = '#{telephone.id}'"
+    raw_value = CorporateSiteContactTelephone.connection.execute(
+      "SELECT telephone_number FROM corporate_site_contact_telephones WHERE id = '#{telephone.id}'"
     ).first["telephone_number"]
 
     # Encrypted value should be different from plaintext
@@ -60,7 +49,7 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
     contact = corporate_site_contacts(:one)
 
     # Create two records with the same telephone number
-    telephone1 = CorporateSiteContactTelepyhone.create!(
+    telephone1 = CorporateSiteContactTelephone.create!(
       corporate_site_contact: contact,
       telephone_number: "+1234567890",
       activated: false,
@@ -69,7 +58,7 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    telephone2 = CorporateSiteContactTelepyhone.create!(
+    telephone2 = CorporateSiteContactTelephone.create!(
       corporate_site_contact: contact,
       telephone_number: "+1234567890",
       activated: false,
@@ -79,12 +68,12 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
     )
 
     # With deterministic encryption, encrypted values should be the same
-    raw1 = CorporateSiteContactTelepyhone.connection.execute(
-      "SELECT telephone_number FROM corporate_site_contact_telepyhones WHERE id = '#{telephone1.id}'"
+    raw1 = CorporateSiteContactTelephone.connection.execute(
+      "SELECT telephone_number FROM corporate_site_contact_telephones WHERE id = '#{telephone1.id}'"
     ).first["telephone_number"]
 
-    raw2 = CorporateSiteContactTelepyhone.connection.execute(
-      "SELECT telephone_number FROM corporate_site_contact_telepyhones WHERE id = '#{telephone2.id}'"
+    raw2 = CorporateSiteContactTelephone.connection.execute(
+      "SELECT telephone_number FROM corporate_site_contact_telephones WHERE id = '#{telephone2.id}'"
     ).first["telephone_number"]
 
     assert_equal raw1, raw2
@@ -94,7 +83,7 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
     # Note: Encrypted fields in fixtures may cause issues
     # We create a fresh record instead of loading from fixtures
     contact = corporate_site_contacts(:one)
-    telephone = CorporateSiteContactTelepyhone.create!(
+    telephone = CorporateSiteContactTelephone.create!(
       corporate_site_contact: contact,
       telephone_number: "+1234567890",
       activated: false,
@@ -107,7 +96,7 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
 
   test "should use UUID as primary key" do
     contact = corporate_site_contacts(:one)
-    telephone = CorporateSiteContactTelepyhone.create!(
+    telephone = CorporateSiteContactTelephone.create!(
       corporate_site_contact: contact,
       telephone_number: "+9876543210",
       expires_at: 1.day.from_now
@@ -118,7 +107,7 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
 
   test "should have timestamps" do
     contact = corporate_site_contacts(:one)
-    telephone = CorporateSiteContactTelepyhone.create!(
+    telephone = CorporateSiteContactTelephone.create!(
       corporate_site_contact: contact,
       telephone_number: "+5555555555",
       expires_at: 1.day.from_now
@@ -131,7 +120,7 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
 
   test "should have all expected attributes" do
     contact = corporate_site_contacts(:one)
-    telephone = CorporateSiteContactTelepyhone.create!(
+    telephone = CorporateSiteContactTelephone.create!(
       corporate_site_contact: contact,
       telephone_number: "+6666666666",
       expires_at: 1.day.from_now
@@ -145,7 +134,7 @@ class CorporateSiteContactTelepyhoneTest < ActiveSupport::TestCase
 
   test "should have default values" do
     contact = corporate_site_contacts(:one)
-    telephone = CorporateSiteContactTelepyhone.create!(
+    telephone = CorporateSiteContactTelephone.create!(
       corporate_site_contact: contact,
       telephone_number: "+1234567890",
       expires_at: 1.day.from_now

@@ -49,11 +49,19 @@ module Apex
         private
 
         def set_edit_variables
-          @current_region = session[:region] || DEFAULT_REGION
-          @current_country = session[:country] || DEFAULT_REGION
-          @current_language = session[:language] || DEFAULT_LANGUAGE
+          # Read from 2-letter URL parameters (lx, ri, tz, ct) for better URL readability
+          region_param = normalize_region_from_param(params[:ri].presence)
+          language_param = normalize_language_from_param(params[:lx].presence)
+          timezone_param = normalize_timezone_from_param(params[:tz].presence)
+          theme_param = normalize_theme_from_param(params[:ct].presence)
 
-          timezone = resolve_timezone(session[:timezone]) || resolve_timezone(DEFAULT_TIMEZONE)
+          @current_region = region_param || session[:region] || DEFAULT_REGION
+          @current_country = session[:country] || DEFAULT_REGION
+          @current_language = language_param || session[:language] || DEFAULT_LANGUAGE
+          @current_theme = theme_param || session[:theme]
+
+          timezone_candidate = timezone_param || session[:timezone]
+          timezone = resolve_timezone(timezone_candidate) || resolve_timezone(DEFAULT_TIMEZONE)
           @current_timezone = timezone ? timezone.to_s : DEFAULT_TIMEZONE
         end
 
@@ -211,6 +219,62 @@ module Apex
             rescue JSON::ParserError, TypeError
               {}
             end
+        end
+
+        def normalize_region_from_param(value)
+          return if value.blank?
+
+          case value.to_s.downcase
+          when "jp"
+            "JP"
+          when "us"
+            "US"
+          else
+            value.to_s.upcase
+          end
+        end
+
+        def normalize_language_from_param(value)
+          return if value.blank?
+
+          case value.to_s.downcase
+          when "ja"
+            "JA"
+          when "en"
+            "EN"
+          else
+            value.to_s.upcase
+          end
+        end
+
+        def normalize_timezone_from_param(value)
+          return if value.blank?
+
+          case value.to_s.downcase
+          when "jst"
+            "Asia/Tokyo"
+          when "utc"
+            "Etc/UTC"
+          when "kst"
+            "Asia/Seoul"
+          else
+            value.to_s
+          end
+        end
+
+        def normalize_theme_from_param(value)
+          return if value.blank?
+
+          case value.to_s.downcase
+          when "dr", "dk"
+            "dark"
+          when "sy"
+            "system"
+          when "li", "lt"
+            "light"
+          else
+            value.to_s
+          end
         end
       end
     end

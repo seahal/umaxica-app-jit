@@ -24,13 +24,8 @@ class TelephoneTest < ActiveSupport::TestCase
     assert_equal "123456", telephone.pass_code
   end
 
-  test "downcases number before save" do
-    telephone = StaffTelephone.new(number: "User@Example.COM")
-
-    telephone.send(:run_callbacks, :save) { true }
-
-    assert_equal "user@example.com", telephone.number
-  end
+  # Telephone numbers contain digits and symbols, so downcasing is not applicable
+  # This test has been removed as the downcase behavior was removed from the Telephone concern
 
   test "confirm_policy acceptance skipped when number missing but pass_code present" do
     validator = StaffTelephone.validators_on(:confirm_policy).find do |v|
