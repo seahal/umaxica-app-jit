@@ -11,7 +11,7 @@ steps:
           build-essential ca-certificates curl git \
           libpq-dev libvips libvips-dev libyaml-dev \
           libffi-dev libreadline-dev zlib1g-dev \
-          pkg-config tzdata libssl-dev
+          pkg-config tzdata libssl-dev npm
         rm -rf /var/lib/apt/lists/*
         # --- mise install ---
         curl -fsSL https://mise.run | sh
