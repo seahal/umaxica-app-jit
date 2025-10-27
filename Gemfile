@@ -98,8 +98,11 @@ group :development, :test do
 end
 
 group :development do
+  #
   gem "bundler-audit"
+  #
   gem "foreman"
+  #
   gem "yard"
   # Preview email in the default browser instead of sending it.
   gem "letter_opener"
@@ -122,7 +125,7 @@ group :development do
   #
   gem "license_finder", require: false
   #
-  gem 'sorbet'
+  # gem 'sorbet'
   #
-  gem 'ruby-lsp'
+  gem "ruby-lsp"
 end
