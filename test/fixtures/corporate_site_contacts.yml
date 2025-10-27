@@ -2,10 +2,16 @@
 
 one:
   category: 'general'
-  status: 'active'
-  token: '7YmHxK4nTwR9BvJp2FsL6cD3Gqa8zMeN'
+  status: 'email_pending'
+  token: ''
+  token_digest: null
+  token_expires_at: null
+  token_viewed: false
 
 two:
-  category: 'general'
-  status: 'active'
-  token: '9MvCy2xTnW5jRkH8pBsD4fGa7LmN3eQz'
+  category: 'inquiry'
+  status: 'completed'
+  token: ''
+  token_digest: null
+  token_expires_at: null
+  token_viewed: false

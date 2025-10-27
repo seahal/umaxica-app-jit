@@ -4,12 +4,10 @@ module Telephone
   attr_accessor :confirm_policy, :confirm_using_mfa, :pass_code
 
   included do
-    before_save { self.number&.downcase! }
+    encrypts :number, deterministic: true
 
-    encrypts :number, downcase: true, deterministic: true
-
-    validates :number, length: 3..255,
-              format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i },
+    validates :number, length: { in: 3..20 },
+              format: { with: /\A\+?[\d\s\-\(\)]+\z/, message: "must be a valid phone number" },
               uniqueness: { case_sensitive: false }
     validates :confirm_policy, acceptance: true,
               unless: Proc.new { |a| a.number.nil? && !a.pass_code.nil? }

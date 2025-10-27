@@ -5,11 +5,10 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
     assert CorporateSiteContactTopic < GuestsRecord
   end
 
-  test "should belong to corporate_site_contact_topic" do
+  test "should belong to corporate_site_contact" do
     topic = corporate_site_contact_topics(:one)
-    assert_respond_to topic, :corporate_site_contact_topic
-    # Note: This is a self-referential association
-    # The fixture may not have a parent, so we just test the association exists
+    assert_respond_to topic, :corporate_site_contact
+    assert_not_nil topic.corporate_site_contact
   end
 
   test "should have valid fixtures" do
@@ -18,16 +17,10 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
   end
 
   test "should create topic with required attributes" do
-    # Create a parent topic first for the self-referential association
-    parent_topic = CorporateSiteContactTopic.create!(
-      corporate_site_contact_topic: corporate_site_contact_topics(:one),
-      title: "Parent Topic",
-      description: "Parent description",
-      deletable: false
-    )
+    contact = corporate_site_contacts(:one)
 
     topic = CorporateSiteContactTopic.new(
-      corporate_site_contact_topic: parent_topic,
+      corporate_site_contact: contact,
       title: "Test Topic",
       description: "Test description",
       deletable: false
@@ -60,9 +53,9 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
   end
 
   test "should have default values" do
-    parent_topic = corporate_site_contact_topics(:one)
+    contact = corporate_site_contacts(:one)
     topic = CorporateSiteContactTopic.create!(
-      corporate_site_contact_topic: parent_topic,
+      corporate_site_contact: contact,
       title: "Test",
       description: "Test description"
     )
@@ -72,15 +65,17 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
   end
 
   test "title should not exceed 255 characters" do
-    parent_topic = corporate_site_contact_topics(:one)
+    contact = corporate_site_contacts(:one)
     topic = CorporateSiteContactTopic.new(
-      corporate_site_contact_topic: parent_topic,
+      corporate_site_contact: contact,
       title: "a" * 256,
       description: "Test"
     )
-    # This may or may not fail depending on validations, but tests the schema limit
-    assert_raises(ActiveRecord::ValueTooLong) do
+    # Model validation will catch this before database constraint
+    assert_raises(ActiveRecord::RecordInvalid) do
       topic.save!
     end
+    assert_not topic.valid?
+    assert topic.errors[:title].any?
   end
 end
