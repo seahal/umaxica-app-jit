@@ -10,10 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_27_061538) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_27_092403) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "corporate_site_contact_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "activated", default: false, null: false
+    t.uuid "corporate_site_contact_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "deletable", default: false, null: false
+    t.string "email_address", limit: 1000, default: "", null: false
+    t.timestamptz "expires_at", default: "2025-10-28 09:27:08", null: false
+    t.integer "remaining_views", default: 10, null: false
+    t.datetime "updated_at", null: false
+    t.index ["corporate_site_contact_id"], name: "idx_on_corporate_site_contact_id_885e7bccdf"
+  end
+
+  create_table "corporate_site_contact_telepyhones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "activated", default: false, null: false
+    t.uuid "corporate_site_contact_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "deletable", default: false, null: false
+    t.timestamptz "expires_at", default: "2025-10-28 09:27:08", null: false
+    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.string "telephone_number", limit: 1000, default: "", null: false
+    t.datetime "updated_at", null: false
+    t.index ["corporate_site_contact_id"], name: "idx_on_corporate_site_contact_id_f14a127c22"
+  end
 
   create_table "corporate_site_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -44,4 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_061538) do
     t.string "title"
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "corporate_site_contact_emails", "corporate_site_contacts"
+  add_foreign_key "corporate_site_contact_telepyhones", "corporate_site_contacts"
 end
