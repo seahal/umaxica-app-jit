@@ -153,7 +153,7 @@ test:
   universal_replica:
     <<: *default
     replica: true
-    port: <%= File.exist?('/.dockerenv')  || ENV['CI'] ? 5432 : 5434 %>
+    port: <%= ENV.fetch('CI', nil) == 'true' ? 5432 : 5434 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_SUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
   contact: # rename!
