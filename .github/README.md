@@ -1,6 +1,6 @@
 [![CI](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit/main)
 
-# Umaxica App
+# Umaxica App (JIT)
 （ ＾ν＾） Hello, World!
 
 ## Prerequisites
@@ -70,16 +70,18 @@
   - Asset CDN: `https://asset.umaxica.net`
 
 ## Secrets & Credentials
-
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.
 - Run `git-secrets --scan` (hooked via Lefthook) before committing to prevent accidental secret leakage.
 
 ## Useful References
-
 - [Official Ruby on Rails Guides](https://rubyonrails.org/)
 - [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
 
 ## Troubleshooting
-
 - Frontend assets not updating: `bin/rails assets:clobber` followed by a rebuild.
 - Tests failing due to missing databases: `bin/rails db:create`
+
+## Known Issues & Limitations
+- This is a work in progress.
+- The public availability of this repository is not guaranteed permanently.
+- No warranty is provided, and the authors shall not be held liable for any damages arising from the use of this repository.

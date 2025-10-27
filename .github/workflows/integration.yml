@@ -2,7 +2,7 @@
 name: 'CI'
 on:
   push:
-    branches: [develop, main]
+    branches: [develop]
   pull_request:
     branches: [main]
 concurrency:
@@ -138,28 +138,28 @@ jobs:
       POSTGRESQL_USER: root
       POSTGRESQL_PORT: 5432
       POSTGRESQL_PASSWORD: password
-      POSTGRESQL_UNIVERSAL_PUB: primary
-      POSTGRESQL_UNIVERSAL_SUB: replica
-      POSTGRESQL_CONTACT_PUB: primary
-      POSTGRESQL_CONTACT_SUB: replica
-      POSTGRESQL_IDENTIFIER_PUB: primary
-      POSTGRESQL_IDENTIFIER_SUB: replica
-      POSTGRESQL_PROFILE_PUB: primary
-      POSTGRESQL_PROFILE_SUB: replica
-      POSTGRESQL_TOKEN_PUB: primary
-      POSTGRESQL_TOKEN_SUB: replica5
-      POSTGRESQL_BUSINESS_PUB: primary
-      POSTGRESQL_BUSINESS_SUB: replica
-      POSTGRESQL_MESSAGE_PUB: primary
-      POSTGRESQL_MESSAGE_SUB: replica
-      POSTGRESQL_NOTIFICATION_PUB: primary
-      POSTGRESQL_NOTIFICATION_SUB: replica
-      POSTGRESQL_CACHE_PUB: primary
-      POSTGRESQL_CACHE_SUB: replica
-      POSTGRESQL_SPECIALITY_PUB: primary
-      POSTGRESQL_SPECIALITY_SUB: replica
-      POSTGRESQL_STORAGE_PUB: primary
-      POSTGRESQL_STORAGE_SUB: replica
+      POSTGRESQL_UNIVERSAL_PUB: localhost
+      POSTGRESQL_UNIVERSAL_SUB: localhost
+      POSTGRESQL_CONTACT_PUB: localhost
+      POSTGRESQL_CONTACT_SUB: localhost
+      POSTGRESQL_IDENTIFIER_PUB: localhost
+      POSTGRESQL_IDENTIFIER_SUB: localhost
+      POSTGRESQL_PROFILE_PUB: localhost
+      POSTGRESQL_PROFILE_SUB: localhost
+      POSTGRESQL_TOKEN_PUB: localhost
+      POSTGRESQL_TOKEN_SUB: localhost
+      POSTGRESQL_BUSINESS_PUB: localhost
+      POSTGRESQL_BUSINESS_SUB: localhost
+      POSTGRESQL_MESSAGE_PUB: localhost
+      POSTGRESQL_MESSAGE_SUB: localhost
+      POSTGRESQL_NOTIFICATION_PUB: localhost
+      POSTGRESQL_NOTIFICATION_SUB: localhost
+      POSTGRESQL_CACHE_PUB: localhost
+      POSTGRESQL_CACHE_SUB: localhost
+      POSTGRESQL_SPECIALITY_PUB: localhost
+      POSTGRESQL_SPECIALITY_SUB: localhost
+      POSTGRESQL_STORAGE_PUB: localhost
+      POSTGRESQL_STORAGE_SUB: localhost
       # Kafka Configuration
       KAFKA_BROKERS: kafka:29092
       # Mail Configuration
