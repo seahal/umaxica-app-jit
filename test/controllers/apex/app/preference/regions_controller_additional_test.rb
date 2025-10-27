@@ -1,4 +1,5 @@
 require "test_helper"
+require_relative "../../../../support/cookie_helper"
 
 class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::IntegrationTest
   # Test region-only update

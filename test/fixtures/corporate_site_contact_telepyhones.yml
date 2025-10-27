@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 one:
   corporate_site_contact: one
-  telephone_number: MyString
+  telephone_number: +11234567890
   activated: false
   deletable: false
   remaining_views: 1
@@ -9,7 +9,7 @@ one:
 
 two:
   corporate_site_contact: two
-  telephone_number: MyString
+  telephone_number: +19876543210
   activated: false
   deletable: false
   remaining_views: 1

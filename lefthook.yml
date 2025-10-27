@@ -24,10 +24,7 @@ pre-commit:
       run: bun run type
     secret-scan:
       run: gitleaks protect
-pre-push:
-  parallel: true
-  commands:
-    rails test:
+    test(Ruby on Rails):
       run: bundle exec rails test
-    bun test:
+    test(Bun):
       run: bun test
