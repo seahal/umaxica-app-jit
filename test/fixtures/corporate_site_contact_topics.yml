@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  corporate_site_contact_topic: one
+  title: MyString
+  description: MyText
+  deletable: false
+
+two:
+  corporate_site_contact_topic: two
+  title: MyString
+  description: MyText
+  deletable: false
