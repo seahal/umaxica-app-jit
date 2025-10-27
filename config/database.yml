@@ -5,7 +5,7 @@ default: &default
   port: 5432
   timeout: 5000
   username: <%= ENV["POSTGRESQL_USER"] %>
-  password: 'password'
+  password: <%= ENV["POSTGRESQL_USER"] || 'password' %>
 
 
 development:
@@ -23,101 +23,101 @@ development:
   contact: # todo: rename!
     <<: *default
     database: development_contact_db
-    host: <%=  ENV["POSTGRESQL_CONTACT_PUB"] || 'localhost' %>
+    host: <%=  ENV["POSTGRESQL_CONTACT_PUB"] %>
     migrations_paths: db/customers_migrate
   contact_replica: # todo: rename!
     <<: *default
     replica: true
     database: development_contact_db
-    host: <%= ENV["POSTGRESQL_CONTACT_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_CONTACT_SUB"] %>
     migrations_paths: db/customers_migrate
   identifier:
     <<: *default
     database: development_identifier_db
-    host: <%= ENV["POSTGRESQL_IDENTIFIER_PUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_IDENTIFIER_PUB"] %>
     migrations_paths: db/identifiers_migrate
   identifier_replica:
     <<: *default
     replica: true
     database: development_identifier_db
-    host: <%= ENV["POSTGRESQL_IDENTIFIER_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_IDENTIFIER_SUB"] %>
     migrations_paths: db/identifiers_migrate
   profile:
     <<: *default
     database: development_profile_db
-    host: <%= ENV["POSTGRESQL_PROFILE_PUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_PROFILE_PUB"] %>
     migrations_paths: db/profiles_migrate
   profile_replica:
     <<: *default
     replica: true
     database: development_profile_db
-    host: <%= ENV["POSTGRESQL_PROFILE_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_PROFILE_SUB"] %>
     migrations_paths: db/profiles_migrate
   token:
     <<: *default
     database: development_token_db
-    host: <%= ENV["POSTGRESQL_TOKEN_PUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_TOKEN_PUB"] %>
     migrations_paths: db/tokens_migrate
   token_replica:
     <<: *default
     replica: true
     database: development_token_db
-    host: <%= ENV["POSTGRESQL_TOKEN_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_TOKEN_SUB"] %>
     migrations_paths: db/tokens_migrate
   business:
     <<: *default
     database: development_business_db
-    host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] %>
     migrations_paths: db/businesses_migrate
   business_replica:
     <<: *default
     replica: true
     database: development_business_db
-    host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
   notification:
     <<: *default
     database: development_notification_db
-    host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] %>
     migrations_paths: db/notifications_migrate
   notification_replica:
     <<: *default
     replica: true
     database: development_notification_db
-    host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] %>
     migrations_paths: db/notifications_migrate
   cache:
     <<: *default
     database: development_cache_db
-    host: <%= ENV["POSTGRESQL_CACHE_PUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_CACHE_PUB"] %>
     migrations_paths: db/caches_migrate
   cache_replica:
     <<: *default
     replica: true
     database: development_cache_db
-    host: <%= ENV["POSTGRESQL_CACHE_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
     migrations_paths: db/caches_migrate
   speciality:
     <<: *default
     database: development_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
     migrations_paths: db/specialities_migrate
   speciality_replica:
     <<: *default
     replica: true
     database: development_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
     migrations_paths: db/specialities_migrate
   storage:
     <<: *default
     database: development_storage_db
-    host: <%= ENV["POSTGRESQL_STORAGE_PUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_STORAGE_PUB"] %>
     migrations_paths: db/storages_migrate
   storage_replica:
     <<: *default
     replica: true
     database: development_storage_db
-    host: <%= ENV["POSTGRESQL_STORAGE_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_STORAGE_SUB"] %>
     migrations_paths: db/storages_migrate
 
 
