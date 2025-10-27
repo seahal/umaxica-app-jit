@@ -17,9 +17,9 @@ steps:
         curl -fsSL https://mise.run | sh
         export PATH="$$HOME/.local/bin:$$PATH"
         export PATH="$$HOME/.local/share/mise/shims:$$PATH"
-        # Install the latest Ruby, Node, and Bun
-        mise install ruby@latest node@latest bun@latest
-        mise use -g ruby@latest node@latest bun@latest
+        # Install the latest Ruby and Bun
+        mise install ruby@latest bun@latest
+        mise use -g ruby@latest bun@latest
         # --- Ruby deps ---
         gem install --no-document bundler
         bundle config set path vendor/bundle
@@ -29,8 +29,12 @@ steps:
         bundle install
         # --- JS deps ---
         bun install
-        # --- Assets build ---
+        # --- Clean up files ---
         rm -rf public/assets
+        rm -rf docs/
+        rm -rf tmp/
+        rm -rf log/
+        # --- Assets build ---
         SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
     id: Build assets with mise (ruby/node/bun latest)
     entrypoint: bash
@@ -62,6 +66,7 @@ steps:
       - '--file'
       - Dockerfile
     id: Docker build
+    # TODO: add here trivy scan step
   - name: gcr.io/cloud-builders/docker
     args:
       - push

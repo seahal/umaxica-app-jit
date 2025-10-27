@@ -1,0 +1,16 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+one:
+  corporate_site_contact: one
+  email_address: MyString
+  activated: false
+  deletable: false
+  remaining_views: 1
+  expires_at: 2025-10-27 09:07:30
+
+two:
+  corporate_site_contact: two
+  email_address: MyString
+  activated: false
+  deletable: false
+  remaining_views: 1
+  expires_at: 2025-10-27 09:07:30
