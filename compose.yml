@@ -26,6 +26,7 @@ services:
     networks:
       - backend
       - frontend
+      - observability
     depends_on:
       - primary
       - replica
@@ -147,12 +148,24 @@ services:
   #     GF_SECURITY_ADMIN_USER: admin
   #     GF_SECURITY_ADMIN_PASSWORD: admin
   #     GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "8889:8889"   # Prometheus metrics exporter
+    volumes:
+      - ./docker/otel-collector/otel-collector-config.yml:/etc/otelcol-contrib/config.yaml
+    networks:
+      - observability
+    restart: always
   prometheus:
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
     volumes:
       - prometheus-volume:/prometheus
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -160,7 +173,9 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
     networks:
-      - observility
+      - observability
+    depends_on:
+      - otel-collector
     restart: always
   # Log collection
   # loki:
@@ -193,14 +208,14 @@ services:
 networks:
   backend:
   frontend:
-  observility:
+  observability:
+
 volumes:
   psql-pub-volume:
   psql-sub-volume:
   valkey-volume:
   kafka-broker-volume:
   minio-volume:
-  rustfs-volume:
   node-volume:
   bundler-volume:
   prometheus-volume:

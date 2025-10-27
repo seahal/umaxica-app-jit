@@ -18,7 +18,7 @@ module Authn
     reset_session
 
     # create user or staff
-    user = User.create
+    user = User.create!
 
     # logged in
     begin
@@ -32,7 +32,7 @@ module Authn
   def log_in(user_or_staff)
     reset_session
 
-    token = UserToken.create(user_id: user_or_staff.id)
+    token = UserToken.create!(user_id: user_or_staff.id)
     credentials = generate_access_token(token)
 
     # ACCESS_TOKEN: Short-lived JWT (15 minutes)

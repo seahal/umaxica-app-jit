@@ -140,8 +140,8 @@ jobs:
       POSTGRESQL_PASSWORD: password
       POSTGRESQL_UNIVERSAL_PUB: localhost
       POSTGRESQL_UNIVERSAL_SUB: localhost
-      POSTGRESQL_CONTACT_PUB: localhost
-      POSTGRESQL_CONTACT_SUB: localhost
+      POSTGRESQL_GUEST_PUB: localhost
+      POSTGRESQL_GUEST_SUB: localhost
       POSTGRESQL_IDENTIFIER_PUB: localhost
       POSTGRESQL_IDENTIFIER_SUB: localhost
       POSTGRESQL_PROFILE_PUB: localhost

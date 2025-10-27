@@ -19,7 +19,7 @@ This is a Rails 8.0 application with a sophisticated multi-domain, multi-databas
 The application uses 10+ separate PostgreSQL databases with primary/replica configurations:
 - `universal` - Universal identifiers and user data
 - `identifier` - Authentication and identity management  
-- `contact` - Contact information and communication
+- `guest` - Guest contact information and communication
 - `profile` - User profiles and preferences
 - `token` - Session and authentication tokens
 - `business` - Business logic and entities
@@ -141,7 +141,7 @@ Shared model logic is in `app/models/concerns/`:
 Models inherit from domain-specific base classes:
 - `UniversalRecord` - Universal database
 - `IdentifiersRecord` - Identifier database  
-- `ContactsRecord` - Contact database
+- `GuestsRecord` - Guest database
 - etc.
 
 ### View Components

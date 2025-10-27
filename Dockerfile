@@ -175,7 +175,6 @@ WORKDIR /home/jit/main
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     bash \
-    zsh \
     dbus \
     fontconfig \
     lsb-release \
