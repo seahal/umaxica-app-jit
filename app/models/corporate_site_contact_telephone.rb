@@ -4,7 +4,7 @@ class CorporateSiteContactTelephone < GuestsRecord
 
   # Validations
   validates :telephone_number, presence: true,
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/, message: "must be a valid phone number" }
+                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
 
   # Generate and store OTP
   def generate_otp!
@@ -26,7 +26,7 @@ class CorporateSiteContactTelephone < GuestsRecord
       update!(activated: true, otp_attempts_left: 0)
       true
     else
-      decrement!(:otp_attempts_left)
+      update!(otp_attempts_left: otp_attempts_left - 1)
       false
     end
   end

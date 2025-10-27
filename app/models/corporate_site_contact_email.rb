@@ -26,7 +26,7 @@ class CorporateSiteContactEmail < GuestsRecord
       update!(activated: true, verifier_attempts_left: 0)
       true
     else
-      decrement!(:verifier_attempts_left)
+      update!(verifier_attempts_left: verifier_attempts_left - 1)
       false
     end
   end

@@ -7,7 +7,7 @@ module Telephone
     encrypts :number, deterministic: true
 
     validates :number, length: { in: 3..20 },
-              format: { with: /\A\+?[\d\s\-\(\)]+\z/, message: "must be a valid phone number" },
+              format: { with: /\A\+?[\d\s\-\(\)]+\z/ },
               uniqueness: { case_sensitive: false }
     validates :confirm_policy, acceptance: true,
               unless: Proc.new { |a| a.number.nil? && !a.pass_code.nil? }
