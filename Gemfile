@@ -121,4 +121,8 @@ group :development do
   gem "annotaterb"
   #
   gem "license_finder", require: false
+  #
+  gem 'sorbet'
+  #
+  gem 'ruby-lsp'
 end
