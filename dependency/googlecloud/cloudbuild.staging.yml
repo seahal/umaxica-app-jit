@@ -66,6 +66,7 @@ steps:
       - '--file'
       - Dockerfile
     id: Docker build
+    # TODO: add here trivy scan step
   - name: gcr.io/cloud-builders/docker
     args:
       - push

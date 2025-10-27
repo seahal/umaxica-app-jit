@@ -21,8 +21,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_092403) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-10-28 09:27:08", null: false
-    t.integer "remaining_views", default: 10, null: false
+    t.timestamptz "expires_at", default: "2025-10-28 09:56:48", null: false
+    t.integer "remaining_views", limit: 2, default: 10, null: false
     t.datetime "updated_at", null: false
     t.index ["corporate_site_contact_id"], name: "idx_on_corporate_site_contact_id_885e7bccdf"
   end
@@ -32,7 +32,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_092403) do
     t.uuid "corporate_site_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-10-28 09:27:08", null: false
+    t.timestamptz "expires_at", default: "2025-10-28 09:56:48", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -40,13 +40,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_092403) do
   end
 
   create_table "corporate_site_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "category", default: "DEFAULT_VALUE", null: false
     t.datetime "created_at", null: false
-    t.text "description"
-    t.string "email_address"
-    t.cidr "ip_address"
-    t.string "telephone_number"
-    t.string "title"
+    t.string "status", default: "DEFAULT_VALUE", null: false
     t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_corporate_site_contacts_on_category"
+    t.index ["status"], name: "index_corporate_site_contacts_on_status"
   end
 
   create_table "service_site_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

@@ -1,5 +1,4 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   corporate_site_contact: one
   email_address: MyString
