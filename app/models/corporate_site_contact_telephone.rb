@@ -1,6 +1,10 @@
 class CorporateSiteContactTelephone < GuestsRecord
   belongs_to :corporate_site_contact
   encrypts :telephone_number, deterministic: true
+  # Bridge OTP helpers to stored verifier_* columns
+  alias_attribute :otp_digest, :verifier_digest
+  alias_attribute :otp_expires_at, :verifier_expires_at
+  alias_attribute :otp_attempts_left, :verifier_attempts_left
 
   # Validations
   validates :telephone_number, presence: true,
