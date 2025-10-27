@@ -36,7 +36,8 @@ module Sign
           @user_recovery_code.user_id = User.first.id # FIXME: user_id is not good!
 
           respond_to do |format|
-            if @user_recovery_code.save
+            if @user_recovery_code.valid?
+              @user_recovery_code.save!
               format.html { redirect_to sign_app_setting_recovery_path(@user_recovery_code), notice: t("messages.user_recovery_code_successfully_created") }
             else
               format.html { render :new, status: :unprocessable_content }
@@ -47,13 +48,12 @@ module Sign
         # PATCH/PUT /recoveries/1 or /recoveries/1.json
         def update
           respond_to do |format|
-            if @user_recovery_code.update(user_recovery_code_params)
-              format.html { redirect_to sign_app_setting_recovery_path(@user_recovery_code), notice: t("messages.user_recovery_code_successfully_updated") }
-              format.json { render :show, status: :ok, location: sign_app_setting_recovery_path(@user_recovery_code) }
-            else
-              format.html { render :edit, status: :unprocessable_content }
-              format.json { render json: @user_recovery_code.errors, status: :unprocessable_content }
-            end
+            @user_recovery_code.update!(user_recovery_code_params)
+            format.html { redirect_to sign_app_setting_recovery_path(@user_recovery_code), notice: t("messages.user_recovery_code_successfully_updated") }
+            format.json { render :show, status: :ok, location: sign_app_setting_recovery_path(@user_recovery_code) }
+          rescue ActiveRecord::RecordInvalid
+            format.html { render :edit, status: :unprocessable_content }
+            format.json { render json: @user_recovery_code.errors, status: :unprocessable_content }
           end
         end
 
