@@ -16,17 +16,16 @@
 1. Install Ruby dependencies: `bundle install`
 2. Install JavaScript/TypeScript dependencies: `bun install`
 3. Prepare the database (creates, migrates, seeds as needed): `bin/rails db:prepare`
-4. If you need fresh frontend assets, run `bun run build`
+4. ... run `bin/dev`
 
 ## Local Development
-
 - Run the full development stack (`web`, `Karafka`, watchers, etc.): `foreman start -f Procfile.dev`
 - Alternatively, launch the Rails server directly: `bin/rails s -p 3000 -b 0.0.0.0`
 - Watch and rebuild assets during development: `bun run build --watch`
 
 ## Testing
 
-- Rails test suite (parallelized): `bin/rails test all`
+- Rails test suite (parallelized): `bundle exec rails test`
 - JavaScript/TypeScript tests: `bun test`
 
 ## Linting & Formatting
