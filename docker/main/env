@@ -73,3 +73,5 @@ RESEND_SMTP_USER_NAME=resend
 # Object Storage Configuration
 MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin
+# OpenTelemetry Configuration
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
