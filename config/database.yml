@@ -12,14 +12,14 @@ development:
     <<: *default
     database: development_universal_db
     port: 5432
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
     migrations_paths: db/universals_migrate
   universal_replica:
     <<: *default
     replica: true
     database: development_universal_db
     port: 5432
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || 'localhost' %>
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
     migrations_paths: db/universals_migrate
   contact: # todo: rename!
     <<: *default
