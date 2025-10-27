@@ -138,28 +138,28 @@ jobs:
       POSTGRESQL_USER: root
       POSTGRESQL_PORT: 5432
       POSTGRESQL_PASSWORD: password
-      POSTGRESQL_UNIVERSAL_PUB: postgres
-      POSTGRESQL_UNIVERSAL_SUB: postgres
-      POSTGRESQL_CONTACT_PUB: postgres
-      POSTGRESQL_CONTACT_SUB: postgres
-      POSTGRESQL_IDENTIFIER_PUB: postgres
-      POSTGRESQL_IDENTIFIER_SUB: postgres
-      POSTGRESQL_PROFILE_PUB: postgres
-      POSTGRESQL_PROFILE_SUB: postgres
-      POSTGRESQL_TOKEN_PUB: postgres
-      POSTGRESQL_TOKEN_SUB: postgres
-      POSTGRESQL_BUSINESS_PUB: postgres
-      POSTGRESQL_BUSINESS_SUB: postgres
-      POSTGRESQL_MESSAGE_PUB: postgres
-      POSTGRESQL_MESSAGE_SUB: postgres
-      POSTGRESQL_NOTIFICATION_PUB: postgres
-      POSTGRESQL_NOTIFICATION_SUB: postgres
-      POSTGRESQL_CACHE_PUB: postgres
-      POSTGRESQL_CACHE_SUB: postgres
-      POSTGRESQL_SPECIALITY_PUB: postgres
-      POSTGRESQL_SPECIALITY_SUB: postgres
-      POSTGRESQL_STORAGE_PUB: postgres
-      POSTGRESQL_STORAGE_SUB: postgres
+      POSTGRESQL_UNIVERSAL_PUB: localhost
+      POSTGRESQL_UNIVERSAL_SUB: localhost
+      POSTGRESQL_CONTACT_PUB: localhost
+      POSTGRESQL_CONTACT_SUB: localhost
+      POSTGRESQL_IDENTIFIER_PUB: localhost
+      POSTGRESQL_IDENTIFIER_SUB: localhost
+      POSTGRESQL_PROFILE_PUB: localhost
+      POSTGRESQL_PROFILE_SUB: localhost
+      POSTGRESQL_TOKEN_PUB: localhost
+      POSTGRESQL_TOKEN_SUB: localhost
+      POSTGRESQL_BUSINESS_PUB: localhost
+      POSTGRESQL_BUSINESS_SUB: localhost
+      POSTGRESQL_MESSAGE_PUB: localhost
+      POSTGRESQL_MESSAGE_SUB: localhost
+      POSTGRESQL_NOTIFICATION_PUB: localhost
+      POSTGRESQL_NOTIFICATION_SUB: localhost
+      POSTGRESQL_CACHE_PUB: localhost
+      POSTGRESQL_CACHE_SUB: localhost
+      POSTGRESQL_SPECIALITY_PUB: localhost
+      POSTGRESQL_SPECIALITY_SUB: localhost
+      POSTGRESQL_STORAGE_PUB: localhost
+      POSTGRESQL_STORAGE_SUB: localhost
       # Kafka Configuration
       KAFKA_BROKERS: kafka:29092
       # Mail Configuration
