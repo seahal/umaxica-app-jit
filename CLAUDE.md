@@ -8,7 +8,7 @@ This is a Rails 8.0 application with a sophisticated multi-domain, multi-databas
 
 ### Domain Structure
 - **WWW (Web Interface)**: Three distinct domains serving different user types
-  - `WWW_CORPORATE_URL` (com): Corporate/client site 
+  - `WWW_CORPORATE_URL` (com): Corporate/client site
   - `WWW_SERVICE_URL` (app): Main service application
   - `WWW_STAFF_URL` (org): Staff administration interface
 - **API**: Corresponding API endpoints for each domain
@@ -18,7 +18,7 @@ This is a Rails 8.0 application with a sophisticated multi-domain, multi-databas
 ### Multi-Database Setup
 The application uses 10+ separate PostgreSQL databases with primary/replica configurations:
 - `universal` - Universal identifiers and user data
-- `identifier` - Authentication and identity management  
+- `identifier` - Authentication and identity management
 - `guest` - Guest contact information and communication
 - `profile` - User profiles and preferences
 - `token` - Session and authentication tokens
@@ -94,13 +94,13 @@ bundle exec guard
 bundle exec rubocop
 bundle exec rubocop --fix
 
-# ERB template linting  
+# ERB template linting
 bundle exec erblint app/views/
 
 # JavaScript/TypeScript linting and formatting
 bun run lint
 bun run format
-bun run typecheck
+bun run type
 
 # Security scanning
 bundle exec brakeman
@@ -127,7 +127,7 @@ bundle exec rails db:drop db:create db:migrate
 ### Model Concerns
 Shared model logic is in `app/models/concerns/`:
 - `Email` - Email validation and normalization
-- `Telephone` - Phone number handling  
+- `Telephone` - Phone number handling
 - `SetId` - ID generation patterns
 - `RecoverCode` - Recovery code management
 
@@ -140,7 +140,7 @@ Shared model logic is in `app/models/concerns/`:
 ### Database Connections
 Models inherit from domain-specific base classes:
 - `UniversalRecord` - Universal database
-- `IdentifiersRecord` - Identifier database  
+- `IdentifiersRecord` - Identifier database
 - `GuestsRecord` - Guest database
 - etc.
 
@@ -150,7 +150,7 @@ Uses ViewComponent gem for reusable UI components. Components are in `app/compon
 ### Route Organization
 Routes are split by domain in `config/routes/`:
 - `www.rb` - Web interface routes
-- `api.rb` - API endpoint routes  
+- `api.rb` - API endpoint routes
 - `docs.rb` - Documentation routes
 - `news.rb` - News/content routes
 
@@ -158,7 +158,7 @@ Routes are split by domain in `config/routes/`:
 
 Key environment variables required:
 - `WWW_CORPORATE_URL`, `WWW_SERVICE_URL`, `WWW_STAFF_URL` - Domain URLs
-- `API_CORPORATE_URL`, `API_SERVICE_URL`, `API_STAFF_URL` - API URLs  
+- `API_CORPORATE_URL`, `API_SERVICE_URL`, `API_STAFF_URL` - API URLs
 - `POSTGRESQL_*` - Database connection settings
 - `RAILS_MAX_THREADS` - Threading configuration
 - `RACK_ATTACK_API_KEY` - API key for Rack::Attack authentication
@@ -171,3 +171,11 @@ Key environment variables required:
 - Test files follow the domain structure: `test/controllers/{domain}/{subdomain}/`
 - Asset compilation uses Bun - ensure Bun is installed locally
 - The application expects Docker Compose for local database setup
+
+### 禁止事項
+- `.env`ファイルの作成・変更
+- `node_modules`内のファイル編集
+- テストを実行せずにコミット
+- 承認なしでのPRマージ
+- test/test_helper.rb の操作は駄目です。
+- config/ の操作は許可を取ること。

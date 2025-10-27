@@ -3,6 +3,7 @@
 require "test_helper"
 require "json"
 require "uri"
+require_relative "../../../support/cookie_helper"
 
 class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
   DEFAULT_QUERY = { "lx" => "ja", "ri" => "jp", "tz" => "jst", "ct" => "sy" }.freeze
