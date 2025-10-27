@@ -147,7 +147,7 @@ test:
   universal:
     <<: *default
     database: test_universal_db
-    port: <%= ENV['CI'] ? 5432 : 5433 %>
+    port: <%= ENV.fetch('CI', nil) == 'true' ? 5432 : 5433 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_UNIVERSAL_PUB"]: 'localhost' %>
     migrations_paths: db/universals_migrate
   universal_replica:
