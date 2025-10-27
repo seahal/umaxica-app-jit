@@ -10,12 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_05_05_020715) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_27_061538) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
+  create_table "corporate_site_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "email_address"
+    t.cidr "ip_address"
+    t.string "telephone_number"
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "service_site_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "email_address"
+    t.cidr "ip_address"
+    t.string "telephone_number"
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_site_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.string "email_address"
