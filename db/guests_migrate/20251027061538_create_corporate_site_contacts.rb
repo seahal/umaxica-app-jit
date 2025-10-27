@@ -3,6 +3,7 @@ class CreateCorporateSiteContacts < ActiveRecord::Migration[8.1]
     create_table :corporate_site_contacts, id: :uuid do |t|
       t.string :category, null: false, index: true, default: 'DEFAULT_VALUE'
       t.string :status, null: false, index: true, default: 'DEFAULT_VALUE'
+      t.string :token, null: false, index: true, default: '', limit: 32
       t.timestamps
     end
   end
