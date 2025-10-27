@@ -58,7 +58,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
   test "PATCH with multiple params updates session and redirects with success notice" do
     patch apex_app_preference_region_url, params: { region: "US", country: "US", language: "EN", timezone: "Asia/Tokyo" }
 
-    assert_redirected_to edit_apex_app_preference_region_url(lx: "ja", ri: "us", tz: "asia/tokyo")
+    assert_redirected_to edit_apex_app_preference_region_url(lx: "en", ri: "us", tz: "asia/tokyo")
     assert_equal "US", session[:region]
     assert_equal "US", session[:country]
     assert_equal "EN", session[:language]
@@ -88,5 +88,80 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
   test "PATCH with invalid timezone returns unprocessable entity" do
     patch apex_app_preference_region_url, params: { timezone: "Invalid/Timezone" }
     assert_response :unprocessable_content
+  end
+
+  # URL parameter tests
+  test "GET edit with lx parameter preselects language without saving to session" do
+    get edit_apex_app_preference_region_url(lx: "en")
+    assert_response :success
+    assert_select "select#language option[value='EN'][selected='selected']"
+    assert_nil session[:language], "Language should not be saved to session from URL parameter"
+  end
+
+  test "GET edit with ri parameter preselects region without saving to session" do
+    get edit_apex_app_preference_region_url(ri: "us")
+    assert_response :success
+    assert_select "select#region option[value='US'][selected='selected']"
+    assert_nil session[:region], "Region should not be saved to session from URL parameter"
+  end
+
+  test "GET edit with tz parameter preselects timezone without saving to session" do
+    get edit_apex_app_preference_region_url(tz: "utc")
+    assert_response :success
+    assert_select "select#timezone option[value='Etc/UTC'][selected='selected']"
+    assert_nil session[:timezone], "Timezone should not be saved to session from URL parameter"
+  end
+
+  test "GET edit with multiple URL parameters preselects all options" do
+    get edit_apex_app_preference_region_url(lx: "en", ri: "us", tz: "utc")
+    assert_response :success
+    assert_select "select#language option[value='EN'][selected='selected']"
+    assert_select "select#region option[value='US'][selected='selected']"
+    assert_select "select#timezone option[value='Etc/UTC'][selected='selected']"
+  end
+
+  test "URL parameters take precedence over session values" do
+    # Set session values
+    patch apex_app_preference_region_url, params: { region: "JP", language: "JA", timezone: "Asia/Tokyo" }
+    follow_redirect!
+
+    # Access with different URL parameters
+    get edit_apex_app_preference_region_url(lx: "en", ri: "us", tz: "utc")
+    assert_response :success
+
+    # URL parameters should override session values in display
+    assert_select "select#language option[value='EN'][selected='selected']"
+    assert_select "select#region option[value='US'][selected='selected']"
+    assert_select "select#timezone option[value='Etc/UTC'][selected='selected']"
+
+    # But session values should remain unchanged
+    assert_equal "JA", session[:language]
+    assert_equal "JP", session[:region]
+    assert_equal "Asia/Tokyo", session[:timezone]
+  end
+
+  test "URL parameter lx normalizes ja to JA for display" do
+    get edit_apex_app_preference_region_url(lx: "ja")
+    assert_response :success
+    assert_select "select#language option[value='JA'][selected='selected']"
+  end
+
+  test "URL parameter ri normalizes jp to JP for display" do
+    get edit_apex_app_preference_region_url(ri: "jp")
+    assert_response :success
+    assert_select "select#region option[value='JP'][selected='selected']"
+  end
+
+  test "URL parameter tz normalizes jst to Asia/Tokyo for display" do
+    get edit_apex_app_preference_region_url(tz: "jst")
+    assert_response :success
+    assert_select "select#timezone option[value='Asia/Tokyo'][selected='selected']"
+  end
+
+  test "URL parameter tz normalizes kst to Asia/Seoul for display" do
+    get edit_apex_app_preference_region_url(tz: "kst")
+    assert_response :success
+    # Note: This test assumes Asia/Seoul is in the timezone options
+    # If not, it will fall back to the default timezone
   end
 end

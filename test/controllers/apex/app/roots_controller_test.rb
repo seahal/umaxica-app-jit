@@ -312,4 +312,55 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
+
+  # Session value tests
+  # Note: These tests verify that the session value integration works correctly
+  # The actual session values are set by RegionsController and read by RootsController
+
+  test "URL parameters take precedence over session values" do
+    # Set session values
+    get apex_app_root_path, headers: HOST_HEADER
+    session[:language] = "EN"
+    session[:region] = "US"
+    session[:timezone] = "Etc/UTC"
+
+    # Access with different URL parameters
+    get apex_app_root_path, headers: HOST_HEADER, params: { lx: "ja", ri: "jp", tz: "jst" }
+
+    # Should use URL parameters, not session values
+    assert_response :redirect
+    location = URI.parse(response.location)
+    assert_nil location.query, "Default preferences should not appear in URL"
+
+    follow_redirect!
+    assert_response :success
+
+    # Cookie should be updated to URL parameter values
+    persisted = JSON.parse(signed_cookie(:apex_app_preferences))
+    assert_equal "ja", persisted["lx"]
+    assert_equal "jp", persisted["ri"]
+    assert_equal "jst", persisted["tz"]
+  end
+
+  test "cookie takes precedence over session values" do
+    # Set cookie
+    get apex_app_root_path, headers: HOST_HEADER, params: { lx: "en", ri: "us", tz: "utc" }
+    assert_response :success
+
+    # Set different session values
+    session[:language] = "JA"
+    session[:region] = "JP"
+    session[:timezone] = "Asia/Tokyo"
+
+    # Access without parameters
+    get apex_app_root_path, headers: HOST_HEADER
+
+    # Should use cookie values, not session values
+    assert_response :redirect
+    location = URI.parse(response.location)
+    query = Rack::Utils.parse_query(location.query)
+    assert_equal "en", query["lx"]
+    assert_equal "us", query["ri"]
+    assert_equal "utc", query["tz"]
+  end
 end
