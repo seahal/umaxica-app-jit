@@ -5,8 +5,7 @@ default: &default
   port: 5432
   timeout: 5000
   username: <%= ENV["POSTGRESQL_USER"] %>
-  password: <%= ENV["POSTGRESQL_USER"] || 'password' %>
-
+  password: <%= ENV["POSTGRESQL_PASSWORD"] %>
 
 development:
   universal:
@@ -163,20 +162,17 @@ test:
   profile:
     <<: *default
     database: test_profile_db
-    port: <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5433 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_PUB"]: 'localhost' %>
     migrations_paths: db/profiles_migrate
   profile_replica:
     <<: *default
     replica: true
     database: test_profile_db
-    port: <%= File.exist?('/.dockerenv') || ENV['CI']  ? 5432: 5434 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_PROFILE_SUB"]: 'localhost' %>
     migrations_paths: db/profiles_migrate
   token:
     <<: *default
     database: test_token_db
-    port: <%= File.exist?('/.dockerenv') || ENV['CI'] ? 5432: 5433 %>
     host: <%= File.exist?('/.dockerenv') ? ENV["POSTGRESQL_TOKEN_PUB"]: 'localhost' %>
     migrations_paths: db/tokens_migrate
   token_replica:
