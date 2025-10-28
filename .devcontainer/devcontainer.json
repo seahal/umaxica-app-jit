@@ -164,8 +164,6 @@
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:latest": {},
 		"ghcr.io/thamaji/devcontainer-features/lefthook:latest": {},
-		"ghcr.io/jsburckhardt/devcontainer-features/codex:latest": {},
-		"ghcr.io/jsburckhardt/devcontainer-features/gitleaks:latest": {},
-		"ghcr.io/anthropics/devcontainer-features/claude-code:latest": {}
+		"ghcr.io/jsburckhardt/devcontainer-features/gitleaks:latest": {}
 	}
 }

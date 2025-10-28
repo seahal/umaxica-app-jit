@@ -9,13 +9,14 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # contact page
-        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
-          scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
-          end
-        end
+        # TODO: Implement corporate inquiry system
+        # resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
+        #   # TODO: Implement contact email and telephone functionality
+        #   # scope module: :contact do
+        #   #   resource :email, only: [ :new, :create ]
+        #   #   resource :telephone, only: [ :new, :create ]
+        #   # end
+        # end
       end
     end
 
@@ -30,10 +31,11 @@ Rails.application.routes.draw do
         end
         # contact page
         resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
-          scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
-          end
+          # TODO: Implement contact email and telephone functionality
+          # scope module: :contact do
+          #   resource :email, only: [ :new, :create ]
+          #   resource :telephone, only: [ :new, :create ]
+          # end
         end
       end
     end
@@ -48,13 +50,14 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # contact page
-        resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
-          scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
-          end
-        end
+        # TODO: Implement staff inquiry management
+        # resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
+        #   # TODO: Implement contact email and telephone functionality
+        #   # scope module: :contact do
+        #   #   resource :email, only: [ :new, :create ]
+        #   #   resource :telephone, only: [ :new, :create ]
+        #   # end
+        # end
       end
     end
   end

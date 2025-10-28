@@ -53,6 +53,8 @@ jobs:
         run: bundle exec bundle audit check --update
       - name: Run bun audit
         run: bun audit
+      - name: Check unused routing config
+        run: bundle exec rails routes --unused
 
   lint-ruby:
     name: Ruby Linting

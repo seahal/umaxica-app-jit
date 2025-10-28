@@ -37,7 +37,7 @@ gem "bootsnap", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing"
 # for Amazon SNS
-gem "aws-sdk"
+gem "aws-sdk-sns"
 # for Active Storage
 gem "google-cloud-storage", require: false
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
@@ -84,8 +84,6 @@ gem "jsbundling-rails"
 gem "fastly"
 # for cloudflare
 #
-# gem "thruster", require: false
-#
 # gem "view_component"
 
 group :development, :test do
@@ -124,8 +122,6 @@ group :development do
   gem "annotaterb"
   #
   gem "license_finder", require: false
-  #
-  # gem 'sorbet'
   #
   gem "ruby-lsp"
 end
