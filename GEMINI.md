@@ -21,7 +21,7 @@ This is a Ruby on Rails application named "umaxica-app-jit". It serves as a mult
 
 When asked to perform tasks, use the following commands:
 
-- **Run tests**: `bin/rails test all`
+- **Run tests**: `bin/rails test`
 - **Run RuboCop (Ruby linter)**: `bundle exec rubocop -A`
 - **Run Biome (Frontend linter/formatter)**: `bun run format` and `bun run lint`
 - **Run Brakeman (Security scanner)**: `bundle exec brakeman`

@@ -11,7 +11,7 @@
 - Database: `bin/rails db:prepare` (creates, migrates, seeds as needed).
 - Build assets: `bun run build` (watch: `bun run build --watch`).
 - Run locally: `foreman start -f Procfile.dev` (web, Karafka; add JS/CSS watchers as needed) or `bin/rails s -p 3000 -b 0.0.0.0`.
-- Tests (Ruby): `bin/rails test all` (parallelized; coverage via SimpleCov).
+- Tests (Ruby): `bin/rails test` (parallelized; coverage via SimpleCov).
 - Tests (JS/TS): `bun test` (looks under `test/javascript/`).
 - Hooks (pre-commit): RuboCop, ERB Lint, Brakeman, Bundler Audit, Biome format/lint, TS typecheck, Importmap audit/outdated (see `lefthook.yml`).
 
@@ -26,9 +26,8 @@
 
 ## Commit & Pull Request Guidelines
 - Commits: Use short, imperative messages; optional bracketed tags reflect repo history (e.g., `[update] implement passkeys endpoint`, `[misc] cleanup services`).
-- PRs: Describe intent and scope; link issues; call out DB migrations; include screenshots/logs for UI/API changes; ensure `bin/rails test all` and `bun test` pass; note any feature flags or env vars.
+- PRs: Describe intent and scope; link issues; call out DB migrations; include screenshots/logs for UI/API changes; ensure `bin/rails test` and `bun test` pass; note any feature flags or env vars.
 
 ## Security & Configuration Tips
 - Never commit secrets. Use `.env.example` as reference; load dev vars via dotenv. Prefer Rails credentials where applicable.
 - Run `bundle exec brakeman` and `bundle exec bundle audit` regularly. Use `./bin/importmap audit` to check browser dependencies.
-
