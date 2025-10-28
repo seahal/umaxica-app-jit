@@ -2,6 +2,7 @@
 
 if ENV["RAILS_ENV"] == "test"
   require "simplecov"
+  SimpleCov.minimum_coverage 65
   SimpleCov.start "rails"
 end
 
