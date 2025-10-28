@@ -1,0 +1,10 @@
+name: Prevent direct pushes to main
+enforcement: active
+target: branch
+rules:
+  - type: push
+    enforcement: blocked
+    conditions:
+      include:
+        - main
+
