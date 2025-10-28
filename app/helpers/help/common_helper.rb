@@ -13,8 +13,10 @@ module Help::CommonHelper
   end
 
   def get_title(title = "")
-    return "#{ ENV['NAME'] }" if title.blank?
-    "#{ title } | #{ ENV['NAME'] }"
+    brand_name = (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+    return brand_name if title.blank?
+
+    "#{ title } | #{ brand_name }"
   end
 
   def get_timezone

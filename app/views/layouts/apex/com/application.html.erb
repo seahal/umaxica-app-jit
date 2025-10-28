@@ -17,7 +17,7 @@
 <header class="max-w-5xl mx-auto flex items-center justify-between py-8">
   <h1 class="text-2xl font-semibold text-zinc-900">
     <a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/" class="hover:text-zinc-600 transition">
-      <%= ENV.fetch('NAME') %> (apex, com)
+      <%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (apex, com)
     </a>
   </h1>
 </header>

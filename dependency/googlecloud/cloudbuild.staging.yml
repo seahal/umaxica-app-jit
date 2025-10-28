@@ -50,7 +50,6 @@ steps:
         aws --version
         aws s3 sync public/ "s3://$_R2_BUCKET/" \
           --endpoint-url "$_R2_ENDPOINT" \
-          --delete \
           --no-progress
     id: up files to cloudflare r2
     entrypoint: bash

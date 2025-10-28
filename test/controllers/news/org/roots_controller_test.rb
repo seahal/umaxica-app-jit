@@ -7,13 +7,15 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     @prev_env = {
       "NEWS_STAFF_URL" => ENV["NEWS_STAFF_URL"],
       "EDGE_STAFF_URL" => ENV["EDGE_STAFF_URL"],
-      "NAME" => ENV["NAME"]
+      "NAME" => ENV["NAME"],
+      "BRAND_NAME" => ENV["BRAND_NAME"]
     }
 
     # Ensure host-constrained routes and layout-rendered ENV.fetch calls work in test
     ENV["NEWS_STAFF_URL"] ||= "news.org.localdomain"
     ENV["EDGE_STAFF_URL"] ||= "edge.localdomain"
     ENV["NAME"] ||= "Umaxica"
+    ENV["BRAND_NAME"] ||= ENV["NAME"]
   end
 
   def teardown
@@ -74,12 +76,12 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get news_org_root_url
 
     assert_select "head", count: 1 do
-      assert_select "title", count: 1, text: "#{ ENV.fetch('NAME') }"
+      assert_select "title", count: 1, text: brand_name
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
-        assert_select "h1", text: "#{ ENV.fetch('NAME') } (news, org)"
+        assert_select "h1", text: "#{ brand_name } (news, org)"
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
