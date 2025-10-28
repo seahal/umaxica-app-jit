@@ -72,7 +72,8 @@
 				"ms-vscode.remote-explorer",
 				"rubocop.vscode-rubocop",
 				"oven.bun-vscode",
-				"openai.chatgpt"
+				"openai.chatgpt",
+				"-sorbet.sorbet-vscode-extension"
 			],
 			"settings": {
 				"extensions.verifySignature": false,

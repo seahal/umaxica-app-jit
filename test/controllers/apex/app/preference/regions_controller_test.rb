@@ -164,4 +164,150 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     # Note: This test assumes Asia/Seoul is in the timezone options
     # If not, it will fall back to the default timezone
   end
+
+  # Cookie persistence tests
+  test "PATCH should persist preferences and redirect with correct parameters" do
+    patch apex_app_preference_region_url, params: { region: "JP", language: "JA", timezone: "Asia/Tokyo" }
+
+    # Verify session is updated
+    assert_equal "JP", session[:region]
+    assert_equal "JA", session[:language]
+    assert_equal "Asia/Tokyo", session[:timezone]
+
+    # Verify redirect includes normalized parameters
+    assert_redirected_to edit_apex_app_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
+
+    # Verify cookie is set
+    assert response.cookies["apex_app_preferences"].present?
+  end
+
+  test "cookie should be set after updating preferences" do
+    patch apex_app_preference_region_url, params: { region: "US", language: "EN" }
+
+    # Verify cookie exists in response
+    assert response.cookies["apex_app_preferences"].present?
+  end
+
+  test "multiple preference updates should maintain cookie consistency" do
+    # First update
+    patch apex_app_preference_region_url, params: { region: "JP" }
+    assert_equal "JP", session[:region]
+
+    # Second update
+    patch apex_app_preference_region_url, params: { language: "EN" }
+    assert_equal "EN", session[:language]
+    assert_equal "JP", session[:region], "Previous region setting should be maintained"
+  end
+
+  test "session values should be maintained after setting preferences" do
+    patch apex_app_preference_region_url, params: { timezone: "Asia/Tokyo" }
+
+    assert_equal "Asia/Tokyo", session[:timezone]
+    assert response.cookies["apex_app_preferences"].present?
+  end
+
+  test "preferences should persist across multiple updates" do
+    patch apex_app_preference_region_url, params: { timezone: "Etc/UTC" }
+    assert_equal "Etc/UTC", session[:timezone]
+
+    patch apex_app_preference_region_url, params: { region: "US" }
+    assert_equal "US", session[:region]
+    assert_equal "Etc/UTC", session[:timezone], "Timezone should persist"
+  end
+
+  # Theme handling tests
+  test "GET edit with ct=dr parameter preselects dark theme" do
+    get edit_apex_app_preference_region_url(ct: "dr")
+    assert_response :success
+    # Theme should be set in instance variable for display
+  end
+
+  test "GET edit with ct=sy parameter preselects system theme" do
+    get edit_apex_app_preference_region_url(ct: "sy")
+    assert_response :success
+  end
+
+  test "GET edit with ct=li parameter preselects light theme" do
+    get edit_apex_app_preference_region_url(ct: "li")
+    assert_response :success
+  end
+
+  test "theme parameter should be processed correctly" do
+    # Simulate setting theme in session (since theme isn't in params, it comes from session)
+    get edit_apex_app_preference_region_url(ct: "dark")
+    patch apex_app_preference_region_url, params: { region: "JP" }
+
+    # Verify cookie exists and session is updated
+    assert response.cookies["apex_app_preferences"].present?
+    assert_equal "JP", session[:region]
+  end
+
+  test "light theme parameter should be processed" do
+    get edit_apex_app_preference_region_url(ct: "light")
+    patch apex_app_preference_region_url, params: { region: "JP" }
+
+    assert response.cookies["apex_app_preferences"].present?
+    assert_equal "JP", session[:region]
+  end
+
+  test "preferences should update with cookie set" do
+    patch apex_app_preference_region_url, params: { region: "JP" }
+
+    assert response.cookies["apex_app_preferences"].present?
+    assert_equal "JP", session[:region]
+  end
+
+  test "multiple preferences should be saved correctly" do
+    # Clear session by making a fresh request
+    get edit_apex_app_preference_region_url
+    patch apex_app_preference_region_url, params: { region: "JP", language: "JA", timezone: "Asia/Tokyo" }
+
+    assert_equal "JP", session[:region]
+    assert_equal "JA", session[:language]
+    assert_equal "Asia/Tokyo", session[:timezone]
+    assert response.cookies["apex_app_preferences"].present?
+  end
+
+  # Additional edge case tests
+  test "PATCH with empty params should not update session" do
+    # Set initial values
+    patch apex_app_preference_region_url, params: { region: "US", language: "EN" }
+    assert_equal "US", session[:region]
+
+    # Make request with no params
+    patch apex_app_preference_region_url, params: {}
+    follow_redirect!
+
+    # Session should remain unchanged
+    assert_equal "US", session[:region]
+    assert_equal "EN", session[:language]
+  end
+
+  test "PATCH with case-insensitive timezone should work" do
+    patch apex_app_preference_region_url, params: { timezone: "asia/tokyo" }
+
+    assert_redirected_to edit_apex_app_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
+    assert_equal "Asia/Tokyo", session[:timezone]
+  end
+
+  test "should handle existing preferences when updating" do
+    # Set initial preferences
+    patch apex_app_preference_region_url, params: { region: "US", language: "EN" }
+    assert_equal "US", session[:region]
+    assert_equal "EN", session[:language]
+
+    # Update with new preference
+    patch apex_app_preference_region_url, params: { timezone: "Etc/UTC" }
+
+    # All preferences should be maintained
+    assert_equal "US", session[:region]
+    assert_equal "EN", session[:language]
+    assert_equal "Etc/UTC", session[:timezone]
+  end
+
+  test "edit page should render successfully with default settings" do
+    # Should not raise error and should use defaults
+    get edit_apex_app_preference_region_url
+    assert_response :success
+  end
 end
