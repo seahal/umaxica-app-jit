@@ -11,7 +11,7 @@ steps:
           build-essential ca-certificates curl git \
           libpq-dev libvips libvips-dev libyaml-dev \
           libffi-dev libreadline-dev zlib1g-dev \
-          pkg-config tzdata libssl-dev npm unzip
+          pkg-config tzdata libssl-dev npm
         rm -rf /var/lib/apt/lists/*
         # --- mise install ---
         curl -fsSL https://mise.run | sh
@@ -37,7 +37,7 @@ steps:
         # --- Assets build ---
         SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
         # trying to use bun
-        curl -fsSL https://bun.sh/install | bash
+        # curl -fsSL https://bun.sh/install | bash
     id: Build assets with mise (ruby/node/bun latest)
     entrypoint: bash
   - name: 'public.ecr.aws/aws-cli/aws-cli:latest'

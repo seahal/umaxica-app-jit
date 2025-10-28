@@ -1,5 +1,6 @@
 # App Configuration
 NAME=UMAXICA
+BRAND_NAME="UMAXICA"
 # Ruyb Configuration
 RUBY_YJIT_ENABLE=1
 BUNDLE_JOBS=8
