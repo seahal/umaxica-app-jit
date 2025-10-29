@@ -8,7 +8,7 @@ gem "rake", "13.2.1"
 # rack
 gem "rack"
 # Rails
-gem "rails", "8.1.0"
+gem "rails", "~> 8.1", ">= 8.1.1"
 # Use Postgres as the database for Active Record
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
