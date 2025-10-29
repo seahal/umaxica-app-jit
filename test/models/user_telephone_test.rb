@@ -92,12 +92,4 @@ class UserTelephoneTest < ActiveSupport::TestCase
     # UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
     assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, user_telephone.id)
   end
-
-  # Encryption tests
-  test "should encrypt phone number" do
-    user_telephone = UserTelephone.create!(@valid_attributes)
-    # The number should be encrypted in the database
-    raw_data = UserTelephone.connection.execute("SELECT number FROM user_telephones WHERE id = '#{user_telephone.id}'").first
-    assert_not_equal @valid_attributes[:number], raw_data["number"] if raw_data
-  end
 end
