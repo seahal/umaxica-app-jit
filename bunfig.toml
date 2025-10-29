@@ -1,0 +1,6 @@
+[test]
+# Always enable coverage
+coverage = true
+coverageThreshold = 0.95
+coverageReporter  = ["text", "lcov"]
+coverageDir = "coverage"

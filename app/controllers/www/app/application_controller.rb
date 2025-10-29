@@ -4,7 +4,14 @@ module Www
   module App
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
+      include ::RateLimit
+      include ::DefaultUrlOptions
+      include ::Www::Concerns::Regionalization
+
       allow_browser versions: :modern
+
+      before_action :set_locale
+      before_action :set_timezone
 
       protected
 
