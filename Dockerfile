@@ -170,7 +170,7 @@ ARG BUN_VERSION
 ARG GITHUB_ACTIONS
 ENV COMMIT_HASH="${COMMIT_HASH}"
 ENV HOME=/home/jit
-WORKDIR /home/jit/main
+WORKDIR /home/jit/workspace
 
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \

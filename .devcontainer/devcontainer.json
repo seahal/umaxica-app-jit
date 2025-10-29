@@ -11,7 +11,7 @@
 		"minio",
 		"kafka-ui"
 	],
-	"workspaceFolder": "/home/jit/main",
+	"workspaceFolder": "/home/jit/workspace",
 	"overrideCommand": false,
 	"remoteEnv": {
 		"EDITOR": "code --wait --reuse-window"
