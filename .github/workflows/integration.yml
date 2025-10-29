@@ -53,6 +53,8 @@ jobs:
         run: bundle exec bundle audit check --update
       - name: Run bun audit
         run: bun audit
+      - name: Check unused routing config
+        run: bundle exec rails routes --unused
 
   lint-ruby:
     name: Ruby Linting
@@ -107,6 +109,7 @@ jobs:
       BUNDLE_JOBS: 4
       # App Configuration
       NAME: UMAXICA
+      BRAND_NAME: UMAXICA
       PORT: 3000
       # Identifiers
       SINGLETON_DEFAULT_SALT: hoge
@@ -213,14 +216,24 @@ jobs:
         with:
           ruby-version: '3.4.7'
           bundler-cache: true
-#      - name: Setup tmate session
-#        uses: mxschmitt/action-tmate@v3
       - name: Setup test databases
         run: |
           bin/rails db:create
           bin/rails db:migrate
       - name: Run Rails tests
         run: bundle exec rails test
+      # - name: Run Rails Server tests
+      #   run: |
+      #     RAILS_ENV=production bundle exec rails server -d
+      #     sleep 3
+      #     HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://com.localhost:3000)
+      #     if [ "$HTTP_CODE" = "200" ]; then
+      #       echo "Success: Server returned HTTP $HTTP_CODE"
+      #       exit 0
+      #     else
+      #       echo "Error: Server returned HTTP $HTTP_CODE (expected 200)"
+      #       exit 1
+      #     fi
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4

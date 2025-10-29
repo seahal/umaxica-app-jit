@@ -95,7 +95,7 @@ bundle exec rubocop
 bundle exec rubocop --fix
 
 # ERB template linting
-bundle exec erblint app/views/
+bundle exec erb_lint app/views/
 
 # JavaScript/TypeScript linting and formatting
 bun run lint

@@ -67,14 +67,21 @@ class Help::App::ApplicationHelperTest < ActionView::TestCase
   # Tests for get_title
   test "get_title returns NAME when title blank" do
     original_name = ENV["NAME"]
+    original_brand_name = ENV["BRAND_NAME"]
     original_lower = ENV["name"]
     ENV["NAME"] = "TestProduct"
+    ENV.delete("BRAND_NAME")
     ENV["name"] = "TestProduct"
 
     assert_equal "TestProduct", get_title(nil)
     assert_equal "TestProduct", get_title("")
   ensure
     ENV["NAME"] = original_name
+    if original_brand_name.nil?
+      ENV.delete("BRAND_NAME")
+    else
+      ENV["BRAND_NAME"] = original_brand_name
+    end
     if original_lower.nil?
       ENV.delete("name")
     else
@@ -84,13 +91,44 @@ class Help::App::ApplicationHelperTest < ActionView::TestCase
 
   test "get_title concatenates title with NAME when present" do
     original_name = ENV["NAME"]
+    original_brand_name = ENV["BRAND_NAME"]
     original_lower = ENV["name"]
     ENV["NAME"] = "TestProduct"
+    ENV.delete("BRAND_NAME")
     ENV["name"] = "TestProduct"
 
     assert_equal "Dashboard | TestProduct", get_title("Dashboard")
   ensure
     ENV["NAME"] = original_name
+    if original_brand_name.nil?
+      ENV.delete("BRAND_NAME")
+    else
+      ENV["BRAND_NAME"] = original_brand_name
+    end
+    if original_lower.nil?
+      ENV.delete("name")
+    else
+      ENV["name"] = original_lower
+    end
+  end
+
+  test "get_title prefers BRAND_NAME when available" do
+    original_name = ENV["NAME"]
+    original_brand_name = ENV["BRAND_NAME"]
+    original_lower = ENV["name"]
+    ENV["NAME"] = "LegacyProduct"
+    ENV["BRAND_NAME"] = "NewBrand"
+    ENV["name"] = "LegacyProduct"
+
+    assert_equal "NewBrand", get_title(nil)
+    assert_equal "Dashboard | NewBrand", get_title("Dashboard")
+  ensure
+    ENV["NAME"] = original_name
+    if original_brand_name.nil?
+      ENV.delete("BRAND_NAME")
+    else
+      ENV["BRAND_NAME"] = original_brand_name
+    end
     if original_lower.nil?
       ENV.delete("name")
     else

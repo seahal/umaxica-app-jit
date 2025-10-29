@@ -26,4 +26,60 @@ class DocumentTest < ActiveSupport::TestCase
   test "the truth" do
     assert true
   end
+
+  test "should inherit from BusinessesRecord" do
+    assert Document < BusinessesRecord
+  end
+
+  test "should create document with title and description" do
+    document = Document.create(
+      title: "Test Document",
+      description: "Test Description"
+    )
+    assert document.persisted?
+    assert_equal "Test Document", document.title
+    assert_equal "Test Description", document.description
+  end
+
+  test "should encrypt title" do
+    document = Document.create(
+      title: "Secret Title",
+      description: "Public Description"
+    )
+    raw_data = Document.connection.execute("SELECT title FROM documents WHERE id = '#{document.id}'").first
+    assert_not_equal "Secret Title", raw_data["title"] if raw_data
+  end
+
+  test "should encrypt description" do
+    document = Document.create(
+      title: "Public Title",
+      description: "Secret Description"
+    )
+    raw_data = Document.connection.execute("SELECT description FROM documents WHERE id = '#{document.id}'").first
+    assert_not_equal "Secret Description", raw_data["description"] if raw_data
+  end
+
+  test "should update document title" do
+    document = Document.create(title: "Original Title", description: "Description")
+    document.update(title: "Updated Title")
+    assert_equal "Updated Title", document.reload.title
+  end
+
+  test "should update document description" do
+    document = Document.create(title: "Title", description: "Original Description")
+    document.update(description: "Updated Description")
+    assert_equal "Updated Description", document.reload.description
+  end
+
+  test "should allow nil title" do
+    document = Document.create(title: nil, description: "Description")
+    assert document.persisted?
+    assert_nil document.title
+  end
+
+  test "should allow nil description" do
+    document = Document.create(title: "Title", description: nil)
+    assert document.persisted?
+    assert_nil document.description
+  end
 end

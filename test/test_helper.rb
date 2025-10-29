@@ -2,6 +2,7 @@
 
 if ENV["RAILS_ENV"] == "test"
   require "simplecov"
+  SimpleCov.minimum_coverage 65
   SimpleCov.start "rails"
 end
 
@@ -15,5 +16,9 @@ module ActiveSupport
     # parallelize(workers: :number_of_processors)
 
     fixtures :all
+
+    def brand_name
+      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+    end
   end
 end

@@ -1,5 +1,6 @@
 # App Configuration
 NAME=UMAXICA
+BRAND_NAME=UMAXICA
 # Ruyb Configuration
 RUBY_YJIT_ENABLE=1
 BUNDLE_JOBS=8
@@ -18,7 +19,6 @@ IDENTIFIER_INSTANCE_ID=0123456789
 # Region
 APEX_REGION=true
 REGION_CODE=jp
-EDGE_STAFF_URL=localhost:5133
 # Database Configuration
 ## Redis (use local Redis service inside Compose)
 VALKEY_URL=redis://valkey:6379/0
@@ -80,5 +80,8 @@ NEWS_STAFF_URL=news.org.localhost
 HELP_CORPORATE_URL=help.com.localhost
 HELP_SERVICE_URL=help.app.localhost
 HELP_STAFF_URL=help.org.localhost
-EDGE_CORPORATE_URL=localhost:5131
-EDGE_SERVICE_URL=localhost:5132
+EDGE_CORPORATE_URL=localhost:5130
+EDGE_SERVICE_URL=localhost:5131
+EDGE_STAFF_URL=localhost:5132
+EDGE_STATUS_URL=localhost:5133
+ASSET_URL=asset.localhost

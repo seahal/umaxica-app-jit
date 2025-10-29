@@ -9,6 +9,7 @@ bundle config set path 'vendor/bundle'
 #sudo chown -R 1000:1000 /home/jit/vendor
 #sudo chown -R 1000:1000 /home/jit/node_modules
 sudo rm -rf /home/jit/.npm
+sudo chown -R 1000:1000 ../
 
 ## Install Ruby/JS dependencies
 bun install

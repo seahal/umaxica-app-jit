@@ -183,12 +183,12 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get apex_org_root_url
 
     assert_select "head", count: 1 do
-      assert_select "title", count: 1, text: "#{ ENV.fetch('NAME') }"
+      assert_select "title", count: 1, text: brand_name
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
-        assert_select "h1", text: "#{ ENV.fetch('NAME') } (apex, org)"
+        assert_select "h1", text: "#{ brand_name } (apex, org)"
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do

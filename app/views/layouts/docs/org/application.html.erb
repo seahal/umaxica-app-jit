@@ -14,7 +14,7 @@
 <%= render "concern/flash_messages" %>
 <header>
   <h1 class="container mx-auto mt-28 px-5 flex">
-    <a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/"><%= ENV.fetch('NAME') %> (docs, org)</a></h1>
+    <a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (docs, org)</a></h1>
 </header>
 
 <hr>
@@ -36,7 +36,7 @@
     <li>Terms</li>
     <li>Privacy</li>
     <li>Accessibility</li>
-    <li>© <%= Time.now.year %> <%= ENV.fetch('NAME') %></li>
+    <li>© <%= Time.now.year %> <%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %></li>
   </ul>
   <%= render "concern/copyright" %>
 </footer>

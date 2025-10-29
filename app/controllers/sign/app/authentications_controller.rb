@@ -4,7 +4,7 @@ module Sign::App
     include ::Authn
 
     def new
-      raise if logged_in?
+      raise StandardError, "User is already logged in" if logged_in?
     end
 
     def edit

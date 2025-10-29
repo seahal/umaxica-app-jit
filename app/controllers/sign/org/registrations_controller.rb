@@ -5,14 +5,13 @@ module Sign
         @registration_methods = [
           {
             key: :email,
-            path: new_sign_app_registration_email_path
+            path: new_sign_org_registration_email_path
           },
           {
             key: :telephone,
-            path: new_sign_app_registration_telephone_path
+            path: new_sign_org_registration_telephone_path
           }
         ]
-
         @social_providers = [
           {
             key: :google,
@@ -24,9 +23,8 @@ module Sign
             key: :apple,
             path: "/sign/apple",
             method: :post,
-            data: { turbo: false }
-          }
-        ]
+            data: { turbo: false
+          } } ]
       end
     end
   end

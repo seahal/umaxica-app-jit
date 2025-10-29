@@ -18,12 +18,14 @@ Rails.application.routes.draw do
         # version
         namespace :v1 do
           resource :health, only: :show
-          namespace :beacon do
-            resources :emails, only: %i[show]
-          end
-          namespace :persona do
-            resources :avatars
-          end
+          # TODO: Implement beacon email tracking
+          # namespace :beacon do
+          #   resources :emails, only: %i[show]
+          # end
+          # TODO: Implement persona avatar management
+          # namespace :persona do
+          #   resources :avatars
+          # end
           namespace :inquiry do
             resources :valid_email_addresses, only: %i[show]
             resources :valid_telephone_numbers, only: %i[create]
