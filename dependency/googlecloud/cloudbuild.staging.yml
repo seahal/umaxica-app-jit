@@ -11,7 +11,7 @@ steps:
           build-essential ca-certificates curl git \
           libpq-dev libvips libvips-dev libyaml-dev \
           libffi-dev libreadline-dev zlib1g-dev \
-          pkg-config tzdata libssl-dev npm
+          pkg-config tzdata libssl-dev npm unzip
         rm -rf /var/lib/apt/lists/*
         # --- mise install ---
         curl -fsSL https://mise.run | sh
@@ -34,6 +34,8 @@ steps:
         rm -rf docs/
         rm -rf tmp/
         rm -rf log/
+        rm -rf docker/
+        rm -rf dependency/
         # --- Assets build ---
         SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
         # trying to use bun
@@ -47,7 +49,6 @@ steps:
         set -euo pipefail
         export AWS_REGION=auto
         export AWS_S3_FORCE_PATH_STYLE=true
-        aws --version
         aws s3 sync public/ "s3://$_R2_BUCKET/" \
           --endpoint-url "$_R2_ENDPOINT" \
           --no-progress

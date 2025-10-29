@@ -117,8 +117,6 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
         assert_response :redirect, "Expected redirect to strip default preferences"
         follow_redirect!
         assert_response :success
-      else
-        assert_response :success, "Expected success when requesting #{combo.join('/')}"
       end
 
       persisted_after_initial = JSON.parse(signed_cookie(:apex_app_preferences))
