@@ -11,15 +11,19 @@ steps:
           build-essential ca-certificates curl git \
           libpq-dev libvips libvips-dev libyaml-dev \
           libffi-dev libreadline-dev zlib1g-dev \
-          pkg-config tzdata libssl-dev npm
+          pkg-config tzdata libssl-dev npm unzip
         rm -rf /var/lib/apt/lists/*
         # --- mise install ---
         curl -fsSL https://mise.run | sh
         export PATH="$$HOME/.local/bin:$$PATH"
         export PATH="$$HOME/.local/share/mise/shims:$$PATH"
-        # Install the latest Ruby and Bun
-        mise install ruby@latest bun@latest
-        mise use -g ruby@latest bun@latest
+        # --- Bun install ---
+        npm install -g bun
+        # --- Ruby install ---
+        mise install ruby@latest
+        mise use -g ruby@latest
+        # --- JS deps ---
+        bun install
         # --- Ruby deps ---
         gem install --no-document bundler
         bundle config set path vendor/bundle
@@ -27,17 +31,15 @@ steps:
         bundle config set jobs "$$(nproc)"
         bundle config set retry 3
         bundle install
-        # --- JS deps ---
-        bun install
         # --- Clean up files ---
         rm -rf public/assets
         rm -rf docs/
         rm -rf tmp/
         rm -rf log/
+        rm -rf docker/
+        rm -rf dependency/
         # --- Assets build ---
         SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
-        # trying to use bun
-        # curl -fsSL https://bun.sh/install | bash
     id: Build assets with mise (ruby/node/bun latest)
     entrypoint: bash
   - name: 'public.ecr.aws/aws-cli/aws-cli:latest'
@@ -47,7 +49,6 @@ steps:
         set -euo pipefail
         export AWS_REGION=auto
         export AWS_S3_FORCE_PATH_STYLE=true
-        aws --version
         aws s3 sync public/ "s3://$_R2_BUCKET/" \
           --endpoint-url "$_R2_ENDPOINT" \
           --no-progress
@@ -67,7 +68,6 @@ steps:
       - '--file'
       - Dockerfile
     id: Docker build
-    # TODO: add here trivy scan step
   - name: gcr.io/cloud-builders/docker
     args:
       - push
@@ -85,20 +85,19 @@ steps:
           --quiet
     entrypoint: bash
 timeout: 3600s
+options:
+  logging: CLOUD_LOGGING_ONLY
 substitutions:
+  _R2_BUCKET: umaxica-production-cloudflare-r2-asset-jit-jp
   _R2_ENDPOINT: 'https://c90999d8a4039c63d02b7a7b1545d211.r2.cloudflarestorage.com/'
   _IMAGE: '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE_NAME}:${SHORT_SHA}'
   _REGION: asia-northeast1
   _REPO: umaxica-app
   _IMAGE_NAME: sample
   _SERVICE: umaxica-app-jit-staging-apex
-  _R2_BUCKET: umaxica-production-cloudflare-r2-asset-jit-jp
 availableSecrets:
   secretManager:
     - versionName: projects/$PROJECT_ID/secrets/AWS_ACCESS_KEY_ID/versions/latest
       env: AWS_ACCESS_KEY_ID
     - versionName: projects/$PROJECT_ID/secrets/AWS_SECRET_ACCESS_KEY/versions/latest
       env: AWS_SECRET_ACCESS_KEY
-options:
-  logging: CLOUD_LOGGING_ONLY
-#  machineType: 'E2-STANDARD-2'
