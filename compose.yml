@@ -1,6 +1,6 @@
 name: "jit"
 services:
-  main:
+  core:
     build:
       context: .
       dockerfile: ./Dockerfile
