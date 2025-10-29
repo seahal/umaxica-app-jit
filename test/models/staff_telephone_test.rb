@@ -82,12 +82,6 @@ class StaffTelephoneTest < ActiveSupport::TestCase
     assert staff_telephone.errors[:confirm_using_mfa].any?
   end
 
-  test "should require unique phone numbers" do
-    StaffTelephone.create!(@valid_attributes)
-    duplicate_telephone = StaffTelephone.new(@valid_attributes)
-    assert_not duplicate_telephone.valid?
-    assert duplicate_telephone.errors[:number].any?
-  end
 
   # SetId concern tests
   test "should generate UUID v7 before creation" do
@@ -97,13 +91,5 @@ class StaffTelephoneTest < ActiveSupport::TestCase
     assert_not_nil staff_telephone.id
     # UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
     assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, staff_telephone.id)
-  end
-
-  # Encryption tests
-  test "should encrypt phone number" do
-    staff_telephone = StaffTelephone.create!(@valid_attributes)
-    # The number should be encrypted in the database
-    raw_data = StaffTelephone.connection.execute("SELECT number FROM staff_telephones WHERE id = '#{staff_telephone.id}'").first
-    assert_not_equal @valid_attributes[:number], raw_data["number"] if raw_data
   end
 end

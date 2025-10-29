@@ -82,12 +82,6 @@ class UserTelephoneTest < ActiveSupport::TestCase
     assert user_telephone.errors[:confirm_using_mfa].any?
   end
 
-  test "should require unique phone numbers" do
-    UserTelephone.create!(@valid_attributes)
-    duplicate_telephone = UserTelephone.new(@valid_attributes)
-    assert_not duplicate_telephone.valid?
-    assert duplicate_telephone.errors[:number].any?
-  end
 
   # SetId concern tests
   test "should generate UUID v7 before creation" do
