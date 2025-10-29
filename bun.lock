@@ -4,7 +4,7 @@
     "": {
       "name": "app",
       "dependencies": {
-        "@hotwired/turbo-rails": "^8.0.18",
+        "@hotwired/turbo-rails": "^8.0.20",
         "react": "^19.2.0",
         "react-aria-components": "^1.13.0",
         "react-dom": "^19.2.0",
@@ -57,9 +57,9 @@
 
     "@formatjs/intl-localematcher": ["@formatjs/intl-localematcher@0.6.2", "", { "dependencies": { "tslib": "^2.8.0" } }, ""],
 
-    "@hotwired/turbo": ["@hotwired/turbo@8.0.18", "", {}, "sha512-dG0N7khQsP8sujclodQE3DYkI4Lq7uKA04fhT0DCC/DwMgn4T4WM3aji6EC6+iCfABQeJncY0SraXqVeOq0vvQ=="],
+    "@hotwired/turbo": ["@hotwired/turbo@8.0.20", "", {}, "sha512-IilkH/+h92BRLeY/rMMR3MUh1gshIfdra/qZzp/Bl5FmiALD/6sQZK/ecxSbumeyOYiWr/JRI+Au1YQmkJGnoA=="],
 
-    "@hotwired/turbo-rails": ["@hotwired/turbo-rails@8.0.18", "", { "dependencies": { "@hotwired/turbo": "^8.0.18", "@rails/actioncable": ">=7.0" } }, "sha512-iRxd922VSTVH0NzlLDx9T9S8Ep0NPnrLCKva31WIMLNApJgUZKa/a90EFiBa2G6Do+x4xuKZk53dlweiwTyXkQ=="],
+    "@hotwired/turbo-rails": ["@hotwired/turbo-rails@8.0.20", "", { "dependencies": { "@hotwired/turbo": "^8.0.20", "@rails/actioncable": ">=7.0" } }, "sha512-4aYkYF9XMKL7ZZPfgElq15+60osZOwMwhztE4myKQYEzCPvaPUxwZH301tOrBNtWUwOD+TNOm1Hrpeaq22RX9A=="],
 
     "@internationalized/date": ["@internationalized/date@3.10.0", "", { "dependencies": { "@swc/helpers": "^0.5.0" } }, ""],
 
