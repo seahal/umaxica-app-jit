@@ -91,7 +91,7 @@ substitutions:
   _REGION: asia-northeast1
   _REPO: umaxica-app
   _IMAGE_NAME: sample
-  _SERVICE: sample
+  _SERVICE: umaxica-app-jit-staging-apex
   _R2_BUCKET: umaxica-production-cloudflare-r2-asset-jit-jp
 availableSecrets:
   secretManager:

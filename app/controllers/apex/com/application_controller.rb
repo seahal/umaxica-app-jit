@@ -6,7 +6,7 @@ module Apex
       include Pundit::Authorization
       include ::RateLimit
       include ::DefaultUrlOptions
-      include ::Regionalization
+      include ::Apex::Concerns::Regionalization
 
       allow_browser versions: :modern
 

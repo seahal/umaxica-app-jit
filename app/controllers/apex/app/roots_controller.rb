@@ -114,7 +114,9 @@ module Apex
           actual_present = request.query_parameters.key?(key)
           actual = request.query_parameters[key]&.to_s&.downcase
 
-          if expected == default
+          if key == "ri"
+            !actual_present || actual != expected
+          elsif expected == default
             actual_present
           else
             actual != expected
@@ -126,7 +128,7 @@ module Apex
         query = request.query_parameters.except(*PREFERENCE_KEYS)
 
         resolved.each do |key, value|
-          next if value == DEFAULT_PREFERENCES[key]
+          next if key != "ri" && value == DEFAULT_PREFERENCES[key]
 
           query[key] = value
         end
