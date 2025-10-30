@@ -1,0 +1,2 @@
+class ContactCategory < ApplicationRecord
+end

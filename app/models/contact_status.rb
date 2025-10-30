@@ -1,0 +1,2 @@
+class ContactStatus < ApplicationRecord
+end
