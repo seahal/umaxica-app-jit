@@ -4,7 +4,7 @@ source "https://rubygems.org"
 ruby "3.4.7"
 
 # rake
-gem "rake", "13.2.1"
+gem "rake", "13.3.1"
 # rack
 gem "rack"
 # Rails
