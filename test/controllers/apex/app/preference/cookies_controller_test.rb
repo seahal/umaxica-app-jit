@@ -76,4 +76,3 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
   end
   # rubocop:enable Minitest/MultipleAssertions
 end
-

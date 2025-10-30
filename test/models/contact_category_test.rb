@@ -45,4 +45,3 @@ class ContactCategoryTest < ActiveSupport::TestCase
   end
   # rubocop:enable Minitest/MultipleAssertions
 end
-

@@ -68,4 +68,3 @@ class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_response :unprocessable_content
   end
 end
-

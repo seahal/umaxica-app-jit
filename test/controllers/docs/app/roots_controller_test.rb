@@ -38,4 +38,3 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
   end
   # rubocop:enable Minitest/MultipleAssertions
 end
-

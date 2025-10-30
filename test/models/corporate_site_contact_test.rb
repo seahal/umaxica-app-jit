@@ -322,4 +322,3 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     assert_nil contact.contact_status_title
   end
 end
-

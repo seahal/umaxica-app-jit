@@ -68,4 +68,3 @@ class TelephoneTest < ActiveSupport::TestCase
   end
   # rubocop:enable Minitest/MultipleAssertions
 end
-

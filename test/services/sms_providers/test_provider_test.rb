@@ -34,4 +34,3 @@ class SmsProviders::TestProviderTest < ActiveSupport::TestCase
     end
   end
 end
-

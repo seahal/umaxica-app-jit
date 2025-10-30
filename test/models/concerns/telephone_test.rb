@@ -72,4 +72,3 @@ class TelephoneTest < ActiveSupport::TestCase
     assert_predicate duplicate.errors[:number], :any?
   end
 end
-

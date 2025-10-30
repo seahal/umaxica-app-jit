@@ -141,4 +141,3 @@ class GoogleAuthTest < ActiveSupport::TestCase
     assert_equal @user, google_auth.user
   end
 end
-

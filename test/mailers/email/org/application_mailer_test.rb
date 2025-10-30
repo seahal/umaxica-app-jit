@@ -30,4 +30,3 @@ class Email::Org::ApplicationMailerTest < ActionMailer::TestCase
     assert_equal "mailer/org/mailer", Email::Org::ApplicationMailer._layout
   end
 end
-

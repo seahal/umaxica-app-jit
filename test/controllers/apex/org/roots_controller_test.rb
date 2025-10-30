@@ -221,4 +221,3 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   end
   # rubocop:enable Minitest/MultipleAssertions
 end
-

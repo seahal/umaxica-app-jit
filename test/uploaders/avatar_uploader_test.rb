@@ -34,4 +34,3 @@ class AvatarUploaderTest < ActiveSupport::TestCase
     assert_equal "something.jpg", @uploader.filename
   end
 end
-

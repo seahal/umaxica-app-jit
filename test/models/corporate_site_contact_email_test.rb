@@ -353,4 +353,3 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     assert_not email.can_resend_verifier?
   end
 end
-

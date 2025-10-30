@@ -351,4 +351,3 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_response :success
   end
 end
-

@@ -387,4 +387,3 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     assert_not telephone.can_resend_otp?
   end
 end
-

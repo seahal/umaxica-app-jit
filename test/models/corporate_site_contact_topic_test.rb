@@ -67,4 +67,3 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
     assert_not topic.deletable
   end
 end
-

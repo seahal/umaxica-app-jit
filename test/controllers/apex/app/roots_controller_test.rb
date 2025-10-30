@@ -442,4 +442,3 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect! if response.redirect?
   end
 end
-

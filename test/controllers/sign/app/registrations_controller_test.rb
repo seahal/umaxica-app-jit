@@ -67,4 +67,3 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
   # rubocop:enable Minitest/MultipleAssertions
 end
-

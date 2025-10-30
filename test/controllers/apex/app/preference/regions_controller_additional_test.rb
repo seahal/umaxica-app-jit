@@ -214,4 +214,3 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
     assert_equal "jp", preferences["ri"]
   end
 end
-

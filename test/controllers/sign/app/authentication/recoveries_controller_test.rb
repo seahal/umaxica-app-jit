@@ -22,4 +22,3 @@ class Sign::App::Authentication::RecoveryCodesControllerTest < ActionDispatch::I
   end
   # rubocop:enable Minitest/MultipleAssertions
 end
-

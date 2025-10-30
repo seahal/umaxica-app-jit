@@ -66,4 +66,3 @@ class IdentifiersRecordTest < ActiveSupport::TestCase
     assert_respond_to IdentifiersRecord, :primary_key
   end
 end
-

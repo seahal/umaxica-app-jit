@@ -33,4 +33,3 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
     assert_match(/You must define #resolve/, error.message)
   end
 end
-

@@ -20,4 +20,3 @@ class Apex::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   end
   # rubocop:enable Minitest/MultipleAssertions
 end
-

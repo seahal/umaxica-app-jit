@@ -70,4 +70,3 @@ class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
     assert_not tbotp.encrypted_attribute? :id
   end
 end
-

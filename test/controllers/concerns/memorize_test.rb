@@ -106,4 +106,3 @@ class MemorizeConcernTest < ActiveSupport::TestCase
     assert_equal "new_value", @memorize["key"]
   end
 end
-

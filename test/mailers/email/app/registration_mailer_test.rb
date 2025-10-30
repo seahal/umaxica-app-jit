@@ -32,4 +32,3 @@ class Email::App::RegistrationMailerTest < ActionMailer::TestCase
     assert_equal [ "from@umaxica.net" ], mail.from
   end
 end
-

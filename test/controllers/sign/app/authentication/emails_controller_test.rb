@@ -40,4 +40,3 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     assert_response :success
   end
 end
-

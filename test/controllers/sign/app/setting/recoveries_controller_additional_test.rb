@@ -103,4 +103,3 @@ class Sign::App::Setting::RecoveriesControllerAdditionalTest < ActionDispatch::I
   #   assert saved_code.recovery_code_digest.include?("argon2"), "Recovery code digest should be hashed with Argon2"
   # end
 end
-
