@@ -32,12 +32,7 @@ steps:
         bundle config set retry 3
         bundle install
         # --- Clean up files ---
-        rm -rf public/assets
-        rm -rf docs/
-        rm -rf tmp/
-        rm -rf log/
-        rm -rf docker/
-        rm -rf dependency/
+        rm -rf public/assets docs/ tmp/ log/ docker/ dependency/
         # --- Assets build ---
         SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
     id: Build assets with mise (ruby/node/bun latest)
@@ -73,17 +68,17 @@ steps:
       - push
       - asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample
     id: Docker push
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-    args:
-      - '-lc'
-      - |
-        set -euxo pipefail
-        gcloud run deploy "${_SERVICE}" \
-          --image "asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:latest" \
-          --region "${_REGION}" \
-          --project "$PROJECT_ID" \
-          --quiet
-    entrypoint: bash
+#  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+#    args:
+#      - '-lc'
+#      - |
+#        set -euxo pipefail
+#        gcloud run deploy "${_SERVICE}" \
+#          --image "asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:latest" \
+#          --region "${_REGION}" \
+#          --project "$PROJECT_ID" \
+#          --quiet
+#    entrypoint: bash
 timeout: 3600s
 options:
   logging: CLOUD_LOGGING_ONLY

@@ -98,7 +98,7 @@ jobs:
   test-rails:
     name: Ruby on Rails Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
       # Rails Configuration
       RAILS_ENV: test
@@ -292,11 +292,11 @@ jobs:
   runnability-check:
     name: Runnability Checks
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
       # Rails Configuration
-      RAILS_ENV: production
-      RACK_ENV: production
+      RAILS_ENV: test
+      RACK_ENV: test
       RAILS_MAX_THREADS: 5
       # Redis (use local Redis service inside Compose)
       REDIS_URL: redis://redis:6379/0

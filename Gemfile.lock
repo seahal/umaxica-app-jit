@@ -833,7 +833,7 @@ DEPENDENCIES
   rack-mini-profiler
   rails (~> 8.1, >= 8.1.1)
   rails_live_reload
-  rake
+  rake (~> 13.3.1, >= 13.3.1)
   redis
   rolify
   rotp
