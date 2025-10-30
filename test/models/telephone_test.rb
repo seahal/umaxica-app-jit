@@ -11,6 +11,7 @@
 #
 require "test_helper"
 
+
 class TelephoneTest < ActiveSupport::TestCase
   test "includes confirm attribute accessors" do
     telephone = StaffTelephone.new
@@ -27,6 +28,7 @@ class TelephoneTest < ActiveSupport::TestCase
   # Telephone numbers contain digits and symbols, so downcasing is not applicable
   # This test has been removed as the downcase behavior was removed from the Telephone concern
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "confirm_policy acceptance skipped when number missing but pass_code present" do
     validator = StaffTelephone.validators_on(:confirm_policy).find do |v|
       v.is_a?(ActiveModel::Validations::AcceptanceValidator)
@@ -44,7 +46,9 @@ class TelephoneTest < ActiveSupport::TestCase
     assert condition.call(skip_validation)
     assert_not condition.call(require_validation)
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "pass_code validation skipped when pass_code missing but number present" do
     validator = StaffTelephone.validators_on(:pass_code).find do |v|
       v.is_a?(ActiveModel::Validations::PresenceValidator)
@@ -62,4 +66,6 @@ class TelephoneTest < ActiveSupport::TestCase
     assert condition.call(skip_validation)
     assert_not condition.call(require_validation)
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end
+

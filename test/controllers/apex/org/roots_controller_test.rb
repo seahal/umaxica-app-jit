@@ -2,6 +2,7 @@
 
 require "test_helper"
 
+
 class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get apex_org_root_url
@@ -197,6 +198,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   #   }
   #   assert_select("html[lang=?]", "en")
   # end
+  # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get apex_org_root_url
 
@@ -217,4 +219,6 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end
+

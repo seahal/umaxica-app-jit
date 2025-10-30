@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class ContactStatusTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
     assert_operator ContactStatus, :<, GuestsRecord
@@ -33,6 +34,7 @@ class ContactStatusTest < ActiveSupport::TestCase
     end
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     status = ContactStatus.create!(title: "test_status")
 
@@ -41,4 +43,6 @@ class ContactStatusTest < ActiveSupport::TestCase
     assert_not_nil status.created_at
     assert_not_nil status.updated_at
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end
+

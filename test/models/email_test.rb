@@ -13,6 +13,7 @@
 #
 require "test_helper"
 
+
 class AccountTest < ActiveSupport::TestCase
   [ StaffEmail, UserEmail ].each do |model|
     test "#{model} valid with address and confirm_policy" do
@@ -42,6 +43,7 @@ class AccountTest < ActiveSupport::TestCase
       assert_equal mail_address.downcase, rec.reload.address
     end
 
+    # rubocop:disable Minitest/MultipleAssertions
     test "#{model} pass_code validations when address nil" do
       m = model.new(address: nil)
       m.pass_code = 123456
@@ -60,6 +62,7 @@ class AccountTest < ActiveSupport::TestCase
 
       assert_not m.valid?
     end
+    # rubocop:enable Minitest/MultipleAssertions
 
     test "#{model} invalid when both address and pass_code nil" do
       m = model.new(address: nil, pass_code: nil)
@@ -68,3 +71,4 @@ class AccountTest < ActiveSupport::TestCase
     end
   end
 end
+

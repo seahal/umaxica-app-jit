@@ -4,3 +4,6 @@ import "@hotwired/turbo-rails";
 
 // Passkeys (Auth App)
 import "./controllers/passkey.js";
+
+// Help Center (React Aria experience)
+import "./help/com/landing";

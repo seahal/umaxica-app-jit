@@ -26,6 +26,7 @@
 #
 require "test_helper"
 
+
 class GoogleAuthTest < ActiveSupport::TestCase
   setup do
     @user = User.new # Assume User model exists
@@ -69,6 +70,7 @@ class GoogleAuthTest < ActiveSupport::TestCase
   # end
 
   # Field validation tests
+  # rubocop:disable Minitest/MultipleAssertions
   test "should allow all fields to be present" do
     google_auth = GoogleAuth.new(@valid_attributes)
 
@@ -81,7 +83,9 @@ class GoogleAuthTest < ActiveSupport::TestCase
     assert_equal @valid_attributes[:name], google_auth.name
     assert_equal @valid_attributes[:provider], google_auth.provider
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should handle optional fields as nil" do
     minimal_attributes = {
       user: @user,
@@ -97,6 +101,7 @@ class GoogleAuthTest < ActiveSupport::TestCase
     assert_nil google_auth.name
     assert_nil google_auth.access_token
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # Token and expiration tests
   test "should store access and refresh tokens" do
@@ -136,3 +141,4 @@ class GoogleAuthTest < ActiveSupport::TestCase
     assert_equal @user, google_auth.user
   end
 end
+

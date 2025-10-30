@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class CorporateSiteContactTopicTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
     assert_operator CorporateSiteContactTopic, :<, GuestsRecord
@@ -40,6 +41,7 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
     assert_equal 36, topic.id.length
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     contact = CorporateSiteContact.create!(category: :general, status: :email_pending)
     topic = CorporateSiteContactTopic.create!(corporate_site_contact: contact)
@@ -49,6 +51,7 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
     assert_not_nil topic.created_at
     assert_not_nil topic.updated_at
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should have all expected attributes" do
     contact = CorporateSiteContact.create!(category: :general, status: :email_pending)
@@ -64,3 +67,4 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
     assert_not topic.deletable
   end
 end
+

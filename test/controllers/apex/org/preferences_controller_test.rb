@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class Apex::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     get apex_org_preference_url
@@ -7,6 +8,7 @@ class Apex::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should display i18n content in preferences page" do
     get apex_org_preference_url
 
@@ -16,4 +18,6 @@ class Apex::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a", text: I18n.t("apex.org.preferences.region_settings")
     assert_select "a", text: I18n.t("apex.org.preferences.theme_settings")
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end
+

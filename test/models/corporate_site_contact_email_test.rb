@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class CorporateSiteContactEmailTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
     assert_operator CorporateSiteContactEmail, :<, GuestsRecord
@@ -120,6 +121,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     assert_equal 36, email.id.length
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     contact = corporate_site_contacts(:one)
     email = CorporateSiteContactEmail.create!(
@@ -133,7 +135,9 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     assert_not_nil email.created_at
     assert_not_nil email.updated_at
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have all expected attributes" do
     contact = corporate_site_contacts(:one)
     email = CorporateSiteContactEmail.create!(
@@ -148,6 +152,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     assert_respond_to email, :remaining_views
     assert_respond_to email, :expires_at
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should have default values" do
     contact = corporate_site_contacts(:one)
@@ -204,6 +209,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
   end
 
   # Verifier tests
+  # rubocop:disable Minitest/MultipleAssertions
   test "should generate verifier code" do
     contact = corporate_site_contacts(:one)
     email = CorporateSiteContactEmail.create!(
@@ -221,6 +227,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     assert_not_nil email.verifier_expires_at
     assert_equal 3, email.verifier_attempts_left
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should verify correct code" do
     contact = corporate_site_contacts(:one)
@@ -346,3 +353,4 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     assert_not email.can_resend_verifier?
   end
 end
+

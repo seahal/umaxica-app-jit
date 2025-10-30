@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class CachesRecordTest < ActiveSupport::TestCase
   test "is abstract and inherits from ApplicationRecord" do
     assert_operator CachesRecord, :<, ApplicationRecord
@@ -29,12 +30,14 @@ class CachesRecordTest < ActiveSupport::TestCase
     assert_not_nil writing_config
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should inherit all ActiveRecord functionality" do
     assert_respond_to CachesRecord, :table_name
     assert_respond_to CachesRecord, :primary_key
     assert_respond_to CachesRecord, :find_by_sql
     assert_respond_to CachesRecord, :transaction
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should be configured for multi-database setup" do
     # Verify this is part of the multi-database architecture
@@ -44,3 +47,4 @@ class CachesRecordTest < ActiveSupport::TestCase
     assert_not_nil config
   end
 end
+

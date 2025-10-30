@@ -2,11 +2,13 @@
 
 require "test_helper"
 
+
 class SmsProviders::TestProviderTest < ActiveSupport::TestCase
   def setup
     @provider = SmsProviders::Test.new
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should send message and return result" do
     result = @provider.send_message(
       to: "+1234567890",
@@ -20,6 +22,7 @@ class SmsProviders::TestProviderTest < ActiveSupport::TestCase
     assert_equal "test", result[:provider]
     assert_not_nil result[:sent_at]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should validate required parameters" do
     assert_raises(ArgumentError) do
@@ -31,3 +34,4 @@ class SmsProviders::TestProviderTest < ActiveSupport::TestCase
     end
   end
 end
+

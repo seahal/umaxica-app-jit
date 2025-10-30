@@ -1,6 +1,8 @@
 require "test_helper"
 
+
 class Sign::App::Authentication::RecoveryCodesControllerTest < ActionDispatch::IntegrationTest
+  # rubocop:disable Minitest/MultipleAssertions
   test "should get new" do
     get new_sign_app_authentication_recovery_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
 
@@ -18,4 +20,6 @@ class Sign::App::Authentication::RecoveryCodesControllerTest < ActionDispatch::I
     #    assert_select "a[href=?]", new_sign_app_authentication_path,                  I18n.t("sign.app.authentication.new.back")
     assert_response :success
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end
+

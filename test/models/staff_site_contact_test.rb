@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class StaffSiteContactTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
     assert_operator StaffSiteContact, :<, GuestsRecord
@@ -69,6 +70,7 @@ class StaffSiteContactTest < ActiveSupport::TestCase
     assert_respond_to contact, :updated_at
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have all expected attributes" do
     contact = staff_site_contacts(:one)
 
@@ -78,6 +80,7 @@ class StaffSiteContactTest < ActiveSupport::TestCase
     assert_respond_to contact, :description
     assert_respond_to contact, :ip_address
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # Foreign key constraint tests
   test "should reference contact_category by title" do
@@ -130,3 +133,4 @@ class StaffSiteContactTest < ActiveSupport::TestCase
     assert_nil contact.contact_status_title
   end
 end
+

@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
     assert_operator CorporateSiteContactTelephone, :<, GuestsRecord
@@ -108,6 +109,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     assert_equal 36, telephone.id.length
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     contact = corporate_site_contacts(:one)
     telephone = CorporateSiteContactTelephone.create!(
@@ -121,7 +123,9 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     assert_not_nil telephone.created_at
     assert_not_nil telephone.updated_at
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have all expected attributes" do
     contact = corporate_site_contacts(:one)
     telephone = CorporateSiteContactTelephone.create!(
@@ -136,6 +140,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     assert_respond_to telephone, :remaining_views
     assert_respond_to telephone, :expires_at
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should have default values" do
     contact = corporate_site_contacts(:one)
@@ -238,6 +243,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
   end
 
   # OTP tests
+  # rubocop:disable Minitest/MultipleAssertions
   test "should generate OTP code" do
     contact = corporate_site_contacts(:one)
     telephone = CorporateSiteContactTelephone.create!(
@@ -255,6 +261,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     assert_not_nil telephone.otp_expires_at
     assert_equal 3, telephone.otp_attempts_left
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should verify correct OTP" do
     contact = corporate_site_contacts(:one)
@@ -380,3 +387,4 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     assert_not telephone.can_resend_otp?
   end
 end
+

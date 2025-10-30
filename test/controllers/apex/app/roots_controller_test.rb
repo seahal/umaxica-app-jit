@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+
 require "json"
 require "uri"
 require_relative "../../../support/cookie_helper"
@@ -9,6 +10,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
   DEFAULT_QUERY = { "lx" => "ja", "ri" => "jp", "tz" => "jst", "ct" => "sy" }.freeze
   HOST_HEADER = { "HTTP_HOST" => "app.localhost" }.freeze
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "redirects to include default region when neither params nor cookie exist" do
     get apex_app_root_path, headers: HOST_HEADER
 
@@ -28,6 +30,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal DEFAULT_QUERY, JSON.parse(persisted)
     assert_equal "jp", request.params["ri"]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should get index" do
     get apex_app_root_path, headers: HOST_HEADER
@@ -39,6 +42,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "redirects using cookie preferences when query params missing" do
     get apex_app_root_path, headers: HOST_HEADER, params: { lx: "en", ri: "us", tz: "utc", ct: "dr" }
 
@@ -63,7 +67,9 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "utc", request.params["tz"]
     assert_equal "dr", request.params["ct"]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "invalid params are coerced to defaults and hidden from query" do
     get apex_app_root_path, headers: HOST_HEADER, params: { lx: "xx", ri: "zz", tz: "mars", ct: "night" }
 
@@ -83,7 +89,9 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "jp", request.params["ri"]
     assert_nil request.params["ct"]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "known non-standard params are mapped to canonical values" do
     get apex_app_root_path, headers: HOST_HEADER, params: { lx: "kr", ri: "sk", tz: "kst", ct: "auto" }
 
@@ -100,6 +108,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "removes default preference params from query" do
     get apex_app_root_path, headers: HOST_HEADER, params: DEFAULT_QUERY
@@ -115,6 +124,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "supports all preference combinations" do
     languages = %w[ja en]
     regions = %w[jp us]
@@ -162,6 +172,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
       assert_equal({ "lx" => lx, "ri" => ri, "tz" => tz, "ct" => ct }, persisted)
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should render HTML by default" do
     get_and_follow_apex_root
@@ -266,6 +277,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "1.1", request.env["HTTP_VERSION"] if request.env["HTTP_VERSION"]
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should not expose sensitive information" do
     get_and_follow_apex_root
 
@@ -276,6 +288,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response_body, "secret"
     assert_not_includes response_body, "api_key"
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should handle requests from different IP addresses" do
     [ "127.0.0.1", "192.168.1.1", "10.0.0.1" ].each do |ip|
@@ -337,6 +350,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_includes %w[development test production], Rails.env
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get_and_follow_apex_root
 
@@ -358,11 +372,13 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # Session value tests
   # Note: These tests verify that the session value integration works correctly
   # The actual session values are set by RegionsController and read by RootsController
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "URL parameters take precedence over session values" do
     # Set session values
     get_and_follow_apex_root
@@ -391,7 +407,9 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "jp", persisted["ri"]
     assert_equal "jst", persisted["tz"]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "cookie takes precedence over session values" do
     # Set cookie
     get apex_app_root_path, headers: HOST_HEADER, params: { lx: "en", ri: "us", tz: "utc" }
@@ -415,6 +433,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "us", query["ri"]
     assert_equal "utc", query["tz"]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   private
 
@@ -423,3 +442,4 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect! if response.redirect?
   end
 end
+

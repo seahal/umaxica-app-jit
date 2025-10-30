@@ -1,6 +1,8 @@
 require "test_helper"
 
+
 class Apex::App::Preference::CookiesControllerTest < ActionDispatch::IntegrationTest
+  # rubocop:disable Minitest/MultipleAssertions
   test "should get edit" do
     original_forgery_setting = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true
@@ -29,7 +31,9 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "submitting the form toggles the checkboxes via persisted preferences" do
     original_forgery_setting = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = false
@@ -70,4 +74,6 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end
+
