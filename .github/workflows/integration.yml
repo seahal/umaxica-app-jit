@@ -111,6 +111,9 @@ jobs:
       NAME: UMAXICA
       BRAND_NAME: UMAXICA
       PORT: 3000
+      #
+      REGION_CODE: jp
+      APEX_REGION: true
       # Identifiers
       SINGLETON_DEFAULT_SALT: hoge
       IDENTIFIER_REGION_CODE: '392'
@@ -305,6 +308,9 @@ jobs:
       NAME: UMAXICA
       BRAND_NAME: UMAXICA
       PORT: 3000
+      #
+      REGION_CODE: jp
+      APEX_REGION: true
       # Identifiers
       SINGLETON_DEFAULT_SALT: hoge
       IDENTIFIER_REGION_CODE: '392'
