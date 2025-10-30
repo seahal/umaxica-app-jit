@@ -4,7 +4,7 @@ source "https://rubygems.org"
 ruby "3.4.7"
 
 # rake
-gem "rake", "~> 13.3.1", ">= 13.3.1"
+gem "rake", "13.3.1"
 # rack
 gem "rack"
 # Rails
@@ -58,6 +58,8 @@ gem "rqrcode"
 gem "solid_cache"
 # pagination
 gem "kaminari"
+# Breadcrumbs
+# gem "gretel"
 # Social Login
 gem "omniauth"
 gem "omniauth-apple"
@@ -69,6 +71,11 @@ gem "action_policy"
 gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
+# OpenAPI
+# gem "rswag"
+gem "ostruct"
+# gem "rswag-api"
+# gem "rswag-ui"
 # JWT
 gem "jwt"
 #
@@ -109,10 +116,6 @@ group :development do
   # rubocop
   gem "rubocop", require: false
   gem "rubocop-rails-omakase", require: false
-  gem "rubocop-performance", require: false
-  gem "rubocop-thread_safety", require: false
-  gem "rubocop-rake", require: false
-  gem "rubocop-minitest", require: false
   # erb linter
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]

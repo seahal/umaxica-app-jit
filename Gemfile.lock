@@ -555,6 +555,7 @@ GEM
     opentelemetry-semantic_conventions (1.36.0)
       opentelemetry-api (~> 1.0)
     os (1.1.4)
+    ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.10.0)
       ast (~> 2.4.1)
@@ -681,10 +682,6 @@ GEM
     rubocop-ast (1.47.1)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
-    rubocop-minitest (0.38.2)
-      lint_roller (~> 1.1)
-      rubocop (>= 1.75.0, < 2.0)
-      rubocop-ast (>= 1.38.0, < 2.0)
     rubocop-performance (1.26.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
@@ -699,13 +696,6 @@ GEM
       rubocop (>= 1.72)
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
-    rubocop-rake (0.7.1)
-      lint_roller (~> 1.1)
-      rubocop (>= 1.72.1)
-    rubocop-thread_safety (0.7.3)
-      lint_roller (~> 1.1)
-      rubocop (~> 1.72, >= 1.72.1)
-      rubocop-ast (>= 1.44.0, < 2.0)
     ruby-lsp (0.26.2)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
@@ -831,6 +821,7 @@ DEPENDENCIES
   opentelemetry-exporter-otlp
   opentelemetry-instrumentation-all
   opentelemetry-sdk
+  ostruct
   pg
   pg_search
   postgresql_cursor
@@ -842,17 +833,13 @@ DEPENDENCIES
   rack-mini-profiler
   rails (~> 8.1, >= 8.1.1)
   rails_live_reload
-  rake (~> 13.3.1, >= 13.3.1)
+  rake (= 13.3.1)
   redis
   rolify
   rotp
   rqrcode
   rubocop
-  rubocop-minitest
-  rubocop-performance
   rubocop-rails-omakase
-  rubocop-rake
-  rubocop-thread_safety
   ruby-lsp
   scenic
   sha3
