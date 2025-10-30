@@ -33,6 +33,8 @@ jobs:
     timeout-minutes: 10
     env:
       BUNDLE_JOBS: 4
+      REGION_CODE: jp
+      APEX_REGION: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
