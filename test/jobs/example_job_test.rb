@@ -2,6 +2,6 @@ require "test_helper"
 
 class ExampleJobTest < ActiveJob::TestCase
   test "the truth" do
-    assert true
+    skip "TODO: implement ExampleJob behavior test"
   end
 end

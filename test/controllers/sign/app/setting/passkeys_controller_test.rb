@@ -9,6 +9,7 @@ class Sign::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
 
   test "should get index" do
     get sign_app_setting_passkeys_url, headers: { "Host" => @host }
+
     assert_response :success
   end
 

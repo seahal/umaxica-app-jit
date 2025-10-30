@@ -6,7 +6,7 @@ module Www::Com
   class ApplicationHelperTest < ActionView::TestCase
     test "sample" do
       # assert_equal Time.new, to_localtime(Time.new)
-      assert true
+      skip "TODO: implement application helper sample test"
     end
   end
 end

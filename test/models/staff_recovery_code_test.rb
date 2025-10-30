@@ -33,11 +33,12 @@ class StaffRecoveryCodeTest < ActiveSupport::TestCase
   end
 
   test "should inherit from IdentifiersRecord" do
-    assert StaffRecoveryCode.ancestors.include?(IdentifiersRecord)
+    assert_includes StaffRecoveryCode.ancestors, IdentifiersRecord
   end
 
   test "should have required database columns" do
     required_columns = %w[recovery_code_digest expires_in staff_id]
+
     required_columns.each do |column|
       assert_includes StaffRecoveryCode.column_names, column
     end
@@ -45,6 +46,7 @@ class StaffRecoveryCodeTest < ActiveSupport::TestCase
 
   test "should handle expiration date" do
     recovery_code = StaffRecoveryCode.new(expires_in: Date.tomorrow, staff_id: 1)
+
     assert_equal Date.tomorrow, recovery_code.expires_in
   end
 end

@@ -31,16 +31,18 @@ class UserGoogleAuthTest < ActiveSupport::TestCase
 
   test "should have required fields" do
     user_google_auth = UserGoogleAuth.new
+
     assert_includes UserGoogleAuth.column_names, "token"
     assert_includes UserGoogleAuth.column_names, "user_id"
   end
 
   test "should inherit from IdentifiersRecord" do
-    assert UserGoogleAuth.ancestors.include?(IdentifiersRecord)
+    assert_includes UserGoogleAuth.ancestors, IdentifiersRecord
   end
 
   test "should handle token storage" do
     auth = UserGoogleAuth.new(token: "test_token_123", user_id: 1)
+
     assert_equal "test_token_123", auth.token
   end
 end

@@ -9,11 +9,13 @@ class Sign::App::Setting::RecoveriesControllerTest < ActionDispatch::Integration
 
   test "should get index" do
     get sign_app_setting_recoveries_url, headers: { "Host" => @host }
+
     assert_response :success
   end
 
   test "should get new" do
     get new_sign_app_setting_recovery_url, headers: { "Host" => @host }
+
     assert_response :success
   end
 

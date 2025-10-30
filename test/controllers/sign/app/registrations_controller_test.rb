@@ -7,11 +7,13 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get new" do
     get new_sign_app_registration_url(format: :html), headers: { "Host" => host }
+
     assert_response :success
   end
 
   test "sets lang attribute on html element" do
     get new_sign_app_registration_url(format: :html)
+
     assert_response :success
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")
@@ -19,6 +21,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "shows registration methods and social providers" do
     get new_sign_app_registration_url(format: :html), headers: { "Host" => host }
+
     assert_response :success
 
     assert_select "[data-testid=?]", "registration-method", count: 2
@@ -31,6 +34,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "renders localized copy with product name fallback" do
     get new_sign_app_registration_url(format: :html), headers: { "Host" => host }
+
     assert_response :success
     assert_select "p", text: "log in?"
   end

@@ -2,6 +2,11 @@
 inherit_gem:
   rubocop-rails-omakase: rubocop.yml
 
+plugins:
+  - rubocop-rake
+#  - rubocop-thread_safety
+#  - rubocop-minitest
+
 # .rubocop.yml
 AllCops:
   # Enable caching
@@ -9,6 +14,9 @@ AllCops:
 
   # Specify where to store cached results
   CacheRootDirectory: tmp/rubocop_cache
+
+  # Enable new cops by default
+  NewCops: enable
 
 Rails:
   Enabled: true

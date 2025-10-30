@@ -5,11 +5,13 @@ require "test_helper"
 class Docs::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     get docs_org_root_url
+
     assert_response :success
   end
 
   test "sets lang attribute on html element" do
     get docs_org_root_url(format: :html)
+
     assert_response :success
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")

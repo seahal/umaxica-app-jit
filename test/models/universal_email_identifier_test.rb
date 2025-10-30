@@ -16,7 +16,7 @@ class UniversalEmailIdentifierTest < ActiveSupport::TestCase
       id: SecureRandom.uuid_v7
     )
 
-    assert identifier.valid?
+    assert_predicate identifier, :valid?
     assert identifier.save
     assert_not_nil identifier.id
   end
@@ -39,8 +39,8 @@ class UniversalEmailIdentifierTest < ActiveSupport::TestCase
       id: SecureRandom.uuid_v7
     )
 
-    assert identifier.id.is_a?(String)
-    assert identifier.id.present?
+    assert_kind_of String, identifier.id
+    assert_predicate identifier.id, :present?
   end
 
   # test "should update timestamps on save" do
@@ -59,7 +59,8 @@ class UniversalEmailIdentifierTest < ActiveSupport::TestCase
     identifier = UniversalEmailIdentifier.new(
       id: SecureRandom.uuid_v7
     )
-    assert identifier.valid?
+
+    assert_predicate identifier, :valid?
   end
 
   test "should create multiple identifiers with unique ids" do
@@ -80,6 +81,7 @@ class UniversalEmailIdentifierTest < ActiveSupport::TestCase
     persisted_id = identifier.id
 
     found_identifier = UniversalEmailIdentifier.find(persisted_id)
+
     assert_equal persisted_id, found_identifier.id
   end
 
@@ -89,6 +91,7 @@ class UniversalEmailIdentifierTest < ActiveSupport::TestCase
     )
 
     found = UniversalEmailIdentifier.find(identifier.id)
+
     assert_equal identifier.id, found.id
     assert_equal identifier.created_at.to_i, found.created_at.to_i
   end
@@ -102,6 +105,7 @@ class UniversalEmailIdentifierTest < ActiveSupport::TestCase
     )
 
     all_identifiers = UniversalEmailIdentifier.all
+
     assert_includes all_identifiers, identifier1
     assert_includes all_identifiers, identifier2
   end

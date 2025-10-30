@@ -10,11 +10,11 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
   end
 
   def test_default_permissions_are_denied
-    assert_equal false, @policy.index?
-    assert_equal false, @policy.show?
-    assert_equal false, @policy.create?
-    assert_equal false, @policy.update?
-    assert_equal false, @policy.destroy?
+    assert_not_predicate @policy, :index?
+    assert_not_predicate @policy, :show?
+    assert_not_predicate @policy, :create?
+    assert_not_predicate @policy, :update?
+    assert_not_predicate @policy, :destroy?
   end
 
   def test_new_and_edit_delegate_to_create_and_update

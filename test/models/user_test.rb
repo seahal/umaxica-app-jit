@@ -15,7 +15,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "should be valid" do
-    assert @user.valid?
+    assert_predicate @user, :valid?
   end
 
   test "should have timestamps" do

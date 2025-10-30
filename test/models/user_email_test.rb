@@ -19,26 +19,27 @@ class UserEmailTest < ActiveSupport::TestCase
     @valid_attributes = {
       address: "test@example.com",
       confirm_policy: true
-    }
+    }.freeze
   end
 
   # Basic model structure tests
   test "should inherit from IdentifiersRecord" do
-    assert UserEmail < IdentifiersRecord
+    assert_operator UserEmail, :<, IdentifiersRecord
   end
 
   test "should include Email concern" do
-    assert UserEmail.included_modules.include?(Email)
+    assert_includes UserEmail.included_modules, Email
   end
 
   test "should include SetId concern" do
-    assert UserEmail.included_modules.include?(SetId)
+    assert_includes UserEmail.included_modules, SetId
   end
 
   # Email concern validation tests
   test "should be valid with valid email and policy confirmation" do
     user_email = UserEmail.new(@valid_attributes)
-    assert user_email.valid?
+
+    assert_predicate user_email, :valid?
   end
 
   # test "should require valid email format" do
@@ -69,13 +70,15 @@ class UserEmailTest < ActiveSupport::TestCase
   test "should downcase email address before saving" do
     user_email = UserEmail.new(@valid_attributes.merge(address: "TEST@EXAMPLE.COM"))
     user_email.save!
+
     assert_equal "test@example.com", user_email.address
   end
 
   # Pass code validation tests
   test "should be valid with pass_code instead of email" do
     user_email = UserEmail.new(pass_code: "123456")
-    assert user_email.valid?
+
+    assert_predicate user_email, :valid?
   end
 
   # test "should require 6-digit numeric pass_code" do
@@ -92,7 +95,8 @@ class UserEmailTest < ActiveSupport::TestCase
 
   test "should not require email when pass_code is present" do
     user_email = UserEmail.new(pass_code: "123456")
-    assert user_email.valid?
+
+    assert_predicate user_email, :valid?
     assert_not user_email.errors[:address].any?
     assert_not user_email.errors[:confirm_policy].any?
   end
@@ -124,7 +128,8 @@ class UserEmailTest < ActiveSupport::TestCase
   # Edge case tests
   test "should handle nil address gracefully when pass_code is set" do
     user_email = UserEmail.new(address: nil, pass_code: "123456")
-    assert user_email.valid?
+
+    assert_predicate user_email, :valid?
   end
 
   # test "should reject both nil address and nil pass_code" do

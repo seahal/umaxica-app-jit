@@ -11,6 +11,6 @@ require "test_helper"
 
 class UserHmacBasedOneTimePasswordTest < ActiveSupport::TestCase
   test "the truth" do
-    assert true
+    skip "TODO: cover user HOTP behavior"
   end
 end

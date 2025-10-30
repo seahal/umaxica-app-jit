@@ -4,6 +4,6 @@ require "test_helper"
 
 class CloudflareTurnstileConcernTest < ActionDispatch::IntegrationTest
   test "placeholder test" do
-    assert true
+    skip "TODO: exercise Cloudflare Turnstile concern"
   end
 end

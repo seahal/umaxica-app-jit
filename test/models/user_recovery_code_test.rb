@@ -26,20 +26,23 @@ class UserRecoveryCodeTest < ActiveSupport::TestCase
   end
 
   test "should be valid with valid attributes" do
-    assert @user_recovery_code.valid?
+    assert_predicate @user_recovery_code, :valid?
   end
 
   test "confirm_create_recovery_code should be accepted on create" do
     @user_recovery_code.confirm_create_recovery_code = false
+
     assert_not @user_recovery_code.valid?
 
     @user_recovery_code.confirm_create_recovery_code = true
-    assert @user_recovery_code.valid?
+
+    assert_predicate @user_recovery_code, :valid?
   end
 
   test "should set recovery_code_digest when recovery_code is provided" do
     assert_nil @user_recovery_code.recovery_code_digest
     @user_recovery_code.save!
+
     assert_not_nil @user_recovery_code.recovery_code_digest
     assert_equal Digest::SHA256.hexdigest("test_recovery_code_123"), @user_recovery_code.recovery_code_digest
   end
@@ -50,7 +53,8 @@ class UserRecoveryCodeTest < ActiveSupport::TestCase
     # Update without confirmation should be valid
     @user_recovery_code.expires_in = Date.current + 60.days
     @user_recovery_code.confirm_create_recovery_code = false
-    assert @user_recovery_code.valid?
+
+    assert_predicate @user_recovery_code, :valid?
   end
 
   test "should not set digest when recovery_code is nil" do
@@ -59,8 +63,10 @@ class UserRecoveryCodeTest < ActiveSupport::TestCase
       expires_in: Date.current + 7.days,
       confirm_create_recovery_code: true
     )
-    assert no_code.valid?
+
+    assert_predicate no_code, :valid?
     no_code.save!
+
     assert_nil no_code.recovery_code_digest
   end
 
@@ -68,6 +74,7 @@ class UserRecoveryCodeTest < ActiveSupport::TestCase
     @user_recovery_code.save!
     original_digest = @user_recovery_code.recovery_code_digest
     @user_recovery_code.update!(expires_in: Date.current + 90.days)
+
     assert_equal original_digest, @user_recovery_code.reload.recovery_code_digest
   end
 
@@ -75,18 +82,20 @@ class UserRecoveryCodeTest < ActiveSupport::TestCase
     @user_recovery_code.save!
     @user_recovery_code.recovery_code = "updated_code_456"
     @user_recovery_code.save!
+
     assert_equal Digest::SHA256.hexdigest("updated_code_456"), @user_recovery_code.reload.recovery_code_digest
   end
 
   test "recovery_code is virtual (not persisted)" do
     @user_recovery_code.save!
     found = UserRecoveryCode.find(@user_recovery_code.id)
+
     assert_respond_to found, :recovery_code
     assert_nil found.recovery_code
   end
 
   test "inherits from IdentifiersRecord" do
-    assert UserRecoveryCode.ancestors.include?(IdentifiersRecord)
+    assert_includes UserRecoveryCode.ancestors, IdentifiersRecord
   end
 
   test "whitespace recovery_code is treated as present" do
@@ -96,6 +105,7 @@ class UserRecoveryCodeTest < ActiveSupport::TestCase
       expires_in: Date.current + 1.day,
       confirm_create_recovery_code: true
     )
+
     assert code.save!
   end
 end

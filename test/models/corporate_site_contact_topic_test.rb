@@ -2,7 +2,7 @@ require "test_helper"
 
 class CorporateSiteContactTopicTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
-    assert CorporateSiteContactTopic < GuestsRecord
+    assert_operator CorporateSiteContactTopic, :<, GuestsRecord
   end
 
   test "should belong to corporate_site_contact" do
@@ -17,7 +17,7 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
     contact = CorporateSiteContact.create!(category: :general, status: :email_pending)
     topic = CorporateSiteContactTopic.create!(corporate_site_contact: contact)
 
-    assert topic.valid?
+    assert_predicate topic, :valid?
   end
 
   test "should create topic with required attributes" do
@@ -27,8 +27,9 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
       corporate_site_contact: contact,
       deletable: false
     )
+
     assert topic.save
-    assert_equal false, topic.deletable
+    assert_not topic.deletable
   end
 
   test "should use UUID as primary key" do
@@ -60,6 +61,6 @@ class CorporateSiteContactTopicTest < ActiveSupport::TestCase
     contact = CorporateSiteContact.create!(category: :general, status: :email_pending)
     topic = CorporateSiteContactTopic.create!(corporate_site_contact: contact)
 
-    assert_equal false, topic.deletable
+    assert_not topic.deletable
   end
 end

@@ -3,6 +3,7 @@ require "test_helper"
 class Email::Org::ApplicationMailerTest < ActionMailer::TestCase
   test "applies default from address" do
     expected_from = Rails.application.credentials.dig(:SMTP_FROM_ADDRESS)
+
     assert_equal expected_from, Email::Org::ApplicationMailer.default[:from]
 
     mailer = Class.new(Email::Org::ApplicationMailer) do

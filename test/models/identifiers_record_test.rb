@@ -2,11 +2,11 @@ require "test_helper"
 
 class IdentifiersRecordTest < ActiveSupport::TestCase
   test "should be abstract class" do
-    assert IdentifiersRecord.abstract_class?
+    assert_predicate IdentifiersRecord, :abstract_class?
   end
 
   test "should inherit from ApplicationRecord" do
-    assert IdentifiersRecord < ApplicationRecord
+    assert_operator IdentifiersRecord, :<, ApplicationRecord
   end
 
   test "should connect to identifier database" do
@@ -17,6 +17,7 @@ class IdentifiersRecordTest < ActiveSupport::TestCase
 
   test "should have correct database configuration" do
     config = IdentifiersRecord.connection_db_config
+
     assert_not_nil config
   end
 
@@ -33,6 +34,7 @@ class IdentifiersRecordTest < ActiveSupport::TestCase
 
   test "should have proper database connection specification" do
     writing_config = IdentifiersRecord.connection_specification_name
+
     assert_not_nil writing_config
   end
 
@@ -45,8 +47,9 @@ class IdentifiersRecordTest < ActiveSupport::TestCase
 
   test "should be configured for identifier database multi-database setup" do
     # Verify this is part of the multi-database architecture
-    assert IdentifiersRecord.respond_to?(:connection_db_config)
+    assert_respond_to IdentifiersRecord, :connection_db_config
     config = IdentifiersRecord.connection_db_config
+
     assert_not_nil config
   end
 

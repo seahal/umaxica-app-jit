@@ -31,11 +31,12 @@ class UserAppleAuthTest < ActiveSupport::TestCase
 
   test "should have required fields" do
     user_apple_auth = UserAppleAuth.new
+
     assert_includes UserAppleAuth.column_names, "token"
     assert_includes UserAppleAuth.column_names, "user_id"
   end
 
   test "should inherit from IdentifiersRecord" do
-    assert UserAppleAuth.ancestors.include?(IdentifiersRecord)
+    assert_includes UserAppleAuth.ancestors, IdentifiersRecord
   end
 end

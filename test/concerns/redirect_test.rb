@@ -87,9 +87,11 @@ class RedirectTest < ActiveSupport::TestCase
 
   test "generate_redirect_url should handle blank URLs" do
     encoded = generate_redirect_url("")
+
     assert_nil encoded
 
     encoded = generate_redirect_url(nil)
+
     assert_nil encoded
   end
 

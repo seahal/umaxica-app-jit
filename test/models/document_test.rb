@@ -24,11 +24,11 @@ class DocumentTest < ActiveSupport::TestCase
   end
 
   test "the truth" do
-    assert true
+    skip "TODO: replace with meaningful document test or remove"
   end
 
   test "should inherit from BusinessesRecord" do
-    assert Document < BusinessesRecord
+    assert_operator Document, :<, BusinessesRecord
   end
 
   test "should create document with title and description" do
@@ -36,7 +36,8 @@ class DocumentTest < ActiveSupport::TestCase
       title: "Test Document",
       description: "Test Description"
     )
-    assert document.persisted?
+
+    assert_predicate document, :persisted?
     assert_equal "Test Document", document.title
     assert_equal "Test Description", document.description
   end
@@ -62,24 +63,28 @@ class DocumentTest < ActiveSupport::TestCase
   test "should update document title" do
     document = Document.create(title: "Original Title", description: "Description")
     document.update(title: "Updated Title")
+
     assert_equal "Updated Title", document.reload.title
   end
 
   test "should update document description" do
     document = Document.create(title: "Title", description: "Original Description")
     document.update(description: "Updated Description")
+
     assert_equal "Updated Description", document.reload.description
   end
 
   test "should allow nil title" do
     document = Document.create(title: nil, description: "Description")
-    assert document.persisted?
+
+    assert_predicate document, :persisted?
     assert_nil document.title
   end
 
   test "should allow nil description" do
     document = Document.create(title: "Title", description: nil)
-    assert document.persisted?
+
+    assert_predicate document, :persisted?
     assert_nil document.description
   end
 end

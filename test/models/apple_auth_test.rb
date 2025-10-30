@@ -26,6 +26,6 @@ require "test_helper"
 
 class AppleAuthTest < ActiveSupport::TestCase
   test "the truth" do
-    assert true
+    skip "TODO: cover AppleAuth model behavior"
   end
 end

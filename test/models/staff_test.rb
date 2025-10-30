@@ -15,7 +15,7 @@ class StaffTest < ActiveSupport::TestCase
   end
 
   test "should be valid" do
-    assert @staff.valid?
+    assert_predicate @staff, :valid?
   end
 
   test "should have timestamps" do

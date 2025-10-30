@@ -9,6 +9,7 @@ class NotificationServiceTest < ActiveSupport::TestCase
 
   test "NotificationService can be instantiated" do
     service = NotificationService.new
+
     assert_instance_of NotificationService, service
   end
 

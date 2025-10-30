@@ -2,7 +2,7 @@ require "test_helper"
 
 class CorporateSiteContactEmailTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
-    assert CorporateSiteContactEmail < GuestsRecord
+    assert_operator CorporateSiteContactEmail, :<, GuestsRecord
   end
 
   test "should belong to corporate_site_contact" do
@@ -15,6 +15,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
       remaining_views: 1,
       expires_at: 1.day.from_now
     )
+
     assert_respond_to email, :corporate_site_contact
     assert_not_nil email.corporate_site_contact
     assert_kind_of CorporateSiteContact, email.corporate_site_contact
@@ -31,6 +32,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
     email.save
+
     assert_equal "test@example.com", email.email_address
   end
 
@@ -102,7 +104,8 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
       remaining_views: 1,
       expires_at: 1.day.from_now
     )
-    assert email.valid?
+
+    assert_predicate email, :valid?
   end
 
   test "should use UUID as primary key" do
@@ -112,6 +115,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
       email_address: "uuid@example.com",
       expires_at: 1.day.from_now
     )
+
     assert_kind_of String, email.id
     assert_equal 36, email.id.length
   end
@@ -123,6 +127,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
       email_address: "timestamp@example.com",
       expires_at: 1.day.from_now
     )
+
     assert_respond_to email, :created_at
     assert_respond_to email, :updated_at
     assert_not_nil email.created_at
@@ -136,6 +141,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
       email_address: "attributes@example.com",
       expires_at: 1.day.from_now
     )
+
     assert_respond_to email, :email_address
     assert_respond_to email, :activated
     assert_respond_to email, :deletable
@@ -150,8 +156,9 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
       email_address: "test@example.com",
       expires_at: 1.day.from_now
     )
-    assert_equal false, email.activated
-    assert_equal false, email.deletable
+
+    assert_not email.activated
+    assert_not email.deletable
     assert_equal 10, email.remaining_views
   end
 
@@ -162,8 +169,9 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
       corporate_site_contact: contact,
       expires_at: 1.day.from_now
     )
+
     assert_not email.valid?
-    assert email.errors[:email_address].any?, "email_address should have validation errors"
+    assert_predicate email.errors[:email_address], :any?, "email_address should have validation errors"
   end
 
   test "should validate format of email_address" do
@@ -177,8 +185,9 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
         email_address: invalid_email,
         expires_at: 1.day.from_now
       )
+
       assert_not email.valid?, "#{invalid_email} should be invalid"
-      assert email.errors[:email_address].any?, "#{invalid_email} should have validation errors"
+      assert_predicate email.errors[:email_address], :any?, "#{invalid_email} should have validation errors"
     end
 
     # Valid email formats
@@ -189,7 +198,8 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
         email_address: valid_email,
         expires_at: 1.day.from_now
       )
-      assert email.valid?, "#{valid_email} should be valid"
+
+      assert_predicate email, :valid?, "#{valid_email} should be valid"
     end
   end
 
@@ -221,6 +231,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     )
 
     raw_code = email.generate_verifier!
+
     assert email.verify_code(raw_code)
     assert email.reload.activated
     assert_equal 0, email.verifier_attempts_left
@@ -285,10 +296,12 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     )
 
     email.generate_verifier!
+
     assert_not email.verifier_expired?
 
     email.update!(verifier_expires_at: 1.hour.ago)
-    assert email.verifier_expired?
+
+    assert_predicate email, :verifier_expired?
   end
 
   test "can_resend_verifier? should return true when verifier expired" do
@@ -302,7 +315,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     email.generate_verifier!
     email.update!(verifier_expires_at: 1.hour.ago)
 
-    assert email.can_resend_verifier?
+    assert_predicate email, :can_resend_verifier?
   end
 
   test "can_resend_verifier? should return true when attempts exhausted" do
@@ -316,7 +329,7 @@ class CorporateSiteContactEmailTest < ActiveSupport::TestCase
     email.generate_verifier!
     email.update!(verifier_attempts_left: 0)
 
-    assert email.can_resend_verifier?
+    assert_predicate email, :can_resend_verifier?
   end
 
   test "can_resend_verifier? should return false when activated" do

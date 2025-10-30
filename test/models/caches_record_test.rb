@@ -2,12 +2,13 @@ require "test_helper"
 
 class CachesRecordTest < ActiveSupport::TestCase
   test "is abstract and inherits from ApplicationRecord" do
-    assert CachesRecord < ApplicationRecord
-    assert CachesRecord.abstract_class?
+    assert_operator CachesRecord, :<, ApplicationRecord
+    assert_predicate CachesRecord, :abstract_class?
   end
 
   test "should have cache database configuration" do
     config = CachesRecord.connection_db_config
+
     assert_not_nil config
   end
 
@@ -24,6 +25,7 @@ class CachesRecordTest < ActiveSupport::TestCase
 
   test "should have proper database connection specification" do
     writing_config = CachesRecord.connection_specification_name
+
     assert_not_nil writing_config
   end
 
@@ -36,8 +38,9 @@ class CachesRecordTest < ActiveSupport::TestCase
 
   test "should be configured for multi-database setup" do
     # Verify this is part of the multi-database architecture
-    assert CachesRecord.respond_to?(:connection_db_config)
+    assert_respond_to CachesRecord, :connection_db_config
     config = CachesRecord.connection_db_config
+
     assert_not_nil config
   end
 end

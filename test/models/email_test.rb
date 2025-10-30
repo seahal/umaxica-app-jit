@@ -17,7 +17,8 @@ class AccountTest < ActiveSupport::TestCase
   [ StaffEmail, UserEmail ].each do |model|
     test "#{model} valid with address and confirm_policy" do
       record = model.new(address: "eg@example.com", confirm_policy: true)
-      assert record.valid?
+
+      assert_predicate record, :valid?
       assert_difference "#{model}.count", +1 do
         record.save!
       end
@@ -29,6 +30,7 @@ class AccountTest < ActiveSupport::TestCase
 
     test "#{model} enforces case-insensitive uniqueness" do
       model.create!(address: "eg@example.com", confirm_policy: true)
+
       assert_not model.new(address: "eg@example.com", confirm_policy: true).valid?
       assert_not model.new(address: "EG@EXAMPLE.COM", confirm_policy: true).valid?
     end
@@ -36,25 +38,32 @@ class AccountTest < ActiveSupport::TestCase
     test "#{model} downcases address on save" do
       mail_address = "A@B.C"
       rec = model.create!(address: mail_address, confirm_policy: true)
+
       assert_equal mail_address.downcase, rec.reload.address
     end
 
     test "#{model} pass_code validations when address nil" do
       m = model.new(address: nil)
       m.pass_code = 123456
-      assert m.valid?
+
+      assert_predicate m, :valid?
       m.pass_code = 12345
+
       assert_not m.valid?
       m.pass_code = 1234567
+
       assert_not m.valid?
       m.pass_code = 0
+
       assert_not m.valid?
       m.pass_code = nil
+
       assert_not m.valid?
     end
 
     test "#{model} invalid when both address and pass_code nil" do
       m = model.new(address: nil, pass_code: nil)
+
       assert_not m.valid?
     end
   end

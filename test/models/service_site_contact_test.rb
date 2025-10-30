@@ -28,23 +28,27 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     end
 
     test "good #{model}'s email pattern" do
-      assert @good_pattern.valid?
+      assert_predicate @good_pattern, :valid?
       assert @good_pattern.save
       @good_pattern.email_address = "x@example.net"
-      assert @good_pattern.valid?
+
+      assert_predicate @good_pattern, :valid?
     end
 
     test "valid #{model}'s confirmation check" do
-      assert @good_pattern.valid?
+      assert_predicate @good_pattern, :valid?
       @good_pattern.confirm_policy = false
+
       assert_not @good_pattern.valid?
       @good_pattern.confirm_policy = nil
-      assert @good_pattern.valid?
+
+      assert_predicate @good_pattern, :valid?
     end
 
     test "invalid #{model}'s email patterns" do
       [ nil, "", "example..com", "exampleexample.com", "xample@#example.jp", "@example.com" ].each do
         @good_pattern.email_address = it
+
         assert_not @good_pattern.valid?
       end
     end
@@ -52,13 +56,15 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     test "valid #{model}'s email patterns" do
       [ "example@example.org" ].each do |chars|
         @good_pattern.email_address = chars
-        assert @good_pattern.valid?
+
+        assert_predicate @good_pattern, :valid?
       end
     end
 
     test "invalid #{model}'s telephone number patterns" do
       [ "", nil, "+810901234", "81901234" ].each do
         @good_pattern.email_address = it
+
         assert_not @good_pattern.valid?
       end
     end
@@ -66,33 +72,35 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     test "valid #{model}'s telephone number patterns" do
       [ "+811" ].each do
         @good_pattern.email_address = it
+
         assert_not @good_pattern.valid?
       end
     end
 
     test "good #{model}'s email otp password pattern" do
-      assert model.new(email_pass_code: 123456).valid?
-      assert model.new(email_pass_code: nil).valid?
+      assert_predicate model.new(email_pass_code: 123456), :valid?
+      assert_predicate model.new(email_pass_code: nil), :valid?
       assert_not model.new(email_pass_code: 12345).valid?
       assert_not model.new(email_pass_code: 1234567).valid?
       assert_not model.new(email_pass_code: 0).valid?
       assert_not model.new(email_pass_code: 1).valid?
-      assert model.new(email_pass_code: nil, telephone_pass_code: 123456).valid?
+      assert_predicate model.new(email_pass_code: nil, telephone_pass_code: 123456), :valid?
     end
 
     test "good #{model}'s telephone otp password pattern" do
-      assert model.new(telephone_pass_code: 123456).valid?
-      assert model.new(telephone_pass_code: nil).valid?
+      assert_predicate model.new(telephone_pass_code: 123456), :valid?
+      assert_predicate model.new(telephone_pass_code: nil), :valid?
       assert_not model.new(telephone_pass_code: 12345).valid?
       assert_not model.new(telephone_pass_code: 1234567).valid?
       assert_not model.new(telephone_pass_code: 0).valid?
       assert_not model.new(telephone_pass_code: 1).valid?
-      assert model.new(email_pass_code: 123456, telephone_pass_code: nil).valid?
+      assert_predicate model.new(email_pass_code: 123456, telephone_pass_code: nil), :valid?
     end
 
     test "bad #{model}'s title pattern" do
       [ "", "a" * 7, "a" * 256 ].each do
         @good_pattern.title = it
+
         assert_not @good_pattern.valid?
       end
     end
@@ -100,13 +108,15 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     test "good #{model}'s title pattern" do
       [ "a" * 8, "a" * 255, nil ].each do
         @good_pattern.title = it
-        assert @good_pattern.valid?
+
+        assert_predicate @good_pattern, :valid?
       end
     end
 
     test "bad #{model}'s description pattern" do
       [ "", "a" * 7, "a" * 1024 ].each do
         @good_pattern.description = it
+
         assert_not @good_pattern.valid?
       end
     end
@@ -114,7 +124,8 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     test "good #{model}'s description pattern" do
       [ "a" * 8, "a" * 1023, nil ].each do
         @good_pattern.description = it
-        assert @good_pattern.valid?
+
+        assert_predicate @good_pattern, :valid?
       end
     end
 
@@ -143,6 +154,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       description: "test description",
       contact_category_title: "test_category"
     )
+
     assert contact.save
     assert_equal "test_category", contact.contact_category_title
   end
@@ -159,6 +171,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       description: "test description",
       contact_status_title: "test_status"
     )
+
     assert contact.save
     assert_equal "test_status", contact.contact_status_title
   end
@@ -174,6 +187,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       description: "test description",
       contact_category_title: nil
     )
+
     assert contact.save
     assert_nil contact.contact_category_title
   end
@@ -189,6 +203,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       description: "test description",
       contact_status_title: nil
     )
+
     assert contact.save
     assert_nil contact.contact_status_title
   end

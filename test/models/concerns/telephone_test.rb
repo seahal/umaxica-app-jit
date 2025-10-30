@@ -5,23 +5,26 @@ require "test_helper"
 # Test with UserTelephone which includes Telephone
 class TelephoneTest < ActiveSupport::TestCase
   test "concern can be included in a class" do
-    assert UserTelephone.included_modules.include?(Telephone)
+    assert_includes UserTelephone.included_modules, Telephone
   end
 
   test "concern adds confirm_policy accessor" do
     telephone = UserTelephone.new
+
     assert_respond_to telephone, :confirm_policy
     assert_respond_to telephone, :confirm_policy=
   end
 
   test "concern adds confirm_using_mfa accessor" do
     telephone = UserTelephone.new
+
     assert_respond_to telephone, :confirm_using_mfa
     assert_respond_to telephone, :confirm_using_mfa=
   end
 
   test "concern adds pass_code accessor" do
     telephone = UserTelephone.new
+
     assert_respond_to telephone, :pass_code
     assert_respond_to telephone, :pass_code=
   end
@@ -39,9 +42,9 @@ class TelephoneTest < ActiveSupport::TestCase
 
   test "validates number format" do
     # Valid phone numbers
-    assert UserTelephone.new(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true).valid?
-    assert UserTelephone.new(number: "+81-90-1234-5678", confirm_policy: true, confirm_using_mfa: true).valid?
-    assert UserTelephone.new(number: "+1 (555) 123-4567", confirm_policy: true, confirm_using_mfa: true).valid?
+    assert_predicate UserTelephone.new(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true), :valid?
+    assert_predicate UserTelephone.new(number: "+81-90-1234-5678", confirm_policy: true, confirm_using_mfa: true), :valid?
+    assert_predicate UserTelephone.new(number: "+1 (555) 123-4567", confirm_policy: true, confirm_using_mfa: true), :valid?
 
     # Invalid phone number
     assert_not UserTelephone.new(number: "invalid!@#", confirm_policy: true, confirm_using_mfa: true).valid?
@@ -55,13 +58,14 @@ class TelephoneTest < ActiveSupport::TestCase
     assert_not UserTelephone.new(number: "+123456789012345678901", confirm_policy: true, confirm_using_mfa: true).valid?
 
     # Just right
-    assert UserTelephone.new(number: "1234567890", confirm_policy: true, confirm_using_mfa: true).valid?
+    assert_predicate UserTelephone.new(number: "1234567890", confirm_policy: true, confirm_using_mfa: true), :valid?
   end
 
   test "validates uniqueness of number" do
     UserTelephone.create!(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true)
     duplicate = UserTelephone.new(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true)
+
     assert_not duplicate.valid?
-    assert duplicate.errors[:number].any?
+    assert_predicate duplicate.errors[:number], :any?
   end
 end

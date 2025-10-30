@@ -4,6 +4,6 @@ require "test_helper"
 
 class RedirectConcernTest < ActionDispatch::IntegrationTest
   test "placeholder test" do
-    assert true
+    skip "TODO: cover Redirect concern behavior"
   end
 end

@@ -3,6 +3,7 @@ require "test_helper"
 class UserPasskeyTest < ActiveSupport::TestCase
   test "belongs to user" do
     association = UserPasskey.reflect_on_association(:user)
+
     assert_not_nil association
     assert_equal :belongs_to, association.macro
   end

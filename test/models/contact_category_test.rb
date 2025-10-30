@@ -2,7 +2,7 @@ require "test_helper"
 
 class ContactCategoryTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
-    assert ContactCategory < GuestsRecord
+    assert_operator ContactCategory, :<, GuestsRecord
   end
 
   test "should use title as primary key" do
@@ -11,6 +11,7 @@ class ContactCategoryTest < ActiveSupport::TestCase
 
   test "should create contact category with title" do
     category = ContactCategory.new(title: "inquiry")
+
     assert category.save
     assert_equal "inquiry", category.title
   end
@@ -18,6 +19,7 @@ class ContactCategoryTest < ActiveSupport::TestCase
   test "should find contact category by title" do
     category = ContactCategory.create!(title: "support")
     found = ContactCategory.find("support")
+
     assert_equal category.title, found.title
   end
 
@@ -33,6 +35,7 @@ class ContactCategoryTest < ActiveSupport::TestCase
 
   test "should have timestamps" do
     category = ContactCategory.create!(title: "test_category")
+
     assert_respond_to category, :created_at
     assert_respond_to category, :updated_at
     assert_not_nil category.created_at

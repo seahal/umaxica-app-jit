@@ -5,16 +5,19 @@ require "test_helper"
 class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get apex_org_root_url
+
     assert_response :success
   end
 
   test "should provide quick actions for admin navigation" do
     get apex_org_root_url
+
     assert_response :success
   end
 
   test "footer cookie link includes default query parameters" do
     get apex_org_root_url
+
     assert_response :success
 
     assert_select "a[href*='preference/cookie/edit'][href*='lx=ja'][href*='ri=jp'][href*='tz=jst']", minimum: 1
@@ -22,6 +25,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "should have proper response content type" do
     get apex_org_root_url
+
     assert_response :success
     assert_equal "text/html", response.media_type
   end
@@ -30,6 +34,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should handle different request formats" do
     # Test HTML format
     get apex_org_root_url, headers: { "Accept" => "text/html" }
+
     assert_response :success
 
     # Test that other formats may not be explicitly handled (controller doesn't specify)
@@ -38,6 +43,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "should assign all required instance variables" do
     get apex_org_root_url
+
     assert_response :success
 
     # Check that all required content is present in response
@@ -47,15 +53,17 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "should have reasonable dashboard statistics" do
     get apex_org_root_url
+
     assert_response :success
 
     # Check that response contains reasonable content structure
     assert_not_empty response.body
-    assert response.body.length > 100
+    assert_operator response.body.length, :>, 100
   end
 
   test "should have quick actions with required fields" do
     get apex_org_root_url
+
     assert_response :success
 
     # Check that response contains action or navigation elements
@@ -66,6 +74,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     # Simulate multiple requests to ensure no shared state issues
     3.times do
       get apex_org_root_url
+
       assert_response :success
       assert_not_empty response.body
     end
@@ -73,6 +82,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "should handle timezone considerations for activities" do
     get apex_org_root_url
+
     assert_response :success
 
     # Response should contain time-related information
@@ -83,6 +93,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     # Simulate multiple rapid requests that might consume memory
     50.times do
       get apex_org_root_url
+
       assert_response :success
     end
 
@@ -100,6 +111,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
     user_agents.each do |ua|
       get apex_org_root_url, headers: { "User-Agent" => ua }
+
       assert_response :success
       assert_not_empty response.body
     end
@@ -114,6 +126,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     }
 
     get apex_org_root_url, headers: admin_headers
+
     assert_response :success
 
     # Should still provide full response regardless of headers
@@ -124,11 +137,13 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     # Simulate requests at different times (though controller doesn't use current time)
     Time.use_zone("UTC") do
       get apex_org_root_url
+
       assert_response :success
     end
 
     Time.use_zone("America/New_York") do
       get apex_org_root_url
+
       assert_response :success
     end
   end
@@ -144,6 +159,7 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
     stress_params.each do |params|
       get apex_org_root_url, params: params
+
       assert_response :success
       assert_not_empty response.body
     end
@@ -151,15 +167,17 @@ class Apex::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "should handle edge cases in admin data" do
     get apex_org_root_url
+
     assert_response :success
 
     # Response should contain proper data structures
     assert_not_empty response.body
-    assert response.body.is_a?(String)
+    assert_kind_of String, response.body
   end
 
   test "sets lang attribute on html element" do
     get apex_org_root_url(format: :html)
+
     assert_response :success
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")

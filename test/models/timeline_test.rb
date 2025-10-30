@@ -17,45 +17,51 @@ require "test_helper"
 
 class TimelineTest < ActiveSupport::TestCase
   test "the truth" do
-    assert true
+    skip "TODO: replace with meaningful timeline test or remove"
   end
 
   test "should inherit from BusinessesRecord" do
-    assert Timeline < BusinessesRecord
+    assert_operator Timeline, :<, BusinessesRecord
   end
 
   test "should create timeline with title and description" do
     timeline = Timeline.create(title: "Test Timeline", description: "Test Description")
-    assert timeline.persisted?
+
+    assert_predicate timeline, :persisted?
     assert_equal "Test Timeline", timeline.title
     assert_equal "Test Description", timeline.description
   end
 
   test "should have uuid as primary key" do
     timeline = Timeline.create(title: "Test")
-    assert timeline.id.is_a?(String)
+
+    assert_kind_of String, timeline.id
     assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/, timeline.id)
   end
 
   test "should allow nil title" do
     timeline = Timeline.create(title: nil, description: "Description")
-    assert timeline.persisted?
+
+    assert_predicate timeline, :persisted?
   end
 
   test "should allow nil description" do
     timeline = Timeline.create(title: "Title", description: nil)
-    assert timeline.persisted?
+
+    assert_predicate timeline, :persisted?
   end
 
   test "should update title" do
     timeline = Timeline.create(title: "Original")
     timeline.update(title: "Updated")
+
     assert_equal "Updated", timeline.reload.title
   end
 
   test "should update description" do
     timeline = Timeline.create(description: "Original")
     timeline.update(description: "Updated")
+
     assert_equal "Updated", timeline.reload.description
   end
 end

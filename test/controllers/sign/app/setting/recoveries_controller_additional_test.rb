@@ -38,6 +38,7 @@ class Sign::App::Setting::RecoveriesControllerAdditionalTest < ActionDispatch::I
 
     assert_response :redirect
     follow_redirect!
+
     assert_response :success
     assert_equal I18n.t("messages.user_recovery_code_successfully_created"), flash[:notice]
   end
@@ -65,6 +66,7 @@ class Sign::App::Setting::RecoveriesControllerAdditionalTest < ActionDispatch::I
     assert_equal 24, recovery_code.length
     # Verify all characters are from BASE58 alphabet
     base58_chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+
     recovery_code.each_char do |char|
       assert_includes base58_chars, char
     end

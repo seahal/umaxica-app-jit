@@ -9,6 +9,7 @@ class EntityServiceTest < ActiveSupport::TestCase
 
   test "EntityService can be instantiated" do
     service = EntityService.new
+
     assert_instance_of EntityService, service
   end
 
