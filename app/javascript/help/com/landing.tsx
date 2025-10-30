@@ -39,7 +39,9 @@ const unregisterTurboEvents = () => {
 
 if (document.readyState === "loading") {
 	document.addEventListener("DOMContentLoaded", mount);
-	document.addEventListener("DOMContentLoaded", registerTurboEvents, { once: true });
+	document.addEventListener("DOMContentLoaded", registerTurboEvents, {
+		once: true,
+	});
 } else {
 	mount();
 	registerTurboEvents();
