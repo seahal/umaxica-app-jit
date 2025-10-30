@@ -13,6 +13,7 @@
 #
 require "test_helper"
 
+
 class ServiceSiteContactTest < ActiveSupport::TestCase
   [ ServiceSiteContact ].each do |model|
     setup do
@@ -77,6 +78,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       end
     end
 
+    # rubocop:disable Minitest/MultipleAssertions
     test "good #{model}'s email otp password pattern" do
       assert_predicate model.new(email_pass_code: 123456), :valid?
       assert_predicate model.new(email_pass_code: nil), :valid?
@@ -86,7 +88,9 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       assert_not model.new(email_pass_code: 1).valid?
       assert_predicate model.new(email_pass_code: nil, telephone_pass_code: 123456), :valid?
     end
+    # rubocop:enable Minitest/MultipleAssertions
 
+    # rubocop:disable Minitest/MultipleAssertions
     test "good #{model}'s telephone otp password pattern" do
       assert_predicate model.new(telephone_pass_code: 123456), :valid?
       assert_predicate model.new(telephone_pass_code: nil), :valid?
@@ -96,6 +100,7 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
       assert_not model.new(telephone_pass_code: 1).valid?
       assert_predicate model.new(email_pass_code: 123456, telephone_pass_code: nil), :valid?
     end
+    # rubocop:enable Minitest/MultipleAssertions
 
     test "bad #{model}'s title pattern" do
       [ "", "a" * 7, "a" * 256 ].each do

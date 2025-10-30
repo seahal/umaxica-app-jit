@@ -1,6 +1,8 @@
 require "test_helper"
 
+
 class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::IntegrationTest
+  # rubocop:disable Minitest/MultipleAssertions
   test "should get edit" do
     original_forgery_setting = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true
@@ -21,7 +23,9 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "checking cookie policy" do
     original_forgery_setting = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true
@@ -52,7 +56,9 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "submitting the form persists admin cookie preferences" do
     original_forgery_setting = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = false
@@ -98,4 +104,5 @@ class Apex::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end

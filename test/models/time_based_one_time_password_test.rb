@@ -10,7 +10,9 @@
 #
 require "test_helper"
 
+
 class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
+  # rubocop:disable Minitest/MultipleAssertions
   test "validation of prvate_key" do
     tbotp = TimeBasedOneTimePassword.new(id: "00000000-0000-0000-0000-0000000000110")
 
@@ -29,7 +31,9 @@ class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
 
     assert tbotp.save
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "validations of first_token" do
     tbotp = TimeBasedOneTimePassword.new(private_key: "SAMPLE")
 
@@ -56,6 +60,7 @@ class TimeBasedOneTimePasswordTest < ActiveSupport::TestCase
 
     assert_predicate tbotp, :valid?
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "check the field encryption" do
     tbotp = TimeBasedOneTimePassword.create(private_key: "EXAMPLE", first_token: 123456,

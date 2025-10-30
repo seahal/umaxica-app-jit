@@ -2,6 +2,7 @@
 
 require "test_helper"
 
+
 # Test with UserTelephone which includes Telephone
 class TelephoneTest < ActiveSupport::TestCase
   test "concern can be included in a class" do
@@ -40,6 +41,7 @@ class TelephoneTest < ActiveSupport::TestCase
     assert_not_equal raw1["number"], raw2["number"]
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "validates number format" do
     # Valid phone numbers
     assert_predicate UserTelephone.new(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true), :valid?
@@ -49,6 +51,7 @@ class TelephoneTest < ActiveSupport::TestCase
     # Invalid phone number
     assert_not UserTelephone.new(number: "invalid!@#", confirm_policy: true, confirm_using_mfa: true).valid?
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "validates number length" do
     # Too short

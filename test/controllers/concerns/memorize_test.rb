@@ -2,6 +2,7 @@
 
 require "test_helper"
 
+
 class MemorizeConcernTest < ActiveSupport::TestCase
   setup do
     @memorize = Memorize::RedisMemorize.test_instance(prefix: "test", postfix: SecureRandom.uuid)
@@ -60,6 +61,7 @@ class MemorizeConcernTest < ActiveSupport::TestCase
     assert_equal "secure_value", @memorize["secure_key"]
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "RedisMemorize clear_all removes all keys with prefix" do
     @memorize["key1"] = "value1"
     @memorize["key2"] = "value2"
@@ -73,6 +75,7 @@ class MemorizeConcernTest < ActiveSupport::TestCase
     assert_nil @memorize["key2"]
     assert_nil @memorize["key3"]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "RedisMemorize test_instance creates instance with custom prefix and postfix" do
     instance = Memorize::RedisMemorize.test_instance(prefix: "custom", postfix: "test")

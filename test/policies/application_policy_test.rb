@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class ApplicationPolicyTest < ActiveSupport::TestCase
   DummyRecord = Struct.new(:id)
 
@@ -9,6 +10,7 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
     @policy = ApplicationPolicy.new(@user, @record)
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   def test_default_permissions_are_denied
     assert_not_predicate @policy, :index?
     assert_not_predicate @policy, :show?
@@ -16,6 +18,7 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
     assert_not_predicate @policy, :update?
     assert_not_predicate @policy, :destroy?
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   def test_new_and_edit_delegate_to_create_and_update
     # new? delegates to create?

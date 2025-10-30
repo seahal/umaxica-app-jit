@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+
 require "json"
 require_relative "../../../../support/cookie_helper"
 
@@ -8,6 +9,7 @@ module Apex
   module App
     module Preference
       class ThemesControllerTest < ActionDispatch::IntegrationTest
+        # rubocop:disable Minitest/MultipleAssertions
         test "renders theme edit page with system selected by default" do
           get edit_apex_app_preference_theme_url
 
@@ -33,7 +35,9 @@ module Apex
 
           assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings"), count: 1
         end
+        # rubocop:enable Minitest/MultipleAssertions
 
+        # rubocop:disable Minitest/MultipleAssertions
         test "updates theme preference and persists to cookies" do
           patch apex_app_preference_theme_url, params: { theme: "dr", lx: "ja", ri: "jp", tz: "jst" }
 
@@ -52,7 +56,9 @@ module Apex
           assert_select "input[type='radio'][name='theme'][value='dr'][checked]", count: 1
           assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
         end
+        # rubocop:enable Minitest/MultipleAssertions
 
+        # rubocop:disable Minitest/MultipleAssertions
         test "re-renders edit on invalid theme selection" do
           patch apex_app_preference_theme_url, params: { theme: "li", lx: "ja", ri: "jp", tz: "jst" }
 
@@ -72,6 +78,7 @@ module Apex
           assert_select "input[type='radio'][name='theme'][value='li'][checked]", count: 1
           assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
         end
+        # rubocop:enable Minitest/MultipleAssertions
       end
     end
   end

@@ -2,6 +2,7 @@
 
 require "test_helper"
 
+
 class Docs::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     get docs_com_root_url
@@ -17,6 +18,7 @@ class Docs::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get docs_com_root_url
 
@@ -34,4 +36,5 @@ class Docs::Com::RootsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end

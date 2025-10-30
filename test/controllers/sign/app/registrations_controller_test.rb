@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   def host
     ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
@@ -19,6 +20,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "shows registration methods and social providers" do
     get new_sign_app_registration_url(format: :html), headers: { "Host" => host }
 
@@ -31,6 +33,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       assert_select "form[action=?][method=?]", "/sign/apple", "post"
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "renders localized copy with product name fallback" do
     get new_sign_app_registration_url(format: :html), headers: { "Host" => host }
@@ -39,6 +42,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: "log in?"
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "renders registration layout structure" do
     get new_sign_app_registration_url(format: :html)
 
@@ -61,4 +65,5 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end

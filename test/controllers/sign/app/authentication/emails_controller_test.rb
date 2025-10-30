@@ -1,6 +1,8 @@
 require "test_helper"
 
+
 class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::IntegrationTest
+  # rubocop:disable Minitest/MultipleAssertions
   test "should get new" do
     get new_sign_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
 
@@ -22,6 +24,7 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     #    assert_select "a[href=?]", new_sign_app_authentication_path(query), I18n.t("sign.app.authentication.new.back")
     assert_response :success
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # FIXME: implement this test
   test "reject already logged in user" do

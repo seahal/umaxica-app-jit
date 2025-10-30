@@ -1,6 +1,8 @@
 require "test_helper"
 
+
 class Apex::App::Preference::RegionsControllerTest < ActionDispatch::IntegrationTest
+  # rubocop:disable Minitest/MultipleAssertions
   test "GET edit renders form with region language and timezone selects" do
     get edit_apex_app_preference_region_url
 
@@ -10,7 +12,9 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_select "select[name='language']"
     assert_select "select[name='timezone']"
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "edit form contains region language and timezone sections with proper structure" do
     get edit_apex_app_preference_region_url
 
@@ -47,6 +51,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
       end
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "edit form preselects options matching session values" do
     patch apex_app_preference_region_url, params: { region: "US", language: "EN", timezone: "Asia/Tokyo" }
@@ -57,6 +62,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_equal "Asia/Tokyo", session[:timezone]
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "PATCH with multiple params updates session and redirects with success notice" do
     patch apex_app_preference_region_url, params: { region: "US", country: "US", language: "EN", timezone: "Asia/Tokyo" }
 
@@ -67,6 +73,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_equal "Asia/Tokyo", session[:timezone]
     assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "PATCH with language normalizes to uppercase and stores in session" do
     patch apex_app_preference_region_url, params: { language: "ja" }
@@ -119,6 +126,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_nil session[:timezone], "Timezone should not be saved to session from URL parameter"
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "GET edit with multiple URL parameters preselects all options" do
     get edit_apex_app_preference_region_url(lx: "en", ri: "us", tz: "utc")
 
@@ -127,7 +135,9 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_select "select#region option[value='US'][selected='selected']"
     assert_select "select#timezone option[value='Etc/UTC'][selected='selected']"
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "URL parameters take precedence over session values" do
     # Set session values
     patch apex_app_preference_region_url, params: { region: "JP", language: "JA", timezone: "Asia/Tokyo" }
@@ -148,6 +158,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_equal "JP", session[:region]
     assert_equal "Asia/Tokyo", session[:timezone]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "URL parameter lx normalizes ja to JA for display" do
     get edit_apex_app_preference_region_url(lx: "ja")
@@ -179,6 +190,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
   end
 
   # Cookie persistence tests
+  # rubocop:disable Minitest/MultipleAssertions
   test "PATCH should persist preferences and redirect with correct parameters" do
     patch apex_app_preference_region_url, params: { region: "JP", language: "JA", timezone: "Asia/Tokyo" }
 
@@ -193,6 +205,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     # Verify cookie is set
     assert_predicate response.cookies["apex_app_preferences"], :present?
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "cookie should be set after updating preferences" do
     patch apex_app_preference_region_url, params: { region: "US", language: "EN" }
@@ -277,6 +290,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_equal "JP", session[:region]
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "multiple preferences should be saved correctly" do
     # Clear session by making a fresh request
     get edit_apex_app_preference_region_url
@@ -287,6 +301,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_equal "Asia/Tokyo", session[:timezone]
     assert_predicate response.cookies["apex_app_preferences"], :present?
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # Additional edge case tests
   test "PATCH with empty params should not update session" do
@@ -311,6 +326,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_equal "Asia/Tokyo", session[:timezone]
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should handle existing preferences when updating" do
     # Set initial preferences
     patch apex_app_preference_region_url, params: { region: "US", language: "EN" }
@@ -326,6 +342,7 @@ class Apex::App::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_equal "EN", session[:language]
     assert_equal "Etc/UTC", session[:timezone]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "edit page should render successfully with default settings" do
     # Should not raise error and should use defaults

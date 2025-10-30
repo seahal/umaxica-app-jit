@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class ContactCategoryTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
     assert_operator ContactCategory, :<, GuestsRecord
@@ -33,6 +34,7 @@ class ContactCategoryTest < ActiveSupport::TestCase
     end
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     category = ContactCategory.create!(title: "test_category")
 
@@ -41,4 +43,5 @@ class ContactCategoryTest < ActiveSupport::TestCase
     assert_not_nil category.created_at
     assert_not_nil category.updated_at
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end

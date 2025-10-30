@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class CorporateSiteContactTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
     assert_operator CorporateSiteContact, :<, GuestsRecord
@@ -38,6 +39,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     assert_equal "general", contact.category
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have state machine methods" do
     contact = corporate_site_contacts(:one)
 
@@ -46,6 +48,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     assert_respond_to contact, :phone_verified?
     assert_respond_to contact, :completed?
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should transition from email_pending to email_verified" do
     contact = CorporateSiteContact.create!(category: "general", status: "email_pending")
@@ -78,6 +81,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     assert_not contact.verify_phone!
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should generate and verify final token" do
     contact = CorporateSiteContact.create!(category: "general", status: "phone_verified")
     raw_token = contact.generate_final_token
@@ -94,6 +98,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     # Cannot verify again
     assert_not contact.verify_token(raw_token)
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should reject invalid token" do
     contact = CorporateSiteContact.create!(category: "general", status: "phone_verified")
@@ -103,6 +108,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     assert_not contact.token_viewed?
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     contact = corporate_site_contacts(:one)
 
@@ -111,6 +117,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     assert_not_nil contact.created_at
     assert_not_nil contact.updated_at
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should use UUID as primary key" do
     contact = corporate_site_contacts(:one)

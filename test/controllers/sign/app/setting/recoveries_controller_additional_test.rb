@@ -2,6 +2,7 @@
 
 require "test_helper"
 
+
 class Sign::App::Setting::RecoveriesControllerAdditionalTest < ActionDispatch::IntegrationTest
   setup do
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
@@ -22,6 +23,7 @@ class Sign::App::Setting::RecoveriesControllerAdditionalTest < ActionDispatch::I
     assert_equal 24, session[:user_recovery_code].length
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "POST create with confirmation saves recovery code" do
     get new_sign_app_setting_recovery_url, headers: { "Host" => @host }
     recovery_code = session[:user_recovery_code]
@@ -42,6 +44,7 @@ class Sign::App::Setting::RecoveriesControllerAdditionalTest < ActionDispatch::I
     assert_response :success
     assert_equal I18n.t("messages.user_recovery_code_successfully_created"), flash[:notice]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "POST create without confirmation renders new with unprocessable status" do
     get new_sign_app_setting_recovery_url, headers: { "Host" => @host }

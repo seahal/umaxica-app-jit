@@ -1,6 +1,8 @@
 require "test_helper"
 
+
 class Email::Com::ApplicationMailerTest < ActionMailer::TestCase
+  # rubocop:disable Minitest/MultipleAssertions
   test "applies default from address" do
     expected_from = Rails.application.credentials.dig(:SMTP_FROM_ADDRESS)
 
@@ -22,6 +24,7 @@ class Email::Com::ApplicationMailerTest < ActionMailer::TestCase
     assert_equal I18n.t("test.email.com.application_mailer.subject"), email.subject
     assert_equal "hello", email.body.encoded
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "uses corporate mailer layout" do
     assert_equal "mailer/com/mailer", Email::Com::ApplicationMailer._layout

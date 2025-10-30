@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class IdentifiersRecordTest < ActiveSupport::TestCase
   test "should be abstract class" do
     assert_predicate IdentifiersRecord, :abstract_class?
@@ -38,12 +39,14 @@ class IdentifiersRecordTest < ActiveSupport::TestCase
     assert_not_nil writing_config
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should inherit all ActiveRecord functionality" do
     assert_respond_to IdentifiersRecord, :table_name
     assert_respond_to IdentifiersRecord, :primary_key
     assert_respond_to IdentifiersRecord, :find_by_sql
     assert_respond_to IdentifiersRecord, :transaction
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should be configured for identifier database multi-database setup" do
     # Verify this is part of the multi-database architecture

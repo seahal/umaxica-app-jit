@@ -1,4 +1,5 @@
 require "test_helper"
+
 require_relative "../../../../support/cookie_helper"
 
 class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::IntegrationTest
@@ -61,6 +62,7 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
   end
 
   # Test cookie persistence after successful update
+  # rubocop:disable Minitest/MultipleAssertions
   test "PATCH with valid params persists preferences to signed cookie" do
     patch apex_app_preference_region_url, params: { region: "US", language: "EN", timezone: "Etc/UTC" }
 
@@ -74,6 +76,7 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
     assert_equal "us", preferences["ri"]
     assert_equal "utc", preferences["tz"]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # Test cookie with JP region
   test "PATCH with JP region stores jp in cookie" do
@@ -113,6 +116,7 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
   end
 
   # Test edit with no session values uses defaults
+  # rubocop:disable Minitest/MultipleAssertions
   test "GET edit with empty session uses default values" do
     # Clear any existing session by making a request with no prior state
     get edit_apex_app_preference_region_url
@@ -123,6 +127,7 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
     assert_select "select#language"
     assert_select "select#timezone"
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # Test multiple region values
   test "PATCH with region JP stores JP in session" do

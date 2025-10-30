@@ -1,6 +1,8 @@
 require "test_helper"
 
+
 class Apex::Com::Preference::RegionsControllerTest < ActionDispatch::IntegrationTest
+  # rubocop:disable Minitest/MultipleAssertions
   test "should get edit" do
     get edit_apex_com_preference_region_url
 
@@ -10,7 +12,9 @@ class Apex::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_select "select[name='language']"
     assert_select "select[name='timezone']"
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should display all form sections" do
     get edit_apex_com_preference_region_url
 
@@ -48,6 +52,7 @@ class Apex::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
       end
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # test "edit preselects saved preferences" do
   #   patch apex_com_preference_region_url, params: { region: "JP", language: "JA", timezone: "Asia/Tokyo" }

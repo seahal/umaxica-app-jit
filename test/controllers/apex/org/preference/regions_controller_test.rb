@@ -1,5 +1,6 @@
 require "test_helper"
 
+
 class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::IntegrationTest
   test "should get edit" do
     get edit_apex_org_preference_region_url
@@ -7,6 +8,7 @@ class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_response :success
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should display all form sections" do
     get edit_apex_org_preference_region_url
 
@@ -52,6 +54,7 @@ class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
       end
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should reject unsupported admin language" do
     patch apex_org_preference_region_url, params: { language: "invalid" }
