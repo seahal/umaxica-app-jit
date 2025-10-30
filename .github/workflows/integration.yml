@@ -28,8 +28,8 @@ env:
   POSTGRESQL_PASSWORD: password
 jobs:
   security:
-    name: Security Checks
-    runs-on: ubuntu-slim
+    name: Security Checks (RuboCop, Brakeman, Bundle Audit)
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       BUNDLE_JOBS: 4
@@ -58,7 +58,7 @@ jobs:
 
   lint-ruby:
     name: Ruby Linting
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       BUNDLE_JOBS: 4
@@ -284,7 +284,7 @@ jobs:
           path: coverage/bun/
           retention-days: 30
   image-check:
-    name: Security Scan
+    name: Docker Image Vulnerability Scan
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
