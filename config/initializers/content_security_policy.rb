@@ -22,7 +22,7 @@ Rails.application.configure do
 
   # Automatically add `nonce` to `javascript_tag`, `javascript_include_tag`, and `stylesheet_link_tag`
   # if the corresponding directives are specified in `content_security_policy_nonce_directives`.
-  # config.content_security_policy_nonce_auto = true
+  config.content_security_policy_nonce_auto = true
 
   # Report violations without enforcing the policy.
   # config.content_security_policy_report_only = true

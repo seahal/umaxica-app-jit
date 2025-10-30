@@ -7,12 +7,11 @@ import {
 	Link,
 	SearchField,
 	Separator,
-	Switch,
 	Tab,
 	TabList,
 	TabPanel,
 	Tabs,
-	Text,
+	ToggleButton,
 } from "react-aria-components";
 
 type Feature = {
@@ -105,16 +104,23 @@ const HelpComLanding: React.FC = () => {
 								Design collaborative stories your community can feel.
 							</h1>
 							<p className="text-lg text-slate-200 sm:text-xl">
-								Help Center for creators, strategists, and community architects building the most welcoming spaces on{" "}
-								<span className="font-semibold text-indigo-200">Umaxica</span>. Explore inclusive UI patterns powered by
-								React Aria and see how dynamic teams stay in flow.
+								Help Center for creators, strategists, and community architects
+								building the most welcoming spaces on{" "}
+								<span className="font-semibold text-indigo-200">Umaxica</span>.
+								Explore inclusive UI patterns powered by React Aria and see how
+								dynamic teams stay in flow.
 							</p>
 						</div>
 
 						<div className="flex flex-wrap gap-4">
 							<Button
 								className="rounded-full bg-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/40 transition hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300"
-								onPress={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
+								onPress={() =>
+									window.scrollTo({
+										top: window.innerHeight,
+										behavior: "smooth",
+									})
+								}
 							>
 								Start a creator space tour
 							</Button>
@@ -146,15 +152,22 @@ const HelpComLanding: React.FC = () => {
 									key={stat.label}
 									className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl"
 								>
-									<dt className="text-xs font-medium uppercase tracking-widest text-slate-300">{stat.label}</dt>
-									<dd className="mt-3 text-3xl font-semibold text-white">{stat.value}</dd>
+									<dt className="text-xs font-medium uppercase tracking-widest text-slate-300">
+										{stat.label}
+									</dt>
+									<dd className="mt-3 text-3xl font-semibold text-white">
+										{stat.value}
+									</dd>
 								</div>
 							))}
 						</dl>
 					</div>
 
 					<div className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-slate-900/60 p-6 shadow-2xl shadow-indigo-500/10 backdrop-blur-2xl lg:col-span-5">
-						<Tabs defaultSelectedKey={featurePanels[0].id} className="flex flex-col gap-6">
+						<Tabs
+							defaultSelectedKey={featurePanels[0].id}
+							className="flex flex-col gap-6"
+						>
 							<TabList
 								aria-label="Platform modes"
 								className="flex flex-wrap gap-2 rounded-2xl bg-white/5 p-2"
@@ -184,12 +197,19 @@ const HelpComLanding: React.FC = () => {
 									className="rounded-2xl border border-white/10 bg-slate-900/60 p-6 text-slate-100"
 								>
 									<div className="space-y-4">
-										<h3 className="text-xl font-semibold text-white">{feature.name}</h3>
-										<p className="text-sm leading-relaxed text-slate-200">{feature.description}</p>
+										<h3 className="text-xl font-semibold text-white">
+											{feature.name}
+										</h3>
+										<p className="text-sm leading-relaxed text-slate-200">
+											{feature.description}
+										</p>
 										<ul className="space-y-3 text-sm text-slate-200">
 											{feature.highlights.map((highlight) => (
 												<li key={highlight} className="flex gap-3">
-													<span className="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-indigo-400" aria-hidden />
+													<span
+														className="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-indigo-400"
+														aria-hidden
+													/>
 													<span>{highlight}</span>
 												</li>
 											))}
@@ -208,44 +228,86 @@ const HelpComLanding: React.FC = () => {
 						<Separator className="h-px w-full bg-white/10" />
 
 						<div className="space-y-4">
-							<Switch
+							<ToggleButton
 								defaultSelected
 								className={({ isSelected, isFocusVisible }) =>
 									[
-										"flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 p-5 transition",
-										isSelected ? "border-indigo-400/60 shadow-md shadow-indigo-500/20" : "",
-										isFocusVisible ? "outline outline-2 outline-offset-2 outline-indigo-300" : "",
+										"w-full rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition",
+										isSelected
+											? "border-indigo-400/60 shadow-md shadow-indigo-500/20"
+											: "",
+										isFocusVisible
+											? "outline outline-2 outline-offset-2 outline-indigo-300"
+											: "",
 									]
 										.filter(Boolean)
 										.join(" ")
 								}
 							>
-								<Label className="text-sm font-semibold text-white">
-									Adaptive onboarding rituals
-								</Label>
-								<Text slot="description" className="text-sm text-slate-200">
-									Time-zone aware welcome sequences keep every new voice seen during their first 48 hours.
-								</Text>
-							</Switch>
+								{({ isSelected }) => (
+									<div className="flex flex-col gap-2">
+										<div className="flex items-center justify-between gap-3">
+											<span className="text-sm font-semibold text-white">
+												Adaptive onboarding rituals
+											</span>
+											<span
+												className={[
+													"rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide transition",
+													isSelected
+														? "bg-indigo-500/80 text-white"
+														: "bg-white/10 text-slate-200",
+												].join(" ")}
+											>
+												{isSelected ? "Active" : "Paused"}
+											</span>
+										</div>
+										<p className="text-sm text-slate-200">
+											Time-zone aware welcome sequences keep every new voice seen
+											during their first 48 hours.
+										</p>
+									</div>
+								)}
+							</ToggleButton>
 
-							<Switch
+							<ToggleButton
 								className={({ isSelected, isFocusVisible }) =>
 									[
-										"flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 p-5 transition",
-										isSelected ? "border-emerald-400/60 shadow-md shadow-emerald-500/20" : "",
-										isFocusVisible ? "outline outline-2 outline-offset-2 outline-emerald-300" : "",
+										"w-full rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition",
+										isSelected
+											? "border-emerald-400/60 shadow-md shadow-emerald-500/20"
+											: "",
+										isFocusVisible
+											? "outline outline-2 outline-offset-2 outline-emerald-300"
+											: "",
 									]
 										.filter(Boolean)
 										.join(" ")
 								}
 							>
-								<Label className="text-sm font-semibold text-white">
-									Notify mentors when a thread needs care
-								</Label>
-								<Text slot="description" className="text-sm text-slate-200">
-									Route calm, constructive voices to conversations the moment sentiment shifts.
-								</Text>
-							</Switch>
+								{({ isSelected }) => (
+									<div className="flex flex-col gap-2">
+										<div className="flex items-center justify-between gap-3">
+											<span className="text-sm font-semibold text-white">
+												Notify mentors when a thread needs care
+											</span>
+											<span
+												className={[
+													"rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide transition",
+													isSelected
+														? "bg-emerald-500/80 text-white"
+														: "bg-white/10 text-slate-200",
+												].join(" ")}
+											>
+												{isSelected ? "Active" : "Paused"}
+											</span>
+										</div>
+										<p className="text-sm text-slate-200">
+											Route calm, constructive voices to conversations the moment
+											sentiment shifts.
+										</p>
+									</div>
+								)}
+							</ToggleButton>
 						</div>
 					</div>
 				</section>
@@ -256,19 +318,28 @@ const HelpComLanding: React.FC = () => {
 							Blueprint a launch your audience will celebrate.
 						</h2>
 						<p className="text-base text-indigo-100">
-							This help center edition curates facilitation patterns, moderation safeguards, and story prompts so your
-							community feels co-created from day one.
+							This help center edition curates facilitation patterns, moderation
+							safeguards, and story prompts so your community feels co-created
+							from day one.
 						</p>
 					</div>
 
 					<div className="mt-10 grid gap-8 md:grid-cols-3">
 						{blueprintColumns.map((column) => (
-							<div key={column.title} className="space-y-4 rounded-2xl border border-white/10 bg-slate-950/40 p-6">
-								<h3 className="text-lg font-semibold text-white">{column.title}</h3>
+							<div
+								key={column.title}
+								className="space-y-4 rounded-2xl border border-white/10 bg-slate-950/40 p-6"
+							>
+								<h3 className="text-lg font-semibold text-white">
+									{column.title}
+								</h3>
 								<ul className="space-y-3 text-sm leading-relaxed text-indigo-100">
 									{column.items.map((item) => (
 										<li key={item} className="flex gap-3">
-											<span className="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-emerald-300" aria-hidden />
+											<span
+												className="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-emerald-300"
+												aria-hidden
+											/>
 											<span>{item}</span>
 										</li>
 									))}

@@ -1,5 +1,5 @@
 {
-	"name": "app",
+	"name": "umaxica-app-jit-bun",
 	"private": true,
 	"scripts": {
 		"build": "bun bun.config.js",
@@ -10,7 +10,6 @@
 	"dependencies": {
 		"@hotwired/turbo-rails": "^8.0.20",
 		"react": "^19.2.0",
-		"react-aria-components": "^1.13.0",
 		"react-dom": "^19.2.0"
 	},
 	"devDependencies": {
@@ -28,6 +27,7 @@
 		"cssnano": "^7.1.2",
 		"daisyui": "^5.3.10",
 		"postcss-cli": "^11.0.1",
-		"tailwindcss": "^4.1.16"
+		"tailwindcss": "^4.1.16",
+		"react-aria-components": "^1.13.0"
 	}
 }
