@@ -129,4 +129,67 @@ class ServiceSiteContactTest < ActiveSupport::TestCase
     #   assert_not model.new(email_address: "", telephone_number: valid_telephone_number).valid?
     # end
   end
+
+  # Foreign key constraint tests
+  test "should reference contact_category by title" do
+    category = ContactCategory.create!(title: "test_category")
+    contact = ServiceSiteContact.new(
+      confirm_policy: true,
+      email_address: "test@example.com",
+      telephone_number: "+819012345678",
+      email_pass_code: 123456,
+      telephone_pass_code: 123456,
+      title: "test title",
+      description: "test description",
+      contact_category_title: "test_category"
+    )
+    assert contact.save
+    assert_equal "test_category", contact.contact_category_title
+  end
+
+  test "should reference contact_status by title" do
+    status = ContactStatus.create!(title: "test_status")
+    contact = ServiceSiteContact.new(
+      confirm_policy: true,
+      email_address: "test@example.com",
+      telephone_number: "+819012345678",
+      email_pass_code: 123456,
+      telephone_pass_code: 123456,
+      title: "test title",
+      description: "test description",
+      contact_status_title: "test_status"
+    )
+    assert contact.save
+    assert_equal "test_status", contact.contact_status_title
+  end
+
+  test "should allow nil for contact_category_title" do
+    contact = ServiceSiteContact.new(
+      confirm_policy: true,
+      email_address: "test@example.com",
+      telephone_number: "+819012345678",
+      email_pass_code: 123456,
+      telephone_pass_code: 123456,
+      title: "test title",
+      description: "test description",
+      contact_category_title: nil
+    )
+    assert contact.save
+    assert_nil contact.contact_category_title
+  end
+
+  test "should allow nil for contact_status_title" do
+    contact = ServiceSiteContact.new(
+      confirm_policy: true,
+      email_address: "test@example.com",
+      telephone_number: "+819012345678",
+      email_pass_code: 123456,
+      telephone_pass_code: 123456,
+      title: "test title",
+      description: "test description",
+      contact_status_title: nil
+    )
+    assert contact.save
+    assert_nil contact.contact_status_title
+  end
 end

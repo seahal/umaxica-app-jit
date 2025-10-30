@@ -255,4 +255,47 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
 
     assert_not contact.verify_token(raw_token)
   end
+
+  # Foreign key constraint tests
+  test "should reference contact_category by title" do
+    category = ContactCategory.create!(title: "corporate_category")
+    contact = CorporateSiteContact.new(
+      category: "general",
+      status: "email_pending",
+      contact_category_title: "corporate_category"
+    )
+    assert contact.save
+    assert_equal "corporate_category", contact.contact_category_title
+  end
+
+  test "should reference contact_status by title" do
+    status = ContactStatus.create!(title: "corporate_status")
+    contact = CorporateSiteContact.new(
+      category: "general",
+      status: "email_pending",
+      contact_status_title: "corporate_status"
+    )
+    assert contact.save
+    assert_equal "corporate_status", contact.contact_status_title
+  end
+
+  test "should allow nil for contact_category_title" do
+    contact = CorporateSiteContact.new(
+      category: "general",
+      status: "email_pending",
+      contact_category_title: nil
+    )
+    assert contact.save
+    assert_nil contact.contact_category_title
+  end
+
+  test "should allow nil for contact_status_title" do
+    contact = CorporateSiteContact.new(
+      category: "general",
+      status: "email_pending",
+      contact_status_title: nil
+    )
+    assert contact.save
+    assert_nil contact.contact_status_title
+  end
 end

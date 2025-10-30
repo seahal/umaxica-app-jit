@@ -70,4 +70,51 @@ class StaffSiteContactTest < ActiveSupport::TestCase
     assert_respond_to contact, :description
     assert_respond_to contact, :ip_address
   end
+
+  # Foreign key constraint tests
+  test "should reference contact_category by title" do
+    category = ContactCategory.create!(title: "staff_category")
+    contact = StaffSiteContact.new(
+      email_address: "staff@example.com",
+      title: "Staff Contact",
+      description: "Staff description",
+      contact_category_title: "staff_category"
+    )
+    assert contact.save
+    assert_equal "staff_category", contact.contact_category_title
+  end
+
+  test "should reference contact_status by title" do
+    status = ContactStatus.create!(title: "staff_status")
+    contact = StaffSiteContact.new(
+      email_address: "staff@example.com",
+      title: "Staff Contact",
+      description: "Staff description",
+      contact_status_title: "staff_status"
+    )
+    assert contact.save
+    assert_equal "staff_status", contact.contact_status_title
+  end
+
+  test "should allow nil for contact_category_title" do
+    contact = StaffSiteContact.new(
+      email_address: "staff@example.com",
+      title: "Staff Contact",
+      description: "Staff description",
+      contact_category_title: nil
+    )
+    assert contact.save
+    assert_nil contact.contact_category_title
+  end
+
+  test "should allow nil for contact_status_title" do
+    contact = StaffSiteContact.new(
+      email_address: "staff@example.com",
+      title: "Staff Contact",
+      description: "Staff description",
+      contact_status_title: nil
+    )
+    assert contact.save
+    assert_nil contact.contact_status_title
+  end
 end
