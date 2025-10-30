@@ -290,7 +290,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
   runnability-check:
-    name: Ruby on Rails Tests
+    name: Runnability Checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
