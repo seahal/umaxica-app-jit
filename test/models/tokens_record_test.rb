@@ -2,11 +2,11 @@ require "test_helper"
 
 class TokensRecordTest < ActiveSupport::TestCase
   test "should be abstract class" do
-    assert TokensRecord.abstract_class?
+    assert_predicate TokensRecord, :abstract_class?
   end
 
   test "should inherit from ApplicationRecord" do
-    assert TokensRecord < ApplicationRecord
+    assert_operator TokensRecord, :<, ApplicationRecord
   end
 
   test "should connect to token database" do

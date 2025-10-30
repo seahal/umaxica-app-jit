@@ -10,6 +10,7 @@ module Apex
       class ThemesControllerTest < ActionDispatch::IntegrationTest
         test "renders theme edit page with system selected by default" do
           get edit_apex_app_preference_theme_url
+
           assert_response :success
 
           assert_select "h1", text: I18n.t("apex.app.preference.theme.edit.title")
@@ -42,9 +43,11 @@ module Apex
           assert_equal "dark", signed_cookie(:apex_app_theme)
 
           persisted_preferences = JSON.parse(signed_cookie(:apex_app_preferences))
+
           assert_equal "dr", persisted_preferences["ct"]
 
           follow_redirect!
+
           assert_response :success
           assert_select "input[type='radio'][name='theme'][value='dr'][checked]", count: 1
           assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")
@@ -52,8 +55,10 @@ module Apex
 
         test "re-renders edit on invalid theme selection" do
           patch apex_app_preference_theme_url, params: { theme: "li", lx: "ja", ri: "jp", tz: "jst" }
+
           assert_redirected_to edit_apex_app_preference_theme_url(lx: "ja", ri: "jp", tz: "jst")
           follow_redirect!
+
           assert_equal "light", session[:theme]
           assert_equal "light", signed_cookie(:apex_app_theme)
           assert_select "a.btn.btn-secondary[href^='#{apex_app_preference_path}']", text: I18n.t("apex.app.preferences.back_to_settings")

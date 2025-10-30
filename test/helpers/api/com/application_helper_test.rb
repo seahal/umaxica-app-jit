@@ -49,9 +49,11 @@ class Api::Com::ApplicationHelperTest < ActionView::TestCase
     test_time = Time.parse("2023-12-25 15:30:45 UTC")
 
     result_utc = to_localetime(test_time, :utc)
+
     assert_equal "UTC", result_utc.zone
 
     result_jst = to_localetime(test_time, :jst)
+
     assert_equal "JST", result_jst.zone
   end
 
@@ -93,9 +95,11 @@ class Api::Com::ApplicationHelperTest < ActionView::TestCase
     test_time = Time.parse("2023-12-25 15:30:45 UTC")
 
     result = to_localetime(test_time, "Jst")
+
     assert_equal "JST", result.zone
 
     result2 = to_localetime(test_time, "jSt")
+
     assert_equal "JST", result2.zone
   end
 

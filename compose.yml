@@ -45,7 +45,7 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
   primary:
-    image: postgres:17.5-alpine
+    image: postgres:18.0-alpine
     command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
     networks:
       - backend
@@ -58,7 +58,8 @@ services:
       POSTGRES_INITDB_MAX_WAL_SENDERS: 10 # max_wal_senders v1
       POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10 # max_replication_slots v1
       POSTGRES_DB: db
-    tmpfs: /var/lib/postgresql/data
+    tmpfs:
+      - /var/lib/postgresql/18:uid=70,gid=70
     ports:
       - "127.0.0.1:5435:5432"
     volumes:
@@ -66,7 +67,7 @@ services:
       - ./docker/psql-pub/pg_hba.conf:/etc/postgresql/pg_hba.conf
       - ./docker/psql-pub:/docker-entrypoint-initdb.d
   replica:
-    image: postgres:17.5-alpine
+    image: postgres:18.0-alpine
     entrypoint: /entrypoint.sh
     networks:
       - backend
@@ -78,7 +79,8 @@ services:
       POSTGRES_DB: db
     ports:
       - "127.0.0.1:5436:5432"
-    tmpfs: /var/lib/postgresql/data
+    tmpfs:
+      - /var/lib/postgresql/18:uid=70,gid=70
     volumes:
       - ./docker/psql-sub/entrypoint.sh:/entrypoint.sh
       - ./docker/psql-sub/postgresql.conf:/etc/postgresql/postgresql.conf

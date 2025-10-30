@@ -2,11 +2,11 @@ require "test_helper"
 
 class GuestsRecordTest < ActiveSupport::TestCase
   test "should be abstract class" do
-    assert GuestsRecord.abstract_class?
+    assert_predicate GuestsRecord, :abstract_class?
   end
 
   test "should inherit from ApplicationRecord" do
-    assert GuestsRecord < ApplicationRecord
+    assert_operator GuestsRecord, :<, ApplicationRecord
   end
 
   test "should connect to guest database" do
@@ -17,12 +17,14 @@ class GuestsRecordTest < ActiveSupport::TestCase
 
   test "should have correct database configuration" do
     config = GuestsRecord.connection_db_config
+
     assert_not_nil config
   end
 
   test "should connect to correct writing database" do
     # Verify the writing database configuration
     writing_config = GuestsRecord.connection_specification_name
+
     assert_not_nil writing_config
   end
 

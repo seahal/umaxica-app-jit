@@ -35,6 +35,7 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
     ActionController::Base.allow_forgery_protection = false
 
     get edit_apex_app_preference_cookie_url
+
     assert_select "input[type='checkbox'][name='accept_functional_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_targeting_cookies'][checked]", count: 0
@@ -46,6 +47,7 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
             accept_targeting_cookies: "1"
           }
     follow_redirect!
+
     assert_response :success
     assert_select "input[type='checkbox'][name='accept_functional_cookies'][checked]", count: 1
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 1
@@ -59,6 +61,7 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
             accept_targeting_cookies: "0"
           }
     follow_redirect!
+
     assert_response :success
     assert_select "input[type='checkbox'][name='accept_functional_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 0

@@ -2,6 +2,6 @@ require "test_helper"
 
 class Sign::Org::TermsControllerTest < ActionDispatch::IntegrationTest
   test "sample" do
-    assert true
+    skip "TODO: implement terms controller test"
   end
 end

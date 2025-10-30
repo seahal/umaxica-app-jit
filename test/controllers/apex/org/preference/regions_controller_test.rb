@@ -3,11 +3,13 @@ require "test_helper"
 class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::IntegrationTest
   test "should get edit" do
     get edit_apex_org_preference_region_url
+
     assert_response :success
   end
 
   test "should display all form sections" do
     get edit_apex_org_preference_region_url
+
     assert_select "h1", text: I18n.t("apex.org.preferences.regions.title")
     assert_select "select[name='region']"
     assert_select "select[name='language']"
@@ -53,11 +55,13 @@ class Apex::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
 
   test "should reject unsupported admin language" do
     patch apex_org_preference_region_url, params: { language: "invalid" }
+
     assert_response :unprocessable_content
   end
 
   test "should reject invalid timezone" do
     patch apex_org_preference_region_url, params: { timezone: "Invalid/Timezone" }
+
     assert_response :unprocessable_content
   end
 end

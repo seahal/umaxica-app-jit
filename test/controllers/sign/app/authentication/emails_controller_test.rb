@@ -3,6 +3,7 @@ require "test_helper"
 class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_sign_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+
     assert_select "h1", I18n.t("sign.app.authentication.email.new.page_title")
     assert_select "ul li" do
       assert_select "a", I18n.t("sign.app.authentication.new.back")
@@ -25,12 +26,14 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   # FIXME: implement this test
   test "reject already logged in user" do
     get new_sign_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+
     assert_response :success
   end
 
   # FIXME: implement this test
   test "reject already logged in staff" do
     get new_sign_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+
     assert_response :success
   end
 end

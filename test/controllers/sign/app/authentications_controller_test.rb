@@ -32,6 +32,7 @@ class Sign::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy responds to DELETE request" do
     delete sign_app_authentication_url
+
     assert_response :redirect
   end
 end

@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 6 * * *' # This runs the workflow daily at 06:00 UTC
+    - cron: '0 4 * * *' # This runs the workflow daily at 06:00 UTC
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -28,11 +28,13 @@ env:
   POSTGRESQL_PASSWORD: password
 jobs:
   security:
-    name: Security Checks
+    name: Security Checks (RuboCop, Brakeman, Bundle Audit)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       BUNDLE_JOBS: 4
+      REGION_CODE: jp
+      APEX_REGION: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -77,7 +79,7 @@ jobs:
 
   lint-js:
     name: JavaScript/TypeScript Linting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - name: Checkout code
@@ -98,7 +100,7 @@ jobs:
   test-rails:
     name: Ruby on Rails Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
       # Rails Configuration
       RAILS_ENV: test
@@ -111,6 +113,9 @@ jobs:
       NAME: UMAXICA
       BRAND_NAME: UMAXICA
       PORT: 3000
+      #
+      REGION_CODE: jp
+      APEX_REGION: true
       # Identifiers
       SINGLETON_DEFAULT_SALT: hoge
       IDENTIFIER_REGION_CODE: '392'
@@ -175,7 +180,7 @@ jobs:
       MINIO_SECRET_KEY: minioadmin
     services:
       postgres:
-        image: postgres:16
+        image: postgres:18
         options: >-
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         ports:
@@ -222,18 +227,6 @@ jobs:
           bin/rails db:migrate
       - name: Run Rails tests
         run: bundle exec rails test
-      # - name: Run Rails Server tests
-      #   run: |
-      #     RAILS_ENV=production bundle exec rails server -d
-      #     sleep 3
-      #     HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://com.localhost:3000)
-      #     if [ "$HTTP_CODE" = "200" ]; then
-      #       echo "Success: Server returned HTTP $HTTP_CODE"
-      #       exit 0
-      #     else
-      #       echo "Error: Server returned HTTP $HTTP_CODE (expected 200)"
-      #       exit 1
-      #     fi
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -284,7 +277,7 @@ jobs:
           path: coverage/bun/
           retention-days: 30
   image-check:
-    name: Security Scan
+    name: Docker Image Vulnerability Scan
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
@@ -300,3 +293,145 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+
+  runnability-check:
+    name: Runnability Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # Rails Configuration
+      RAILS_ENV: test
+      RACK_ENV: test
+      RAILS_MAX_THREADS: 5
+      # Redis (use local Redis service inside Compose)
+      REDIS_URL: redis://redis:6379/0
+      BUNDLE_JOBS: 4
+      # App Configuration
+      NAME: UMAXICA
+      BRAND_NAME: UMAXICA
+      PORT: 3000
+      #
+      REGION_CODE: jp
+      APEX_REGION: true
+      # Identifiers
+      SINGLETON_DEFAULT_SALT: hoge
+      IDENTIFIER_REGION_CODE: '392'
+      IDENTIFIER_INSTANCE_ID: '0123456789'
+      # Domain URLs
+      APEX_CORPORATE_URL: com.localhost
+      APEX_SERVICE_URL: app.localhost
+      APEX_STAFF_URL: org.localhost
+      WWW_CORPORATE_URL: www.com.localhost
+      WWW_SERVICE_URL: www.app.localhost
+      WWW_STAFF_URL: www.org.localhost
+      API_CORPORATE_URL: api.com.localhost
+      API_SERVICE_URL: api.app.localhost
+      API_STAFF_URL: api.org.localhost
+      SIGN_SERVICE_URL: sign.app.localhost
+      SIGN_STAFF_URL: sign.org.localhost
+      DOCS_CORPORATE_URL: docs.com.localhost
+      DOCS_SERVICE_URL: docs.app.localhost
+      DOCS_STAFF_URL: docs.org.localhost
+      NEWS_CORPORATE_URL: news.com.localhost
+      NEWS_SERVICE_URL: news.app.localhost
+      NEWS_STAFF_URL: news.org.localhost
+      HELP_CORPORATE_URL: help.com.localhost
+      HELP_SERVICE_URL: help.app.localhost
+      HELP_STAFF_URL: help.org.localhost
+      EDGE_CORPORATE_URL: localhost:5170
+      EDGE_SERVICE_URL: localhost:5171
+      EDGE_STAFF_URL: localhost:5172
+      # Database Configuration
+      POSTGRESQL_USER: root
+      POSTGRESQL_PORT: 5432
+      POSTGRESQL_PASSWORD: password
+      POSTGRESQL_UNIVERSAL_PUB: localhost
+      POSTGRESQL_UNIVERSAL_SUB: localhost
+      POSTGRESQL_GUEST_PUB: localhost
+      POSTGRESQL_GUEST_SUB: localhost
+      POSTGRESQL_IDENTIFIER_PUB: localhost
+      POSTGRESQL_IDENTIFIER_SUB: localhost
+      POSTGRESQL_PROFILE_PUB: localhost
+      POSTGRESQL_PROFILE_SUB: localhost
+      POSTGRESQL_TOKEN_PUB: localhost
+      POSTGRESQL_TOKEN_SUB: localhost
+      POSTGRESQL_BUSINESS_PUB: localhost
+      POSTGRESQL_BUSINESS_SUB: localhost
+      POSTGRESQL_MESSAGE_PUB: localhost
+      POSTGRESQL_MESSAGE_SUB: localhost
+      POSTGRESQL_NOTIFICATION_PUB: localhost
+      POSTGRESQL_NOTIFICATION_SUB: localhost
+      POSTGRESQL_CACHE_PUB: localhost
+      POSTGRESQL_CACHE_SUB: localhost
+      POSTGRESQL_SPECIALITY_PUB: localhost
+      POSTGRESQL_SPECIALITY_SUB: localhost
+      POSTGRESQL_STORAGE_PUB: localhost
+      POSTGRESQL_STORAGE_SUB: localhost
+      # Kafka Configuration
+      KAFKA_BROKERS: kafka:29092
+      # Mail Configuration
+      RESEND_SMTP_ENDPOINT: smtp.resend.com
+      RESEND_SMTP_USER_NAME: resend
+      # Object Storage Configuration
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    services:
+      postgres:
+        image: postgres:18
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 6379:6379
+      zookeeper:
+        image: confluentinc/cp-zookeeper:7.4.0
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+      kafka:
+        image: confluentinc/cp-kafka:7.4.0
+        env:
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+        options: >-
+          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092" --health-interval 30s --health-timeout 10s --health-retries 5
+        ports:
+          - 9092:9092
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4.7'
+          bundler-cache: true
+      - name: Setup test databases
+        run: |
+          bin/rails db:create
+          bin/rails db:migrate
+      - name: Run Rails Server tests
+        run: bundle exec rails about
+      #   run: |
+      #     RAILS_ENV=production bundle exec rails server -d
+      #     sleep 3
+      #     HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://com.localhost:3000)
+      #     if [ "$HTTP_CODE" = "200" ]; then
+      #       echo "Success: Server returned HTTP $HTTP_CODE"
+      #       exit 0
+      #     else
+      #       echo "Error: Server returned HTTP $HTTP_CODE (expected 200)"
+      #       exit 1
+      #     fi

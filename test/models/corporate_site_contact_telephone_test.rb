@@ -2,7 +2,7 @@ require "test_helper"
 
 class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
-    assert CorporateSiteContactTelephone < GuestsRecord
+    assert_operator CorporateSiteContactTelephone, :<, GuestsRecord
   end
 
   test "should belong to corporate_site_contact" do
@@ -15,6 +15,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
       remaining_views: 1,
       expires_at: 1.day.from_now
     )
+
     assert_respond_to telephone, :corporate_site_contact
     assert_not_nil telephone.corporate_site_contact
     assert_kind_of CorporateSiteContact, telephone.corporate_site_contact
@@ -91,7 +92,8 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
       remaining_views: 1,
       expires_at: 1.day.from_now
     )
-    assert telephone.valid?
+
+    assert_predicate telephone, :valid?
   end
 
   test "should use UUID as primary key" do
@@ -101,6 +103,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
       telephone_number: "+9876543210",
       expires_at: 1.day.from_now
     )
+
     assert_kind_of String, telephone.id
     assert_equal 36, telephone.id.length
   end
@@ -112,6 +115,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
       telephone_number: "+5555555555",
       expires_at: 1.day.from_now
     )
+
     assert_respond_to telephone, :created_at
     assert_respond_to telephone, :updated_at
     assert_not_nil telephone.created_at
@@ -125,6 +129,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
       telephone_number: "+6666666666",
       expires_at: 1.day.from_now
     )
+
     assert_respond_to telephone, :telephone_number
     assert_respond_to telephone, :activated
     assert_respond_to telephone, :deletable
@@ -139,8 +144,9 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
       telephone_number: "+1234567890",
       expires_at: 1.day.from_now
     )
-    assert_equal false, telephone.activated
-    assert_equal false, telephone.deletable
+
+    assert_not telephone.activated
+    assert_not telephone.deletable
     assert_equal 10, telephone.remaining_views
   end
 
@@ -151,8 +157,9 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
       corporate_site_contact: contact,
       expires_at: 1.day.from_now
     )
+
     assert_not telephone.valid?
-    assert telephone.errors[:telephone_number].any?, "telephone_number should have validation errors"
+    assert_predicate telephone.errors[:telephone_number], :any?, "telephone_number should have validation errors"
   end
 
   test "should validate format of telephone_number" do
@@ -166,8 +173,9 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
         telephone_number: invalid_phone,
         expires_at: 1.day.from_now
       )
+
       assert_not telephone.valid?, "#{invalid_phone} should be invalid"
-      assert telephone.errors[:telephone_number].any?, "#{invalid_phone} should have validation errors"
+      assert_predicate telephone.errors[:telephone_number], :any?, "#{invalid_phone} should have validation errors"
     end
 
     # Valid telephone formats
@@ -178,7 +186,8 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
         telephone_number: valid_phone,
         expires_at: 1.day.from_now
       )
-      assert telephone.valid?, "#{valid_phone} should be valid"
+
+      assert_predicate telephone, :valid?, "#{valid_phone} should be valid"
     end
   end
 
@@ -193,6 +202,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
 
     test_digest = "test_digest_value"
     telephone.otp_digest = test_digest
+
     assert_equal test_digest, telephone.verifier_digest
     assert_equal test_digest, telephone.otp_digest
   end
@@ -207,6 +217,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
 
     test_time = 1.hour.from_now
     telephone.otp_expires_at = test_time
+
     assert_equal test_time.to_i, telephone.verifier_expires_at.to_i
     assert_equal test_time.to_i, telephone.otp_expires_at.to_i
   end
@@ -221,6 +232,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
 
     test_attempts = 5
     telephone.otp_attempts_left = test_attempts
+
     assert_equal test_attempts, telephone.verifier_attempts_left
     assert_equal test_attempts, telephone.otp_attempts_left
   end
@@ -253,6 +265,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     )
 
     raw_otp = telephone.generate_otp!
+
     assert telephone.verify_otp(raw_otp)
     assert telephone.reload.activated
     assert_equal 0, telephone.otp_attempts_left
@@ -317,10 +330,12 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     )
 
     telephone.generate_otp!
+
     assert_not telephone.otp_expired?
 
     telephone.update!(otp_expires_at: 1.hour.ago)
-    assert telephone.otp_expired?
+
+    assert_predicate telephone, :otp_expired?
   end
 
   test "can_resend_otp? should return true when OTP expired" do
@@ -334,7 +349,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     telephone.generate_otp!
     telephone.update!(otp_expires_at: 1.hour.ago)
 
-    assert telephone.can_resend_otp?
+    assert_predicate telephone, :can_resend_otp?
   end
 
   test "can_resend_otp? should return true when attempts exhausted" do
@@ -348,7 +363,7 @@ class CorporateSiteContactTelephoneTest < ActiveSupport::TestCase
     telephone.generate_otp!
     telephone.update!(otp_attempts_left: 0)
 
-    assert telephone.can_resend_otp?
+    assert_predicate telephone, :can_resend_otp?
   end
 
   test "can_resend_otp? should return false when activated" do

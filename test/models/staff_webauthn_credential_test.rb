@@ -11,11 +11,12 @@ class StaffWebauthnCredentialTest < ActiveSupport::TestCase
 
   test "should have staff association defined" do
     association = StaffWebauthnCredential.reflect_on_association(:staff)
+
     assert_not_nil association
     assert_equal :belongs_to, association.macro
   end
 
   test "should inherit from IdentifiersRecord" do
-    assert StaffWebauthnCredential < IdentifiersRecord
+    assert_operator StaffWebauthnCredential, :<, IdentifiersRecord
   end
 end

@@ -20,7 +20,7 @@ class UniversalUserIdentifierTest < ActiveSupport::TestCase
       otp_private_key: "test_private_key_#{SecureRandom.hex(16)}"
     )
 
-    assert identifier.valid?
+    assert_predicate identifier, :valid?
     assert identifier.save
     assert_not_nil identifier.id
   end
@@ -32,7 +32,7 @@ class UniversalUserIdentifierTest < ActiveSupport::TestCase
       otp_private_key: nil
     )
 
-    assert identifier.valid?
+    assert_predicate identifier, :valid?
   end
 
   test "should set timestamps on create" do
@@ -70,8 +70,8 @@ class UniversalUserIdentifierTest < ActiveSupport::TestCase
       otp_private_key: "test_private_key_#{SecureRandom.hex(16)}"
     )
 
-    assert identifier.id.is_a?(String)
-    assert identifier.id.present?
+    assert_kind_of String, identifier.id
+    assert_predicate identifier.id, :present?
   end
 
   test "should store and retrieve otp_private_key" do
@@ -83,6 +83,7 @@ class UniversalUserIdentifierTest < ActiveSupport::TestCase
     )
 
     identifier.reload
+
     assert_equal private_key, identifier.otp_private_key
   end
 end

@@ -2,12 +2,13 @@ require "test_helper"
 
 class CorporateSiteContactTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
-    assert CorporateSiteContact < GuestsRecord
+    assert_operator CorporateSiteContact, :<, GuestsRecord
   end
 
   test "should have valid fixtures" do
     contact = corporate_site_contacts(:one)
-    assert contact.valid?
+
+    assert_predicate contact, :valid?
     assert_equal "general", contact.category
     assert_equal "email_pending", contact.status
   end
@@ -17,6 +18,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
       category: "inquiry",
       status: "email_verified"
     )
+
     assert contact.save
     assert_equal "inquiry", contact.category
     assert_equal "email_verified", contact.status
@@ -24,18 +26,21 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
 
   test "should default to email_pending status" do
     contact = CorporateSiteContact.new(category: "general")
+
     assert contact.save
     assert_equal "email_pending", contact.status
   end
 
   test "should default to general category" do
     contact = CorporateSiteContact.new(status: "email_pending")
+
     assert contact.save
     assert_equal "general", contact.category
   end
 
   test "should have state machine methods" do
     contact = corporate_site_contacts(:one)
+
     assert_respond_to contact, :email_pending?
     assert_respond_to contact, :email_verified?
     assert_respond_to contact, :phone_verified?
@@ -44,27 +49,31 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
 
   test "should transition from email_pending to email_verified" do
     contact = CorporateSiteContact.create!(category: "general", status: "email_pending")
-    assert contact.can_verify_email?
+
+    assert_predicate contact, :can_verify_email?
     assert contact.verify_email!
-    assert contact.email_verified?
+    assert_predicate contact, :email_verified?
   end
 
   test "should transition from email_verified to phone_verified" do
     contact = CorporateSiteContact.create!(category: "general", status: "email_verified")
-    assert contact.can_verify_phone?
+
+    assert_predicate contact, :can_verify_phone?
     assert contact.verify_phone!
-    assert contact.phone_verified?
+    assert_predicate contact, :phone_verified?
   end
 
   test "should transition from phone_verified to completed" do
     contact = CorporateSiteContact.create!(category: "general", status: "phone_verified")
-    assert contact.can_complete?
+
+    assert_predicate contact, :can_complete?
     assert contact.complete!
-    assert contact.completed?
+    assert_predicate contact, :completed?
   end
 
   test "should not allow invalid transitions" do
     contact = CorporateSiteContact.create!(category: "general", status: "email_pending")
+
     assert_not contact.can_verify_phone?
     assert_not contact.verify_phone!
   end
@@ -80,7 +89,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
 
     # Verify correct token
     assert contact.verify_token(raw_token)
-    assert contact.token_viewed?
+    assert_predicate contact, :token_viewed?
 
     # Cannot verify again
     assert_not contact.verify_token(raw_token)
@@ -96,6 +105,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
 
   test "should have timestamps" do
     contact = corporate_site_contacts(:one)
+
     assert_respond_to contact, :created_at
     assert_respond_to contact, :updated_at
     assert_not_nil contact.created_at
@@ -104,12 +114,14 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
 
   test "should use UUID as primary key" do
     contact = corporate_site_contacts(:one)
+
     assert_kind_of String, contact.id
     assert_equal 36, contact.id.length
   end
 
   test "should have category and status attributes" do
     contact = corporate_site_contacts(:one)
+
     assert_respond_to contact, :category
     assert_respond_to contact, :status
   end
@@ -213,7 +225,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     contact.status = "invalid_status"
 
     assert_not contact.valid?
-    assert contact.errors[:status].any?, "status should have validation errors for invalid value"
+    assert_predicate contact.errors[:status], :any?, "status should have validation errors for invalid value"
   end
 
   test "should validate inclusion of category" do
@@ -221,7 +233,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     contact.category = "invalid_category"
 
     assert_not contact.valid?
-    assert contact.errors[:category].any?, "category should have validation errors for invalid value"
+    assert_predicate contact.errors[:category], :any?, "category should have validation errors for invalid value"
   end
 
   # Token expiration tests
@@ -238,7 +250,7 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
 
     contact.update!(token_expires_at: 1.hour.ago)
 
-    assert contact.token_expired?
+    assert_predicate contact, :token_expired?
   end
 
   test "token_expired? should return false when token_expires_at is nil" do
@@ -254,5 +266,52 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     contact.update!(token_expires_at: 1.hour.ago)
 
     assert_not contact.verify_token(raw_token)
+  end
+
+  # Foreign key constraint tests
+  test "should reference contact_category by title" do
+    category = ContactCategory.create!(title: "corporate_category")
+    contact = CorporateSiteContact.new(
+      category: "general",
+      status: "email_pending",
+      contact_category_title: "corporate_category"
+    )
+
+    assert contact.save
+    assert_equal "corporate_category", contact.contact_category_title
+  end
+
+  test "should reference contact_status by title" do
+    status = ContactStatus.create!(title: "corporate_status")
+    contact = CorporateSiteContact.new(
+      category: "general",
+      status: "email_pending",
+      contact_status_title: "corporate_status"
+    )
+
+    assert contact.save
+    assert_equal "corporate_status", contact.contact_status_title
+  end
+
+  test "should allow nil for contact_category_title" do
+    contact = CorporateSiteContact.new(
+      category: "general",
+      status: "email_pending",
+      contact_category_title: nil
+    )
+
+    assert contact.save
+    assert_nil contact.contact_category_title
+  end
+
+  test "should allow nil for contact_status_title" do
+    contact = CorporateSiteContact.new(
+      category: "general",
+      status: "email_pending",
+      contact_status_title: nil
+    )
+
+    assert contact.save
+    assert_nil contact.contact_status_title
   end
 end

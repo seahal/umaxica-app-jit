@@ -19,7 +19,7 @@ class RecoverCodeTest < ActiveSupport::TestCase
   end
 
   test "concern can be included in a class" do
-    assert DummyRecoverCodeModel.included_modules.include?(RecoverCode)
+    assert_includes DummyRecoverCodeModel.included_modules, RecoverCode
   end
 
   test "concern adds confirm_policy accessor" do
@@ -39,16 +39,19 @@ class RecoverCodeTest < ActiveSupport::TestCase
 
   test "confirm_policy can be set and retrieved" do
     @model.confirm_policy = "test_policy"
+
     assert_equal "test_policy", @model.confirm_policy
   end
 
   test "confirm_using_mfa can be set and retrieved" do
     @model.confirm_using_mfa = true
-    assert_equal true, @model.confirm_using_mfa
+
+    assert @model.confirm_using_mfa
   end
 
   test "pass_code can be set and retrieved" do
     @model.pass_code = "123456"
+
     assert_equal "123456", @model.pass_code
   end
 

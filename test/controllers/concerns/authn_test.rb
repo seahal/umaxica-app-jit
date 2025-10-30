@@ -4,6 +4,6 @@ require "test_helper"
 
 class AuthnTest < ActiveSupport::TestCase
   test "placeholder test" do
-    assert true
+    skip "TODO: cover Authn concern behavior"
   end
 end

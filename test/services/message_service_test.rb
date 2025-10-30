@@ -9,6 +9,7 @@ class MessageServiceTest < ActiveSupport::TestCase
 
   test "MessageService can be instantiated" do
     service = MessageService.new
+
     assert_instance_of MessageService, service
   end
 

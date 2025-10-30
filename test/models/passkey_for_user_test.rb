@@ -40,20 +40,23 @@ class PasskeyForUserTest < ActiveSupport::TestCase
 
   test "should have description field" do
     passkey = PasskeyForUser.new(description: "Test Description")
+
     assert_equal "Test Description", passkey.description
   end
 
   test "should have public_key field" do
     passkey = PasskeyForUser.new(public_key: "test_key")
+
     assert_equal "test_key", passkey.public_key
   end
 
   test "should inherit from IdentifierRecord" do
-    assert PasskeyForUser.ancestors.include?(IdentifierRecord)
+    assert_includes PasskeyForUser.ancestors, IdentifierRecord
   end
 
   test "should have required database columns" do
     required_columns = %w[description public_key sign_count external_id user_id webauthn_id]
+
     required_columns.each do |column|
       assert_includes PasskeyForUser.column_names, column
     end

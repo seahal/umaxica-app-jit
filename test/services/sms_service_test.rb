@@ -33,6 +33,7 @@ class SmsServiceTest < ActiveSupport::TestCase
     SmsService.instance_variable_set(:@provider, nil)
 
     provider = SmsService.send(:provider)
+
     assert_instance_of SmsProviders::AwsSns, provider
   end
 

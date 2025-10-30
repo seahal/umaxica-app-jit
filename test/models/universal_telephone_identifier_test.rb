@@ -14,7 +14,7 @@ class UniversalTelephoneIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should be valid" do
-    assert @universal_telephone_identifier.valid?
+    assert_predicate @universal_telephone_identifier, :valid?
   end
 
   test "should inherit from UniversalRecord" do

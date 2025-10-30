@@ -24,7 +24,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
   test "should create hmac based one time password with valid attributes" do
     otp = HmacBasedOneTimePassword.new(valid_attributes)
 
-    assert otp.valid?
+    assert_predicate otp, :valid?
     assert otp.save
     assert_not_nil otp.id
   end
@@ -54,8 +54,8 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
   test "should generate binary id" do
     otp = HmacBasedOneTimePassword.create!(valid_attributes)
 
-    assert otp.id.is_a?(String)
-    assert otp.id.present?
+    assert_kind_of String, otp.id
+    assert_predicate otp.id, :present?
   end
 
   test "should store and retrieve private_key" do
@@ -67,6 +67,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
     )
 
     otp.reload
+
     assert_equal private_key, otp.private_key
   end
 
@@ -79,7 +80,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
       private_key: max_key
     )
 
-    assert otp.valid?
+    assert_predicate otp, :valid?
     assert_equal 1024, max_key.length
   end
 
@@ -108,7 +109,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
     current_time = Time.current
     otp.update!(last_otp_at: current_time)
 
-    assert otp.last_otp_at > initial_time
+    assert_operator otp.last_otp_at, :>, initial_time
     assert_equal current_time.to_i, otp.last_otp_at.to_i
   end
 
@@ -126,6 +127,7 @@ class HmacBasedOneTimePasswordTest < ActiveSupport::TestCase
     otp2.update!(last_otp_at: time2)
 
     otp.reload
+
     assert_equal time2.to_i, otp.last_otp_at.to_i
   end
 end

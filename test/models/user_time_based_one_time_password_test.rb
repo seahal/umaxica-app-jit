@@ -9,11 +9,12 @@ require "test_helper"
 
 class UserTimeBasedOneTimePasswordTest < ActiveSupport::TestCase
   test "inherits from IdentifiersRecord" do
-    assert UserTimeBasedOneTimePassword < IdentifiersRecord
+    assert_operator UserTimeBasedOneTimePassword, :<, IdentifiersRecord
   end
 
   test "belongs to user" do
     association = UserTimeBasedOneTimePassword.reflect_on_association(:user)
+
     assert_not_nil association
     assert_equal :belongs_to, association.macro
   end

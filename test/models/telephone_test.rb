@@ -19,8 +19,8 @@ class TelephoneTest < ActiveSupport::TestCase
     telephone.confirm_using_mfa = false
     telephone.pass_code = "123456"
 
-    assert_equal true, telephone.confirm_policy
-    assert_equal false, telephone.confirm_using_mfa
+    assert telephone.confirm_policy
+    assert_not telephone.confirm_using_mfa
     assert_equal "123456", telephone.pass_code
   end
 
@@ -31,10 +31,12 @@ class TelephoneTest < ActiveSupport::TestCase
     validator = StaffTelephone.validators_on(:confirm_policy).find do |v|
       v.is_a?(ActiveModel::Validations::AcceptanceValidator)
     end
+
     assert_not_nil validator
 
     condition = Array(validator.options[:unless]).first
-    assert condition.respond_to?(:call)
+
+    assert_respond_to condition, :call
 
     skip_validation = StaffTelephone.new(number: nil, pass_code: "654321")
     require_validation = StaffTelephone.new(number: "user@example.com", pass_code: nil)
@@ -47,10 +49,12 @@ class TelephoneTest < ActiveSupport::TestCase
     validator = StaffTelephone.validators_on(:pass_code).find do |v|
       v.is_a?(ActiveModel::Validations::PresenceValidator)
     end
+
     assert_not_nil validator
 
     condition = Array(validator.options[:unless]).first
-    assert condition.respond_to?(:call)
+
+    assert_respond_to condition, :call
 
     skip_validation = StaffTelephone.new(number: "user@example.com", pass_code: nil)
     require_validation = StaffTelephone.new(number: nil, pass_code: "123456")

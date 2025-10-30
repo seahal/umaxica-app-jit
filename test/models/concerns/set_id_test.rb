@@ -5,13 +5,15 @@ require "test_helper"
 # Test with UserEmail which includes SetId
 class SetIdTest < ActiveSupport::TestCase
   test "concern can be included in a class" do
-    assert UserEmail.included_modules.include?(SetId)
+    assert_includes UserEmail.included_modules, SetId
   end
 
   test "should generate UUIDv7 before create" do
     email = UserEmail.new(address: "test@example.com", confirm_policy: true)
+
     assert_nil email.id
     email.save!
+
     assert_not_nil email.id
   end
 
@@ -25,6 +27,7 @@ class SetIdTest < ActiveSupport::TestCase
     # Create multiple records and verify they are all valid UUIDs
     3.times do |i|
       email = UserEmail.create!(address: "test#{i}@example.com", confirm_policy: true)
+
       assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7/, email.id)
     end
   end
@@ -32,6 +35,7 @@ class SetIdTest < ActiveSupport::TestCase
   test "should generate different ids for each record" do
     email1 = UserEmail.create!(address: "unique1@example.com", confirm_policy: true)
     email2 = UserEmail.create!(address: "unique2@example.com", confirm_policy: true)
+
     assert_not_equal email1.id, email2.id
   end
 
@@ -39,6 +43,7 @@ class SetIdTest < ActiveSupport::TestCase
     email = UserEmail.create!(address: "update@example.com", confirm_policy: true)
     original_id = email.id
     email.update!(address: "updated@example.com")
+
     assert_equal original_id, email.id
   end
 end

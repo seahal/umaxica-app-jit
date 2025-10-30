@@ -3,7 +3,7 @@ require "test_helper"
 class Sign::App::Token::RefreshsControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     # TODO: Implement show action test for token refresh
-    assert_not false
+    skip "TODO: implement show action test for token refresh"
   end
 
   test "should patch update" do

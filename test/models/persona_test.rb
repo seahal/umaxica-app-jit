@@ -17,41 +17,45 @@ class PersonaTest < ActiveSupport::TestCase
   end
 
   test "should be valid with valid attributes" do
-    assert @persona.valid?
+    assert_predicate @persona, :valid?
   end
 
   test "should have timestamps" do
     @persona.save
+
     assert_not_nil @persona.created_at
     assert_not_nil @persona.updated_at
   end
 
   test "should have uuid as primary key" do
     @persona.save
-    assert @persona.id.is_a?(String)
+
+    assert_kind_of String, @persona.id
     assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/, @persona.id)
   end
 
   test "should accept name attribute" do
     @persona.name = "Updated Name"
+
     assert_equal "Updated Name", @persona.name
   end
 
   # Model structure tests
   test "should inherit from SpecialitiesRecord" do
-    assert Persona < SpecialitiesRecord
+    assert_operator Persona, :<, SpecialitiesRecord
   end
 
   test "should mount avatar uploader" do
-    assert @persona.respond_to?(:avatar)
-    assert @persona.respond_to?(:avatar=)
-    assert @persona.respond_to?(:remove_avatar)
+    assert_respond_to @persona, :avatar
+    assert_respond_to @persona, :avatar=
+    assert_respond_to @persona, :remove_avatar
   end
 
   # Avatar functionality tests
   test "should handle avatar upload" do
     # Test that avatar field exists and can be set
     @persona.avatar = "test_avatar_data"
+
     assert_not_nil @persona.avatar
   end
 
@@ -59,20 +63,24 @@ class PersonaTest < ActiveSupport::TestCase
     # The schema shows avatar is a jsonb field
     @persona.save!
     column = Persona.columns_hash["avatar"]
+
     assert_equal :jsonb, column.type
   end
 
   # Name validation tests
   test "should allow empty name" do
     @persona.name = nil
-    assert @persona.valid?
+
+    assert_predicate @persona, :valid?
   end
 
   test "should allow long names" do
     long_name = "a" * 255
     @persona.name = long_name
-    assert @persona.valid?
+
+    assert_predicate @persona, :valid?
     @persona.save!
+
     assert_equal long_name, @persona.name
   end
 
@@ -80,18 +88,20 @@ class PersonaTest < ActiveSupport::TestCase
   test "should allow identifier_id to be set" do
     identifier_uuid = SecureRandom.uuid
     @persona.identifier_id = identifier_uuid
+
     assert_equal identifier_uuid, @persona.identifier_id
   end
 
   test "should allow nil identifier_id" do
     @persona.identifier_id = nil
-    assert @persona.valid?
+
+    assert_predicate @persona, :valid?
   end
 
   # Avatar uploader specific tests
   test "should respond to avatar uploader methods" do
-    assert @persona.respond_to?(:avatar_url)
-    assert @persona.respond_to?(:avatar_identifier)
+    assert_respond_to @persona, :avatar_url
+    assert_respond_to @persona, :avatar_identifier
   end
 
   # JSONB functionality tests

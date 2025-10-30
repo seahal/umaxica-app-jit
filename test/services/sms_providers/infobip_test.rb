@@ -4,15 +4,15 @@ require "test_helper"
 
 class SmsProviders::InfobipTest < ActiveSupport::TestCase
   test "send_message posts formatted payload and returns parsed json" do
-    assert true
+    skip "TODO: mock HTTP client and assert formatted payload"
   end
 
   test "send_message raises when response is unsuccessful" do
-    assert true
+    skip "TODO: simulate non-success response and assert failure"
   end
 
   test "send_message falls back to default base url and sender id" do
-    assert true
+    skip "TODO: cover Infobip defaults behavior"
   end
 end
 
@@ -23,7 +23,7 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
       to: "+1234567890",
       message: "Test message",
       subject: "Test Subject"
-    }
+    }.freeze
   end
 
   test "provider inherits from Base" do
@@ -75,6 +75,7 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     @provider.send_message(**@valid_params)
 
     body = JSON.parse(captured_options[:body])
+
     assert_equal 1, body["messages"].length
     assert_equal @valid_params[:to], body["messages"][0]["destinations"][0]["to"]
     assert_equal @valid_params[:message], body["messages"][0]["text"]
@@ -224,6 +225,7 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     @provider.send_message(**@valid_params)
 
     body = JSON.parse(captured_options[:body])
+
     assert_not_nil body["messages"][0]["from"]
   end
 

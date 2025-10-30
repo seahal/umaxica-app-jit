@@ -3,6 +3,7 @@ require "test_helper"
 class Sign::Org::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get sign_org_setting_passkeys_url
+
     assert_response :success
     assert_equal I18n.t("errors.not_implemented"), @response.body
   end
@@ -14,6 +15,7 @@ class Sign::Org::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
 
   test "should get new" do
     get new_sign_org_setting_passkey_url
+
     assert_response :success
     assert_equal I18n.t("errors.not_implemented"), @response.body
   end

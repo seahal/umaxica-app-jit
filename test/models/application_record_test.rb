@@ -2,7 +2,7 @@ require "test_helper"
 
 class ApplicationRecordTest < ActiveSupport::TestCase
   test "should be abstract class" do
-    assert ApplicationRecord.abstract_class?
+    assert_predicate ApplicationRecord, :abstract_class?
   end
 
   test "should be primary abstract class" do
@@ -11,6 +11,6 @@ class ApplicationRecordTest < ActiveSupport::TestCase
   end
 
   test "should inherit from ActiveRecord::Base" do
-    assert ApplicationRecord < ActiveRecord::Base
+    assert_operator ApplicationRecord, :<, ActiveRecord::Base
   end
 end

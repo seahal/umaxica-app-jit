@@ -15,12 +15,15 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     location = URI.parse(response.location)
     query = Rack::Utils.parse_query(location.query)
+
     assert_equal({ "ri" => "jp" }, query)
 
     follow_redirect!
+
     assert_response :success
 
     persisted = signed_cookie(:apex_app_preferences)
+
     assert_not_nil persisted
     assert_equal DEFAULT_QUERY, JSON.parse(persisted)
     assert_equal "jp", request.params["ri"]
@@ -28,26 +31,32 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get index" do
     get apex_app_root_path, headers: HOST_HEADER
+
     assert_response :redirect
 
     follow_redirect!
+
     assert_response :success
   end
 
   test "redirects using cookie preferences when query params missing" do
     get apex_app_root_path, headers: HOST_HEADER, params: { lx: "en", ri: "us", tz: "utc", ct: "dr" }
+
     assert_response :success
 
     get apex_app_root_path, headers: HOST_HEADER
+
     assert_response :redirect
     location = URI.parse(response.location)
     query = Rack::Utils.parse_query(location.query)
+
     assert_equal "en", query["lx"]
     assert_equal "us", query["ri"]
     assert_equal "utc", query["tz"]
     assert_equal "dr", query["ct"]
 
     follow_redirect!
+
     assert_response :success
     assert_equal "en", request.params["lx"]
     assert_equal "us", request.params["ri"]
@@ -61,12 +70,15 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     location = URI.parse(response.location)
     query = Rack::Utils.parse_query(location.query)
+
     assert_equal({ "ri" => "jp" }, query)
 
     follow_redirect!
+
     assert_response :success
 
     persisted = JSON.parse(signed_cookie(:apex_app_preferences))
+
     assert_equal DEFAULT_QUERY, persisted
     assert_equal "jp", request.params["ri"]
     assert_nil request.params["ct"]
@@ -78,12 +90,14 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     location = URI.parse(response.location)
     query = Rack::Utils.parse_query(location.query)
+
     assert_nil query["lx"]
     assert_equal "jp", query["ri"]
     assert_nil query["tz"]
     assert_nil query["ct"]
 
     follow_redirect!
+
     assert_response :success
   end
 
@@ -93,9 +107,11 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     location = URI.parse(response.location)
     query = Rack::Utils.parse_query(location.query)
+
     assert_equal({ "ri" => "jp" }, query)
 
     follow_redirect!
+
     assert_response :success
   end
 
@@ -116,10 +132,12 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
       if combo == default_combo
         assert_response :redirect, "Expected redirect to strip default preferences"
         follow_redirect!
+
         assert_response :success
       end
 
       persisted_after_initial = JSON.parse(signed_cookie(:apex_app_preferences))
+
       assert_equal({ "lx" => lx, "ri" => ri, "tz" => tz, "ct" => ct }, persisted_after_initial)
 
       get apex_app_root_path, headers: HOST_HEADER
@@ -136,29 +154,34 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
       assert_equal expected_query, query
 
       follow_redirect!
+
       assert_response :success
 
       persisted = JSON.parse(signed_cookie(:apex_app_preferences))
+
       assert_equal({ "lx" => lx, "ri" => ri, "tz" => tz, "ct" => ct }, persisted)
     end
   end
 
   test "should render HTML by default" do
     get_and_follow_apex_root
+
     assert_response :success
     assert_equal "text/html", response.media_type
   end
 
   test "should have proper response headers" do
     get_and_follow_apex_root
+
     assert_response :success
     assert_not_nil response.headers["Content-Type"]
-    assert response.headers["Content-Type"].include?("text/html")
+    assert_includes response.headers["Content-Type"], "text/html"
   end
 
   test "sets lang attribute on html element" do
     get apex_app_root_path(format: :html), headers: HOST_HEADER
     follow_redirect! if response.redirect?
+
     assert_response :success
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")
@@ -167,6 +190,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "should load without any instance variables" do
     get_and_follow_apex_root
+
     assert_response :success
     assert_not_empty response.body
   end
@@ -174,15 +198,18 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should handle multiple concurrent requests" do
     5.times do
       get_and_follow_apex_root
+
       assert_response :success
     end
   end
 
   test "should handle different Accept headers" do
     get_and_follow_apex_root(headers: HOST_HEADER.merge("Accept" => "text/html"))
+
     assert_response :success
 
     get_and_follow_apex_root(headers: HOST_HEADER.merge("Accept" => "*/*"))
+
     assert_response :success
   end
 
@@ -196,12 +223,14 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     )
 
     get_and_follow_apex_root(headers: headers)
+
     assert_response :success
   end
 
   test "should handle requests with query parameters" do
     request_params = { utm_source: "test", debug: "true" }
     get_and_follow_apex_root(params: request_params)
+
     assert_response :success
     assert_equal "test", request.params[:utm_source]
     assert_equal "true", request.params[:debug]
@@ -222,22 +251,27 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should handle edge case scenarios" do
     long_param = "a" * 1000
     get_and_follow_apex_root(headers: HOST_HEADER.merge(long_param: long_param))
+
     assert_response :success
 
     get_and_follow_apex_root(headers: HOST_HEADER.merge(special: "test@#$%^&*()"))
+
     assert_response :success
   end
 
   test "should handle different HTTP versions" do
     get_and_follow_apex_root
+
     assert_response :success
     assert_equal "1.1", request.env["HTTP_VERSION"] if request.env["HTTP_VERSION"]
   end
 
   test "should not expose sensitive information" do
     get_and_follow_apex_root
+
     assert_response :success
     response_body = response.body
+
     assert_not_includes response_body, "password"
     assert_not_includes response_body, "secret"
     assert_not_includes response_body, "api_key"
@@ -246,6 +280,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should handle requests from different IP addresses" do
     [ "127.0.0.1", "192.168.1.1", "10.0.0.1" ].each do |ip|
       get_and_follow_apex_root(headers: HOST_HEADER.merge("REMOTE_ADDR" => ip))
+
       assert_response :success
     end
   end
@@ -255,6 +290,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     first_session_id = session.id if session.respond_to?(:id)
 
     get_and_follow_apex_root
+
     assert_response :success
     assert_not_nil session
   end
@@ -262,6 +298,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should handle malformed requests gracefully" do
     begin
       get_and_follow_apex_root(headers: HOST_HEADER.merge("REQUEST_METHOD" => "GET"))
+
       assert_response :success
     rescue => e
       assert_kind_of StandardError, e
@@ -281,17 +318,20 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     end
 
     avg_time = response_times.sum / response_times.length
-    assert avg_time < 0.1, "Average response time too slow: #{avg_time}s"
+
+    assert_operator avg_time, :<, 0.1, "Average response time too slow: #{avg_time}s"
   end
 
   test "should handle character encoding properly" do
     get_and_follow_apex_root(headers: HOST_HEADER.merge("Accept-Charset" => "utf-8"))
+
     assert_response :success
     assert_equal Encoding::UTF_8, response.body.encoding
   end
 
   test "should work with different Rails environments" do
     get_and_follow_apex_root
+
     assert_response :success
     assert_not_nil Rails.env
     assert_includes %w[development test production], Rails.env
@@ -337,13 +377,16 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     location = URI.parse(response.location)
     query = Rack::Utils.parse_query(location.query)
+
     assert_equal({ "ri" => "jp" }, query)
 
     follow_redirect!
+
     assert_response :success
 
     # Cookie should be updated to URL parameter values
     persisted = JSON.parse(signed_cookie(:apex_app_preferences))
+
     assert_equal "ja", persisted["lx"]
     assert_equal "jp", persisted["ri"]
     assert_equal "jst", persisted["tz"]
@@ -352,6 +395,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "cookie takes precedence over session values" do
     # Set cookie
     get apex_app_root_path, headers: HOST_HEADER, params: { lx: "en", ri: "us", tz: "utc" }
+
     assert_response :success
 
     # Set different session values
@@ -366,6 +410,7 @@ class Apex::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     location = URI.parse(response.location)
     query = Rack::Utils.parse_query(location.query)
+
     assert_equal "en", query["lx"]
     assert_equal "us", query["ri"]
     assert_equal "utc", query["tz"]

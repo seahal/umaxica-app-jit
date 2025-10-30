@@ -24,17 +24,20 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get index with staff host" do
     get news_org_root_path, headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
+
     assert_response :success
   end
 
   test "renders HTML by default" do
     get news_org_root_path, headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
+
     assert_response :success
     assert_equal "text/html", response.media_type
   end
 
   test "includes view and layout content" do
     get news_org_root_path, headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
+
     assert_response :success
     # View content
     assert_includes response.body, "Www::Org::Roots#index"
@@ -44,6 +47,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get news_org_root_path,
         headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] },
         params: { utm_source: "test-suite", debug: "1" }
+
     assert_response :success
     assert_equal "test-suite", request.params[:utm_source]
     assert_equal "1", request.params[:debug]
@@ -52,6 +56,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   test "consistent across multiple requests" do
     3.times do
       get news_org_root_path, headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
+
       assert_response :success
       assert_includes response.body, "Www::Org::Roots#index"
     end
@@ -59,6 +64,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "does not expose sensitive keywords" do
     get news_org_root_path, headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
+
     assert_response :success
     assert_not_includes response.body, "password"
     assert_not_includes response.body, "secret"
@@ -67,6 +73,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   test "sets lang attribute on html element" do
     get news_org_root_url(format: :html)
+
     assert_response :success
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")

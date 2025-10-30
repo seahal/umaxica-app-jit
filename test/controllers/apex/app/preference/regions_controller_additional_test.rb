@@ -65,9 +65,11 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
     patch apex_app_preference_region_url, params: { region: "US", language: "EN", timezone: "Etc/UTC" }
 
     cookie_value = signed_cookie(:apex_app_preferences)
+
     assert_not_nil cookie_value
 
     preferences = JSON.parse(cookie_value)
+
     assert_equal "en", preferences["lx"]
     assert_equal "us", preferences["ri"]
     assert_equal "utc", preferences["tz"]
@@ -79,6 +81,7 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
 
     cookie_value = signed_cookie(:apex_app_preferences)
     preferences = JSON.parse(cookie_value)
+
     assert_equal "jp", preferences["ri"]
     assert_equal "ja", preferences["lx"]
     assert_equal "jst", preferences["tz"]
@@ -93,6 +96,7 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
 
     cookie_value = signed_cookie(:apex_app_preferences)
     preferences = JSON.parse(cookie_value)
+
     assert_equal "us", preferences["ri"]
   end
 
@@ -180,7 +184,7 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
     patch apex_app_preference_region_url, params: { timezone: "ETC/UTC" }
 
     assert_redirected_to edit_apex_app_preference_region_url(lx: "ja", ri: "jp", tz: "etc/utc")
-    assert session[:timezone].present?
+    assert_predicate session[:timezone], :present?
   end
 
   # Test language with region combination
@@ -189,6 +193,7 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
 
     cookie_value = signed_cookie(:apex_app_preferences)
     preferences = JSON.parse(cookie_value)
+
     assert_equal "en", preferences["lx"]
     assert_equal "us", preferences["ri"]
   end
@@ -199,6 +204,7 @@ class Apex::App::Preference::RegionsControllerAdditionalTest < ActionDispatch::I
 
     cookie_value = signed_cookie(:apex_app_preferences)
     preferences = JSON.parse(cookie_value)
+
     assert_equal "ja", preferences["lx"]
     assert_equal "jp", preferences["ri"]
   end

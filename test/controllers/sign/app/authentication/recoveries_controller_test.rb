@@ -3,6 +3,7 @@ require "test_helper"
 class Sign::App::Authentication::RecoveryCodesControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_sign_app_authentication_recovery_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+
     assert_select "h1", I18n.t("sign.app.authentication.recovery.new.page_title")
     assert_select "p", I18n.t("sign.app.authentication.recovery.new.description")
     assert_select "form" do |_element|

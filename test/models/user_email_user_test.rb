@@ -4,21 +4,23 @@ require "test_helper"
 
 class UserEmailUserTest < ActiveSupport::TestCase
   test "the truth" do
-    assert true
+    skip "TODO: replace with meaningful user email user test or remove"
   end
 
   test "email user relation" do
     ue = UserEmail.new(address: "one@example.com", confirm_policy: true)
-    assert ue.valid?
+
+    assert_predicate ue, :valid?
     assert ue.save
   end
 
   test "should inherit from IdentifiersRecord" do
-    assert UserEmailUser < IdentifiersRecord
+    assert_operator UserEmailUser, :<, IdentifiersRecord
   end
 
   test "should belong to email with foreign key" do
     association = UserEmailUser.reflect_on_association(:email)
+
     assert_not_nil association
     assert_equal :belongs_to, association.macro
     assert association.options[:foreign_key]
@@ -26,6 +28,7 @@ class UserEmailUserTest < ActiveSupport::TestCase
 
   test "should belong to user with foreign key" do
     association = UserEmailUser.reflect_on_association(:user)
+
     assert_not_nil association
     assert_equal :belongs_to, association.macro
     assert association.options[:foreign_key]

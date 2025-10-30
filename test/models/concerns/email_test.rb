@@ -5,17 +5,19 @@ require "test_helper"
 # Test with UserEmail which includes Email
 class EmailTest < ActiveSupport::TestCase
   test "concern can be included in a class" do
-    assert UserEmail.included_modules.include?(Email)
+    assert_includes UserEmail.included_modules, Email
   end
 
   test "concern adds confirm_policy accessor" do
     email = UserEmail.new
+
     assert_respond_to email, :confirm_policy
     assert_respond_to email, :confirm_policy=
   end
 
   test "concern adds pass_code accessor" do
     email = UserEmail.new
+
     assert_respond_to email, :pass_code
     assert_respond_to email, :pass_code=
   end
@@ -23,6 +25,7 @@ class EmailTest < ActiveSupport::TestCase
   test "downcases address before save" do
     email = UserEmail.new(address: "TEST@EXAMPLE.COM", confirm_policy: true)
     email.save!
+
     assert_equal "test@example.com", email.address
   end
 
@@ -39,8 +42,8 @@ class EmailTest < ActiveSupport::TestCase
 
   test "validates email format" do
     # Valid emails
-    assert UserEmail.new(address: "test@example.com", confirm_policy: true).valid?
-    assert UserEmail.new(address: "user+tag@example.co.jp", confirm_policy: true).valid?
+    assert_predicate UserEmail.new(address: "test@example.com", confirm_policy: true), :valid?
+    assert_predicate UserEmail.new(address: "user+tag@example.co.jp", confirm_policy: true), :valid?
 
     # Invalid email
     assert_not UserEmail.new(address: "invalid-email", confirm_policy: true).valid?
@@ -48,20 +51,23 @@ class EmailTest < ActiveSupport::TestCase
 
   test "validates email presence" do
     email = UserEmail.new(address: nil, confirm_policy: true)
+
     assert_not email.valid?
-    assert email.errors[:address].any?
+    assert_predicate email.errors[:address], :any?
   end
 
   test "validates uniqueness of address case insensitively" do
     UserEmail.create!(address: "test@example.com", confirm_policy: true)
     duplicate = UserEmail.new(address: "TEST@EXAMPLE.COM", confirm_policy: true)
+
     assert_not duplicate.valid?
-    assert duplicate.errors[:address].any?
+    assert_predicate duplicate.errors[:address], :any?
   end
 
   test "validates confirm_policy acceptance" do
     email = UserEmail.new(address: "test@example.com", confirm_policy: false)
+
     assert_not email.valid?
-    assert email.errors[:confirm_policy].any?
+    assert_predicate email.errors[:confirm_policy], :any?
   end
 end

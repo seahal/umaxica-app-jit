@@ -14,11 +14,13 @@ class AvatarUploaderTest < ActiveSupport::TestCase
 
   def test_store_dir
     expected = "uploads/dummy_model/avatar/42"
+
     assert_equal expected, @uploader.store_dir
   end
 
   def test_extension_allowlist
     allowlist = @uploader.extension_allowlist
+
     assert_includes allowlist, "png"
     assert_includes allowlist, "jpg"
     assert_includes allowlist, "jpeg"

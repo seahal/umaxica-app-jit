@@ -1,0 +1,521 @@
+---
+en:
+  hello: "Hello world 2"
+  messages:
+    region_settings_updated_successfully: "Region settings updated successfully."
+  common:
+    ok: "OK"
+  errors:
+    unauthorized: "Unauthorized access"
+    not_implemented: "Feature not yet implemented"
+  sign:
+    default_user_name: "User"
+    default_passkey_name: "Passkey"
+    default_passkey_description: "My Passkey"
+    app:
+      authentication:
+        new:
+          page_title: "Choose how to sign in"
+          description: "Select the method that fits your current session."
+          back: "Prefer a different method?"
+          links:
+            email: "Email"
+            telephone: "Telephone"
+            passkey: "Passkey"
+            recovery: "Recovery code"
+            google: "Sign in with Google"
+            apple: "Sign in with Apple"
+            registration: "Need an account?"
+        passkey:
+          new:
+            page_title: "Register a passkey"
+            description: "Use one of your trusted devices to add a passkey for passwordless sign-in."
+        telephone:
+          new:
+            page_title: "Sign in with your phone number"
+            description: "Provide your registered phone number to receive a one-time verification code."
+      recovery:
+        new:
+          page_title: "Use a recovery code"
+          description: "Enter one of your saved recovery codes to regain access to your account."
+      setting:
+        show:
+          description: "Manage advanced security controls for your account."
+        recovery:
+          index:
+            description: "Review existing recovery codes and ensure they stay up to date."
+            edit_link: "Edit"
+            new_link: "Create a new recovery code"
+          new:
+            page_title: "Generate a recovery code"
+            description: "Create a fresh recovery code to regain access if you lose your primary factors."
+            confirm_label: "I understand a new recovery code will be generated"
+            submit: "Generate recovery code"
+        totp:
+          index:
+            description: "Manage time-based one-time passwords linked to your account."
+            new_link: "Create a new TOTP credential"
+      registration:
+        new:
+          page_title: "Create your account"
+          page_description: "Choose the sign-up method that works best for your %{product} account."
+          methods:
+            title: "Choose how to get started"
+            email:
+              title: "Email address"
+              description: "Receive a verification link by email and finish registration in a few minutes."
+              cta: "Sign up with email"
+            telephone:
+              title: "Mobile phone number"
+              description: "Verify your phone with a one-time SMS code before creating your account."
+              cta: "Sign up with telephone"
+          social:
+            title: "Use an existing account"
+            description: "Link a new %{product} account with the provider you already trust."
+            buttons:
+              google: "Continue with Google"
+              apple: "Continue with Apple"
+            disclaimer: "We will never post or share anything without your permission."
+        links:
+          sign_in_html: "Already registered? %{link}"
+          sign_in_text: "Sign in"
+        email:
+          new:
+            page_title: "UMAXICA (sign, app)"
+    org:
+      authentication:
+        new:
+          page_title: "Choose how to sign in"
+          description: "Select the method you prefer to access the staff console."
+          links:
+            email: "Email"
+            telephone: "Telephone"
+            apple: "Apple"
+            google: "Google"
+            passkey: "Passkey"
+            recovery: "Recovery code"
+            registration: "Need an account?"
+  languages:
+    english: "English"
+    japanese: "日本語"
+  themes:
+    light: "Light Theme"
+    dark: "Dark Theme"
+    corporate: "Corporate Theme"
+    system: "System Theme"
+  apex:
+    app:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region Settings"
+        email_preferences: "Email Preferences"
+        theme_settings: "Theme Settings"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Regional & Language Settings"
+          region_section: "Regional Settings"
+          language_section: "Language Preferences"
+          timezone_section: "Timezone Settings"
+          select_region: "Select Region"
+          select_country: "Select Country"
+          select_language: "Select Language"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_country_prompt: "Choose your country..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+        emails:
+          updated: "Email preferences updated successfully"
+          invalid: "Invalid email preferences"
+        languages:
+          updated: "Language updated to %{language}"
+          unsupported: "Unsupported language selected"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          updated: "Timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_tracking_cookies: "Allow tracking cookies"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that fits your workspace and comfort."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
+            hints:
+              light: "Great when you work during the day or in bright rooms."
+              dark: "Ideal for night shifts or reducing eye strain."
+              system: "Matches your operating system and switches automatically."
+            submit: "Save theme preference"
+    com:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region Settings"
+        email_preferences: "Email Preferences"
+        theme_settings: "Choose Dark or Light Theme"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Corporate Regional & Language Settings"
+          region_section: "Regional Settings"
+          language_section: "Language Preferences"
+          timezone_section: "Timezone Settings"
+          select_region: "Select Region"
+          select_country: "Select Country"
+          select_language: "Select Language"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_country_prompt: "Choose your country..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+        emails:
+          updated: "Email preferences updated successfully"
+          none_selected: "No preferences selected"
+        languages:
+          updated: "Language preference updated to %{language}"
+          unsupported: "Unsupported language selected"
+        themes:
+          updated: "Corporate theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          updated: "Timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected"
+      preference:
+        cookie:
+          edit:
+            h1: "Corporate Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_tracking_cookies: "Allow tracking cookies"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that helps you focus on corporate dashboards."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit offices"
+              dark: "Dark — subdued colors for command centers"
+              system: "System default — mirror corporate device settings"
+            hints:
+              light: "Best when you present in meeting rooms or open spaces."
+              dark: "Perfect for late-night reviews or monitoring screens."
+              system: "Keeps theme in sync with enterprise-managed preferences."
+            submit: "Save theme preference"
+    org:
+      customers:
+        created: "Customer %{name} created successfully"
+        updated: "Customer updated successfully"
+        deleted: "Customer %{name} deleted successfully"
+        name_email_required: "Name and email are required"
+        invalid_data: "Invalid customer data"
+      preferences:
+        title: "Admin Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region Settings"
+        email_preferences: "Email Preferences"
+        theme_settings: "Choose Dark or Light Theme"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Admin Regional & Language Settings"
+          region_section: "Regional Settings"
+          language_section: "Admin Language Preferences"
+          timezone_section: "Admin Timezone Settings"
+          select_region: "Select Region"
+          select_language: "Select Admin Language"
+          select_timezone: "Select Admin Timezone"
+          select_region_prompt: "Choose your region..."
+          select_country_prompt: "Choose your country..."
+          select_language_prompt: "Choose admin language..."
+          select_timezone_prompt: "Choose admin timezone..."
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+        languages:
+          updated: "Admin language updated to %{language}"
+          unsupported: "Unsupported admin language selected"
+        themes:
+          updated: "Admin theme updated to %{theme}"
+          invalid: "Invalid admin theme selected"
+        timezones:
+          updated: "Admin timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected for admin interface"
+        privacies:
+          updated: "Privacy settings updated successfully"
+          invalid: "Invalid privacy settings"
+      preference:
+        cookie:
+          edit:
+            h1: "Admin Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_tracking_cookies: "Allow tracking cookies"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Switch the console appearance for long on-call shifts."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright interface for office work"
+              dark: "Dark — low-glare view for night duty"
+              system: "System default — inherit admin workstation setting"
+            hints:
+              light: "Recommended when collaborating in shared spaces."
+              dark: "Gentle on the eyes during overnight monitoring."
+              system: "Automatically adapts when your device switches modes."
+            submit: "Save theme preference"
+  activerecord:
+    errors:
+      messages:
+        record_invalid: 'Validation failed: %{errors}'
+        restrict_dependent_destroy:
+          has_one: Cannot delete record because a dependent %{record} exists
+          has_many: Cannot delete record because dependent %{record} exist
+  date:
+    abbr_day_names:
+      - Sun
+      - Mon
+      - Tue
+      - Wed
+      - Thu
+      - Fri
+      - Sat
+    abbr_month_names:
+      -
+      - Jan
+      - Feb
+      - Mar
+      - Apr
+      - May
+      - Jun
+      - Jul
+      - Aug
+      - Sep
+      - Oct
+      - Nov
+      - Dec
+    day_names:
+      - Sunday
+      - Monday
+      - Tuesday
+      - Wednesday
+      - Thursday
+      - Friday
+      - Saturday
+    formats:
+      default: "%Y-%m-%d"
+      long: "%B %d, %Y"
+      short: "%b %d"
+    month_names:
+      -
+      - January
+      - February
+      - March
+      - April
+      - May
+      - June
+      - July
+      - August
+      - September
+      - October
+      - November
+      - December
+    order:
+      - year
+      - month
+      - day
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: about %{count} hour
+        other: about %{count} hours
+      about_x_months:
+        one: about %{count} month
+        other: about %{count} months
+      about_x_years:
+        one: about %{count} year
+        other: about %{count} years
+      almost_x_years:
+        one: almost %{count} year
+        other: almost %{count} years
+      half_a_minute: half a minute
+      less_than_x_seconds:
+        one: less than %{count} second
+        other: less than %{count} seconds
+      less_than_x_minutes:
+        one: less than a minute
+        other: less than %{count} minutes
+      over_x_years:
+        one: over %{count} year
+        other: over %{count} years
+      x_seconds:
+        one: "%{count} second"
+        other: "%{count} seconds"
+      x_minutes:
+        one: "%{count} minute"
+        other: "%{count} minutes"
+      x_days:
+        one: "%{count} day"
+        other: "%{count} days"
+      x_months:
+        one: "%{count} month"
+        other: "%{count} months"
+      x_years:
+        one: "%{count} year"
+        other: "%{count} years"
+    prompts:
+      second: Seconds
+      minute: Minute
+      hour: Hour
+      day: Day
+      month: Month
+      year: Year
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: must be accepted
+      blank: can't be blank
+      confirmation: doesn't match %{attribute}
+      empty: can't be empty
+      equal_to: must be equal to %{count}
+      even: must be even
+      exclusion: is reserved
+      greater_than: must be greater than %{count}
+      greater_than_or_equal_to: must be greater than or equal to %{count}
+      in: must be in %{count}
+      inclusion: is not included in the list
+      invalid: is invalid
+      less_than: must be less than %{count}
+      less_than_or_equal_to: must be less than or equal to %{count}
+      model_invalid: 'Validation failed: %{errors}'
+      not_a_number: is not a number
+      not_an_integer: must be an integer
+      odd: must be odd
+      other_than: must be other than %{count}
+      password_too_long: is too long
+      present: must be blank
+      required: must exist
+      taken: has already been taken
+      too_long:
+        one: is too long (maximum is %{count} character)
+        other: is too long (maximum is %{count} characters)
+      too_short:
+        one: is too short (minimum is %{count} character)
+        other: is too short (minimum is %{count} characters)
+      wrong_length:
+        one: is the wrong length (should be %{count} character)
+        other: is the wrong length (should be %{count} characters)
+    template:
+      body: 'There were problems with the following fields:'
+      header:
+        one: "%{count} error prohibited this %{model} from being saved"
+        other: "%{count} errors prohibited this %{model} from being saved"
+  helpers:
+    select:
+      prompt: Please select
+    submit:
+      create: Create %{model}
+      submit: Save %{model}
+      update: Update %{model}
+  number:
+    currency:
+      format:
+        delimiter: ","
+        format: "%u%n"
+        negative_format: "-%u%n"
+        precision: 2
+        separator: "."
+        significant: false
+        strip_insignificant_zeros: false
+        unit: "$"
+    format:
+      delimiter: ","
+      precision: 3
+      round_mode: default
+      separator: "."
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: "%n %u"
+        units:
+          billion: Billion
+          million: Million
+          quadrillion: Quadrillion
+          thousand: Thousand
+          trillion: Trillion
+          unit: ''
+      format:
+        delimiter: ''
+        precision: 3
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: "%n %u"
+        units:
+          byte:
+            one: Byte
+            other: Bytes
+          eb: EB
+          gb: GB
+          kb: KB
+          mb: MB
+          pb: PB
+          tb: TB
+          zb: ZB
+    percentage:
+      format:
+        delimiter: ''
+        format: "%n%"
+    precision:
+      format:
+        delimiter: ''
+  support:
+    array:
+      last_word_connector: ", and "
+      two_words_connector: " and "
+      words_connector: ", "
+  time:
+    am: am
+    formats:
+      default: "%a, %d %b %Y %H:%M:%S %z"
+      long: "%B %d, %Y %H:%M"
+      short: "%d %b %H:%M"
+    pm: pm

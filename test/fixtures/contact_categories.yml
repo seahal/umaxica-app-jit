@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: 'CORPORATE_CATEGORY'
+  description: 'ROOT'
+two:
+  title: 'SERVICE_CATEGORY'
+  description: 'ROOT'
+three:
+  title: 'ORGANIZATION_CATEGORY'
+  description: 'ROOT'

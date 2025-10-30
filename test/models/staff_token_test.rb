@@ -16,18 +16,20 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "should be valid" do
-    assert @staff_token.valid?
+    assert_predicate @staff_token, :valid?
   end
 
   test "should have uuid as primary key" do
     @staff_token.save!
+
     assert_not_nil @staff_token.id
-    assert @staff_token.id.is_a?(String)
+    assert_kind_of String, @staff_token.id
     assert_equal 36, @staff_token.id.length
   end
 
   test "should have created_at and updated_at timestamps" do
     @staff_token.save!
+
     assert_not_nil @staff_token.created_at
     assert_not_nil @staff_token.updated_at
   end
@@ -54,22 +56,14 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "should validate presence of required fields if implemented" do
-    # TODO: Add validation tests when validations are implemented
-    # assert_not @staff_token.valid? without required fields
-    assert true # Placeholder assertion until validations are implemented
+    skip "TODO: add validation tests when validations are implemented"
   end
 
   test "should handle token expiration if implemented" do
-    # TODO: Add expiration tests when expiration logic is implemented
-    # @staff_token.save!
-    # assert_not @staff_token.expired?
-    assert true # Placeholder assertion until expiration logic is implemented
+    skip "TODO: add expiration tests when expiration logic is implemented"
   end
 
   test "should handle token scopes if implemented" do
-    # TODO: Add scope tests when scope functionality is implemented
-    # @staff_token.scope = "read:profile"
-    # assert_equal "read:profile", @staff_token.scope
-    assert true # Placeholder assertion until scope functionality is implemented
+    skip "TODO: add scope tests when scope functionality is implemented"
   end
 end

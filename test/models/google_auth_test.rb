@@ -40,16 +40,17 @@ class GoogleAuthTest < ActiveSupport::TestCase
       expires_at: 1.hour.from_now,
       image_url: "https://example.com/avatar.jpg",
       raw_info: '{"id":"123456789","name":"John Doe"}'
-    }
+    }.freeze
   end
 
   # Basic model structure tests
   test "should inherit from IdentifiersRecord" do
-    assert GoogleAuth < IdentifiersRecord
+    assert_operator GoogleAuth, :<, IdentifiersRecord
   end
 
   test "should belong to user" do
     association = GoogleAuth.reflect_on_association(:user)
+
     assert_not_nil association
     assert_equal :belongs_to, association.macro
   end
@@ -57,7 +58,8 @@ class GoogleAuthTest < ActiveSupport::TestCase
   # Basic validation tests
   test "should be valid with valid attributes" do
     google_auth = GoogleAuth.new(@valid_attributes)
-    assert google_auth.valid?
+
+    assert_predicate google_auth, :valid?
   end
 
   # test "should require user association" do
@@ -69,9 +71,11 @@ class GoogleAuthTest < ActiveSupport::TestCase
   # Field validation tests
   test "should allow all fields to be present" do
     google_auth = GoogleAuth.new(@valid_attributes)
-    assert google_auth.valid?
+
+    assert_predicate google_auth, :valid?
 
     google_auth.save!
+
     assert_equal @valid_attributes[:uid], google_auth.uid
     assert_equal @valid_attributes[:email], google_auth.email
     assert_equal @valid_attributes[:name], google_auth.name
@@ -84,9 +88,11 @@ class GoogleAuthTest < ActiveSupport::TestCase
       uid: "google_minimal"
     }
     google_auth = GoogleAuth.new(minimal_attributes)
-    assert google_auth.valid?
+
+    assert_predicate google_auth, :valid?
 
     google_auth.save!
+
     assert_nil google_auth.email
     assert_nil google_auth.name
     assert_nil google_auth.access_token
@@ -95,6 +101,7 @@ class GoogleAuthTest < ActiveSupport::TestCase
   # Token and expiration tests
   test "should store access and refresh tokens" do
     google_auth = GoogleAuth.create!(@valid_attributes)
+
     assert_equal "access_token_123", google_auth.access_token
     assert_equal "refresh_token_456", google_auth.refresh_token
   end
@@ -103,17 +110,20 @@ class GoogleAuthTest < ActiveSupport::TestCase
     past_time = 1.hour.ago
     google_auth = GoogleAuth.new(@valid_attributes.merge(expires_at: past_time))
     google_auth.save!
-    assert google_auth.expires_at < Time.current
+
+    assert_operator google_auth.expires_at, :<, Time.current
   end
 
   test "should store raw OAuth info as JSON" do
     google_auth = GoogleAuth.create!(@valid_attributes)
+
     assert_equal '{"id":"123456789","name":"John Doe"}', google_auth.raw_info
   end
 
   # Provider-specific tests
   test "should store Google provider information" do
     google_auth = GoogleAuth.create!(@valid_attributes)
+
     assert_equal "google", google_auth.provider
     assert_equal "user@gmail.com", google_auth.email
     assert_equal "https://example.com/avatar.jpg", google_auth.image_url
@@ -122,6 +132,7 @@ class GoogleAuthTest < ActiveSupport::TestCase
   # User relationship tests
   test "should be associated with correct user" do
     google_auth = GoogleAuth.create!(@valid_attributes)
+
     assert_equal @user, google_auth.user
   end
 end

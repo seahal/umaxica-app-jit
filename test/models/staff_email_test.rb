@@ -21,64 +21,72 @@ class StaffEmailTest < ActiveSupport::TestCase
     @valid_attributes = {
       address: "staff@example.com",
       confirm_policy: true
-    }
+    }.freeze
   end
 
   # Basic model structure tests
   test "should inherit from IdentifiersRecord" do
-    assert StaffEmail < IdentifiersRecord
+    assert_operator StaffEmail, :<, IdentifiersRecord
   end
 
   test "should include Email concern" do
-    assert StaffEmail.included_modules.include?(Email)
+    assert_includes StaffEmail.included_modules, Email
   end
 
   test "should include SetId concern" do
-    assert StaffEmail.included_modules.include?(SetId)
+    assert_includes StaffEmail.included_modules, SetId
   end
 
   # Email concern validation tests
   test "should be valid with valid email and policy confirmation" do
     staff_email = StaffEmail.new(@valid_attributes)
-    assert staff_email.valid?
+
+    assert_predicate staff_email, :valid?
   end
 
   test "should require valid email format" do
     staff_email = StaffEmail.new(@valid_attributes.merge(address: "invalid-email"))
+
     assert_not staff_email.valid?
-    assert staff_email.errors[:address].any?
+    assert_predicate staff_email.errors[:address], :any?
   end
 
   test "should require email presence" do
     staff_email = StaffEmail.new(@valid_attributes.except(:address))
+
     assert_not staff_email.valid?
-    assert staff_email.errors[:address].any?
+    assert_predicate staff_email.errors[:address], :any?
   end
 
   test "should require policy confirmation" do
     staff_email = StaffEmail.new(@valid_attributes.merge(confirm_policy: false))
+
     assert_not staff_email.valid?
-    assert staff_email.errors[:confirm_policy].any?
+    assert_predicate staff_email.errors[:confirm_policy], :any?
   end
 
   test "should require unique email addresses" do
     StaffEmail.create!(@valid_attributes)
     duplicate_email = StaffEmail.new(@valid_attributes)
+
     assert_not duplicate_email.valid?
-    assert duplicate_email.errors[:address].any?
+    assert_predicate duplicate_email.errors[:address], :any?
   end
 
   test "should downcase email address before saving" do
     staff_email = StaffEmail.new(@valid_attributes.merge(address: "STAFF@EXAMPLE.COM"))
     staff_email.save!
+
     assert_equal "staff@example.com", staff_email.address
   end
 
   # SetId concern tests
   test "should generate UUID v7 before creation" do
     staff_email = StaffEmail.new(@valid_attributes)
+
     assert_nil staff_email.id
     staff_email.save!
+
     assert_not_nil staff_email.id
     assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, staff_email.id)
   end

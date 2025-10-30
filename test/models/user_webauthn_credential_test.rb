@@ -10,11 +10,12 @@ class UserWebauthnCredentialTest < ActiveSupport::TestCase
   end
   test "should have user association defined" do
     association = UserWebauthnCredential.reflect_on_association(:user)
+
     assert_not_nil association
     assert_equal :belongs_to, association.macro
   end
 
   test "should inherit from IdentifiersRecord" do
-    assert UserWebauthnCredential < IdentifiersRecord
+    assert_operator UserWebauthnCredential, :<, IdentifiersRecord
   end
 end

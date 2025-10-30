@@ -2,11 +2,11 @@ require "test_helper"
 
 class UniversalRecordTest < ActiveSupport::TestCase
   test "should be abstract class" do
-    assert UniversalRecord.abstract_class?
+    assert_predicate UniversalRecord, :abstract_class?
   end
 
   test "should inherit from ApplicationRecord" do
-    assert UniversalRecord < ApplicationRecord
+    assert_operator UniversalRecord, :<, ApplicationRecord
   end
 
   test "should connect to universal database" do
