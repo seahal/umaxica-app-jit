@@ -34,7 +34,7 @@ steps:
         # --- Clean up files ---
         rm -rf public/assets docs/ tmp/ log/ docker/ dependency/
         # --- Assets build ---
-        SECRET_KEY_BASE=dummy RAILS_ENV=asset bundle exec rails assets:precompile
+        SECRET_KEY_BASE=dummy RAILS_ENV=asset REGION_CODE=jp APEX_REGION=true bundle exec rails assets:precompile
     id: Build assets with mise (ruby/node/bun latest)
     entrypoint: bash
   - name: 'public.ecr.aws/aws-cli/aws-cli:latest'
