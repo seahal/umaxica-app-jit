@@ -1,8 +1,8 @@
 module Help
-module Com
+  module Com
     class ContactsController < ApplicationController
       def new
-        @site_contact = CorporateSiteContact.new
+        @service_site_contact = ServiceSiteContact.new
       end
 
       def create

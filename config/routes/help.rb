@@ -10,14 +10,12 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # contact page
-        resources :contacts, only: [ :new, :create, :show ]
-        # resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
-        #   # TODO: Implement contact email and telephone functionality
-        #   # scope module: :contact do
-        #   #   resource :email, only: [ :new, :create ]
-        #   #   resource :telephone, only: [ :new, :create ]
-        #   # end
-        # end
+        resources :contacts, only: [ :new, :create, :show ] do
+          scope module: :contact do
+            resource :email, only: [ :new, :create ]
+            resource :telephone, only: [ :new, :create ]
+          end
+        end
       end
     end
 
