@@ -172,7 +172,7 @@ export class WebAuthnAuthentication {
 
 #### 4.1 Passkey controller for authentication
 ```ruby
-# app/controllers/www/app/authentication/passkeys_controller.rb
+# app/views/www/app/authentication/passkeys_controller.rb
 class Www::App::Authentication::PasskeysController < Www::App::ApplicationController
   def new
     @options = WebAuthn::Credential.options_for_get(
@@ -207,7 +207,7 @@ end
 
 #### 4.2 Passkey controller for settings
 ```ruby
-# app/controllers/www/app/setting/passkeys_controller.rb
+# app/views/www/app/setting/passkeys_controller.rb
 class Www::App::Setting::PasskeysController < Www::App::ApplicationController
   before_action :authenticate_user!
   
@@ -308,7 +308,7 @@ end
 
 #### 6.1 Tie into the existing MFA system
 ```ruby
-# app/controllers/concerns/authentication.rb additions
+# app/views/concerns/authentication.rb additions
 
 def require_second_factor_or_webauthn
   return true if webauthn_authenticated?
@@ -340,7 +340,7 @@ session.delete(:webauthn_credential_id)
 
 #### 7.1 Error messages
 ```ruby
-# app/controllers/concerns/webauthn_errors.rb
+# app/views/concerns/webauthn_errors.rb
 module WebauthnErrors
   WEBAUTHN_ERROR_MESSAGES = {
     'NotAllowedError' => 'Security key not found or the operation was cancelled',
@@ -389,7 +389,7 @@ end
 
 #### 8.2 Controller tests
 ```ruby
-# test/controllers/www/app/setting/passkeys_controller_test.rb
+# test/views/www/app/setting/passkeys_controller_test.rb
 class Www::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
   setup do
     sign_in users(:one)

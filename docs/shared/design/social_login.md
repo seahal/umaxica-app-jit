@@ -55,7 +55,7 @@ providers:
 
 ### 3. Shared controller concern
 ```ruby
-# app/controllers/concerns/oauth_authentication.rb
+# app/views/concerns/oauth_authentication.rb
 module OauthAuthentication
   extend ActiveSupport::Concern
   
