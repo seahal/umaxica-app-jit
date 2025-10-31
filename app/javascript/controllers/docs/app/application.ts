@@ -10,6 +10,8 @@ export function resolveDocsAppUrl(path = "/"): URL {
 /**
  * Reads hydration props from the docs app container dataset.
  */
+const docsAppHostname = new URL(DOCS_APP_DEFAULT_ORIGIN).hostname;
+
 export function readDocsAppProps(
 	element: HTMLElement | null,
 ): Record<string, string> {
@@ -25,4 +27,13 @@ export function readDocsAppProps(
 		helpServiceUrl: dataset.helpServiceUrl ?? "",
 		newsServiceUrl: dataset.newsServiceUrl ?? "",
 	};
+}
+
+if (
+	typeof window !== "undefined" &&
+	window.location.hostname === docsAppHostname
+) {
+	window.addEventListener("DOMContentLoaded", () => {
+		alert("docs");
+	});
 }
