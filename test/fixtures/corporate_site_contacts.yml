@@ -1,16 +1,12 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  category: 'general'
-  status: 'email_pending'
   token: ''
   token_digest: null
   token_expires_at: null
   token_viewed: false
 
 two:
-  category: 'inquiry'
-  status: 'completed'
   token: ''
   token_digest: null
   token_expires_at: null

@@ -9,7 +9,8 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # TODO: Implement corporate inquiry system
+        # contact page
+        resources :contacts, only: [ :new, :create, :show ]
         # resources :inquiries, only: [ :new, :create, :edit, :update, :show ] do
         #   # TODO: Implement contact email and telephone functionality
         #   # scope module: :contact do

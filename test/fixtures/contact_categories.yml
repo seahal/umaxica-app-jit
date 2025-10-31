@@ -1,5 +1,8 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+none:
+  title: 'NULL_CATEGORY_STATUS'
+  description: 'ROOT'
 one:
   title: 'CORPORATE_CATEGORY'
   description: 'ROOT'

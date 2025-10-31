@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_27_102304) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_27_102305) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -39,7 +39,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102304) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-10-31 13:16:21", null: false
+    t.timestamptz "expires_at", default: "2025-11-01 17:42:21", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -53,12 +53,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102304) do
     t.index ["verifier_expires_at"], name: "index_corporate_site_contact_emails_on_verifier_expires_at"
   end
 
+  create_table "corporate_site_contact_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "corporate_site_contact_id", null: false
+    t.datetime "created_at", null: false
+    t.uuid "parent_id"
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["corporate_site_contact_id"], name: "idx_on_corporate_site_contact_id_f04741b4cc"
+  end
+
   create_table "corporate_site_contact_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
     t.uuid "corporate_site_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-10-31 13:16:21", null: false
+    t.timestamptz "expires_at", default: "2025-11-01 17:42:21", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -75,7 +84,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102304) do
     t.uuid "corporate_site_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-10-31 13:16:21", null: false
+    t.timestamptz "expires_at", default: "2025-11-01 17:42:21", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
@@ -85,18 +94,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102304) do
   end
 
   create_table "corporate_site_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "category", default: "DEFAULT_VALUE", null: false
     t.string "contact_category_title", limit: 255
     t.string "contact_status_title", limit: 255
     t.datetime "created_at", null: false
-    t.string "status", default: "DEFAULT_VALUE", null: false
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", null: false
-    t.index ["category"], name: "index_corporate_site_contacts_on_category"
-    t.index ["status"], name: "index_corporate_site_contacts_on_status"
     t.index ["token"], name: "index_corporate_site_contacts_on_token"
     t.index ["token_digest"], name: "index_corporate_site_contacts_on_token_digest"
     t.index ["token_expires_at"], name: "index_corporate_site_contacts_on_token_expires_at"
@@ -127,6 +132,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102304) do
   end
 
   add_foreign_key "corporate_site_contact_emails", "corporate_site_contacts"
+  add_foreign_key "corporate_site_contact_histories", "corporate_site_contacts"
   add_foreign_key "corporate_site_contact_telephones", "corporate_site_contacts"
   add_foreign_key "corporate_site_contact_topics", "corporate_site_contacts"
   add_foreign_key "corporate_site_contacts", "contact_categories", column: "contact_category_title", primary_key: "title"
