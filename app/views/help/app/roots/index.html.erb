@@ -1,7 +1,27 @@
-<ul>
-  <li>Current language: <%= I18n.locale %></li>
-  <li>TimeZone: <%= params[:tz].to_s.downcase == 'utc' ? "utc" : 'jst' %></li>
-  <li><%= I18n.t "hello" %></li>
-  <li><%= Time.now.in_time_zone("Tokyo") %></li>
-  <li><%= to_localetime Time.now, 'jst' %></li>
-</ul>
+<% content_for :help_app_react_shell, true %>
+<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
+<% help_service_host = ENV["HELP_SERVICE_URL"].presence || "" %>
+<% docs_service_host = ENV["DOCS_SERVICE_URL"].presence || "" %>
+<% news_service_host = ENV["NEWS_SERVICE_URL"].presence || "" %>
+
+<div
+  id="help-app-react-roots"
+  class="min-h-[60vh]"
+  data-code-name="<%= code_name %>"
+  data-help-service-url="<%= help_service_host %>"
+  data-docs-service-url="<%= docs_service_host %>"
+  data-news-service-url="<%= news_service_host %>"
+>
+</div>
+
+<section class="prose max-w-none px-4 py-8 text-slate-900">
+  <h2><%= code_name %> Help Center</h2>
+  <p>JavaScript を有効にすると、React Aria を使ったインタラクティブな体験をご覧いただけます。</p>
+  <ul>
+    <li>Current language: <%= I18n.locale %></li>
+    <li>TimeZone: <%= params[:tz].to_s.downcase == 'utc' ? "utc" : 'jst' %></li>
+    <li><%= I18n.t "hello" %></li>
+    <li><%= Time.current.in_time_zone("Tokyo") %></li>
+    <li><%= to_localetime Time.current, 'jst' %></li>
+  </ul>
+</section>

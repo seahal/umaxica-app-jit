@@ -5,6 +5,7 @@ module Help
     class ApplicationController < ActionController::Base
       include ::RateLimit
       include ::DefaultUrlOptions
+
       allow_browser versions: :modern
     end
   end
