@@ -12,7 +12,7 @@ module Sign
 
       private
 
-      # Minimal authentication guard for namespaced sign app controllers.
+      # Minimal authentication guard for namespaced sign app views.
       # Uses `logged_in?` provided by Authn concern (cookie-based JWT check).
       def authenticate_user!
         return if logged_in?
