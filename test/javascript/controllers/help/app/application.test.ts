@@ -3,7 +3,7 @@ import {
     HELP_APP_DEFAULT_ORIGIN,
     readHelpAppProps,
     resolveHelpAppUrl,
-} from "../../../../../app/javascript/controllers/help/app/main.ts";
+} from "../../../../../app/javascript/controllers/help/app/application.ts";
 
 describe("Help app landing shell (React Aria)", () => {
     test("resolves the default help origin", () => {

@@ -3,7 +3,7 @@ import {
     HELP_ORG_DEFAULT_ORIGIN,
     readHelpOrgProps,
     resolveHelpOrgUrl,
-} from "../../../../../app/javascript/controllers/help/org/main.ts";
+} from "../../../../../app/javascript/controllers/help/org/application.ts";
 
 describe("Help org landing shell (React Aria)", () => {
     test("resolves the default help origin", () => {

@@ -3,7 +3,7 @@ import {
     DOCS_APP_DEFAULT_ORIGIN,
     readDocsAppProps,
     resolveDocsAppUrl,
-} from "../../../../../app/javascript/controllers/docs/app/main.ts";
+} from "../../../../../app/javascript/controllers/docs/app/application.ts";
 
 describe("Docs app landing shell (React Aria)", () => {
     test("resolves the default docs origin", () => {

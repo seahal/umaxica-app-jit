@@ -3,7 +3,7 @@ import {
     DOCS_ORG_DEFAULT_ORIGIN,
     readDocsOrgProps,
     resolveDocsOrgUrl,
-} from "../../../../../app/javascript/controllers/docs/org/main.ts";
+} from "../../../../../app/javascript/controllers/docs/org/application.ts";
 
 describe("Docs org landing shell (React Aria)", () => {
     test("resolves the default staff docs origin", () => {

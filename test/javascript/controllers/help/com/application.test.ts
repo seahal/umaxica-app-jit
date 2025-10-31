@@ -3,7 +3,7 @@ import {
     HELP_COM_DEFAULT_ORIGIN,
     readHelpComProps,
     resolveHelpComUrl,
-} from "../../../../../app/javascript/controllers/help/com/main.ts";
+} from "../../../../../app/javascript/controllers/help/com/application.ts";
 
 describe("Help com landing shell (React Aria)", () => {
     test("resolves the default corporate help origin", () => {

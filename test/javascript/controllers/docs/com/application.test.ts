@@ -3,7 +3,7 @@ import {
     DOCS_COM_DEFAULT_ORIGIN,
     readDocsComProps,
     resolveDocsComUrl,
-} from "../../../../../app/javascript/controllers/docs/com/main.ts";
+} from "../../../../../app/javascript/controllers/docs/com/application.ts";
 
 describe("Docs com landing shell (React Aria)", () => {
     test("resolves the default corporate docs origin", () => {
