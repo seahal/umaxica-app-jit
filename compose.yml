@@ -9,8 +9,8 @@ services:
         COMMIT_HASH: "abcdef"
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
-    env_file: docker/main/env
-    entrypoint: ["/bin/bash", "docker/main/entrypoint.sh"]
+    env_file: docker/core/env
+    entrypoint: ["/bin/bash", "docker/core/entrypoint.sh"]
     command: ["sleep", "infinity"]
     restart: always
     tty: true
@@ -23,6 +23,7 @@ services:
       - /home/jit/workspace/tmp:size=4G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
       - .:/home/jit/workspace
+      - ./docker/core/preferences:/home/jit
     networks:
       - backend
       - frontend

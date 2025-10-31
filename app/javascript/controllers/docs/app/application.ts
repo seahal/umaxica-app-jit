@@ -29,12 +29,22 @@ export function readDocsAppProps(
 	};
 }
 
-function isDocsAppHost(): boolean {
-	if (typeof window === "undefined") {
+type WindowLike = {
+	location?: Location;
+	addEventListener?: Window["addEventListener"];
+	alert?: (message: string) => void;
+};
+
+export function isDocsAppHost(
+	windowLike: WindowLike | undefined = typeof window !== "undefined"
+		? window
+		: undefined,
+): boolean {
+	if (!windowLike) {
 		return false;
 	}
 
-	const { location } = window;
+	const { location } = windowLike;
 
 	if (!location) {
 		return false;
@@ -47,8 +57,22 @@ function isDocsAppHost(): boolean {
 	}
 }
 
-if (isDocsAppHost()) {
-	window.addEventListener("DOMContentLoaded", () => {
-		alert("docs");
+export function installDocsAppHostAlert(
+	windowLike: WindowLike | undefined = typeof window !== "undefined"
+		? window
+		: undefined,
+): void {
+	if (!windowLike?.addEventListener) {
+		return;
+	}
+
+	if (!isDocsAppHost(windowLike)) {
+		return;
+	}
+
+	windowLike.addEventListener("DOMContentLoaded", () => {
+		windowLike.alert?.("docs");
 	});
 }
+
+installDocsAppHostAlert();

@@ -102,3 +102,7 @@ node_modules
 
 # Ruby & JavsScript are not create /out folders.
 /out
+
+
+/docker/core/preferences/
+!/docker/core/preferences/.bashrc
