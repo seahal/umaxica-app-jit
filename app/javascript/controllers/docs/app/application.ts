@@ -29,10 +29,25 @@ export function readDocsAppProps(
 	};
 }
 
-if (
-	typeof window !== "undefined" &&
-	window.location.hostname === docsAppHostname
-) {
+function isDocsAppHost(): boolean {
+	if (typeof window === "undefined") {
+		return false;
+	}
+
+	const { location } = window;
+
+	if (!location) {
+		return false;
+	}
+
+	try {
+		return location.hostname === docsAppHostname;
+	} catch {
+		return false;
+	}
+}
+
+if (isDocsAppHost()) {
 	window.addEventListener("DOMContentLoaded", () => {
 		alert("docs");
 	});
