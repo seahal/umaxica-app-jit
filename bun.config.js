@@ -2,13 +2,14 @@ import path from "path";
 import fs from "fs";
 
 const rootDir = process.cwd();
+const javascriptRoot = path.join(rootDir, "app/javascript");
+const controllersRoot = path.join(javascriptRoot, "controllers");
+const buildsRoot = path.join(rootDir, "app/assets/builds");
 const isWatch = process.argv.includes("--watch");
 const isProduction = process.env.NODE_ENV === "production";
 
 const jsConfig = {
   sourcemap: "external",
-  entrypoints: ["app/javascript/application.js"],
-  outdir: path.join(rootDir, "app/assets/builds"),
   minify: isProduction,
 };
 
@@ -45,16 +46,42 @@ function tailwindCmdArgs(options = {}) {
 }
 
 async function buildJavascript() {
-  const result = await Bun.build(jsConfig);
+  const entrypoints = discoverEntryPoints();
+  const failures = [];
 
-  if (!result.success) {
+  for (const entrypoint of entrypoints) {
+    const relativePath = path.relative(javascriptRoot, entrypoint);
+    const outputDir = path.join(buildsRoot, path.dirname(relativePath));
+    fs.mkdirSync(outputDir, { recursive: true });
+
+    const result = await Bun.build({
+      ...jsConfig,
+      entrypoints: [entrypoint],
+      outdir: outputDir,
+      entrynames: "[name]",
+    });
+
+    if (!result.success) {
+      failures.push({ entrypoint, logs: result.logs });
+    }
+  }
+
+  if (failures.length > 0) {
     console.error("JavaScript build failed");
-    for (const message of result.logs) {
-      console.error(message);
+    for (const failure of failures) {
+      console.error(
+        `- ${path.relative(rootDir, failure.entrypoint)} failed to compile`,
+      );
+      for (const log of failure.logs) {
+        console.error(log);
+      }
     }
 
     if (!isWatch) {
-      throw new AggregateError(result.logs, "JavaScript build failed");
+      throw new AggregateError(
+        failures.flatMap((failure) => failure.logs),
+        "JavaScript build failed",
+      );
     }
   }
 }
@@ -81,9 +108,7 @@ async function buildTailwind() {
 }
 
 function watchJavascript() {
-  const javascriptDir = path.join(rootDir, "app/javascript");
-
-  fs.watch(javascriptDir, { recursive: true }, (_eventType, filename) => {
+  fs.watch(javascriptRoot, { recursive: true }, (_eventType, filename) => {
     if (filename) {
       console.log(`JS change detected: ${filename}. Rebuilding...`);
     }
@@ -132,6 +157,43 @@ run().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
+function discoverEntryPoints() {
+  const entryFiles = [];
+  const applicationCandidates = ["application.ts", "application.js"];
+
+  for (const candidate of applicationCandidates) {
+    const candidatePath = path.join(javascriptRoot, candidate);
+    if (fs.existsSync(candidatePath)) {
+      entryFiles.push(candidatePath);
+      break;
+    }
+  }
+
+  if (fs.existsSync(controllersRoot)) {
+    collectControllerEntries(controllersRoot, entryFiles);
+  }
+
+  entryFiles.sort();
+  return entryFiles;
+}
+
+function collectControllerEntries(directory, entryFiles) {
+  const children = fs.readdirSync(directory, { withFileTypes: true });
+
+  for (const child of children) {
+    const fullPath = path.join(directory, child.name);
+
+    if (child.isDirectory()) {
+      collectControllerEntries(fullPath, entryFiles);
+      continue;
+    }
+
+    if (/^application\.(t|j)sx?$/.test(child.name)) {
+      entryFiles.push(fullPath);
+    }
+  }
+}
 
 function resolveTailwindExecutable() {
   const packageCandidates = ["tailwindcss", "@tailwindcss/cli"];

@@ -7,3 +7,4 @@ import "./controllers/passkey.js";
 
 // Help Center (React Aria experience)
 import "./help/com/landing";
+import "./help/app/landing";

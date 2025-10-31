@@ -2,19 +2,21 @@
 <html lang="<%= get_language %>">
 <head>
 
-  <title><%= get_title(yield(:page_title)) %></title>  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><%= get_title(yield(:page_title)) %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "help/org/main" %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-  <link rel="icon" href="https://perm.umaxica.org/favicon.ico" sizes="32x32">
+  <link rel="icon" href="<%= Rails.env.production? ? 'https://perm.umaxica.org/favicon.ico' : 'favicon.ico' %>" sizes="32x32">
 </head>
 <body class="px-4">
 <%= render "concern/flash_messages" %>
 <header>
   <h1 class="container mx-auto mt-28 px-5 flex">
-    <a href="http://<%= ENV['NEWS_STAFF_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (help, org)</a></h1>
+    <a href="http://<%= ENV['NEWS_STAFF_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (help, org)</a>
+  </h1>
 </header>
 
 <hr>
