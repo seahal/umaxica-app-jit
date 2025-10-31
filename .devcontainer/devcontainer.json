@@ -1,7 +1,7 @@
 {
 	"name": "umaxica-app-jit",
 	"dockerComposeFile": ["../compose.yml"],
-	"service": "main",
+	"service": "core",
 	"runServices": [
 		"primary",
 		"replica",

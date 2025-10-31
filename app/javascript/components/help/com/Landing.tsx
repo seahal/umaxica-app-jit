@@ -262,8 +262,8 @@ const HelpComLanding: React.FC = () => {
 											</span>
 										</div>
 										<p className="text-sm text-slate-200">
-											Time-zone aware welcome sequences keep every new voice seen
-											during their first 48 hours.
+											Time-zone aware welcome sequences keep every new voice
+											seen during their first 48 hours.
 										</p>
 									</div>
 								)}
@@ -302,8 +302,8 @@ const HelpComLanding: React.FC = () => {
 											</span>
 										</div>
 										<p className="text-sm text-slate-200">
-											Route calm, constructive voices to conversations the moment
-											sentiment shifts.
+											Route calm, constructive voices to conversations the
+											moment sentiment shifts.
 										</p>
 									</div>
 								)}
