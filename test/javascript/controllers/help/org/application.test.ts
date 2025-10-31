@@ -34,8 +34,4 @@ describe("Help org landing shell (React Aria)", () => {
     test("returns empty props when container missing", () => {
         expect(readHelpOrgProps(null)).toEqual({});
     });
-
-    test.todo("hydrates the help org React shell with server-provided props");
-    test.todo("supports keyboard-only navigation across header and tabs");
-    test.todo("navigates to external docs/news/help resources via dataset URLs");
 });

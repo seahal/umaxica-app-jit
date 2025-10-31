@@ -35,7 +35,4 @@ describe("WWW staff landing shell", () => {
         expect(readWwwOrgProps(null)).toEqual({});
     });
 
-    test.todo("hydrates the org www shell with server-provided props");
-    test.todo("supports keyboard navigation for departmental links");
-    test.todo("launches help links via dataset URLs");
 });

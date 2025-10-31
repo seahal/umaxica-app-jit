@@ -37,7 +37,4 @@ describe("News app landing shell", () => {
         expect(readNewsAppProps(null)).toEqual({});
     });
 
-    test.todo("hydrates the news app shell with server-provided props");
-    test.todo("supports keyboard-only access across featured stories");
-    test.todo("routes to docs/help via dataset-provided URLs");
 });

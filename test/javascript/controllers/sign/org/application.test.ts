@@ -34,8 +34,4 @@ describe("Sign staff landing shell", () => {
     test("returns empty props when container missing", () => {
         expect(readSignOrgProps(null)).toEqual({});
     });
-
-    test.todo("hydrates the org sign shell with server-provided props");
-    test.todo("supports staff keyboard shortcuts");
-    test.todo("navigates to help resources via dataset URLs");
 });

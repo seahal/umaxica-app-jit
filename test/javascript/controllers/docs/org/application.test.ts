@@ -35,7 +35,4 @@ describe("Docs org landing shell (React Aria)", () => {
         expect(readDocsOrgProps(null)).toEqual({});
     });
 
-    test.todo("hydrates the docs org React shell with staff-specific briefs");
-    test.todo("follows focus order when switching between navigation links");
-    test.todo("links to help and newsroom using staff dataset origins");
 });

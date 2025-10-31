@@ -35,7 +35,4 @@ describe("Sign app landing shell", () => {
         expect(readSignAppProps(null)).toEqual({});
     });
 
-    test.todo("hydrates the sign app shell with server-provided props");
-    test.todo("supports keyboard submission from the landing form");
-    test.todo("navigates to help resources via dataset URLs");
 });

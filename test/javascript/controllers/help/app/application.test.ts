@@ -35,7 +35,4 @@ describe("Help app landing shell (React Aria)", () => {
         expect(readHelpAppProps(null)).toEqual({});
     });
 
-    test.todo("hydrates the help app React shell with server-provided props");
-    test.todo("persists filter state when navigating between knowledge tabs");
-    test.todo("routes external footer links via service URLs from dataset");
 });

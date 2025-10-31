@@ -35,7 +35,4 @@ describe("Docs com landing shell (React Aria)", () => {
         expect(readDocsComProps(null)).toEqual({});
     });
 
-    test.todo("hydrates the docs com React shell with enterprise guides");
-    test.todo("announces tab selection changes for assistive technologies");
-    test.todo("links to newsroom and help using corporate dataset origins");
 });

@@ -34,8 +34,4 @@ describe("Docs app landing shell (React Aria)", () => {
     test("returns empty props when container missing", () => {
         expect(readDocsAppProps(null)).toEqual({});
     });
-
-    test.todo("hydrates the docs app React shell with server-provided props");
-    test.todo("navigates between document categories via keyboard only");
-    test.todo("routes support links using dataset-provided service URLs");
 });

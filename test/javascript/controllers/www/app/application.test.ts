@@ -39,7 +39,4 @@ describe("WWW app landing shell", () => {
         expect(readWwwAppProps(null)).toEqual({});
     });
 
-    test.todo("hydrates the www app shell with server-provided props");
-    test.todo("supports keyboard traversal between promo sections");
-    test.todo("launches docs/help/news links via dataset URLs");
 });

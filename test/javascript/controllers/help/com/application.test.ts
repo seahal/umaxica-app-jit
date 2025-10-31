@@ -34,8 +34,4 @@ describe("Help com landing shell (React Aria)", () => {
     test("returns empty props when container missing", () => {
         expect(readHelpComProps(null)).toEqual({});
     });
-
-    test.todo("hydrates the help com React shell with corporate-specific content");
-    test.todo("announces navigation changes for assistive technology users");
-    test.todo("links to newsroom and docs using corporate dataset origins");
 });
