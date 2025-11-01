@@ -1,0 +1,33 @@
+<% content_for :page_title, t('root.com.preferences.cookie_settings') %>
+
+<h1><%= t('root.com.preference.cookie.edit.h1') %></h1>
+
+<%= form_with url: root_com_preference_cookie_url, method: :patch do |f| %>
+  <div class="interests-selection">
+    <%= check_box_tag :accept_necessary_cookies, "1", true, disabled: true %>
+    <%= label_tag :accept_necessary_cookies, t('root.com.preference.cookie.edit.accept_necessary_cookies') %>
+  </div>
+
+  <div class="interests-selection">
+    <%= f.check_box :accept_functional_cookies, { checked: @accept_functional_cookies } %>
+    <%= f.label :accept_functional_cookies, t('root.com.preference.cookie.edit.accept_functional_cookies') %>
+  </div>
+
+  <div class="interests-selection">
+    <%= f.check_box :accept_performance_cookies, { checked: @accept_performance_cookies } %>
+    <%= f.label :accept_performance_cookies, t('root.com.preference.cookie.edit.accept_performance_cookies') %>
+  </div>
+
+  <div class="interests-selection">
+    <%= f.check_box :accept_targeting_cookies, { checked: @accept_targeting_cookies } %>
+    <%= f.label :accept_targeting_cookies, t('root.com.preference.cookie.edit.accept_targeting_cookies') %>
+  </div>
+
+  <div>
+    <%= f.submit %>
+  </div>
+
+  <div>
+    <%= link_to t('root.com.preferences.back_to_settings'), root_com_preference_path, class: 'btn btn-secondary' %>
+  </div>
+<% end %>

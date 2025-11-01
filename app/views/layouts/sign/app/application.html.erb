@@ -35,10 +35,10 @@
 <footer>
   <ul>
     <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Home</a></li>
-    <li><%= link_to 'Cookie', edit_apex_app_preference_cookie_url %></li>
+    <li><%= link_to 'Cookie', edit_root_app_preference_cookie_url %></li>
     <li><%= link_to 'Document', docs_app_root_url %></li>
     <li><%= link_to 'News', news_app_root_url %></li>
-    <li><%= link_to 'apex', apex_app_root_url %></li>
+    <li><%= link_to 'root', root_app_root_url %></li>
     <li><%= link_to 'Help Center', help_app_root_url %></li>
   </ul>
   <%= render "concern/copyright" %>

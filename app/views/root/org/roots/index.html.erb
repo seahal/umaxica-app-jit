@@ -1,0 +1,10 @@
+<ul>
+  <li>Region: <%= session[:region] %></li>
+  <li>Current language: <%= I18n.locale %></li>
+  <li>TimeZone: <%= session[:timezone] %></li>
+  <li><%= I18n.t "hello" %></li>
+  <li><%= Time.now %></li>
+  <li><%= Time.now.in_time_zone("Tokyo") %></li>
+  <li><%= to_localetime Time.now, 'jst' %></li>
+  <li><%= link_to "Settings", root_org_preference_url %></li>
+</ul>

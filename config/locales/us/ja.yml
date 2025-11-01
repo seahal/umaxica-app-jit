@@ -44,7 +44,7 @@ ja:
         authentication:
           destroy:
             jump_obj: sign in with email
-    apex:
+    root:
       app:
         preference:
           show:
@@ -259,7 +259,7 @@ ja:
         totp:
           new:
             title: TOTP no shinki
-  apex:
+  root:
     app:
       preferences:
         title: 設定

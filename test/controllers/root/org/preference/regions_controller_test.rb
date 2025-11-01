@@ -1,0 +1,70 @@
+require "test_helper"
+
+
+class Root::Org::Preference::RegionsControllerTest < ActionDispatch::IntegrationTest
+  test "should get edit" do
+    get edit_root_org_preference_region_url
+
+    assert_response :success
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should display all form sections" do
+    get edit_root_org_preference_region_url
+
+    assert_select "h1", text: I18n.t("root.org.preferences.regions.title")
+    assert_select "select[name='region']"
+    assert_select "select[name='language']"
+    assert_select "select[name='timezone']"
+    assert_select "main.container.mx-auto.mt-28.px-5.block" do
+      expected_action = root_org_preference_region_url(ri: "jp", tz: "jst", lx: "ja")
+      assert_select "form[action=?][method='post']", expected_action do
+        assert_select "input[name='_method'][value='patch']", count: 1
+
+        assert_select ".region-section" do
+          assert_select "h2", text: I18n.t("root.org.preferences.regions.region_section")
+          assert_select "label[for='region']", text: I18n.t("root.org.preferences.regions.select_region")
+          assert_select "select#region option[value='US']"
+          assert_select "select#region option[value='JP']"
+          assert_not_select "select#language option[value='KR']"
+        end
+
+        assert_select ".language-section" do
+          assert_select "h2", text: I18n.t("root.org.preferences.regions.language_section")
+          assert_select ".language-selection label[for='language']", text: I18n.t("root.org.preferences.regions.select_language")
+          assert_select ".language-selection select#language option[value='JA']"
+          assert_select "select#language option[value='JA']"
+          assert_select "select#language option[value='EN']"
+          assert_not_select "select#language option[value='KR']"
+        end
+
+        assert_select ".timezone-section" do
+          assert_select "h2", text: I18n.t("root.org.preferences.regions.timezone_section")
+          assert_select ".timezone-selection label[for='timezone']", text: I18n.t("root.org.preferences.regions.select_timezone")
+          assert_select ".timezone-selection select#timezone option[value='Etc/UTC']"
+          assert_select ".timezone-selection select#timezone option[value='Asia/Tokyo']"
+          assert_not_select "select#language option[value='KST']"
+        end
+
+        assert_select ".form-actions" do
+          assert_select "input[type='submit']", count: 1
+        end
+
+        assert_select "a.btn.btn-secondary", text: I18n.t("root.org.preferences.regions.cancel")
+      end
+    end
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "should reject unsupported admin language" do
+    patch root_org_preference_region_url, params: { language: "invalid" }
+
+    assert_response :unprocessable_content
+  end
+
+  test "should reject invalid timezone" do
+    patch root_org_preference_region_url, params: { timezone: "Invalid/Timezone" }
+
+    assert_response :unprocessable_content
+  end
+end

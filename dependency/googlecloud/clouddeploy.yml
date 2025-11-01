@@ -1,0 +1,132 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: umaxica-app-jit-staging-apex       # ← サービス名だけ apex
+  namespace: '897712432319'
+  labels:
+    cloud.googleapis.com/location: asia-northeast1
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      labels:
+        run.googleapis.com/startupProbeType: Default
+      annotations:
+        autoscaling.knative.dev/maxScale: "1"
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 897712432319-compute@developer.gserviceaccount.com
+      containers:
+        - name: sample-1
+          image: asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:latest
+          args:
+            - bundle
+            - exec
+            - puma
+            - --port
+            - "8080"
+          ports:
+            - name: http1
+              containerPort: 8080
+          env:
+            - name: RAILS_ENV
+              value: production
+            - name: NAME
+              value: UMAXICA
+            - name: BRAND_NAME
+              value: UMAXICA
+
+            # ▼ apex 用に本当はちょっと変えるかもしれない値たち
+            #   まずは jp と同じでいい。後で REGION_CODE や URL 群を
+            #   apex 向けに差し替える運用にすればOK。
+            - name: APEX_REGION
+              value: "false"
+            - name: REGION_CODE
+              value: jp
+
+            - name: APEX_CORPORATE_URL
+              value: umaxica.com
+            - name: APEX_SERVICE_URL
+              value: umaxica.app
+            - name: APEX_NETWORK_URL
+              value: umaxica.net
+            - name: APEX_STAFF_URL
+              value: umaxica.org
+
+            - name: SIGN_SERVICE_URL
+              value: sign.umaxica.app
+            - name: SIGN_STAFF_URL
+              value: sign.umaxica.org
+
+            - name: API_CORPORATE_URL
+              value: api.jp.umaxica.com
+            - name: API_SERVICE_URL
+              value: api.jp.umaxica.app
+            - name: API_STAFF_URL
+              value: api.jp.umaxica.org
+
+            - name: WWW_CORPORATE_URL
+              value: www.jp.umaxica.com
+            - name: WWW_SERVICE_URL
+              value: www.jp.umaxica.app
+            - name: WWW_STAFF_URL
+              value: www.jp.umaxica.org
+
+            - name: DOCS_CORPORATE_URL
+              value: docs.jp.umaxica.com
+            - name: DOCS_SERVICE_URL
+              value: docs.jp.umaxica.app
+            - name: DOCS_STAFF_URL
+              value: docs.jp.umaxica.org
+
+            - name: NEWS_CORPORATE_URL
+              value: news.jp.umaxica.com
+            - name: NEWS_SERVICE_URL
+              value: news.jp.umaxica.net
+            - name: NEWS_STAFF_URL
+              value: news.jp.umaxica.org
+
+            - name: HELP_CORPORATE_URL
+              value: help.jp.umaxica.com
+            - name: HELP_SERVICE_URL
+              value: help.jp.umaxica.app
+            - name: HELP_STAFF_URL
+              value: help.jp.umaxica.org
+
+            - name: EDGE_CORPORATE_URL
+              value: jp.umaxica.com
+            - name: EDGE_SERVICE_URL
+              value: jp.umaxica.app
+            - name: EDGE_STAFF_URL
+              value: jp.umaxica.org
+            - name: EDGE_STATUS_URL
+              value: jp.umaxica.dev
+
+            - name: ASSET_URL
+              value: asset-jp.umaxica.net
+
+            - name: RAILS_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: umaxica_jp_rails_credential_production
+                  key: latest
+
+          resources:
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+
+          startupProbe:
+            timeoutSeconds: 240
+            periodSeconds: 240
+            failureThreshold: 1
+            tcpSocket:
+              port: 8080
+  traffic:
+    - percent: 100
+      latestRevision: true
+

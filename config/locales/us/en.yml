@@ -103,7 +103,7 @@ en:
     dark: "Dark Theme"
     corporate: "Corporate Theme"
     system: "System Theme"
-  apex:
+  root:
     app:
       preferences:
         title: "Preferences"

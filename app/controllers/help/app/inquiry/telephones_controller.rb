@@ -49,7 +49,7 @@ module Help
             session[:contact_telephone_checked] = true
             session[:contact_expires_in] = 2.hours.from_now
             session[:contact_count] = 0
-            redirect_to edit_apex_app_contact_url(params[:contact_id])
+            redirect_to edit_root_app_contact_url(params[:contact_id])
           else
             @service_site_contact.errors.add :base, :invalid,
                                              message: t("model.concern.otp.invalid_input") if hotp_result.blank?

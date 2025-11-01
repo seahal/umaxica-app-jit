@@ -1,7 +1,7 @@
 module DefaultUrlOptions
   extend ActiveSupport::Concern
 
-  PREFERENCE_COOKIE_KEY = :apex_app_preferences
+  PREFERENCE_COOKIE_KEY = :root_app_preferences
 
   def default_url_options
     options = read_cookie_preferences_for_url

@@ -26,7 +26,7 @@ module Sign
           if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"] && session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
             @user_email = UserEmail.new
           else
-            redirect_to new_apex_app_registration_email_path,
+            redirect_to new_root_app_registration_email_path,
                         notice: t("sign.app.registration.email.edit.your_session_was_expired")
           end
         end
@@ -57,7 +57,7 @@ module Sign
             Email::App::EmailRegistrationMailer.with({ hotp_token: num,
                                                        mail_address: @user_email.address }).create.deliver_now
 
-            redirect_to edit_apex_app_registration_email_path(id), notice: t("messages.email_successfully_created")
+            redirect_to edit_root_app_registration_email_path(id), notice: t("messages.email_successfully_created")
           else
             render :new, status: :unprocessable_content
           end

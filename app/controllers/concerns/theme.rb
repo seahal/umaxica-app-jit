@@ -30,13 +30,13 @@ module Theme
     resolved_theme = normalize_theme(params[:theme])
 
     if resolved_theme.nil?
-      flash.now[:alert] = I18n.t("apex.#{preference_scope}.preferences.themes.invalid")
+      flash.now[:alert] = I18n.t("root.#{preference_scope}.preferences.themes.invalid")
       assign_current_theme
       @theme_query_params = theme_redirect_params
       render :edit, status: :unprocessable_content
     else
       persist_theme!(resolved_theme)
-      flash[:notice] = I18n.t("apex.#{preference_scope}.preferences.themes.updated", theme: I18n.t("themes.#{resolved_theme}"))
+      flash[:notice] = I18n.t("root.#{preference_scope}.preferences.themes.updated", theme: I18n.t("themes.#{resolved_theme}"))
       redirect_to theme_redirect_url
     end
   end
@@ -85,13 +85,13 @@ module Theme
   end
 
   def theme_cookie_key
-    :"apex_#{preference_scope}_theme"
+    :"root_#{preference_scope}_theme"
   end
 
   def theme_redirect_url
     query = theme_redirect_params
     public_send(
-      "edit_apex_#{preference_scope}_preference_theme_path",
+      "edit_root_#{preference_scope}_preference_theme_path",
       symbolize_keys(query.presence || {})
     )
   end
@@ -127,9 +127,9 @@ module Theme
   end
 
   def persist_app_preferences_cookie!(theme)
-    keys = Apex::App::RootsController::PREFERENCE_KEYS
-    defaults = Apex::App::RootsController::DEFAULT_PREFERENCES
-    cookie_key = Apex::App::RootsController::PREFERENCE_COOKIE_KEY
+    keys = Root::App::RootsController::PREFERENCE_KEYS
+    defaults = Root::App::RootsController::DEFAULT_PREFERENCES
+    cookie_key = Root::App::RootsController::PREFERENCE_COOKIE_KEY
 
     resolved = defaults.dup
 

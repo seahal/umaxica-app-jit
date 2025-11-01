@@ -9,23 +9,23 @@ export function hostToCategory(host: string): HostCategory | null {
     return null;
 }
 
-// Given a host and pathname, ensure it has the right /apex/<category> prefix.
+// Given a host and pathname, ensure it has the right /root/<category> prefix.
 // If it's already prefixed correctly, do nothing. Avoid double prefixes.
-export function applyApexPrefix(host: string, pathname: string): string {
+export function applyRootPrefix(host: string, pathname: string): string {
     const category = hostToCategory(host);
     const path = pathname || "/";
 
     if (!category) return path; // unknown host: leave unchanged
 
-    const targetPrefix = `/apex/${category}`;
+    const targetPrefix = `/root/${category}`;
 
     // Already correctly prefixed
     if (path === targetPrefix || path.startsWith(`${targetPrefix}/`)) {
         return path;
     }
 
-    // Avoid double-prefix if it already starts with any /apex/<known>
-    if (path.startsWith("/apex/app/") || path.startsWith("/apex/com/") || path.startsWith("/apex/org/")) {
+    // Avoid double-prefix if it already starts with any /root/<known>
+    if (path.startsWith("/root/app/") || path.startsWith("/root/com/") || path.startsWith("/root/org/")) {
         return path;
     }
 
@@ -35,4 +35,3 @@ export function applyApexPrefix(host: string, pathname: string): string {
     // Normal case
     return `${targetPrefix}${path.startsWith("/") ? "" : "/"}${path}`;
 }
-
