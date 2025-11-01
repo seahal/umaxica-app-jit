@@ -26,15 +26,23 @@ class InvertCorporateSiteContactDependencies < ActiveRecord::Migration[8.1]
 
     say_with_time "Backfilling corporate_site_contact_email_id" do
       email_class.find_each do |email|
-        contact_class.where(id: email[:corporate_site_contact_id])
-                     .update_all(corporate_site_contact_email_id: email[:id])
+        next unless email[:corporate_site_contact_id]
+
+        contact = contact_class.find_by(id: email[:corporate_site_contact_id])
+        next unless contact
+
+        contact.update!(corporate_site_contact_email_id: email[:id])
       end
     end
 
     say_with_time "Backfilling corporate_site_contact_telephone_id" do
       telephone_class.find_each do |telephone|
-        contact_class.where(id: telephone[:corporate_site_contact_id])
-                     .update_all(corporate_site_contact_telephone_id: telephone[:id])
+        next unless telephone[:corporate_site_contact_id]
+
+        contact = contact_class.find_by(id: telephone[:corporate_site_contact_id])
+        next unless contact
+
+        contact.update!(corporate_site_contact_telephone_id: telephone[:id])
       end
     end
 

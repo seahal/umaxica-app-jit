@@ -11,12 +11,14 @@ class CorporateSiteContact < GuestsRecord
              class_name: "ContactCategory",
              foreign_key: :contact_category_title,
              primary_key: :title,
-             optional: true
+             optional: true,
+             inverse_of: :corporate_site_contacts
   belongs_to :corporate_site_contact_status,
              class_name: "ContactStatus",
              foreign_key: :contact_status_title,
              primary_key: :title,
-             optional: true
+             optional: true,
+             inverse_of: :corporate_site_contacts
   has_many :corporate_site_contact_topics, dependent: :destroy
 
   attr_accessor :confirm_policy

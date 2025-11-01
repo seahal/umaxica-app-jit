@@ -7,7 +7,7 @@
 
 - Ruby 3.4.7 (defined in the `Gemfile`)
 - Bundler 2.5+ (shipped with modern Ruby installations)
-- Bun 1.x (plus Node.js 20+ if a package requires Node APIs)
+- Bun 1.3.x (plus Node.js 20+ if a package requires Node APIs)
 - Docker (recommended for local infrastructure parity)
 - Access to PostgreSQL, Valkey (Redis-compatible), and Kafka instances
 
@@ -39,8 +39,11 @@
 
 - Data and messaging: PostgreSQL, Valkey (Redis), Kafka
 - Observability: [OpenTelemetry](https://opentelemetry.io/)
-- Email: Resend, AWS SES
-- Content delivery: Cloudflare (R2, Turnstile, registrar), Fastly CDN
+- Email: Resend
+- SMS: AWS SES
+- Content delivery Network
+  - Cloudflare (R2)
+  - Fastly CDN
 - Cloud platforms:
   - Google Cloud (Cloud Run, Cloud Build, Cloud Storage, Artifact Registry, OAuth)
   - Apple (Social login)
@@ -61,12 +64,25 @@
 - Monitor CI status via the integration workflow badge above.
 
 ## Environments & Endpoints
-
-- Umaxica domains:
-  - `umaxica.com`, `www.jp.umaxica.com`, `docs.jp.umaxica.com`, `news.jp.umaxica.com`
-  - `umaxica.app`, `www.jp.umaxica.app`,, `auth.jp.umaxica.app`, `docs.jp.umaxica.app`, `help.jp.umaxica.app`, `news.jp.umaxica.app`
-  - `umaxica.org`, `www.jp.umaxica.org`, `auth.jp.umaxica.org`, `docs.jp.umaxica.org`, `help.jp.umaxica.org`, `news.jp.umaxica.org`
-  - Asset CDN: `https://asset.umaxica.net`
+  - Corporate site: 
+    - `www.umaxica.com`
+    - `news.[jp|us].umaxica.com`
+    - `docs.[jp|us].umaxica.com` 
+    - `news.[jp|us].umaxica.com`
+  - Service endpoints:
+    - `www.umaxica.app`,
+    - `sign.umaxica.app`, 
+    - `docs.[jp|us].umaxica.app`
+    - `help.[jp|us].umaxica.app`
+    - `news.[jp|us].umaxica.app`
+  - Staff site:
+    - `www.umaxica.org`
+    - `sign.umaxica.org`
+    - `docs.[jp|us].umaxica.org`
+    - `help.[jp|us].umaxica.org`
+    - `news.[jp|us].umaxica.org`
+  - Network endpoints:
+    - `asset-[jp|us].umaxica.net`
 
 ## Secrets & Credentials
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.
@@ -74,6 +90,7 @@
 
 ## Useful References
 - [Official Ruby on Rails Guides](https://rubyonrails.org/)
+- [RubyGem](https://rubygems.org/)
 - [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
 
 ## Troubleshooting
