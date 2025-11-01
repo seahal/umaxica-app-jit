@@ -15,10 +15,10 @@ gem "puma"
 gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
 gem "pg"
-gem "pg_search"
-gem "postgresql_cursor"
-gem "fx"
-gem "scenic"
+# gem "pg_search"
+# gem "postgresql_cursor"
+# gem "fx"
+# gem "scenic"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "redis"
 # Kafka
