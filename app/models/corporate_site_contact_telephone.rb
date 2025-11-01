@@ -1,5 +1,18 @@
 class CorporateSiteContactTelephone < GuestsRecord
-  belongs_to :corporate_site_contact
+  has_many :corporate_site_contacts,
+           inverse_of: :corporate_site_contact_telephone,
+           dependent: :restrict_with_error
+
+  after_commit :apply_pending_contact, on: %i[create update]
+
+  # Backwards compatible accessor for older API usage
+  def corporate_site_contact
+    corporate_site_contacts.first
+  end
+
+  def corporate_site_contact=(contact)
+    @pending_corporate_site_contact = contact
+  end
   encrypts :telephone_number, deterministic: true
   # Bridge OTP helpers to stored verifier_* columns
   alias_attribute :otp_digest, :verifier_digest
@@ -41,5 +54,17 @@ class CorporateSiteContactTelephone < GuestsRecord
 
   def can_resend_otp?
     !activated && (otp_expired? || otp_attempts_left <= 0)
+  end
+
+  private
+
+  def apply_pending_contact
+    return unless instance_variable_defined?(:@pending_corporate_site_contact)
+
+    contact = @pending_corporate_site_contact
+    if contact
+      contact.update!(corporate_site_contact_telephone: self)
+    end
+    remove_instance_variable(:@pending_corporate_site_contact)
   end
 end

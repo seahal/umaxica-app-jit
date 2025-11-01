@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_27_102305) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_01_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -35,11 +35,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102305) do
 
   create_table "corporate_site_contact_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
-    t.uuid "corporate_site_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-11-01 17:42:21", null: false
+    t.timestamptz "expires_at", default: "2025-11-01 19:22:17", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -48,7 +47,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102305) do
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
     t.timestamptz "verifier_expires_at"
-    t.index ["corporate_site_contact_id"], name: "idx_on_corporate_site_contact_id_885e7bccdf"
     t.index ["email_address"], name: "index_corporate_site_contact_emails_on_email_address"
     t.index ["verifier_expires_at"], name: "index_corporate_site_contact_emails_on_verifier_expires_at"
   end
@@ -64,17 +62,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102305) do
 
   create_table "corporate_site_contact_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
-    t.uuid "corporate_site_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-01 17:42:21", null: false
+    t.timestamptz "expires_at", default: "2025-11-01 19:22:17", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
     t.timestamptz "verifier_expires_at"
-    t.index ["corporate_site_contact_id"], name: "idx_on_corporate_site_contact_id_72d0fd0e7a"
     t.index ["telephone_number"], name: "index_corporate_site_contact_telephones_on_telephone_number"
     t.index ["verifier_expires_at"], name: "index_corporate_site_contact_telephones_on_verifier_expires_at"
   end
@@ -84,7 +80,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102305) do
     t.uuid "corporate_site_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-01 17:42:21", null: false
+    t.timestamptz "expires_at", default: "2025-11-01 19:22:17", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
@@ -96,12 +92,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102305) do
   create_table "corporate_site_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "contact_category_title", limit: 255
     t.string "contact_status_title", limit: 255
+    t.uuid "corporate_site_contact_email_id"
+    t.uuid "corporate_site_contact_telephone_id"
     t.datetime "created_at", null: false
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", null: false
+    t.index ["corporate_site_contact_email_id"], name: "idx_on_corporate_site_contact_email_id"
+    t.index ["corporate_site_contact_telephone_id"], name: "idx_on_corporate_site_contact_telephone_id"
     t.index ["token"], name: "index_corporate_site_contacts_on_token"
     t.index ["token_digest"], name: "index_corporate_site_contacts_on_token_digest"
     t.index ["token_expires_at"], name: "index_corporate_site_contacts_on_token_expires_at"
@@ -131,12 +131,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102305) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "corporate_site_contact_emails", "corporate_site_contacts"
   add_foreign_key "corporate_site_contact_histories", "corporate_site_contacts"
-  add_foreign_key "corporate_site_contact_telephones", "corporate_site_contacts"
   add_foreign_key "corporate_site_contact_topics", "corporate_site_contacts"
   add_foreign_key "corporate_site_contacts", "contact_categories", column: "contact_category_title", primary_key: "title"
   add_foreign_key "corporate_site_contacts", "contact_statuses", column: "contact_status_title", primary_key: "title"
+  add_foreign_key "corporate_site_contacts", "corporate_site_contact_emails"
+  add_foreign_key "corporate_site_contacts", "corporate_site_contact_telephones"
   add_foreign_key "service_site_contacts", "contact_categories", column: "contact_category_title", primary_key: "title"
   add_foreign_key "service_site_contacts", "contact_statuses", column: "contact_status_title", primary_key: "title"
   add_foreign_key "staff_site_contacts", "contact_categories", column: "contact_category_title", primary_key: "title"

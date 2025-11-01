@@ -1,5 +1,19 @@
 class CorporateSiteContactEmail < GuestsRecord
-  belongs_to :corporate_site_contact
+  has_many :corporate_site_contacts,
+           inverse_of: :corporate_site_contact_email,
+           dependent: :restrict_with_error
+
+  after_commit :apply_pending_contact, on: %i[create update]
+
+  # Backwards compatible accessors for legacy API usage in fixtures/tests
+  def corporate_site_contact
+    corporate_site_contacts.first
+  end
+
+  def corporate_site_contact=(contact)
+    @pending_corporate_site_contact = contact
+  end
+
   before_save { self.email_address&.downcase! }
   encrypts :email_address, downcase: true, deterministic: true
 
@@ -37,5 +51,17 @@ class CorporateSiteContactEmail < GuestsRecord
 
   def can_resend_verifier?
     !activated && (verifier_expired? || verifier_attempts_left <= 0)
+  end
+
+  private
+
+  def apply_pending_contact
+    return unless instance_variable_defined?(:@pending_corporate_site_contact)
+
+    contact = @pending_corporate_site_contact
+    if contact
+      contact.update!(corporate_site_contact_email: self)
+    end
+    remove_instance_variable(:@pending_corporate_site_contact)
   end
 end

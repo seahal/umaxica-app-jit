@@ -4,5 +4,5 @@ module Com
       def index
       end
     end
-  end
+end
 end

@@ -1,15 +1,22 @@
 class CorporateSiteContact < GuestsRecord
   # Associations
 
-  # from
-  # has_many :corporate_site_contact_emails
-  # has_many :corporate_site_contact_telephones
-  # to
-  # belongs_to :corporate_site_contact_email
-  # belongs_to :corporate_site_contact_telephone
-
-  belongs_to :corporate_site_contact_category
-  belongs_to :corporate_site_contact_status
+  belongs_to :corporate_site_contact_email,
+             optional: true,
+             inverse_of: :corporate_site_contacts
+  belongs_to :corporate_site_contact_telephone,
+             optional: true,
+             inverse_of: :corporate_site_contacts
+  belongs_to :corporate_site_contact_category,
+             class_name: "ContactCategory",
+             foreign_key: :contact_category_title,
+             primary_key: :title,
+             optional: true
+  belongs_to :corporate_site_contact_status,
+             class_name: "ContactStatus",
+             foreign_key: :contact_status_title,
+             primary_key: :title,
+             optional: true
   has_many :corporate_site_contact_topics, dependent: :destroy
 
   attr_accessor :confirm_policy
