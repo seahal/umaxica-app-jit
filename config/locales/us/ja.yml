@@ -267,6 +267,7 @@ ja:
         region_settings: 地域設定
         email_preferences: メール設定
         theme_settings: テーマ設定（ライト／ダークの切り替え）
+        reset_settings: 設定のクリア
         regions:
           title: 地域・言語設定
           region_section: 地域設定
@@ -318,6 +319,16 @@ ja:
               dark: 夜間や目の負担を減らしたい時におすすめです。
               system: 端末のテーマ設定に合わせて自動で切り替わります。
             submit: テーマ設定を保存
+        reset:
+          edit:
+            title: 設定クッキーをリセット
+            description: このブラウザに保存している表示設定クッキーを削除します。
+            confirmation: 元に戻せない操作です。
+            confirmation_label: すべての設定クッキーを削除することに同意します
+            submit: 設定クッキーをクリア
+          destroy:
+            success: 設定クッキーをクリアしました。
+            confirmation_required: クッキーを削除するにはチェックボックスにチェックを入れてください。
         themes:
           updated: テーマを%{theme}に更新しました
           invalid: 無効なテーマが選択されました

@@ -11,30 +11,36 @@
   <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 </head>
 
-<body class="px-4">
+<% react_shell_enabled = content_for?(:root_app_react_shell) %>
+<body class="<%= react_shell_enabled ? 'bg-slate-950 text-slate-50' : 'px-4' %>">
 <%= render "concern/flash_messages" %>
-<header>
-  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (root, app)</a></h1>
-</header>
 
-<hr>
-
-<main class="container mx-auto mt-28 px-5 block">
+<% if react_shell_enabled %>
   <%= yield %>
-</main>
+<% else %>
+  <header>
+    <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (root, app)</a></h1>
+  </header>
 
-<hr>
+  <hr>
 
-<footer>
-  <ul>
-    <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Home</a></li>
-    <li><%= link_to 'Cookie', edit_root_app_preference_cookie_path %></li>
-    <li><%= link_to 'Support', help_app_root_url %></li>
-    <li><%= link_to 'NewsRoom', news_app_root_url %></li>
-    <li><%= link_to 'Documents', docs_app_root_url %></li>
-    <li><%= link_to 'Cookie', edit_root_app_preference_cookie_path %></li>
-  </ul>
-  <%= render "concern/copyright" %>
-</footer>
+  <main class="container mx-auto mt-28 px-5 block">
+    <%= yield %>
+  </main>
+
+  <hr>
+
+  <footer>
+    <ul>
+      <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Home</a></li>
+      <li><%= link_to 'Cookie', edit_root_app_preference_cookie_path %></li>
+      <li><%= link_to 'Support', help_app_root_url %></li>
+      <li><%= link_to 'NewsRoom', news_app_root_url %></li>
+      <li><%= link_to 'Documents', docs_app_root_url %></li>
+      <li><%= link_to 'Cookie', edit_root_app_preference_cookie_path %></li>
+    </ul>
+    <%= render "concern/copyright" %>
+  </footer>
+<% end %>
 </body>
 </html>

@@ -23,3 +23,4 @@ import "./views/www/org/application.ts";
 import "./views/passkey.js";
 import "./views/passkey_helpers.js";
 import "./views/www/app/inquiry/before_submit.js";
+import "./root/app/landing.tsx";

@@ -1,16 +1,32 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: umaxica-app-jit-staging-apex       # ← サービス名だけ apex
-  namespace: '897712432319'
+  name: umaxica-app-jit-staging-ap
+  namespace: "897712432319"
   labels:
+    # Cloud Deploy / rollout tracking
+    delivery-pipeline-id: umaxica-app-jit-staging
+    release-id: release-buqmsfh            # パイプライン側で適宜上書きされる想定
+    target-id: ap
+    managed-by: google-cloud-deploy
+    project-id: umaxica-454904
+    location: asia-northeast1
     cloud.googleapis.com/location: asia-northeast1
   annotations:
-    run.googleapis.com/ingress: all
+    # Cloud Run networking / security posture
+    run.googleapis.com/ingress: internal-and-cloud-load-balancing
+    run.googleapis.com/default-url-disabled: "true"
+    run.googleapis.com/invoker-iam-disabled: "true"
 spec:
   template:
     metadata:
       labels:
+        delivery-pipeline-id: umaxica-app-jit-staging
+        release-id: release-buqmsfh
+        target-id: ap
+        managed-by: google-cloud-deploy
+        project-id: umaxica-454904
+        location: asia-northeast1
         run.googleapis.com/startupProbeType: Default
       annotations:
         autoscaling.knative.dev/maxScale: "1"
@@ -35,33 +51,33 @@ spec:
           env:
             - name: RAILS_ENV
               value: production
+
             - name: NAME
               value: UMAXICA
             - name: BRAND_NAME
               value: UMAXICA
 
-            # ▼ apex 用に本当はちょっと変えるかもしれない値たち
-            #   まずは jp と同じでいい。後で REGION_CODE や URL 群を
-            #   apex 向けに差し替える運用にすればOK。
-            - name: APEX_REGION
-              value: "false"
+            # ===== ブランディング/リージョン系 =====
+            - name: APEX_REGION # rename to GLOBAL_MODE
+              value: "true"
             - name: REGION_CODE
               value: jp
 
+            # ===== apex / root 面で使っているホスト群 =====
             - name: APEX_CORPORATE_URL
-              value: umaxica.com
+              value: www.umaxica.com
             - name: APEX_SERVICE_URL
-              value: umaxica.app
-            - name: APEX_NETWORK_URL
-              value: umaxica.net
+              value: www.umaxica.app
             - name: APEX_STAFF_URL
-              value: umaxica.org
+              value: www.umaxica.org
 
+            # ===== Sign-in surfaces =====
             - name: SIGN_SERVICE_URL
               value: sign.umaxica.app
             - name: SIGN_STAFF_URL
               value: sign.umaxica.org
 
+            # ===== API =====
             - name: API_CORPORATE_URL
               value: api.jp.umaxica.com
             - name: API_SERVICE_URL
@@ -69,6 +85,7 @@ spec:
             - name: API_STAFF_URL
               value: api.jp.umaxica.org
 
+            # ===== WWW (リージョン JP 側の表面) =====
             - name: WWW_CORPORATE_URL
               value: www.jp.umaxica.com
             - name: WWW_SERVICE_URL
@@ -76,6 +93,7 @@ spec:
             - name: WWW_STAFF_URL
               value: www.jp.umaxica.org
 
+            # ===== DOCS =====
             - name: DOCS_CORPORATE_URL
               value: docs.jp.umaxica.com
             - name: DOCS_SERVICE_URL
@@ -83,6 +101,7 @@ spec:
             - name: DOCS_STAFF_URL
               value: docs.jp.umaxica.org
 
+            # ===== NEWS =====
             - name: NEWS_CORPORATE_URL
               value: news.jp.umaxica.com
             - name: NEWS_SERVICE_URL
@@ -90,6 +109,7 @@ spec:
             - name: NEWS_STAFF_URL
               value: news.jp.umaxica.org
 
+            # ===== HELP =====
             - name: HELP_CORPORATE_URL
               value: help.jp.umaxica.com
             - name: HELP_SERVICE_URL
@@ -97,6 +117,7 @@ spec:
             - name: HELP_STAFF_URL
               value: help.jp.umaxica.org
 
+            # ===== EDGE / POP / CDN-ish =====
             - name: EDGE_CORPORATE_URL
               value: jp.umaxica.com
             - name: EDGE_SERVICE_URL
@@ -109,6 +130,7 @@ spec:
             - name: ASSET_URL
               value: asset-jp.umaxica.net
 
+            # Rails master key from Secret Manager via GKE Secret Manager volume sync or k8s secret
             - name: RAILS_MASTER_KEY
               valueFrom:
                 secretKeyRef:
@@ -126,7 +148,7 @@ spec:
             failureThreshold: 1
             tcpSocket:
               port: 8080
+
   traffic:
     - percent: 100
       latestRevision: true
-

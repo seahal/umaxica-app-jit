@@ -1,10 +1,6 @@
 Rails.application.routes.draw do
   scope module: :root, as: :root do
-    # TODO(human): Refactor this routes file to eliminate duplication
-    # Create a helper method to define common routes for each domain
-    # The common pattern: root, health, preference (with cookie/region/email/theme), staging (com only)
     # for corporate site
-
     constraints host: ENV["APEX_CORPORATE_URL"] do
       scope module: :com, as: :com do
         root to: "roots#index"
@@ -23,6 +19,8 @@ Rails.application.routes.draw do
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
           resource :theme, only: [ :edit, :update ]
+          # Clear all preference cookies
+          resource :reset, only: [ :edit, :destroy ]
         end
       end
     end
@@ -46,6 +44,8 @@ Rails.application.routes.draw do
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
           resource :theme, only: [ :edit, :update ]
+          # Clear all preference cookies
+          resource :reset, only: [ :edit, :destroy ]
         end
       end
     end
@@ -69,6 +69,8 @@ Rails.application.routes.draw do
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
           resource :theme, only: [ :edit, :update ]
+          # Clear all preference cookies
+          resource :reset, only: [ :edit, :destroy ]
         end
       end
     end

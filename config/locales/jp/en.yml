@@ -111,6 +111,7 @@ en:
         region_settings: "Region Settings"
         email_preferences: "Email Preferences"
         theme_settings: "Theme Settings"
+        reset_settings: "Clear Saved Preferences"
         back_to_settings: "Back to Preferences"
         regions:
           title: "Regional & Language Settings"
@@ -171,6 +172,16 @@ en:
               dark: "Ideal for night shifts or reducing eye strain."
               system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
+        reset:
+          edit:
+            title: "Reset Preference Cookies"
+            description: "Confirm to clear saved preference cookies for this browser."
+            confirmation: "This action cannot be undone."
+            confirmation_label: "I understand all saved preference cookies will be removed."
+            submit: "Clear preference cookies"
+          destroy:
+            success: "Preference cookies cleared."
+            confirmation_required: "Select the checkbox to confirm clearing your preference cookies."
     com:
       preferences:
         title: "Preferences"
