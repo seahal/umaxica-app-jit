@@ -1,4 +1,4 @@
-[![CI](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit/main)
+=[![CI](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit/main)
 
 # Umaxica App (JIT)
 （ ＾ν＾） Hello, World!
@@ -65,18 +65,15 @@
 
 ## Environments & Endpoints
   - Corporate site: 
-    - `www.umaxica.com`
     - `news.[jp|us].umaxica.com`
     - `docs.[jp|us].umaxica.com` 
     - `news.[jp|us].umaxica.com`
   - Service endpoints:
-    - `www.umaxica.app`,
     - `sign.umaxica.app`, 
     - `docs.[jp|us].umaxica.app`
     - `help.[jp|us].umaxica.app`
     - `news.[jp|us].umaxica.app`
   - Staff site:
-    - `www.umaxica.org`
     - `sign.umaxica.org`
     - `docs.[jp|us].umaxica.org`
     - `help.[jp|us].umaxica.org`
