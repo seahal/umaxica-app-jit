@@ -128,4 +128,7 @@ group :development do
   gem "license_finder", require: false
   #
   gem "ruby-lsp"
+  #
+  gem 'reek'
+  gem 'churn'
 end

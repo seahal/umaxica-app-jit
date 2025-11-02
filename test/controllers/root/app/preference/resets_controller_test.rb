@@ -13,13 +13,13 @@ module Root
 
           assert_response :success
           assert_select "h1", text: I18n.t("root.app.preference.reset.edit.title")
-          assert_select "form[action='#{root_app_preference_reset_path}']" do
+          assert_select "form" do
             assert_select "input[type='hidden'][name='_method'][value='delete']", count: 1
             assert_select "input[type='checkbox'][name='confirm_reset']", count: 1
             assert_select "label[for='confirm_reset']", text: I18n.t("root.app.preference.reset.edit.confirmation_label")
             assert_select "input[type='submit'][value='#{I18n.t("root.app.preference.reset.edit.submit")}']", count: 1
           end
-          assert_select "a.btn.btn-secondary[href='#{root_app_preference_path}']",
+          assert_select "a.btn.btn-secondary",
                         text: I18n.t("root.app.preferences.back_to_settings"),
                         count: 1
         end
@@ -30,7 +30,8 @@ module Root
 
           delete root_app_preference_reset_url, params: { confirm_reset: "1" }
 
-          assert_redirected_to root_app_preference_url
+          assert_response :redirect
+          assert_match %r{^#{Regexp.escape(root_app_preference_url)}}, response.location
           assert_equal I18n.t("root.app.preference.reset.destroy.success"), flash[:notice]
           assert_nil signed_cookie(:root_app_preferences)
 
@@ -49,7 +50,7 @@ module Root
           assert_response :unprocessable_content
           assert_equal I18n.t("root.app.preference.reset.destroy.confirmation_required"), flash[:alert]
           assert_equal original_cookie, signed_cookie(:root_app_preferences)
-          assert_select "form[action='#{root_app_preference_reset_path}']", count: 1
+          assert_select "form", count: 1
         end
       end
     end

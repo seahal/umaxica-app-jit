@@ -3,8 +3,6 @@
 one:
   contact_category_title: CORPORATE_CATEGORY
   contact_status_title: CORPORATE_SITE_STATUS
-  corporate_site_contact_email: one
-  corporate_site_contact_telephone: one
   token: ''
   token_digest: null
   token_expires_at: null
@@ -15,8 +13,6 @@ one:
 two:
   contact_category_title: SERVICE_CATEGORY
   contact_status_title: SERVICE_SITE_STATUS
-  corporate_site_contact_email: two
-  corporate_site_contact_telephone: two
   token: ''
   token_digest: null
   token_expires_at: null

@@ -22,8 +22,8 @@ class CorporateSiteContactTest < ActiveSupport::TestCase
     contact = corporate_site_contacts(:one)
 
     assert_predicate contact, :valid?
-    assert_nil contact.contact_category_title
-    assert_nil contact.contact_status_title
+    assert_equal "CORPORATE_CATEGORY", contact.contact_category_title
+    assert_equal "CORPORATE_SITE_STATUS", contact.contact_status_title
   end
 
   test "should create contact with relationship titles" do

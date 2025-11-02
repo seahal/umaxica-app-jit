@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_01_000000) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_02_110700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -35,6 +35,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_000000) do
 
   create_table "corporate_site_contact_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
+    t.uuid "corporate_site_contact_id"
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
@@ -47,6 +48,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_000000) do
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
     t.timestamptz "verifier_expires_at"
+    t.index ["corporate_site_contact_id"], name: "idx_on_corporate_site_contact_id_885e7bccdf"
     t.index ["email_address"], name: "index_corporate_site_contact_emails_on_email_address"
     t.index ["verifier_expires_at"], name: "index_corporate_site_contact_emails_on_verifier_expires_at"
   end
@@ -62,6 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_000000) do
 
   create_table "corporate_site_contact_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
+    t.uuid "corporate_site_contact_id"
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.timestamptz "expires_at", default: "2025-11-01 19:22:17", null: false
@@ -71,6 +74,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_000000) do
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
     t.timestamptz "verifier_expires_at"
+    t.index ["corporate_site_contact_id"], name: "idx_on_corporate_site_contact_id_72d0fd0e7a"
     t.index ["telephone_number"], name: "index_corporate_site_contact_telephones_on_telephone_number"
     t.index ["verifier_expires_at"], name: "index_corporate_site_contact_telephones_on_verifier_expires_at"
   end
@@ -131,7 +135,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_000000) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "corporate_site_contact_emails", "corporate_site_contacts"
   add_foreign_key "corporate_site_contact_histories", "corporate_site_contacts"
+  add_foreign_key "corporate_site_contact_telephones", "corporate_site_contacts"
   add_foreign_key "corporate_site_contact_topics", "corporate_site_contacts"
   add_foreign_key "corporate_site_contacts", "contact_categories", column: "contact_category_title", primary_key: "title"
   add_foreign_key "corporate_site_contacts", "contact_statuses", column: "contact_status_title", primary_key: "title"

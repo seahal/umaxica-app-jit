@@ -360,15 +360,11 @@ class Root::App::RootsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_select "body", count: 1 do
-      assert_select "header", count: 1 do
-        assert_select "h1", text: "#{ brand_name } (root, app)"
-      end
-      assert_select "main", count: 1
-      assert_select "footer", count: 1 do
-        assert_select "ul" do
-          assert_select "li"
-        end
-        assert_select "small", text: /^©/
+      # React shell is enabled for root app, so traditional header/footer are not rendered
+      assert_select "div#root-app-react-root", count: 1
+      # Fallback content when JavaScript is disabled
+      assert_select "section", count: 1 do
+        assert_select "h2", text: "JavaScript が無効化されています"
       end
     end
   end
