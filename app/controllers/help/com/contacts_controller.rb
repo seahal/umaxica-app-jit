@@ -5,12 +5,13 @@ module Help
         @service_site_contact = ServiceSiteContact.new
         @contact_categories = ContactCategory.order(:title)
       end
+      
+      def show
+      end
 
       def create
       end
 
-      def show
-      end
     end
   end
 end
