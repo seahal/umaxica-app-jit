@@ -129,6 +129,6 @@ group :development do
   #
   gem "ruby-lsp"
   #
-  gem 'reek'
-  gem 'churn'
+  gem "reek"
+  gem "churn"
 end

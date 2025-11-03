@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # root page
-  draw :root
-  #
+  # global 
+  ## sing up/in page 
+  draw :sign
+  # regional
+  ## www endpoint
   draw :www
   # api endpoint url
   draw :api
-  # endpoint for sign
-  draw :sign
   # endpoint for docs
   draw :docs
   # endpoint for news
