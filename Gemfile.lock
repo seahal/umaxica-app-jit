@@ -180,9 +180,6 @@ GEM
       rake
     foreman (0.90.0)
       thor (~> 1.4)
-    fx (0.9.0)
-      activerecord (>= 7.0)
-      railties (>= 7.0)
     globalid (1.3.0)
       activesupport (>= 6.1)
     google-apis-core (1.0.2)
@@ -269,7 +266,7 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    karafka (2.5.1)
+    karafka (2.5.2)
       base64 (~> 0.2)
       karafka-core (>= 2.5.6, < 2.6.0)
       karafka-rdkafka (>= 0.22.0)
@@ -278,14 +275,14 @@ GEM
     karafka-core (2.5.7)
       karafka-rdkafka (>= 0.20.0)
       logger (>= 1.6.0)
-    karafka-rdkafka (0.22.2)
-      ffi (~> 1.15)
+    karafka-rdkafka (0.23.0)
+      ffi (~> 1.17.1)
       json (> 2.0)
       logger
       mini_portile2 (~> 2.6)
       rake (> 12)
-    karafka-rdkafka (0.22.2-x86_64-linux-gnu)
-      ffi (~> 1.15)
+    karafka-rdkafka (0.23.0-x86_64-linux-gnu)
+      ffi (~> 1.17.1)
       json (> 2.0)
       logger
       mini_portile2 (~> 2.6)
@@ -562,11 +559,6 @@ GEM
       racc
     pg (1.6.2)
     pg (1.6.2-x86_64-linux)
-    pg_search (2.3.7)
-      activerecord (>= 6.1)
-      activesupport (>= 6.1)
-    postgresql_cursor (0.6.9)
-      activerecord (>= 6.0)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -719,9 +711,6 @@ GEM
     rubyzip (2.4.1)
     safety_net_attestation (0.5.0)
       jwt (>= 2.0, < 4.0)
-    scenic (1.9.0)
-      activerecord (>= 4.0.0)
-      railties (>= 4.0.0)
     securerandom (0.4.1)
     sha3 (2.2.3)
     signet (0.21.0)
@@ -769,7 +758,7 @@ GEM
     uri (1.1.0)
     useragent (0.16.11)
     version_gem (1.1.9)
-    waterdrop (2.8.12)
+    waterdrop (2.8.13)
       karafka-core (>= 2.4.9, < 3.0.0)
       karafka-rdkafka (>= 0.20.0)
       zeitwerk (~> 2.3)
@@ -814,7 +803,6 @@ DEPENDENCIES
   erb_lint
   fastly
   foreman
-  fx
   google-cloud-storage
   image_processing
   jbuilder
@@ -834,8 +822,6 @@ DEPENDENCIES
   opentelemetry-sdk
   ostruct
   pg
-  pg_search
-  postgresql_cursor
   propshaft
   puma
   pundit
@@ -856,7 +842,6 @@ DEPENDENCIES
   rubocop-rake
   rubocop-thread_safety
   ruby-lsp
-  scenic
   sha3
   simplecov
   sitemap_generator
