@@ -1,7 +1,6 @@
 module DefaultUrlOptions
   extend ActiveSupport::Concern
-
-  PREFERENCE_COOKIE_KEY = :root_app_preferences
+  include PreferenceConstants
 
   def default_url_options
     options = read_cookie_preferences_for_url

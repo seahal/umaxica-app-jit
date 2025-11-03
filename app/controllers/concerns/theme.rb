@@ -4,6 +4,7 @@ require "json"
 
 module Theme
   extend ActiveSupport::Concern
+  include PreferenceConstants
 
   ALLOWED_THEMES = %w[system dark light].freeze
   DEFAULT_THEME = "system"
@@ -89,11 +90,11 @@ module Theme
   end
 
   def theme_redirect_url
+    # NOTE: This method is deprecated after root domain removal
+    # Root domain theme functionality has been moved to Hono
     query = theme_redirect_params
-    public_send(
-      "edit_root_#{preference_scope}_preference_theme_path",
-      symbolize_keys(query.presence || {})
-    )
+    # TODO: Remove this concern entirely if no longer used
+    raise NotImplementedError, "Theme functionality has been moved to Hono application"
   end
 
   def theme_redirect_params
@@ -127,9 +128,9 @@ module Theme
   end
 
   def persist_app_preferences_cookie!(theme)
-    keys = Root::App::RootsController::PREFERENCE_KEYS
-    defaults = Root::App::RootsController::DEFAULT_PREFERENCES
-    cookie_key = Root::App::RootsController::PREFERENCE_COOKIE_KEY
+    keys = PREFERENCE_KEYS
+    defaults = DEFAULT_PREFERENCES
+    cookie_key = PREFERENCE_COOKIE_KEY
 
     resolved = defaults.dup
 

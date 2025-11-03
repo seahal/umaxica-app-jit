@@ -7,7 +7,7 @@
 
   <h1 class="font-bold text-4xl">Showing sample</h1>
 
-  <%= form_with model: @user_email, url: root_app_registration_email_path, method: :patch do |form| %>
+  <%= form_with model: @user_email, url: sign_app_registration_email_path, method: :patch do |form| %>
     <% if @user_email.errors.any? %>
       <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
         <h2><%= pluralize(@user_email.errors.count, "error") %> prohibited this sample from being saved:</h2>

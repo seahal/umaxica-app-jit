@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # global 
-  ## sing up/in page 
+  # global
+  ## sing up/in page
   draw :sign
   # regional
   ## www endpoint

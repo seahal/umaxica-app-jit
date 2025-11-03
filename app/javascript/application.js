@@ -3,9 +3,6 @@
 import "@hotwired/turbo-rails";
 
 // Views
-import "./views/root/app/application.ts";
-import "./views/root/com/application.ts";
-import "./views/root/org/application.ts";
 import "./views/docs/app/application.ts";
 import "./views/docs/com/application.ts";
 import "./views/docs/org/application.ts";
@@ -23,4 +20,3 @@ import "./views/www/org/application.ts";
 import "./views/passkey.js";
 import "./views/passkey_helpers.js";
 import "./views/www/app/inquiry/before_submit.js";
-import "./root/app/landing.tsx";
