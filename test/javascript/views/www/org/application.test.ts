@@ -8,7 +8,7 @@ import {
 } from "../../../../../app/javascript/views/www/org/application.ts";
 
 describe("WWW staff landing shell", () => {
-    test("resolves the default staff www origin", () => {
+    test("resolves the default staff sign origin", () => {
         const url = resolveWwwOrgUrl();
 
         expect(url.origin).toBe(WWW_ORG_DEFAULT_ORIGIN);

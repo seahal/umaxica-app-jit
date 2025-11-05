@@ -269,8 +269,8 @@ const surfaces: SurfaceScenario[] = [
 		},
 	},
 	{
-		name: "www app",
-		modulePath: "../../../app/javascript/views/www/app/application.ts",
+		name: "sign app",
+		modulePath: "../../../app/javascript/views/sign/app/application.ts",
 		originConst: "WWW_APP_DEFAULT_ORIGIN",
 		expectedOrigin: "http://www.app.localhost",
 		resolveExport: "resolveWwwAppUrl",
@@ -289,8 +289,8 @@ const surfaces: SurfaceScenario[] = [
 		},
 	},
 	{
-		name: "www com",
-		modulePath: "../../../app/javascript/views/www/com/application.ts",
+		name: "sign com",
+		modulePath: "../../../app/javascript/views/sign/com/application.ts",
 		originConst: "SIGN_ORG_DEFAULT_ORIGIN",
 		expectedOrigin: "http://www.com.localhost",
 		resolveExport: "resolveSignOrgUrl",
@@ -306,8 +306,8 @@ const surfaces: SurfaceScenario[] = [
 		},
 	},
 	{
-		name: "www org",
-		modulePath: "../../../app/javascript/views/www/org/application.ts",
+		name: "sign org",
+		modulePath: "../../../app/javascript/views/sign/org/application.ts",
 		originConst: "SIGN_ORG_DEFAULT_ORIGIN",
 		expectedOrigin: "http://www.org.localhost",
 		resolveExport: "resolveSignOrgUrl",

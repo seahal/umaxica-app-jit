@@ -1,24 +1,5 @@
 Rails.application.routes.draw do
   scope module: :sign, as: :sign do
-    constraints host: ENV["SIGN_CORPORATE_URL"] do
-      # health check for html/json
-      resource :health, only: :show, defaults: { format: :html }
-      # api endpoint
-      namespace :v1 do
-        resource :health, only: :show
-      end
-      # preferences
-      resource :preference, only: [ :show ]
-      namespace :preference do
-        # for ePrivacy settings.
-        resource :cookie, only: [ :edit, :update ]
-        # for region settings.
-        resource :region, only: [ :edit, :update ]
-        # for dark/light mode
-        resource :theme, only: [ :edit, :update ]
-      end
-    end
-
     # service page
     constraints host: ENV["SIGN_SERVICE_URL"] do
       scope module: :app, as: :app do

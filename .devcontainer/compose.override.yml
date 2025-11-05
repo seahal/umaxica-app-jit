@@ -1,0 +1,7 @@
+name: 'jit-devcontainer'
+services:
+  core:
+    ports: []
+    environment:
+      - DEVCONTAINER=1
+    restart: unless-stopped

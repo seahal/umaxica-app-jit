@@ -2,11 +2,13 @@
 
 Rails.application.routes.draw do
   # global
-  ## sing up/in page
+  # top level pages
+  draw :top
+  # sign in / up
   draw :sign
   # regional
   ## www endpoint
-  draw :www
+  draw :bff
   # api endpoint url
   draw :api
   # endpoint for docs
