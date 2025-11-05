@@ -247,6 +247,29 @@ ja:
               dark: 夜間監視や長時間の操作で目の負担を軽減します。
               system: 端末のテーマ切り替えに合わせて自動で変更します。
             submit: テーマ設定を保存
+    top:
+      app:
+        preferences:
+          title: Title
+          back_to_settings: Back To Settings
+        preference:
+          cookie:
+            edit:
+              h1: H1
+              accept_necessary_cookies: 必要なクッキーの許可について（必須）
+              accept_targeting_cookies: ターゲティングクッキーの許可について
+              accept_functional_cookies: 機能性クッキーの許可について
+              accept_performance_cookies: パフォーマンスクッキーの許可について
+      org:
+        preferences:
+          title: Title
+          back_to_settings: Back To Settings
+          regions:
+            title: Title
+        preference:
+          cookie:
+            edit:
+              h1: H1
     help:
       app:
         contacts:

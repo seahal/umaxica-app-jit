@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     # service page
     constraints host: ENV["SIGN_SERVICE_URL"] do
       scope module: :app, as: :app do
+        root to: "roots#index"
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
         # api endpoint
@@ -75,6 +76,7 @@ Rails.application.routes.draw do
     # For Staff's webpages sign.org.localhost
     constraints host: ENV["SIGN_STAFF_URL"] do
       scope module: :org, as: :org do
+        root to: "roots#index"
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
         # api endpoint

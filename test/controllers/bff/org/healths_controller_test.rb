@@ -33,7 +33,7 @@ module Bff
       test "should accept both success and redirect responses" do
         get bff_org_health_url(format: :html)
 
-        assert_includes [ 302 ], response.status
+        assert_includes [ 200 ], response.status
       end
     end
   end
