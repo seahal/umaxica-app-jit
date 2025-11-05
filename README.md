@@ -64,17 +64,23 @@
 - Monitor CI status via the integration workflow badge above.
 
 ## Environments & Endpoints
-  - Corporate site: 
+  - Corporate site:
+    - `www.umaxica.app`,
+    - `api.[jp|us].umaxica.com`
     - `news.[jp|us].umaxica.com`
     - `docs.[jp|us].umaxica.com` 
     - `news.[jp|us].umaxica.com`
   - Service endpoints:
-    - `sign.umaxica.app`, 
+    - `www.umaxica.app`,
+    - `sign.umaxica.app`,
+    - `api.[jp|us].umaxica.app`
     - `docs.[jp|us].umaxica.app`
     - `help.[jp|us].umaxica.app`
     - `news.[jp|us].umaxica.app`
   - Staff site:
+    - `www.umaxica.org`
     - `sign.umaxica.org`
+    - `api.[jp|us].umaxica.org`
     - `docs.[jp|us].umaxica.org`
     - `help.[jp|us].umaxica.org`
     - `news.[jp|us].umaxica.org`

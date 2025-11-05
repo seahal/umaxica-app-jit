@@ -8,7 +8,7 @@ import {
 } from "../../../../../app/javascript/views/www/com/application.ts";
 
 describe("WWW corporate landing shell", () => {
-    test("resolves the default corporate www origin", () => {
+    test("resolves the default corporate sign origin", () => {
         const url = resolveWwwComUrl();
 
         expect(url.origin).toBe(WWW_COM_DEFAULT_ORIGIN);

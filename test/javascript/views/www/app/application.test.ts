@@ -8,7 +8,7 @@ import {
 } from "../../../../../app/javascript/views/www/app/application.ts";
 
 describe("WWW app landing shell", () => {
-    test("resolves the default www origin", () => {
+    test("resolves the default sign origin", () => {
         const url = resolveWwwAppUrl();
 
         expect(url.origin).toBe(WWW_APP_DEFAULT_ORIGIN);
@@ -19,7 +19,7 @@ describe("WWW app landing shell", () => {
         const element = {
             dataset: {
                 codeName: "Umaxica App",
-                wwwServiceUrl: "www.app.localhost",
+                wwwServiceUrl: "sign.app.localhost",
                 docsServiceUrl: "docs.app.localhost",
                 helpServiceUrl: "help.app.localhost",
                 newsServiceUrl: "news.app.localhost",
@@ -28,7 +28,7 @@ describe("WWW app landing shell", () => {
 
         expect(readWwwAppProps(element)).toEqual({
             codeName: "Umaxica App",
-            wwwServiceUrl: "www.app.localhost",
+            wwwServiceUrl: "sign.app.localhost",
             docsServiceUrl: "docs.app.localhost",
             helpServiceUrl: "help.app.localhost",
             newsServiceUrl: "news.app.localhost",

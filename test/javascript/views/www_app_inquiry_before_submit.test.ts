@@ -1,7 +1,7 @@
 import {afterEach, describe, expect, test} from "bun:test";
 
 const modulePath =
-	"../../../app/javascript/views/www/app/inquiry/before_submit.js";
+	"../../../app/javascript/views/sign/app/inquiry/before_submit.js";
 
 const originalDocument = (globalThis as {document?: Document}).document;
 const originalAlert = (globalThis as {alert?: (message: string) => void}).alert;
@@ -20,7 +20,7 @@ afterEach(() => {
 	}
 });
 
-describe("www inquiry submit guard", () => {
+describe("sign inquiry submit guard", () => {
 	test("returns early when document is undefined", async () => {
 		delete (globalThis as {document?: Document}).document;
 

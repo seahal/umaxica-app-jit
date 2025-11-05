@@ -1,6 +1,6 @@
 {
-	"name": "jit-devcontainer",
-	"dockerComposeFile": ["../compose.yml"],
+	"name": "umaxica-app-jit-dc",
+	"dockerComposeFile": ["../compose.yml", "./compose.override.yml"],
 	"service": "core",
 	"runServices": [
 		"primary",
@@ -16,47 +16,47 @@
 	"remoteEnv": {
 		"EDITOR": "code --wait --reuse-window"
 	},
-	"forwardPorts": [
-		3333, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601, 63342
-	],
-	"portsAttributes": {
-		"3333": {
-			"label": "Rails Server (Docker)",
-			"onAutoForward": "notify",
-			"protocol": "http"
-		},
-		"5433": {
-			"label": "PostgreSQL Primary"
-		},
-		"5434": {
-			"label": "PostgreSQL Replica"
-		},
-		"6379": {
-			"label": "Valkey(Redis)"
-		},
-		"9092": {
-			"label": "Kafka"
-		},
-		"3000": {
-			"label": "Rails Server (Local)",
-			"protocol": "http"
-		},
-		"9000": {
-			"label": "Minio API"
-		},
-		"9001": {
-			"label": "Minio Console",
-			"protocol": "http"
-		},
-		"8080": {
-			"label": "Kafka UI",
-			"protocol": "http"
-		},
-		"63342": {
-			"label": "JetBrains Backend",
-			"onAutoForward": "silent"
-		}
-	},
+	// "forwardPorts": [
+	// 	3333, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601, 63342
+	// ],
+	// "portsAttributes": {
+	// 	"3333": {
+	// 		"label": "Rails Server (Docker)",
+	// 		"onAutoForward": "notify",
+	// 		"protocol": "http"
+	// 	},
+	// 	"5433": {
+	// 		"label": "PostgreSQL Primary"
+	// 	},
+	// 	"5434": {
+	// 		"label": "PostgreSQL Replica"
+	// 	},
+	// 	"6379": {
+	// 		"label": "Valkey(Redis)"
+	// 	},
+	// 	"9092": {
+	// 		"label": "Kafka"
+	// 	},
+	// 	"3000": {
+	// 		"label": "Rails Server (Local)",
+	// 		"protocol": "http"
+	// 	},
+	// 	"9000": {
+	// 		"label": "Minio API"
+	// 	},
+	// 	"9001": {
+	// 		"label": "Minio Console",
+	// 		"protocol": "http"
+	// 	},
+	// 	"8080": {
+	// 		"label": "Kafka UI",
+	// 		"protocol": "http"
+	// 	},
+	// 	"63342": {
+	// 		"label": "JetBrains Backend",
+	// 		"onAutoForward": "silent"
+	// 	}
+	// },
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -158,6 +158,5 @@
 	"onCreateCommand": "bin/rails db:create db:migrate",
 	"updateContentCommand": "",
 	"updateRemoteUserUID": false,
-	"features": {
-	}
+	"features": {}
 }
