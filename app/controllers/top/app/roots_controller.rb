@@ -1,8 +1,9 @@
 module Top
   module App
     class RootsController < ApplicationController
+
       def index
-        render plain: 'top app root'
+        redirect_to "https://#{ENV['TOP_SERVICE_URL']}", allow_other_host: true
       end
     end
   end

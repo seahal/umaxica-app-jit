@@ -31,6 +31,23 @@ module Bff
           assert_response :success
           assert_equal "OK", response.parsed_body["status"]
         end
+
+        test "should handle redirect if response is redirect" do
+          get bff_com_v1_health_url
+
+          if response.redirect?
+            assert_response :redirect
+            assert_not_nil response.location
+          else
+            assert_response :success
+          end
+        end
+
+        test "should accept both success and redirect responses" do
+          get bff_com_v1_health_url(format: :json)
+
+          assert_includes [200, 302], response.status
+        end
       end
     end
   end

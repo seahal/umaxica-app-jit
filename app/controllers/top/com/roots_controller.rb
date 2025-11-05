@@ -2,7 +2,7 @@ module Top
   module Com
     class RootsController < ApplicationController
       def index
-        render plain: 'top com root'
+        redirect_to "https://#{ENV['TOP_CORPORATE_URL']}", allow_other_host: true
       end
     end
   end

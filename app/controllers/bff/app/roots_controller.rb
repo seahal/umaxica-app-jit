@@ -1,8 +1,8 @@
-module Top
+module Bff
   module App
     class RootsController < ApplicationController
       def index
-        render plain: 'top app root'
+        redirect_to "https://#{ENV['BFF_SERVICE_URL']}", allow_other_host: true
       end
     end
   end

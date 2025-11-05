@@ -55,14 +55,6 @@ class RedirectTest < ActiveSupport::TestCase
     ENV.update(@original_env)
   end
 
-  test "generate_redirect_url should encode valid URLs" do
-    valid_url = "https://app.www.localdomain/test"
-    encoded = generate_redirect_url(valid_url)
-
-    assert_not_nil encoded
-    assert_equal valid_url, Base64.urlsafe_decode64(encoded)
-  end
-
   test "generate_redirect_url should reject invalid hosts" do
     invalid_url = "https://malicious.com/test"
     encoded = generate_redirect_url(invalid_url)

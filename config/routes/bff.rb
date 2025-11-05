@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     # for client site
     constraints host: ENV["BFF_CORPORATE_URL"] do
       scope module: :com, as: :com do
+                root to: "roots#index"
         # health check for html
         resource :health, only: :show, format: :html
         # api endpoint
@@ -15,6 +16,7 @@ Rails.application.routes.draw do
     # service page
     constraints host: ENV["BFF_SERVICE_URL"] do
       scope module: :app, as: :app do
+                root to: "roots#index"
         # endpoint of health check
         resource :health, only: :show
         # api endpoint
@@ -29,6 +31,7 @@ Rails.application.routes.draw do
       # mount Karafka::Web::App, at: "/karafka"
 
       scope module: :org, as: :org do
+        root to: "roots#index"
         # health check for html
         resource :health, only: :show
         # api endpoint
