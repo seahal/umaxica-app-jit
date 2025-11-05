@@ -46,7 +46,7 @@ module Bff
         test "should accept both success and redirect responses" do
           get bff_app_v1_health_url(format: :json)
 
-          assert_includes [200, 302], response.status
+          assert_includes [ 302 ], response.status
         end
       end
     end
