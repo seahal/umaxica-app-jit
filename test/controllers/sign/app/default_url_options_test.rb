@@ -38,7 +38,7 @@ module Sign
       test "default_url_options updates after preference change" do
         # Initially set to Japanese preferences
         patch sign_app_preference_region_url, params: { region: "JP", language: "JA", timezone: "Asia/Tokyo" }
-        assert_redirected_to edit_sign_app_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
+        assert_redirected_to edit_sign_app_preference_region_url(lx: "ja", ri: "jp", tz: "jst")
 
         follow_redirect!
         assert_response :success

@@ -79,7 +79,7 @@
     - `help.[jp|us].umaxica.org`
     - `news.[jp|us].umaxica.org`
   - Network endpoints:
-    - `asset-[jp|us].umaxica.net`
+    - `asset-[jp|us].umaxica.net` ... NOTE: This endopoints are not run on Ruby on Rails
 
 ## Secrets & Credentials
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.

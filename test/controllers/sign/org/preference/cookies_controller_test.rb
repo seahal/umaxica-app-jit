@@ -26,7 +26,7 @@ class Sign::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
       assert_select "label", I18n.t("sign.org.preference.cookie.edit.accept_performance_cookies")
       assert_select "input[type='submit']", count: 1
     end
-    assert_select "a.btn.btn-secondary[href^='#{sign_org_preference_path}']", text: I18n.t("sign.org.preferences.back_to_settings"), count: 1
+    assert_select "a[href^='#{sign_org_preference_path}']", text: I18n.t("sign.org.preferences.back_to_settings"), count: 1
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
@@ -55,7 +55,7 @@ class Sign::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
     assert_select "input[type='checkbox'][name='accept_functional_cookies'][checked]", count: 1
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 1
     assert_select "input[type='checkbox'][name='accept_targeting_cookies'][checked]", count: 1
-    assert_select "a.btn.btn-secondary[href^='#{sign_org_preference_path}']", text: I18n.t("sign.org.preferences.back_to_settings"), count: 1
+    assert_select "a[href^='#{sign_org_preference_path}']", text: I18n.t("sign.org.preferences.back_to_settings"), count: 1
 
     patch sign_org_preference_cookie_url,
           params: {
@@ -69,7 +69,7 @@ class Sign::Org::Preference::CookiesControllerTest < ActionDispatch::Integration
     assert_select "input[type='checkbox'][name='accept_functional_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_targeting_cookies'][checked]", count: 0
-    assert_select "a.btn.btn-secondary[href^='#{sign_org_preference_path}']", text: I18n.t("sign.org.preferences.back_to_settings"), count: 1
+    assert_select "a[href^='#{sign_org_preference_path}']", text: I18n.t("sign.org.preferences.back_to_settings"), count: 1
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end

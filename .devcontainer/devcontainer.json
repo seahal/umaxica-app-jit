@@ -1,5 +1,5 @@
 {
-	"name": "umaxica-app-jit",
+	"name": "jit-devcontainer",
 	"dockerComposeFile": ["../compose.yml"],
 	"service": "core",
 	"runServices": [
@@ -157,13 +157,7 @@
 	"initializeCommand": "",
 	"onCreateCommand": "bin/rails db:create db:migrate",
 	"updateContentCommand": "",
-	// "mounts": [
-	// 	"source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
-	// ],
 	"updateRemoteUserUID": false,
 	"features": {
-		"ghcr.io/devcontainers/features/github-cli:latest": {},
-		"ghcr.io/thamaji/devcontainer-features/lefthook:latest": {},
-		"ghcr.io/jsburckhardt/devcontainer-features/gitleaks:latest": {}
 	}
 }

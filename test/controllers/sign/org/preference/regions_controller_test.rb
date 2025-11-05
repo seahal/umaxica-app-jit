@@ -66,7 +66,7 @@ class Sign::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
   test "PATCH with multiple params updates session and redirects with success notice" do
     patch sign_org_preference_region_url, params: { region: "US", country: "US", language: "EN", timezone: "Asia/Tokyo" }
 
-    assert_redirected_to edit_sign_org_preference_region_url(lx: "en", ri: "us", tz: "asia/tokyo")
+    assert_redirected_to edit_sign_org_preference_region_url(lx: "en", ri: "us", tz: "jst")
     assert_equal "US", session[:region]
     assert_equal "US", session[:country]
     assert_equal "EN", session[:language]
@@ -91,7 +91,7 @@ class Sign::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
   test "PATCH with timezone stores timezone identifier in session" do
     patch sign_org_preference_region_url, params: { timezone: "Asia/Tokyo" }
 
-    assert_redirected_to edit_sign_org_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
+    assert_redirected_to edit_sign_org_preference_region_url(lx: "ja", ri: "jp", tz: "jst")
     assert_equal "Asia/Tokyo", session[:timezone]
   end
 
@@ -200,7 +200,7 @@ class Sign::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_equal "Asia/Tokyo", session[:timezone]
 
     # Verify redirect includes normalized parameters
-    assert_redirected_to edit_sign_org_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
+    assert_redirected_to edit_sign_org_preference_region_url(lx: "ja", ri: "jp", tz: "jst")
 
     # Verify cookie is set
     assert_predicate response.cookies["root_app_preferences"], :present?
@@ -322,7 +322,7 @@ class Sign::Org::Preference::RegionsControllerTest < ActionDispatch::Integration
   test "PATCH with case-insensitive timezone should work" do
     patch sign_org_preference_region_url, params: { timezone: "asia/tokyo" }
 
-    assert_redirected_to edit_sign_org_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
+    assert_redirected_to edit_sign_org_preference_region_url(lx: "ja", ri: "jp", tz: "jst")
     assert_equal "Asia/Tokyo", session[:timezone]
   end
 

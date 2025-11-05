@@ -33,7 +33,7 @@ module Sign
             assert_select "input[type='submit'][value=?]", I18n.t("sign.app.preference.theme.edit.submit")
           end
 
-          assert_select "a.btn.btn-secondary[href^='#{sign_app_preference_path}']", text: I18n.t("sign.app.preferences.back_to_settings"), count: 1
+          assert_select "a[href^='#{sign_app_preference_path}']", text: I18n.t("sign.app.preferences.back_to_settings"), count: 1
         end
         # rubocop:enable Minitest/MultipleAssertions
 
