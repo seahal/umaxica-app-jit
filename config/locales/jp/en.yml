@@ -655,6 +655,9 @@ en:
         cookie_settings: "Cookie Settings"
         region_settings: "Region & Language Settings"
         theme_settings: "Theme Settings"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
         back_to_settings: "Back to Preferences"
         regions:
           title: "Region & Language Settings"
@@ -703,6 +706,9 @@ en:
     org:
       preferences:
         title: "Preferences"
+        themes:
+          updated: "Admin theme updated to %{theme}"
+          invalid: "Invalid admin theme selected"
         back_to_settings: "Back to Preferences"
         regions:
           title: "Region & Language Settings"

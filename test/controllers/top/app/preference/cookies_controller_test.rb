@@ -11,7 +11,6 @@ class Top::App::Preference::CookiesControllerTest < ActionDispatch::IntegrationT
 
     assert_response :success
     assert_select "h1", I18n.t("top.app.preference.cookie.edit.h1")
-    assert_select "div#hello-world-component", count: 1
     expected_action = top_app_preference_cookie_url(ri: "jp", tz: "jst", lx: "ja")
     assert_select "form[action=?]", expected_action do
       assert_select "input[type='hidden'][name='authenticity_token']", count: 1

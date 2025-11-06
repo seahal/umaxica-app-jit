@@ -254,6 +254,9 @@ ja:
           cookie_settings: クッキー設定
           region_settings: 地域と言語の設定
           theme_settings: テーマ設定
+          themes:
+            updated: テーマを%{theme}に更新しました
+            invalid: 無効なテーマが選択されました
           back_to_settings: 設定一覧に戻る
           regions:
             title: 地域・言語の設定
@@ -302,6 +305,9 @@ ja:
       org:
         preferences:
           <<: *top_preferences_shared
+          themes:
+            updated: 管理テーマを%{theme}に更新しました
+            invalid: 無効な管理テーマが選択されました
         preference:
           cookie:
             edit:

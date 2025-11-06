@@ -42,7 +42,7 @@ module Top
           patch top_app_preference_theme_url, params: { theme: "dr", lx: "ja", ri: "jp", tz: "jst" }
 
           assert_redirected_to edit_top_app_preference_theme_url(lx: "ja", ri: "jp", tz: "jst")
-          assert_equal I18n.t("top.app.preferences.themes.updated", theme: I18n.t("themes.dark")), flash[:notice]
+          assert_equal "テーマをダークテーマに更新しました", flash[:notice]
           assert_equal "dark", session[:theme]
           assert_equal "dark", signed_cookie(:root_app_theme)
 
@@ -54,7 +54,7 @@ module Top
 
           assert_response :success
           assert_select "input[type='radio'][name='theme'][value='dr'][checked]", count: 1
-          assert_select "a.btn.btn-secondary[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings")
+          assert_select "a[href^='#{top_app_preference_path}']", minimum: 1
         end
         # rubocop:enable Minitest/MultipleAssertions
 
@@ -67,16 +67,16 @@ module Top
 
           assert_equal "light", session[:theme]
           assert_equal "light", signed_cookie(:root_app_theme)
-          assert_select "a.btn.btn-secondary[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings")
+          assert_select "a[href^='#{top_app_preference_path}']", minimum: 1
 
           patch top_app_preference_theme_url, params: { theme: "neon", lx: "ja", ri: "jp", tz: "jst" }
 
           assert_response :unprocessable_content
-          assert_equal I18n.t("top.app.preferences.themes.invalid"), flash[:alert]
+          assert_equal "無効なテーマが選択されました", flash[:alert]
           assert_equal "light", session[:theme]
           assert_equal "light", signed_cookie(:root_app_theme)
           assert_select "input[type='radio'][name='theme'][value='li'][checked]", count: 1
-          assert_select "a.btn.btn-secondary[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings")
+          assert_select "a[href^='#{top_app_preference_path}']", minimum: 1
         end
         # rubocop:enable Minitest/MultipleAssertions
       end

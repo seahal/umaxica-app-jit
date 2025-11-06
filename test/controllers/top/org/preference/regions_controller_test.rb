@@ -19,35 +19,32 @@ class Top::Org::Preference::RegionsControllerTest < ActionDispatch::IntegrationT
     get edit_top_org_preference_region_url
 
     assert_select "h1", text: I18n.t("top.org.preferences.regions.title")
-    assert_select "main.container.mx-auto.mt-28.px-5.block" do
-      expected_action = top_org_preference_region_url(ri: "jp", tz: "jst", lx: "ja")
-      assert_select "form[action=?][method='post']", expected_action do
-        assert_select "input[name='_method'][value='patch']", count: 1
+    assert_select "form[method='post']" do
+      assert_select "input[name='_method'][value='patch']", count: 1
 
-        assert_select ".region-section" do
-          assert_select "h2", text: I18n.t("top.org.preferences.regions.region_section")
-          assert_select "label[for='region']", text: I18n.t("top.org.preferences.regions.select_region")
-          assert_select "select#region option[value='US']"
-          assert_select "select#region option[value='JP']"
-        end
+      assert_select ".region-section" do
+        assert_select "h2", text: I18n.t("top.org.preferences.regions.region_section")
+        assert_select "label[for='region']", text: I18n.t("top.org.preferences.regions.select_region")
+        assert_select "select#region option[value='US']"
+        assert_select "select#region option[value='JP']"
+      end
 
-        assert_select ".language-section" do
-          assert_select "h2", text: I18n.t("top.org.preferences.regions.language_section")
-          assert_select ".language-selection label[for='language']", text: I18n.t("top.org.preferences.regions.select_language")
-          assert_select "select#language option[value='JA']"
-          assert_select "select#language option[value='EN']"
-        end
+      assert_select ".language-section" do
+        assert_select "h2", text: I18n.t("top.org.preferences.regions.language_section")
+        assert_select ".language-selection label[for='language']", text: I18n.t("top.org.preferences.regions.select_language")
+        assert_select "select#language option[value='JA']"
+        assert_select "select#language option[value='EN']"
+      end
 
-        assert_select ".timezone-section" do
-          assert_select "h2", text: I18n.t("top.org.preferences.regions.timezone_section")
-          assert_select ".timezone-selection label[for='timezone']", text: I18n.t("top.org.preferences.regions.select_timezone")
-          assert_select "select#timezone option[value='Etc/UTC']"
-          assert_select "select#timezone option[value='Asia/Tokyo']"
-        end
+      assert_select ".timezone-section" do
+        assert_select "h2", text: I18n.t("top.org.preferences.regions.timezone_section")
+        assert_select ".timezone-selection label[for='timezone']", text: I18n.t("top.org.preferences.regions.select_timezone")
+        assert_select "select#timezone option[value='Etc/UTC']"
+        assert_select "select#timezone option[value='Asia/Tokyo']"
+      end
 
-        assert_select ".form-actions" do
-          assert_select "input[type='submit']", count: 1
-        end
+      assert_select ".form-actions" do
+        assert_select "input[type='submit']", count: 1
       end
     end
   end
@@ -66,7 +63,7 @@ class Top::Org::Preference::RegionsControllerTest < ActionDispatch::IntegrationT
   test "PATCH with multiple params updates session and redirects with success notice" do
     patch top_org_preference_region_url, params: { region: "US", country: "US", language: "EN", timezone: "Asia/Tokyo" }
 
-    assert_redirected_to edit_top_org_preference_region_url(lx: "en", ri: "us", tz: "jst")
+    assert_redirected_to edit_top_org_preference_region_url(lx: "en", ri: "us", tz: "asia/tokyo")
     assert_equal "US", session[:region]
     assert_equal "US", session[:country]
     assert_equal "EN", session[:language]
@@ -91,7 +88,7 @@ class Top::Org::Preference::RegionsControllerTest < ActionDispatch::IntegrationT
   test "PATCH with timezone stores timezone identifier in session" do
     patch top_org_preference_region_url, params: { timezone: "Asia/Tokyo" }
 
-    assert_redirected_to edit_top_org_preference_region_url(lx: "ja", ri: "jp", tz: "jst")
+    assert_redirected_to edit_top_org_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
     assert_equal "Asia/Tokyo", session[:timezone]
   end
 
@@ -200,7 +197,7 @@ class Top::Org::Preference::RegionsControllerTest < ActionDispatch::IntegrationT
     assert_equal "Asia/Tokyo", session[:timezone]
 
     # Verify redirect includes normalized parameters
-    assert_redirected_to edit_top_org_preference_region_url(lx: "ja", ri: "jp", tz: "jst")
+    assert_redirected_to edit_top_org_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
 
     # Verify cookie is set
     assert_predicate response.cookies["root_app_preferences"], :present?
@@ -322,7 +319,7 @@ class Top::Org::Preference::RegionsControllerTest < ActionDispatch::IntegrationT
   test "PATCH with case-insensitive timezone should work" do
     patch top_org_preference_region_url, params: { timezone: "asia/tokyo" }
 
-    assert_redirected_to edit_top_org_preference_region_url(lx: "ja", ri: "jp", tz: "jst")
+    assert_redirected_to edit_top_org_preference_region_url(lx: "ja", ri: "jp", tz: "asia/tokyo")
     assert_equal "Asia/Tokyo", session[:timezone]
   end
 

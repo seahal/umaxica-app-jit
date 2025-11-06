@@ -4,6 +4,14 @@ module Top
   module Com
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
+      include ::RateLimit
+      include ::DefaultUrlOptions
+      include ::Top::Concerns::Regionalization
+
+      allow_browser versions: :modern
+
+      before_action :set_locale
+      before_action :set_timezone
 
       allow_browser versions: :modern
     end

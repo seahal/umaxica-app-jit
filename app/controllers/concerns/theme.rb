@@ -31,13 +31,13 @@ module Theme
     resolved_theme = normalize_theme(params[:theme])
 
     if resolved_theme.nil?
-      flash.now[:alert] = I18n.t("root.#{preference_scope}.preferences.themes.invalid")
+      flash.now[:alert] = I18n.t("controller.top.#{preference_scope}.preferences.themes.invalid")
       assign_current_theme
       @theme_query_params = theme_redirect_params
       render :edit, status: :unprocessable_content
     else
       persist_theme!(resolved_theme)
-      flash[:notice] = I18n.t("root.#{preference_scope}.preferences.themes.updated", theme: I18n.t("themes.#{resolved_theme}"))
+      flash[:notice] = I18n.t("controller.top.#{preference_scope}.preferences.themes.updated", theme: I18n.t("themes.#{resolved_theme}"))
       redirect_to theme_redirect_url
     end
   end
@@ -90,11 +90,19 @@ module Theme
   end
 
   def theme_redirect_url
-    # NOTE: This method is deprecated after root domain removal
-    # Root domain theme functionality has been moved to Hono
+    # NOTE: Root domain theme functionality has been moved to Hono
+    # But top/app and top/org domains still use Rails-based theme management
     query = theme_redirect_params
-    # TODO: Remove this concern entirely if no longer used
-    raise NotImplementedError, "Theme functionality has been moved to Hono application"
+
+    case preference_scope
+    when "app"
+      Rails.application.routes.url_helpers.edit_top_app_preference_theme_url(**query)
+    when "org"
+      Rails.application.routes.url_helpers.edit_top_org_preference_theme_url(**query)
+    else
+      # Root domain theme functionality has been moved to Hono
+      raise NotImplementedError, "Theme functionality has been moved to Hono application"
+    end
   end
 
   def theme_redirect_params
