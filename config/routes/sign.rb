@@ -10,16 +10,6 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # preferences
-        resource :preference, only: [ :show ]
-        namespace :preference do
-          # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
-          # for region settings.
-          resource :region, only: [ :edit, :update ]
-          # for dark/light mode
-          resource :theme, only: [ :edit, :update ]
-        end
         # Sign up pages
         resource :registration, only: :new
         namespace :registration do
@@ -82,16 +72,6 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
-        end
-        # preferences
-        resource :preference, only: [ :show ]
-        namespace :preference do
-          # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
-          # for region settings.
-          resource :region, only: [ :edit, :update ]
-          # for dark/light mode
-          resource :theme, only: [ :edit, :update ]
         end
         # registration staff page
         resource :registration, only: [ :new ] do

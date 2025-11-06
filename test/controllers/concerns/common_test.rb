@@ -3,7 +3,7 @@
 require "test_helper"
 
 class CommonTest < ActiveSupport::TestCase
-  class TestController < ActionController::Base
+  class TestController < ApplicationController
     include Common
   end
 

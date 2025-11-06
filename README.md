@@ -39,7 +39,9 @@
 
 - Data and messaging: PostgreSQL, Valkey (Redis), Kafka
 - Default infrastructure ports: Valkey exposed on host port 56379 (override with `VALKEY_HOST_PORT`)
-- Observability: [OpenTelemetry](https://opentelemetry.io/)
+- Observability: 
+  - Datadog
+  - Sentry
 - Email: Resend
 - SMS: AWS SES
 - Content delivery Network
@@ -49,7 +51,6 @@
   - Google Cloud (Cloud Run, Cloud Build, Cloud Storage, Artifact Registry, OAuth)
   - Apple (Social login)
 - Infrastructure as Code: Terraform (including TCP Terraform modules)
-- Sentry ... ?
 
 ## Tooling & Automation
 
