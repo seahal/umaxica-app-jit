@@ -689,20 +689,6 @@ en:
         theme:
           edit:
             title: "Choose Dark or Light Theme"
-            description: "Pick the display mode that fits your frontline teams."
-            legend: "Select a theme"
-            options:
-              light: "Light — bright backgrounds for well-lit spaces"
-              dark: "Dark — dimmed colors for low-light comfort"
-              system: "System default — follow your device settings"
-            hints:
-              light: "Helpful when your org works in bright control rooms."
-              dark: "Designed for monitoring centers with dim lighting."
-              system: "Keeps theme in sync with managed device settings."
-            submit: "Save theme preference"
-        theme:
-          edit:
-            title: "Choose Dark or Light Theme"
             description: "Pick the display mode that fits your workspace and comfort."
             legend: "Select a theme"
             options:
@@ -750,4 +736,15 @@ en:
             accept_targeting_cookies: "Allow targeting cookies"
         theme:
           edit:
-            title: "title"
+            title: "Choose Dark or Light Theme"
+            description: "Configure the default theme for your organization’s operators."
+            legend: "Select a theme"
+            options:
+              light: "Light — optimized for bright operations centers"
+              dark: "Dark — ideal for low-light monitoring rooms"
+              system: "System default — follow enterprise device settings"
+            hints:
+              light: "Keeps dashboards clear when your teams work in well-lit spaces."
+              dark: "Helps reduce eye strain during overnight shifts."
+              system: "Automatically aligns with centrally managed device preferences."
+            submit: "Save theme preference"

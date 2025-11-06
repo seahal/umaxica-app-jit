@@ -677,20 +677,6 @@ en:
         theme:
           edit:
             title: "Choose Dark or Light Theme"
-            description: "Pick the display mode that keeps your org dashboards comfortable."
-            legend: "Select a theme"
-            options:
-              light: "Light — bright backgrounds for well-lit spaces"
-              dark: "Dark — dimmed colors for low-light comfort"
-              system: "System default — follow your device settings"
-            hints:
-              light: "Best when teams operate in bright operations centers."
-              dark: "Favored for late-night monitoring without eye strain."
-              system: "Keeps theme aligned with managed device policies."
-            submit: "Save theme preference"
-        theme:
-          edit:
-            title: "Choose Dark or Light Theme"
             description: "Pick the display mode that helps you focus on corporate dashboards."
             legend: "Select a theme"
             options:
@@ -736,6 +722,20 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that keeps your org dashboards comfortable."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
+            hints:
+              light: "Best when teams operate in bright operations centers."
+              dark: "Favored for late-night monitoring without eye strain."
+              system: "Keeps theme aligned with managed device policies."
+            submit: "Save theme preference"
   support:
     array:
       last_word_connector: ", and "

@@ -871,20 +871,6 @@ ja:
         theme:
           edit:
             title: テーマ設定（ライト／ダークの切り替え）
-            description: 組織ごとの運用環境に合わせてダッシュボードの表示モードを選択します。
-            legend: テーマの選択
-            options:
-              light: ライト — 明るい管制室で見やすい配色
-              dark: ダーク — 夜間監視でも目が疲れにくい配色
-              system: システム設定 — 端末のポリシーに追従
-            hints:
-              light: 日中のオペレーションや共有スペースでの利用に最適です。
-              dark: 夜間対応や照度の低い環境での常時監視に適しています。
-              system: 管理端末のテーマ変更に合わせて自動で切り替わります。
-            submit: テーマ設定を保存
-        theme:
-          edit:
-            title: テーマ設定（ライト／ダークの切り替え）
             description: 表示モードを作業環境に合わせて選択します。
             legend: テーマの選択
             options:
@@ -930,6 +916,20 @@ ja:
             accept_functional_cookies: 機能性クッキーを許可
             accept_performance_cookies: パフォーマンスクッキーを許可
             accept_targeting_cookies: ターゲティングクッキーを許可
+        theme:
+          edit:
+            title: テーマ設定（ライト／ダークの切り替え）
+            description: 組織ごとの運用環境に合わせてダッシュボードの表示モードを選択します。
+            legend: テーマの選択
+            options:
+              light: ライト — 明るい管制室で見やすい配色
+              dark: ダーク — 夜間監視でも目が疲れにくい配色
+              system: システム設定 — 端末のポリシーに追従
+            hints:
+              light: 日中のオペレーションや共有スペースでの利用に最適です。
+              dark: 夜間対応や照度の低い環境での常時監視に適しています。
+              system: 管理端末のテーマ変更に合わせて自動で切り替わります。
+            submit: テーマ設定を保存
   support:
     array:
       last_word_connector: 、
