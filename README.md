@@ -51,6 +51,7 @@
   - Google Cloud (Cloud Run, Cloud Build, Cloud Storage, Artifact Registry, OAuth)
   - Apple (Social login)
 - Infrastructure as Code: Terraform (including TCP Terraform modules)
+- Sentry ... ?
 
 ## Tooling & Automation
 
