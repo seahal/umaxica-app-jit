@@ -785,6 +785,12 @@ GEM
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
     securerandom (0.4.1)
+    sentry-rails (6.1.0)
+      railties (>= 5.2.0)
+      sentry-ruby (~> 6.1.0)
+    sentry-ruby (6.1.0)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     sexp_processor (4.17.4)
     sha3 (2.2.3)
     signet (0.21.0)
@@ -922,6 +928,8 @@ DEPENDENCIES
   rubocop-thread_safety
   ruby-lsp
   scenic
+  sentry-rails
+  sentry-ruby
   sha3
   simplecov
   sitemap_generator
