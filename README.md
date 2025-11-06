@@ -38,6 +38,7 @@
 ## Key Services & Integrations
 
 - Data and messaging: PostgreSQL, Valkey (Redis), Kafka
+- Default infrastructure ports: Valkey exposed on host port 56379 (override with `VALKEY_HOST_PORT`)
 - Observability: [OpenTelemetry](https://opentelemetry.io/)
 - Email: Resend
 - SMS: AWS SES

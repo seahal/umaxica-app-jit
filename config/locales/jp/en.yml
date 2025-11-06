@@ -648,3 +648,106 @@ en:
       long: "%B %d, %Y %H:%M"
       short: "%d %b %H:%M"
     pm: pm
+  top:
+    app:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region & Language Settings"
+        theme_settings: "Theme Settings"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Region & Language Settings"
+          region_section: "Region Settings"
+          select_region: "Select Region"
+          language_section: "Language Settings"
+          select_language: "Select Language"
+          timezone_section: "Timezone Settings"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow strictly necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that fits your frontline teams."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
+            hints:
+              light: "Helpful when your org works in bright control rooms."
+              dark: "Designed for monitoring centers with dim lighting."
+              system: "Keeps theme in sync with managed device settings."
+            submit: "Save theme preference"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that fits your workspace and comfort."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
+            hints:
+              light: "Great when you work during the day or in bright rooms."
+              dark: "Ideal for night shifts or reducing eye strain."
+              system: "Matches your operating system and switches automatically."
+            submit: "Save theme preference"
+    org:
+      preferences:
+        title: "Preferences"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Region & Language Settings"
+          region_section: "Region Settings"
+          select_region: "Select Region"
+          language_section: "Language Settings"
+          select_language: "Select Language"
+          timezone_section: "Timezone Settings"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow strictly necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "title"
