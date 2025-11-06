@@ -1,5 +1,5 @@
 {
-	"name": "umaxica-app-jit-dc",
+	"name": "app-jit-dc",
 	"dockerComposeFile": ["../compose.yml", "./compose.override.yml"],
 	"service": "core",
 	"runServices": [

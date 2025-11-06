@@ -72,7 +72,7 @@ gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
 # OpenAPI
-# gem "rswag"
+gem "rswag"
 gem "ostruct"
 # gem "rswag-api"
 # gem "rswag-ui"
