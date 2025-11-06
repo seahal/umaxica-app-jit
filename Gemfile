@@ -85,7 +85,7 @@ gem "fastly"
 # for cloudflare
 #
 # gem "view_component"
-# 
+#
 gem "sentry-ruby"
 gem "sentry-rails"
 
