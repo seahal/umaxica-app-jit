@@ -8,7 +8,7 @@ pre-commit:
         if [ -f /.dockerenv ]; then
           echo "Dockerコンテナ内です"
         else
-          echo "Docker外です"
+          echo "Docker外で>>>す"
         fi
     # audit(bundler):
     #   run: docker compose run bundle exec bundler-audit check --update
