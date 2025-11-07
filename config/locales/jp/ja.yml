@@ -351,6 +351,10 @@ ja:
             page_title: エラーが生じました
             page_description: はじめからやりなおしてください
             back_to_contact_root_page: もどる
+          create:
+            success: お問い合わせを受け付けました。担当チームより折り返しご連絡いたします。
+            failure: 入力内容をご確認のうえ、もう一度送信してください。
+            turnstile_error: セキュリティ検証に失敗しました。時間をおいて再度お試しください。
   hello: やぁ、せかい
   messages:
     region_settings_updated_successfully: 地域設定が正常に更新されました。
