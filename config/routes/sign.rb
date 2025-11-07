@@ -40,7 +40,7 @@ Rails.application.routes.draw do
         # Settings with logined user
         resource :setting, only: %i[show]
         namespace :setting do
-          resources :passkeys, only: [:index, :edit, :update, :new] do
+          resources :passkeys, only: [ :index, :edit, :update, :new ] do
             collection do
               post :challenge
               post :verify
@@ -48,13 +48,13 @@ Rails.application.routes.draw do
           end
           resources :recoveries
           # TODO: Implement TOTP settings management
-          resources :totps, only: [:index, :new, :create, :edit]
+          resources :totps, only: [ :index, :new, :create, :edit ]
           # TODO: Implement telephone settings management
           # resources :telephones
           # TODO: Implement email settings management
           # resources :emails
-          resource :apple, only: [:show]
-          resource :google, only: [:show]
+          resource :apple, only: [ :show ]
+          resource :google, only: [ :show ]
         end
         # TODO: Implement token refresh functionality
         # namespace :token do
@@ -75,18 +75,18 @@ Rails.application.routes.draw do
         end
         # registration staff page
         # 変更後（sign/app と同じパターン）
-        resource :registration, only: [:new]
+        resource :registration, only: [ :new ]
         namespace :registration do
           resources :emails, only: %i[new create edit update]
           resources :telephones, only: %i[new create edit update]
         end
         # Sign up pages
         # TODO: Implement authentication actions (show, update, put, delete, create)
-        resource :authentication, only: [:new]
+        resource :authentication, only: [ :new ]
         namespace :setting do
           # TODO: Implement TOTP settings (index, new, edit, update actions only)
           # resources :totp, only: [ :index, :new, :create, :edit, :update ]
-          resources :passkeys, only: [:index, :edit, :update, :new] do
+          resources :passkeys, only: [ :index, :edit, :update, :new ] do
             # TODO: Implement passkey challenge and verify
             # collection do
             #   post :challenge
