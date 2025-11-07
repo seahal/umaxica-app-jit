@@ -930,6 +930,72 @@ ja:
               dark: 夜間対応や照度の低い環境での常時監視に適しています。
               system: 管理端末のテーマ変更に合わせて自動で切り替わります。
             submit: テーマ設定を保存
+    com:
+      preferences:
+        title: 設定
+        cookie_settings: クッキー設定
+        region_settings: 地域設定
+        email_preferences: メール設定
+        theme_settings: テーマ設定（ライト／ダークの切り替え）
+        back_to_settings: 設定一覧に戻る
+        regions:
+          title: 企業地域・言語設定
+          region_section: 地域設定
+          language_section: 言語設定
+          timezone_section: タイムゾーン設定
+          select_region: 地域を選択
+          select_country: 国を選択
+          select_language: 言語を選択
+          select_timezone: タイムゾーンを選択
+          select_region_prompt: 地域を選択してください…
+          select_country_prompt: 国を選択してください…
+          select_language_prompt: 言語を選択してください…
+          select_timezone_prompt: タイムゾーンを選択してください…
+          select_region_selector:
+            USA: アメリカ合衆国
+            JAPAN: 日本
+          select_language_selector:
+            JAPANESE: 日本語
+            ENGLISH: 英語
+          select_timezone_selector:
+            UTC: 協定世界時 (UTC)
+            JST: 日本標準時 (JST)
+          update_settings: 設定を更新
+          cancel: キャンセル
+        emails:
+          updated: メール設定が正常に更新されました
+          none_selected: 設定が選択されていません
+        languages:
+          updated: 言語設定を%{language}に更新しました
+          unsupported: サポートされていない言語が選択されました
+        themes:
+          updated: 企業テーマを%{theme}に更新しました
+          invalid: 無効なテーマが選択されました
+        timezones:
+          updated: タイムゾーンを%{timezone}に更新しました
+          invalid: 無効なタイムゾーンが選択されました
+      preference:
+        cookie:
+          edit:
+            h1: クッキー設定
+            accept_necessary_cookies: 必須クッキーを許可 (必須)
+            accept_functional_cookies: 機能性クッキーを許可
+            accept_performance_cookies: パフォーマンスクッキーを許可
+            accept_targeting_cookies: ターゲティングクッキーを許可
+        theme:
+          edit:
+            title: テーマ設定（ライト／ダークの切り替え）
+            description: 社内ダッシュボードの閲覧環境に合わせてテーマを選択します。
+            legend: テーマの選択
+            options:
+              light: ライト — 明るいオフィス向けの配色
+              dark: ダーク — 低照度環境で目に優しい配色
+              system: システム設定 — 端末ポリシーに追従
+            hints:
+              light: 日中シフトや共有スペースでの利用におすすめです。
+              dark: 夜間オペレーションや長時間監視で目の疲れを抑えます。
+              system: 管理端末のテーマ変更に合わせて自動で切り替わります。
+            submit: テーマ設定を保存
   support:
     array:
       last_word_connector: 、

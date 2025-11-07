@@ -2,6 +2,9 @@
 
 require "test_helper"
 
+require "json"
+require_relative "../../../../support/cookie_helper"
+
 module Top
   module Com
     module Preference
