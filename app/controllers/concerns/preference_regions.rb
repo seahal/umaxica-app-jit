@@ -93,6 +93,8 @@ module PreferenceRegions
   def apply_updates(preferences)
     updated = false
 
+    Rails.logger.debug { "[PreferenceRegions] params=#{preferences.inspect}" } if defined?(Rails)
+    Rails.logger.debug { "[PreferenceRegions] region=#{preferences[:region]} country=#{preferences[:country]} language=#{preferences[:language]} timezone=#{preferences[:timezone]}" } if defined?(Rails)
     updated ||= assign_if_present(:region, preferences[:region])
     updated ||= assign_if_present(:country, preferences[:country])
 
