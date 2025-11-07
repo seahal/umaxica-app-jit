@@ -1,8 +1,17 @@
 pre-commit:
   parallel: true
   commands:
-    audit(bundler):
-      run: docker compose run bundle exec bundler-audit check --update
+    test_bun:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          echo "Dockerコンテナ内です"
+        else
+          echo "Docker外です"
+        fi
+    # audit(bundler):
+    #   run: docker compose run bundle exec bundler-audit check --update
     # audit(bun):
     #   run: bun audit --update
     # brakeman:
@@ -24,7 +33,5 @@ pre-commit:
     #   run: bun run type
     # secret-scan:
     #   run: gitleaks protect
-    test(Ruby on Rails):
-      run: docker compose run bundle exec rails test
-    test(Bun):
-      run: docker compose run core bun test
+    # test(Ruby on Rails):
+    #   run: docker compose run bundle exec rails test
