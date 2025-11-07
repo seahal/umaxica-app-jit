@@ -128,7 +128,7 @@ jobs:
       SIGN_STAFF_URL: sign.org.localhost
       BFF_CORPORATE_URL: www.com.localhost
       BFF_SERVICE_URL: www.app.localhost
-      BEF_STAFF_URL: www.org.localhost
+      BFF_STAFF_URL: www.org.localhost
       API_CORPORATE_URL: api.com.localhost
       API_SERVICE_URL: api.app.localhost
       API_STAFF_URL: api.org.localhost
