@@ -36,9 +36,6 @@ services:
       - minio
   minio:
     image: minio/minio
-    ports:
-      - "127.0.0.1:${MINIO_API_PORT:-19000}:9000"
-      - "127.0.0.1:${MINIO_CONSOLE_PORT:-19001}:9001"
     volumes:
       - minio-volume:/data
     environment:

@@ -114,11 +114,6 @@
 		"CLAUDE_CONFIG_DIR": "/home/jit/.claude",
 		"POWERLEVEL9K_DISABLE_GITSTATUS": "true"
 	},
-	"postCreateCommand": "REGION_CODE=jp bin/rails db:create db:migrate",
-	"postStartCommand": "if sudo test -x /usr/local/bin/init-firewall.sh; then sudo /usr/local/bin/init-firewall.sh; fi",
-	"waitFor": "postStartCommand",
-	"initializeCommand": "",
-	"onCreateCommand": "",
 	"updateContentCommand": "",
 	"updateRemoteUserUID": false,
 	"features": {
