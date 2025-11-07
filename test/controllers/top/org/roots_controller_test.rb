@@ -8,7 +8,7 @@ module Top::Org
       get top_org_root_url
 
       assert_response :redirect
-      assert_redirected_to "https://#{ENV['TOP_STAFF_URL']}"
+      assert_redirected_to "https://#{ENV['EDGE_STAFF_URL']}"
     end
   end
 end

@@ -5,7 +5,7 @@
 	"remoteUser": "jit",
 	"containerUser": "jit",
 	"workspaceFolder": "/home/jit/workspace",
-	"overrideCommand": false,
+	"overrideCommand": true,
 	"remoteEnv": {
 		"EDITOR": "code --wait --reuse-window"
 	},
@@ -84,14 +84,11 @@
 					}
 				}
 			},
-			"terminal.integrated.defaultProfile.linux": "zsh",
+			"terminal.integrated.defaultProfile.linux": "bash",
 			"terminal.integrated.profiles.linux": {
 				"bash": {
 					"path": "bash",
 					"icon": "terminal-bash"
-				},
-				"zsh": {
-					"path": "zsh"
 				}
 			}
 		},
@@ -111,25 +108,16 @@
 		"DEVCONTAINER_AUTO_START_BIN_DEV": "1",
 		"REGION_CODE": "jp",
 		"NODE_OPTIONS": "--max-old-space-size=4096",
-		"CLAUDE_CONFIG_DIR": "/home/jit/.claude",
-		"POWERLEVEL9K_DISABLE_GITSTATUS": "true"
+		"CLAUDE_CONFIG_DIR": "/home/jit/.claude"
 	},
-	"postCreateCommand": "npm install --save-dev lefthook && bin/rails db:create",
+	"postCreateCommand": "npm install --save-dev lefthook && bin/rails db:create && bash",
 	"updateContentCommand": "",
 	"updateRemoteUserUID": false,
 	"features": {
-		"ghcr.io/devcontainers/features/github-cli:1": {
-			"version": "latest"
-		},
-		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {
-			"version": "latest"
-		},
-		"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/aws-cli:1": {
-			"version": "latest"
-		}
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+		"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
+		"ghcr.io/devcontainers/features/aws-cli:1": {}
 	},
 	"mounts": [
 		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume"

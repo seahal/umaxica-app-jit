@@ -79,10 +79,10 @@ NEWS_STAFF_URL=news.org.localhost
 HELP_CORPORATE_URL=help.com.localhost
 HELP_SERVICE_URL=help.app.localhost
 HELP_STAFF_URL=help.org.localhost
-EDGE_CORPORATE_URL=localhost:5130
-EDGE_SERVICE_URL=localhost:5131
-EDGE_STAFF_URL=localhost:5132
-EDGE_STATUS_URL=localhost:5133
+EDGE_CORPORATE_URL=edge.com.localhost
+EDGE_SERVICE_URL=edge.app.localhost
+EDGE_STAFF_URL=edge.org.localhost
+EDGE_STATUS_URL=edge.dev.localhost
 ASSET_URL=asset.localhost
 # JWT Configuration
 JWT_CORPORATE_PRIVATE_KEY="-----BEGIN EC PRIVATE KEY-----\nMIGkAgEBBDD/EUvJBtMoDgkXKpEDM7ScEPlhYnxy6cggO9geUVd8DmxpzqYE5L/T\nVFzXKaloieOgBwYFK4EEACKhZANiAATpeKKqtOnn4uWa11Ovfy8tXgaE7NWL0t3b\nyddl35xWcheHbU7QDGfRSAr+0rR5HpmjDrbQgY3s0EbRX4bt3R0FjZRqi3QyRO24\n5R5s9vhX42LVcXMVY1aCJFdVW/XqrEg=\n-----END EC PRIVATE KEY-----\n"

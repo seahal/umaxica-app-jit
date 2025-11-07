@@ -73,13 +73,13 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # registration staff page
-        resource :registration, only: [ :new ] do
-          # TODO: Implement email registration
-          # resource :emails, only: [ :new, :create, :edit, :update ]
-          # TODO: Implement telephone registration
-          # resource :telephone, only: [ :new, :create, :edit, :update ]
-        end
+  # registration staff page
+  # 変更後（sign/app と同じパターン）
+  resource :registration, only: [ :new ]
+  namespace :registration do
+    resources :emails, only: %i[new create edit update]
+    resources :telephones, only: %i[new create edit update]
+  end
         # Sign up pages
         # TODO: Implement authentication actions (show, update, put, delete, create)
         resource :authentication, only: [ :new ]
