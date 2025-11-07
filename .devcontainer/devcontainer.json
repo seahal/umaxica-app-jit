@@ -114,14 +114,13 @@
 		"CLAUDE_CONFIG_DIR": "/home/jit/.claude",
 		"POWERLEVEL9K_DISABLE_GITSTATUS": "true"
 	},
-	"postCreateCommand": "bin/rails db:create",
+	"postCreateCommand": "npm install --save-dev lefthook && bin/rails db:create",
 	"updateContentCommand": "",
 	"updateRemoteUserUID": false,
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {
 			"version": "latest"
 		},
-		"ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {
 			"version": "latest"
 		},

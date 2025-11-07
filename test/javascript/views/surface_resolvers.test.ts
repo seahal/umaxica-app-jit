@@ -1,4 +1,4 @@
-import {describe, expect, test} from "bun:test";
+import { describe, expect, test } from "bun:test";
 
 type SurfaceScenario = {
 	name: string;
@@ -327,7 +327,10 @@ const surfaces: SurfaceScenario[] = [
 describe("surface view modules", () => {
 	for (const surface of surfaces) {
 		test(`${surface.name} resolves URLs relative to the default origin`, async () => {
-			const module = (await import(surface.modulePath)) as Record<string, unknown>;
+			const module = (await import(surface.modulePath)) as Record<
+				string,
+				unknown
+			>;
 			expect(module[surface.originConst]).toBe(surface.expectedOrigin);
 
 			const resolve = module[surface.resolveExport] as (path?: string) => URL;
@@ -337,7 +340,10 @@ describe("surface view modules", () => {
 		});
 
 		test(`${surface.name} reads hydration props from dataset entries`, async () => {
-			const module = (await import(surface.modulePath)) as Record<string, unknown>;
+			const module = (await import(surface.modulePath)) as Record<
+				string,
+				unknown
+			>;
 			const read = module[surface.readExport] as (
 				element: HTMLElement | null,
 			) => Record<string, string>;
@@ -353,7 +359,8 @@ describe("surface view modules", () => {
 	}
 });
 
-const docsAppModulePath = "../../../app/javascript/views/docs/app/application.ts";
+const docsAppModulePath =
+	"../../../app/javascript/views/docs/app/application.ts";
 
 describe("docs app host detection", () => {
 	test("identifies docs host reliably", async () => {

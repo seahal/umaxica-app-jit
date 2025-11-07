@@ -1,4 +1,4 @@
-import {describe, expect, test} from "bun:test";
+import { describe, expect, test } from "bun:test";
 
 describe("Passkey enrollment view", () => {
 	test("registers a click handler when the passkey button exists", async () => {

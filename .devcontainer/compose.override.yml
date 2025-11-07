@@ -1,7 +1,36 @@
 name: 'jit-devcontainer'
 services:
   core:
+    container_name: jit-devcontainer-core
     environment:
       - DEVCONTAINER=1
       - RUBY_DEBUG_OPEN=true
     restart: unless-stopped
+    ports: !reset []
+  primary:
+    container_name: jit-devcontainer-primary
+    ports: !reset []
+  replica:
+    container_name: jit-devcontainer-replica
+    ports: !reset []
+  valkey:
+    container_name: jit-devcontainer-valkey
+    ports: !reset []
+  zookeeper:
+    container_name: jit-devcontainer-zookeeper
+    ports: !reset []
+  kafka:
+    container_name: jit-devcontainer-kafka
+    ports: !reset []
+  kafka-ui:
+    container_name: jit-devcontainer-kafka-ui
+    ports: !reset []
+  minio:
+    container_name: jit-devcontainer-minio
+    ports: !reset []
+  otel-collector:
+    container_name: jit-devcontainer-otel-collector
+    ports: !reset []
+  prometheus:
+    container_name: jit-devcontainer-prometheus
+    ports: !reset []

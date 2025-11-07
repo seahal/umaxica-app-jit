@@ -8,10 +8,10 @@ import {
 	mock,
 	test,
 } from "bun:test";
-import {createElement} from "react";
-import {renderToStaticMarkup} from "react-dom/server";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 
-const originalWindow = (globalThis as {window?: unknown}).window;
+const originalWindow = (globalThis as { window?: unknown }).window;
 
 const createReactAriaStub = () => {
 	const renderChildren = (children: unknown) => {
@@ -90,7 +90,7 @@ const createReactAriaStub = () => {
 };
 
 beforeAll(() => {
-	(globalThis as {window?: any}).window = {
+	(globalThis as { window?: any }).window = {
 		location: { pathname: "/current" },
 		innerHeight: 1080,
 		scrollTo: () => {},
@@ -109,9 +109,9 @@ afterEach(() => {
 
 afterAll(() => {
 	if (originalWindow === undefined) {
-		delete (globalThis as {window?: unknown}).window;
+		delete (globalThis as { window?: unknown }).window;
 	} else {
-		(globalThis as {window?: unknown}).window = originalWindow;
+		(globalThis as { window?: unknown }).window = originalWindow;
 	}
 });
 

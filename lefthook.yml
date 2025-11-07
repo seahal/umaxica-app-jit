@@ -1,37 +1,91 @@
 pre-commit:
   parallel: true
   commands:
-    test_bun:
+    bun_test:
       run: |
         #!/bin/sh
         set -eu
         if [ -f /.dockerenv ]; then
-          echo "Dockerコンテナ内です"
+          bun test
         else
-          echo "Docker外で>>>す"
+          docker compose run core bun test
         fi
-    # audit(bundler):
-    #   run: docker compose run bundle exec bundler-audit check --update
-    # audit(bun):
-    #   run: bun audit --update
-    # brakeman:
-    #   run: bundle exec brakeman --no-pager
-    # rubocop:
-    #   stage_fixed: true
-    #   run: bundle exec rubocop -A
-    # erb-lint:
-    #   stage_fixed: true
-    #   run: bundle exec erb_lint app/views/
-    # biome-format:
-    #   stage_fixed: true
-    #   run: bun run format
-    # lint:
-    #   run: bun run lint
-    #   stage_fixed: true
-    #   glob: "*.{js,jsx,ts,tsx}"
-    # typecheck:
-    #   run: bun run type
+    bun_audit:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bun audit
+        else
+          docker compose run core bun audit
+        fi
+    bun_biome_check:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bun run check
+        else
+          docker compose run core bun check
+        fi
+    bun_type_check:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bun run type
+        else
+          docker compose run core bun type
+        fi
+    ruby_rubocop:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec rubocop
+        else
+          docker compose run core bundle exec rubocop
+        fi
+    ruby_erb_lint:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec erb_lint -a .
+        else
+          docker compose run core bundle exec erb_lint -a .
+        fi
+    ruby_audit:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec bundler-audit check --update
+        else
+          docker compose run core bundle exec bundler-audit check --update
+        fi
+    ruby_brakeman:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec brakeman --no-pager
+        else
+          docker compose run core bundle exec brakeman --no-pager
+        fi
+    ruby_on_rails_test:
+      run: |
+        #!/bin/sh
+        set -eu
+        if [ -f /.dockerenv ]; then
+          bundle exec rails db:migrate && bundle exec rails test
+        else
+          docker compose run core bash -c "bundle exec rails db:migrate && bundle exec rails test "
+        fi
     # secret-scan:
+    #   run: |
+    #     #!/bin/sh
+    #     set -eu
+    #     docker run -v pwd:pwd -w pwd --rm -it secretlint/secretlint secretlint "**/*"
+    # # secret-scan:
     #   run: gitleaks protect
-    # test(Ruby on Rails):
-    #   run: docker compose run bundle exec rails test

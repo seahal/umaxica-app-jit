@@ -1,4 +1,4 @@
-import {describe, expect, test} from "bun:test";
+import { describe, expect, test } from "bun:test";
 
 describe("WWW inquiry form guard", () => {
 	test("prevents submission when policy checkbox is unchecked", async () => {

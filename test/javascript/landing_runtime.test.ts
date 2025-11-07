@@ -1,5 +1,5 @@
-import {afterEach, describe, expect, mock, test} from "bun:test";
-import {createElement} from "react";
+import { afterEach, describe, expect, mock, test } from "bun:test";
+import { createElement } from "react";
 
 type Listener = (...args: unknown[]) => void;
 
@@ -11,27 +11,31 @@ type DocumentStubOptions = {
 
 type DocumentStub = {
 	readyState: string;
-	getElementById: (id: string) => {dataset: Record<string, string>} | null;
-	addEventListener: (event: string, handler: Listener, options?: unknown) => void;
+	getElementById: (id: string) => { dataset: Record<string, string> } | null;
+	addEventListener: (
+		event: string,
+		handler: Listener,
+		options?: unknown,
+	) => void;
 	removeEventListener: (event: string, handler: Listener) => void;
 };
 
 type ListenerMap = Record<string, Listener[]>;
 
-const originalDocument = (globalThis as {document?: Document}).document;
-const originalWindow = (globalThis as {window?: unknown}).window;
+const originalDocument = (globalThis as { document?: Document }).document;
+const originalWindow = (globalThis as { window?: unknown }).window;
 
 afterEach(() => {
 	if (originalDocument === undefined) {
-		delete (globalThis as {document?: Document}).document;
+		delete (globalThis as { document?: Document }).document;
 	} else {
-		(globalThis as {document?: Document}).document = originalDocument;
+		(globalThis as { document?: Document }).document = originalDocument;
 	}
 
 	if (originalWindow === undefined) {
-		delete (globalThis as {window?: unknown}).window;
+		delete (globalThis as { window?: unknown }).window;
 	} else {
-		(globalThis as {window?: unknown}).window = originalWindow;
+		(globalThis as { window?: unknown }).window = originalWindow;
 	}
 
 	mock.restore();
@@ -118,7 +122,7 @@ const installReactAriaStub = () => {
 };
 
 const applyWindowStub = () => {
-	(globalThis as {window?: any}).window = {
+	(globalThis as { window?: any }).window = {
 		location: { pathname: "/current" },
 		innerHeight: 1080,
 		scrollTo: () => {},
@@ -129,7 +133,11 @@ const applyWindowStub = () => {
 
 const createDocumentStub = (
 	options: DocumentStubOptions,
-): {documentStub: DocumentStub; listeners: ListenerMap; container: {dataset: Record<string, string>}} => {
+): {
+	documentStub: DocumentStub;
+	listeners: ListenerMap;
+	container: { dataset: Record<string, string> };
+} => {
 	const listeners: ListenerMap = {};
 	const container = { dataset: options.dataset ?? {} };
 
@@ -188,12 +196,13 @@ describe("root landing entrypoint", () => {
 			},
 		});
 
-		(globalThis as {document?: Document}).document = documentStub as unknown as Document;
+		(globalThis as { document?: Document }).document =
+			documentStub as unknown as Document;
 
 		await import("../../app/javascript/root/app/landing.tsx");
 
 		expect(containers[0]).toBe(container);
-		const rendered = renderCalls[0] as {props: Record<string, unknown>};
+		const rendered = renderCalls[0] as { props: Record<string, unknown> };
 		expect(rendered.props.codeName).toBe("Atlas");
 		expect(rendered.props.rootServiceUrl).toBe("https://app.example");
 		expect(rendered.props.docsServiceUrl).toBe("https://docs.example");
@@ -221,12 +230,13 @@ describe("help landing entrypoints", () => {
 			},
 		});
 
-		(globalThis as {document?: Document}).document = documentStub as unknown as Document;
+		(globalThis as { document?: Document }).document =
+			documentStub as unknown as Document;
 
 		await import("../../app/javascript/help/app/landing.tsx");
 
 		expect(containers[0]).toBe(container);
-		const rendered = renderCalls[0] as {props: Record<string, unknown>};
+		const rendered = renderCalls[0] as { props: Record<string, unknown> };
 		expect(rendered.props.codeName).toBe("Harbor");
 		expect(rendered.props.helpServiceUrl).toBe("https://help.example");
 		expect(rendered.props.docsServiceUrl).toBe("https://docs.example");
@@ -244,7 +254,8 @@ describe("help landing entrypoints", () => {
 			readyState: "complete",
 		});
 
-		(globalThis as {document?: Document}).document = documentStub as unknown as Document;
+		(globalThis as { document?: Document }).document =
+			documentStub as unknown as Document;
 
 		await import("../../app/javascript/help/com/landing.tsx");
 

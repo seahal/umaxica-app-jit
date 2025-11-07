@@ -1,38 +1,39 @@
-import {afterEach, describe, expect, test} from "bun:test";
+import { afterEach, describe, expect, test } from "bun:test";
 
 const modulePath =
 	"../../../app/javascript/views/sign/app/inquiry/before_submit.js";
 
-const originalDocument = (globalThis as {document?: Document}).document;
-const originalAlert = (globalThis as {alert?: (message: string) => void}).alert;
+const originalDocument = (globalThis as { document?: Document }).document;
+const originalAlert = (globalThis as { alert?: (message: string) => void })
+	.alert;
 
 afterEach(() => {
 	if (originalDocument === undefined) {
-		delete (globalThis as {document?: Document}).document;
+		delete (globalThis as { document?: Document }).document;
 	} else {
-		(globalThis as {document?: Document}).document = originalDocument;
+		(globalThis as { document?: Document }).document = originalDocument;
 	}
 
 	if (originalAlert === undefined) {
-		delete (globalThis as {alert?: (message: string) => void}).alert;
+		delete (globalThis as { alert?: (message: string) => void }).alert;
 	} else {
-		(globalThis as {alert?: (message: string) => void}).alert = originalAlert;
+		(globalThis as { alert?: (message: string) => void }).alert = originalAlert;
 	}
 });
 
 describe("sign inquiry submit guard", () => {
 	test("returns early when document is undefined", async () => {
-		delete (globalThis as {document?: Document}).document;
+		delete (globalThis as { document?: Document }).document;
 
 		await import(`${modulePath}?case=no-document`);
 
-		expect((globalThis as {document?: Document}).document).toBeUndefined();
+		expect((globalThis as { document?: Document }).document).toBeUndefined();
 	});
 
 	test("returns early when inquiry form is missing", async () => {
 		let selectorUsed: string | null = null;
 
-		(globalThis as {document?: Document}).document = {
+		(globalThis as { document?: Document }).document = {
 			querySelector: (selector: string) => {
 				selectorUsed = selector;
 				return null;
@@ -45,8 +46,10 @@ describe("sign inquiry submit guard", () => {
 	});
 
 	test("prevents submission when policy checkbox is unchecked", async () => {
-		const listeners: Record<string, (event: {preventDefault: () => void}) => void> =
-			{};
+		const listeners: Record<
+			string,
+			(event: { preventDefault: () => void }) => void
+		> = {};
 		let prevented = false;
 		let alertMessage: string | null = null;
 		let focused = false;
@@ -61,7 +64,7 @@ describe("sign inquiry submit guard", () => {
 		const form = {
 			addEventListener: (
 				event: string,
-				handler: (event: {preventDefault: () => void}) => void,
+				handler: (event: { preventDefault: () => void }) => void,
 			) => {
 				listeners[event] = handler;
 			},
@@ -71,12 +74,12 @@ describe("sign inquiry submit guard", () => {
 					: null,
 		};
 
-		(globalThis as {document?: Document}).document = {
+		(globalThis as { document?: Document }).document = {
 			querySelector: (selector: string) =>
 				selector === "form[action$='/help/app/inquiries']" ? form : null,
 		} as any;
 
-		(globalThis as {alert?: (message: string) => void}).alert = (message) => {
+		(globalThis as { alert?: (message: string) => void }).alert = (message) => {
 			alertMessage = message;
 		};
 
