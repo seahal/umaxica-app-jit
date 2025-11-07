@@ -8,7 +8,7 @@ gem "rake"
 # rack
 gem "rack"
 # Rails
-gem "rails", "~> 8.1", ">= 8.1.1"
+gem "rails"
 # Use Postgres as the database for Active Record
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -58,8 +58,6 @@ gem "rqrcode"
 gem "solid_cache"
 # pagination
 gem "kaminari"
-# Breadcrumbs
-# gem "gretel"
 # Social Login
 gem "omniauth"
 gem "omniauth-apple"
@@ -74,20 +72,14 @@ gem "carrierwave"
 # OpenAPI
 gem "rswag"
 gem "ostruct"
-# gem "rswag-api"
-# gem "rswag-ui"
+gem "rswag-api"
+gem "rswag-ui"
 # JWT
 gem "jwt"
 #
 gem "jsbundling-rails"
 # for fastly cache purge
 gem "fastly"
-# for cloudflare
-#
-# gem "view_component"
-#
-gem "sentry-ruby"
-gem "sentry-rails"
 
 
 group :development, :test do
@@ -97,6 +89,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
+  #
+  # gem "coverband"
 end
 
 group :development do

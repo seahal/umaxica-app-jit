@@ -1,0 +1,1 @@
+REGION_CODE=jp bin/rails db:create db:migrate

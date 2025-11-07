@@ -2,15 +2,8 @@
 	"name": "app-jit-dc",
 	"dockerComposeFile": ["../compose.yml", "./compose.override.yml"],
 	"service": "core",
-	"runServices": [
-		"primary",
-		"replica",
-		"valkey",
-		"kafka",
-		"zookeeper",
-		"minio",
-		"kafka-ui"
-	],
+	"remoteUser": "jit",
+	"containerUser": "jit",
 	"workspaceFolder": "/home/jit/workspace",
 	"overrideCommand": false,
 	"remoteEnv": {
@@ -32,17 +25,23 @@
 				"rubocop.vscode-rubocop",
 				"oven.bun-vscode",
 				"openai.chatgpt",
-				"-sorbet.sorbet-vscode-extension"
+				"-sorbet.sorbet-vscode-extension",
+				"anthropic.claude-code",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"eamodio.gitlens"
 			],
 			"settings": {
 				"extensions.verifySignature": false,
-				"terminal.integrated.defaultProfile.linux": "bash",
+				"terminal.integrated.defaultProfile.linux": "zsh",
 				"editor.formatOnSave": true,
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
 				"editor.tabSize": 2,
 				"files.trimTrailingWhitespace": true,
 				"files.insertFinalNewline": true,
 				"editor.codeActionsOnSave": {
-					"source.fixAll.biome": "explicit"
+					"source.fixAll.biome": "explicit",
+					"source.fixAll.eslint": "explicit"
 				},
 				"files.associations": {
 					"*.erb": "erb",
@@ -85,7 +84,7 @@
 					}
 				}
 			},
-			"terminal.integrated.defaultProfile.linux": "bash",
+			"terminal.integrated.defaultProfile.linux": "zsh",
 			"terminal.integrated.profiles.linux": {
 				"bash": {
 					"path": "bash",
@@ -109,13 +108,35 @@
 	"containerEnv": {
 		"RAILS_ENV": "development",
 		"RACK_ENV": "development",
-		"DEVCONTAINER_AUTO_START_BIN_DEV": "1"
+		"DEVCONTAINER_AUTO_START_BIN_DEV": "1",
+		"REGION_CODE": "jp",
+		"NODE_OPTIONS": "--max-old-space-size=4096",
+		"CLAUDE_CONFIG_DIR": "/home/jit/.claude",
+		"POWERLEVEL9K_DISABLE_GITSTATUS": "true"
 	},
-	"postCreateCommand": "",
-	"postStartCommand": "",
+	"postCreateCommand": "REGION_CODE=jp bin/rails db:create db:migrate",
+	"postStartCommand": "if sudo test -x /usr/local/bin/init-firewall.sh; then sudo /usr/local/bin/init-firewall.sh; fi",
+	"waitFor": "postStartCommand",
 	"initializeCommand": "",
-	"onCreateCommand": "bin/rails db:create db:migrate",
+	"onCreateCommand": "",
 	"updateContentCommand": "",
 	"updateRemoteUserUID": false,
-	"features": {}
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"version": "latest"
+		},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {
+			"version": "latest"
+		},
+		"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {
+			"version": "latest"
+		}
+	},
+	"mounts": [
+		"source=${localWorkspaceFolder}/.devcontainer/lefthook.container.yml,target=/workspace/lefthook.yml,type=bind",
+		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume"
+	]
 }

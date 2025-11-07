@@ -1,7 +1,10 @@
 name: 'jit-devcontainer'
 services:
   core:
-    ports: []
     environment:
       - DEVCONTAINER=1
+      - RUBY_DEBUG_OPEN=true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
     restart: unless-stopped

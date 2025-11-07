@@ -175,6 +175,8 @@ WORKDIR /home/jit/workspace
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     bash \
+    iproute2 \
+    zsh \
     dbus \
     fontconfig \
     lsb-release \

@@ -3,7 +3,7 @@
 require "test_helper"
 
 class DefaultUrlOptionsTest < ActiveSupport::TestCase
-  class TestController < ApplicationController
+  class TestController < ActionController::Base
     include DefaultUrlOptions
 
     attr_accessor :request, :response
