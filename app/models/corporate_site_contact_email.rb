@@ -1,5 +1,6 @@
 class CorporateSiteContactEmail < GuestsRecord
-  belongs_to :corporate_site_contact
+  belongs_to :corporate_site_contact, optional: true
+
   before_save { self.email_address&.downcase! }
   encrypts :email_address, downcase: true, deterministic: true
 

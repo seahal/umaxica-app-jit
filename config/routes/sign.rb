@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     # service page
     constraints host: ENV["SIGN_SERVICE_URL"] do
       scope module: :app, as: :app do
+        root to: "roots#index"
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
         # api endpoint
@@ -65,6 +66,7 @@ Rails.application.routes.draw do
     # For Staff's webpages sign.org.localhost
     constraints host: ENV["SIGN_STAFF_URL"] do
       scope module: :org, as: :org do
+        root to: "roots#index"
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
         # api endpoint
@@ -72,11 +74,11 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # registration staff page
-        resource :registration, only: [ :new ] do
-          # TODO: Implement email registration
-          # resource :emails, only: [ :new, :create, :edit, :update ]
-          # TODO: Implement telephone registration
-          # resource :telephone, only: [ :new, :create, :edit, :update ]
+        # 変更後（sign/app と同じパターン）
+        resource :registration, only: [ :new ]
+        namespace :registration do
+          resources :emails, only: %i[new create edit update]
+          resources :telephones, only: %i[new create edit update]
         end
         # Sign up pages
         # TODO: Implement authentication actions (show, update, put, delete, create)

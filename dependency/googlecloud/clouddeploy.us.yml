@@ -1,0 +1,154 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: umaxica-app-jit-staging-us
+  namespace: "897712432319"
+  labels:
+    # Cloud Deploy / rollout tracking
+    delivery-pipeline-id: umaxica-app-jit-staging
+    release-id: release-buqmsfh            # パイプライン側で適宜上書きされる想定
+    target-id: us
+    managed-by: google-cloud-deploy
+    project-id: umaxica-454904
+    location: asia-northeast1
+    cloud.googleapis.com/location: asia-northeast1
+  annotations:
+    # Cloud Run networking / security posture
+    run.googleapis.com/ingress: internal-and-cloud-load-balancing
+    run.googleapis.com/default-url-disabled: "true"
+    run.googleapis.com/invoker-iam-disabled: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        delivery-pipeline-id: umaxica-app-jit-staging
+        release-id: release-buqmsfh
+        target-id: ap
+        managed-by: google-cloud-deploy
+        project-id: umaxica-454904
+        location: asia-northeast1
+        run.googleapis.com/startupProbeType: Default
+      annotations:
+        autoscaling.knative.dev/maxScale: "1"
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 897712432319-compute@developer.gserviceaccount.com
+      containers:
+        - name: sample-1
+          image: asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:latest
+          args:
+            - bundle
+            - exec
+            - puma
+            - --port
+            - "8080"
+          ports:
+            - name: http1
+              containerPort: 8080
+          env:
+            - name: RAILS_ENV
+              value: production
+
+            - name: NAME
+              value: UMAXICA
+            - name: BRAND_NAME
+              value: UMAXICA
+
+            # ===== ブランディング/リージョン系 =====
+            - name: APEX_REGION # rename to GLOBAL_MODE
+              value: "false"
+            - name: REGION_CODE
+              value: us
+
+            # ===== apex / root 面で使っているホスト群 =====
+            - name: APEX_CORPORATE_URL
+              value: www.umaxica.com
+            - name: APEX_SERVICE_URL
+              value: www.umaxica.app
+            - name: APEX_STAFF_URL
+              value: www.umaxica.org
+
+            # ===== Sign-in surfaces =====
+            - name: SIGN_SERVICE_URL
+              value: sign.umaxica.app
+            - name: SIGN_STAFF_URL
+              value: sign.umaxica.org
+
+            # ===== API =====
+            - name: API_CORPORATE_URL
+              value: api.jp.umaxica.com
+            - name: API_SERVICE_URL
+              value: api.jp.umaxica.app
+            - name: API_STAFF_URL
+              value: api.jp.umaxica.org
+
+            # ===== WWW (リージョン JP 側の表面) =====
+            - name: WWW_CORPORATE_URL
+              value: www.jp.umaxica.com
+            - name: WWW_SERVICE_URL
+              value: www.jp.umaxica.app
+            - name: WWW_STAFF_URL
+              value: www.jp.umaxica.org
+
+            # ===== DOCS =====
+            - name: DOCS_CORPORATE_URL
+              value: docs.jp.umaxica.com
+            - name: DOCS_SERVICE_URL
+              value: docs.jp.umaxica.app
+            - name: DOCS_STAFF_URL
+              value: docs.jp.umaxica.org
+
+            # ===== NEWS =====
+            - name: NEWS_CORPORATE_URL
+              value: news.jp.umaxica.com
+            - name: NEWS_SERVICE_URL
+              value: news.jp.umaxica.net
+            - name: NEWS_STAFF_URL
+              value: news.jp.umaxica.org
+
+            # ===== HELP =====
+            - name: HELP_CORPORATE_URL
+              value: help.jp.umaxica.com
+            - name: HELP_SERVICE_URL
+              value: help.jp.umaxica.app
+            - name: HELP_STAFF_URL
+              value: help.jp.umaxica.org
+
+            # ===== EDGE / POP / CDN-ish =====
+            - name: EDGE_CORPORATE_URL
+              value: jp.umaxica.com
+            - name: EDGE_SERVICE_URL
+              value: jp.umaxica.app
+            - name: EDGE_STAFF_URL
+              value: jp.umaxica.org
+            - name: EDGE_STATUS_URL
+              value: jp.umaxica.dev
+
+            - name: ASSET_URL
+              value: asset-jp.umaxica.net
+
+            # Rails master key from Secret Manager via GKE Secret Manager volume sync or k8s secret
+            - name: RAILS_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: umaxica_jp_rails_credential_production
+                  key: latest
+
+          resources:
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+
+          startupProbe:
+            timeoutSeconds: 240
+            periodSeconds: 240
+            failureThreshold: 1
+            tcpSocket:
+              port: 8080
+
+  traffic:
+    - percent: 100
+      latestRevision: true

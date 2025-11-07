@@ -113,7 +113,7 @@ end
 #           argon2 = Argon2::Password.new()
 #           @user_recover_code.password_digest = argon2.create(@user_recover_code.password)
 #           if @user_recover_code.save
-#             redirect_to apex_app_setting_recovery_codes_path(@user_recover_code),
+#             redirect_to root_app_setting_recovery_codes_path(@user_recover_code),
 #                         notice: "Sample was successfully created."
 #           else
 #             render :new

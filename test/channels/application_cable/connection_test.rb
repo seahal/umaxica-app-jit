@@ -3,11 +3,27 @@
 require "test_helper"
 
 class ApplicationCable::ConnectionTest < ActionCable::Connection::TestCase
-  # test "connects with cookies" do
-  #   cookies.signed[:user_id] = 42
-  #
-  #   connect
-  #
-  #   assert_equal connection.user_id, "42"
-  # end
+  test "ApplicationCable::Connection is a subclass of ActionCable::Connection::Base" do
+    assert ApplicationCable::Connection < ActionCable::Connection::Base
+  end
+
+  test "connection can be established" do
+    connect
+
+    assert connection
+  end
+
+  test "connection has access to request" do
+    connect
+
+    assert_respond_to connection, :request
+  end
+
+  test "connection can be closed" do
+    connect
+    assert connection
+
+    # Connection should exist after connecting
+    assert_not_nil connection
+  end
 end

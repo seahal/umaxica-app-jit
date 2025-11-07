@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # apex page
-  draw :apex
-  #
-  draw :www
+  # global
+  # top level pages
+  draw :top
+  # sign in / up
+  draw :sign
+  # regional
+  ## www endpoint
+  draw :bff
   # api endpoint url
   draw :api
-  # endpoint for sign
-  draw :sign
   # endpoint for docs
   draw :docs
   # endpoint for news

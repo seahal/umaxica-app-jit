@@ -85,6 +85,9 @@ module Jit
     config.sms_provider = ENV.fetch("SMS_PROVIDER", "aws_sns")
     config.aws_region = ENV.fetch("AWS_REGION", "ap-northeast-1")
 
+    # Load translations from nested locale directories (e.g., config/locales/jp/**/*.yml)
+    config.i18n.load_path += Rails.root.glob("config/locales/**/*.{rb,yml}")
+
     # Set UUID as default primary key for new tables
     config.generators do |g|
       g.orm :active_record, primary_key_type: :uuid

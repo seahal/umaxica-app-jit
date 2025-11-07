@@ -4,6 +4,7 @@ require "json"
 
 module Theme
   extend ActiveSupport::Concern
+  include PreferenceConstants
 
   ALLOWED_THEMES = %w[system dark light].freeze
   DEFAULT_THEME = "system"
@@ -30,13 +31,13 @@ module Theme
     resolved_theme = normalize_theme(params[:theme])
 
     if resolved_theme.nil?
-      flash.now[:alert] = I18n.t("apex.#{preference_scope}.preferences.themes.invalid")
+      flash.now[:alert] = I18n.t("controller.top.#{preference_scope}.preferences.themes.invalid")
       assign_current_theme
       @theme_query_params = theme_redirect_params
       render :edit, status: :unprocessable_content
     else
       persist_theme!(resolved_theme)
-      flash[:notice] = I18n.t("apex.#{preference_scope}.preferences.themes.updated", theme: I18n.t("themes.#{resolved_theme}"))
+      flash[:notice] = I18n.t("controller.top.#{preference_scope}.preferences.themes.updated", theme: I18n.t("themes.#{resolved_theme}"))
       redirect_to theme_redirect_url
     end
   end
@@ -85,15 +86,23 @@ module Theme
   end
 
   def theme_cookie_key
-    :"apex_#{preference_scope}_theme"
+    :"root_#{preference_scope}_theme"
   end
 
   def theme_redirect_url
+    # NOTE: Root domain theme functionality has been moved to Hono
+    # But top/app and top/org domains still use Rails-based theme management
     query = theme_redirect_params
-    public_send(
-      "edit_apex_#{preference_scope}_preference_theme_path",
-      symbolize_keys(query.presence || {})
-    )
+
+    case preference_scope
+    when "app"
+      Rails.application.routes.url_helpers.edit_top_app_preference_theme_url(**query)
+    when "org"
+      Rails.application.routes.url_helpers.edit_top_org_preference_theme_url(**query)
+    else
+      # Root domain theme functionality has been moved to Hono
+      raise NotImplementedError, "Theme functionality has been moved to Hono application"
+    end
   end
 
   def theme_redirect_params
@@ -127,9 +136,9 @@ module Theme
   end
 
   def persist_app_preferences_cookie!(theme)
-    keys = Apex::App::RootsController::PREFERENCE_KEYS
-    defaults = Apex::App::RootsController::DEFAULT_PREFERENCES
-    cookie_key = Apex::App::RootsController::PREFERENCE_COOKIE_KEY
+    keys = PREFERENCE_KEYS
+    defaults = DEFAULT_PREFERENCES
+    cookie_key = PREFERENCE_COOKIE_KEY
 
     resolved = defaults.dup
 

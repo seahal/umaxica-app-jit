@@ -22,3 +22,15 @@ Document.find_or_create_by(id: '01001', parent_id: nil, prev_id: nil, succ_id: n
 # USER
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38')
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')
+
+#
+ContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
+ContactCategory.create_or_find_by!(title: 'CORPORATE_SITE_CONTACT', description: 'root of corporate site status inquiries')
+ContactCategory.create_or_find_by!(title: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')
+ContactCategory.create_or_find_by!(title: 'ORGANIZATION_SITE_CONTACT', description: 'root of organzation site status inquiries')
+
+#
+ContactStatus.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
+ContactStatus.create_or_find_by!(title: 'CORPORATE_SITE_STATUS', description: 'root of corporate site status inquiries')
+ContactStatus.create_or_find_by!(title: 'SERVICE_SITE_STATUS', description: 'root of service site status inquiries')
+ContactStatus.create_or_find_by!(title: 'ORGANIZATION_SITE_STATUS', description: 'root of organzation site status inquiries')

@@ -6,6 +6,7 @@ if ENV["RAILS_ENV"] == "test"
   SimpleCov.start "rails"
 end
 
+ENV["REGION_CODE"] ||= "jp"
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"

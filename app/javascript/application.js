@@ -3,9 +3,6 @@
 import "@hotwired/turbo-rails";
 
 // Views
-import "./views/apex/app/application.ts";
-import "./views/apex/com/application.ts";
-import "./views/apex/org/application.ts";
 import "./views/docs/app/application.ts";
 import "./views/docs/com/application.ts";
 import "./views/docs/org/application.ts";

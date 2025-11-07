@@ -1,61 +1,13 @@
 {
-	"name": "umaxica-app-jit",
-	"dockerComposeFile": ["../compose.yml"],
+	"name": "app-jit-dc",
+	"dockerComposeFile": ["../compose.yml", "./compose.override.yml"],
 	"service": "core",
-	"runServices": [
-		"primary",
-		"replica",
-		"valkey",
-		"kafka",
-		"zookeeper",
-		"minio",
-		"kafka-ui"
-	],
+	"remoteUser": "jit",
+	"containerUser": "jit",
 	"workspaceFolder": "/home/jit/workspace",
-	"overrideCommand": false,
+	"overrideCommand": true,
 	"remoteEnv": {
 		"EDITOR": "code --wait --reuse-window"
-	},
-	"forwardPorts": [
-		3333, 5432, 5433, 5434, 6379, 9092, 9200, 9000, 9001, 8080, 5601, 63342
-	],
-	"portsAttributes": {
-		"3333": {
-			"label": "Rails Server (Docker)",
-			"onAutoForward": "notify",
-			"protocol": "http"
-		},
-		"5433": {
-			"label": "PostgreSQL Primary"
-		},
-		"5434": {
-			"label": "PostgreSQL Replica"
-		},
-		"6379": {
-			"label": "Valkey(Redis)"
-		},
-		"9092": {
-			"label": "Kafka"
-		},
-		"3000": {
-			"label": "Rails Server (Local)",
-			"protocol": "http"
-		},
-		"9000": {
-			"label": "Minio API"
-		},
-		"9001": {
-			"label": "Minio Console",
-			"protocol": "http"
-		},
-		"8080": {
-			"label": "Kafka UI",
-			"protocol": "http"
-		},
-		"63342": {
-			"label": "JetBrains Backend",
-			"onAutoForward": "silent"
-		}
 	},
 	"customizations": {
 		"vscode": {
@@ -73,17 +25,23 @@
 				"rubocop.vscode-rubocop",
 				"oven.bun-vscode",
 				"openai.chatgpt",
-				"-sorbet.sorbet-vscode-extension"
+				"-sorbet.sorbet-vscode-extension",
+				"anthropic.claude-code",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"eamodio.gitlens"
 			],
 			"settings": {
 				"extensions.verifySignature": false,
-				"terminal.integrated.defaultProfile.linux": "bash",
+				"terminal.integrated.defaultProfile.linux": "zsh",
 				"editor.formatOnSave": true,
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
 				"editor.tabSize": 2,
 				"files.trimTrailingWhitespace": true,
 				"files.insertFinalNewline": true,
 				"editor.codeActionsOnSave": {
-					"source.fixAll.biome": "explicit"
+					"source.fixAll.biome": "explicit",
+					"source.fixAll.eslint": "explicit"
 				},
 				"files.associations": {
 					"*.erb": "erb",
@@ -131,9 +89,6 @@
 				"bash": {
 					"path": "bash",
 					"icon": "terminal-bash"
-				},
-				"zsh": {
-					"path": "zsh"
 				}
 			}
 		},
@@ -150,20 +105,21 @@
 	"containerEnv": {
 		"RAILS_ENV": "development",
 		"RACK_ENV": "development",
-		"DEVCONTAINER_AUTO_START_BIN_DEV": "1"
+		"DEVCONTAINER_AUTO_START_BIN_DEV": "1",
+		"REGION_CODE": "jp",
+		"NODE_OPTIONS": "--max-old-space-size=4096",
+		"CLAUDE_CONFIG_DIR": "/home/jit/.claude"
 	},
-	"postCreateCommand": "",
-	"postStartCommand": "",
-	"initializeCommand": "",
-	"onCreateCommand": "bin/rails db:create db:migrate",
+	"postCreateCommand": "npm install --save-dev lefthook && bin/rails db:create && bash",
 	"updateContentCommand": "",
-	// "mounts": [
-	// 	"source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind"
-	// ],
 	"updateRemoteUserUID": false,
 	"features": {
-		"ghcr.io/devcontainers/features/github-cli:latest": {},
-		"ghcr.io/thamaji/devcontainer-features/lefthook:latest": {},
-		"ghcr.io/jsburckhardt/devcontainer-features/gitleaks:latest": {}
-	}
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+		"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
+		"ghcr.io/devcontainers/features/aws-cli:1": {}
+	},
+	"mounts": [
+		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume"
+	]
 }

@@ -1,30 +1,23 @@
 class CorporateSiteContact < GuestsRecord
   # Associations
+
   has_many :corporate_site_contact_emails, dependent: :destroy
   has_many :corporate_site_contact_telephones, dependent: :destroy
+  belongs_to :corporate_site_contact_category,
+             class_name: "ContactCategory",
+             foreign_key: :contact_category_title,
+             primary_key: :title,
+             optional: true,
+             inverse_of: :corporate_site_contacts
+  belongs_to :corporate_site_contact_status,
+             class_name: "ContactStatus",
+             foreign_key: :contact_status_title,
+             primary_key: :title,
+             optional: true,
+             inverse_of: :corporate_site_contacts
   has_many :corporate_site_contact_topics, dependent: :destroy
 
-  # State machine using Rails enum
-  enum :status, {
-    email_pending: "email_pending",
-    email_verified: "email_verified",
-    phone_verified: "phone_verified",
-    completed: "completed"
-  }, default: :email_pending, validate: true
-
-  # Category enum
-  enum :category, {
-    general: "general",
-    inquiry: "inquiry",
-    support: "support",
-    sales: "sales",
-    partnership: "partnership",
-    other: "other"
-  }, default: :general, validate: true
-
-  # Validations
-  validates :status, presence: true, inclusion: { in: statuses.keys }
-  validates :category, presence: true, inclusion: { in: categories.keys }
+  attr_accessor :confirm_policy
 
   # State transition helpers
   def can_verify_email?

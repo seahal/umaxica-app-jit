@@ -82,6 +82,65 @@ en:
         email:
           new:
             page_title: "UMAXICA (sign, app)"
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region Settings"
+        theme_settings: "Theme Settings"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Regional & Language Settings"
+          region_section: "Regional Settings"
+          language_section: "Language Preferences"
+          timezone_section: "Timezone Settings"
+          select_region: "Select Region"
+          select_country: "Select Country"
+          select_language: "Select Language"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_country_prompt: "Choose your country..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+        languages:
+          unsupported: "Unsupported language selected"
+        timezones:
+          invalid: "Invalid timezone selected"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that fits your workspace and comfort."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
+            hints:
+              light: "Great when you work during the day or in bright rooms."
+              dark: "Ideal for night shifts or reducing eye strain."
+              system: "Matches your operating system and switches automatically."
+            submit: "Save theme preference"
     org:
       authentication:
         new:
@@ -95,6 +154,65 @@ en:
             passkey: "Passkey"
             recovery: "Recovery code"
             registration: "Need an account?"
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region Settings"
+        theme_settings: "Theme Settings"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Regional & Language Settings"
+          region_section: "Regional Settings"
+          language_section: "Language Preferences"
+          timezone_section: "Timezone Settings"
+          select_region: "Select Region"
+          select_country: "Select Country"
+          select_language: "Select Language"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_country_prompt: "Choose your country..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+        languages:
+          unsupported: "Unsupported language selected"
+        timezones:
+          invalid: "Invalid timezone selected"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that fits your workspace and comfort."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
+            hints:
+              light: "Great when you work during the day or in bright rooms."
+              dark: "Ideal for night shifts or reducing eye strain."
+              system: "Matches your operating system and switches automatically."
+            submit: "Save theme preference"
   languages:
     english: "English"
     japanese: "日本語"
@@ -103,7 +221,7 @@ en:
     dark: "Dark Theme"
     corporate: "Corporate Theme"
     system: "System Theme"
-  apex:
+  root:
     app:
       preferences:
         title: "Preferences"
@@ -111,6 +229,7 @@ en:
         region_settings: "Region Settings"
         email_preferences: "Email Preferences"
         theme_settings: "Theme Settings"
+        reset_settings: "Clear Saved Preferences"
         back_to_settings: "Back to Preferences"
         regions:
           title: "Regional & Language Settings"
@@ -171,6 +290,16 @@ en:
               dark: "Ideal for night shifts or reducing eye strain."
               system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
+        reset:
+          edit:
+            title: "Reset Preference Cookies"
+            description: "Confirm to clear saved preference cookies for this browser."
+            confirmation: "This action cannot be undone."
+            confirmation_label: "I understand all saved preference cookies will be removed."
+            submit: "Clear preference cookies"
+          destroy:
+            success: "Preference cookies cleared."
+            confirmation_required: "Select the checkbox to confirm clearing your preference cookies."
     com:
       preferences:
         title: "Preferences"
@@ -507,6 +636,172 @@ en:
     precision:
       format:
         delimiter: ''
+  top:
+    app:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region & Language Settings"
+        theme_settings: "Theme Settings"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Region & Language Settings"
+          region_section: "Region Settings"
+          select_region: "Select Region"
+          language_section: "Language Settings"
+          select_language: "Select Language"
+          timezone_section: "Timezone Settings"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow strictly necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that helps you focus on corporate dashboards."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
+            hints:
+              light: "Great when you work during the day or in bright rooms."
+              dark: "Ideal for night shifts or reducing eye strain."
+              system: "Matches your operating system and switches automatically."
+            submit: "Save theme preference"
+    org:
+      preferences:
+        title: "Preferences"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Region & Language Settings"
+          region_section: "Region Settings"
+          select_region: "Select Region"
+          language_section: "Language Settings"
+          select_language: "Select Language"
+          timezone_section: "Timezone Settings"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow strictly necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that keeps your org dashboards comfortable."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
+            hints:
+              light: "Best when teams operate in bright operations centers."
+              dark: "Favored for late-night monitoring without eye strain."
+              system: "Keeps theme aligned with managed device policies."
+            submit: "Save theme preference"
+    com:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region Settings"
+        email_preferences: "Email Preferences"
+        theme_settings: "Choose Dark or Light Theme"
+        back_to_settings: "Back to Preferences"
+        regions:
+          title: "Corporate Regional & Language Settings"
+          region_section: "Regional Settings"
+          select_region: "Select Region"
+          language_section: "Language Preferences"
+          select_language: "Select Language"
+          timezone_section: "Timezone Settings"
+          select_timezone: "Select Timezone"
+          select_region_prompt: "Choose your region..."
+          select_country_prompt: "Choose your country..."
+          select_language_prompt: "Choose your language..."
+          select_timezone_prompt: "Choose your timezone..."
+          select_region_selector:
+            USA: "United States"
+            JAPAN: "Japan"
+          select_language_selector:
+            JAPANESE: "Japanese"
+            ENGLISH: "English"
+          select_timezone_selector:
+            UTC: "Coordinated Universal Time (UTC)"
+            JST: "Japan Standard Time (JST)"
+          update_settings: "Update Settings"
+          cancel: "Cancel"
+        emails:
+          updated: "Email preferences updated successfully"
+          none_selected: "No preferences selected"
+        languages:
+          updated: "Language preference updated to %{language}"
+          unsupported: "Unsupported language selected"
+        themes:
+          updated: "Corporate theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          updated: "Timezone updated to %{timezone}"
+          invalid: "Invalid timezone selected"
+      preference:
+        cookie:
+          edit:
+            h1: "Corporate Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_tracking_cookies: "Allow tracking cookies"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+        theme:
+          edit:
+            title: "Choose Dark or Light Theme"
+            description: "Pick the display mode that helps you focus on corporate dashboards."
+            legend: "Select a theme"
+            options:
+              light: "Light — bright backgrounds for well-lit spaces"
+              dark: "Dark — dimmed colors for low-light comfort"
+              system: "System default — follow your device settings"
+            hints:
+              light: "Great when you work during the day or in bright rooms."
+              dark: "Ideal for night shifts or reducing eye strain."
+              system: "Matches your operating system and switches automatically."
+            submit: "Save theme preference"
   support:
     array:
       last_word_connector: ", and "

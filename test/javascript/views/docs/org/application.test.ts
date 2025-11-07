@@ -1,38 +1,37 @@
-import {describe, expect, test} from "bun:test";
+import { describe, expect, test } from "bun:test";
 import {
-    DOCS_ORG_DEFAULT_ORIGIN,
-    readDocsOrgProps,
-    resolveDocsOrgUrl,
+	DOCS_ORG_DEFAULT_ORIGIN,
+	readDocsOrgProps,
+	resolveDocsOrgUrl,
 } from "../../../../../app/javascript/views/docs/org/application.ts";
 
 describe("Docs org landing shell (React Aria)", () => {
-    test("resolves the default staff docs origin", () => {
-        const url = resolveDocsOrgUrl();
+	test("resolves the default staff docs origin", () => {
+		const url = resolveDocsOrgUrl();
 
-        expect(url.origin).toBe(DOCS_ORG_DEFAULT_ORIGIN);
-        expect(url.pathname).toBe("/");
-    });
+		expect(url.origin).toBe(DOCS_ORG_DEFAULT_ORIGIN);
+		expect(url.pathname).toBe("/");
+	});
 
-    test("reads dataset values for hydration props", () => {
-        const element = {
-            dataset: {
-                codeName: "Umaxica Staff Docs",
-                docsServiceUrl: "docs.org.localhost",
-                helpServiceUrl: "help.org.localhost",
-                newsServiceUrl: "news.org.localhost",
-            },
-        } as unknown as HTMLElement;
+	test("reads dataset values for hydration props", () => {
+		const element = {
+			dataset: {
+				codeName: "Umaxica Staff Docs",
+				docsServiceUrl: "docs.org.localhost",
+				helpServiceUrl: "help.org.localhost",
+				newsServiceUrl: "news.org.localhost",
+			},
+		} as unknown as HTMLElement;
 
-        expect(readDocsOrgProps(element)).toEqual({
-            codeName: "Umaxica Staff Docs",
-            docsServiceUrl: "docs.org.localhost",
-            helpServiceUrl: "help.org.localhost",
-            newsServiceUrl: "news.org.localhost",
-        });
-    });
+		expect(readDocsOrgProps(element)).toEqual({
+			codeName: "Umaxica Staff Docs",
+			docsServiceUrl: "docs.org.localhost",
+			helpServiceUrl: "help.org.localhost",
+			newsServiceUrl: "news.org.localhost",
+		});
+	});
 
-    test("returns empty props when container missing", () => {
-        expect(readDocsOrgProps(null)).toEqual({});
-    });
-
+	test("returns empty props when container missing", () => {
+		expect(readDocsOrgProps(null)).toEqual({});
+	});
 });

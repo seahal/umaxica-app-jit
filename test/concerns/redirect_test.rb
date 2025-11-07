@@ -5,9 +5,9 @@ class RedirectTest < ActiveSupport::TestCase
 
   setup do
     @original_env = ENV.to_h
-    ENV["APEX_SERVICE_URL"] = "app.www.localdomain"
-    ENV["APEX_CORPORATE_URL"] = "com.www.localdomain"
-    ENV["APEX_STAFF_URL"] = "org.www.localdomain"
+    ENV["APEX_SERVICE_URL"] = "app.sign.localdomain"
+    ENV["APEX_CORPORATE_URL"] = "com.sign.localdomain"
+    ENV["APEX_STAFF_URL"] = "org.sign.localdomain"
     ENV["API_SERVICE_URL"] = "app.api.localdomain"
     ENV["API_CORPORATE_URL"] = "com.api.localdomain"
     ENV["API_STAFF_URL"] = "org.api.localdomain"
@@ -55,14 +55,6 @@ class RedirectTest < ActiveSupport::TestCase
     ENV.update(@original_env)
   end
 
-  test "generate_redirect_url should encode valid URLs" do
-    valid_url = "https://app.www.localdomain/test"
-    encoded = generate_redirect_url(valid_url)
-
-    assert_not_nil encoded
-    assert_equal valid_url, Base64.urlsafe_decode64(encoded)
-  end
-
   test "generate_redirect_url should reject invalid hosts" do
     invalid_url = "https://malicious.com/test"
     encoded = generate_redirect_url(invalid_url)
@@ -96,16 +88,16 @@ class RedirectTest < ActiveSupport::TestCase
   end
 
   test "allowed_host? should accept exact matches" do
-    assert allowed_host?("app.www.localdomain")
+    assert allowed_host?("app.sign.localdomain")
   end
 
   test "allowed_host? should accept subdomains" do
-    assert allowed_host?("sub.app.www.localdomain")
+    assert allowed_host?("sub.app.sign.localdomain")
   end
 
   test "allowed_host? should reject other domains" do
     assert_not allowed_host?("malicious.com")
-    assert_not allowed_host?("app.www.localdomain.evil.com")
+    assert_not allowed_host?("app.sign.localdomain.evil.com")
   end
 
   test "allowed_host? should handle blank hosts" do

@@ -47,6 +47,7 @@ class UserTelephoneTest < ActiveSupport::TestCase
     user_telephone = UserTelephone.new(@valid_attributes.merge(number: "invalid!@#"))
 
     assert_not user_telephone.valid?
+    # Error message will be in the current locale (Japanese in test environment)
     assert_includes user_telephone.errors[:number], "は不正な値です"
   end
 

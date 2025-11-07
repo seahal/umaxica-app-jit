@@ -4,11 +4,11 @@ source "https://rubygems.org"
 ruby "3.4.7"
 
 # rake
-gem "rake", "13.3.1"
+gem "rake"
 # rack
 gem "rack"
 # Rails
-gem "rails", "~> 8.1", ">= 8.1.1"
+gem "rails"
 # Use Postgres as the database for Active Record
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -58,8 +58,6 @@ gem "rqrcode"
 gem "solid_cache"
 # pagination
 gem "kaminari"
-# Breadcrumbs
-# gem "gretel"
 # Social Login
 gem "omniauth"
 gem "omniauth-apple"
@@ -72,19 +70,17 @@ gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
 # OpenAPI
-# gem "rswag"
+gem "rswag"
 gem "ostruct"
-# gem "rswag-api"
-# gem "rswag-ui"
+gem "rswag-api"
+gem "rswag-ui"
 # JWT
 gem "jwt"
 #
 gem "jsbundling-rails"
 # for fastly cache purge
 gem "fastly"
-# for cloudflare
-#
-# gem "view_component"
+
 
 group :development, :test do
   # to avoid n+1 queries
@@ -93,6 +89,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
+  #
+  # gem "coverband"
 end
 
 group :development do
@@ -128,4 +126,7 @@ group :development do
   gem "license_finder", require: false
   #
   gem "ruby-lsp"
+  #
+  gem "reek"
+  gem "churn"
 end
