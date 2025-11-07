@@ -121,9 +121,7 @@
 		"ghcr.io/devcontainers/features/github-cli:1": {
 			"version": "latest"
 		},
-		"ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {
-			"version": "latest"
-		},
+		"ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {
 			"version": "latest"
 		},
@@ -135,7 +133,6 @@
 		}
 	},
 	"mounts": [
-		"source=${localWorkspaceFolder}/.devcontainer/lefthook.container.yml,target=/workspace/lefthook.yml,type=bind",
 		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume"
 	]
 }
