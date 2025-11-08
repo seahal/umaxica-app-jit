@@ -102,7 +102,18 @@ ja:
               light: 共有スペースや明るいオフィスでの利用におすすめです。
               dark: 夜間の作業や目の疲れを軽減したいときに最適です。
               system: OS のテーマ変更に連動して切り替わります。
-            submit: テーマ設定を保存
+          submit: テーマ設定を保存
+    top:
+      app:
+        preferences:
+          themes:
+            updated: テーマを%{theme}に更新しました
+            invalid: 無効なテーマが選択されました
+      com:
+        preferences:
+          themes:
+            updated: テーマを%{theme}に更新しました
+            invalid: 無効なテーマが選択されました
     root:
       app:
         preference:
@@ -469,6 +480,8 @@ ja:
             you_have_already_logged_in: あなたはログインしています
             forbidden_action: 最初からやり直してください
             your_session_was_expired: 有効期間が切れたので、最初からやり直してください
+          update:
+            success: 電話番号の登録が完了しました。
       setting:
         totp:
           new:

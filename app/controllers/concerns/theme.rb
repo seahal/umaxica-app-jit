@@ -18,6 +18,7 @@ module Theme
     "lt" => "light"
   ).freeze
   THEME_QUERY_KEYS = %w[lx ri tz].freeze
+  PREFERENCE_COOKIE_SCOPES = %w[app com].freeze
 
   included do
     before_action :assign_current_theme, only: :edit
@@ -78,7 +79,7 @@ module Theme
       same_site: :lax
     }
 
-    persist_app_preferences_cookie!(theme) if preference_scope == "app"
+    persist_preferences_cookie!(theme) if preference_cookie_enabled?
   end
 
   def preference_scope
@@ -99,6 +100,8 @@ module Theme
       Rails.application.routes.url_helpers.edit_top_app_preference_theme_url(**query)
     when "org"
       Rails.application.routes.url_helpers.edit_top_org_preference_theme_url(**query)
+    when "com"
+      Rails.application.routes.url_helpers.edit_top_com_preference_theme_url(**query)
     else
       # Root domain theme functionality has been moved to Hono
       raise NotImplementedError, "Theme functionality has been moved to Hono application"
@@ -135,10 +138,10 @@ module Theme
     hash.transform_keys { |key| key.respond_to?(:to_sym) ? key.to_sym : key }
   end
 
-  def persist_app_preferences_cookie!(theme)
+  def persist_preferences_cookie!(theme)
     keys = PREFERENCE_KEYS
     defaults = DEFAULT_PREFERENCES
-    cookie_key = PREFERENCE_COOKIE_KEY
+    cookie_key = preferences_cookie_key
 
     resolved = defaults.dup
 
@@ -165,5 +168,13 @@ module Theme
       secure: Rails.env.production?,
       same_site: :lax
     }
+  end
+
+  def preference_cookie_enabled?
+    PREFERENCE_COOKIE_SCOPES.include?(preference_scope)
+  end
+
+  def preferences_cookie_key
+    :"root_#{preference_scope}_preferences"
   end
 end

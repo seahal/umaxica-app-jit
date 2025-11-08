@@ -44,6 +44,17 @@ ja:
         authentication:
           destroy:
             jump_obj: sign in with email
+    top:
+      app:
+        preferences:
+          themes:
+            updated: テーマを%{theme}に更新しました
+            invalid: 無効なテーマが選択されました
+      com:
+        preferences:
+          themes:
+            updated: テーマを%{theme}に更新しました
+            invalid: 無効なテーマが選択されました
     root:
       app:
         preference:
@@ -318,6 +329,8 @@ ja:
             you_have_already_logged_in: あなたはログインしています
             forbidden_action: 最初からやり直してください
             your_session_was_expired: 有効期間が切れたので、最初からやり直してください
+          update:
+            success: Telephone verification completed successfully.
       setting:
         totp:
           new:

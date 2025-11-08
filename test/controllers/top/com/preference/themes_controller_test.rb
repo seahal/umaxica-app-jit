@@ -9,12 +9,76 @@ module Top
   module Com
     module Preference
       class ThemesControllerTest < ActionDispatch::IntegrationTest
-        # NOTE: Theme functionality for top/com has been moved to Hono application
-        # Controller exists but raises NotImplementedError when theme_redirect_url is called
+        # rubocop:disable Minitest/MultipleAssertions
+        test "renders theme edit page with system selected by default 2" do
+          get edit_top_com_preference_theme_url
 
-        test "placeholder test for themes controller" do
-          skip "Theme functionality has been moved to Hono application"
+          assert_response :success
+
+          assert_select "h1", text: I18n.t("top.com.preference.theme.edit.title")
+          assert_select "p.theme-description", text: I18n.t("top.com.preference.theme.edit.description")
+
+          assert_select "form" do
+            assert_select "legend", text: I18n.t("top.com.preference.theme.edit.legend")
+            assert_select "input[type='hidden'][name='_method'][value='patch']", count: 1
+            assert_select "input[type='radio'][name='theme'][value='li'][checked]", count: 0
+            assert_select "input[type='radio'][name='theme'][value='dr'][checked]", count: 0
+            assert_select "input[type='radio'][name='theme'][value='sy'][checked]", count: 1
+            assert_select "label[for='theme_light_com']", text: I18n.t("top.com.preference.theme.edit.options.light")
+            assert_select "label[for='theme_dark_com']", text: I18n.t("top.com.preference.theme.edit.options.dark")
+            assert_select "label[for='theme_system_com']", text: I18n.t("top.com.preference.theme.edit.options.system")
+            assert_select ".hint", text: I18n.t("top.com.preference.theme.edit.hints.light")
+            assert_select ".hint", text: I18n.t("top.com.preference.theme.edit.hints.dark")
+            assert_select ".hint", text: I18n.t("top.com.preference.theme.edit.hints.system")
+            assert_select "input[type='submit'][value=?]", I18n.t("top.com.preference.theme.edit.submit")
+          end
+
+          assert_select "a[href^='#{top_com_preference_path}']", text: I18n.t("top.com.preferences.back_to_settings"), count: 1
         end
+        # rubocop:enable Minitest/MultipleAssertions
+
+        # rubocop:disable Minitest/MultipleAssertions
+        test "updates theme preference and persists to cookies" do
+          patch top_com_preference_theme_url, params: { theme: "dr", lx: "ja", ri: "jp", tz: "jst" }
+
+          assert_redirected_to edit_top_com_preference_theme_url(lx: "ja", ri: "jp", tz: "jst")
+          assert_equal "テーマをダークテーマに更新しました", flash[:notice]
+          assert_equal "dark", session[:theme]
+          assert_equal "dark", signed_cookie(:root_com_theme)
+
+          persisted_preferences = JSON.parse(signed_cookie(:root_com_preferences))
+
+          assert_equal "dr", persisted_preferences["ct"]
+
+          follow_redirect!
+
+          assert_response :success
+          assert_select "input[type='radio'][name='theme'][value='dr'][checked]", count: 1
+          assert_select "a[href^='#{top_com_preference_path}']", minimum: 1
+        end
+        # rubocop:enable Minitest/MultipleAssertions
+
+        # rubocop:disable Minitest/MultipleAssertions
+        test "re-renders edit on invalid theme selection" do
+          patch top_com_preference_theme_url, params: { theme: "li", lx: "ja", ri: "jp", tz: "jst" }
+
+          assert_redirected_to edit_top_com_preference_theme_url(lx: "ja", ri: "jp", tz: "jst")
+          follow_redirect!
+
+          assert_equal "light", session[:theme]
+          assert_equal "light", signed_cookie(:root_com_theme)
+          assert_select "a[href^='#{top_com_preference_path}']", minimum: 1
+
+          patch top_com_preference_theme_url, params: { theme: "neon", lx: "ja", ri: "jp", tz: "jst" }
+
+          assert_response :unprocessable_content
+          assert_equal "無効なテーマが選択されました", flash[:alert]
+          assert_equal "light", session[:theme]
+          assert_equal "light", signed_cookie(:root_com_theme)
+          assert_select "input[type='radio'][name='theme'][value='li'][checked]", count: 1
+          assert_select "a[href^='#{top_com_preference_path}']", minimum: 1
+        end
+        # rubocop:enable Minitest/MultipleAssertions
       end
     end
   end
