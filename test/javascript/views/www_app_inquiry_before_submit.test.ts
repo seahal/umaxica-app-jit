@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test } from "bun:test";
 
 const modulePath =
-	"../../../app/javascript/views/top/app/inquiry/before_submit.js";
+	"../../../app/javascript/views/www/app/inquiry/before_submit.js";
 
 const originalDocument = (globalThis as { document?: Document }).document;
 const originalAlert = (globalThis as { alert?: (message: string) => void })
