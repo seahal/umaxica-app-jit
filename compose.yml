@@ -1,10 +1,10 @@
 name: "jit"
+
 services:
   core:
     build:
       context: .
       dockerfile: ./Dockerfile
-#      target: development
       args:
         COMMIT_HASH: "abcdef"
         DOCKER_UID: ${UID:-1000}
@@ -23,68 +23,95 @@ services:
       - /home/jit/workspace/tmp:size=4G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
       - .:/home/jit/workspace
-      - ./docker/core/preferences:/home/jit
     networks:
       - backend
       - frontend
       - observability
     depends_on:
-      - primary
-      - replica
-      - kafka
-      - valkey
-      - minio
+      primary:
+        condition: service_healthy
+      replica:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
   minio:
-    image: minio/minio
-    volumes:
-      - minio-volume:/data
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
-    command: server /data --console-address ":9001"
-  primary:
-    image: postgres:18.0-alpine
-    command: -c 'config_file=/etc/postgresql/postgresql.conf' -c 'hba_file=/etc/postgresql/pg_hba.conf'
+    volumes:
+      - minio-volume:/data
+    ports:
+      - "127.0.0.1:9000:9000" # API
+      - "127.0.0.1:9001:9001" # Console
     networks:
       - backend
+    restart: unless-stopped
+
+  primary:
+    image: postgres:18.0-alpine
+    command:
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+      - -c
+      - hba_file=/etc/postgresql/pg_hba.conf
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
-      TZ: UTC
-      POSTGRES_HOST_AUTH_METHOD: trust # NOTE: Development only
-      POSTGRES_INITDB_WAL_LEVEL: replica # wal_level v1
-      POSTGRES_INITDB_MAX_WAL_SENDERS: 10 # max_wal_senders v1
-      POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10 # max_replication_slots v1
       POSTGRES_DB: db
+      TZ: UTC
+      POSTGRES_HOST_AUTH_METHOD: trust # dev only
+      POSTGRES_INITDB_WAL_LEVEL: replica
+      POSTGRES_INITDB_MAX_WAL_SENDERS: 10
+      POSTGRES_INITDB_MAX_REPLICATION_SLOTS: 10
     tmpfs:
       - /var/lib/postgresql/18:uid=70,gid=70
     ports:
       - "127.0.0.1:5435:5432"
     volumes:
-      - ./docker/psql-pub/postgresql.conf:/etc/postgresql/postgresql.conf
-      - ./docker/psql-pub/pg_hba.conf:/etc/postgresql/pg_hba.conf
-      - ./docker/psql-pub:/docker-entrypoint-initdb.d
+      - ./docker/psql-pub/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ./docker/psql-pub/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      - ./docker/psql-pub:/docker-entrypoint-initdb.d:ro
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d db -h 127.0.0.1"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
   replica:
     image: postgres:18.0-alpine
     entrypoint: /entrypoint.sh
-    networks:
-      - backend
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
-      TZ: UTC
-      POSTGRES_HOST_AUTH_METHOD: trust # NOTE: Development only
       POSTGRES_DB: db
-    ports:
-      - "127.0.0.1:5436:5432"
+      TZ: UTC
+      POSTGRES_HOST_AUTH_METHOD: trust # dev only
     tmpfs:
       - /var/lib/postgresql/18:uid=70,gid=70
+    ports:
+      - "127.0.0.1:5436:5432"
     volumes:
-      - ./docker/psql-sub/entrypoint.sh:/entrypoint.sh
-      - ./docker/psql-sub/postgresql.conf:/etc/postgresql/postgresql.conf
-      - ./docker/psql-sub/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./docker/psql-sub/entrypoint.sh:/entrypoint.sh:ro
+      - ./docker/psql-sub/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ./docker/psql-sub/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
     depends_on:
-      - primary
+      primary:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
   valkey:
     image: valkey/valkey:8.0-alpine3.22
     ports:
@@ -93,18 +120,27 @@ services:
       - backend
     volumes:
       - valkey-volume:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+      start_period: 3s
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.9.0
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     networks:
       - backend
+    restart: unless-stopped
+
   kafka:
     image: confluentinc/cp-kafka:7.9.0
-    ports:
-      - "127.0.0.1:${KAFKA_BROKER_PORT:-19092}:9092"
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_started
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
@@ -115,107 +151,90 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_MIN_INSYNC_REPLICAS: 1
+    ports:
+      - "127.0.0.1:${KAFKA_BROKER_PORT:-19092}:9092"
     networks:
       - backend
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "kafka-topics --bootstrap-server kafka:29092 --list >/dev/null 2>&1 || exit 1",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+
   kafka-ui:
     image: ghcr.io/kafbat/kafka-ui:v1.2.0
-    ports:
-      - "127.0.0.1:${KAFKA_UI_PORT:-18080}:8080"
     depends_on:
-      - kafka
-    restart: always
+      kafka:
+        condition: service_healthy
     environment:
       KAFKA_CLUSTERS_0_NAME: local-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    ports:
+      - "127.0.0.1:${KAFKA_UI_PORT:-18080}:8080"
     networks:
       - backend
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   ports:
-  #     - 8000:3000
-  #   volumes:
-  #     - grafana-volume:/var/lib/grafana
-  #     # Add config files if available
-  #     # - ./docker/grafana/provisioning:/etc/grafana/provisioning
-  #   networks:
-  #     - backend
-  #   depends_on:
-  #     - prometheus
-  #     - loki
-  #     - tempo
-  #     - elasticsearch
-  #   environment:
-  #     GF_SECURITY_ADMIN_USER: admin
-  #     GF_SECURITY_ADMIN_PASSWORD: admin
-  #     GF_PATHS_PROVISIONING: /etc/grafana/provisioning
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
+    restart: always
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/local-config.yaml
     ports:
-      - "4317:4317"   # OTLP gRPC
-      - "4318:4318"   # OTLP HTTP
-      - "8889:8889"   # Prometheus metrics exporter
+      - "127.0.0.1:${LOKI_HOST_PORT:-33100}:3100"
     volumes:
-      - ./docker/otel-collector/otel-collector-config.yml:/etc/otelcol-contrib/config.yaml
+      - loki-volume:/tmp/loki
     networks:
       - observability
-    restart: always
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:latest
+    command: -config.file=/etc/tempo.yaml
     volumes:
-      - prometheus-volume:/prometheus
-      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
+      - ./docker/tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo-volume:/tmp/tempo
+    ports:
+      - "127.0.0.1:14268:14268" # jaeger ingest
+      - "127.0.0.1:3200:3200" # tempo
+      - "127.0.0.1:9095:9095" # tempo grpc
+      - "127.0.0.1:4317:4317" # otlp grpc
+      - "127.0.0.1:4318:4318" # otlp http
+      - "127.0.0.1:9411:9411" # zipkin
+    networks:
+      - observability
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+    ports:
+      - "127.0.0.1:8000:3000"
+    volumes:
+      - grafana-volume:/var/lib/grafana
+      # - ./docker/grafana/provisioning:/etc/grafana/provisioning
     networks:
       - observability
     depends_on:
-      - otel-collector
-    restart: always
-  # Log collection
-  # loki:
-  #   image: grafana/loki:latest
-  #   ports:
-  #     - "3100:3100"
-  #   volumes:
-  #     - loki-volume:/tmp/loki
-  #   command: -config.file=/etc/loki/local-config.yaml
-  #   networks:
-  #     - observility
-  #   restart: always
-  # # Distributed tracing
-  # tempo:
-  #   image: grafana/tempo:latest
-  #   command: -config.file=/etc/tempo.yaml  # Change extension from .yaml to .yml
-  #   volumes:
-  #   - ./docker/tempo/tempo.yaml:/etc/tempo.yaml  # Update the file name and path
-  #   - tempo-volume:/tmp/tempo
-  #   ports:
-  #     - "14268:14268"  # jaeger ingest
-  #     - "3200:3200"   # tempo
-  #     - "9095:9095" # tempo grpc
-  #     - "4317:4317"  # otlp grpc
-  #     - "4318:4318"  # otlp http:
-  #  minio-volume:
-  #     - "9411:9411"   # zipkin
-  #   depends_on:
-  #     - main
+      - loki
+      - tempo
+    restart: unless-stopped
+
 networks:
-  backend:
-  frontend:
-  observability:
+  backend: {}
+  frontend: {}
+  observability: {}
 
 volumes:
-  psql-pub-volume:
-  psql-sub-volume:
-  valkey-volume:
-  kafka-broker-volume:
-  minio-volume:
-  node-volume:
-  bundler-volume:
-  prometheus-volume:
+  valkey-volume: {}
+  minio-volume: {}
+  loki-volume: {}
+  tempo-volume: {}
+  grafana-volume: {}

@@ -107,7 +107,7 @@ Rails.application.routes.draw do
         # TODO: Implement news management
         # resources :news
         # TODO: Implement WWW docs creation
-        # namespace :www do
+        # namespace :top do
         #   namespace :com do
         #     resources :docs, only: %i[new]
         #   end

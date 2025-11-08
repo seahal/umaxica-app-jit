@@ -32,8 +32,8 @@ class StaffRecoveryCodeTest < ActiveSupport::TestCase
     assert_respond_to StaffRecoveryCode.new, :staff
   end
 
-  test "should inherit from IdentifiersRecord" do
-    assert_includes StaffRecoveryCode.ancestors, IdentifiersRecord
+  test "should inherit from IdentitiesRecord" do
+    assert_includes StaffRecoveryCode.ancestors, IdentitiesRecord
   end
 
   test "should have required database columns" do

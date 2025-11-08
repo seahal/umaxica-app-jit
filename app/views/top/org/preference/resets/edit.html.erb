@@ -1,0 +1,13 @@
+<% content_for :page_title, t('top.org.preference.resets.title') %>
+
+<h1><%= t('top.org.preference.resets.title') %></h1>
+
+<p><%= t('top.org.preference.resets.description') %></p>
+
+<%= button_to t('top.org.preference.resets.button'),
+              top_org_preference_reset_path,
+              method: :delete,
+              data: { confirm: t('top.org.preference.resets.confirm') },
+              class: "btn btn-danger" %>
+
+<p><%= link_to t('top.org.preference.resets.back'), top_org_preference_path %></p>

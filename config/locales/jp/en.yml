@@ -681,6 +681,9 @@ en:
             JST: "Japan Standard Time (JST)"
           update_settings: "Update Settings"
           cancel: "Cancel"
+        resets:
+          title: "reset preferenece???"
+        reset_settings: "reset setting??"
       preference:
         cookie:
           edit:
@@ -732,6 +735,12 @@ en:
             JST: "Japan Standard Time (JST)"
           update_settings: "Update Settings"
           cancel: "Cancel"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region & Language Settings"
+        theme_settings: "Theme Settings"
+        reset_settings: "Reset Settings"
+        resets:
+          title: "Reset Preferences"
       preference:
         cookie:
           edit:
@@ -787,6 +796,7 @@ en:
             JST: "Japan Standard Time (JST)"
           update_settings: "Update Settings"
           cancel: "Cancel"
+        reset_settings: "Reset Settings"
       preference:
         cookie:
           edit:

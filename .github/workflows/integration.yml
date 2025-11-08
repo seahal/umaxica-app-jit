@@ -1,159 +1,217 @@
 # CI/CD Pipeline for Umaxica App
 name: 'CI'
+
 on:
   push:
     branches: [develop]
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 4 * * *' # This runs the workflow daily at 06:00 UTC
+    - cron: '0 4 * * *' # Daily at 06:00 UTC
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 permissions:
   contents: read
   issues: write
   checks: write
   pull-requests: write
+
 defaults:
   run:
     shell: bash
+
 env:
+  # CI Configuration
   CI: true
+
+  # Version Configuration
+  RUBY_VERSION: '3.4.7'
+  BUN_VERSION: '1.3.1'
+
+  # Rails Configuration
   RAILS_ENV: test
   RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
   NODE_ENV: test
+
+  # Bundler Configuration
   BUNDLE_WITH: test
+  BUNDLE_JOBS: 4
+
+  # Database Configuration
   POSTGRESQL_USER: postgres
   POSTGRESQL_PASSWORD: password
+
+  # Region Configuration
+  REGION_CODE: jp
+  APEX_REGION: true
 jobs:
+  # ====================
+  # Security Checks
+  # ====================
   security:
-    name: Security Checks (RuboCop, Brakeman, Bundle Audit)
+    name: Security Checks (Brakeman, Bundle Audit, Bun Audit)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      BUNDLE_JOBS: 4
-      REGION_CODE: jp
-      APEX_REGION: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4.7'
+          ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: '1.3.1'
+          bun-version: ${{ env.BUN_VERSION }}
+
       - name: Install Bun dependencies
         run: bun install
-      - name: Run Brakeman
+
+      - name: Run Brakeman security scanner
         run: bundle exec brakeman -z -q
+
       - name: Run bundle-audit
         run: bundle exec bundle audit check --update
+
       - name: Run bun audit
         run: bun audit
+
       - name: Check unused routing config
         run: bundle exec rails routes --unused
 
+  # ====================
+  # Linting - Ruby
+  # ====================
   lint-ruby:
-    name: Ruby Linting
+    name: Ruby Linting (RuboCop, ERB Lint)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      BUNDLE_JOBS: 4
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4.7'
+          ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
+
       - name: Run RuboCop
         run: bundle exec rubocop --fail-fast
+
       - name: Run ERB Lint
         run: bundle exec erb_lint --lint-all
 
+  # ====================
+  # Linting - JavaScript/TypeScript
+  # ====================
   lint-js:
-    name: JavaScript/TypeScript Linting
-    runs-on: ubuntu-slim
+    name: JavaScript/TypeScript Linting (Format, Lint, Type Check)
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: '1.3.1'
+          bun-version: ${{ env.BUN_VERSION }}
+
       - name: Install Bun dependencies
         run: bun install
-      - name: Run bun format
+
+      - name: Run format check
         run: bun run format
-      - name: Run bun lint
+
+      - name: Run lint
         run: bun run lint
-      - name: Run bun type check
+
+      - name: Run type check
         run: bun run type
 
+  # ====================
+  # Testing - Rails
+  # ====================
   test-rails:
     name: Ruby on Rails Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      # Rails Configuration
-      RAILS_ENV: test
+      # Rails & Rack
       RACK_ENV: test
       RAILS_MAX_THREADS: 5
-      # Redis (use local Redis service inside Compose)
+
+      # Redis
       REDIS_URL: redis://redis:6379/0
-      BUNDLE_JOBS: 4
-      # App Configuration
+
+      # Application
       NAME: UMAXICA
       BRAND_NAME: UMAXICA
       PORT: 3000
-      #
-      REGION_CODE: jp
-      APEX_REGION: true
+
       # Identifiers
       SINGLETON_DEFAULT_SALT: hoge
       IDENTIFIER_REGION_CODE: '392'
       IDENTIFIER_INSTANCE_ID: '0123456789'
-      # Domain URLs
+
+      # Domain URLs - Top Level
       TOP_CORPORATE_URL: com.localhost
       TOP_SERVICE_URL: app.localhost
       TOP_STAFF_URL: org.localhost
+
+      # Domain URLs - Sign
       SIGN_SERVICE_URL: sign.app.localhost
       SIGN_STAFF_URL: sign.org.localhost
-      BFF_CORPORATE_URL: www.com.localhost
-      BFF_SERVICE_URL: www.app.localhost
-      BFF_STAFF_URL: www.org.localhost
+
+      # Domain URLs - BFF
+      BFF_CORPORATE_URL: top.com.localhost
+      BFF_SERVICE_URL: top.app.localhost
+      BFF_STAFF_URL: top.org.localhost
+
+      # Domain URLs - API
       API_CORPORATE_URL: api.com.localhost
       API_SERVICE_URL: api.app.localhost
       API_STAFF_URL: api.org.localhost
+
+      # Domain URLs - Docs
       DOCS_CORPORATE_URL: docs.com.localhost
       DOCS_SERVICE_URL: docs.app.localhost
       DOCS_STAFF_URL: docs.org.localhost
+
+      # Domain URLs - News
       NEWS_CORPORATE_URL: news.com.localhost
       NEWS_SERVICE_URL: news.app.localhost
       NEWS_STAFF_URL: news.org.localhost
+
+      # Domain URLs - Help
       HELP_CORPORATE_URL: help.com.localhost
       HELP_SERVICE_URL: help.app.localhost
       HELP_STAFF_URL: help.org.localhost
+
+      # Domain URLs - Edge
       EDGE_CORPORATE_URL: localhost:5170
       EDGE_SERVICE_URL: localhost:5171
       EDGE_STAFF_URL: localhost:5172
-      # Database Configuration
+
+      # PostgreSQL - Connection
       POSTGRESQL_USER: root
       POSTGRESQL_PORT: 5432
       POSTGRESQL_PASSWORD: password
+
+      # PostgreSQL - Primary/Replica Hosts
       POSTGRESQL_UNIVERSAL_PUB: localhost
       POSTGRESQL_UNIVERSAL_SUB: localhost
       POSTGRESQL_GUEST_PUB: localhost
       POSTGRESQL_GUEST_SUB: localhost
-      POSTGRESQL_IDENTIFIER_PUB: localhost
-      POSTGRESQL_IDENTIFIER_SUB: localhost
+      POSTGRESQL_IDENTITY_PUB: localhost
+      POSTGRESQL_IDENTITY_SUB: localhost
       POSTGRESQL_PROFILE_PUB: localhost
       POSTGRESQL_PROFILE_SUB: localhost
       POSTGRESQL_TOKEN_PUB: localhost
@@ -170,36 +228,48 @@ jobs:
       POSTGRESQL_SPECIALITY_SUB: localhost
       POSTGRESQL_STORAGE_PUB: localhost
       POSTGRESQL_STORAGE_SUB: localhost
-      # Kafka Configuration
+
+      # Kafka
       KAFKA_BROKERS: kafka:29092
-      # Mail Configuration
+
+      # Email
       RESEND_SMTP_ENDPOINT: smtp.resend.com
       RESEND_SMTP_USER_NAME: resend
-      # Object Storage Configuration
+
+      # Object Storage
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
     services:
       postgres:
         image: postgres:18
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-          - 5432:5432
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: password
           POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
       redis:
         image: redis:7-alpine
-        options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
         ports:
           - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
       zookeeper:
         image: confluentinc/cp-zookeeper:7.4.0
         env:
           ZOOKEEPER_CLIENT_PORT: 2181
           ZOOKEEPER_TICK_TIME: 2000
+
       kafka:
         image: confluentinc/cp-kafka:7.4.0
         env:
@@ -209,24 +279,32 @@ jobs:
           KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
           KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
           KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-        options: >-
-          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092" --health-interval 30s --health-timeout 10s --health-retries 5
         ports:
           - 9092:9092
+        options: >-
+          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4.7'
+          ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
+
       - name: Setup test databases
         run: |
           bin/rails db:create
           bin/rails db:migrate
+
       - name: Run Rails tests
         run: bundle exec rails test
+
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -234,6 +312,7 @@ jobs:
           name: rails-coverage-report
           path: coverage/
           retention-days: 30
+
       - name: Upload test logs
         if: failure()
         uses: actions/upload-artifact@v4
@@ -243,23 +322,31 @@ jobs:
             log/test.log
             tmp/screenshots/
           retention-days: 7
+  # ====================
+  # Testing - JavaScript/TypeScript
+  # ====================
   test-js:
-    name: Bun & Co. Tests
+    name: JavaScript/TypeScript Tests (Bun)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: '1.3.1'
+          bun-version: ${{ env.BUN_VERSION }}
+
       - name: Install Bun dependencies
         run: bun install
+
       - name: Build JavaScript assets
         run: bun run build
-      - name: Run JavaScript tests with coverage
+
+      - name: Run tests with coverage
         run: bun test --coverage --coverage-reporter=lcov
+
       - name: Prepare coverage artifact
         if: always()
         run: |
@@ -269,6 +356,7 @@ jobs:
           else
             echo "No Bun coverage file generated"
           fi
+
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -276,20 +364,30 @@ jobs:
           name: js-coverage-report
           path: coverage/bun/
           retention-days: 30
+  # ====================
+  # Security - Docker Image Scan
+  # ====================
   image-check:
-    name: Docker Image Vulnerability Scan
+    name: Docker Image Vulnerability Scan (Trivy)
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-      - name: Build an image from Dockerfile
-        run: docker build . --target production -t asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }} -f Dockerfile
+
+      - name: Build Docker image
+        run: |
+          docker build . \
+            --target production \
+            --tag asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }} \
+            --file Dockerfile
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }}'
-          format: 'table'
+          image-ref: asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }}
+          format: table
           exit-code: '1'
           ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          vuln-type: os,library
+          severity: CRITICAL,HIGH

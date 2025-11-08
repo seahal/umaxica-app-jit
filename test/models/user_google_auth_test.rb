@@ -36,8 +36,8 @@ class UserGoogleAuthTest < ActiveSupport::TestCase
     assert_includes UserGoogleAuth.column_names, "user_id"
   end
 
-  test "should inherit from IdentifiersRecord" do
-    assert_includes UserGoogleAuth.ancestors, IdentifiersRecord
+  test "should inherit from IdentitiesRecord" do
+    assert_includes UserGoogleAuth.ancestors, IdentitiesRecord
   end
 
   test "should handle token storage" do

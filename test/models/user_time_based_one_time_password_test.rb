@@ -8,8 +8,8 @@
 require "test_helper"
 
 class UserTimeBasedOneTimePasswordTest < ActiveSupport::TestCase
-  test "inherits from IdentifiersRecord" do
-    assert_operator UserTimeBasedOneTimePassword, :<, IdentifiersRecord
+  test "inherits from IdentitiesRecord" do
+    assert_operator UserTimeBasedOneTimePassword, :<, IdentitiesRecord
   end
 
   test "belongs to user" do

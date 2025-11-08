@@ -12,7 +12,7 @@
 #
 #  index_user_emails_on_user_id  (user_id)
 #
-class UserEmail < IdentifiersRecord
+class UserEmail < IdentitiesRecord
   include SetId
   include Email
 end

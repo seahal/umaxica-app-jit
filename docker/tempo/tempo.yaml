@@ -14,7 +14,8 @@ distributor:
         grpc:
         http:
     zipkin:
-      endpoint: /api/v2/spans
+      # Bind explicit host:port so Tempo listens correctly; default path /api/v2/spans stays intact.
+      endpoint: 0.0.0.0:9411
 
 ingester:
   lifecycler:

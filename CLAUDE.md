@@ -82,7 +82,7 @@ bundle exec rails test
 bundle exec rails test test/models/user_test.rb
 
 # Run tests for specific controller
-bundle exec rails test test/views/www/app/authentications_controller_test.rb
+bundle exec rails test test/views/top/app/authentications_controller_test.rb
 
 # Continuous testing with Guard
 bundle exec guard
@@ -140,7 +140,7 @@ Shared model logic is in `app/models/concerns/`:
 ### Database Connections
 Models inherit from domain-specific base classes:
 - `UniversalRecord` - Universal database
-- `IdentifiersRecord` - Identifier database
+- `IdentitiesRecord` - Identifier database
 - `GuestsRecord` - Guest database
 - etc.
 

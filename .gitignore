@@ -104,5 +104,5 @@ node_modules
 /out
 
 
-/docker/core/preferences/
+/docker/core/preferences/*
 !/docker/core/preferences/.bashrc

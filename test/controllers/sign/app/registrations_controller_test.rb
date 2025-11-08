@@ -50,7 +50,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     escaped_brand = Regexp.escape(expected_brand)
 
     assert_select "head", count: 1 do
-      assert_select "title", count: 1, text: /#{ escaped_brand }/
+      assert_select "title", count: 1, text: "#{expected_brand} (app)"
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do

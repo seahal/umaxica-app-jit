@@ -44,6 +44,17 @@ ja:
         authentication:
           destroy:
             jump_obj: sign in with email
+    top:
+      app:
+        preferences:
+          themes:
+            updated: テーマを%{theme}に更新しました
+            invalid: 無効なテーマが選択されました
+      com:
+        preferences:
+          themes:
+            updated: テーマを%{theme}に更新しました
+            invalid: 無効なテーマが選択されました
     root:
       app:
         preference:
@@ -141,6 +152,10 @@ ja:
             page_title: エラーが生じました
             page_description: はじめからやりなおしてください
             back_to_contact_root_page: もどる
+          create:
+            success: お問い合わせを受け付けました。担当者より順次ご連絡いたします。
+            failure: 入力内容を確認し、もう一度送信してください。
+            turnstile_error: セキュリティ検証に失敗しました。再度お試しください。
   hello: やぁ、せかい
   messages:
     region_settings_updated_successfully: 地域設定が正常に更新されました。
@@ -314,6 +329,8 @@ ja:
             you_have_already_logged_in: あなたはログインしています
             forbidden_action: 最初からやり直してください
             your_session_was_expired: 有効期間が切れたので、最初からやり直してください
+          update:
+            success: Telephone verification completed successfully.
       setting:
         totp:
           new:

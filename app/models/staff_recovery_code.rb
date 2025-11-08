@@ -13,6 +13,6 @@
 #
 #  index_staff_recovery_codes_on_staff_id  (staff_id)
 #
-class StaffRecoveryCode < IdentifiersRecord
+class StaffRecoveryCode < IdentitiesRecord
   belongs_to :staff
 end

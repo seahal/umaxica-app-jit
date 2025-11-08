@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (app) Apex" %>
+  <title>UMAXICA <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "bff/app/main" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+</head>
+
+<body class="px-4">
+<header>
+  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Umaxica(www, app)</a></h1>
+</header>
+
+<hr>
+
+<main class="container mx-auto mt-28 px-5 block">
+  <%= yield %>
+</main>
+
+<nav>
+
+</nav>
+
+<hr>
+
+<footer>
+  <ul>
+    <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Home</a></li>
+    <li><%= link_to 'Cookie', edit_top_app_preference_cookie_path %></li>
+    <li>Support</li>
+    <li>Privacy</li>
+    <li>Security</li>
+    <li>Accessibility</li>
+  </ul>
+  <p>© 2025 Umaxica.</p>
+</footer>
+
+</body>
+</html>

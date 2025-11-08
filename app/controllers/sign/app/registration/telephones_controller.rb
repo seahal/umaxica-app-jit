@@ -50,6 +50,8 @@ module Sign
             session[:user_telephone_registration] = {
               id: id,
               number: @user_telephone.number,
+              confirm_policy: boolean_value(@user_telephone.confirm_policy),
+              confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
               otp_private_key: otp_private_key,
               otp_counter: otp_count_number,
               expires_at: 12.minutes.from_now.to_i
@@ -66,13 +68,23 @@ module Sign
           render plain: t("sign.app.authentication.telephone.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in_staff? || logged_in_user?
 
-          @user_telephone = UserTelephone.new(number: session[:user_telephone_registration]["number"],
-                                              pass_code: params["user_telephone"]["pass_code"])
+          registration_session = session[:user_telephone_registration]
+          if registration_session.blank?
+            redirect_to new_sign_app_registration_telephone_path,
+                        notice: t("sign.app.registration.telephone.edit.your_session_was_expired") and return
+          end
+
+          @user_telephone = UserTelephone.new(
+            number: registration_session["number"],
+            pass_code: params.dig("user_telephone", "pass_code"),
+            confirm_policy: registration_session.fetch("confirm_policy", true),
+            confirm_using_mfa: registration_session.fetch("confirm_using_mfa", true)
+          )
 
           if [
             @user_telephone.valid?,
-            session[:user_telephone_registration]["id"] == params["id"],
-            session[:user_telephone_registration]["expires_at"].to_i > Time.now.to_i
+            registration_session["id"] == params["id"],
+            registration_session["expires_at"].to_i > Time.now.to_i
           ].all?
             @user_telephone.save!
             session[:user_telephone_registration] = nil
@@ -80,6 +92,12 @@ module Sign
           else
             render :edit, status: :unprocessable_content
           end
+        end
+
+        private
+
+        def boolean_value(value)
+          ActiveModel::Type::Boolean.new.cast(value)
         end
       end
     end

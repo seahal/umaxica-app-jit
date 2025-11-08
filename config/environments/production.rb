@@ -32,7 +32,7 @@ Rails.application.configure do
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
-  confi.ssl_options = { hsts: { subdomains: true } }
+  config.ssl_options = { hsts: { subdomains: true } }
 
 
   # Log to STDOUT using a JSON formatter for Cloud Run visibility.
@@ -86,7 +86,7 @@ Rails.application.configure do
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
+  #   /.*\.example\.com/ # Allow requests from subdomains like `top.example.com`
   # ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.

@@ -9,6 +9,6 @@
 #  updated_at  :datetime         not null
 #  webauthn_id :string
 #
-class Staff < IdentifiersRecord
+class Staff < IdentitiesRecord
   has_many :emails, foreign_key: "address", dependent: :destroy, inverse_of: :staff
 end

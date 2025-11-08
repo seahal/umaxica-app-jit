@@ -24,6 +24,6 @@
 #
 #  fk_rails_...  (user_id => users.id)
 #
-class GoogleAuth < IdentifiersRecord
+class GoogleAuth < IdentitiesRecord
   belongs_to :user
 end

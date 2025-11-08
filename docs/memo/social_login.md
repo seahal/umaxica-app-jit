@@ -97,9 +97,9 @@ class OauthButtonComponent < ViewComponent::Base
   def oauth_path
     case action
     when :authenticate
-      send("new_www_app_authentication_#{provider}_path")
+      send("new_sign_app_authentication_#{provider}_path")
     when :register
-      send("new_www_app_registration_#{provider}_path")
+      send("new_sign_app_registration_#{provider}_path")
     end
   end
 end
@@ -107,7 +107,7 @@ end
 
 ### 5. Unified routing
 ```ruby
-# DRY out config/routes/www.rb
+# DRY out config/routes/top.rb
 OauthProviders.enabled.each do |provider|
   # Registration routes
   namespace :registration do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StaffWebauthnCredential < IdentifiersRecord
+class StaffWebauthnCredential < IdentitiesRecord
   belongs_to :staff
 
   validates :external_id, presence: true, uniqueness: true

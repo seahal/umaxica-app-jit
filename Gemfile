@@ -15,10 +15,6 @@ gem "puma"
 gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
 gem "pg"
-# gem "pg_search"
-# gem "postgresql_cursor"
-# gem "fx"
-# gem "scenic"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "redis"
 # Kafka
@@ -80,6 +76,8 @@ gem "jwt"
 gem "jsbundling-rails"
 # for fastly cache purge
 gem "fastly"
+# easty to write tags in head.
+gem "meta-tags"
 
 
 group :development, :test do
@@ -89,8 +87,6 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
-  #
-  # gem "coverband"
 end
 
 group :development do
@@ -129,4 +125,5 @@ group :development do
   #
   gem "reek"
   gem "churn"
+  gem "flog"
 end

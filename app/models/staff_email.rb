@@ -14,7 +14,7 @@
 #
 #  index_staff_emails_on_staff_id  (staff_id)
 #
-class StaffEmail < IdentifiersRecord
+class StaffEmail < IdentitiesRecord
   include SetId
   include Email
 end

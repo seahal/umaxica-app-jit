@@ -45,8 +45,8 @@ class GoogleAuthTest < ActiveSupport::TestCase
   end
 
   # Basic model structure tests
-  test "should inherit from IdentifiersRecord" do
-    assert_operator GoogleAuth, :<, IdentifiersRecord
+  test "should inherit from IdentitiesRecord" do
+    assert_operator GoogleAuth, :<, IdentitiesRecord
   end
 
   test "should belong to user" do

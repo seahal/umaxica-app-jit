@@ -16,6 +16,6 @@
 #
 #  index_passkey_for_users_on_user_id  (user_id)
 #
-class PasskeyForUser < IdentifierRecord
+class PasskeyForUser < IdentityRecord
   belongs_to :user
 end

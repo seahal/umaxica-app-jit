@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= get_language %>">
 <head>
-
-  <title><%= get_title(yield(:page_title)) %></title>
+  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (app) Help Center" %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>

@@ -16,7 +16,7 @@ class StaffWebauthnCredentialTest < ActiveSupport::TestCase
     assert_equal :belongs_to, association.macro
   end
 
-  test "should inherit from IdentifiersRecord" do
-    assert_operator StaffWebauthnCredential, :<, IdentifiersRecord
+  test "should inherit from IdentitiesRecord" do
+    assert_operator StaffWebauthnCredential, :<, IdentitiesRecord
   end
 end

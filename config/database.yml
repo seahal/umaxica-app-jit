@@ -30,17 +30,17 @@ development:
     database: development_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_SUB"] %>
     migrations_paths: db/guests_migrate
-  identifier:
+  identity:
     <<: *default
-    database: development_identifier_db
-    host: <%= ENV["POSTGRESQL_IDENTIFIER_PUB"] %>
-    migrations_paths: db/identifiers_migrate
-  identifier_replica:
+    database: development_identity_db
+    host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] %>
+    migrations_paths: db/identities_migrate
+  identity_replica:
     <<: *default
     replica: true
-    database: development_identifier_db
-    host: <%= ENV["POSTGRESQL_IDENTIFIER_SUB"] %>
-    migrations_paths: db/identifiers_migrate
+    database: development_identity_db
+    host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] %>
+    migrations_paths: db/identities_migrate
   profile:
     <<: *default
     database: development_profile_db
@@ -148,17 +148,17 @@ test:
     database: test_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_SUB"] %>
     migrations_paths: db/guests_migrate
-  identifier:
+  identity:
     <<: *default
-    database: test_identifier_db
-    host: <%= ENV["POSTGRESQL_IDENTIFIER_PUB"] %>
-    migrations_paths: db/identifiers_migrate
-  identifier_replica:
+    database: test_identity_db
+    host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] %>
+    migrations_paths: db/identities_migrate
+  identity_replica:
     <<: *default
     replica: true
-    database: test_identifier_db
-    host: <%= ENV["POSTGRESQL_IDENTIFIER_SUB"] %>
-    migrations_paths: db/identifiers_migrate
+    database: test_identity_db
+    host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] %>
+    migrations_paths: db/identities_migrate
   profile:
     <<: *default
     database: test_profile_db
@@ -274,23 +274,23 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.GUEST_REPLICA&.PASSWORD %>
     migrations_paths: db/guests_migrate
-  identifier:
+  identity:
     <<: *default
-    database: production_identifier_db
+    database: production_identity_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.IDENTIFIER&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.identity&.HOST %>
     username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.IDENTIFIER&.PASSWORD %>
-    migrations_paths: db/identifiers_migrate
-  identifier_replica:
+    password: <%= Rails.application.credentials&.DATABASE&.identity&.PASSWORD %>
+    migrations_paths: db/identities_migrate
+  identity_replica:
     <<: *default
     replica: true
-    database: production_identifier_db
+    database: production_identity_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.IDENTIFIER_REPLICA&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.IDENTITY_REPLICA&.HOST %>
     username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.IDENTIFIER_REPLICA&.PASSWORD %>
-    migrations_paths: db/identifiers_migrate
+    password: <%= Rails.application.credentials&.DATABASE&.IDENTITY_REPLICA&.PASSWORD %>
+    migrations_paths: db/identities_migrate
   profile:
     <<: *default
     database: production_profile_db

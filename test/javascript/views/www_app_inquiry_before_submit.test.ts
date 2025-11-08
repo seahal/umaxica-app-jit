@@ -21,7 +21,7 @@ afterEach(() => {
 	}
 });
 
-describe("www app inquiry submit guard", () => {
+describe("top app inquiry submit guard", () => {
 	test("returns early when document is undefined", async () => {
 		delete (globalThis as { document?: Document }).document;
 

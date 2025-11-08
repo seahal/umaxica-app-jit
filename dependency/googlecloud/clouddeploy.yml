@@ -65,11 +65,11 @@ spec:
 
             # ===== apex / root 面で使っているホスト群 =====
             - name: APEX_CORPORATE_URL
-              value: www.umaxica.com
+              value: top.umaxica.com
             - name: APEX_SERVICE_URL
-              value: www.umaxica.app
+              value: top.umaxica.app
             - name: APEX_STAFF_URL
-              value: www.umaxica.org
+              value: top.umaxica.org
 
             # ===== Sign-in surfaces =====
             - name: SIGN_SERVICE_URL
@@ -87,11 +87,11 @@ spec:
 
             # ===== WWW (リージョン JP 側の表面) =====
             - name: WWW_CORPORATE_URL
-              value: www.jp.umaxica.com
+              value: top.jp.umaxica.com
             - name: WWW_SERVICE_URL
-              value: www.jp.umaxica.app
+              value: top.jp.umaxica.app
             - name: WWW_STAFF_URL
-              value: www.jp.umaxica.org
+              value: top.jp.umaxica.org
 
             # ===== DOCS =====
             - name: DOCS_CORPORATE_URL

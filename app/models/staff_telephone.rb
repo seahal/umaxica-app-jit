@@ -12,7 +12,7 @@
 #
 #  index_staff_telephones_on_staff_id  (staff_id)
 #
-class StaffTelephone < IdentifiersRecord
+class StaffTelephone < IdentitiesRecord
   include Telephone
   include SetId
 end

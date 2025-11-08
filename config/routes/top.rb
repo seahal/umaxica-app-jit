@@ -18,6 +18,10 @@ Rails.application.routes.draw do
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
           resource :theme, only: [ :edit, :update ]
+          # endpoint of reset preferences.
+          resource :reset, only: [ :edit, :destroy ]
+          # non-login user's email settings.
+          resources :emails, only: [ :edit, :update ]
         end
       end
     end
@@ -40,6 +44,10 @@ Rails.application.routes.draw do
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
           resource :theme, only: [ :edit, :update ]
+          # endpoint of reset preferences.
+          resource :reset, only: [ :edit, :destroy ]
+          # non-login user's email settings.
+          resources :emails, only: [ :edit, :update ]
         end
       end
     end
@@ -62,6 +70,10 @@ Rails.application.routes.draw do
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
           resource :theme, only: [ :edit, :update ]
+          # endpoint of reset preferences.
+          resource :reset, only: [ :edit, :destroy ]
+          # non-login user's email settings.
+          resources :emails, only: [ :edit, :update ]
         end
       end
     end

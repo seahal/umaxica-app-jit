@@ -12,8 +12,6 @@ module Top
 
       before_action :set_locale
       before_action :set_timezone
-
-      allow_browser versions: :modern
     end
   end
 end
