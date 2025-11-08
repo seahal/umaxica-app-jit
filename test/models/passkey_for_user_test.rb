@@ -50,8 +50,8 @@ class PasskeyForUserTest < ActiveSupport::TestCase
     assert_equal "test_key", passkey.public_key
   end
 
-  test "should inherit from IdentifierRecord" do
-    assert_includes PasskeyForUser.ancestors, IdentifierRecord
+  test "should inherit from IdentityRecord" do
+    assert_includes PasskeyForUser.ancestors, IdentityRecord
   end
 
   test "should have required database columns" do

@@ -6,5 +6,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class UniversalTelephoneIdentifier < UniversalRecord
+class UniversalTelephoneIdentity < UniversalRecord
+  self.table_name = "universal_telephone_identifiers"
 end

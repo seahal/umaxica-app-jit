@@ -4,8 +4,9 @@
 	"scripts": {
 		"build": "bun bun.config.js",
 		"type": "bun x tsgo --noEmit",
+		"check": "bun x @biomejs/biome check --write app/javascript",
 		"format": "bun x @biomejs/biome format --write app/javascript",
-		"lint": "bun x @biomejs/biome lint --fix app/javascript"
+		"lint": "bun x @biomejs/biome lint --write app/javascript"
 	},
 	"dependencies": {
 		"@hotwired/turbo-rails": "^8.0.20",

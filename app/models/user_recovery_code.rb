@@ -13,7 +13,7 @@
 #
 #  index_user_recovery_codes_on_user_id  (user_id)
 #
-class UserRecoveryCode < IdentifiersRecord
+class UserRecoveryCode < IdentitiesRecord
   attr_accessor :confirm_create_recovery_code, :recovery_code
 
   validates :confirm_create_recovery_code, acceptance: true, on: :create

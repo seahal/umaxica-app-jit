@@ -8,5 +8,6 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
-class UniversalStaffIdentifier < UniversalRecord
+class UniversalStaffIdentity < UniversalRecord
+  self.table_name = "universal_staff_identifiers"
 end

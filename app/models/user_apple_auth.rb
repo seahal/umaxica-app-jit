@@ -14,6 +14,6 @@
 #
 #  index_user_apple_auths_on_user_id  (user_id)
 #
-class UserAppleAuth < IdentifiersRecord
+class UserAppleAuth < IdentitiesRecord
   belongs_to :user
 end

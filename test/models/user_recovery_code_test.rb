@@ -94,8 +94,8 @@ class UserRecoveryCodeTest < ActiveSupport::TestCase
     assert_nil found.recovery_code
   end
 
-  test "inherits from IdentifiersRecord" do
-    assert_includes UserRecoveryCode.ancestors, IdentifiersRecord
+  test "inherits from IdentitiesRecord" do
+    assert_includes UserRecoveryCode.ancestors, IdentitiesRecord
   end
 
   test "whitespace recovery_code is treated as present" do

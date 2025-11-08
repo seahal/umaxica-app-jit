@@ -12,7 +12,7 @@
 #
 #  index_user_telephones_on_user_id  (user_id)
 #
-class UserTelephone < IdentifiersRecord
+class UserTelephone < IdentitiesRecord
   include Telephone
   include SetId
 end

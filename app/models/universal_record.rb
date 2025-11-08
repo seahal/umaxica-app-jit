@@ -1,6 +1,6 @@
 # NOTE: Accounts Database would run on global unique database.
 
-# IdentifierRecord is a base class for models that should only have a single record.
+# IdentityRecord is a base class for models that should only have a single record.
 # It ensures that only one instance of the model exists and provides convenient access to it.
 
 class UniversalRecord < ApplicationRecord

@@ -6,5 +6,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class IdentifierRegionCode < UniversalRecord
+class IdentityRegionCode < UniversalRecord
+  self.table_name = "identifier_region_codes"
 end

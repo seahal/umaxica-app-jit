@@ -57,7 +57,7 @@ INDEX idx_staff_webauthn_credentials_external_id (external_id)
 #### 2.1 `WebauthnCredential` model
 ```ruby
 # app/models/webauthn_credential.rb
-class WebauthnCredential < IdentifiersRecord
+class WebauthnCredential < IdentitiesRecord
   belongs_to :user
   
   validates :external_id, presence: true, uniqueness: true
@@ -79,7 +79,7 @@ end
 #### 2.2 `StaffWebauthnCredential` model
 ```ruby
 # app/models/staff_webauthn_credential.rb
-class StaffWebauthnCredential < IdentifiersRecord
+class StaffWebauthnCredential < IdentitiesRecord
   belongs_to :staff
   
   # Mirrors WebauthnCredential

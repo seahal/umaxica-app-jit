@@ -140,7 +140,7 @@ Shared model logic is in `app/models/concerns/`:
 ### Database Connections
 Models inherit from domain-specific base classes:
 - `UniversalRecord` - Universal database
-- `IdentifiersRecord` - Identifier database
+- `IdentitiesRecord` - Identifier database
 - `GuestsRecord` - Guest database
 - etc.
 

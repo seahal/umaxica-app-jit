@@ -7,7 +7,7 @@
 #  hmac_based_one_time_password_id :binary           not null
 #  user_id                         :binary           not null
 #
-class UserHmacBasedOneTimePassword < IdentifiersRecord
+class UserHmacBasedOneTimePassword < IdentitiesRecord
   belongs_to :user
   belongs_to :hmac_based_one_time_password
 end

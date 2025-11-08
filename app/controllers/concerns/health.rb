@@ -12,7 +12,7 @@ module Health
 
   def get_status
     # TODO: implement!
-    if [ IdentifiersRecord ].all? { it.connection.execute("SELECT 1;") }
+    if [ IdentitiesRecord ].all? { it.connection.execute("SELECT 1;") }
       [ 200, "OK" ]
     else
       raise

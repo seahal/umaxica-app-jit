@@ -22,6 +22,6 @@
 #
 #  fk_rails_...  (user_id => users.id)
 #
-class AppleAuth < IdentifiersRecord
+class AppleAuth < IdentitiesRecord
   belongs_to :user
 end

@@ -12,9 +12,9 @@
 #
 require "test_helper"
 
-class UniversalUserIdentifierTest < ActiveSupport::TestCase
+class UniversalUserIdentityTest < ActiveSupport::TestCase
   test "should create universal user identifier with valid attributes" do
-    identifier = UniversalUserIdentifier.new(
+    identifier = UniversalUserIdentity.new(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: "test_private_key_#{SecureRandom.hex(16)}"
@@ -26,7 +26,7 @@ class UniversalUserIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should allow nil otp_private_key" do
-    identifier = UniversalUserIdentifier.new(
+    identifier = UniversalUserIdentity.new(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: nil
@@ -36,7 +36,7 @@ class UniversalUserIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should set timestamps on create" do
-    identifier = UniversalUserIdentifier.create!(
+    identifier = UniversalUserIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: "test_private_key_#{SecureRandom.hex(16)}"
@@ -47,7 +47,7 @@ class UniversalUserIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should update last_otp_at" do
-    identifier = UniversalUserIdentifier.create!(
+    identifier = UniversalUserIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: 1.hour.ago,
       otp_private_key: "test_private_key_#{SecureRandom.hex(16)}"
@@ -60,11 +60,11 @@ class UniversalUserIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should inherit from UniversalRecord" do
-    assert_equal UniversalRecord, UniversalUserIdentifier.superclass
+    assert_equal UniversalRecord, UniversalUserIdentity.superclass
   end
 
   test "should generate binary id" do
-    identifier = UniversalUserIdentifier.create!(
+    identifier = UniversalUserIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: "test_private_key_#{SecureRandom.hex(16)}"
@@ -76,7 +76,7 @@ class UniversalUserIdentifierTest < ActiveSupport::TestCase
 
   test "should store and retrieve otp_private_key" do
     private_key = "secure_private_key_#{SecureRandom.hex(32)}"
-    identifier = UniversalUserIdentifier.create!(
+    identifier = UniversalUserIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: private_key

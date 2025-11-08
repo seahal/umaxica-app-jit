@@ -14,6 +14,6 @@
 #
 #  index_user_google_auths_on_user_id  (user_id)
 #
-class UserGoogleAuth < IdentifiersRecord
+class UserGoogleAuth < IdentitiesRecord
   belongs_to :user
 end

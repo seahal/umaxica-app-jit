@@ -16,6 +16,6 @@
 #
 #  index_passkey_for_staffs_on_staff_id  (staff_id)
 #
-class PasskeyForStaff < IdentifierRecord
+class PasskeyForStaff < IdentityRecord
   belongs_to :staff
 end

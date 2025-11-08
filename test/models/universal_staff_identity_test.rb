@@ -12,9 +12,9 @@
 #
 require "test_helper"
 
-class UniversalStaffIdentifierTest < ActiveSupport::TestCase
+class UniversalStaffIdentityTest < ActiveSupport::TestCase
   test "should create universal staff identifier with valid attributes" do
-    identifier = UniversalStaffIdentifier.new(
+    identifier = UniversalStaffIdentity.new(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: "staff_private_key_#{SecureRandom.hex(16)}"
@@ -26,7 +26,7 @@ class UniversalStaffIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should allow nil otp_private_key" do
-    identifier = UniversalStaffIdentifier.new(
+    identifier = UniversalStaffIdentity.new(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: nil
@@ -36,7 +36,7 @@ class UniversalStaffIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should set timestamps on create" do
-    identifier = UniversalStaffIdentifier.create!(
+    identifier = UniversalStaffIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: "staff_private_key_#{SecureRandom.hex(16)}"
@@ -47,7 +47,7 @@ class UniversalStaffIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should update last_otp_at for staff" do
-    identifier = UniversalStaffIdentifier.create!(
+    identifier = UniversalStaffIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: 2.hours.ago,
       otp_private_key: "staff_private_key_#{SecureRandom.hex(16)}"
@@ -60,11 +60,11 @@ class UniversalStaffIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should inherit from UniversalRecord" do
-    assert_equal UniversalRecord, UniversalStaffIdentifier.superclass
+    assert_equal UniversalRecord, UniversalStaffIdentity.superclass
   end
 
   test "should generate binary id for staff" do
-    identifier = UniversalStaffIdentifier.create!(
+    identifier = UniversalStaffIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: "staff_private_key_#{SecureRandom.hex(16)}"
@@ -76,7 +76,7 @@ class UniversalStaffIdentifierTest < ActiveSupport::TestCase
 
   test "should store and retrieve staff otp_private_key" do
     private_key = "secure_staff_key_#{SecureRandom.hex(32)}"
-    identifier = UniversalStaffIdentifier.create!(
+    identifier = UniversalStaffIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: private_key
@@ -88,13 +88,13 @@ class UniversalStaffIdentifierTest < ActiveSupport::TestCase
   end
 
   test "should be different from user identifier" do
-    user_identifier = UniversalUserIdentifier.create!(
+    user_identifier = UniversalUserIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: "user_key"
     )
 
-    staff_identifier = UniversalStaffIdentifier.create!(
+    staff_identifier = UniversalStaffIdentity.create!(
       id: SecureRandom.uuid_v7,
       last_otp_at: Time.current,
       otp_private_key: "staff_key"

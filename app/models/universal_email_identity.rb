@@ -6,5 +6,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class UniversalEmailIdentifier < UniversalRecord
+class UniversalEmailIdentity < UniversalRecord
+  self.table_name = "universal_email_identifiers"
 end

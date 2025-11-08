@@ -7,6 +7,6 @@
 #  staff_id                        :uuid             not null
 #  time_based_one_time_password_id :uuid             not null
 #
-class StaffTimeBasedOneTimePassword < IdentifiersRecord
+class StaffTimeBasedOneTimePassword < IdentitiesRecord
   belongs_to :staff
 end

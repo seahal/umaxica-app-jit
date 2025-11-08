@@ -10,8 +10,8 @@
 require "test_helper"
 
 class StaffTimeBasedOneTimePasswordTest < ActiveSupport::TestCase
-  test "inherits from IdentifiersRecord" do
-    assert_operator StaffTimeBasedOneTimePassword, :<, IdentifiersRecord
+  test "inherits from IdentitiesRecord" do
+    assert_operator StaffTimeBasedOneTimePassword, :<, IdentitiesRecord
   end
 
   test "belongs to staff" do

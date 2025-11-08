@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class UserWebauthnCredential < IdentifiersRecord
+class UserWebauthnCredential < IdentitiesRecord
   belongs_to :user
 
   validates :external_id, presence: true, uniqueness: true

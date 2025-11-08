@@ -14,8 +14,8 @@ class UserEmailUserTest < ActiveSupport::TestCase
     assert ue.save
   end
 
-  test "should inherit from IdentifiersRecord" do
-    assert_operator UserEmailUser, :<, IdentifiersRecord
+  test "should inherit from IdentitiesRecord" do
+    assert_operator UserEmailUser, :<, IdentitiesRecord
   end
 
   test "should belong to email with foreign key" do

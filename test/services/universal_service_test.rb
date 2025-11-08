@@ -72,7 +72,7 @@ class UniversalServiceTest < ActiveSupport::TestCase
 
   # test "should integrate with multi-database architecture (placeholder)" do
   #   # Future implementation should test:
-  #   # - Integration with IdentifiersRecord
+  #   # - Integration with IdentitiesRecord
   #   # - Integration with UniversalRecord
   #   # - Database transaction coordination
   #   # - Data consistency across databases

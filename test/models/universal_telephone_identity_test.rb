@@ -8,9 +8,9 @@
 #
 require "test_helper"
 
-class UniversalTelephoneIdentifierTest < ActiveSupport::TestCase
+class UniversalTelephoneIdentityTest < ActiveSupport::TestCase
   def setup
-    @universal_telephone_identifier = UniversalTelephoneIdentifier.new
+    @universal_telephone_identifier = UniversalTelephoneIdentity.new
   end
 
   test "should be valid" do
