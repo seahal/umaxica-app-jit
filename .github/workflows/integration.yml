@@ -152,8 +152,8 @@ jobs:
       POSTGRESQL_UNIVERSAL_SUB: localhost
       POSTGRESQL_GUEST_PUB: localhost
       POSTGRESQL_GUEST_SUB: localhost
-      POSTGRESQL_IDENTIFIER_PUB: localhost
-      POSTGRESQL_IDENTIFIER_SUB: localhost
+      POSTGRESQL_IDENTITY_PUB: localhost
+      POSTGRESQL_IDENTITY_SUB: localhost
       POSTGRESQL_PROFILE_PUB: localhost
       POSTGRESQL_PROFILE_SUB: localhost
       POSTGRESQL_TOKEN_PUB: localhost
