@@ -30,9 +30,3 @@ services:
   minio:
     container_name: jit-devcontainer-minio
     ports: !reset []
-  otel-collector:
-    container_name: jit-devcontainer-otel-collector
-    ports: !reset []
-  prometheus:
-    container_name: jit-devcontainer-prometheus
-    ports: !reset []

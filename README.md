@@ -39,11 +39,10 @@
 
 - Data and messaging: PostgreSQL, Valkey (Redis), Kafka
 - Default infrastructure ports: Valkey exposed on host port 56379 (override with `VALKEY_HOST_PORT`)
-- Observability: 
-  - Datadog
-  - Sentry
-- Email: Resend
-- SMS: AWS SES
+- Email and Telecomunication:
+  - Resend
+  - Twilio
+  - AWS SES
 - Content delivery Network
   - Cloudflare (R2)
   - Fastly CDN
@@ -69,14 +68,14 @@
 
 ## Environments & Endpoints
   - Corporate site:
-    - `www.umaxica.app`,
+    - `www.umaxica.app`
     - `api.[jp|us].umaxica.com`
     - `news.[jp|us].umaxica.com`
     - `docs.[jp|us].umaxica.com` 
     - `news.[jp|us].umaxica.com`
   - Service endpoints:
-    - `www.umaxica.app`,
-    - `sign.umaxica.app`,
+    - `www.umaxica.app`
+    - `sign.umaxica.app`
     - `api.[jp|us].umaxica.app`
     - `docs.[jp|us].umaxica.app`
     - `help.[jp|us].umaxica.app`

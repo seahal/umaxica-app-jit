@@ -4,7 +4,7 @@
 # Shared build arguments
 # ============================================================================
 ARG RUBY_VERSION=3.4.7
-ARG BUN_VERSION=1.3.1
+ARG BUN_VERSION=1.3.2
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
 ARG DOCKER_USER=jit
@@ -175,6 +175,7 @@ WORKDIR /home/jit/workspace
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     bash \
+    zsh \
     iproute2 \
     dbus \
     fontconfig \
@@ -213,20 +214,12 @@ RUN apt-get update -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
-
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
 RUN npm install -g bun@"${BUN_VERSION}" \
     && npm cache clean --force
 
 RUN rm -rf /home/jit/.npm
-
-# RUN bun install
-
-# RUN gem install bundler \
-#    && bundle config set --local path vendor/bundle \
-#    && bundle config set without 'production' \
-#    && bundle install --jobs "$(nproc)"
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
