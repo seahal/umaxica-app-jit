@@ -11,7 +11,7 @@ class TopPreferenceRegionsFlowTest < ActionDispatch::IntegrationTest
     test "#{domain[:name]} domain updates preferences and persists cookies" do
       patch public_send(domain[:update]), params: { region: "JP", language: "JA", timezone: "Asia/Tokyo" }
 
-      assert_redirected_to public_send(domain[:edit])
+      assert_redirected_to public_send(domain[:edit], lx: "ja", ri: "jp", tz: "asia/tokyo")
       assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
       assert_predicate response.cookies["root_app_preferences"], :present?
     end

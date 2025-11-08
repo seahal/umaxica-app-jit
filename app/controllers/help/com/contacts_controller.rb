@@ -26,14 +26,15 @@ module Help
       private
 
       def contact_params
-        params.require(:service_site_contact).permit(:confirm_policy,
+        params.expect(service_site_contact: [ :confirm_policy,
                                                      :contact_category_title,
+                                                     :contact_status_title,
                                                      :email_address,
                                                      :telephone_number,
                                                      :email_pass_code,
                                                      :telephone_pass_code,
                                                      :title,
-                                                     :description)
+                                                     :description ])
       end
 
       def load_contact_categories

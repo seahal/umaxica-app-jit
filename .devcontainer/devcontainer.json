@@ -118,8 +118,8 @@
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
 		"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
 		"ghcr.io/devcontainers/features/aws-cli:1": {}
-	},
-	"mounts": [
-		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume"
-	]
+	} //,
+	// "mounts": [
+	// 	"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume"
+	// ]
 }

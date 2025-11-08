@@ -80,7 +80,7 @@ module PreferenceRegions
     else
       persist_preference_cookie!
       flash[:notice] = t("messages.region_settings_updated_successfully") if result.updated?
-      redirect_to preference_region_edit_url
+      redirect_to preference_region_edit_url(redirect_params)
     end
   end
 
@@ -95,8 +95,8 @@ module PreferenceRegions
 
     Rails.logger.debug { "[PreferenceRegions] params=#{preferences.inspect}" } if defined?(Rails)
     Rails.logger.debug { "[PreferenceRegions] region=#{preferences[:region]} country=#{preferences[:country]} language=#{preferences[:language]} timezone=#{preferences[:timezone]}" } if defined?(Rails)
-    updated ||= assign_if_present(:region, preferences[:region])
-    updated ||= assign_if_present(:country, preferences[:country])
+    updated |= assign_if_present(:region, preferences[:region])
+    updated |= assign_if_present(:country, preferences[:country])
 
     if preferences[:language].present?
       language_result = update_language(preferences[:language])
@@ -268,6 +268,14 @@ module PreferenceRegions
     return if value.blank?
 
     THEME_PARAM_MAP[value.to_s.downcase] || value.to_s
+  end
+
+  def redirect_params
+    params = {}
+    params[:lx] = session[:language].to_s.downcase if session[:language].present?
+    params[:ri] = session[:region].to_s.downcase if session[:region].present?
+    params[:tz] = session[:timezone].to_s.downcase if session[:timezone].present?
+    params
   end
 
   def error_result(*key_parts)

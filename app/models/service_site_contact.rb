@@ -12,7 +12,7 @@
 #  updated_at       :datetime         not null
 #
 class ServiceSiteContact < GuestsRecord
-  attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code
+  attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code, :contact_category_title, :contact_status_title
 
   before_save { self.email_address&.downcase! }
   before_save { self.telephone_number&.downcase! }

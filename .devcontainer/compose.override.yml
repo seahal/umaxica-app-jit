@@ -1,12 +1,14 @@
-name: 'jit-devcontainer'
+name: 'jit-dc'
 services:
   core:
-    container_name: jit-devcontainer-core
+    container_name: jit-dc-core
     environment:
       - DEVCONTAINER=1
       - RUBY_DEBUG_OPEN=true
     restart: unless-stopped
     ports: !reset []
+    tty: true
+    stdin_open: true
   primary:
     container_name: jit-devcontainer-primary
     ports: !reset []
