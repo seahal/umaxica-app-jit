@@ -107,7 +107,7 @@ end
 
 ### 5. Unified routing
 ```ruby
-# DRY out config/routes/www.rb
+# DRY out config/routes/top.rb
 OauthProviders.enabled.each do |provider|
   # Registration routes
   namespace :registration do

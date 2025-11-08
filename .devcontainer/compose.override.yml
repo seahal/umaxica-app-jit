@@ -1,32 +1,41 @@
-name: 'jit-dc'
+name: 'jit-devcontainer'
 services:
   core:
-    container_name: jit-dc-core
+    container_name: jit-devcontainer-core
     environment:
       - DEVCONTAINER=1
       - RUBY_DEBUG_OPEN=true
     restart: unless-stopped
-    ports: !reset []
+    ports:  !reset []
     tty: true
     stdin_open: true
   primary:
     container_name: jit-devcontainer-primary
-    ports: !reset []
+    ports:  !reset []
   replica:
     container_name: jit-devcontainer-replica
-    ports: !reset []
+    ports:  !reset []
   valkey:
     container_name: jit-devcontainer-valkey
-    ports: !reset []
+    ports:  !reset []
   zookeeper:
     container_name: jit-devcontainer-zookeeper
-    ports: !reset []
+    ports:  !reset []
   kafka:
     container_name: jit-devcontainer-kafka
-    ports: !reset []
+    ports:  !reset []
   kafka-ui:
     container_name: jit-devcontainer-kafka-ui
-    ports: !reset []
+    ports:  !reset []
   minio:
     container_name: jit-devcontainer-minio
-    ports: !reset []
+    ports:  !reset []
+  loki:
+    container_name: jit-devcontainer-loki
+    ports:  !reset []
+  tempo:
+    container_name: jit-devcontainer-tempo
+    ports:  !reset []
+  grafana:
+    container_name: jit-devcontainer-grafana
+    ports:  !reset []q

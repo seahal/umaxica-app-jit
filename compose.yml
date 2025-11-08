@@ -185,7 +185,7 @@ services:
     image: grafana/loki:latest
     command: -config.file=/etc/loki/local-config.yaml
     ports:
-      - "127.0.0.1:3100:3100"
+      - "127.0.0.1:${LOKI_HOST_PORT:-33100}:3100"
     volumes:
       - loki-volume:/tmp/loki
     networks:

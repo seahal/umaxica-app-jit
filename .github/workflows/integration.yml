@@ -171,9 +171,9 @@ jobs:
       SIGN_STAFF_URL: sign.org.localhost
 
       # Domain URLs - BFF
-      BFF_CORPORATE_URL: www.com.localhost
-      BFF_SERVICE_URL: www.app.localhost
-      BFF_STAFF_URL: www.org.localhost
+      BFF_CORPORATE_URL: top.com.localhost
+      BFF_SERVICE_URL: top.app.localhost
+      BFF_STAFF_URL: top.org.localhost
 
       # Domain URLs - API
       API_CORPORATE_URL: api.com.localhost

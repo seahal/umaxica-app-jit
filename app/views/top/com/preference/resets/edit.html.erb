@@ -1,0 +1,22 @@
+<% content_for :page_title, t('top.org.preferences.regions.title') %>
+
+<h1><%= t('top.org.preferences.regions.title') %></h1>
+
+<%= form_with url: top_com_preference_region_url, method: :destroy do |f| %>
+  <div class="region-section">
+    <h2><%= t('top.org.preferences.regions.region_section') %></h2>
+
+    <div class="region-selection">
+      <%= f.label :region, t('top.org.preferences.regions.select_region') %>
+      <%= f.select :region, options_for_select([
+                                                 [t('top.org.preferences.regions.select_region_selector.USA'), 'US'],
+                                                 [t('top.org.preferences.regions.select_region_selector.JAPAN'), 'JP'],
+                                               ], @current_region), { prompt: t('top.org.preferences.regions.select_region_prompt') } %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 cursor-pointer' %>
+    <%= link_to t('top.org.preferences.regions.cancel'), top_org_preference_url, class: 'inline-block px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-md transition-colors duration-200' %>
+  </div>
+<% end %>

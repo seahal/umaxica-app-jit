@@ -172,7 +172,7 @@ export class WebAuthnAuthentication {
 
 #### 4.1 Passkey controller for authentication
 ```ruby
-# app/views/www/app/authentication/passkeys_controller.rb
+# app/views/top/app/authentication/passkeys_controller.rb
 class Www::App::Authentication::PasskeysController < Www::App::ApplicationController
   def new
     @options = WebAuthn::Credential.options_for_get(
@@ -207,7 +207,7 @@ end
 
 #### 4.2 Passkey controller for settings
 ```ruby
-# app/views/www/app/setting/passkeys_controller.rb
+# app/views/top/app/setting/passkeys_controller.rb
 class Www::App::Setting::PasskeysController < Www::App::ApplicationController
   before_action :authenticate_user!
   
@@ -389,7 +389,7 @@ end
 
 #### 8.2 Controller tests
 ```ruby
-# test/views/www/app/setting/passkeys_controller_test.rb
+# test/views/top/app/setting/passkeys_controller_test.rb
 class Www::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
   setup do
     sign_in users(:one)

@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "umaxica-app-jit-bun",
@@ -18,12 +19,12 @@
         "@tailwindcss/container-queries": "^0.1.1",
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/typography": "^0.5.19",
-        "@types/bun": "^1.3.1",
+        "@types/bun": "^1.3.2",
         "@types/react": "^19.2.2",
         "@types/react-dom": "^19.2.2",
-        "@typescript/native-preview": "^7.0.0-dev.20251107.1",
+        "@typescript/native-preview": "^7.0.0-dev.20251108.1",
         "autoprefixer": "^10.4.21",
-        "bun": "^1.3.1",
+        "bun": "^1.3.2",
         "cssnano": "^7.1.2",
         "daisyui": "^5.4.7",
         "lefthook": "^2.0.2",

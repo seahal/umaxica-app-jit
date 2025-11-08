@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   # sign in / up
   draw :sign
   # regional
-  ## www endpoint
+  ## top endpoint
   draw :bff
   # api endpoint url
   draw :api

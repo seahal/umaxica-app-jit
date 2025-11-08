@@ -87,7 +87,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get news_org_root_url
 
     assert_select "head", count: 1 do
-      assert_select "title", count: 1, text: brand_name
+      assert_select "title", count: 1, text: "#{brand_name} (org) Newsroom"
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do

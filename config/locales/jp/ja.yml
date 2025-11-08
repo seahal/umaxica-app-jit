@@ -879,7 +879,7 @@ ja:
       too_long: は%{count}文字以内で入力してください
       too_short: は%{count}文字以上で入力してください
       wrong_length: は%{count}文字で入力してください
-      extension_allowlist_error: ???
+      extension_allowlist_error: 許可されていないファイル形式です
     template:
       body: 次の項目を確認してください
       header: '%{model}に%{count}個のエラーが発生しました'
@@ -981,6 +981,9 @@ ja:
             JST: 日本標準時 (JST)
           update_settings: 設定を更新
           cancel: キャンセル
+        resets:
+          title: "設定のリセット"
+        reset_settings: "設定の変更？"
       preference:
         cookie:
           edit:
@@ -1029,6 +1032,12 @@ ja:
             JST: 日本標準時 (JST)
           update_settings: 設定を更新
           cancel: キャンセル
+        cookie_settings: クッキー設定
+        region_settings: 地域と言語の設定
+        theme_settings: テーマ設定
+        reset_settings: 設定のリセット
+        resets:
+          title: 設定のリセット
       preference:
         cookie:
           edit:
@@ -1084,6 +1093,7 @@ ja:
             JST: 日本標準時 (JST)
           update_settings: 設定を更新
           cancel: キャンセル
+        reset_settings: 設定のリセット
       preference:
         cookie:
           edit:

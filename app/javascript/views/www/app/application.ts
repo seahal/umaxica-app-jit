@@ -1,14 +1,14 @@
 export const WWW_APP_DEFAULT_ORIGIN = "http://www.app.localhost";
 
 /**
- * Resolves fully-qualified URLs for the www app surface.
+ * Resolves fully-qualified URLs for the top app surface.
  */
 export function resolveWwwAppUrl(path = "/"): URL {
 	return new URL(path, WWW_APP_DEFAULT_ORIGIN);
 }
 
 /**
- * Reads hydration props from the www app container dataset.
+ * Reads hydration props from the top app container dataset.
  */
 export function readWwwAppProps(
 	element: HTMLElement | null,
