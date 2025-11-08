@@ -50,6 +50,8 @@ module Sign
             session[:user_telephone_registration] = {
               id: id,
               number: @user_telephone.number,
+              confirm_policy: boolean_value(@user_telephone.confirm_policy),
+              confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
               otp_private_key: otp_private_key,
               otp_counter: otp_count_number,
               expires_at: 12.minutes.from_now.to_i
@@ -71,8 +73,12 @@ module Sign
                         notice: t("sign.org.registration.telephone.edit.your_session_was_expired") and return
           end
 
-          @user_telephone = UserTelephone.new(number: registration_session["number"],
-                                              pass_code: params.dig("user_telephone", "pass_code"))
+          @user_telephone = UserTelephone.new(
+            number: registration_session["number"],
+            pass_code: params.dig("user_telephone", "pass_code"),
+            confirm_policy: registration_session.fetch("confirm_policy", true),
+            confirm_using_mfa: registration_session.fetch("confirm_using_mfa", true)
+          )
           otp_verified = otp_verified?(registration_session, @user_telephone.pass_code)
           @user_telephone.errors.add(:pass_code, :invalid) unless otp_verified
 
@@ -105,6 +111,10 @@ module Sign
           ActiveSupport::SecurityUtils.secure_compare(expected_code, submitted_pass_code.to_s)
         rescue ArgumentError, ROTP::Base32::Base32Error
           false
+        end
+
+        def boolean_value(value)
+          ActiveModel::Type::Boolean.new.cast(value)
         end
       end
     end

@@ -172,8 +172,8 @@ export class WebAuthnAuthentication {
 
 #### 4.1 Passkey controller for authentication
 ```ruby
-# app/views/top/app/authentication/passkeys_controller.rb
-class Www::App::Authentication::PasskeysController < Www::App::ApplicationController
+# app/controllers/sign/app/authentication/passkeys_controller.rb
+class Sign::App::Authentication::PasskeysController < Sign::App::ApplicationController
   def new
     @options = WebAuthn::Credential.options_for_get(
       allow: user_credentials_for_authentication,
@@ -207,8 +207,8 @@ end
 
 #### 4.2 Passkey controller for settings
 ```ruby
-# app/views/top/app/setting/passkeys_controller.rb
-class Www::App::Setting::PasskeysController < Www::App::ApplicationController
+# app/controllers/sign/app/setting/passkeys_controller.rb
+class Sign::App::Setting::PasskeysController < Sign::App::ApplicationController
   before_action :authenticate_user!
   
   def index
@@ -255,7 +255,7 @@ end
 
 #### 5.1 Authentication view
 ```erb
-<!-- app/views/www/app/authentication/passkeys/new.html.erb -->
+<!-- app/views/sign/app/authentication/passkeys/new.html.erb -->
 <div class="webauthn-auth">
   <h2>Authenticate with a security key</h2>
   <p>Touch your security key to continue.</p>
@@ -284,7 +284,7 @@ end
 
 #### 5.2 Management view
 ```erb
-<!-- app/views/www/app/setting/passkeys/index.html.erb -->
+<!-- app/views/sign/app/setting/passkeys/index.html.erb -->
 <div class="webauthn-management">
   <h2>Security key management</h2>
   
@@ -390,7 +390,7 @@ end
 #### 8.2 Controller tests
 ```ruby
 # test/views/top/app/setting/passkeys_controller_test.rb
-class Www::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
+class Sign::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
   setup do
     sign_in users(:one)
   end

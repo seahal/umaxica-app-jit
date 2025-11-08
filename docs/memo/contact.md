@@ -5,7 +5,7 @@
 - Your Email and Telephone concerns already handle validation and normalization
 
 2. The abstract design fits your multi-domain architecture well
-- Putting this in www/com (corporate) domain makes sense
+- Putting this in top/com (corporate) domain makes sense
 - Using the guest database for unauthenticated contact is the right choice
 - You already have mailers organized by domain (email/com/, email/app/)
 
@@ -120,13 +120,13 @@ Pragmatic approach:
 
 8. Missing: Controller Layer
 
-You have no controllers yet in www/com for contact flow. Your abstract spec lists 8 routes:
+You have no controllers yet in top/com for the contact flow. Your abstract spec lists 8 routes:
 GET  /contact/new
 POST /contact
 GET  /contact/verify-email
 # ... etc
 
-But you only have healths_controller.rb in www/com/.
+But you only have healths_controller.rb in top/com/.
 
 9. Service Layer Pattern
 

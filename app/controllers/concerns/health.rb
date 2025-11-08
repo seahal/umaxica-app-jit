@@ -3,20 +3,15 @@
 module Health
   extend ActiveSupport::Concern
 
-  # TODO(human): Implement lightweight health check for Cloud Run
-  # Create a method that provides quick health response without external dependencies
-  # This should check Rails.application.initialized? and return 200 OK quickly
-  # Use environment variables or request parameters to determine when to use this vs full check
-
   private
 
   def get_status
-    # TODO: implement!
-    if [ IdentitiesRecord ].all? { it.connection.execute("SELECT 1;") }
-      [ 200, "OK" ]
-    else
-      raise
-    end
+    return [ 503, "BOOTING" ] unless Rails.application.initialized?
+
+    [ 200, "OK" ]
+  rescue StandardError => e
+    Rails.logger.error("[health-check] #{e.class}: #{e.message}") if defined?(Rails) && Rails.logger
+    [ 500, "ERROR" ]
   end
 
   def show_html
