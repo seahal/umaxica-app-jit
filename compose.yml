@@ -17,7 +17,7 @@ services:
     stdin_open: true
     user: "${UID:-1000}:${GID:-1000}"
     ports:
-      - "3333:3000"
+      - "3001:3000"
     tmpfs:
       - /home/jit/workspace/log:size=2G,uid=${UID:-1000},gid=${GID:-1000}
       - /home/jit/workspace/tmp:size=4G,uid=${UID:-1000},gid=${GID:-1000}

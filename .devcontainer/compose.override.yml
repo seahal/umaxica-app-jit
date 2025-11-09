@@ -6,7 +6,7 @@ services:
       - DEVCONTAINER=1
       - RUBY_DEBUG_OPEN=true
     restart: unless-stopped
-    ports:  !reset []
+    ports:  !reset [3002:3000]
     tty: true
     stdin_open: true
   primary:
@@ -38,4 +38,4 @@ services:
     ports:  !reset []
   grafana:
     container_name: jit-devcontainer-grafana
-    ports:  !reset []q
+    ports:  !reset []

@@ -1,0 +1,22 @@
+@startuml
+title A. サインアップ（新規登録）
+
+start
+:Sign up ページ表示;
+
+if (登録方法を選択) then (メール)
+  :メールで登録;
+elseif (Google)
+  :Google で登録;
+elseif (Apple)
+  :Apple で登録;
+else (電話)
+  :電話番号で登録;
+endif
+
+:アカウント作成完了;
+
+:アプリへ遷移;
+stop
+@enduml
+

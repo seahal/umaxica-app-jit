@@ -29,7 +29,8 @@
 				"-sorbet.sorbet-vscode-extension",
 				"-dbaeumer.vscode-eslint",
 				"-esbenp.prettier-vscode",
-				"-eamodio.gitlens"
+				"-eamodio.gitlens",
+				"KoichiSasada.vscode-rdbg"
 			],
 			"settings": {
 				"extensions.verifySignature": false,
@@ -106,20 +107,19 @@
 	"shutdownAction": "stopCompose",
 	"containerEnv": {
 		"DEVCONTAINER_AUTO_START_BIN_DEV": "1",
-		"NODE_OPTIONS": "--max-old-space-size=4096"
+		"NODE_OPTIONS": "--max-old-space-size=4096",
+		"RUBY_DEBUG_OPEN": "true"
 	},
 	"postCreateCommand": "bun install && bundle install && bin/rails db:create db:migrate db:seed",
 	"updateContentCommand": "",
 	"updateRemoteUserUID": false,
 	"features": {
-	 	"ghcr.io/devcontainers/features/github-cli:1": {},
-	 	"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
-	 	"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
-	 	"ghcr.io/devcontainers/features/aws-cli:1": {}
-	 },
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+		"ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
+		"ghcr.io/devcontainers/features/aws-cli:1": {}
+	},
 	"mounts": [
-		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume",
-		"source=${localEnv:PWD}/docker/core/preferences/.bashrc,target=/home/jit/.bashrc,type=bind,readonly",
-		"source=${localEnv:PWD}/docker/core/preferences/.bash_history,target=/home/jit/.bash_history,type=bind"
+		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume"
 	]
 }
