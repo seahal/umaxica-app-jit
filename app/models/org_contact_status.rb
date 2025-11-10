@@ -1,4 +1,4 @@
-class OrgContactStatus < ContactStatus
+class OrgContactStatus <  GuestsRecord
   has_many :org_contacts,
            foreign_key: :contact_status_title,
            primary_key: :title,

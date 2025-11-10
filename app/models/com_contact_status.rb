@@ -1,4 +1,4 @@
-class ComContactStatus < ContactStatus
+class ComContactStatus <  GuestsRecord
   has_many :com_contacts,
            foreign_key: :contact_status_title,
            primary_key: :title,

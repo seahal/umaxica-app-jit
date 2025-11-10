@@ -16,7 +16,7 @@ class AppContact < GuestsRecord
 
   belongs_to :app_contact_status,
              class_name: "AppContactStatus",
-             foreign_key: :contact_status_title,
+             foreign_key: :app_contact_status_title,
              primary_key: :title,
              optional: true,
              inverse_of: :app_contacts

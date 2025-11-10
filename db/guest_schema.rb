@@ -34,8 +34,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102307) do
   end
 
   create_table "app_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "contact_category_title", limit: 255
-    t.string "contact_status_title", limit: 255
+    t.string "app_contact_category_title", limit: 255
+    t.string "app_contact_status_title", limit: 255
     t.datetime "created_at", null: false
     t.text "description"
     t.string "email_address"
@@ -60,7 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102307) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-11-11 07:42:10", null: false
+    t.timestamptz "expires_at", default: "2025-11-11 08:37:49", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -97,7 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102307) do
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-11 07:42:10", null: false
+    t.timestamptz "expires_at", default: "2025-11-11 08:37:49", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -114,7 +114,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102307) do
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-11 07:42:10", null: false
+    t.timestamptz "expires_at", default: "2025-11-11 08:37:49", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
@@ -124,8 +124,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102307) do
   end
 
   create_table "com_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "contact_category_title", limit: 255
-    t.string "contact_status_title", limit: 255
+    t.string "com_contact_category_title", limit: 255
+    t.string "com_contact_status_title", limit: 255
     t.datetime "created_at", null: false
     t.inet "ip_address"
     t.string "token", limit: 32, default: "", null: false
@@ -157,25 +157,25 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_102307) do
   end
 
   create_table "org_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "contact_category_title", limit: 255
-    t.string "contact_status_title", limit: 255
     t.datetime "created_at", null: false
     t.text "description"
     t.string "email_address"
     t.cidr "ip_address"
+    t.string "org_contact_category_title", limit: 255
+    t.string "org_contact_status_title", limit: 255
     t.string "telephone_number"
     t.string "title"
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "app_contacts", "app_contact_categories", column: "contact_category_title", primary_key: "title"
-  add_foreign_key "app_contacts", "app_contact_statuses", column: "contact_status_title", primary_key: "title"
+  add_foreign_key "app_contacts", "app_contact_categories", column: "app_contact_category_title", primary_key: "title"
+  add_foreign_key "app_contacts", "app_contact_statuses", column: "app_contact_status_title", primary_key: "title"
   add_foreign_key "com_contact_emails", "com_contacts"
   add_foreign_key "com_contact_histories", "com_contacts"
   add_foreign_key "com_contact_telephones", "com_contacts"
   add_foreign_key "com_contact_topics", "com_contacts"
-  add_foreign_key "com_contacts", "com_contact_categories", column: "contact_category_title", primary_key: "title"
-  add_foreign_key "com_contacts", "com_contact_statuses", column: "contact_status_title", primary_key: "title"
-  add_foreign_key "org_contacts", "org_contact_categories", column: "contact_category_title", primary_key: "title"
-  add_foreign_key "org_contacts", "org_contact_statuses", column: "contact_status_title", primary_key: "title"
+  add_foreign_key "com_contacts", "com_contact_categories", column: "com_contact_category_title", primary_key: "title"
+  add_foreign_key "com_contacts", "com_contact_statuses", column: "com_contact_status_title", primary_key: "title"
+  add_foreign_key "org_contacts", "org_contact_categories", column: "org_contact_category_title", primary_key: "title"
+  add_foreign_key "org_contacts", "org_contact_statuses", column: "org_contact_status_title", primary_key: "title"
 end
