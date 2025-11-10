@@ -1,0 +1,82 @@
+ja:
+  bff:
+    shared:
+      preference_emails:
+        token_invalid: "リンクの有効期限が切れています。新しくリクエストしてください。"
+        turnstile_error: "Turnstileの検証に失敗しました。ページを更新して再試行してください。"
+        update_failure: "設定を保存できませんでした。もう一度お試しください。"
+    app:
+      preferences:
+        title: "メール設定"
+        description: "ログイン不要ですぐに通知設定を変更できるリンクをリクエストします。"
+        email_settings: "メール設定リンクをリクエスト"
+        email_settings_description: "メールアドレスを入力すると安全なリンクをお送りします。"
+        token_guidance: "届いたメールのリンクで2時間以内に設定を変更してください。"
+        back_to_settings: "設定に戻る"
+      preference:
+        emails:
+          new:
+            page_title: "設定リンクをリクエスト"
+            heading: "安全なリンクをリクエスト"
+            description: "メールアドレスを入力してワンタイムトークンを受け取ってください。"
+            email_label: "メールアドレス"
+            submit: "リンクを送信"
+            success: "登録があれば安全なリンクをメールでお届けしました。"
+            failure: "入力内容を確認の上、再度お試しください。"
+          edit:
+            page_title: "メール設定を編集"
+            heading: "メール設定を編集"
+            description: "メールで届いたリンクで任意の通知を調整できます。"
+            always_on: "重要なお知らせ"
+            always_on_description: "重要なメッセージは常に有効になり、変更できません。"
+            product_updates_label: "製品アップデート"
+            product_updates_description: "新機能や改善の情報を受け取ります。"
+            promotional_messages_label: "プロモーション情報"
+            promotional_messages_description: "キャンペーンやイベントの案内を受け取ります。"
+            submit: "設定を保存"
+    org:
+      preferences:
+        title: "メール設定"
+        description: "スタッフ向けに通知設定のリンクをメールで送信します。"
+        email_settings: "メール設定リンクをリクエスト"
+        email_settings_description: "スタッフ用のワンタイムトークンリンクを送信します。"
+        token_guidance: "届いたリンクで有効期限内に設定を変更してください。"
+        back_to_settings: "設定に戻る"
+      preference:
+        emails:
+          new:
+            page_title: "スタッフ用リンクをリクエスト"
+            heading: "安全なスタッフリンクをリクエスト"
+            description: "対象のメールアドレスを入力し、ワンタイムトークンを受け取ってください。"
+            email_label: "スタッフメール"
+            submit: "リンクを送信"
+            success: "登録がある場合はリンクを含むメールを送信しました。"
+            failure: "エラーを修正してからもう一度お試しください。"
+          edit:
+            page_title: "スタッフメール設定を調整"
+            heading: "スタッフ通知の選択"
+            description: "どの通知を受け取るかを選べます。"
+            always_on: "重要なお知らせ"
+            always_on_description: "重要なアラートは自動的に有効のままです。"
+            product_updates_label: "製品アップデート"
+            product_updates_description: "スタッフ向け製品や機能の情報を受け取ります。"
+            promotional_messages_label: "プロモーション情報"
+            promotional_messages_description: "プロモーションやイベント情報を受け取ります。"
+            submit: "スタッフ設定を保存"
+  email:
+    app:
+      preference_mailer:
+        update_request:
+          subject: "メール設定を更新"
+          greeting: "こんにちは、"
+          intro: "下のリンクからメール設定を編集してください。"
+          cta: "メール設定を更新する"
+          expiration_notice: "このリンクは2時間で無効になり、1回のみ利用できます。"
+    org:
+      preference_mailer:
+        update_request:
+          subject: "スタッフ用メール設定を更新"
+          greeting: "こんにちは、"
+          intro: "下のリンクからスタッフ向けの設定を変更してください。"
+          cta: "スタッフ設定を更新"
+          expiration_notice: "このリンクは2時間で期限切れになり、1回しか使えません。"

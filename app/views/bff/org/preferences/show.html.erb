@@ -10,9 +10,6 @@
       <%= link_to t('bff.org.preferences.email_settings'), new_bff_org_preference_email_path, class: 'configuration-link' %>
       <p class="text-sm text-gray-600"><%= t('bff.org.preferences.email_settings_description') %></p>
     </li>
-    <li>
-      <%= link_to t('bff.org.preferences.email_edit_settings'), edit_bff_org_preference_email_path(id: 'default'), class: 'configuration-link' %>
-      <p class="text-sm text-gray-600"><%= t('bff.org.preferences.email_edit_settings_description') %></p>
-    </li>
   </ul>
+  <p class="text-sm text-gray-500 mt-4"><%= t('bff.org.preferences.token_guidance') %></p>
 </div>

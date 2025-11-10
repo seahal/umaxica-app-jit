@@ -4,16 +4,20 @@ module Bff
   module App
     module Preference
       class EmailsController < ApplicationController
-        include PreferenceRegions
+        include ::Bff::Preference::EmailFlow
 
         private
 
-        def translation_scope
-          "bff.app.preferences"
+        def preference_context
+          :app
         end
 
-        def preference_region_edit_url(params = {})
-          edit_bff_app_preference_email_url(params)
+        def preference_email_edit_url(token)
+          edit_bff_app_preference_email_url(token, host: request.host, port: request.port, protocol: request.protocol)
+        end
+
+        def preference_mailer
+          Email::App::PreferenceMailer
         end
       end
     end

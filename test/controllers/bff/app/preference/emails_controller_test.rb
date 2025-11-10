@@ -1,55 +1,89 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "uri"
 
 class Bff::App::Preference::EmailsControllerTest < ActionDispatch::IntegrationTest
-  test "GET edit renders successfully" do
-    get edit_bff_app_preference_email_url(id: 1)
+  setup do
+    ActionMailer::Base.deliveries.clear
+  end
+
+  test "GET new renders the request form" do
+    get new_bff_app_preference_email_url
 
     assert_response :success
+    assert_select "form"
+    assert_select "input[name='email_preference_request[email_address]']", count: 1
   end
 
-  test "GET edit renders form with region language and timezone selects" do
-    get edit_bff_app_preference_email_url(id: 1)
+  test "POST create with valid email enqueues a mail and redirects" do
+    assert_difference "EmailPreferenceRequest.count", 1 do
+      post bff_app_preference_emails_url, params: { email_preference_request: { email_address: "user@example.com" } }
+    end
+
+    assert_response :redirect
+    assert_match %r{/preference}, response.location
+    email = ActionMailer::Base.deliveries.last
+    assert_equal [ "user@example.com" ], email.to
+  end
+
+  test "POST create with invalid email re-renders the form" do
+    post bff_app_preference_emails_url, params: { email_preference_request: { email_address: "invalid" } }
+
+    assert_response :unprocessable_entity
+    assert_select "div.bg-red-50"
+    assert_empty ActionMailer::Base.deliveries
+  end
+
+  test "GET edit with valid token shows the pref form" do
+    email_request = create_app_request
+
+    get edit_bff_app_preference_email_url(id: email_request.raw_token)
 
     assert_response :success
-    assert_select "select[name='region']"
-    assert_select "select[name='language']"
-    assert_select "select[name='timezone']"
+    assert_select "form"
+    assert_select "input[type='checkbox'][name='email_preference_request[product_updates]']", count: 1
+    assert_select "input[type='checkbox'][name='email_preference_request[promotional_messages]']", count: 1
   end
 
-  test "PATCH with language normalizes to uppercase and stores in session" do
-    patch bff_app_preference_email_url(id: 1), params: { language: "ja" }
+  test "GET edit with invalid token redirects to the request page" do
+    get edit_bff_app_preference_email_url(id: "missing-token")
 
     assert_response :redirect
-    assert_equal "JA", session[:language]
+    assert_equal "/preference/emails/new", URI(response.location).path
+    assert_equal I18n.t("bff.shared.preference_emails.token_invalid"), flash[:alert]
   end
 
-  test "PATCH with timezone stores timezone identifier in session" do
-    patch bff_app_preference_email_url(id: 1), params: { timezone: "Asia/Tokyo" }
+  test "PATCH update saves preferences and marks the token used" do
+    email_request = create_app_request
+
+    patch bff_app_preference_email_url(id: email_request.raw_token), params: { email_preference_request: { product_updates: "0", promotional_messages: "1" } }
 
     assert_response :redirect
-    assert_equal "Asia/Tokyo", session[:timezone]
+    assert_equal "/preference", URI(response.location).path
+
+    email_request.reload
+    assert_in_delta Time.current, email_request.token_used_at, 1.second
+    assert_equal false, email_request.preferences["product_updates"]
+    assert_equal true, email_request.preferences["promotional_messages"]
   end
 
-  test "PATCH with unsupported language returns unprocessable entity" do
-    patch bff_app_preference_email_url(id: 1), params: { language: "invalid" }
+  test "PATCH update with a spent token redirects to the request page" do
+    email_request = create_app_request
+    email_request.update!(token_used_at: 1.hour.ago)
 
-    assert_response :unprocessable_content
-  end
-
-  test "PATCH with invalid timezone returns unprocessable entity" do
-    patch bff_app_preference_email_url(id: 1), params: { timezone: "Invalid/Timezone" }
-
-    assert_response :unprocessable_content
-  end
-
-  test "PATCH with multiple params updates session and redirects" do
-    patch bff_app_preference_email_url(id: 1), params: { region: "US", language: "EN", timezone: "Asia/Tokyo" }
+    patch bff_app_preference_email_url(id: email_request.raw_token), params: { email_preference_request: { product_updates: "1" } }
 
     assert_response :redirect
-    assert_equal "US", session[:region]
-    assert_equal "EN", session[:language]
-    assert_equal "Asia/Tokyo", session[:timezone]
+    assert_equal "/preference/emails/new", URI(response.location).path
+    assert_equal I18n.t("bff.shared.preference_emails.token_invalid"), flash[:alert]
+  end
+
+  private
+
+  def create_app_request
+    request = EmailPreferenceRequest.new(email_address: "user@example.com", context: :app)
+    request.save!
+    request
   end
 end

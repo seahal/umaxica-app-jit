@@ -4,17 +4,20 @@ module Bff
   module Org
     module Preference
       class EmailsController < ApplicationController
-        def edit
-          # For now, we'll just render the edit view
-          # In a real app, you'd load the email preference from database
-          @email_preference = { id: params[:id], enabled: true }
+        include ::Bff::Preference::EmailFlow
+
+        private
+
+        def preference_context
+          :org
         end
 
-        def update
-          # In a real app, you'd update the email preference in database
-          # For now, just flash a success message
+        def preference_email_edit_url(token)
+          edit_bff_org_preference_email_url(token, host: request.host, port: request.port, protocol: request.protocol)
+        end
 
-          redirect_to bff_org_preference_path, notice: t("bff.org.preference.emails.updated")
+        def preference_mailer
+          Email::Org::PreferenceMailer
         end
       end
     end

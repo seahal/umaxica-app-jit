@@ -10,10 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_04_21_125748) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_03_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "email_preference_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "context", limit: 32, null: false
+    t.datetime "created_at", null: false
+    t.string "email_address", limit: 1000, null: false
+    t.jsonb "preferences", default: {}, null: false
+    t.datetime "sent_at"
+    t.string "token_digest", limit: 64, null: false
+    t.datetime "token_expires_at", null: false
+    t.datetime "token_used_at"
+    t.datetime "updated_at", null: false
+    t.index ["context"], name: "index_email_preference_requests_on_context"
+    t.index ["token_digest"], name: "index_email_preference_requests_on_token_digest", unique: true
+  end
 
   create_table "hmac_based_one_time_passwords", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false

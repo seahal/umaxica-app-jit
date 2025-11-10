@@ -1,0 +1,168 @@
+# Software Requirements Specification (SRS)
+## Project: Umaxica App (JIT)
+### Aligned with ISO/IEC/IEEE 29148:2018 guidance
+
+---
+
+## 1. Purpose and Scope
+
+### 1.1 Purpose
+Umaxica App (JIT) replaces the legacy edge-only portal with a unified Ruby on Rails platform that serves every public surface owned by Umaxica—corporate, service, staff, help, docs, news, BFF, and API domains.  
+The SRS defines the business goals, functional expectations, and quality attributes that the Rails monolith must satisfy while orchestrating user onboarding, customer support, and staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
+
+### 1.2 Scope
+- Domains in scope (production + regional mirrors):  
+  - Public sites: `www.umaxica.app`, `www.umaxica.com`, `www.umaxica.org`  
+  - Service endpoints: `sign.umaxica.*`, `api.jp.umaxica.*`, `docs.[jp|us].umaxica.*`, `help.[jp|us].umaxica.*`, `news.[jp|us].umaxica.*`  
+  - Staff estate: `www.umaxica.org`, `sign.umaxica.org`, `api.umaxica.org`, etc.  
+  - Network-only hosts (e.g., `asset-jp.umaxica.net`) are proxied but not powered by Rails.
+- Subsystems: top-level marketing pages, authentication (sign), help center/contact flows, documentation and news portals, BFF preference endpoints, public API endpoints for inquiry validation, and supporting infrastructure (Karafka, Kafka, Valkey, OpenTelemetry, MinIO, Fastly/Cloudflare integrations).
+
+### 1.3 Intended Audience and Use
+- Product and engineering leadership – prioritization, roadmap alignment
+- Domain engineers (Rails/React/Bun) – implementation details and traceable requirements
+- DevOps/SRE – hosting, observability, security posture
+- QA/Release – acceptance criteria, traceability to tests and documentation
+
+---
+
+## 2. Stakeholders and Roles
+
+| Role | Responsibilities | Tooling / Notes |
+|------|------------------|-----------------|
+| Product Owner | Defines feature scope, localization priorities, and compliance targets | Roadmap, Notion/Jira |
+| Tech Lead / Architect | Owns multi-surface Rails architecture, multi-DB strategy, and integration points (Valkey, Kafka, SMS, email) | Rails, Karafka, Docker Compose |
+| Front-End Engineer | Builds Bun-bundled React/Turbo views in `app/javascript`, owns theme and preference UX | Bun, Biome, Tailwind, Turbo |
+| Back-End Engineer | Implements controller logic (e.g., `config/routes/*.rb` namespaces), models, encryption, OTP/passkey workflows | Rails 8, PostgreSQL, Valkey |
+| Platform/DevOps | Manages Compose stack (PostgreSQL shards, Valkey, Kafka, MinIO, Grafana/Loki/Tempo), CI (`integration.yml`), and deployments | Docker, Foreman, GitHub Actions |
+| QA Engineer | Designs Minitest/spec + Bun tests, Rswag/OpenAPI verification, smoke/load tests | `bin/rails test`, `bun test`, Playwright/k6 |
+| Security/Compliance | Oversees JWT keys, Cloudflare Turnstile secrets, GDPR/ePrivacy consent storage | Secrets management, monitoring |
+
+---
+
+## 3. System Overview
+- **Runtime & language**: Ruby 3.4.7 / Rails 8.x monolith with multi-database (`connects_to`) separation (identity, universal, guest, profile, token, etc.) backed by PostgreSQL 18 (primary + replica).  
+- **Frontend toolchain**: Bun 1.3+ builds Tailwind + React/Turbo entrypoints (`app/javascript`). Assets land in `app/assets/builds` via `bun bun.config.js`.  
+- **Caching & session adjuncts**: Valkey (Redis-compatible) powers request rate limiting, `Memorize` ephemeral storage, signed preference cookies, and Rack session backing for Action Cable.  
+- **Messaging & async**: Kafka (via Karafka + WaterDrop) hosts the `email` topic consumed by `EmailConsumer` for OTP and notification fan-out.  
+- **Security & identity**: JWT auth cookies (ES256) via the `Authn` concern, WebAuthn passkeys, HOTP/TOTP (ROTP), SMS dispatchers (AWS SNS/Infobip/Test), and Cloudflare Turnstile for bot defense.  
+- **Observability**: OpenTelemetry instrumentation exports to Tempo via OTLP; logs/metrics land in Loki/Grafana (docker/observability stack).  
+- **Storage & CDN**: Active Storage/Shrine configured for Google Cloud Storage or MinIO (dev). Fastly and Cloudflare R2 provide CDN and asset edge.  
+- **Surface mapping** (driven by ENV such as `TOP_CORPORATE_URL`, `SIGN_SERVICE_URL`, etc.):
+  | Surface | Host examples | Namespace | Responsibilites |
+  |---------|---------------|-----------|-----------------|
+  | Top (marketing / preferences) | `www.umaxica.com`, `www.umaxica.app`, `www.umaxica.org` | `Top::Com/App/Org` | Redirects to edge, exposes `/health`, `/v1/health`, preference UIs (cookie/region/theme). |
+  | Sign | `sign.umaxica.app`, `sign.umaxica.org` | `Sign::App/Org` | Registration (email/phone), OTP, passkeys, OAuth (Google/Apple), recovery, withdrawals. |
+  | Help | `help.umaxica.com` | `Help::Com/App/Org` | Contact forms, ticket intake (`ServiceSiteContact`), Turnstile enforcement. |
+  | Docs / News | `docs.umaxica.*`, `news.umaxica.*` | `Docs::*`, `News::*` | Documentation/newsroom placeholders with health pages. |
+  | BFF | `bff.umaxica.*` | `Bff::*` | Non-auth preference/email endpoints for clients. |
+  | API | `api.umaxica.*` | `Api::*` | JSON APIs (`/v1/inquiry/valid_email_addresses`, `valid_telephone_numbers`, `health`). |
+
+---
+
+## 4. Functional Requirements
+
+### 4.1 Cross-surface routing and platform services
+- **FR-01**: Each namespace (`top`, `sign`, `bff`, `api`, `docs`, `news`, `help`) must enforce host-level constraints defined in `config/routes/*.rb` using `ENV` variables to prevent routing leakage.
+- **FR-02**: All surfaces implement HTML (`/health`) and JSON (`/v1/health`) heartbeat endpoints via the shared `Health` concern; responses must be cache-friendly and usable by Fastly/Cloudflare monitors.
+- **FR-03**: Controllers must set consistent default URL parameters (`lx`, `ri`, `tz`) using `DefaultUrlOptions` so deep links retain localization context.
+- **FR-04**: Request throttling is enforced through the `RateLimit` concern (Valkey-backed `rate_limit to: 1000 within 1.hour`) for every ActionController except API health, with overrides for test environments.
+
+### 4.2 Preference management & localization
+- **FR-05**: Region/language/timezone updates in `Top::*::Preference::RegionController` must validate against the mappings defined in `PreferenceRegions` and persist to signed cookies (`root_app_preferences`) plus Rails session.
+- **FR-06**: Theme selection (`Theme` concern) must support `system/dark/light` with shorthand codes (sy/dr/li) and rewrite to the correct edit URL per scope (Top::App/Com/Org).
+- **FR-07**: Cookie consent toggles (`Preference::CookieController` using `Cookie` concern) must respect ePrivacy, storing permanent signed booleans for functional/performance/targeting cookies.
+
+### 4.3 Identity, authentication, and account security (sign.*)
+- **FR-08**: Registration flows under `Sign::App::Registration` shall support email signup with Cloudflare Turnstile verification, HOTP issuance (ROTP), and `UserEmail` persistence using encrypted attributes.
+- **FR-09**: Telephone registration controllers mirror email flow but dispatch OTP codes through `SmsService`, which must support AWS SNS, Infobip, and in-memory test providers selected via `Rails.application.config.sms_provider`.
+- **FR-10**: Authentication controllers (`Sign::App::Authentication::*`) must issue short-lived access tokens (JWT ES256) and encrypted refresh tokens using `Authn#log_in`. Logout must clear both cookies.
+- **FR-11**: Passkey management (`Sign::App::Setting::PasskeysController`) must expose `/setting/passkeys/challenge` and `/verify` endpoints compatible with WebAuthn spec and persist credentials in `UserPasskey`.
+- **FR-12**: TOTP provisioning (`Sign::App::Setting::TotpsController`) must generate QR codes (`rqrcode`) with session-stored secrets, verify first token, and persist to `TimeBasedOneTimePassword` (encrypted key).
+- **FR-13**: OAuth integrations (Google/Apple) use OmniAuth and must be wired for CSRF-safe flows (move to GET in backlog but tracked here as compliance requirement).
+- **FR-14**: Withdrawal controllers must collect user intent and mark accounts for deletion once the `Authn` layer supports revocation.
+
+### 4.4 Support, inquiry, and content surfaces
+- **FR-15**: Help center contact forms (`Help::Com::ContactsController`) shall validate input via `ServiceSiteContact`, requiring either email or telephone, policy acceptance, and OTP confirmation. IP addresses must be logged (`ip_address` column) and PII encrypted at rest.
+- **FR-16**: Successful contact submissions must enqueue notifications—initially via `Email::App::ContactMailer` (sync) with the ability to offload through the Kafka `email` topic (once `EmailConsumer` wiring is finished).
+- **FR-17**: News and Docs namespaces must redirect to content-specific roots and expose health status; they are placeholders for static/dynamic content served through Rails/Turbo (React slots defined in `app/javascript/views`).
+
+### 4.5 API and BFF services
+- **FR-18**: Public API endpoints under `Api::App::V1::Inquiry` must provide Base64-safe email validation (`valid_email_addresses#show`) and JSON phone validation (`valid_telephone_numbers#create`) using the same `ServiceSiteContact` validator to avoid duplicating rules.
+- **FR-19**: BFF preference endpoints (`Bff::*::Preference::EmailsController`) must reuse `PreferenceRegions` logic while remaining stateless (no session writes) and support locale query aliases (`tz/tz`, `lx/lang`).
+- **FR-20**: API/BFF responses must include structured error payloads and standard headers (CORS via `rack-cors`) to enable SPA and mobile clients.
+
+### 4.6 Data protection and compliance
+- **FR-21**: Personally identifiable records must reside in their designated database clusters (`IdentitiesRecord`, `GuestsRecord`, `UniversalRecord`, etc.) with `connects_to` wiring honoring read replicas for reporting workloads.
+- **FR-22**: Sensitive columns (emails, telephone numbers, OTP secrets) must use Active Record encryption with deterministic mode for lookups where required.
+- **FR-23**: Preference cookies (`root_app_preferences`) must be signed/HTTP-only/Lax by default, with same-site exceptions documented if a downstream domain (e.g., `help` forms) legitimately reads them.
+
+### 4.7 Observability, CI/CD, and ops readiness
+- **FR-24**: OpenTelemetry instrumentation (`config/initializers/opentelemetry.rb`) must be active in production and optionally in development (when OTLP collector is reachable) to push traces to Tempo; spans must include hostnames to differentiate surfaces.
+- **FR-25**: Compose stack (PostgreSQL primaries/replicas, Valkey, Kafka, MinIO, Grafana/Loki/Tempo) must stay reproducible for local dev; `Procfile.dev` orchestrates Rails, Bun build watcher, and (optionally) Karafka.
+- **FR-26**: GitHub Actions integration pipeline (`integration.yml`) plus Lefthook pre-commit must run `bundle exec rubocop`, `erb_lint`, `bun run lint`, `bun run typecheck`, `bin/rails test`, and `bun test`.
+- **FR-27**: Health dashboards (Grafana) must visualize request rate, OTP/passkey errors, and Kafka lag for the `email` topic.
+
+---
+
+## 5. Non-Functional Requirements
+
+| Category | Requirement |
+|----------|-------------|
+| Performance | P95 response time ≤ 300 ms for `/health` endpoints; OTP submissions and preference updates complete within 2 s end-to-end; Bun asset rebuild < 5 s in watch mode. |
+| Availability | ≥ 99.0 % uptime for top/sign/help hosts, measured monthly; automated failover to replica PostgreSQL instances for read-heavy queries. |
+| Scalability | Support ≥ 1k req/min per host with linear scale-out via additional Rails pods; Karafka consumers must process ≥ 50 msgs/s sustained. |
+| Security | Enforce HTTPS-only traffic, HSTS headers, CSRF protection, signed cookies, JWT validation, Cloudflare Turnstile challenge, rate limiters, and WebAuthn/TOTP options. |
+| Privacy & Compliance | Preference cookies must capture consent state (GDPR/ePrivacy). PII stored encrypted with separation by database cluster. Audit logs retained ≥ 180 days. |
+| Maintainability | Namespaced controllers/views keep code per host ≤ 500 LOC; shared concerns (`Authn`, `PreferenceRegions`, `Theme`, etc.) must remain framework-agnostic. |
+| Localization | UI copy available in Japanese (default) and English; URL params `lx`, `ri`, `tz`, `ct` propagate through redirects and forms. |
+| Observability | OTEL traces for HTTP, Redis, Kafka, and Action Mailer; structured logs shipped to Loki; uptime monitors poll `/health` + `/v1/health`. |
+
+---
+
+## 6. Constraints and Dependencies
+
+### 6.1 Technical constraints
+- Ruby 3.4.7, Rails 8.x, Bun 1.3+, Node.js 20+ (if needed for tooling), PostgreSQL 18.
+- Multi-database config defined in `config/database.yml` requires environment variables for each host (e.g., `POSTGRESQL_IDENTITY_PUB`).
+- Asset pipeline relies on Bun + Tailwind CLI; Vite is intentionally not used.
+- Dependencies include Karafka, ROTP, WebAuthn, OmniAuth (Google/Apple), Rswag, Pundit, Shrine, SolidCache, Fastly gem, AWS SDK.
+
+### 6.2 Environmental & configuration constraints
+- Required ENV keys: host mappings (e.g., `TOP_CORPORATE_URL`, `SIGN_SERVICE_URL`, `API_STAFF_URL`), downstream edge hosts (`EDGE_*`), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Cloudflare Turnstile secret, JWT private/public keys, SMS provider selector, storage credentials (GCS/MinIO), OTLP endpoint.
+- Docker Compose assumes local ports: Rails 3000 (forwarded to 3001), PostgreSQL primaries on 5435/5436, Valkey on 56379, Kafka 19092, Kafka UI 18080, Grafana 8000, Loki 33100, Tempo 3200/4317, MinIO 9000/9001.
+- Foreman/Procfile required for multi-process dev; CI uses GitHub Actions runners with PostgreSQL/Valkey services.
+
+### 6.3 External services & integrations
+- Email providers: AWS SES, Resend (future), ActionMailer + SMTP credentials.
+- SMS: AWS SNS, Infobip, or custom provider via `SmsService`.
+- Cloud providers: Google Cloud (Cloud Run/Build/Storage/Artifact Registry) for deployment, Cloudflare (R2, Turnstile, DNS), Fastly (asset CDN).
+- Observability: Tempo/Loki/Grafana stack via Docker; production may forward to managed Grafana Cloud.
+
+---
+
+## 7. Acceptance Criteria
+
+| ID | Condition |
+|----|-----------|
+| AC-01 | `GET https://www.umaxica.com/health` returns 200 HTML, `GET .../v1/health` returns JSON `{status:"OK"}` for each host namespace. |
+| AC-02 | Editing language/region/timezone/theme updates cookies and redirects back to the proper Top scope with query parameters preserved. |
+| AC-03 | Email registration flow issues an OTP via ActionMailer (or Kafka stub) only when Turnstile succeeds and saves `UserEmail` with encrypted address. |
+| AC-04 | Telephone registration rejects invalid E.164 numbers and uses the configured SMS provider. |
+| AC-05 | Passkey flow returns creation options, stores the challenge in session, and accepts subsequent verification payloads. |
+| AC-06 | Help contact form cannot submit without policy consent; valid submissions persist to `service_site_contacts` and emit a Mailer call. |
+| AC-07 | API inquiry endpoints validate addresses/phones using shared rules (no divergent regex). |
+| AC-08 | Rate limiting, JWT verification, and Cloudflare Turnstile secrets are configurable per environment and validated during smoke tests. |
+| AC-09 | OpenTelemetry traces are visible in Grafana Tempo for at least the top/sign/help flows in staging/production. |
+| AC-10 | CI pipeline executes `bundle exec rails test`, `bun test`, `bun run lint`, `rubocop`, `erb_lint`, and `bun run typecheck` before merging. |
+
+---
+
+## 8. Appendices & References
+- Repository guides: `README.md`, `AGENTS.md`, `docs/checklist.md`
+- Infrastructure: `compose.yml`, `Procfile.dev`, `karafka.rb`, `karafka-web` UI
+- Security: `SECURITY.md`, `CODE_OF_CONDUCT.md`
+- Testing assets: `test/`, `test/javascript/`, `rswag` configuration
+- Change log: tracked via Git history and PR descriptions
+
+> **Note:** This SRS is internal-facing and must be updated whenever routes, data stores, or external integrations change. It supersedes the legacy Apex portal specifications.
