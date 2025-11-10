@@ -66,7 +66,9 @@ module Sign
         def update
           # FIXME: write test code!
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_staff? || logged_in_user?
+                 status: :bad_request and return if logged_in?
+          render plain: t("sign.app.registration.email.edit.forbidden_action"),
+                 status: :bad_request and return if session[:user_email_registration].nil?
 
           @user_email = UserEmail.new(address: session[:user_email_registration]["address"],
                                       pass_code: params["user_email"]["pass_code"])

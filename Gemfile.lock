@@ -146,6 +146,7 @@ GEM
       sexp_processor (~> 4.1)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.4)
+    content_disposition (1.0.0)
     cose (1.3.1)
       cbor (~> 0.5.9)
       openssl-signature_algorithm (~> 1.0)
@@ -159,6 +160,8 @@ GEM
     digest-crc (0.7.0)
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.1)
+    down (5.4.2)
+      addressable (~> 2.8)
     drb (2.2.3)
     dry-configurable (1.3.0)
       dry-core (~> 1.1)
@@ -232,7 +235,7 @@ GEM
       mini_mime (~> 1.1)
       representable (~> 3.0)
       retriable (~> 3.1)
-    google-apis-iamcredentials_v1 (0.25.0)
+    google-apis-iamcredentials_v1 (0.26.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-apis-storage_v1 (0.57.0)
       google-apis-core (>= 0.15.0, < 2.a)
@@ -381,7 +384,7 @@ GEM
       logger
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
-    minitest (5.26.0)
+    minitest (5.26.1)
     msgpack (1.8.0)
     multi_json (1.17.0)
     multi_xml (0.7.2)
@@ -796,6 +799,9 @@ GEM
     securerandom (0.4.1)
     sexp_processor (4.17.4)
     sha3 (2.2.3)
+    shrine (3.6.0)
+      content_disposition (~> 1.0)
+      down (~> 5.1)
     signet (0.21.0)
       addressable (~> 2.8)
       faraday (>= 0.17.5, < 3.a)
@@ -933,6 +939,7 @@ DEPENDENCIES
   rubocop-thread_safety
   ruby-lsp
   sha3
+  shrine
   simplecov
   sitemap_generator
   solid_cache

@@ -1,0 +1,35 @@
+<% content_for :page_title, t('bff.org.preference.emails.edit.page_title') %>
+
+<h1><%= t('bff.org.preference.emails.edit.heading') %></h1>
+
+<p><%= t('bff.org.preference.emails.edit.description') %></p>
+
+<div class="bg-gray-50 border border-gray-200 rounded-md p-4 mt-4">
+  <p class="font-semibold text-sm"><%= t('bff.org.preference.emails.edit.always_on') %></p>
+  <p class="text-sm text-gray-700"><%= t('bff.org.preference.emails.edit.always_on_description') %></p>
+</div>
+
+<%= render "concern/flash_messages" %>
+
+<%= form_with model: @email_preference_request, url: bff_org_preference_email_path(params[:id]), method: :patch, local: true do |f| %>
+  <div class="form-group mt-5">
+    <div class="flex items-center gap-2 mb-1">
+      <%= f.check_box :product_updates, { checked: @email_preferences[:product_updates] }, "1", "0" %>
+      <%= f.label :product_updates, t('bff.org.preference.emails.edit.product_updates_label'), class: 'font-medium' %>
+    </div>
+    <p class="text-sm text-gray-500"><%= t('bff.org.preference.emails.edit.product_updates_description') %></p>
+  </div>
+
+  <div class="form-group mt-4">
+    <div class="flex items-center gap-2 mb-1">
+      <%= f.check_box :promotional_messages, { checked: @email_preferences[:promotional_messages] }, "1", "0" %>
+      <%= f.label :promotional_messages, t('bff.org.preference.emails.edit.promotional_messages_label'), class: 'font-medium' %>
+    </div>
+    <p class="text-sm text-gray-500"><%= t('bff.org.preference.emails.edit.promotional_messages_description') %></p>
+  </div>
+
+  <div class="form-actions mt-6 flex gap-3">
+    <%= f.submit t('bff.org.preference.emails.edit.submit'), class: 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700' %>
+    <%= link_to t('bff.org.preferences.back_to_settings'), bff_org_preference_path, class: 'text-sm text-gray-700 hover:underline' %>
+  </div>
+<% end %>

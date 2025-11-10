@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
   <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (org) Apex" %>
-  <title>UMAXICA <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
@@ -11,7 +10,8 @@
 </head>
 <body class="px-4">
 <header>
-  <h1 class="container mx-auto mt-28 px-5 flex"><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">Umaxica(www, org)</a></h1>
+  <h1 class="container mx-auto mt-28 px-5 flex">
+    <a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">Umaxica(www, org)</a></h1>
 </header>
 
 <hr>
@@ -35,9 +35,8 @@
     <li>Terms</li>
     <li>Privacy</li>
     <li>Accessibility</li>
-    <li>© <%= Time.now.year %> Umaxica</li>
-  </ul><p>© <%= Time.now.year %> Umaxica.</p>
+  </ul>
+  <p>© <%= Time.now.year %> <%= ENV['BRAND_NAME'] %></p>
 </footer>
-
 </body>
 </html>

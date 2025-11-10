@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
   <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (com) Apex" %>
-  <title>UMAXICA <%= content_for?(:page_title) ? "| #{yield(:page_title)} " : "" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
@@ -36,7 +35,7 @@
     <li>Security</li>
     <li>Accessibility</li>
   </ul>
-  <p>© <%= Time.now.year %> Umaxica.</p>
+  <p>© <%= Time.now.year %> <%= ENV['BRAND_NAME'] %></p>
 </footer>
 
 </body>

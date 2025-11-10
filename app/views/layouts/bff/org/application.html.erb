@@ -6,8 +6,6 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "top/org/main" %>
-  <%= javascript_importmap_tags %>
-
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
  </head>
 <body class="px-4">
@@ -24,20 +22,24 @@
     <ul>
       <li></li>
     </ul>
-    <%= breadcrumbs pretext: "You are here: ", separator: " &rsaquo; " %>
+    <% if defined?(breadcrumbs) %>
+      <%= breadcrumbs pretext: "You are here: ", separator: " &rsaquo; " %>
+    <% end %>
   </nav>
 </main>
 
 <nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
   <nav>
-    <% breadcrumbs.tap do |links| %>
-      <% if links.any? %>
-        <ul>
-          <% links.each do |link| %>
-            <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
-          <% end %>
-          <li>...</li>
-        </ul>
+    <% if defined?(breadcrumbs) %>
+      <% breadcrumbs.tap do |links| %>
+        <% if links.any? %>
+          <ul>
+            <% links.each do |link| %>
+              <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
+            <% end %>
+            <li>...</li>
+          </ul>
+        <% end %>
       <% end %>
     <% end %>
   </nav>
@@ -46,18 +48,19 @@
 <hr>
 
 <footer>
-aa
   <ul>
     <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">home</a></li>
-    <li>
-      <%= link_to 'Cookie', edit_www_org_preference_cookie_path %></li>
+    <% if defined?(edit_www_org_preference_cookie_path) %>
+      <li><%= link_to 'Cookie', edit_www_org_preference_cookie_path %></li>
+    <% end %>
     <li>Security</li>
     <li>Support</li>
     <li>Terms</li>
     <li>Privacy</li>
     <li>Accessibility</li>
     <li>© <%= Time.now.year %> Umaxica</li>
-  </ul><p>© <%= Time.now.year %> Umaxica.</p>
+  </ul>
+  <p>© <%= Time.now.year %> Umaxica.</p>
 </footer>
 
 </body>

@@ -20,8 +20,6 @@ Rails.application.routes.draw do
           resource :theme, only: [ :edit, :update ]
           # endpoint of reset preferences.
           resource :reset, only: [ :edit, :destroy ]
-          # non-login user's email settings.
-          resources :emails, only: [ :edit, :update ]
         end
       end
     end
@@ -46,9 +44,13 @@ Rails.application.routes.draw do
           resource :theme, only: [ :edit, :update ]
           # endpoint of reset preferences.
           resource :reset, only: [ :edit, :destroy ]
-          # non-login user's email settings.
-          resources :emails, only: [ :edit, :update ]
         end
+        # # configurations
+        # resource :configuration, only: [ :show ]
+        # namespace :configuration do
+        #   # non-login user's email settings.
+        #   resources :emails, only: [ :edit, :update, :new, :create ]
+        # end
       end
     end
 
@@ -72,8 +74,6 @@ Rails.application.routes.draw do
           resource :theme, only: [ :edit, :update ]
           # endpoint of reset preferences.
           resource :reset, only: [ :edit, :destroy ]
-          # non-login user's email settings.
-          resources :emails, only: [ :edit, :update ]
         end
       end
     end

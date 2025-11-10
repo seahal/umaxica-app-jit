@@ -50,3 +50,13 @@
 - No user can actually authenticate successfully
 - All protected routes are likely accessible without authentication
 - This represents a critical security vulnerability
+
+## Additional TODOs
+
+1. Implement the contact page.
+2. Implement the functionality that relies on JWT.
+3. Implement the login-related features.
+4. Fix the asset pipeline so CSP no longer blocks it.
+5. Configure OpenAPI now that Rswag has been added.
+6. Reconfigure the Rails → Cloud Run → Cloud Load Balancer → Fastly path.
+7. Add functionality that lets users fix email issues without requiring a login.
