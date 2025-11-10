@@ -4,6 +4,6 @@ class AppContactCategory < GuestsRecord
   has_many :app_contacts,
            foreign_key: :contact_category_title,
            primary_key: :title,
-           inverse_of: :app_contact_category,
-           dependent: :nullify
+           dependent: :nullify,
+           inverse_of: :app_contact_category
 end

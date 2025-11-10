@@ -16,6 +16,7 @@ class Bff::App::Preference::EmailsControllerTest < ActionDispatch::IntegrationTe
     assert_select "input[name='email_preference_request[email_address]']", count: 1
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "POST create with valid email enqueues a mail and redirects" do
     assert_difference "EmailPreferenceRequest.count", 1 do
       post bff_app_preference_emails_url, params: { email_preference_request: { email_address: "user@example.com" } }
@@ -24,8 +25,10 @@ class Bff::App::Preference::EmailsControllerTest < ActionDispatch::IntegrationTe
     assert_response :redirect
     assert_match %r{/preference}, response.location
     email = ActionMailer::Base.deliveries.last
+
     assert_equal [ "user@example.com" ], email.to
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "POST create with invalid email re-renders the form" do
     post bff_app_preference_emails_url, params: { email_preference_request: { email_address: "invalid" } }
@@ -35,6 +38,7 @@ class Bff::App::Preference::EmailsControllerTest < ActionDispatch::IntegrationTe
     assert_empty ActionMailer::Base.deliveries
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "GET edit with valid token shows the pref form" do
     email_request = create_app_request
 
@@ -45,6 +49,7 @@ class Bff::App::Preference::EmailsControllerTest < ActionDispatch::IntegrationTe
     assert_select "input[type='checkbox'][name='email_preference_request[product_updates]']", count: 1
     assert_select "input[type='checkbox'][name='email_preference_request[promotional_messages]']", count: 1
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "GET edit with invalid token redirects to the request page" do
     get edit_bff_app_preference_email_url(id: "missing-token")
@@ -54,6 +59,7 @@ class Bff::App::Preference::EmailsControllerTest < ActionDispatch::IntegrationTe
     assert_equal I18n.t("bff.shared.preference_emails.token_invalid"), flash[:alert]
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "PATCH update saves preferences and marks the token used" do
     email_request = create_app_request
 
@@ -63,10 +69,12 @@ class Bff::App::Preference::EmailsControllerTest < ActionDispatch::IntegrationTe
     assert_equal "/preference", URI(response.location).path
 
     email_request.reload
+
     assert_in_delta Time.current, email_request.token_used_at, 1.second
-    assert_equal false, email_request.preferences["product_updates"]
-    assert_equal true, email_request.preferences["promotional_messages"]
+    assert_not email_request.preferences["product_updates"]
+    assert email_request.preferences["promotional_messages"]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "PATCH update with a spent token redirects to the request page" do
     email_request = create_app_request

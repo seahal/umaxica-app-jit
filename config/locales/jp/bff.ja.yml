@@ -80,3 +80,24 @@ ja:
           intro: "下のリンクからスタッフ向けの設定を変更してください。"
           cta: "スタッフ設定を更新"
           expiration_notice: "このリンクは2時間で期限切れになり、1回しか使えません。"
+  controller:
+    help:
+      app:
+        contacts:
+          new:
+            email_address: "メールアドレス"
+            contact_category_title: "カテゴリ"
+            cancel: "キャンセル"
+            telephone_number: "電話番号"
+  help:
+    app:
+      contacts:
+        create:
+          turnstile_error: "Turnstile にチェックを入れてください"
+  ja:
+    help:
+      com:
+        contacts:
+          create:
+            success: "成功！"
+            failure: "失敗！"

@@ -7,18 +7,17 @@ module Help
       end
 
       def new
-        @com_contact = ComContact.new
-        @contact_categories = ComContactCategory.order(:title)
+        @contact = ComContact.new
+        @contact_categories = ComContactCategory.all
       end
 
       def create
-        @com_contact = ComContact.new(contact_params.merge(ip_address: request.remote_ip))
-
-        if turnstile_passed? && @com_contact.save
-          redirect_to new_help_com_contact_url, notice: t("help.app.contacts.create.success")
+        @contact = ComContact.new(contact_params)
+        if @contact.save
+          redirect_to new_help_com_contact_url, notice: t("ja.help.com.contacts.create.success")
         else
           load_contact_categories
-          flash.now[:alert] ||= t("help.app.contacts.create.failure")
+          flash.now[:alert] ||= t("ja.help.com.contacts.create.failure")
           render :new, status: :unprocessable_entity
         end
       end

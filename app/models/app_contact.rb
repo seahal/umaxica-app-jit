@@ -12,14 +12,22 @@
 #  updated_at       :datetime         not null
 #
 class AppContact < GuestsRecord
-  attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code, :contact_category_title, :contact_status_title
+  attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code
 
-  belongs_to :app_contact_status,
-             class_name: "AppContactStatus",
-             foreign_key: :app_contact_status_title,
+  belongs_to :app_contact_category,
+             class_name: "AppContactCategory",
+             foreign_key: :contact_category_title,
              primary_key: :title,
              optional: true,
              inverse_of: :app_contacts
+  belongs_to :app_contact_status,
+             class_name: "AppContactStatus",
+             foreign_key: :contact_status_title,
+             primary_key: :title,
+             optional: true,
+             inverse_of: :app_contacts
+
+  after_initialize :set_default_category_and_status, if: :new_record?
 
   before_save { self.email_address&.downcase! }
   before_save { self.telephone_number&.downcase! }
@@ -61,4 +69,11 @@ class AppContact < GuestsRecord
             presence: true,
             length: { in: 8...1024 },
             unless: Proc.new { it.description.nil? }
+
+  private
+
+  def set_default_category_and_status
+    self.contact_category_title ||= "NULL_APP_CATEGORY"
+    self.contact_status_title ||= "NULL_CONTACT_STATUS"
+  end
 end

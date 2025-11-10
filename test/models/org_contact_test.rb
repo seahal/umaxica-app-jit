@@ -109,7 +109,7 @@ class OrgContactTest < ActiveSupport::TestCase
     assert_equal "org_status", contact.contact_status_title
   end
 
-  test "should allow nil for contact_category_title" do
+  test "should set default contact_category_title when nil" do
     contact = OrgContact.new(
       email_address: "org@example.com",
       title: "Org Contact",
@@ -118,10 +118,10 @@ class OrgContactTest < ActiveSupport::TestCase
     )
 
     assert contact.save
-    assert_nil contact.contact_category_title
+    assert_equal "NULL_ORG_CATEGORY", contact.contact_category_title
   end
 
-  test "should allow nil for contact_status_title" do
+  test "should set default contact_status_title when nil" do
     contact = OrgContact.new(
       email_address: "org@example.com",
       title: "Org Contact",
@@ -130,6 +130,6 @@ class OrgContactTest < ActiveSupport::TestCase
     )
 
     assert contact.save
-    assert_nil contact.contact_status_title
+    assert_equal "NULL_CONTACT_STATUS", contact.contact_status_title
   end
 end

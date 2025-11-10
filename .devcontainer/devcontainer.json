@@ -51,7 +51,8 @@
 				"files.insertFinalNewline": true,
 				"editor.codeActionsOnSave": {
 					"source.fixAll.biome": "explicit",
-					"source.fixAll.eslint": "explicit"
+					"source.fixAll.eslint": "explicit",
+					"source.fixAll": "explicit"
 				},
 				"files.associations": {
 					"*.erb": "erb",
@@ -87,6 +88,9 @@
 					"workspaceSymbol": true,
 					"signatureHelp": true,
 					"typeHierarchy": true
+				},
+				"ruby.lint": {
+					"rubocop": true
 				}
 			}
 		},

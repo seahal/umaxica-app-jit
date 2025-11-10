@@ -80,3 +80,25 @@ en:
           intro: "Use the link below to manage staff email preferences."
           cta: "Update staff preferences"
           expiration_notice: "This link is single-use and expires in two hours."
+  controller:
+    help:
+      app:
+        contacts:
+          new:
+            page_title: "contact us!!!"
+            email_address: "Email Address"
+            contact_category_title: "Category"
+            cancel: "Cancel"
+            telephone_number: "Telephone number"
+  help:
+    app:
+      contacts:
+        create:
+          turnstile_error: "check !!!"
+  ja:
+    help:
+      com:
+        contacts:
+          create:
+            success: "Success!!!"
+            failure: "failure!!!"

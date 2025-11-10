@@ -22,6 +22,7 @@ class Bff::Org::Preference::EmailsControllerTest < ActionDispatch::IntegrationTe
 
     assert_response :redirect
     email = ActionMailer::Base.deliveries.last
+
     assert_equal [ "staff@example.com" ], email.to
   end
 
@@ -50,6 +51,7 @@ class Bff::Org::Preference::EmailsControllerTest < ActionDispatch::IntegrationTe
     assert_equal I18n.t("bff.shared.preference_emails.token_invalid"), flash[:alert]
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "PATCH update stores preferences and marks token used" do
     email_request = create_org_request
 
@@ -58,9 +60,11 @@ class Bff::Org::Preference::EmailsControllerTest < ActionDispatch::IntegrationTe
     assert_response :redirect
     assert_equal "/preference", URI(response.location).path
     email_request.reload
-    assert_equal false, email_request.preferences["product_updates"]
+
+    assert_not email_request.preferences["product_updates"]
     assert_in_delta Time.current, email_request.token_used_at, 1.second
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "PATCH update with used token redirects to request path" do
     email_request = create_org_request

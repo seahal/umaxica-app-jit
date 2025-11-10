@@ -19,6 +19,9 @@ class ComContact < GuestsRecord
 
   attr_accessor :confirm_policy
 
+  # Callbacks
+  after_initialize :set_default_category_and_status, if: :new_record?
+
   # Validations
   validates :confirm_policy, acceptance: true
 
@@ -75,5 +78,12 @@ class ComContact < GuestsRecord
 
   def token_expired?
     token_expires_at && Time.current >= token_expires_at
+  end
+
+  private
+
+  def set_default_category_and_status
+    self.contact_category_title ||= "NULL_COM_CATEGORY"
+    self.contact_status_title ||= "NULL_COM_STATUS"
   end
 end

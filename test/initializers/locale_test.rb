@@ -20,6 +20,7 @@ class LocaleInitializerTest < ActiveSupport::TestCase
     assert_raises(KeyError) { reload_locale_initializer }
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "REGION_CODE=jp should load jp locale files" do
     ENV["REGION_CODE"] = "jp"
 
@@ -30,6 +31,7 @@ class LocaleInitializerTest < ActiveSupport::TestCase
     assert_equal [ :en, :ja ], I18n.fallbacks[:en]
     assert_equal [ :ja, :en ], I18n.fallbacks[:ja]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # test "REGION_CODE=us should work correctly" do
   #   result = system(
@@ -69,6 +71,7 @@ class LocaleInitializerTest < ActiveSupport::TestCase
 
   def assert_includes_locale_path(location)
     matched_paths = I18n.load_path.grep(/#{Regexp.escape(location)}/)
-    assert matched_paths.any?, "Expected I18n.load_path to include #{location}, but got #{I18n.load_path}"
+
+    assert_predicate matched_paths, :any?, "Expected I18n.load_path to include #{location}, but got #{I18n.load_path}"
   end
 end

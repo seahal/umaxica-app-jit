@@ -1,15 +1,19 @@
 require "test_helper"
 
 class Help::Com::ContactsControllerTest < ActionDispatch::IntegrationTest
+  # rubocop:disable Minitest/MultipleAssertions
   test "should get new" do
     get new_help_com_contact_url
+
     assert_response :success
     assert_select "h1", I18n.t("controller.help.app.contacts.new.page_title")
     assert_select "form[action^='#{help_com_contacts_path}']"
     assert_select "input[name='com_contact[confirm_policy]']"
     assert_select "select[name='com_contact[contact_category_title]']"
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should create contact and redirect with notice" do
     category = com_contact_categories(:two)
 
@@ -25,8 +29,9 @@ class Help::Com::ContactsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     assert_match %r{#{new_help_com_contact_path}}, response.redirect_url
-    assert_equal I18n.t("help.app.contacts.create.success"), flash[:notice]
+    assert_equal I18n.t("ja.help.com.contacts.create.success"), flash[:notice]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "invalid form re-renders new with errors" do
     # Missing confirm_policy and contact_category_title should fail validation

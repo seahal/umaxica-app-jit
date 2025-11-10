@@ -37,15 +37,15 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal sample_status, contact.contact_status_title
   end
 
-  test "should allow nil relationship titles" do
+  test "should set default category and status when nil" do
     contact = ComContact.new(
       contact_category_title: nil,
       contact_status_title: nil
     )
 
     assert contact.save
-    assert_nil contact.contact_category_title
-    assert_nil contact.contact_status_title
+    assert_equal "NULL_COM_CATEGORY", contact.contact_category_title
+    assert_equal "NULL_COM_STATUS", contact.contact_status_title
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -245,21 +245,21 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal "com_status", contact.contact_status_title
   end
 
-  test "should allow nil for contact_category_title" do
+  test "should set default contact_category_title when nil" do
     contact = ComContact.new(
       contact_category_title: nil
     )
 
     assert contact.save
-    assert_nil contact.contact_category_title
+    assert_equal "NULL_COM_CATEGORY", contact.contact_category_title
   end
 
-  test "should allow nil for contact_status_title" do
+  test "should set default contact_status_title when nil" do
     contact = ComContact.new(
       contact_status_title: nil
     )
 
     assert contact.save
-    assert_nil contact.contact_status_title
+    assert_equal "NULL_COM_STATUS", contact.contact_status_title
   end
 end

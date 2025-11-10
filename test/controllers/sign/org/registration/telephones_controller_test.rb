@@ -30,6 +30,7 @@ class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::Integr
     assert_equal I18n.t("sign.org.registration.telephone.edit.your_session_was_expired"), flash[:notice]
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "update succeeds with valid pending registration session" do
     otp_code = nil
     SmsService.stub :send_message, ->(**kwargs) { otp_code = extract_otp(kwargs[:message]); true } do
@@ -39,8 +40,9 @@ class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::Integr
     end
 
     registration_id = response.location[%r{/registration/telephones/([^/]+)/edit}, 1]
-    assert registration_id.present?, "registration id should be present in redirect location"
-    assert otp_code.present?, "otp code should be captured from sms message"
+
+    assert_predicate registration_id, :present?, "registration id should be present in redirect location"
+    assert_predicate otp_code, :present?, "otp code should be captured from sms message"
 
     patch sign_org_registration_telephone_url(registration_id),
           params: { user_telephone: { pass_code: otp_code } },
@@ -49,6 +51,7 @@ class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::Integr
     assert_redirected_to "/"
     assert_equal I18n.t("sign.org.registration.telephone.update.success"), flash[:notice]
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "update rejects invalid otp code" do
     otp_code = nil
@@ -59,8 +62,9 @@ class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::Integr
     end
 
     registration_id = response.location[%r{/registration/telephones/([^/]+)/edit}, 1]
-    assert registration_id.present?, "registration id should be present in redirect location"
-    assert otp_code.present?, "otp code should be captured from sms message"
+
+    assert_predicate registration_id, :present?, "registration id should be present in redirect location"
+    assert_predicate otp_code, :present?, "otp code should be captured from sms message"
 
     wrong_code = otp_code.tr("0123456789", "1234567890")
 
