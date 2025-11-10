@@ -1,0 +1,14 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+none:
+  title: 'NULL_ORG_CATEGORY'
+  description: 'ROOT'
+one:
+  title: 'STAFF_INQUIRY'
+  description: 'Staff inquiry category'
+two:
+  title: 'STAFF_SUPPORT'
+  description: 'Staff support category'
+three:
+  title: 'STAFF_FEEDBACK'
+  description: 'Staff feedback category'

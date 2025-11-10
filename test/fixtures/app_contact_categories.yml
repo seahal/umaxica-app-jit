@@ -1,0 +1,14 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+none:
+  title: 'NULL_APP_CATEGORY'
+  description: 'ROOT'
+one:
+  title: 'SERVICE_INQUIRY'
+  description: 'Service inquiry category'
+two:
+  title: 'SERVICE_SUPPORT'
+  description: 'Service support category'
+three:
+  title: 'SERVICE_FEEDBACK'
+  description: 'Service feedback category'

@@ -71,7 +71,7 @@
     - `www.umaxica.app`
     - `api.[jp|us].umaxica.com`
     - `news.[jp|us].umaxica.com`
-    - `docs.[jp|us].umaxica.com` 
+    - `docs.[jp|us].umaxica.com`
     - `news.[jp|us].umaxica.com`
   - Service endpoints:
     - `www.umaxica.app`
@@ -102,6 +102,7 @@
 ## Troubleshooting
 - Frontend assets not updating: `bin/rails assets:clobber` followed by a rebuild.
 - Tests failing due to missing databases: `bin/rails db:create`
+- If your devcontainer fails to start, rebuilding it might resolve the issue.
 
 ## Known Issues & Limitations
 - This is a work in progress.

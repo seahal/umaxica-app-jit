@@ -7,14 +7,14 @@ module Help
       end
 
       def new
-        @service_site_contact = ServiceSiteContact.new
-        load_contact_categories
+        @com_contact = ComContact.new
+        @contact_categories = ComContactCategory.order(:title)
       end
 
       def create
-        @service_site_contact = ServiceSiteContact.new(contact_params.merge(ip_address: request.remote_ip))
+        @com_contact = ComContact.new(contact_params.merge(ip_address: request.remote_ip))
 
-        if turnstile_passed? && @service_site_contact.save
+        if turnstile_passed? && @com_contact.save
           redirect_to new_help_com_contact_url, notice: t("help.app.contacts.create.success")
         else
           load_contact_categories
@@ -26,7 +26,7 @@ module Help
       private
 
       def contact_params
-        params.expect(service_site_contact: [ :confirm_policy,
+        params.expect(com_contact: [ :confirm_policy,
                                                      :contact_category_title,
                                                      :contact_status_title,
                                                      :email_address,
@@ -38,7 +38,7 @@ module Help
       end
 
       def load_contact_categories
-        @contact_categories = ContactCategory.order(:title)
+        @contact_categories = ComContactCategory.order(:title)
       end
 
       def turnstile_passed?
@@ -46,12 +46,12 @@ module Help
         return true if result["success"]
 
         Rails.logger.warn("Cloudflare Turnstile verification failed: #{result}")
-        @service_site_contact.errors.add(:base, :turnstile, message: t("help.app.contacts.create.turnstile_error"))
+        @com_contact.errors.add(:base, :turnstile, message: t("help.app.contacts.create.turnstile_error"))
         flash.now[:alert] = t("help.app.contacts.create.turnstile_error")
         false
       rescue StandardError => error
         Rails.logger.error("Cloudflare Turnstile verification exception: #{error.message}")
-        @service_site_contact.errors.add(:base, :turnstile, message: t("help.app.contacts.create.turnstile_error"))
+        @com_contact.errors.add(:base, :turnstile, message: t("help.app.contacts.create.turnstile_error"))
         flash.now[:alert] = t("help.app.contacts.create.turnstile_error")
         false
       end

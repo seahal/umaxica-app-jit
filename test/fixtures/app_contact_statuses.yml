@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+none:
+  title: 'NULL_CONTACT_STATUS'
+  description: 'ROOT'
+
+staff_root:
+  title: 'STAFF_SITE_STATUS'
+  description: 'ROOT'
