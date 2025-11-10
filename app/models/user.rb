@@ -10,6 +10,7 @@
 #  webauthn_id :string
 #
 class User < IdentitiesRecord
+  has_secure_password # algorithm: :argon2
   has_many :emails, foreign_key: "address", dependent: :destroy, inverse_of: :user
   has_many :phones, foreign_key: "id", dependent: :destroy, inverse_of: :user
   has_one :user_apple_auth, dependent: :destroy

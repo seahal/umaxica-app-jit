@@ -10,5 +10,6 @@
 #  webauthn_id :string
 #
 class Staff < IdentitiesRecord
+  has_secure_password # algorithm: :argon2
   has_many :emails, foreign_key: "address", dependent: :destroy, inverse_of: :staff
 end

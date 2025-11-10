@@ -23,6 +23,7 @@ gem "karafka-web"
 # For CORS
 gem "rack-cors"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+gem "bcrypt"
 gem "argon2"
 # SHA3
 gem "sha3"
