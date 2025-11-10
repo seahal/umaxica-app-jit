@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Top
+module Bff
   module App
     module Preference
       class EmailsController < ApplicationController
@@ -9,11 +9,11 @@ module Top
         private
 
         def translation_scope
-          "top.app.preferences"
+          "bff.app.preferences"
         end
 
         def preference_region_edit_url(params = {})
-          edit_top_app_preference_region_url(params)
+          edit_bff_app_preference_email_url(params)
         end
       end
     end

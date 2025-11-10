@@ -1,22 +1,21 @@
 @startuml
-title A. サインアップ（新規登録）
+title A. Sign-Up (New Registration)
 
 start
-:Sign up ページ表示;
+:Display sign-up page;
 
-if (登録方法を選択) then (メール)
-  :メールで登録;
+if (Choose registration method) then (Email)
+  :Register with email;
 elseif (Google)
-  :Google で登録;
+  :Register with Google;
 elseif (Apple)
-  :Apple で登録;
-else (電話)
-  :電話番号で登録;
+  :Register with Apple;
+else (Phone)
+  :Register with phone number;
 endif
 
-:アカウント作成完了;
+:Account creation complete;
 
-:アプリへ遷移;
+:Navigate to app;
 stop
 @enduml
-

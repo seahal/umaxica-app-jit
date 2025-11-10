@@ -1,11 +1,11 @@
-# whici stand for
+# What each stands for
 
-- apex → ジャンプページか、各種設定の変更など
-- sign → 認証認可
-- api → ほとんどはブラウザとアプリで実行するので、ここにアクセスさせる。
-- asset → アセット類です
-- data → 一時的な可能性もあるファイルの置き場（アクセス制限あり）
-- perm → 永遠を予定するファイルの置き場（アクセス制限あり）
-- help → ヘルプセンター・仲介
-- docs → document のページ
-- news → ニュースルーム
+- apex -> Jump page or surface for various configuration changes
+- sign -> Authentication and authorization
+- api -> Primary access point for browser and app executions
+- asset -> Static assets
+- data -> Storage for files that may be temporary (restricted access)
+- perm -> Storage for files intended to be permanent (restricted access)
+- help -> Help center and intermediary
+- docs -> Documentation pages
+- news -> Newsroom

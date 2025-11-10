@@ -1,48 +1,47 @@
 @startuml
-title B. ログイン（既存ユーザ）
+title B. Sign-In (Existing User)
 
 start
-:Login ページ表示;
+:Display login page;
 
-if (ログイン方法を選択) then (メール)
-  if (認証手段を選択) then (パスワード)
-    :メール + パスワード;
+if (Choose sign-in method) then (Email)
+  if (Choose auth factor) then (Password)
+    :Email + password;
   elseif (OTP)
-    :メール OTP 認証;
+    :Email OTP authentication;
   else (Passkey)
-    :メール Passkey 認証;
+    :Email passkey authentication;
   endif
 
-elseif (電話番号)
-  if (認証手段を選択) then (パスワード)
-    :電話番号 + パスワード;
+elseif (Phone number)
+  if (Choose auth factor) then (Password)
+    :Phone number + password;
   else (Passkey)
-    :電話番号 Passkey 認証;
+    :Phone number passkey authentication;
   endif
 
 elseif (Google)
-  :Google でログイン;
+  :Sign in with Google;
 else (Apple)
-  :Apple でログイン;
+  :Sign in with Apple;
 endif
 
-if (MFA 必須？) then (はい)
-  if (チャネル選択) then (メール)
-    if (要素) then (TOTP)
-      :TOTP 入力（メール）;
+if (Is MFA required?) then (Yes)
+  if (Choose channel) then (Email)
+    if (Choose factor) then (TOTP)
+      :Enter TOTP (email);
     else (Passkey)
-      :Passkey 使用（メール）;
+      :Use passkey (email);
     endif
-  else (電話番号)
-    if (要素) then (TOTP)
-      :TOTP 入力（電話）;
+  else (Phone number)
+    if (Choose factor) then (TOTP)
+      :Enter TOTP (phone);
     else (Passkey)
-      :Passkey 使用（電話）;
+      :Use passkey (phone);
     endif
   endif
 endif
 
-:認証成功 → アプリへ遷移;
+:Authentication succeeds -> navigate to app;
 stop
 @enduml
-

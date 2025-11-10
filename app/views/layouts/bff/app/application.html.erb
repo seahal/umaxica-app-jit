@@ -6,7 +6,6 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "top/app/main" %>
-  <%= javascript_importmap_tags %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
 </head>
 
@@ -14,8 +13,10 @@
 <header>
   <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Umaxica(www, app)</a></h1>
   <p>
-    <%= link_to_if !@user&.active?, "logout?", new_auth_app_registration_path %>
-    <%= link_to_unless @user&.active?, "login?", new_auth_app_registration_path %>
+    <% if defined?(new_auth_app_registration_path) %>
+      <%= link_to_if !@user&.active?, "logout?", new_auth_app_registration_path %>
+      <%= link_to_unless @user&.active?, "login?", new_auth_app_registration_path %>
+    <% end %>
   </p>
 </header>
 
@@ -26,15 +27,17 @@
 </main>
 
 <nav>
-  <% breadcrumbs.tap do |links| %>
-    <% if links.any? %>
-      <ul>
-        <% links.each do |link| %>
-          <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
-        <% end %>
+  <% if defined?(breadcrumbs) %>
+    <% breadcrumbs.tap do |links| %>
+      <% if links.any? %>
+        <ul>
+          <% links.each do |link| %>
+            <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
+          <% end %>
+      <% end %>
+      <li>...</li>
+      </ul>
     <% end %>
-    <li>...</li>
-    </ul>
   <% end %>
 </nav>
 
@@ -43,7 +46,9 @@
 <footer>
   <ul>
     <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Home</a></li>
-    <li><%= link_to 'Cookie', edit_www_app_preference_cookie_path %></li>
+    <% if defined?(edit_www_app_preference_cookie_path) %>
+      <li><%= link_to 'Cookie', edit_www_app_preference_cookie_path %></li>
+    <% end %>
     <li>Support</li>
     <li>Privacy</li>
     <li>Security</li>

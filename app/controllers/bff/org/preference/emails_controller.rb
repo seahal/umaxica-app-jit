@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Top
+module Bff
   module Org
     module Preference
       class EmailsController < ApplicationController
@@ -14,7 +14,7 @@ module Top
           # In a real app, you'd update the email preference in database
           # For now, just flash a success message
 
-          redirect_to top_org_preference_path, notice: t("top.org.preference.emails.updated")
+          redirect_to bff_org_preference_path, notice: t("bff.org.preference.emails.updated")
         end
       end
     end
