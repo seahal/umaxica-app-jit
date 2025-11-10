@@ -6,43 +6,41 @@ class Help::Com::ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", I18n.t("controller.help.app.contacts.new.page_title")
     assert_select "form[action^='#{help_com_contacts_path}']"
+    assert_select "input[name='com_contact[confirm_policy]']"
+    assert_select "select[name='com_contact[contact_category_title]']"
   end
 
   test "should create contact and redirect with notice" do
-    category = contact_categories(:two)
+    category = com_contact_categories(:two)
 
-    assert_difference("ServiceSiteContact.count", 0) do
+    # Turnstile validation is bypassed in test environment, so contact should be created
+    assert_difference("ComContact.count", 1) do
       post help_com_contacts_url, params: {
-        service_site_contact: {
-          confirm_policy: true,
-          contact_category_title: category.title,
-          email_address: "test@example.com",
-          telephone_number: "+819012345678",
-          email_pass_code: "123456",
-          telephone_pass_code: "123456",
-          title: "Support needed",
-          description: "Please help with onboarding."
+        com_contact: {
+          confirm_policy: "1",  # Checkbox sends "1" when checked
+          contact_category_title: category.title
         }
       }
     end
 
-    # assert_redirected_to new_help_com_contact_url
-    # assert_equal I18n.t("help.app.contacts.create.success"), flash[:notice]
+    assert_response :redirect
+    assert_match %r{#{new_help_com_contact_path}}, response.redirect_url
+    assert_equal I18n.t("help.app.contacts.create.success"), flash[:notice]
   end
 
   test "invalid form re-renders new with errors" do
-    assert_no_difference("ServiceSiteContact.count") do
+    # Missing confirm_policy and contact_category_title should fail validation
+    assert_no_difference("ComContact.count") do
       post help_com_contacts_url, params: {
-        service_site_contact: {
-          confirm_policy: false,
-          email_address: "",
-          telephone_number: ""
+        com_contact: {
+          confirm_policy: "0",  # Checkbox not checked
+          contact_category_title: nil
         }
       }
     end
 
     assert_response :unprocessable_entity
-    assert_select "#error_explanation"
-    assert_equal I18n.t("help.app.contacts.create.failure"), flash[:alert]
+    # Form should be re-rendered with category select
+    assert_select "select[name='com_contact[contact_category_title]']"
   end
 end

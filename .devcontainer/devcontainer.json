@@ -6,6 +6,7 @@
 	"containerUser": "jit",
 	"workspaceFolder": "/home/jit/workspace",
 	"overrideCommand": true,
+	"forwardPorts": [3001],
 	"remoteEnv": {
 		"EDITOR": "code --wait --reuse-window"
 	},
@@ -30,7 +31,8 @@
 				"-dbaeumer.vscode-eslint",
 				"-esbenp.prettier-vscode",
 				"-eamodio.gitlens",
-				"KoichiSasada.vscode-rdbg"
+				"KoichiSasada.vscode-rdbg",
+				"GitHub.copilot-chat"
 			],
 			"settings": {
 				"extensions.verifySignature": false,
@@ -44,7 +46,6 @@
 					}
 				},
 				"editor.formatOnSave": true,
-				"editor.defaultFormatter": "esbenp.prettier-vscode",
 				"editor.tabSize": 2,
 				"files.trimTrailingWhitespace": true,
 				"files.insertFinalNewline": true,
@@ -86,11 +87,6 @@
 					"workspaceSymbol": true,
 					"signatureHelp": true,
 					"typeHierarchy": true
-				},
-				"ruby.lint": {
-					"rubocop": {
-						"onSave": true
-					}
 				}
 			}
 		},
@@ -110,7 +106,7 @@
 		"NODE_OPTIONS": "--max-old-space-size=4096",
 		"RUBY_DEBUG_OPEN": "true"
 	},
-	"postCreateCommand": "bun install && bundle install && bin/rails db:create db:migrate db:seed",
+	"postCreateCommand": "bun install && bundle install && bin/rails db:create",
 	"updateContentCommand": "",
 	"updateRemoteUserUID": false,
 	"features": {

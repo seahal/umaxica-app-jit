@@ -60,3 +60,4 @@
 5. Configure OpenAPI now that Rswag has been added.
 6. Reconfigure the Rails → Cloud Run → Cloud Load Balancer → Fastly path.
 7. Add functionality that lets users fix email issues without requiring a login.
+8. Configure Resend with the `.com`, `.app`, and `.org` domains for production once those domains are added.

@@ -89,9 +89,9 @@ Rails.application.configure do
   config.hosts << "org.localhost"
   config.hosts << "sign.app.localhost"
   config.hosts << "sign.org.localhost"
-  config.hosts << "top.app.localhost"
-  config.hosts << "top.com.localhost"
-  config.hosts << "top.org.localhost"
+  config.hosts << "www.app.localhost"
+  config.hosts << "www.com.localhost"
+  config.hosts << "www.org.localhost"
   config.hosts << "api.app.localhost"
   config.hosts << "api.com.localhost"
   config.hosts << "api.org.localhost"
@@ -121,7 +121,7 @@ Rails.application.configure do
   ## Email Settings
   ### Set localhost to be used by links generated in mailer templates.
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.default_url_options = { host: "localhost", port: 3333 }
+  config.action_mailer.default_url_options = { host: "localhost", port: 3001 }
   config.action_mailer.smtp_settings = {
     address: ENV["RESEND_SMTP_ENDPOINT"],
     user_name: ENV["RESEND_SMTP_USER_NAME"],

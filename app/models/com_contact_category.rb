@@ -1,0 +1,9 @@
+class ComContactCategory < GuestsRecord
+  self.primary_key = :title
+
+  has_many :com_contacts,
+           foreign_key: :contact_category_title,
+           primary_key: :title,
+           inverse_of: :com_contact_category,
+           dependent: :nullify
+end
