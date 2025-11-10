@@ -1,7 +1,7 @@
 class AppContactStatus < ContactStatus
-  has_many :org_contacts,
+  has_many :app_contacts,
            foreign_key: :contact_status_title,
            primary_key: :title,
-           inverse_of: :org_contact_status,
+           inverse_of: :app_contact_status,
            dependent: :nullify
 end
