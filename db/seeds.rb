@@ -27,7 +27,7 @@ User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')
 # ContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
 # ContactCategory.create_or_find_by!(title: 'CORPORATE_SITE_CONTACT', description: 'root of corporate site status inquiries')
 # ContactCategory.create_or_find_by!(title: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')
-# ContactCategory.create_or_find_by!(title: 'ORGANIZATION_SITE_CONTACT', description: 'root of organzation site status inquiries')
+# ContactCategory.create_or_find_by!(title: 'ORGANIZATION_SITE_CONTACT', description: 'root of organization site status inquiries')
 
 # #
 # [ AppContactStatus, ComContactStatus, OrgContactStatus ].each do |status_class|
@@ -37,6 +37,6 @@ User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')
 # AppContactStatus.create_or_find_by!(title: 'STAFF_SITE_STATUS', description: 'root of staff site status inquiries')
 # ComContactStatus.create_or_find_by!(title: 'SERVICE_SITE_STATUS', description: 'root of service site status inquiries')
 # ComContactStatus.create_or_find_by!(title: 'CORPORATE_SITE_STATUS', description: 'root of corporate site status inquiries')
-# OrgContactStatus.create_or_find_by!(title: 'ORGANIZATION_SITE_STATUS', description: 'root of organzation site status inquiries')
+# OrgContactStatus.create_or_find_by!(title: 'ORGANIZATION_SITE_STATUS', description: 'root of organization site status inquiries')
 # ComContactStatus.create_or_find_by!(title: 'CORPORATE_SITE_SECURITY_ISSUE', description: 'security issue', parent_title: 'CORPORATE_SITE_STATUS')
 # ComContactStatus.create_or_find_by!(title: 'CORPORATE_SITE_OTHERS', description: 'others',  parent_title: 'CORPORATE_SITE_STATUS')
