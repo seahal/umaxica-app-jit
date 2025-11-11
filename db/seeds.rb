@@ -45,7 +45,6 @@ AppContactStatus.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: '
 AppContactStatus.create_or_find_by!(title: 'STAFF_SITE_STATUS', description: 'root of staff site status inquiries')
 OrgContactStatus.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'null status')
 OrgContactStatus.create_or_find_by!(title: 'ORG_SITE_STATUS', description: 'root of org site status inquiries')
-OrgContactStatus.create_or_find_by!(title: 'ORG_SITE_STATUS', description: 'root of org site status inquiries')
 ComContactStatus.create_or_find_by!(title: 'NULL_COM_STATUS', description: 'root of service site status inquiries')
 ComContactStatus.create_or_find_by!(title: 'NULL', description: 'root of service site status inquiries')
 ComContactStatus.create_or_find_by!(title: 'SET_UP', description: 'first step completed')
