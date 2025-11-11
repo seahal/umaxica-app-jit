@@ -10,10 +10,10 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # contact page
-        resources :contacts, only: [ :new, :create, :show ] do
+        resources :contacts, only: [ :new, :create ] do
           scope module: :contact do
-            resources :email, only: [ :edit, :update ]
-            resources :telephone, only: [ :edit, :update ]
+            resource :email, only: [ :edit, :update ]
+            resource :telephone, only: [ :edit, :update ]
           end
         end
       end

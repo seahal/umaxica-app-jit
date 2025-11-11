@@ -3,9 +3,6 @@ module Help
     class ContactsController < ApplicationController
       include CloudflareTurnstile
 
-      def show
-      end
-
       def new
         @contact = ComContact.new
         @contact.com_contact_emails.build
@@ -16,15 +13,6 @@ module Help
       def create
         @contact = ComContact.new(contact_params)
 
-        # Debug in test: check email values immediately after initialization
-        if Rails.env.test?
-          Rails.logger.debug "=== AFTER new() ==="
-          @contact.com_contact_emails.each_with_index do |email, i|
-            Rails.logger.debug "Email #{i}: #{email.email_address.inspect}"
-          end
-          Rails.logger.debug "=== END ==="
-        end
-
         # Set expires_at for nested attributes if not already set
         @contact.com_contact_emails.each do |email|
           email.expires_at ||= 24.hours.from_now
@@ -33,8 +21,10 @@ module Help
           telephone.expires_at ||= 24.hours.from_now
         end
 
-        if turnstile_passed? && @contact.save
-          redirect_to new_help_com_contact_email_path(contact_id: @contact.id), notice: t(".success")
+        passed_turnstile = turnstile_passed?
+
+        if @contact.save && passed_turnstile
+          redirect_to edit_help_com_contact_email_path(contact_id: @contact.id), notice: t(".success")
         else
           # エラー時: 入力フィールドを表示するために最低1つのオブジェクトが必要
           # 既存のオブジェクトに入力値が保持されているので、空の場合のみ追加
