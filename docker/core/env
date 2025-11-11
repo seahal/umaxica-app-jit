@@ -2,7 +2,9 @@
 BRAND_NAME=UMAXICA
 # Ruyb Configuration
 RUBY_YJIT_ENABLE=1
+RUBY_PATH=/usr/local/bin/ruby
 BUNDLE_JOBS=8
+BUNDLE_PATH=vendor/bundle
 NODE_ENV=development
 # Rails Configuration
 RAILS_ENV=development

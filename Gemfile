@@ -8,7 +8,8 @@ gem "rake"
 # rack
 gem "rack"
 # Rails
-gem "rails"
+# gem "rails"
+gem "rails", github: "rails/rails", branch: "main"
 # Use Postgres as the database for Active Record
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -84,11 +85,13 @@ gem "meta-tags"
 
 group :development, :test do
   # to avoid n+1 queries
-  gem "bullet"
+  # gem "bullet"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
+  #
+  gem "rails-erd"
 end
 
 group :development do

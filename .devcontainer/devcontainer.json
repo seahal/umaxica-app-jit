@@ -6,7 +6,7 @@
 	"containerUser": "jit",
 	"workspaceFolder": "/home/jit/workspace",
 	"overrideCommand": true,
-	"forwardPorts": [3001],
+	"forwardPorts": [3002],
 	"remoteEnv": {
 		"EDITOR": "code --wait --reuse-window"
 	},
@@ -108,7 +108,9 @@
 	"containerEnv": {
 		"DEVCONTAINER_AUTO_START_BIN_DEV": "1",
 		"NODE_OPTIONS": "--max-old-space-size=4096",
-		"RUBY_DEBUG_OPEN": "true"
+		"RUBY_DEBUG_OPEN": "true",
+		"QT_QPA_PLATFORM": "wayland",
+		"GDK_BACKEND": "wayland"
 	},
 	"postCreateCommand": "bun install && bundle install && bin/rails db:create",
 	"updateContentCommand": "",
@@ -120,6 +122,8 @@
 		"ghcr.io/devcontainers/features/aws-cli:1": {}
 	},
 	"mounts": [
-		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume"
+		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume",
+		"source=/run/user/${localEnv:UID}/wayland-0,target=/run/user/1000/wayland-0,type=bind",
+		"source=${localEnv:XDG_RUNTIME_DIR}/wayland-0,target=/tmp/wayland-0,type=bind"
 	]
 }

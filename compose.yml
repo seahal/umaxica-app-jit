@@ -10,8 +10,8 @@ services:
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
     env_file: docker/core/env
-    entrypoint: ["/bin/bash", "docker/core/entrypoint.sh"]
-    command: ["sleep", "infinity"]
+    entrypoint: [ "/bin/bash", "docker/core/entrypoint.sh" ]
+    command: [ "sleep", "infinity" ]
     restart: always
     tty: true
     stdin_open: true
@@ -82,7 +82,7 @@ services:
       - backend
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d db -h 127.0.0.1"]
+      test: [ "CMD-SHELL", "pg_isready -U root -d db -h 127.0.0.1" ]
       interval: 3s
       timeout: 3s
       retries: 20
@@ -122,7 +122,7 @@ services:
       - valkey-volume:/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "valkey-cli", "ping"]
+      test: [ "CMD", "valkey-cli", "ping" ]
       interval: 3s
       timeout: 2s
       retries: 20
@@ -228,13 +228,13 @@ services:
     restart: unless-stopped
 
 networks:
-  backend: {}
-  frontend: {}
-  observability: {}
+  backend: { }
+  frontend: { }
+  observability: { }
 
 volumes:
-  valkey-volume: {}
-  minio-volume: {}
-  loki-volume: {}
-  tempo-volume: {}
-  grafana-volume: {}
+  valkey-volume: { }
+  minio-volume: { }
+  loki-volume: { }
+  tempo-volume: { }
+  grafana-volume: { }

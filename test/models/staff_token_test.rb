@@ -11,7 +11,7 @@ require "test_helper"
 
 class StaffTokenTest < ActiveSupport::TestCase
   def setup
-    @staff = Staff.create!
+    @staff = Staff.create!(password: 'qwerty123456!@#$%^')
     @staff_token = StaffToken.new(staff_id: @staff.id)
   end
 
