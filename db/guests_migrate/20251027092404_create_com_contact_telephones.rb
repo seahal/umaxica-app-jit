@@ -1,7 +1,6 @@
 class CreateComContactTelephones < ActiveRecord::Migration[8.1]
   def change
-    create_table :com_contact_telephones, id: :uuid do |t|
-      t.references :com_contact, null: false, foreign_key: true, type: :uuid
+    create_table :com_contact_telephones, id: :string do |t|
       t.string :telephone_number, null: false, default: "", limit: 1000
       t.boolean :activated, null: false, default: false
       t.boolean :deletable, null: false, default: false

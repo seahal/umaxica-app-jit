@@ -81,6 +81,8 @@ gem "jsbundling-rails"
 gem "fastly"
 # easty to write tags in head.
 gem "meta-tags"
+# use surrogate key for pk of db.
+gem "nanoid"
 
 
 group :development, :test do

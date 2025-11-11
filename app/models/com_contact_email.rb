@@ -1,5 +1,5 @@
 class ComContactEmail < GuestsRecord
-  belongs_to :com_contact, optional: true
+  has_many :com_contacts, dependent: :destroy
 
   before_save { self.email_address&.downcase! }
   encrypts :email_address, downcase: true, deterministic: true

@@ -1,7 +1,7 @@
 <h1><%= title t('help.com.contacts.new.page_title') %></h1>
 
-<%= form_with model: @contact, url: help_com_contacts_path do |form| %>
-  <% if @contact.errors.any? %>
+<%= form_with model: ComContact.new, url: help_com_contacts_path, scope: :com_contact do |form| %>
+  <% if defined?(@contact) && @contact&.errors&.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
       <h2><%= pluralize(@contact.errors.count, "error") %> prohibited this contact from being saved:</h2>
 
@@ -28,21 +28,13 @@
   </div>
 
   <div>
-    <% @contact.com_contact_emails.each do |email| %>
-      <%= form.fields_for :com_contact_emails, email do |email_form| %>
-        <%= email_form.label :email_address %>
-        <%= email_form.email_field :email_address %>
-      <% end %>
-    <% end %>
+    <%= form.label :email_address, t('help.com.contacts.new.email_address') %>
+    <%= form.email_field :email_address, value: @email_address %>
   </div>
 
   <div>
-    <% @contact.com_contact_telephones.each do |telephone| %>
-      <%= form.fields_for :com_contact_telephones, telephone do |telephone_form| %>
-        <%= telephone_form.label :telephone_number %>
-        <%= telephone_form.text_field :telephone_number %>
-      <% end %>
-    <% end %>
+    <%= form.label :telephone_number, t('help.com.contacts.new.telephone_number') %>
+    <%= form.text_field :telephone_number, value: @telephone_number %>
   </div>
 
   <div>

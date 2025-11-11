@@ -1,8 +1,8 @@
 class ComContact < GuestsRecord
   # Associations
 
-  has_many :com_contact_emails, dependent: :destroy
-  has_many :com_contact_telephones, dependent: :destroy
+  belongs_to :com_contact_email
+  belongs_to :com_contact_telephone
   belongs_to :com_contact_category,
              class_name: "ComContactCategory",
              foreign_key: :contact_category_title,
@@ -17,10 +17,6 @@ class ComContact < GuestsRecord
              inverse_of: :com_contacts
   has_many :com_contact_topics, dependent: :destroy
 
-  # Nested attributes
-  accepts_nested_attributes_for :com_contact_emails
-  accepts_nested_attributes_for :com_contact_telephones
-
   attr_accessor :confirm_policy
 
   # Callbacks
@@ -29,9 +25,8 @@ class ComContact < GuestsRecord
   # Validations
   validates :confirm_policy, acceptance: true
   validates :contact_category_title, presence: true
-  validates :com_contact_emails, presence: true, length: { minimum: 1 }
-  validates :com_contact_telephones, presence: true, length: { minimum: 1 }
-  validate :validate_nested_email_and_telephone
+  validates :com_contact_email, presence: true
+  validates :com_contact_telephone, presence: true
 
   # State transition helpers
   def can_verify_email?
@@ -93,35 +88,5 @@ class ComContact < GuestsRecord
   def set_default_category_and_status
     self.contact_category_title ||= "NULL_COM_CATEGORY"
     self.contact_status_title ||= "NULL_COM_STATUS"
-  end
-
-  def validate_nested_email_and_telephone
-    # メールアドレスのバリデーション
-    if com_contact_emails.empty?
-      errors.add(:base, :email_required, message: "Email address is required")
-    else
-      com_contact_emails.each do |email|
-        next if email.marked_for_destruction?
-        unless email.valid?
-          email.errors.full_messages.each do |msg|
-            errors.add(:base, :invalid_email, message: "Email: #{msg}")
-          end
-        end
-      end
-    end
-
-    # 電話番号のバリデーション
-    if com_contact_telephones.empty?
-      errors.add(:base, :telephone_required, message: "Telephone number is required")
-    else
-      com_contact_telephones.each do |telephone|
-        next if telephone.marked_for_destruction?
-        unless telephone.valid?
-          telephone.errors.full_messages.each do |msg|
-            errors.add(:base, :invalid_telephone, message: "Telephone: #{msg}")
-          end
-        end
-      end
-    end
   end
 end

@@ -1,7 +1,6 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  com_contact: one
   telephone_number: "+11234567890"
   activated: false
   deletable: false
@@ -11,7 +10,6 @@ one:
   updated_at: 2025-10-27 09:24:03
 
 two:
-  com_contact: two
   telephone_number: "+19876543210"
   activated: false
   deletable: false
