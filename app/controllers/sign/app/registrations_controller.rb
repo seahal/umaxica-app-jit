@@ -16,13 +16,13 @@ module Sign
         @social_providers = [
           {
             key: :google,
-            path: "/sign/google_oauth2",
+            path: "social/google_oauth2",
             method: :post,
             data: { turbo: false }
           },
           {
             key: :apple,
-            path: "/sign/apple",
+            path: "social/apple",
             method: :post,
             data: { turbo: false }
           }

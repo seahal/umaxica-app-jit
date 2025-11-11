@@ -4,7 +4,7 @@ require "test_helper"
 
 class ApplicationCable::ConnectionTest < ActionCable::Connection::TestCase
   test "ApplicationCable::Connection is a subclass of ActionCable::Connection::Base" do
-    assert ApplicationCable::Connection < ActionCable::Connection::Base
+    assert_operator ApplicationCable::Connection, :<, ActionCable::Connection::Base
   end
 
   test "connection can be established" do
@@ -21,6 +21,7 @@ class ApplicationCable::ConnectionTest < ActionCable::Connection::TestCase
 
   test "connection can be closed" do
     connect
+
     assert connection
 
     # Connection should exist after connecting

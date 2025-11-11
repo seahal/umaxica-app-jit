@@ -1,5 +1,5 @@
 class ComContactTelephone < GuestsRecord
-  belongs_to :com_contact, optional: true
+  has_many :com_contacts, dependent: :destroy
 
   encrypts :telephone_number, deterministic: true
   # Bridge OTP helpers to stored verifier_* columns

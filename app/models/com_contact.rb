@@ -1,8 +1,8 @@
 class ComContact < GuestsRecord
   # Associations
 
-  has_many :com_contact_emails, dependent: :destroy
-  has_many :com_contact_telephones, dependent: :destroy
+  belongs_to :com_contact_email
+  belongs_to :com_contact_telephone
   belongs_to :com_contact_category,
              class_name: "ComContactCategory",
              foreign_key: :contact_category_title,
@@ -19,8 +19,12 @@ class ComContact < GuestsRecord
 
   attr_accessor :confirm_policy
 
+  # Callbacks
+  after_initialize :set_default_category_and_status, if: :new_record?
+
   # Validations
   validates :confirm_policy, acceptance: true
+  validates :contact_category_title, presence: true
 
   # State transition helpers
   def can_verify_email?
@@ -75,5 +79,12 @@ class ComContact < GuestsRecord
 
   def token_expired?
     token_expires_at && Time.current >= token_expires_at
+  end
+
+  private
+
+  def set_default_category_and_status
+    self.contact_category_title ||= "NULL_COM_CATEGORY"
+    self.contact_status_title ||= "NULL_COM_STATUS"
   end
 end

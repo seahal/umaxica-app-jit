@@ -7,7 +7,24 @@ class ComContactTopicTest < ActiveSupport::TestCase
   end
 
   def build_contact
-    ComContact.create!
+    email = ComContactEmail.create!(
+      id: SecureRandom.uuid,
+      email_address: "test@example.com",
+      expires_at: 1.day.from_now
+    )
+    telephone = ComContactTelephone.create!(
+      id: SecureRandom.uuid,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
+    contact = ComContact.new(
+      com_contact_email: email,
+      com_contact_telephone: telephone,
+      confirm_policy: "1"
+    )
+    contact.save!
+    contact
   end
 
   test "should belong to com_contact" do

@@ -155,6 +155,7 @@ RUN apt-get update -qq \
     tzdata \
     unzip \
     zlib1g-dev \
+    graphviz \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 

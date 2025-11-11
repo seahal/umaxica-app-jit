@@ -8,7 +8,8 @@ gem "rake"
 # rack
 gem "rack"
 # Rails
-gem "rails"
+# gem "rails"
+gem "rails", github: "rails/rails", branch: "main"
 # Use Postgres as the database for Active Record
 gem "puma"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -23,6 +24,7 @@ gem "karafka-web"
 # For CORS
 gem "rack-cors"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+gem "bcrypt"
 gem "argon2"
 # SHA3
 gem "sha3"
@@ -79,11 +81,13 @@ gem "jsbundling-rails"
 gem "fastly"
 # easty to write tags in head.
 gem "meta-tags"
+# use surrogate key for pk of db.
+gem "nanoid"
 
 
 group :development, :test do
   # to avoid n+1 queries
-  gem "bullet"
+  # gem "bullet"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
   # coverage
@@ -127,4 +131,6 @@ group :development do
   gem "reek"
   gem "churn"
   gem "flog"
+  #
+  gem "rails-erd"
 end

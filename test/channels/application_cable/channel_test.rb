@@ -14,7 +14,7 @@ class ApplicationCable::ChannelTest < ActionCable::Channel::TestCase
   end
 
   test "ApplicationCable::Channel is a subclass of ActionCable::Channel::Base" do
-    assert ApplicationCable::Channel < ActionCable::Channel::Base
+    assert_operator ApplicationCable::Channel, :<, ActionCable::Channel::Base
   end
 
   test "channels can inherit from ApplicationCable::Channel" do
@@ -24,18 +24,19 @@ class ApplicationCable::ChannelTest < ActionCable::Channel::TestCase
   test "channel can be subscribed" do
     subscribe
 
-    assert subscription.confirmed?
+    assert_predicate subscription, :confirmed?
   end
 
   test "channel can stream from" do
     subscribe
     # Verify subscription was created successfully
-    assert subscription.confirmed?
+    assert_predicate subscription, :confirmed?
   end
 
   test "channel can be unsubscribed" do
     subscribe
-    assert subscription.confirmed?
+
+    assert_predicate subscription, :confirmed?
 
     perform :unsubscribe
 

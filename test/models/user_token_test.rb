@@ -11,7 +11,7 @@ require "test_helper"
 
 class UserTokenTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!
+    @user = User.create!(password: 'Qwerty123456!@#$%^')
     @user_token = UserToken.new(user_id: @user.id)
   end
 

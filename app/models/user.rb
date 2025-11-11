@@ -10,11 +10,12 @@
 #  webauthn_id :string
 #
 class User < IdentitiesRecord
-  has_many :emails, foreign_key: "address", dependent: :destroy, inverse_of: :user
-  has_many :phones, foreign_key: "id", dependent: :destroy, inverse_of: :user
+  has_secure_password algorithm: :argon2
+  has_many :user_emails, dependent: :destroy
+  has_many :user_telephones, dependent: :destroy
   has_one :user_apple_auth, dependent: :destroy
   has_one :user_google_auth, dependent: :destroy
   has_many :user_sessions, dependent: :destroy
   has_many :user_time_based_one_time_password, dependent: :destroy
-  has_many :webauthns, dependent: :destroy
+  has_many :user_webauthn_credentials, dependent: :destroy
 end

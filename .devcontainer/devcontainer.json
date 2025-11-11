@@ -6,7 +6,7 @@
 	"containerUser": "jit",
 	"workspaceFolder": "/home/jit/workspace",
 	"overrideCommand": true,
-	"forwardPorts": [3001],
+	"forwardPorts": [3002],
 	"remoteEnv": {
 		"EDITOR": "code --wait --reuse-window"
 	},
@@ -51,7 +51,8 @@
 				"files.insertFinalNewline": true,
 				"editor.codeActionsOnSave": {
 					"source.fixAll.biome": "explicit",
-					"source.fixAll.eslint": "explicit"
+					"source.fixAll.eslint": "explicit",
+					"source.fixAll": "explicit"
 				},
 				"files.associations": {
 					"*.erb": "erb",
@@ -87,6 +88,9 @@
 					"workspaceSymbol": true,
 					"signatureHelp": true,
 					"typeHierarchy": true
+				},
+				"ruby.lint": {
+					"rubocop": true
 				}
 			}
 		},
@@ -104,7 +108,9 @@
 	"containerEnv": {
 		"DEVCONTAINER_AUTO_START_BIN_DEV": "1",
 		"NODE_OPTIONS": "--max-old-space-size=4096",
-		"RUBY_DEBUG_OPEN": "true"
+		"RUBY_DEBUG_OPEN": "true",
+		"QT_QPA_PLATFORM": "wayland",
+		"GDK_BACKEND": "wayland"
 	},
 	"postCreateCommand": "bun install && bundle install && bin/rails db:create",
 	"updateContentCommand": "",
@@ -116,6 +122,10 @@
 		"ghcr.io/devcontainers/features/aws-cli:1": {}
 	},
 	"mounts": [
-		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume"
+		"source=${localEnv:CLAUDE_CONFIG_DIR},target=/home/jit/.claude,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.config/gh,target=/home/jit/.config/gh,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.config/git,target=/home/jit/.config/git,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.gitconfig,target=/home/jit/.gitconfig,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.ssh,target=/home/jit/.ssh,type=bind,consistency=cached"
 	]
 }

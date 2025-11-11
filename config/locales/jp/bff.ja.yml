@@ -80,3 +80,75 @@ ja:
           intro: "下のリンクからスタッフ向けの設定を変更してください。"
           cta: "スタッフ設定を更新"
           expiration_notice: "このリンクは2時間で期限切れになり、1回しか使えません。"
+  help:
+    com:
+      contacts:
+        new:
+          page_title: "お問い合わせ"
+          heading: "お問い合わせフォーム"
+          description: "以下のフォームにご記入ください。"
+          email_address: "メールアドレス"
+          telephone_number: "電話番号"
+          contact_category_title: "お問い合わせ種別"
+          confirm_policy: "プライバシーポリシーに同意します"
+          submit: "次へ"
+          cancel: "キャンセル"
+        create:
+          success: "お問い合わせを受け付けました。メールアドレスを確認してください。"
+          failure: "お問い合わせを送信できませんでした。入力内容をご確認ください。"
+          turnstile_error: "セキュリティ検証に失敗しました。ページを更新して再度お試しください。"
+          confirm_policy_error: "続行するには、プライバシーポリシーに同意する必要があります。"
+      contact:
+        emails:
+          new:
+            page_title: "メールアドレスの確認"
+            heading: "メールアドレスを入力"
+            description: "入力されたメールアドレスに確認コードを送信します。"
+            email_label: "メールアドレス"
+            submit: "確認コードを送信"
+          create:
+            success: "確認コードを送信しました。メールをご確認ください。"
+            failure: "確認コードを送信できませんでした。もう一度お試しください。"
+            turnstile_error: "セキュリティ検証に失敗しました。ページを更新して再度お試しください。"
+          edit:
+            page_title: "確認コードの入力"
+            heading: "メールアドレスを確認"
+            description: "メールアドレスに送信された6桁のコードを入力してください。"
+            code_label: "確認コード"
+            submit: "メールアドレスを確認"
+            session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            resend_code: "コードを再送信"
+          update:
+            success: "メールアドレスが確認されました。電話番号を確認してください。"
+            session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            invalid_code: "確認コードが正しくありません。残り%{attempts_left}回の試行が可能です。"
+            max_attempts: "確認の試行回数が上限に達しました。新しいコードをリクエストしてください。"
+            expired: "確認コードの有効期限が切れました。新しいコードをリクエストしてください。"
+        telephones:
+          new:
+            page_title: "電話番号の確認"
+            heading: "電話番号を入力"
+            description: "入力された電話番号にSMSで確認コードを送信します。"
+            telephone_label: "電話番号"
+            submit: "確認コードを送信"
+          create:
+            success: "確認コードを送信しました。SMSをご確認ください。"
+            failure: "確認コードを送信できませんでした。もう一度お試しください。"
+            turnstile_error: "セキュリティ検証に失敗しました。ページを更新して再度お試しください。"
+          edit:
+            page_title: "確認コードの入力"
+            heading: "電話番号を確認"
+            description: "SMSで送信された6桁のコードを入力してください。"
+            code_label: "確認コード"
+            submit: "電話番号を確認"
+            session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            resend_code: "コードを再送信"
+          update:
+            success: "電話番号が確認されました。お問い合わせありがとうございました!"
+            session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            invalid_code: "確認コードが正しくありません。残り%{attempts_left}回の試行が可能です。"
+            max_attempts: "確認の試行回数が上限に達しました。新しいコードをリクエストしてください。"
+            expired: "確認コードの有効期限が切れました。新しいコードをリクエストしてください。"
+            success: "成功！"
+            failure: "失敗！"
+  confirm_policy_error: "ポリシーエラー"

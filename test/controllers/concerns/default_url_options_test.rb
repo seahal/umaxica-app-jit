@@ -22,7 +22,7 @@ class DefaultUrlOptionsTest < ActiveSupport::TestCase
   test "read_cookie_preferences_for_url returns empty hash for blank cookie" do
     result = @controller.send(:read_cookie_preferences_for_url)
 
-    assert_equal({}, result)
+    assert_empty(result)
   end
 
   test "read_cookie_preferences_for_url handles JSON parse error gracefully" do
@@ -32,7 +32,7 @@ class DefaultUrlOptionsTest < ActiveSupport::TestCase
 
     result = @controller.send(:read_cookie_preferences_for_url)
 
-    assert_equal({}, result)
+    assert_empty(result)
   end
 
   test "read_cookie_preferences_for_url handles TypeError gracefully" do
@@ -42,7 +42,7 @@ class DefaultUrlOptionsTest < ActiveSupport::TestCase
 
     result = @controller.send(:read_cookie_preferences_for_url)
 
-    assert_equal({}, result)
+    assert_empty(result)
   end
 
   test "read_cookie_preferences_for_url returns empty hash for non-hash JSON" do
@@ -52,7 +52,7 @@ class DefaultUrlOptionsTest < ActiveSupport::TestCase
 
     result = @controller.send(:read_cookie_preferences_for_url)
 
-    assert_equal({}, result)
+    assert_empty(result)
   end
 
   test "read_cookie_preferences_for_url extracts preference values" do

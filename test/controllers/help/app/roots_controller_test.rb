@@ -18,6 +18,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get help_app_root_url
 
@@ -36,3 +37,4 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 end
+# rubocop:enable Minitest/MultipleAssertions

@@ -15,9 +15,9 @@ Rails.application.routes.draw do
         namespace :registration do
           resources :emails, only: %i[new create edit update]
           resources :telephones, only: %i[new create edit update]
+          resources :googles, only: %i[new]
           # TODO: Implement Apple Sign-in registration
           # resources :apples, only: %i[new]
-          resources :googles, only: %i[new]
         end
         # Sign In/Out pages
         resource :authentication, only: %i[new edit destroy]
@@ -32,9 +32,11 @@ Rails.application.routes.draw do
           resource :apple, only: %i[new create]
           resource :google, only: %i[new]
         end
-        # OAuth required pages
-        get "sign/:provider/callback", to: "sessions#create"
-        get "sign/failure", to: redirect("/") # TODO: Fix this
+        namespace :socail do
+          # OAuth required pages
+          get ":provider/callback", to: "sessions#create"
+          get "failure", to: redirect("/") # TODO: Fix this
+        end
         # Withdrawal
         resource :withdrawal, only: %i[new create edit update]
         # Settings with logined user

@@ -10,11 +10,11 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # contact page
-        resources :contacts, only: [ :new, :create, :show ] do
-          # scope module: :contact do
-          #   resource :email, only: [ :new, :create ]
-          #   resource :telephone, only: [ :new, :create ]
-          # end
+        resources :contacts, only: [ :new, :create ] do
+          scope module: :contact do
+            resource :email, only: [ :edit, :update ]
+            resource :telephone, only: [ :edit, :update ]
+          end
         end
       end
     end
@@ -29,10 +29,12 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # contact page
-        # resources :contacts, only: [ :new, :create, :show ] do
-        #   # scope module: :contact do
-        #   #   resource :email, only: [ :new, :create ]
-        #   #   resource :telephone, only: [ :new, :create ]
+        resources :contacts, only: [ :new, :create ] do
+          scope module: :contact do
+            resource :email, only: [ :edit, :update ]
+            resource :telephone, only: [ :edit, :update ]
+          end
+        end
       end
     end
 
@@ -46,7 +48,13 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # TODO: Implement staff contact page
+        # contact page
+        resources :contacts, only: [ :new, :create ] do
+          scope module: :contact do
+            resource :email, only: [ :edit, :update ]
+            resource :telephone, only: [ :edit, :update ]
+          end
+        end
       end
     end
   end
