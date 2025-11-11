@@ -8,7 +8,7 @@ module Help
 
         # 検証コード入力画面
         def edit
-          @contact_email = @contact.com_contact_emails.find(params[:id])
+          @contact_email = @contact.com_contact_email
 
           # セッションチェック
           unless valid_session?(@contact_email)
@@ -19,7 +19,7 @@ module Help
 
         # 検証コード確認処理
         def update
-          @contact_email = @contact.com_contact_emails.find(params[:id])
+          @contact_email = @contact.com_contact_email
 
           unless valid_session?(@contact_email)
             redirect_to help_com_root_path,
@@ -34,7 +34,7 @@ module Help
             session[:com_contact_email_verification] = nil
 
             # 次は電話番号の確認へ
-            redirect_to edit_help_com_contact_telephone_path(@contact, @contact.com_contact_telephones.first),
+            redirect_to edit_help_com_contact_telephone_path(@contact),
                         notice: t(".success")
           else
             # 検証失敗時のエラーメッセージ

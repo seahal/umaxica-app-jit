@@ -1,0 +1,37 @@
+  # Dependencies
+  node_modules/
+  vendor/
+  .bundle/
+  .bun/
+
+  # Lock files (large binary/generated files)
+  bun.lock
+  Gemfile.lock
+
+  # Logs and temp files
+  log/
+  tmp/
+  .cache/
+  .local/
+
+  # Build outputs
+  /app/assets/builds/
+  /public/vite*
+  /public/assets
+  coverage/
+  .run/
+
+  # IDE and tools
+  .vscode/
+  .idea/
+  .ruby-lsp/
+
+  # Database
+  *.sqlite3
+
+  # Documentation
+  /doc/
+  .yardoc/
+
+  # Docker
+  docker/

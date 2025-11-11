@@ -103,6 +103,7 @@
 - Frontend assets not updating: `bin/rails assets:clobber` followed by a rebuild.
 - Tests failing due to missing databases: `bin/rails db:create`
 - If your devcontainer fails to start, rebuilding it might resolve the issue.
+- The credentials key will be shared with you separately.
 
 ## Known Issues & Limitations
 - This is a work in progress.

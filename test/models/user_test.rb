@@ -25,12 +25,12 @@ class UserTest < ActiveSupport::TestCase
 
   test "should have many emails association" do
     assert_respond_to @user, :emails
-    assert_equal "address", @user.class.reflect_on_association(:emails).foreign_key
+    assert_equal "user_id", @user.class.reflect_on_association(:user_emails).foreign_key
   end
 
   test "should have many phones association" do
     assert_respond_to @user, :phones
-    assert_equal "id", @user.class.reflect_on_association(:phones).foreign_key
+    assert_equal "user_id", @user.class.reflect_on_association(:user_telephones).foreign_key
   end
 
   test "should have one user_apple_auth association" do

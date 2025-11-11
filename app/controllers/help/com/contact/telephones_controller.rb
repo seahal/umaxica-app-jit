@@ -13,11 +13,11 @@ module Help
         end
 
         def edit
-          @contact_telephone = @contact.com_contact_telephones.find(params[:id])
+          @contact_telephone = @contact.com_contact_telephone
 
           # セッションチェック
           unless valid_session?(@contact_telephone)
-            redirect_to new_help_com_contact_telephone_path(@contact),
+            redirect_to help_com_root_path,
                         alert: t(".session_expired")
             nil
           end
@@ -55,10 +55,10 @@ module Help
 
 
         def update
-          @contact_telephone = @contact.com_contact_telephones.find(params[:id])
+          @contact_telephone = @contact.com_contact_telephone
 
           unless valid_session?(@contact_telephone)
-            redirect_to new_help_com_contact_telephone_path(@contact),
+            redirect_to help_com_root_path,
                         alert: t(".session_expired")
             return
           end
