@@ -25,7 +25,7 @@ User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')
 
 #
 ComContactCategory.create_or_find_by!(title: 'NULL', description: 'NULL')
-ComContactCategory.create_or_find_by!(title: 'SECIRITY_ISSUE', description: 'root of corporate site status inquiries', parent_title: 'NULL')
+ComContactCategory.create_or_find_by!(title: 'SECURITY_ISSUE', description: 'root of corporate site status inquiries', parent_title: 'NULL')
 ComContactCategory.create_or_find_by!(title: 'OTHERS', description: 'root of corporate site status inquiries', parent_title: 'NULL')
 AppContactCategory.create_or_find_by!(title: 'NULL', description: 'NULL')
 AppContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
@@ -34,7 +34,6 @@ OrgContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description:
 AppContactCategory.create_or_find_by!(title: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')
 OrgContactCategory.create_or_find_by!(title: 'APEX_OF_ORG', description: 'root of org site status inquiries')
 OrgContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
-AppContactCategory.create_or_find_by!(title: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')
 OrgContactCategory.create_or_find_by!(title: 'ORGANIZATION_SITE_CONTACT', description: 'root of org site status inquiries')
 # #
 # [ AppContactStatus, ComContactStatus, OrgContactStatus ].each do |status_class|
