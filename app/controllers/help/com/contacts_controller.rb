@@ -8,6 +8,8 @@ module Help
 
       def new
         @contact = ComContact.new
+        @contact.com_contact_emails.build
+        @contact.com_contact_telephones.build
         load_contact_categories
       end
 
@@ -15,10 +17,12 @@ module Help
         @contact = ComContact.new(contact_params)
 
         if turnstile_passed? && @contact.save
-          redirect_to new_help_com_contact_email_url(@contact), notice: t("ja.help.com.contacts.create.success")
+          redirect_to edit_help_com_contact_email_path(@contact), notice: t(".success")
         else
+          # エラー時に、パラメータから関連レコードが作成されていない場合のみ空のレコードを追加
+          @contact.com_contact_emails.build if @contact.com_contact_emails.empty?
+          @contact.com_contact_telephones.build if @contact.com_contact_telephones.empty?
           load_contact_categories
-          flash.now[:alert] ||= t("ja.help.com.contacts.create.failure")
           render :new, status: :unprocessable_entity
         end
       end
@@ -26,12 +30,12 @@ module Help
       private
 
       def contact_params
-        params.expect(com_contact: [
+        params.require(:com_contact).permit(
           :contact_category_title,
           :confirm_policy,
           com_contact_emails_attributes: [ :email_address ],
           com_contact_telephones_attributes: [ :telephone_number ]
-        ])
+        )
       end
 
       def load_contact_categories

@@ -12,8 +12,8 @@ Rails.application.routes.draw do
         # contact page
         resources :contacts, only: [ :new, :create, :show ] do
           scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
+            resources :email, only: [ :edit, :update ]
+            resources :telephone, only: [ :edit, :update ]
           end
         end
       end

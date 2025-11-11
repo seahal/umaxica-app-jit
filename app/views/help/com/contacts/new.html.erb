@@ -1,4 +1,4 @@
-<h1><%= title t('controller.help.com.contacts.new.page_title') %></h1>
+<h1><%= title t('help.com.contacts.new.page_title') %></h1>
 
 <%= form_with model: @contact, url: help_com_contacts_path do |form| %>
   <% if @contact.errors.any? %>
@@ -15,11 +15,11 @@
 
   <div>
     <%= form.checkbox :confirm_policy %>
-    <%= form.label :confirm_policy, t('controller.help.com.contacts.new.confirm_policy') %>
+    <%= form.label :confirm_policy, t('help.com.contacts.new.confirm_policy') %>
   </div>
 
   <div>
-    <%= form.label :contact_category_title, t('controller.help.com.contacts.new.contact_category_title') %>
+    <%= form.label :contact_category_title, t('help.com.contacts.new.contact_category_title') %>
     <%= form.collection_select :contact_category_title,
                                @contact_categories,
                                :title,
@@ -27,24 +27,24 @@
                                { include_blank: true } %>
   </div>
 
-  <%= form.fields_for :email_address, @contact.com_contact_emails.build do |email_form| %>
-    <div>
-      <%= email_form.label :email_address, t('controller.help.com.contacts.new.email_address') %>
+  <div>
+    <%= form.fields_for :com_contact_emails do |email_form| %>
+      <%= email_form.label :email_address %>
       <%= email_form.email_field :email_address %>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
 
-  <%= form.fields_for :telephone_number, @contact.com_contact_telephones.build do |telephone_form| %>
-    <div>
-      <%= telephone_form.label :telephone_number, t('controller.help.com.contacts.new.telephone_number') %>
+  <div>
+    <%= form.fields_for :com_contact_telephones do |telephone_form| %>
+      <%= telephone_form.label :telephone_number %>
       <%= telephone_form.text_field :telephone_number %>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
+
+  <div>
+    <%= link_to t('help.com.contacts.new.cancel'), help_com_root_path %>
+  </div>
 
   <%= render "concern/cloudflare_turnstile" %>
-
   <%= form.submit %>
-  <div>
-    <%= link_to t('controller.help.com.contacts.new.cancel'), help_com_root_path %>
-  </div>
 <% end %>

@@ -80,31 +80,72 @@ en:
           intro: "Use the link below to manage staff email preferences."
           cta: "Update staff preferences"
           expiration_notice: "This link is single-use and expires in two hours."
-  controller:
-    help:
-      app:
-        contacts:
-          new:
-            page_title: "contact us!!!"
-            email_address: "Email Address"
-            contact_category_title: "Category"
-            cancel: "Cancel"
-            telephone_number: "Telephone number"
   help:
-    app:
-      contacts:
-        create:
-          turnstile_error: "check !!!"
     com:
       contacts:
+        new:
+          page_title: "Contact Us"
+          heading: "Send us a message"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          contact_category_title: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          submit: "Continue"
+          cancel: "Cancel"
         create:
-          turnstile_error: "ta-nsaite no error???"
-          success: ">>>???"
-  ja:
-    help:
-      com:
-        contacts:
+          success: "Thank you for contacting us. Please verify your email address."
+          failure: "Unable to process your request. Please check the form and try again."
+          turnstile_error: "Security verification failed. Please refresh the page and try again."
+          confirm_policy_error: "You must agree to the privacy policy to continue."
+      contact:
+        emails:
+          new:
+            page_title: "Verify Email Address"
+            heading: "Enter your email address"
+            description: "We will send a verification code to your email address."
+            email_label: "Email Address"
+            submit: "Send verification code"
           create:
-            success: "Success!!!"
-            failure: "failure!!!"
-  confirm_policy_error: "???"
+            success: "Verification code sent. Please check your email."
+            failure: "Unable to send verification code. Please try again."
+            turnstile_error: "Security verification failed. Please refresh the page and try again."
+          edit:
+            page_title: "Enter Verification Code"
+            heading: "Verify your email"
+            description: "Enter the 6-digit code we sent to your email address."
+            code_label: "Verification Code"
+            submit: "Verify email"
+            session_expired: "Your session has expired. Please start over."
+            resend_code: "Resend code"
+          update:
+            success: "Email verified successfully. Please verify your phone number."
+            session_expired: "Your session has expired. Please start over."
+            invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
+            max_attempts: "Maximum verification attempts exceeded. Please request a new code."
+            expired: "Verification code has expired. Please request a new code."
+        telephones:
+          new:
+            page_title: "Verify Phone Number"
+            heading: "Enter your phone number"
+            description: "We will send a verification code via SMS to your phone number."
+            telephone_label: "Phone Number"
+            submit: "Send verification code"
+          create:
+            success: "Verification code sent. Please check your phone."
+            failure: "Unable to send verification code. Please try again."
+            turnstile_error: "Security verification failed. Please refresh the page and try again."
+          edit:
+            page_title: "Enter Verification Code"
+            heading: "Verify your phone number"
+            description: "Enter the 6-digit code we sent to your phone via SMS."
+            code_label: "Verification Code"
+            submit: "Verify phone number"
+            session_expired: "Your session has expired. Please start over."
+            resend_code: "Resend code"
+          update:
+            success: "Phone number verified successfully. Thank you for contacting us!"
+            session_expired: "Your session has expired. Please start over."
+            invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
+            max_attempts: "Maximum verification attempts exceeded. Please request a new code."
+            expired: "Verification code has expired. Please request a new code."

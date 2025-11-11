@@ -1,4 +1,4 @@
-=[![CI](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit/main)
+[![CI](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml/badge.svg?branch=main)](https://github.com/seahal/umaxica-app-jit/actions/workflows/integration.yml) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/seahal/umaxica-app-jit/main)
 
 # Umaxica App (JIT)
 （ ＾ν＾） Hello, World!
@@ -6,10 +6,10 @@
 ## Prerequisites
 
 - Ruby 3.4.7 (defined in the `Gemfile`)
-- Bundler 2.5+ (shipped with modern Ruby installations)
+  - Bundler 2.5+ (shipped with modern Ruby installations)
 - Bun 1.3.x (plus Node.js 20+ if a package requires Node APIs)
 - Docker (recommended for local infrastructure parity)
-- Access to PostgreSQL, Valkey (Redis-compatible), and Kafka instances
+  - Access to PostgreSQL, Valkey (Redis-compatible), and Kafka instances
 
 ## Initial Setup
 
