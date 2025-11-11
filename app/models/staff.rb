@@ -11,5 +11,5 @@
 #
 class Staff < IdentitiesRecord
   has_secure_password algorithm: :argon2
-  has_many :emails, foreign_key: "address", dependent: :destroy, inverse_of: :staff
+  has_many :staff_emails, dependent: :destroy
 end

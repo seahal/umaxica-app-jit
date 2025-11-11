@@ -4,6 +4,8 @@ module Telephone
   attr_accessor :confirm_policy, :confirm_using_mfa, :pass_code
 
   included do
+    belongs_to :user, optional: true
+    
     encrypts :number, deterministic: true
 
     validates :number, length: { in: 3..20 },

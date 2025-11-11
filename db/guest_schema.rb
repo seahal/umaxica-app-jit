@@ -59,7 +59,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-11-12 09:16:49", null: false
+    t.timestamptz "expires_at", default: "2025-11-12 10:17:01", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -94,7 +94,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-12 09:16:49", null: false
+    t.timestamptz "expires_at", default: "2025-11-12 10:17:01", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -110,7 +110,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-12 09:16:49", null: false
+    t.timestamptz "expires_at", default: "2025-11-12 10:17:01", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"

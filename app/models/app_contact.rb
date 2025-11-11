@@ -12,8 +12,9 @@
 #  updated_at       :datetime         not null
 #
 class AppContact < GuestsRecord
-  attr_accessor :confirm_policy, :email_pass_code, :telephone_pass_code
-
+  # Associations
+  belongs_to :app_contact_email
+  belongs_to :app_contact_telephone
   belongs_to :app_contact_category,
              class_name: "AppContactCategory",
              foreign_key: :contact_category_title,
@@ -26,54 +27,78 @@ class AppContact < GuestsRecord
              primary_key: :title,
              optional: true,
              inverse_of: :app_contacts
+  has_many :app_contact_topics, dependent: :destroy
 
+  attr_accessor :confirm_policy
+
+  # Callbacks
   after_initialize :set_default_category_and_status, if: :new_record?
 
-  before_save { self.email_address&.downcase! }
-  before_save { self.telephone_number&.downcase! }
-  before_create { raise if telephone_number.nil? && email_address.nil? && title.nil? && description.nil? }
+  # Validations
+  validates :confirm_policy, acceptance: true
+  validates :contact_category_title, presence: true
+  validates :app_contact_email, presence: true
+  validates :app_contact_telephone, presence: true
 
-  encrypts :email_address, downcase: true
-  encrypts :telephone_number, downcase: true
-  encrypts :title
-  encrypts :description
+  # State transition helpers
+  def can_verify_email?
+    email_pending?
+  end
 
-  validates :confirm_policy,
-            acceptance: true,
-            unless: Proc.new { it.telephone_number.nil? && it.confirm_policy.nil? && it.email_address.nil? },
-            on: :create
-  validates :email_address,
-            format: { with: URI::MailTo::EMAIL_REGEXP },
-            presence: true,
-            unless: Proc.new { it.telephone_number.nil? && it.confirm_policy.nil? && it.email_address.nil? }
-  validates :telephone_number,
-            presence: true,
-            format: { with: /\A\+[1-9]\d{1,14}\z/ },
-            unless: Proc.new { it.telephone_number.nil? && it.confirm_policy.nil? && it.email_address.nil? }
-  validates :email_pass_code,
-            numericality: { only_integer: true },
-            length: { is: 6 },
-            presence: true,
-            unless: Proc.new { it.email_pass_code.nil? },
-            if: Proc.new { it.telephone_pass_code.nil? }
-  validates :telephone_pass_code,
-            numericality: { only_integer: true },
-            length: { is: 6 },
-            presence: true,
-            unless: Proc.new { it.telephone_pass_code.nil? }
-  validates :title,
-            presence: true,
-            length: { in: 8...256 },
-            unless: Proc.new { it.title.nil? }
-  validates :description,
-            presence: true,
-            length: { in: 8...1024 },
-            unless: Proc.new { it.description.nil? }
+  def can_verify_phone?
+    email_verified?
+  end
+
+  def can_complete?
+    phone_verified?
+  end
+
+  def verify_email!
+    return false unless can_verify_email?
+    update!(status: :email_verified)
+  end
+
+  def verify_phone!
+    return false unless can_verify_phone?
+    update!(status: :phone_verified)
+  end
+
+  def complete!
+    return false unless can_complete?
+    update!(status: :completed)
+  end
+
+  # Token management
+  def generate_final_token
+    raw_token = SecureRandom.alphanumeric(32)
+    self.token_digest = Argon2::Password.create(raw_token)
+    self.token_expires_at = 7.days.from_now
+    self.token_viewed = false
+    save!
+    raw_token # Return raw token only once
+  end
+
+  def verify_token(raw_token)
+    return false if token_viewed?
+    return false if token_expires_at && Time.current >= token_expires_at
+    return false unless token_digest
+
+    if Argon2::Password.verify_password(raw_token, token_digest)
+      update!(token_viewed: true)
+      true
+    else
+      false
+    end
+  end
+
+  def token_expired?
+    token_expires_at && Time.current >= token_expires_at
+  end
 
   private
 
   def set_default_category_and_status
     self.contact_category_title ||= "NULL_APP_CATEGORY"
-    self.contact_status_title ||= "NULL_CONTACT_STATUS"
+    self.contact_status_title ||= "NULL_APP_STATUS"
   end
 end

@@ -2,6 +2,7 @@ module Help
   module Com
     class ContactsController < ApplicationController
       include CloudflareTurnstile
+      include ROTP
 
       def new
         @email_address = ""
@@ -24,7 +25,8 @@ module Help
         ActiveRecord::Base.transaction do
           # First create the contact
           @contact = ComContact.new(
-            contact_category_title: params.dig(:com_contact, :contact_category_title)
+            contact_category_title: params.dig(:com_contact, :contact_category_title),
+            public_id: Nanoid.generate
           )
           @contact.confirm_policy = params.dig(:com_contact, :confirm_policy)
           @contact.save!
@@ -51,6 +53,9 @@ module Help
             email_address: @email.email_address,
             pass_code: otp_code
           ).create.deliver_now
+
+        # ⇑ rewrite app/controllers/concerns/rotp.rb and use here
+
         redirect_to edit_help_com_contact_email_path(contact_id: @contact.id), notice: t(".success")
       rescue ActiveRecord::RecordInvalid => e
         # On error, preserve input values
