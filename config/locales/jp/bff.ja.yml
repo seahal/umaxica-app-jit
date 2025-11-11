@@ -106,4 +106,4 @@ ja:
           create:
             success: "成功！"
             failure: "失敗！"
-  confirm_policy_error: "ポリシーエラー？"
+  confirm_policy_error: "ポリシーエラー"
