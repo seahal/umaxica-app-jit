@@ -9,8 +9,8 @@ bun install
 bundle install
 
 # Rails app prep
-# bin/rails tmp:clear
-bin/rails db:prepare
+bin/rails tmp:clear
+RAILS_ENV=test bin/rails db:prepare
 bin/rails db:seed
 
 # Karafka web UI DB (best-effort)

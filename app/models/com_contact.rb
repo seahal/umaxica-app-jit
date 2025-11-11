@@ -17,6 +17,10 @@ class ComContact < GuestsRecord
              inverse_of: :com_contacts
   has_many :com_contact_topics, dependent: :destroy
 
+  # Nested attributes
+  accepts_nested_attributes_for :com_contact_emails
+  accepts_nested_attributes_for :com_contact_telephones
+
   attr_accessor :confirm_policy
 
   # Callbacks

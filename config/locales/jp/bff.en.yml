@@ -95,6 +95,11 @@ en:
       contacts:
         create:
           turnstile_error: "check !!!"
+    com:
+      contacts:
+        create:
+          turnstile_error: "ta-nsaite no error???"
+          success: ">>>???"
   ja:
     help:
       com:
@@ -102,3 +107,4 @@ en:
           create:
             success: "Success!!!"
             failure: "failure!!!"
+  confirm_policy_error: "???"

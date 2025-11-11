@@ -94,6 +94,11 @@ ja:
       contacts:
         create:
           turnstile_error: "Turnstile にチェックを入れてください"
+    com:
+      contacts:
+        create:
+          turnstile_error: "ロボットのとｋろをそうさする？？？"
+          success: ">>><<<<????"
   ja:
     help:
       com:
@@ -101,3 +106,4 @@ ja:
           create:
             success: "成功！"
             failure: "失敗！"
+  confirm_policy_error: "ポリシーエラー？"

@@ -24,11 +24,10 @@ User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38')
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')
 
 #
-ComContactCategory.create_or_find_by!(title: 'NULL_COM_CATEGORY', description: 'NULL')
 ComContactCategory.create_or_find_by!(title: 'NULL', description: 'NULL')
 ComContactCategory.create_or_find_by!(title: 'SECIRITY_ISSUE', description: 'root of corporate site status inquiries', parent_title: 'NULL')
 ComContactCategory.create_or_find_by!(title: 'OTHERS', description: 'root of corporate site status inquiries', parent_title: 'NULL')
-AppContactCategory.create_or_find_by!(title: 'NULL_APP_CATEGORY', description: 'NULL')
+AppContactCategory.create_or_find_by!(title: 'NULL', description: 'NULL')
 AppContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
 OrgContactCategory.create_or_find_by!(title: 'NULL_ORG_CATEGORY', description: 'NULL')
 OrgContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
