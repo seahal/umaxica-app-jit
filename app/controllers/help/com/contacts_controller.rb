@@ -30,11 +30,11 @@ module Help
       private
 
       def contact_params
-        params.require(:com_contact).permit(
-          :contact_category_title,
+        params.expect(
+          com_contact: [ :contact_category_title,
           :confirm_policy,
           com_contact_emails_attributes: [ :email_address ],
-          com_contact_telephones_attributes: [ :telephone_number ]
+          com_contact_telephones_attributes: [ :telephone_number ] ]
         )
       end
 

@@ -122,11 +122,10 @@
 		"ghcr.io/devcontainers/features/aws-cli:1": {}
 	},
 	"mounts": [
-		"source=claude-code-config-${devcontainerId},target=/home/jit/.claude,type=volume",
-		"source=${localEnv:CLAUDE_CONFIG_DIR},target=/home/node/.claude,type=bind,consistency=cached",
-		"source=${localEnv:HOME}/.config/gh,target=/home/node/.config/gh,type=bind,consistency=cached",
-		"source=${localEnv:HOME}/.config/git,target=/home/node/.config/git,type=bind,consistency=cached",
-		"source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached",
-		"source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached"
+		"source=${localEnv:CLAUDE_CONFIG_DIR},target=/home/jit/.claude,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.config/gh,target=/home/jit/.config/gh,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.config/git,target=/home/jit/.config/git,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.gitconfig,target=/home/jit/.gitconfig,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.ssh,target=/home/jit/.ssh,type=bind,consistency=cached"
 	]
 }
