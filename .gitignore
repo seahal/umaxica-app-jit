@@ -106,3 +106,4 @@ node_modules
 
 /docker/core/preferences/*
 !/docker/core/preferences/.bashrc
+erd.pdf
