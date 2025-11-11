@@ -18,7 +18,7 @@ class Help::Com::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:disable Minitest/MultipleAssertions
   test "should create contact email and redirect to edit" do
     assert_difference("ComContactEmail.count", 1) do
-      post help_com_contact_emails_url(@contact), params: {
+      post edit_help_com_contact_email_url(@contact), params: {
         com_contact_email: {
           email_address: "test@example.com"
         }

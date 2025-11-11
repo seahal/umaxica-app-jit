@@ -28,16 +28,20 @@
   </div>
 
   <div>
-    <%= form.fields_for :com_contact_emails do |email_form| %>
-      <%= email_form.label :email_address %>
-      <%= email_form.email_field :email_address %>
+    <% @contact.com_contact_emails.each do |email| %>
+      <%= form.fields_for :com_contact_emails, email do |email_form| %>
+        <%= email_form.label :email_address %>
+        <%= email_form.email_field :email_address %>
+      <% end %>
     <% end %>
   </div>
 
   <div>
-    <%= form.fields_for :com_contact_telephones do |telephone_form| %>
-      <%= telephone_form.label :telephone_number %>
-      <%= telephone_form.text_field :telephone_number %>
+    <% @contact.com_contact_telephones.each do |telephone| %>
+      <%= form.fields_for :com_contact_telephones, telephone do |telephone_form| %>
+        <%= telephone_form.label :telephone_number %>
+        <%= telephone_form.text_field :telephone_number %>
+      <% end %>
     <% end %>
   </div>
 

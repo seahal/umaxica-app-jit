@@ -16,10 +16,28 @@ module Help
       def create
         @contact = ComContact.new(contact_params)
 
+        # Debug in test: check email values immediately after initialization
+        if Rails.env.test?
+          Rails.logger.debug "=== AFTER new() ==="
+          @contact.com_contact_emails.each_with_index do |email, i|
+            Rails.logger.debug "Email #{i}: #{email.email_address.inspect}"
+          end
+          Rails.logger.debug "=== END ==="
+        end
+
+        # Set expires_at for nested attributes if not already set
+        @contact.com_contact_emails.each do |email|
+          email.expires_at ||= 24.hours.from_now
+        end
+        @contact.com_contact_telephones.each do |telephone|
+          telephone.expires_at ||= 24.hours.from_now
+        end
+
         if turnstile_passed? && @contact.save
-          redirect_to edit_help_com_contact_email_path(@contact), notice: t(".success")
+          redirect_to new_help_com_contact_email_path(contact_id: @contact.id), notice: t(".success")
         else
-          # エラー時に、パラメータから関連レコードが作成されていない場合のみ空のレコードを追加
+          # エラー時: 入力フィールドを表示するために最低1つのオブジェクトが必要
+          # 既存のオブジェクトに入力値が保持されているので、空の場合のみ追加
           @contact.com_contact_emails.build if @contact.com_contact_emails.empty?
           @contact.com_contact_telephones.build if @contact.com_contact_telephones.empty?
           load_contact_categories
@@ -30,11 +48,11 @@ module Help
       private
 
       def contact_params
-        params.expect(
-          com_contact: [ :contact_category_title,
+        params.require(:com_contact).permit(
+          :contact_category_title,
           :confirm_policy,
           com_contact_emails_attributes: [ :email_address ],
-          com_contact_telephones_attributes: [ :telephone_number ] ]
+          com_contact_telephones_attributes: [ :telephone_number ]
         )
       end
 

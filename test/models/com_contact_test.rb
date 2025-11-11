@@ -3,7 +3,23 @@ require "test_helper"
 
 class ComContactTest < ActiveSupport::TestCase
   def build_contact(**attrs)
-    ComContact.create!(**attrs)
+    contact = ComContact.new(**attrs)
+    # Add required email and telephone if not provided
+    if contact.com_contact_emails.empty?
+      contact.com_contact_emails.build(
+        email_address: "test@example.com",
+        expires_at: 1.day.from_now
+      )
+    end
+    if contact.com_contact_telephones.empty?
+      contact.com_contact_telephones.build(
+        telephone_number: "+1234567890",
+        expires_at: 1.day.from_now
+      )
+    end
+    contact.confirm_policy = "1" unless attrs.key?(:confirm_policy)
+    contact.save!
+    contact
   end
 
   def sample_category
@@ -29,8 +45,11 @@ class ComContactTest < ActiveSupport::TestCase
   test "should create contact with relationship titles" do
     contact = ComContact.new(
       contact_category_title: sample_category,
-      contact_status_title: sample_status
+      contact_status_title: sample_status,
+      confirm_policy: "1"
     )
+    contact.com_contact_emails.build(email_address: "test@example.com", expires_at: 1.day.from_now)
+    contact.com_contact_telephones.build(telephone_number: "+1234567890", expires_at: 1.day.from_now)
 
     assert contact.save
     assert_equal sample_category, contact.contact_category_title
@@ -40,8 +59,11 @@ class ComContactTest < ActiveSupport::TestCase
   test "should set default category and status when nil" do
     contact = ComContact.new(
       contact_category_title: nil,
-      contact_status_title: nil
+      contact_status_title: nil,
+      confirm_policy: "1"
     )
+    contact.com_contact_emails.build(email_address: "test@example.com", expires_at: 1.day.from_now)
+    contact.com_contact_telephones.build(telephone_number: "+1234567890", expires_at: 1.day.from_now)
 
     assert contact.save
     assert_equal "NULL_COM_CATEGORY", contact.contact_category_title
@@ -77,6 +99,9 @@ class ComContactTest < ActiveSupport::TestCase
   test "should have many com_contact_emails" do
     contact = build_contact
 
+    # Contact already has 1 email from build_contact
+    initial_count = contact.com_contact_emails.count
+
     email1 = ComContactEmail.create!(
       com_contact: contact,
       email_address: "test1@example.com",
@@ -89,7 +114,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal 2, contact.com_contact_emails.count
+    assert_equal initial_count + 2, contact.com_contact_emails.count
     assert_includes contact.com_contact_emails, email1
     assert_includes contact.com_contact_emails, email2
   end
@@ -112,9 +137,12 @@ class ComContactTest < ActiveSupport::TestCase
   test "should have many com_contact_telephones" do
     contact = build_contact
 
+    # Contact already has 1 telephone from build_contact
+    initial_count = contact.com_contact_telephones.count
+
     phone1 = ComContactTelephone.create!(
       com_contact: contact,
-      telephone_number: "+1234567890",
+      telephone_number: "+1234567891",
       expires_at: 1.day.from_now
     )
 
@@ -124,7 +152,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal 2, contact.com_contact_telephones.count
+    assert_equal initial_count + 2, contact.com_contact_telephones.count
     assert_includes contact.com_contact_telephones, phone1
     assert_includes contact.com_contact_telephones, phone2
   end
@@ -227,8 +255,11 @@ class ComContactTest < ActiveSupport::TestCase
     ComContactCategory.create!(title: "com_category")
 
     contact = ComContact.new(
-      contact_category_title: "com_category"
+      contact_category_title: "com_category",
+      confirm_policy: "1"
     )
+    contact.com_contact_emails.build(email_address: "test@example.com", expires_at: 1.day.from_now)
+    contact.com_contact_telephones.build(telephone_number: "+1234567890", expires_at: 1.day.from_now)
 
     assert contact.save
     assert_equal "com_category", contact.contact_category_title
@@ -238,8 +269,11 @@ class ComContactTest < ActiveSupport::TestCase
     ComContactStatus.create!(title: "com_status")
 
     contact = ComContact.new(
-      contact_status_title: "com_status"
+      contact_status_title: "com_status",
+      confirm_policy: "1"
     )
+    contact.com_contact_emails.build(email_address: "test@example.com", expires_at: 1.day.from_now)
+    contact.com_contact_telephones.build(telephone_number: "+1234567890", expires_at: 1.day.from_now)
 
     assert contact.save
     assert_equal "com_status", contact.contact_status_title
@@ -247,8 +281,11 @@ class ComContactTest < ActiveSupport::TestCase
 
   test "should set default contact_category_title when nil" do
     contact = ComContact.new(
-      contact_category_title: nil
+      contact_category_title: nil,
+      confirm_policy: "1"
     )
+    contact.com_contact_emails.build(email_address: "test@example.com", expires_at: 1.day.from_now)
+    contact.com_contact_telephones.build(telephone_number: "+1234567890", expires_at: 1.day.from_now)
 
     assert contact.save
     assert_equal "NULL_COM_CATEGORY", contact.contact_category_title
@@ -256,8 +293,11 @@ class ComContactTest < ActiveSupport::TestCase
 
   test "should set default contact_status_title when nil" do
     contact = ComContact.new(
-      contact_status_title: nil
+      contact_status_title: nil,
+      confirm_policy: "1"
     )
+    contact.com_contact_emails.build(email_address: "test@example.com", expires_at: 1.day.from_now)
+    contact.com_contact_telephones.build(telephone_number: "+1234567890", expires_at: 1.day.from_now)
 
     assert contact.save
     assert_equal "NULL_COM_STATUS", contact.contact_status_title
