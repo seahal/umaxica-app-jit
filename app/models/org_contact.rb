@@ -1,7 +1,7 @@
 class OrgContact < GuestsRecord
   # Associations
-  belongs_to :org_contact_email
-  belongs_to :org_contact_telephone
+  belongs_to :org_contact_email, optional: true
+  belongs_to :org_contact_telephone, optional: true
   belongs_to :org_contact_category,
              class_name: "OrgContactCategory",
              foreign_key: :contact_category_title,

@@ -12,4 +12,7 @@
 class Staff < IdentitiesRecord
   has_secure_password algorithm: :argon2
   has_many :staff_emails, dependent: :destroy
+
+  # Alias for backward compatibility with tests
+  alias_method :emails, :staff_emails
 end

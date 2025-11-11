@@ -1,8 +1,8 @@
 class ComContact < GuestsRecord
   # Associations
 
-  belongs_to :com_contact_email
-  belongs_to :com_contact_telephone
+  belongs_to :com_contact_email, optional: true
+  belongs_to :com_contact_telephone, optional: true
   belongs_to :com_contact_category,
              class_name: "ComContactCategory",
              foreign_key: :contact_category_title,
@@ -25,6 +25,8 @@ class ComContact < GuestsRecord
   # Validations
   validates :confirm_policy, acceptance: true
   validates :contact_category_title, presence: true
+
+  # State transition helpers
 
   # State transition helpers
   def can_verify_email?

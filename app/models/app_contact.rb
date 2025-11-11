@@ -13,8 +13,8 @@
 #
 class AppContact < GuestsRecord
   # Associations
-  belongs_to :app_contact_email
-  belongs_to :app_contact_telephone
+  belongs_to :app_contact_email, optional: true
+  belongs_to :app_contact_telephone, optional: true
   belongs_to :app_contact_category,
              class_name: "AppContactCategory",
              foreign_key: :contact_category_title,
