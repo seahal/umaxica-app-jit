@@ -34,7 +34,6 @@ OrgContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description:
 AppContactCategory.create_or_find_by!(title: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')
 OrgContactCategory.create_or_find_by!(title: 'APEX_OF_ORG', description: 'root of org site status inquiries')
 OrgContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
-AppContactCategory.create_or_find_by!(title: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')
 OrgContactCategory.create_or_find_by!(title: 'ORGANIZATION_SITE_CONTACT', description: 'root of org site status inquiries')
 # #
 # [ AppContactStatus, ComContactStatus, OrgContactStatus ].each do |status_class|
