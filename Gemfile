@@ -92,8 +92,6 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
-  #
-  gem "rails-erd"
 end
 
 group :development do
@@ -133,4 +131,6 @@ group :development do
   gem "reek"
   gem "churn"
   gem "flog"
+  #
+  gem "rails-erd"
 end

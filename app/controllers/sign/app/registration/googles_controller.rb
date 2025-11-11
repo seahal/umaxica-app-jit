@@ -9,7 +9,7 @@ module Sign
         end
 
         def new
-          redirect_to "/auth/google_oauth2", allow_other_host: true
+          redirect_to "/google_oauth2" # , allow_other_host: true
         end
 
         def create

@@ -5,7 +5,7 @@ module Telephone
 
   included do
     belongs_to :user, optional: true
-    
+
     encrypts :number, deterministic: true
 
     validates :number, length: { in: 3..20 },

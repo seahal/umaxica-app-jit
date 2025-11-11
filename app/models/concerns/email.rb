@@ -6,7 +6,7 @@ module Email
   included do
     belongs_to :user, optional: true
     belongs_to :staff, optional: true
-    
+
     before_save { self.address&.downcase! }
 
     encrypts :address, downcase: true, deterministic: true

@@ -25,8 +25,6 @@ class ComContact < GuestsRecord
   # Validations
   validates :confirm_policy, acceptance: true
   validates :contact_category_title, presence: true
-  validates :com_contact_email, presence: true
-  validates :com_contact_telephone, presence: true
 
   # State transition helpers
   def can_verify_email?
