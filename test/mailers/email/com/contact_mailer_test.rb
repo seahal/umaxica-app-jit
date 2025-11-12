@@ -36,19 +36,19 @@ class Email::Com::ContactMailerTest < ActionMailer::TestCase
   test "should have both html and text parts" do
     mail = Email::Com::ContactMailer.with(email_address: "user@example.com", pass_code: "555444").create
 
-    assert mail.multipart?
+    assert_predicate mail, :multipart?
     assert_not_nil mail.html_part
     assert_not_nil mail.text_part
   end
 
   test "should use correct brand name in subject" do
-    original_brand = ENV['BRAND_NAME']
-    ENV['BRAND_NAME'] = 'TestBrand'
+    original_brand = ENV["BRAND_NAME"]
+    ENV["BRAND_NAME"] = "TestBrand"
 
     mail = Email::Com::ContactMailer.with(email_address: "user@example.com", pass_code: "123456").create
 
     assert_equal "TestBrand - Email Verification Code", mail.subject
   ensure
-    ENV['BRAND_NAME'] = original_brand
+    ENV["BRAND_NAME"] = original_brand
   end
 end

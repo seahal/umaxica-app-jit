@@ -6,6 +6,7 @@ module Help::Com
       @category = com_contact_categories(:one)
     end
 
+    # rubocop:disable Minitest/MultipleAssertions
     test "should get new" do
       get new_help_com_contact_url
 
@@ -15,7 +16,9 @@ module Help::Com
       assert_select "select[name='com_contact[contact_category_title]']"
       assert_select "input[name='com_contact[confirm_policy]']"
     end
+    # rubocop:enable Minitest/MultipleAssertions
 
+    # rubocop:disable Minitest/MultipleAssertions
     test "should create contact with email and telephone" do
       assert_difference("ComContact.count", 1) do
         assert_difference("ComContactEmail.count", 1) do
@@ -35,13 +38,15 @@ module Help::Com
 
       assert_response :redirect
       contact = ComContact.order(:created_at).last
+
       assert_redirected_to edit_help_com_contact_email_path(contact_id: contact.id)
       assert_equal I18n.t("help.com.contacts.create.success"), flash[:notice]
     end
+    # rubocop:enable Minitest/MultipleAssertions
 
     test "should require valid category" do
       # Test with invalid/nil category
-      assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
+      assert_no_difference([ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ]) do
         post help_com_contacts_url, params: {
           com_contact: {
             contact_category_title: "", # Invalid: empty category
@@ -58,7 +63,7 @@ module Help::Com
     end
 
     test "should render new when validation fails" do
-      assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
+      assert_no_difference([ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ]) do
         post help_com_contacts_url, params: {
           com_contact: {
             contact_category_title: @category.title,

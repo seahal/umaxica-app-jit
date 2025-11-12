@@ -18,10 +18,10 @@ class ComContact < GuestsRecord
 
   attr_accessor :confirm_policy
 
+  after_initialize :set_default_category_and_status, if: :new_record?
   # Callbacks
   before_create :generate_public_id
   before_create :generate_token
-  after_initialize :set_default_category_and_status, if: :new_record?
 
   # Validations
   validates :confirm_policy, acceptance: true

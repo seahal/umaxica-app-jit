@@ -124,6 +124,7 @@ class AppContactTest < ActiveSupport::TestCase
   end
 
   # Association tests
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have many app_contact_emails" do
     contact = build_contact
 
@@ -140,7 +141,9 @@ class AppContactTest < ActiveSupport::TestCase
 
     assert_equal 2, contact.app_contact_emails.count
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have many app_contact_telephones" do
     contact = build_contact
 
@@ -157,6 +160,7 @@ class AppContactTest < ActiveSupport::TestCase
 
     assert_equal 2, contact.app_contact_telephones.count
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should have many app_contact_topics" do
     contact = build_contact
@@ -332,6 +336,7 @@ class AppContactTest < ActiveSupport::TestCase
     assert_equal 0, contact.app_contact_telephones.count
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should allow contact with multiple emails and telephones" do
     contact = AppContact.new(confirm_policy: "1")
     contact.save!
@@ -368,6 +373,7 @@ class AppContactTest < ActiveSupport::TestCase
     assert_includes contact.app_contact_telephones, telephone1
     assert_includes contact.app_contact_telephones, telephone2
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # Validation: confirm_policy
   test "should require confirm_policy to be accepted" do
@@ -378,7 +384,7 @@ class AppContactTest < ActiveSupport::TestCase
     )
 
     assert_not contact.valid?
-    assert contact.errors[:confirm_policy].present?
+    assert_predicate contact.errors[:confirm_policy], :present?
   end
 
   test "should accept contact when confirm_policy is true" do
@@ -406,6 +412,7 @@ class AppContactTest < ActiveSupport::TestCase
 
     # After save, token should be generated (may be empty string from callback)
     contact.reload
+
     assert_respond_to contact, :token
   end
 

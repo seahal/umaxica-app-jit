@@ -124,6 +124,7 @@ class ComContactTest < ActiveSupport::TestCase
   end
 
   # Association tests
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have many com_contact_emails" do
     contact = build_contact
 
@@ -140,7 +141,9 @@ class ComContactTest < ActiveSupport::TestCase
 
     assert_equal 2, contact.com_contact_emails.count
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should have many com_contact_telephones" do
     contact = build_contact
 
@@ -157,6 +160,7 @@ class ComContactTest < ActiveSupport::TestCase
 
     assert_equal 2, contact.com_contact_telephones.count
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "should have many com_contact_topics" do
     contact = build_contact
@@ -348,6 +352,7 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal 0, contact.com_contact_telephones.count
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "should allow contact with multiple emails and telephones" do
     contact = ComContact.new(confirm_policy: "1")
     contact.save!
@@ -384,4 +389,5 @@ class ComContactTest < ActiveSupport::TestCase
     assert_includes contact.com_contact_telephones, telephone1
     assert_includes contact.com_contact_telephones, telephone2
   end
+  # rubocop:enable Minitest/MultipleAssertions
 end

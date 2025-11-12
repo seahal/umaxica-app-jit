@@ -7,10 +7,10 @@ module Help
         before_action :load_contact
 
         def edit
-          Rails.logger.debug "DEBUG: edit action called, @contact = #{@contact.inspect}"
+          Rails.logger.debug { "DEBUG: edit action called, @contact = #{@contact.inspect}" }
           # セッションから telephone ID を取得
           @contact_telephone = load_contact_telephone_from_session
-          Rails.logger.debug "DEBUG: @contact_telephone = #{@contact_telephone.inspect}"
+          Rails.logger.debug { "DEBUG: @contact_telephone = #{@contact_telephone.inspect}" }
 
           # セッションチェック
           unless @contact_telephone && valid_session?(@contact_telephone)
@@ -55,7 +55,7 @@ module Help
 
         def load_contact
           @contact = ComContact.find(params[:contact_id])
-          Rails.logger.debug "DEBUG: loaded @contact = #{@contact.inspect}, class = #{@contact.class}"
+          Rails.logger.debug { "DEBUG: loaded @contact = #{@contact.inspect}, class = #{@contact.class}" }
         end
 
         def load_contact_telephone_from_session
