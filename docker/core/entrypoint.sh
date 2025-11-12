@@ -13,8 +13,8 @@ bin/rails tmp:clear
 bin/rails db:create
 bin/rails db:migrate
 RAILS_ENV=test bin/rails db:create
-RAILS_ENV=test bin/rails db:migrate
 bin/rails db:seed
+# RAILS_ENV=test bin/rails db:seed
 
 # Karafka web UI DB (best-effort)
 # bundle exec karafka-web migrate || true

@@ -1,5 +1,5 @@
 class ComContactTelephone < GuestsRecord
-  has_many :com_contacts, dependent: :destroy
+  belongs_to :com_contact
 
   before_create :generate_id
   encrypts :telephone_number, deterministic: true

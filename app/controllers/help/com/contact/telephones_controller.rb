@@ -6,58 +6,25 @@ module Help
 
         before_action :load_contact
 
-        def new
-          # セッションをクリア(セキュリティ対策)
-          session[:com_contact_telephone_verification] = nil
-          @contact_telephone = @contact.com_contact_telephones.build
-        end
-
         def edit
-          @contact_telephone = @contact.com_contact_telephone
+          Rails.logger.debug "DEBUG: edit action called, @contact = #{@contact.inspect}"
+          # セッションから telephone ID を取得
+          @contact_telephone = load_contact_telephone_from_session
+          Rails.logger.debug "DEBUG: @contact_telephone = #{@contact_telephone.inspect}"
 
           # セッションチェック
-          unless valid_session?(@contact_telephone)
+          unless @contact_telephone && valid_session?(@contact_telephone)
             redirect_to help_com_root_path,
                         alert: t(".session_expired")
             nil
           end
         end
-        def create
-          @contact_telephone = @contact.com_contact_telephones.build(telephone_params)
-
-          if turnstile_passed? && @contact_telephone.save
-            # 6桁のOTPを生成
-            otp_code = @contact_telephone.generate_otp!
-
-            # セッションに保存
-            session[:com_contact_telephone_verification] = {
-              id: @contact_telephone.id,
-              contact_id: @contact.id,
-              expires_at: 10.minutes.from_now.to_i
-            }
-
-            # TODO: SMS送信処理を実装
-            # SmsService.send_message(
-            #   to: @contact_telephone.telephone_number,
-            #   message: "Your verification code is: #{otp_code}",
-            #   subject: "Contact Verification Code"
-            # )
-
-            # 開発環境ではログに出力
-            Rails.logger.info("OTP code for #{@contact_telephone.telephone_number}: #{otp_code}") if Rails.env.development?
-
-            redirect_to edit_help_com_contact_telephone_path(@contact, @contact_telephone),
-                        notice: t(".success")
-          else
-            render :new, status: :unprocessable_entity
-          end
-        end
-
 
         def update
-          @contact_telephone = @contact.com_contact_telephone
+          # セッションから telephone ID を取得
+          @contact_telephone = load_contact_telephone_from_session
 
-          unless valid_session?(@contact_telephone)
+          unless @contact_telephone && valid_session?(@contact_telephone)
             redirect_to help_com_root_path,
                         alert: t(".session_expired")
             return
@@ -88,19 +55,16 @@ module Help
 
         def load_contact
           @contact = ComContact.find(params[:contact_id])
+          Rails.logger.debug "DEBUG: loaded @contact = #{@contact.inspect}, class = #{@contact.class}"
         end
 
-        def telephone_params
-          params.expect(com_contact_telephone: [ :telephone_number ])
-        end
+        def load_contact_telephone_from_session
+          session_data = session[:com_contact_telephone_verification]
+          return nil if session_data.nil?
 
-        def turnstile_passed?
-          result = cloudflare_turnstile_validation
-          return true if result["success"]
-
-          @contact_telephone.errors.add(:base, :turnstile,
-                                        message: t("help.com.contact.telephones.create.turnstile_error"))
-          false
+          # セッションから ID を取得して、該当する telephone を探す
+          telephone_id = session_data["id"]
+          @contact.com_contact_telephones.find_by(id: telephone_id)
         end
 
         def valid_session?(contact_telephone)

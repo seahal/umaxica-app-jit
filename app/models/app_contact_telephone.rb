@@ -1,6 +1,7 @@
 class AppContactTelephone < GuestsRecord
-  belongs_to :app_contact, optional: true
+  belongs_to :app_contact
 
+  before_create :generate_id
   encrypts :telephone_number, deterministic: true
   # Bridge OTP helpers to stored verifier_* columns
   alias_attribute :otp_digest, :verifier_digest
@@ -42,5 +43,11 @@ class AppContactTelephone < GuestsRecord
 
   def can_resend_otp?
     !activated && (otp_expired? || otp_attempts_left <= 0)
+  end
+
+  private
+
+  def generate_id
+    self.id ||= Nanoid.generate(size: 21)
   end
 end

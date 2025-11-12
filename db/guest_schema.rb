@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
+ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -30,7 +30,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-11-12 11:44:02", null: false
+    t.timestamptz "expires_at", default: "2025-11-13 03:53:16", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -58,7 +58,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.uuid "app_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-12 11:44:02", null: false
+    t.timestamptz "expires_at", default: "2025-11-13 03:53:16", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -98,10 +98,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
 
   create_table "com_contact_emails", id: :string, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
+    t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-11-12 11:44:02", null: false
+    t.timestamptz "expires_at", default: "2025-11-13 03:53:16", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -110,6 +111,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
     t.timestamptz "verifier_expires_at"
+    t.index ["com_contact_id"], name: "index_com_contact_emails_on_com_contact_id"
     t.index ["email_address"], name: "index_com_contact_emails_on_email_address"
     t.index ["verifier_expires_at"], name: "index_com_contact_emails_on_verifier_expires_at"
   end
@@ -134,15 +136,17 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
 
   create_table "com_contact_telephones", id: :string, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
+    t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-12 11:44:02", null: false
+    t.timestamptz "expires_at", default: "2025-11-13 03:53:16", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
     t.timestamptz "verifier_expires_at"
+    t.index ["com_contact_id"], name: "index_com_contact_telephones_on_com_contact_id"
     t.index ["telephone_number"], name: "index_com_contact_telephones_on_telephone_number"
     t.index ["verifier_expires_at"], name: "index_com_contact_telephones_on_verifier_expires_at"
   end
@@ -152,7 +156,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-12 11:44:02", null: false
+    t.timestamptz "expires_at", default: "2025-11-13 03:53:16", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
@@ -162,8 +166,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
   end
 
   create_table "com_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "com_contact_email_id", null: false
-    t.string "com_contact_telephone_id", null: false
     t.string "contact_category_title", limit: 255
     t.string "contact_status_title", limit: 255
     t.datetime "created_at", null: false
@@ -174,8 +176,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.timestamptz "token_expires_at"
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", null: false
-    t.index ["com_contact_email_id"], name: "index_com_contacts_on_com_contact_email_id"
-    t.index ["com_contact_telephone_id"], name: "index_com_contacts_on_com_contact_telephone_id"
     t.index ["public_id"], name: "index_com_contacts_on_public_id"
     t.index ["token"], name: "index_com_contacts_on_token"
     t.index ["token_digest"], name: "index_com_contacts_on_token_digest"
@@ -196,7 +196,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-11-12 11:44:02", null: false
+    t.timestamptz "expires_at", default: "2025-11-13 03:53:16", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
@@ -224,7 +224,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-11-12 11:44:02", null: false
+    t.timestamptz "expires_at", default: "2025-11-13 03:53:16", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
@@ -261,9 +261,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_102307) do
   add_foreign_key "com_contact_histories", "com_contacts"
   add_foreign_key "com_contact_topics", "com_contacts"
   add_foreign_key "com_contacts", "com_contact_categories", column: "contact_category_title", primary_key: "title"
-  add_foreign_key "com_contacts", "com_contact_emails"
   add_foreign_key "com_contacts", "com_contact_statuses", column: "contact_status_title", primary_key: "title"
-  add_foreign_key "com_contacts", "com_contact_telephones"
   add_foreign_key "org_contact_emails", "org_contacts"
   add_foreign_key "org_contact_telephones", "org_contacts"
   add_foreign_key "org_contacts", "org_contact_categories", column: "contact_category_title", primary_key: "title"

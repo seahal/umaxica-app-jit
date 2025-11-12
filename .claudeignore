@@ -35,3 +35,6 @@
 
   # Docker
   docker/
+
+# human only, not ai
+**/hona_*

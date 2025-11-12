@@ -8,10 +8,11 @@ module Help
 
         # 検証コード入力画面
         def edit
-          @contact_email = @contact.com_contact_email
+          # セッションから email ID を取得
+          @contact_email = load_contact_email_from_session
 
           # セッションチェック
-          unless valid_session?(@contact_email)
+          unless @contact_email && valid_session?(@contact_email)
             redirect_to help_com_root_path,
                         alert: t(".session_expired")
           end
@@ -19,9 +20,10 @@ module Help
 
         # 検証コード確認処理
         def update
-          @contact_email = @contact.com_contact_email
+          # セッションから email ID を取得
+          @contact_email = load_contact_email_from_session
 
-          unless valid_session?(@contact_email)
+          unless @contact_email && valid_session?(@contact_email)
             redirect_to help_com_root_path,
                         alert: t(".session_expired")
             return
@@ -54,6 +56,15 @@ module Help
 
         def set_contact
           @contact = ComContact.find(params[:contact_id])
+        end
+
+        def load_contact_email_from_session
+          session_data = session[:com_contact_email_verification]
+          return nil if session_data.nil?
+
+          # セッションから ID を取得して、該当する email を探す
+          email_id = session_data["id"]
+          @contact.com_contact_emails.find_by(id: email_id)
         end
 
         def valid_session?(contact_email)

@@ -5,10 +5,10 @@ class Help::Com::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
     @contact = com_contacts(:one)
     # Create email for the contact since resource is singular
     @contact_email = ComContactEmail.create!(
+      com_contact: @contact,
       email_address: "test@example.com",
       expires_at: 24.hours.from_now
     )
-    @contact.update!(com_contact_email_id: @contact_email.id)
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -16,13 +16,16 @@ class Help::Com::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
     @contact_email.generate_verifier!
 
     # セッションを設定
-    session[:com_contact_email_verification] = {
-      id: @contact_email.id,
-      contact_id: @contact.id,
-      expires_at: 15.minutes.from_now.to_i
-    }
-
-    get edit_help_com_contact_email_url(@contact)
+    get edit_help_com_contact_email_url(@contact), params: {},
+      env: {
+        "rack.session" => {
+          com_contact_email_verification: {
+            "id" => @contact_email.id,
+            "contact_id" => @contact.id,
+            "expires_at" => 15.minutes.from_now.to_i
+          }
+        }
+      }
 
     assert_response :success
     assert_select "form[action^='#{help_com_contact_email_path(@contact)}']"
@@ -45,27 +48,28 @@ class Help::Com::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Create telephone for the next step
     @contact_telephone = ComContactTelephone.create!(
+      com_contact: @contact,
       telephone_number: "+81901234567",
       expires_at: 24.hours.from_now
     )
-    @contact.update!(com_contact_telephone_id: @contact_telephone.id)
 
     # セッションを設定
-    session[:com_contact_email_verification] = {
-      id: @contact_email.id,
-      contact_id: @contact.id,
-      expires_at: 15.minutes.from_now.to_i
-    }
-
     patch help_com_contact_email_url(@contact), params: {
       com_contact_email: {
         verification_code: verification_code
+      }
+    }, env: {
+      "rack.session" => {
+        com_contact_email_verification: {
+          "id" => @contact_email.id,
+          "contact_id" => @contact.id,
+          "expires_at" => 15.minutes.from_now.to_i
+        }
       }
     }
 
     assert_redirected_to edit_help_com_contact_telephone_path(@contact)
     assert_equal I18n.t("help.com.contact.emails.update.success"), flash[:notice]
-    assert_nil session[:com_contact_email_verification]
 
     @contact_email.reload
 
@@ -77,18 +81,20 @@ class Help::Com::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
   test "should reject incorrect verification code" do
     @contact_email.generate_verifier!
 
-    # セッションを設定
-    session[:com_contact_email_verification] = {
-      id: @contact_email.id,
-      contact_id: @contact.id,
-      expires_at: 15.minutes.from_now.to_i
-    }
-
     initial_attempts = @contact_email.verifier_attempts_left
 
+    # セッションを設定
     patch help_com_contact_email_url(@contact), params: {
       com_contact_email: {
         verification_code: "000000"
+      }
+    }, env: {
+      "rack.session" => {
+        com_contact_email_verification: {
+          "id" => @contact_email.id,
+          "contact_id" => @contact.id,
+          "expires_at" => 15.minutes.from_now.to_i
+        }
       }
     }
 

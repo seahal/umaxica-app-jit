@@ -1,8 +1,7 @@
 class ComContact < GuestsRecord
   # Associations
-
-  belongs_to :com_contact_email, optional: true
-  belongs_to :com_contact_telephone, optional: true
+  has_many :com_contact_emails, dependent: :destroy
+  has_many :com_contact_telephones, dependent: :destroy
   belongs_to :com_contact_category,
              class_name: "ComContactCategory",
              foreign_key: :contact_category_title,

@@ -5,24 +5,37 @@ class Help::Com::Contact::TelephonesControllerTest < ActionDispatch::Integration
     @contact = com_contacts(:one)
     # Create telephone for the contact since resource is singular
     @contact_telephone = ComContactTelephone.create!(
+      com_contact: @contact,
       telephone_number: "+81901234567",
       expires_at: 24.hours.from_now
     )
-    @contact.update!(com_contact_telephone_id: @contact_telephone.id)
   end
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should get edit with valid session" do
     @contact_telephone.generate_otp!
 
-    # セッションを設定
-    session[:com_contact_telephone_verification] = {
-      id: @contact_telephone.id,
-      contact_id: @contact.id,
-      expires_at: 10.minutes.from_now.to_i
-    }
+    contact_id = @contact.id
+    telephone_id = @contact_telephone.id
+    expires_at = 10.minutes.from_now.to_i
 
-    get edit_help_com_contact_telephone_url(@contact)
+    puts "About to build URL with contact_id: #{contact_id}"
+    url = edit_help_com_contact_telephone_url(contact_id: contact_id)
+    puts "URL built: #{url}"
+
+    puts "Building env hash..."
+    env_hash = {
+      "rack.session" => {
+        com_contact_telephone_verification: {
+          "id" => telephone_id,
+          "contact_id" => contact_id,
+          "expires_at" => expires_at
+        }
+      }
+    }
+    puts "Env hash built successfully"
+
+    get url, env: env_hash
 
     assert_response :success
     assert_select "form[action^='#{help_com_contact_telephone_path(@contact)}']"
@@ -43,16 +56,17 @@ class Help::Com::Contact::TelephonesControllerTest < ActionDispatch::Integration
   test "should verify telephone with correct OTP" do
     otp_code = @contact_telephone.generate_otp!
 
-    # セッションを設定
-    session[:com_contact_telephone_verification] = {
-      id: @contact_telephone.id,
-      contact_id: @contact.id,
-      expires_at: 10.minutes.from_now.to_i
-    }
-
     patch help_com_contact_telephone_url(@contact), params: {
       com_contact_telephone: {
         otp_code: otp_code
+      }
+    }, env: {
+      "rack.session" => {
+        com_contact_telephone_verification: {
+          "id" => @contact_telephone.id,
+          "contact_id" => @contact.id,
+          "expires_at" => 10.minutes.from_now.to_i
+        }
       }
     }
 
@@ -70,18 +84,19 @@ class Help::Com::Contact::TelephonesControllerTest < ActionDispatch::Integration
   test "should reject incorrect OTP code" do
     @contact_telephone.generate_otp!
 
-    # セッションを設定
-    session[:com_contact_telephone_verification] = {
-      id: @contact_telephone.id,
-      contact_id: @contact.id,
-      expires_at: 10.minutes.from_now.to_i
-    }
-
     initial_attempts = @contact_telephone.otp_attempts_left
 
     patch help_com_contact_telephone_url(@contact), params: {
       com_contact_telephone: {
         otp_code: "000000"
+      }
+    }, env: {
+      "rack.session" => {
+        com_contact_telephone_verification: {
+          "id" => @contact_telephone.id,
+          "contact_id" => @contact.id,
+          "expires_at" => 10.minutes.from_now.to_i
+        }
       }
     }
 

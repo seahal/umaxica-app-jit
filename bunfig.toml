@@ -5,3 +5,6 @@ coverage = true
 #coverageThreshold = 0.96
 coverageReporter  = ["text", "lcov"]
 #coverageDir = "coverage"
+
+# Only run tests in test/javascript directory
+root = "test/javascript"

@@ -1,6 +1,7 @@
 class AppContactEmail < GuestsRecord
-  belongs_to :app_contact, optional: true
+  belongs_to :app_contact
 
+  before_create :generate_id
   before_save { self.email_address&.downcase! }
   encrypts :email_address, downcase: true, deterministic: true
 
@@ -38,5 +39,11 @@ class AppContactEmail < GuestsRecord
 
   def can_resend_verifier?
     !activated && (verifier_expired? || verifier_attempts_left <= 0)
+  end
+
+  private
+
+  def generate_id
+    self.id ||= Nanoid.generate(size: 21)
   end
 end

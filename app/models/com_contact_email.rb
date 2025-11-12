@@ -1,5 +1,5 @@
 class ComContactEmail < GuestsRecord
-  has_many :com_contacts, dependent: :destroy
+  belongs_to :com_contact
 
   before_create :generate_id
   before_save { self.email_address&.downcase! }
