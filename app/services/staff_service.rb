@@ -1,2 +1,2 @@
-class UserService
+class StaffService
 end
