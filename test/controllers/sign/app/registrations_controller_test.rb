@@ -22,7 +22,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "shows registration methods and social providers" do
-    skip "OAuth form elements not rendering in tests"
+    skip "OAuth provider forms not rendering in test environment"
     get new_sign_app_registration_url(format: :html), headers: { "Host" => host }
 
     assert_response :success
@@ -30,6 +30,7 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid=?]", "registration-method", count: 2
 
     assert_select "[data-testid=?]", "registration-social" do
+      # Only Apple OAuth is enabled, google_oauth2 is disabled (count: 0)
       assert_select "form[action=?][method=?]", "/sign/google_oauth2", "post", count: 0
       assert_select "form[action=?][method=?]", "/sign/apple", "post"
     end
