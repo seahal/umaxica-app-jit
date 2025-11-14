@@ -60,6 +60,19 @@ ActiveRecord::Schema[8.2].define(version: 2025_08_08_064848) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "staff_identity_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.uuid "external_id", null: false
+    t.text "public_key", null: false
+    t.bigint "sign_count", default: 0, null: false
+    t.uuid "staff_id", null: false
+    t.datetime "updated_at", null: false
+    t.binary "webauthn_id", null: false
+    t.index ["staff_id"], name: "index_staff_identity_passkeys_on_staff_id"
+    t.index ["webauthn_id"], name: "index_staff_identity_passkeys_on_webauthn_id", unique: true
+  end
+
   create_table "staff_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "external_id"
@@ -136,6 +149,19 @@ ActiveRecord::Schema[8.2].define(version: 2025_08_08_064848) do
     t.binary "user_id", null: false
   end
 
+  create_table "user_identity_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.uuid "external_id", null: false
+    t.text "public_key", null: false
+    t.bigint "sign_count", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.uuid "webauthn_id", null: false
+    t.index ["user_id"], name: "index_user_identity_passkeys_on_user_id"
+    t.index ["webauthn_id"], name: "index_user_identity_passkeys_on_webauthn_id", unique: true
+  end
+
   create_table "user_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "external_id"
@@ -181,6 +207,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_08_08_064848) do
 
   add_foreign_key "apple_auths", "users"
   add_foreign_key "google_auths", "users"
+  add_foreign_key "staff_identity_passkeys", "staffs"
   add_foreign_key "staff_passkeys", "staffs"
+  add_foreign_key "user_identity_passkeys", "users"
   add_foreign_key "user_passkeys", "users"
 end

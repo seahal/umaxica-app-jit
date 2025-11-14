@@ -21,7 +21,7 @@ module ActiveSupport
 
     fixtures :all
     set_fixture_class user_identity_passkeys: UserIdentityPasskey,
-                      passkey_for_staffs: StaffIdentityPasskey
+                      staff_identity_passkeys: StaffIdentityPasskey
 
     def brand_name
       (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s

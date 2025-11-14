@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: passkey_for_staffs
+# Table name: staff_identity_passkeys
 #
 #  id          :uuid             not null, primary key
 #  description :string           not null
@@ -14,10 +14,8 @@
 #
 # Indexes
 #
-#  index_passkey_for_staffs_on_staff_id  (staff_id)
+#  index_staff_identity_passkeys_on_staff_id  (staff_id)
 #
 class StaffIdentityPasskey < IdentityRecord
-  self.table_name = "passkey_for_staffs"
-
   belongs_to :staff
 end

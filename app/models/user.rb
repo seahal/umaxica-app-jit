@@ -18,8 +18,6 @@ class User < IdentitiesRecord
   has_many :user_sessions, dependent: :destroy
   has_many :user_time_based_one_time_password, dependent: :destroy
   has_many :user_webauthn_credentials, dependent: :destroy
-
-  # Aliases for backward compatibility with tests
-  alias_method :emails, :user_emails
-  alias_method :phones, :user_telephones
+  has_many :emails, class_name: "UserEmail", dependent: :destroy
+  has_many :phones, class_name: "UserTelephone", dependent: :destroy
 end
