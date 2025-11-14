@@ -1,5 +1,3 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 # == Schema Information
 #
 # Table name: documents
@@ -15,14 +13,7 @@
 #  staff_id         :binary
 #  succ_id          :binary
 #
-one:
-  parent_id:
-  succ_id:
-  title: MyString
-  description: MyString
-
-two:
-  parent_id:
-  succ_id:
-  title: MyString
-  description: MyString
+class AppDocument < BusinessesRecord
+  encrypts :title
+  encrypts :description
+end
