@@ -108,8 +108,7 @@ module Sign
         def create_identity_secret!(user, password)
           UserIdentitySecret.create!(
             user: user,
-            password: password,
-            password_confirmation: password
+            password: password
           )
         end
       end
