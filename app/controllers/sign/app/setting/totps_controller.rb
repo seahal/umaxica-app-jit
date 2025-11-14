@@ -3,7 +3,7 @@ module Sign
     module Setting
       class TotpsController < ApplicationController
         def index
-          @utbotp = TimeBasedOneTimePassword.all
+          @utbotp = UserTimeBasedOneTimePassword.all
         end
 
         def new
@@ -13,11 +13,11 @@ module Sign
           totp = ROTP::TOTP.new(session[:private_key])
           # put qrcode of totp objects
           @png = RQRCode::QRCode.new(totp.provisioning_uri("umaxica")).as_png # ToDo: <= set account_id
-          @utbotp = TimeBasedOneTimePassword.new
+          @utbotp = UserTimeBasedOneTimePassword.new
         end
 
         def create
-          @utbotp = TimeBasedOneTimePassword.new(create_params)
+          @utbotp = UserTimeBasedOneTimePassword.new(sample_params)
           @utbotp.private_key = session[:private_key]
           @utbotp.id = SecureRandom.uuid_v7
 
@@ -38,7 +38,7 @@ module Sign
 
       # Use callbacks to share common setup or constraints between actions.
       def set_sample
-        @sample = TimeBasedOneTimePassword.find(params.expect(:id))
+        @sample = UserTimeBasedOneTimePassword.find(params.expect(:id))
       end
 
       # Only allow a list of trusted parameters through.

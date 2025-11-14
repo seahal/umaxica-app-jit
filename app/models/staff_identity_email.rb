@@ -1,18 +1,20 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
-# Table name: user_emails
+# Table name: staff_identity_emails
 #
 #  id         :uuid             not null, primary key
 #  address    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  user_id    :bigint
+#  staff_id   :bigint
 #
 # Indexes
 #
-#  index_user_emails_on_user_id  (user_id)
+#  index_staff_identity_emails_on_staff_id  (staff_id)
 #
-class UserEmail < IdentitiesRecord
+class StaffIdentityEmail < IdentitiesRecord
   include SetId
   include Email
 end

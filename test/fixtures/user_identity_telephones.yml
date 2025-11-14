@@ -2,27 +2,27 @@
 
 # == Schema Information
 #
-# Table name: user_emails
+# Table name: user_identity_telephones
 #
 #  id         :uuid             not null, primary key
-#  address    :string
+#  number     :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  user_id    :bigint
 #
 # Indexes
 #
-#  index_user_emails_on_user_id  (user_id)
+#  index_user_identity_telephones_on_user_id  (user_id)
 #
 
 one:
-  id: "550e8400-e29b-41d4-a716-446655440220"
-  address: "user1@example.com"
+  id: "550e8400-e29b-41d4-a716-446655440390"
+  number: "+81901234567"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 
 two:
-  id: "550e8400-e29b-41d4-a716-446655440221"
-  address: "user2@example.com"
+  id: "550e8400-e29b-41d4-a716-446655440391"
+  number: "+81908765432"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

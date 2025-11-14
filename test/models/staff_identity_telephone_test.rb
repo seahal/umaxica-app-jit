@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: staff_telephones
+# Table name: staff_identity_telephones
 #
 #  id         :uuid             not null, primary key
 #  number     :string
@@ -10,11 +10,11 @@
 #
 # Indexes
 #
-#  index_staff_telephones_on_staff_id  (staff_id)
+#  index_staff_identity_telephones_on_staff_id  (staff_id)
 #
 require "test_helper"
 
-class StaffTelephoneTest < ActiveSupport::TestCase
+class StaffIdentityTelephoneTest < ActiveSupport::TestCase
   setup do
     @valid_attributes = {
       number: "+1234567890",
@@ -25,66 +25,66 @@ class StaffTelephoneTest < ActiveSupport::TestCase
 
   # Basic model structure tests
   test "should inherit from IdentitiesRecord" do
-    assert_operator StaffTelephone, :<, IdentitiesRecord
+    assert_operator StaffIdentityTelephone, :<, IdentitiesRecord
   end
 
   test "should include Telephone concern" do
-    assert_includes StaffTelephone.included_modules, Telephone
+    assert_includes StaffIdentityTelephone.included_modules, Telephone
   end
 
   test "should include SetId concern" do
-    assert_includes StaffTelephone.included_modules, SetId
+    assert_includes StaffIdentityTelephone.included_modules, SetId
   end
 
   # Telephone concern validation tests
   test "should be valid with valid phone number and policy confirmations" do
-    staff_telephone = StaffTelephone.new(@valid_attributes)
+    staff_telephone = StaffIdentityTelephone.new(@valid_attributes)
 
     assert_predicate staff_telephone, :valid?
   end
 
   test "should require valid phone number format" do
-    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "invalid!@#"))
+    staff_telephone = StaffIdentityTelephone.new(@valid_attributes.merge(number: "invalid!@#"))
 
     assert_not staff_telephone.valid?
     assert_predicate staff_telephone.errors[:number], :any?
   end
 
   test "should accept phone number with country code" do
-    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "+81-90-1234-5678"))
+    staff_telephone = StaffIdentityTelephone.new(@valid_attributes.merge(number: "+81-90-1234-5678"))
 
     assert_predicate staff_telephone, :valid?
   end
 
   test "should accept phone number with parentheses" do
-    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "+1 (555) 123-4567"))
+    staff_telephone = StaffIdentityTelephone.new(@valid_attributes.merge(number: "+1 (555) 123-4567"))
 
     assert_predicate staff_telephone, :valid?
   end
 
   test "should reject phone number that is too short" do
-    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "12"))
+    staff_telephone = StaffIdentityTelephone.new(@valid_attributes.merge(number: "12"))
 
     assert_not staff_telephone.valid?
     assert_predicate staff_telephone.errors[:number], :any?
   end
 
   test "should reject phone number that is too long" do
-    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "+1234567890123456789012"))
+    staff_telephone = StaffIdentityTelephone.new(@valid_attributes.merge(number: "+1234567890123456789012"))
 
     assert_not staff_telephone.valid?
     assert_predicate staff_telephone.errors[:number], :any?
   end
 
   test "should require policy confirmation" do
-    staff_telephone = StaffTelephone.new(@valid_attributes.merge(confirm_policy: false))
+    staff_telephone = StaffIdentityTelephone.new(@valid_attributes.merge(confirm_policy: false))
 
     assert_not staff_telephone.valid?
     assert_predicate staff_telephone.errors[:confirm_policy], :any?
   end
 
   test "should require MFA confirmation" do
-    staff_telephone = StaffTelephone.new(@valid_attributes.merge(confirm_using_mfa: false))
+    staff_telephone = StaffIdentityTelephone.new(@valid_attributes.merge(confirm_using_mfa: false))
 
     assert_not staff_telephone.valid?
     assert_predicate staff_telephone.errors[:confirm_using_mfa], :any?
@@ -93,7 +93,7 @@ class StaffTelephoneTest < ActiveSupport::TestCase
 
   # SetId concern tests
   test "should generate UUID v7 before creation" do
-    staff_telephone = StaffTelephone.new(@valid_attributes)
+    staff_telephone = StaffIdentityTelephone.new(@valid_attributes)
 
     assert_nil staff_telephone.id
     staff_telephone.save!

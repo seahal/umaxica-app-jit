@@ -26,7 +26,6 @@ Rails.application.routes.draw do
           # TODO: Implement telephone authentication
           # resource :telephone, only: %i[new create]
           resource :passkey, only: %i[new create]
-          resource :recovery, only: %i[new create]
           # TODO(human): Refactor OAuth flow to use only GET requests for better security
           # Change from POST create to GET show to eliminate CSRF protection bypass
           resource :apple, only: %i[new create]

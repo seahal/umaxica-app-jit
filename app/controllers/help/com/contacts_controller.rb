@@ -77,7 +77,7 @@ module Help
 
         # ⇑ rewrite app/controllers/concerns/rotp.rb and use here
 
-        redirect_to edit_help_com_contact_email_path(contact_id: @contact.id), notice: t(".success")
+        redirect_to new_help_com_contact_email_path(contact_id: @contact.id), notice: t(".success")
       rescue ActiveRecord::RecordInvalid => e
         # On error, preserve input values
         @email_address = params.dig(:com_contact, :email_address) || ""

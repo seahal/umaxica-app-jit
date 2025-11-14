@@ -56,10 +56,9 @@ module Sign
         end
 
         def find_or_create_user_from(auth_hash)
-          apple_auth = AppleAuth.find_by(uid: auth_hash.uid)
+          apple_auth = UserAppleAuth.find_by(token: auth_hash.uid)
 
           if apple_auth
-            apple_auth.update!(apple_auth_attributes(auth_hash))
             sync_user_apple_auth!(apple_auth.user, auth_hash.uid)
             Rails.logger.info "Existing Apple OAuth user: #{apple_auth.user_id}"
             apple_auth.user
@@ -75,46 +74,12 @@ module Sign
             user = User.create!
             create_identity_secret!(user, random_password)
 
-            AppleAuth.create!(apple_auth_attributes(auth_hash).merge(user: user))
             sync_user_apple_auth!(user, auth_hash.uid)
             persist_email!(user, auth_hash)
 
             Rails.logger.info "New Apple OAuth user created: #{user.id}"
             user
           end
-        end
-
-        def apple_auth_attributes(auth_hash)
-          info = auth_hash.info || OmniAuth::AuthHash.new
-          credentials = auth_hash.credentials || OmniAuth::AuthHash.new
-
-          {
-            provider: auth_hash.provider,
-            uid: auth_hash.uid,
-            email: info.email,
-            name: build_full_name(info),
-            access_token: credentials.token,
-            refresh_token: credentials.refresh_token,
-            expires_at: normalize_expires_at(credentials.expires_at)
-          }
-        end
-
-        def build_full_name(info)
-          return info.name if info.respond_to?(:name) && info.name.present?
-
-          parts = []
-          parts << info.first_name if info.respond_to?(:first_name) && info.first_name.present?
-          parts << info.last_name if info.respond_to?(:last_name) && info.last_name.present?
-          parts.compact.join(" ").presence
-        end
-
-        def normalize_expires_at(value)
-          return if value.blank?
-          return Time.zone.at(value) if value.is_a?(Numeric)
-
-          Time.zone.parse(value.to_s)
-        rescue ArgumentError
-          nil
         end
 
         def sync_user_apple_auth!(user, uid)
@@ -132,7 +97,7 @@ module Sign
 
           normalized_email = email.to_s.downcase
 
-          UserEmail.find_or_create_by!(user: user, address: normalized_email) do |user_email|
+          UserIdentityEmail.find_or_create_by!(user: user, address: normalized_email) do |user_email|
             user_email.confirm_policy = true
           end
         end

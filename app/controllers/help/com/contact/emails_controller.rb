@@ -6,6 +6,10 @@ module Help
 
         before_action :set_contact
 
+        def new
+          @contact_email = @contact.com_contact_emails.build
+          render plain: placeholder_message(:new)
+        end
         # 検証コード入力画面
         def edit
           # セッションから email ID を取得
@@ -16,6 +20,10 @@ module Help
             redirect_to help_com_root_path,
                         alert: t(".session_expired")
           end
+        end
+
+        def create
+          render plain: placeholder_message(:create), status: :created
         end
 
         # 検証コード確認処理
@@ -56,6 +64,10 @@ module Help
 
         def set_contact
           @contact = ComContact.find(params[:contact_id])
+        end
+
+        def placeholder_message(action)
+          "Corporate contact email #{action} pending for contact #{@contact.id}"
         end
 
         def load_contact_email_from_session

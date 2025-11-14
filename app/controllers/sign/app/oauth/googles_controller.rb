@@ -54,10 +54,9 @@ module Sign
         end
 
         def find_or_create_user_from(auth_hash)
-          google_auth = GoogleAuth.find_by(uid: auth_hash.uid)
+          google_auth = UserGoogleAuth.find_by(token: auth_hash.uid)
 
           if google_auth
-            google_auth.update!(google_auth_attributes(auth_hash))
             Rails.logger.info "Existing Google OAuth user: #{google_auth.user_id}"
             sync_user_google_auth!(google_auth.user, auth_hash.uid)
             persist_email!(google_auth.user, auth_hash)
@@ -74,7 +73,6 @@ module Sign
             user = User.create!
             create_identity_secret!(user, random_password)
 
-            GoogleAuth.create!(google_auth_attributes(auth_hash).merge(user: user))
             sync_user_google_auth!(user, auth_hash.uid)
             persist_email!(user, auth_hash)
 
@@ -83,63 +81,13 @@ module Sign
           end
         end
 
-        def google_auth_attributes(auth_hash)
-          info = auth_hash.info || OmniAuth::AuthHash.new
-          credentials = auth_hash.credentials || OmniAuth::AuthHash.new
-          extra = auth_hash.extra || OmniAuth::AuthHash.new
-
-          {
-            provider: auth_hash.provider,
-            uid: auth_hash.uid,
-            email: info.email,
-            name: info.name.presence || build_full_name(info),
-            image_url: info.image || info.image_url,
-            access_token: credentials.token,
-            refresh_token: credentials.refresh_token,
-            expires_at: normalize_expires_at(credentials.expires_at),
-            raw_info: extract_raw_info(extra)
-          }
-        end
-
-        def build_full_name(info)
-          return info.name if info.respond_to?(:name) && info.name.present?
-
-          parts = []
-          parts << info.first_name if info.respond_to?(:first_name) && info.first_name.present?
-          parts << info.last_name if info.respond_to?(:last_name) && info.last_name.present?
-          parts.compact.join(" ").presence
-        end
-
-        def extract_raw_info(extra)
-          raw_info = if extra.respond_to?(:raw_info)
-                       extra.raw_info
-          else
-                       extra[:raw_info]
-          end
-
-          return if raw_info.blank?
-
-          raw_info.respond_to?(:to_json) ? raw_info.to_json : raw_info.to_s
-        rescue StandardError
-          nil
-        end
-
-        def normalize_expires_at(value)
-          return if value.blank?
-          return Time.zone.at(value) if value.is_a?(Numeric)
-
-          Time.zone.parse(value.to_s)
-        rescue ArgumentError
-          nil
-        end
-
         def persist_email!(user, auth_hash)
           email = auth_hash.dig(:info, :email) || auth_hash.info&.email
           return if email.blank?
 
           normalized_email = email.to_s.downcase
 
-          UserEmail.find_or_create_by!(user: user, address: normalized_email) do |user_email|
+          UserIdentityEmail.find_or_create_by!(user: user, address: normalized_email) do |user_email|
             user_email.confirm_policy = true
           end
         end

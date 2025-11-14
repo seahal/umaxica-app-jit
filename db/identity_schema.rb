@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_11_15_061000) do
+ActiveRecord::Schema[8.2].define(version: 2025_11_15_073000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -45,19 +45,19 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_061000) do
     t.index ["user_id"], name: "index_google_auths_on_user_id"
   end
 
-  create_table "staff_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "address"
-    t.datetime "created_at", null: false
-    t.bigint "staff_id"
-    t.datetime "updated_at", null: false
-    t.index ["staff_id"], name: "index_staff_emails_on_staff_id"
-  end
-
   create_table "staff_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.binary "hmac_based_one_time_password_id", null: false
     t.binary "staff_id", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_identity_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "address"
+    t.datetime "created_at", null: false
+    t.bigint "staff_id"
+    t.datetime "updated_at", null: false
+    t.index ["staff_id"], name: "index_staff_identity_emails_on_staff_id"
   end
 
   create_table "staff_identity_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -80,6 +80,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_061000) do
     t.uuid "staff_id", null: false
     t.datetime "updated_at", null: false
     t.index ["staff_id"], name: "index_staff_identity_secrets_on_staff_id"
+  end
+
+  create_table "staff_identity_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "number"
+    t.bigint "staff_id"
+    t.datetime "updated_at", null: false
+    t.index ["staff_id"], name: "index_staff_identity_telephones_on_staff_id"
   end
 
   create_table "staff_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -105,14 +113,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_061000) do
     t.index ["staff_id"], name: "index_staff_recovery_codes_on_staff_id"
   end
 
-  create_table "staff_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "number"
-    t.bigint "staff_id"
-    t.datetime "updated_at", null: false
-    t.index ["staff_id"], name: "index_staff_telephones_on_staff_id"
-  end
-
   create_table "staff_time_based_one_time_passwords", id: false, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "staff_id", null: false
@@ -134,14 +134,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_061000) do
     t.index ["user_id"], name: "index_user_apple_auths_on_user_id"
   end
 
-  create_table "user_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "address"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id"
-    t.index ["user_id"], name: "index_user_emails_on_user_id"
-  end
-
   create_table "user_google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "token"
@@ -155,6 +147,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_061000) do
     t.binary "hmac_based_one_time_password_id", null: false
     t.datetime "updated_at", null: false
     t.binary "user_id", null: false
+  end
+
+  create_table "user_identity_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_user_identity_emails_on_user_id"
   end
 
   create_table "user_identity_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -179,6 +179,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_061000) do
     t.index ["user_id"], name: "index_user_identity_secrets_on_user_id"
   end
 
+  create_table "user_identity_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "number"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_user_identity_telephones_on_user_id"
+  end
+
   create_table "user_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "external_id"
@@ -200,14 +208,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_061000) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_user_recovery_codes_on_user_id"
-  end
-
-  create_table "user_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "number"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id"
-    t.index ["user_id"], name: "index_user_telephones_on_user_id"
   end
 
   create_table "user_time_based_one_time_passwords", id: false, force: :cascade do |t|

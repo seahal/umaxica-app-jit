@@ -5,7 +5,7 @@ module Sign
         include ::CloudflareTurnstile
 
         def new
-          @user_telephone = UserTelephone.new
+          @user_telephone = UserIdentityTelephone.new
 
           # # to avoid session attack
           session[:user_telephone_registration] = nil
@@ -19,7 +19,7 @@ module Sign
 
           if [ session[:user_telephone_registration]["id"] == params["id"],
               session[:user_telephone_registration]["expires_at"].to_i > Time.now.to_i ].all?
-            @user_telephone = UserTelephone.new
+            @user_telephone = UserIdentityTelephone.new
           else
             redirect_to new_sign_org_registration_telephone_path,
                         notice: t("sign.org.registration.telephone.edit.your_session_was_expired")
@@ -30,7 +30,7 @@ module Sign
           render plain: t("sign.org.authentication.telephone.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in_staff? || logged_in_user?
 
-          @user_telephone = UserTelephone.new(params.expect(user_telephone: [ :number, :confirm_policy,
+          @user_telephone = UserIdentityTelephone.new(params.expect(user_telephone: [ :number, :confirm_policy,
                                                                              :confirm_using_mfa ]))
 
           res = cloudflare_turnstile_validation
@@ -73,7 +73,7 @@ module Sign
                         notice: t("sign.org.registration.telephone.edit.your_session_was_expired") and return
           end
 
-          @user_telephone = UserTelephone.new(
+          @user_telephone = UserIdentityTelephone.new(
             number: registration_session["number"],
             pass_code: params.dig("user_telephone", "pass_code"),
             confirm_policy: registration_session.fetch("confirm_policy", true),

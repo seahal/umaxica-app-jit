@@ -6,6 +6,10 @@ module Help
 
         before_action :load_contact
 
+        def new
+          @contact_telephone = @contact.com_contact_telephones.build
+          render plain: placeholder_message(:new)
+        end
         def edit
           Rails.logger.debug { "DEBUG: edit action called, @contact = #{@contact.inspect}" }
           # セッションから telephone ID を取得
@@ -18,6 +22,10 @@ module Help
                         alert: t(".session_expired")
             nil
           end
+        end
+
+        def create
+          render plain: placeholder_message(:create), status: :created
         end
 
         def update
@@ -74,6 +82,10 @@ module Help
           session_data["id"] == contact_telephone.id &&
             session_data["contact_id"] == @contact.id &&
             session_data["expires_at"].to_i > Time.now.to_i
+        end
+
+        def placeholder_message(action)
+          "Corporate contact telephone #{action} pending for contact #{@contact.id}"
         end
       end
     end

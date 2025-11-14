@@ -53,7 +53,7 @@ This TS defines how the Rails-based Umaxica App (JIT) will be verified across ev
 ---
 
 ## 4. Test Approach
-- **Unit tests (Ruby)**: `bin/rails test` covers models (e.g., `ServiceSiteContact`, `UserEmail`, `TimeBasedOneTimePassword`), controllers, concerns, services, consumers. Fixtures stored under `test/fixtures`; multi-database fixtures split by context.
+- **Unit tests (Ruby)**: `bin/rails test` covers models (e.g., `ServiceSiteContact`, `UserIdentityEmail`, `TimeBasedOneTimePassword`), controllers, concerns, services, consumers. Fixtures stored under `test/fixtures`; multi-database fixtures split by context.
 - **Unit tests (JS/TS)**: `bun test` targets helpers (`views/passkey_helpers.js`, React utility modules) and ensures Bun bundles remain deterministic.
 - **Integration/system tests**: Rails system tests or Playwright scripts simulate flows (preference edits, registration, help contact).
 - **API/contract tests**: Rswag (planned) or request specs verify `/api/v1/inquiry/*`, `/bff/*` payloads and headers.
@@ -104,7 +104,7 @@ This TS defines how the Rails-based Umaxica App (JIT) will be verified across ev
 - **TC-PREF-104** Cookie consent toggles: editing `preference/cookie` stores boolean flags, default false.
 
 ### 7.3 Identity & Security (Sign)
-- **TC-SIGN-201** Email registration happy path (Turnstile bypass in test): `POST /sign/.../registration/emails` -> expect session metadata, OTP mail, redirect to `edit`. Submitting correct OTP persists `UserEmail` and clears session.
+- **TC-SIGN-201** Email registration happy path (Turnstile bypass in test): `POST /sign/.../registration/emails` -> expect session metadata, OTP mail, redirect to `edit`. Submitting correct OTP persists `UserIdentityEmail` and clears session.
 - **TC-SIGN-202** Expired OTP: set `expires_at` in session to past time; `#update` returns 422 with error.
 - **TC-SIGN-203** Telephone registration: invalid E.164 rejected; valid number triggers `SmsService`.
 - **TC-SIGN-204** Passkey challenge: POST `/setting/passkeys/challenge`; expect JSON options with challenge stored in session. Replay fails once challenge consumed.

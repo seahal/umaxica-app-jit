@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: staff_telephones
+# Table name: staff_identity_telephones
 #
 #  id         :uuid             not null, primary key
 #  number     :string
@@ -10,9 +10,9 @@
 #
 # Indexes
 #
-#  index_staff_telephones_on_staff_id  (staff_id)
+#  index_staff_identity_telephones_on_staff_id  (staff_id)
 #
-class StaffTelephone < IdentitiesRecord
+class StaffIdentityTelephone < IdentitiesRecord
   include Telephone
   include SetId
 end

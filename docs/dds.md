@@ -80,10 +80,10 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 
 ### 3.4 Sign Namespace
 **Registration flow** (`app/controllers/sign/app/registration/emails_controller.rb`):
-1. `#new`: clears session slot, ensures user not logged in, instantiates `UserEmail`.
+1. `#new`: clears session slot, ensures user not logged in, instantiates `UserIdentityEmail`.
 2. `#create`: validates Turnstile, generates HOTP secret + counter, stores intermediate state in session, dispatches OTP via `Email::App::RegistrationMailer`.
 3. `#edit`: ensures session data matches requested ID and not expired.
-4. `#update`: validates OTP; on success, persists `UserEmail`, clears session, redirects to home.
+4. `#update`: validates OTP; on success, persists `UserIdentityEmail`, clears session, redirects to home.
 
 **Authentication flow** (`sign/app/authentication`):
 - Email login obtains HOTP private key stored in encrypted cookie `:htop_private_key`.
@@ -154,8 +154,8 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ### 4.2 Email Registration Flow
 1. `Sign::App::Registration::EmailsController#new` resets session, renders form.
 2. `#create` verifies Turnstile, generates HOTP secret/counter, stores metadata in session, and emails OTP via `Email::App::RegistrationMailer`.
-3. User enters OTP → `#update` reuses `UserEmail` validations; ensures session ID matches and not expired.
-4. On success, `UserEmail` persists to identity DB, session cleared, redirect with success flash.
+3. User enters OTP → `#update` reuses `UserIdentityEmail` validations; ensures session ID matches and not expired.
+4. On success, `UserIdentityEmail` persists to identity DB, session cleared, redirect with success flash.
 
 ### 4.3 Help Contact Submission
 1. User visits `help.umaxica.com/contacts/new`.
@@ -178,7 +178,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | Model | Base DB | Notes |
 |-------|---------|-------|
 | `User`, `Staff` | `IdentitiesRecord` | `has_many :emails`, `:phones`, `webauthn_id` stored |
-| `UserEmail` | `IdentitiesRecord` | Includes `Email` concern, encrypts `address`, `before_create` sets UUID v7 |
+| `UserIdentityEmail` | `IdentitiesRecord` | Includes `Email` concern, encrypts `address`, `before_create` sets UUID v7 |
 | `ServiceSiteContact` | `GuestsRecord` | Encrypts email/phone/title/description, validates OTP codes, stores `ip_address` |
 | `TimeBasedOneTimePassword` | `UniversalRecord` | Encrypts `private_key`, stores `last_otp_at`, `first_token` virtual attr |
 | `UserPasskey` | `ApplicationRecord` | Validates `webauthn_id`, `public_key`, `description`, `sign_count` |

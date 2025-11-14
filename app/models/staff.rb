@@ -10,6 +10,7 @@
 #  webauthn_id :string
 #
 class Staff < IdentitiesRecord
-  has_many :staff_emails, dependent: :destroy
-  has_many :emails, class_name: "StaffEmail", dependent: :destroy
+  has_many :staff_identity_emails, dependent: :destroy
+  has_many :staff_identity_telephones, dependent: :destroy
+  has_many :emails, class_name: "StaffIdentityEmail", dependent: :destroy
 end
