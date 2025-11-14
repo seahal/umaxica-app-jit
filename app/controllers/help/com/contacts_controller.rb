@@ -47,6 +47,27 @@ module Help
           @telephone.save!
         end
 
+          # ここから、OTP生成とメール送信の処理 をするが、あとで concerns/rotp.rb にまとめる
+          otp_private_key = ROTP::Base32.random_base32
+          otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
+          hotp = ROTP::HOTP.new(otp_private_key)
+          num = hotp.at(otp_count_number)
+
+          # セッションに保存
+          # session[:user_email_registration] = {
+          #   id: id,
+          #   address: @user_email.address,
+          #   otp_private_key: otp_private_key,
+          #   otp_counter: otp_count_number,
+          #   expires_at: 12.minutes.from_now.to_i
+          # }
+
+          # メール送信
+          # Email::App::RegistrationMailer.with({
+          #   hotp_token: num,
+          #   email_address: @user_email.address
+          # }).create.deliver_now
+
           # Generate OTP and send email
           otp_code = @email.generate_verifier!
           Email::Com::ContactMailer.with(

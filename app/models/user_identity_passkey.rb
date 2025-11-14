@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: passkey_for_staffs
+# Table name: passkey_for_users
 #
 #  id          :uuid             not null, primary key
 #  description :string           not null
@@ -9,13 +9,15 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  external_id :uuid             not null
-#  staff_id    :bigint           not null
-#  webauthn_id :binary           not null
+#  user_id     :bigint           not null
+#  webauthn_id :uuid             not null
 #
 # Indexes
 #
-#  index_passkey_for_staffs_on_staff_id  (staff_id)
+#  index_passkey_for_users_on_user_id  (user_id)
 #
-class PasskeyForStaff < IdentityRecord
-  belongs_to :staff
+class UserIdentityPasskey < IdentityRecord
+  self.table_name = "passkey_for_users"
+
+  belongs_to :user
 end

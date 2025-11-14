@@ -4,7 +4,7 @@ services:
     container_name: jit-devcontainer-core
     environment:
       - DEVCONTAINER=1
-      - RUBY_DEBUG_OPEN=true
+      - RUBY_DEBUG_OPEN=false
     restart: unless-stopped
     ports:  !reset [3002:3000]
     tty: true

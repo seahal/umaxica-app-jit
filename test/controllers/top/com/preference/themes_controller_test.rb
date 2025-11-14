@@ -41,7 +41,9 @@ module Top
         test "updates theme preference and persists to cookies" do
           patch top_com_preference_theme_url, params: { theme: "dr", lx: "ja", ri: "jp", tz: "jst" }
 
-          assert_redirected_to edit_top_com_preference_theme_url(lx: "ja", ri: "jp", tz: "jst")
+          expected_url = "http://com.localhost/preference/theme/edit?lx=ja&ri=jp&tz=jst"
+
+          assert_equal expected_url, response.redirect_url
           assert_equal "テーマをダークテーマに更新しました", flash[:notice]
           assert_equal "dark", session[:theme]
           assert_equal "dark", signed_cookie(:root_com_theme)
@@ -62,7 +64,9 @@ module Top
         test "re-renders edit on invalid theme selection" do
           patch top_com_preference_theme_url, params: { theme: "li", lx: "ja", ri: "jp", tz: "jst" }
 
-          assert_redirected_to edit_top_com_preference_theme_url(lx: "ja", ri: "jp", tz: "jst")
+          expected_url = "http://com.localhost/preference/theme/edit?lx=ja&ri=jp&tz=jst"
+
+          assert_equal expected_url, response.redirect_url
           follow_redirect!
 
           assert_equal "light", session[:theme]

@@ -9,6 +9,7 @@ class ComContactEmail < GuestsRecord
   validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   # Generate and store email verification code
+  # TODO: Rewrite this code to otp generator
   def generate_verifier!
     raw_code = SecureRandom.random_number(100000..999999).to_s # 6-digit code
     self.verifier_digest = Argon2::Password.create(raw_code)
@@ -19,6 +20,7 @@ class ComContactEmail < GuestsRecord
   end
 
   # Verify the code
+  # TODO: Rewrite this code to otp verifier
   def verify_code(raw_code)
     return false if verifier_attempts_left <= 0
     return false if verifier_expires_at && Time.current >= verifier_expires_at
@@ -33,16 +35,20 @@ class ComContactEmail < GuestsRecord
     end
   end
 
+  # TODO: Rewrite this code to otp verifier
   def verifier_expired?
     verifier_expires_at && Time.current >= verifier_expires_at
   end
 
+  # TODO: Rewrite this code to otp verifier
   def can_resend_verifier?
     !activated && (verifier_expired? || verifier_attempts_left <= 0)
   end
 
   private
 
+  # TODO: rewrite this code to be concerned ... how about public_id.rb ?
+  #     : rename to generate_public_id
   def generate_id
     self.id ||= Nanoid.generate(size: 21)
   end

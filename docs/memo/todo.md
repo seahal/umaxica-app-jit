@@ -89,7 +89,7 @@
 
 ### 3. Finish the Passkey implementation
 - Complete the WebAuthn authentication system.
-- Finalise `PasskeyForUser` and `PasskeyForStaff` models.
+- Finalise `UserIdentityPasskey` and `StaffIdentityPasskey` models.
 - Finish passkey registration and authentication flows.
 - Integrate multi-factor authentication.
 

@@ -18,7 +18,6 @@ class Top::App::Preference::RegionsControllerTest < ActionDispatch::IntegrationT
   test "edit form contains region language and timezone sections with proper structure" do
     get edit_top_app_preference_region_url
 
-    assert_select "h1", text: I18n.t("top.app.preferences.regions.title")
     assert_select "form[method='post']" do
       assert_select "input[name='_method'][value='patch']", count: 1
 

@@ -67,7 +67,7 @@ module Sign
 
         # POST /passkeys or /passkeys.json
         def create
-          @passkey = PasskeyForUser.new(passkey_params.merge(user: current_user))
+          @passkey = UserIdentityPasskey.new(passkey_params.merge(user: current_user))
           authorize @passkey
 
           respond_to do |format|
@@ -110,7 +110,7 @@ module Sign
 
         # Use callbacks to share common setup or constraints between actions.
         def set_passkey
-          @passkey = PasskeyForUser.find(params.expect(:id))
+          @passkey = UserIdentityPasskey.find(params.expect(:id))
         end
 
         # Only allow a list of trusted parameters through.

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: a9b4f5f638fbfc908dc4e657915278cc2451810c
+  revision: e0789cb3b1a4ac96f8ecfcbca50031a7519ce5dd
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -220,7 +220,7 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
-    erb (5.1.3)
+    erb (6.0.0)
     erb_lint (0.9.0)
       activesupport
       better_html (>= 2.0.1)
@@ -283,7 +283,7 @@ GEM
       googleauth (~> 1.9)
       mini_mime (~> 1.0)
     google-logging-utils (0.2.0)
-    google-protobuf (4.33.0)
+    google-protobuf (4.33.1)
       bigdecimal
       rake (>= 13)
     googleapis-common-protos-types (1.22.0)
@@ -408,8 +408,8 @@ GEM
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
     nanoid (2.0.0)
-    net-http (0.7.0)
-      uri
+    net-http (0.8.0)
+      uri (>= 0.11.1)
     net-imap (0.5.12)
       date
       net-protocol
@@ -714,7 +714,7 @@ GEM
       uber (< 0.2.0)
     retriable (3.1.2)
     rexml (3.4.4)
-    roda (3.97.0)
+    roda (3.98.0)
       rack
     rolify (6.0.1)
     rotp (6.3.0)
@@ -781,7 +781,7 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-graphviz (1.2.5)
       rexml
-    ruby-lsp (0.26.2)
+    ruby-lsp (0.26.3)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 5)
@@ -824,7 +824,7 @@ GEM
       activerecord (>= 7.2)
       railties (>= 7.2)
     ssrf_filter (1.3.0)
-    stringio (3.1.7)
+    stringio (3.1.8)
     thor (1.4.0)
     tilt (2.6.1)
     timeout (0.4.4)

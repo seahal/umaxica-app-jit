@@ -10,5 +10,17 @@ Rails.application.config.middleware.use OmniAuth::Builder do
              key_id: Rails.application.credentials&.OMNI_AUTH&.APPLE&.KEY_ID,
              pem: Rails.application.credentials&.OMNI_AUTH&.APPLE&.PRIVATE_KEY
            }
+<<<<<<< HEAD
+=======
+provider :apple,
+         Rails.application.credentials.dig(:OMNI_AUTH, :APPLE, :CLIENT_ID),
+         {
+           scope: "email name",
+           team_id: Rails.application.credentials.dig(:OMNI_AUTH, :APPLE, :TEAM_ID),
+           key_id:  Rails.application.credentials.dig(:OMNI_AUTH, :APPLE, :KEY_ID),
+           pem:     Rails.application.credentials.dig(:OMNI_AUTH, :APPLE, :PRIVATE_KEY),
+           callback_path: "/oauth/apple/callback"       # 明示
+         }
+>>>>>>> 0f3400d8 ([fixed] tests are all green now.)
 end
 OmniAuth.config.allowed_request_methods = %i[post]

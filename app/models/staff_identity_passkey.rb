@@ -16,10 +16,8 @@
 #
 #  index_passkey_for_staffs_on_staff_id  (staff_id)
 #
-require "test_helper"
+class StaffIdentityPasskey < IdentityRecord
+  self.table_name = "passkey_for_staffs"
 
-class PasskeyForStaffTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  belongs_to :staff
 end
