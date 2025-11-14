@@ -56,10 +56,10 @@ module Sign
         end
 
         def find_or_create_user_from(auth_hash)
-          apple_auth = UserAppleAuth.find_by(token: auth_hash.uid)
+          apple_auth = UserIdentityAppleAuth.find_by(token: auth_hash.uid)
 
           if apple_auth
-            sync_user_apple_auth!(apple_auth.user, auth_hash.uid)
+            sync_user_identity_apple_auth!(apple_auth.user, auth_hash.uid)
             Rails.logger.info "Existing Apple OAuth user: #{apple_auth.user_id}"
             apple_auth.user
           else
@@ -74,7 +74,7 @@ module Sign
             user = User.create!
             create_identity_secret!(user, random_password)
 
-            sync_user_apple_auth!(user, auth_hash.uid)
+            sync_user_identity_apple_auth!(user, auth_hash.uid)
             persist_email!(user, auth_hash)
 
             Rails.logger.info "New Apple OAuth user created: #{user.id}"
@@ -82,13 +82,13 @@ module Sign
           end
         end
 
-        def sync_user_apple_auth!(user, uid)
+        def sync_user_identity_apple_auth!(user, uid)
           return if user.blank? || uid.blank?
 
-          record = UserAppleAuth.find_or_initialize_by(user: user)
+          record = UserIdentityAppleAuth.find_or_initialize_by(user: user)
           record.update!(token: uid)
         rescue ActiveRecord::StatementInvalid => e
-          Rails.logger.warn("UserAppleAuth sync skipped: #{e.message}")
+          Rails.logger.warn("UserIdentityAppleAuth sync skipped: #{e.message}")
         end
 
         def persist_email!(user, auth_hash)

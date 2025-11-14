@@ -10,7 +10,9 @@
 #  updated_at :datetime         not null
 #  user_id    :uuid
 #
-class UserAppleAuth < IdentitiesRecord
+class UserIdentityAppleAuth < IdentitiesRecord
+  self.table_name = "user_apple_auths"
+
   belongs_to :user
 
   validates :token, presence: true

@@ -54,11 +54,11 @@ module Sign
         end
 
         def find_or_create_user_from(auth_hash)
-          google_auth = UserGoogleAuth.find_by(token: auth_hash.uid)
+          google_auth = UserIdentityGoogleAuth.find_by(token: auth_hash.uid)
 
           if google_auth
             Rails.logger.info "Existing Google OAuth user: #{google_auth.user_id}"
-            sync_user_google_auth!(google_auth.user, auth_hash.uid)
+            sync_user_identity_google_auth!(google_auth.user, auth_hash.uid)
             persist_email!(google_auth.user, auth_hash)
             google_auth.user
           else
@@ -73,7 +73,7 @@ module Sign
             user = User.create!
             create_identity_secret!(user, random_password)
 
-            sync_user_google_auth!(user, auth_hash.uid)
+            sync_user_identity_google_auth!(user, auth_hash.uid)
             persist_email!(user, auth_hash)
 
             Rails.logger.info "New Google OAuth user created: #{user.id}"
@@ -92,13 +92,13 @@ module Sign
           end
         end
 
-        def sync_user_google_auth!(user, uid)
+        def sync_user_identity_google_auth!(user, uid)
           return if user.blank? || uid.blank?
 
-          record = UserGoogleAuth.find_or_initialize_by(user: user)
+          record = UserIdentityGoogleAuth.find_or_initialize_by(user: user)
           record.update!(token: uid)
         rescue ActiveRecord::StatementInvalid => e
-          Rails.logger.warn("UserGoogleAuth sync skipped: #{e.message}")
+          Rails.logger.warn("UserIdentityGoogleAuth sync skipped: #{e.message}")
         end
 
         def with_identity_writing(&block)

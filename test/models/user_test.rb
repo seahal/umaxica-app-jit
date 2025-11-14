@@ -33,14 +33,14 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "user_id", @user.class.reflect_on_association(:user_identity_telephones).foreign_key
   end
 
-  test "should have one user_apple_auth association" do
-    assert_respond_to @user, :user_apple_auth
-    assert_equal :has_one, @user.class.reflect_on_association(:user_apple_auth).macro
+  test "should have one user_identity_apple_auth association" do
+    assert_respond_to @user, :user_identity_apple_auth
+    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_apple_auth).macro
   end
 
-  test "should have one user_google_auth association" do
-    assert_respond_to @user, :user_google_auth
-    assert_equal :has_one, @user.class.reflect_on_association(:user_google_auth).macro
+  test "should have one user_identity_google_auth association" do
+    assert_respond_to @user, :user_identity_google_auth
+    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_google_auth).macro
   end
 
   test "should have many user_sessions association" do

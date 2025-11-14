@@ -10,7 +10,9 @@
 #  updated_at :datetime         not null
 #  user_id    :uuid
 #
-class UserGoogleAuth < IdentitiesRecord
+class UserIdentityGoogleAuth < IdentitiesRecord
+  self.table_name = "user_google_auths"
+
   belongs_to :user
 
   validates :token, presence: true
