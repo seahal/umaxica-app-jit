@@ -16,8 +16,8 @@ raise '[SAFEGUARD] db:seed only use for dev env.' unless Rails.env.development?
 # RegionCode.create_or_find_by(id: 392)
 
 # CREATE TERM
-Document.find_or_create_by(id: '01000', parent_id: nil, prev_id: nil, succ_id: nil, title: 'TERM', description: '')
-Document.find_or_create_by(id: '01001', parent_id: nil, prev_id: nil, succ_id: nil, title: 'PRIVACY', description: '')
+# ComDocument.find_or_create_by(id: '01000', parent_id: nil, prev_id: nil, succ_id: nil, title: 'TERM', description: '')
+# ComDocument.find_or_create_by(id: '01001', parent_id: nil, prev_id: nil, succ_id: nil, title: 'PRIVACY', description: '')
 
 # USER
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38')

@@ -7,67 +7,38 @@ module Help
       def new
         @email_address = ""
         @telephone_number = ""
-        load_contact_categories
+        @contact_categories = ComContactCategory.all
       end
 
       def create
-        passed_turnstile = turnstile_passed_without_contact?
+        # Cloudflare Turnstile validation
+        turnstile_result = cloudflare_turnstile_validation
 
-        unless passed_turnstile
+        # Create contact with nested associations
+        @contact = ComContact.new(
+          contact_category_title: params.dig(:com_contact, :contact_category_title),
+          confirm_policy: params.dig(:com_contact, :confirm_policy)
+        )
+
+        # Build associated email and telephone
+        @email = @contact.com_contact_emails.build(
+          email_address: params.dig(:com_contact, :email_address)
+        )
+
+        @telephone = @contact.com_contact_telephones.build(
+          telephone_number: params.dig(:com_contact, :telephone_number)
+        )
+
+        unless turnstile_result["success"]
+          @contact.errors.add(:base, "ロボットではないことの確認に失敗しました。もう一度お試しください。")
           @email_address = params.dig(:com_contact, :email_address) || ""
           @telephone_number = params.dig(:com_contact, :telephone_number) || ""
-          load_contact_categories
+          @contact_categories = ComContactCategory.all
           render :new, status: :unprocessable_entity
           return
         end
 
-        # Use transaction to ensure all-or-nothing
-        ActiveRecord::Base.transaction do
-          # First create the contact
-          @contact = ComContact.new(
-            contact_category_title: params.dig(:com_contact, :contact_category_title),
-            public_id: Nanoid.generate
-          )
-          @contact.confirm_policy = params.dig(:com_contact, :confirm_policy)
-          @contact.save!
-
-          # Then create email and telephone records with the contact_id
-          @email = ComContactEmail.new(
-            com_contact_id: @contact.id,
-            email_address: params.dig(:com_contact, :email_address),
-            expires_at: 24.hours.from_now
-          )
-          @email.save!
-
-          @telephone = ComContactTelephone.new(
-            com_contact_id: @contact.id,
-            telephone_number: params.dig(:com_contact, :telephone_number),
-            expires_at: 24.hours.from_now
-          )
-          @telephone.save!
-        end
-
-          # ここから、OTP生成とメール送信の処理 をするが、あとで concerns/rotp.rb にまとめる
-          otp_private_key = ROTP::Base32.random_base32
-          otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
-          hotp = ROTP::HOTP.new(otp_private_key)
-          num = hotp.at(otp_count_number)
-
-          # セッションに保存
-          # session[:user_email_registration] = {
-          #   id: id,
-          #   address: @user_email.address,
-          #   otp_private_key: otp_private_key,
-          #   otp_counter: otp_count_number,
-          #   expires_at: 12.minutes.from_now.to_i
-          # }
-
-          # メール送信
-          # Email::App::RegistrationMailer.with({
-          #   hotp_token: num,
-          #   email_address: @user_email.address
-          # }).create.deliver_now
-
+        if @contact.save
           # Generate OTP and send email
           otp_code = @email.generate_verifier!
           Email::Com::ContactMailer.with(
@@ -75,40 +46,16 @@ module Help
             pass_code: otp_code
           ).create.deliver_now
 
-        # ⇑ rewrite app/controllers/concerns/rotp.rb and use here
-
-        redirect_to new_help_com_contact_email_path(contact_id: @contact.id), notice: t(".success")
-      rescue ActiveRecord::RecordInvalid => e
-        # On error, preserve input values
-        @email_address = params.dig(:com_contact, :email_address) || ""
-        @telephone_number = params.dig(:com_contact, :telephone_number) || ""
-        # re-set the contact of privacy confirmation status
-        @contact ||= ComContact.new(contact_category_title: params.dig(:com_contact, :contact_category_title))
-        @contact.confirm_policy = params.dig(:com_contact, :confirm_policy)
-        @contact.errors.add(:base, e.message)
-        # re-set the contact of privacy status
-        load_contact_categories
-        render :new, status: :unprocessable_entity
-      end
-
-      private
-
-      def contact_params
-        params.expect(
-          com_contact: [ :contact_category_title,
-          :confirm_policy,
-          :email_address,
-          :telephone_number ]
-        )
-      end
-
-      def load_contact_categories
-        @contact_categories = ComContactCategory.order(:title)
-      end
-
-      def turnstile_passed_without_contact?
-        result = cloudflare_turnstile_validation
-        result["success"]
+          # Success: redirect to email verification
+          flash[:notice] = t(".success")
+          redirect_to new_help_com_contact_email_path(contact_id: @contact.id)
+        else
+          # Validation failed: re-render form with errors
+          @email_address = params.dig(:com_contact, :email_address) || ""
+          @telephone_number = params.dig(:com_contact, :telephone_number) || ""
+          @contact_categories = ComContactCategory.all
+          render :new, status: :unprocessable_entity
+        end
       end
     end
   end

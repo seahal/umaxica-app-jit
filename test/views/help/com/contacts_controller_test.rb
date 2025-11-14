@@ -87,5 +87,37 @@ module Help::Com
       assert_select "select[name='com_contact[contact_category_title]']"
       assert_select "input[name='com_contact[confirm_policy]']"
     end
+
+    test "should preserve unchecked confirm_policy on validation error" do
+      post help_com_contacts_url, params: {
+        com_contact: {
+          contact_category_title: @category.title,
+          confirm_policy: "0", # Unchecked
+          email_address: "test@example.com",
+          telephone_number: "+1234567890"
+        },
+        "cf-turnstile-response": "test_token"
+      }
+
+      assert_response :unprocessable_entity
+      # Checkbox should remain unchecked
+      assert_select "input[name='com_contact[confirm_policy]'][type='checkbox']:not([checked])"
+    end
+
+    test "should preserve checked confirm_policy on validation error" do
+      post help_com_contacts_url, params: {
+        com_contact: {
+          contact_category_title: "", # Invalid: empty category to trigger validation error
+          confirm_policy: "1", # Checked
+          email_address: "test@example.com",
+          telephone_number: "+1234567890"
+        },
+        "cf-turnstile-response": "test_token"
+      }
+
+      assert_response :unprocessable_entity
+      # Checkbox should remain checked
+      assert_select "input[name='com_contact[confirm_policy]'][type='checkbox'][checked='checked']"
+    end
   end
 end
