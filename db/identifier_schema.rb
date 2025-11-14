@@ -57,7 +57,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_130019) do
     t.index ["staff_id"], name: "index_passkey_for_staffs_on_staff_id"
   end
 
-  create_table "passkey_for_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_identity_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.timestamptz "created_at", null: false
     t.string "description", null: false
     t.uuid "external_id", null: false
@@ -66,7 +66,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_130019) do
     t.timestamptz "updated_at", null: false
     t.bigint "user_id", null: false
     t.uuid "webauthn_id", null: false
-    t.index ["user_id"], name: "index_passkey_for_users_on_user_id"
+    t.index ["user_id"], name: "index_user_identity_passkeys_on_user_id"
   end
 
   create_table "staff_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

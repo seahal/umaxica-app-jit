@@ -20,7 +20,7 @@ module ActiveSupport
     # parallelize(workers: :number_of_processors)
 
     fixtures :all
-    set_fixture_class passkey_for_users: UserIdentityPasskey,
+    set_fixture_class user_identity_passkeys: UserIdentityPasskey,
                       passkey_for_staffs: StaffIdentityPasskey
 
     def brand_name

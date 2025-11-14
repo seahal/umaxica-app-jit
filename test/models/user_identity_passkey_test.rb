@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: passkey_for_users
+# Table name: user_identity_passkeys
 #
 #  id          :uuid             not null, primary key
 #  description :string           not null
@@ -14,7 +14,7 @@
 #
 # Indexes
 #
-#  index_passkey_for_users_on_user_id  (user_id)
+#  index_user_identity_passkeys_on_user_id  (user_id)
 #
 require "test_helper"
 
