@@ -1,7 +1,4 @@
-<h1><%= t('sign.app.authentication.edit.title') %></h1>
-
-<%= form_with url: sign_app_authentication_path, method: :destroy do |f| %>
-  <%= f.submit %>
-<% end %>
-
-<%= button_to "Delete?", sign_app_authentication_path(notice), method: :delete %>
+<main class="max-w-xl mx-auto py-8 text-center">
+  <h1 class="text-2xl font-semibold mb-4"><%= t("sign.app.authentication.edit.title") %></h1>
+  <p class="text-sm text-slate-600"><%= t("sign.app.authentication.edit.description") %></p>
+</main>

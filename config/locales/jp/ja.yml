@@ -388,6 +388,7 @@ ja:
             registration: アカウント登録はこちら
         edit:
           title: ログアウトしますか？
+          description: セッションを終了してログインページへ戻ります。
         passkey:
           new:
             page_title: パスキーを登録する
@@ -449,6 +450,17 @@ ja:
           links:
             sign_in_html: すでにアカウントをお持ちですか？%{link}
             sign_in_text: ログインする
+        oauth:
+          apple:
+            callback:
+              success: Apple authentication completed successfully.
+            failure:
+              error: Apple authentication failed
+          google:
+            callback:
+              success: Google authentication completed successfully.
+            failure:
+              error: Google authentication failed
         email:
           new:
             page_title: "UMAXICA (sign, app)"

@@ -32,6 +32,16 @@ class Sign::App::Oauth::GooglesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Google authentication failed", flash[:alert]
   end
 
+  test "should route apple strategy failures to apple message" do
+    get sign_app_auth_failure_url(strategy: "apple"), headers: { "Host" => @host }
+
+    assert_response :redirect
+    follow_redirect!
+
+    assert_response :success
+    assert_equal "Apple authentication failed", flash[:alert]
+  end
+
   test "should handle callback with missing auth_hash" do
     # Skip this test due to OmniAuth CSRF protection in test environment
     # The callback endpoint requires proper OmniAuth state management

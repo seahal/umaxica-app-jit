@@ -32,11 +32,20 @@ Rails.application.routes.draw do
           resource :apple, only: %i[new create]
           resource :google, only: %i[new]
         end
-        namespace :socail do
-          # OAuth required pages
-          get ":provider/callback", to: "sessions#create"
-          get "failure", to: redirect("/") # TODO: Fix this
+        # Social SignUp or LogIn
+        namespace :oauth do
+          resource :apple, only: [ :create ] do
+            get :callback
+            get :failure
+          end
+          resource :google, only: [ :create ] do
+            get :callback
+            get :failure
+          end
         end
+        get "/auth/google/callback", to: "oauth/googles#callback"
+        get "/auth/apple/callback", to: "oauth/apples#callback"
+        get "/auth/failure", to: "oauth/apples#failure"
         # Withdrawal
         resource :withdrawal, only: %i[new create edit update]
         # Settings with logined user

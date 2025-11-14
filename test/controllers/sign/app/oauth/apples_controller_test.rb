@@ -13,7 +13,7 @@ class Sign::App::Oauth::ApplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle callback failure with default error message" do
-    get failure_sign_app_oauth_apple_url, headers: { "Host" => @host }
+    get failure_sign_app_oauth_apple_url(strategy: "apple"), headers: { "Host" => @host }
 
     assert_response :redirect
     follow_redirect!
@@ -23,7 +23,7 @@ class Sign::App::Oauth::ApplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle callback failure with custom error message" do
-    get failure_sign_app_oauth_apple_url(message: "user_cancelled_authorize"), headers: { "Host" => @host }
+    get failure_sign_app_oauth_apple_url(message: "user_cancelled_authorize", strategy: "apple"), headers: { "Host" => @host }
 
     assert_response :redirect
     follow_redirect!

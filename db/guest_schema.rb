@@ -30,11 +30,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-<<<<<<< HEAD
-    t.timestamptz "expires_at", default: "2025-11-13 06:19:26", null: false
-=======
-    t.timestamptz "expires_at", default: "2025-11-15 01:04:40", null: false
->>>>>>> 0f3400d8 ([fixed] tests are all green now.)
+    t.timestamptz "expires_at", default: "2025-11-15 02:49:57", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -62,11 +58,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.uuid "app_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-<<<<<<< HEAD
-    t.timestamptz "expires_at", default: "2025-11-13 06:19:26", null: false
-=======
-    t.timestamptz "expires_at", default: "2025-11-15 01:04:40", null: false
->>>>>>> 0f3400d8 ([fixed] tests are all green now.)
+    t.timestamptz "expires_at", default: "2025-11-15 02:49:57", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -110,11 +102,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-<<<<<<< HEAD
-    t.timestamptz "expires_at", default: "2025-11-13 06:19:26", null: false
-=======
-    t.timestamptz "expires_at", default: "2025-11-15 01:04:40", null: false
->>>>>>> 0f3400d8 ([fixed] tests are all green now.)
+    t.timestamptz "expires_at", default: "2025-11-15 02:49:58", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -151,11 +139,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.uuid "com_contact_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-<<<<<<< HEAD
-    t.timestamptz "expires_at", default: "2025-11-13 06:19:26", null: false
-=======
-    t.timestamptz "expires_at", default: "2025-11-15 01:04:40", null: false
->>>>>>> 0f3400d8 ([fixed] tests are all green now.)
+    t.timestamptz "expires_at", default: "2025-11-15 02:49:58", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -172,11 +156,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-<<<<<<< HEAD
-    t.timestamptz "expires_at", default: "2025-11-13 06:19:26", null: false
-=======
-    t.timestamptz "expires_at", default: "2025-11-15 01:04:40", null: false
->>>>>>> 0f3400d8 ([fixed] tests are all green now.)
+    t.timestamptz "expires_at", default: "2025-11-15 02:49:58", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
@@ -216,11 +196,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-<<<<<<< HEAD
-    t.timestamptz "expires_at", default: "2025-11-13 06:19:26", null: false
-=======
-    t.timestamptz "expires_at", default: "2025-11-15 01:04:40", null: false
->>>>>>> 0f3400d8 ([fixed] tests are all green now.)
+    t.timestamptz "expires_at", default: "2025-11-15 02:49:57", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
@@ -248,11 +224,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-<<<<<<< HEAD
-    t.timestamptz "expires_at", default: "2025-11-13 06:19:26", null: false
-=======
-    t.timestamptz "expires_at", default: "2025-11-15 01:04:40", null: false
->>>>>>> 0f3400d8 ([fixed] tests are all green now.)
+    t.timestamptz "expires_at", default: "2025-11-15 02:49:58", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false

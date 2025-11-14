@@ -40,8 +40,10 @@ module Sign
         # GET /auth/failure (OmniAuth認証失敗時)
         def failure
           error_message = params[:message] || "unknown_error"
-          Rails.logger.error "Apple OAuth failure: #{error_message}"
-          flash[:alert] = t("sign.app.registration.oauth.apple.failure.error")
+          provider = determine_provider
+
+          Rails.logger.error "Apple OAuth failure: #{error_message} (provider=#{provider})"
+          flash[:alert] = t("sign.app.registration.oauth.#{provider}.failure.error")
           redirect_to new_sign_app_authentication_path
         end
 
@@ -131,6 +133,23 @@ module Sign
           UserEmail.find_or_create_by!(user: user, address: normalized_email) do |user_email|
             user_email.confirm_policy = true
           end
+        end
+
+        def determine_provider
+          provider = params[:strategy] || params[:provider]
+
+          if provider.blank? && (strategy = request.env["omniauth.error.strategy"])
+            provider =
+              if strategy.respond_to?(:name)
+                strategy.name
+              elsif strategy.respond_to?(:class)
+                strategy.class.name.demodulize
+              end
+          end
+
+          normalized = provider.to_s.downcase
+          return "apple" if normalized == "apple"
+          "google"
         end
       end
     end
