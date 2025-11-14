@@ -702,9 +702,22 @@ en:
               dark: "Ideal for night shifts or reducing eye strain."
               system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference cookies for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to Preferences"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference cookies for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to Preferences"
     org:
       preferences:
         title: "Preferences"
+        locale_settings: "Locale Settings"
         back_to_settings: "Back to Preferences"
         regions:
           title: "Region & Language Settings"
@@ -750,6 +763,12 @@ en:
               dark: "Favored for late-night monitoring without eye strain."
               system: "Keeps theme aligned with managed device policies."
             submit: "Save theme preference"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference cookies for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to Preferences"
     com:
       preferences:
         title: "Preferences"

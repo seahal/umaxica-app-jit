@@ -5,6 +5,7 @@ module Rotp
 
   private
 
+  # TODO: remove this
   def send_otp_code_using_email(pass_code: nil, email_address: nil)
     raise unless pass_code
     raise unless email_address
@@ -12,6 +13,7 @@ module Rotp
     Email::App::ContactMailer.with({ email_address: email_address, pass_code: pass_code }).create.deliver_now
   end
 
+  # TODO: remove this
   def send_otp_code_using_sms(pass_code: nil, telephone_number: nil)
     raise unless pass_code
     raise unless telephone_number
@@ -21,5 +23,13 @@ module Rotp
       message: "PassCode => #{pass_code}",
       subject: "PassCode"
     )
+  end
+
+  def generate_otp_code
+    # TODO: implement!
+  end
+
+  def verify_otp_code(pass_code: nil, expected_code: nil)
+    # TODO: implement!
   end
 end

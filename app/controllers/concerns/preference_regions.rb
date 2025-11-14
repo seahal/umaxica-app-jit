@@ -183,7 +183,14 @@ module PreferenceRegions
 
     timezone_candidate = timezone_param || session[:timezone]
     timezone = resolve_timezone(timezone_candidate) || resolve_timezone(DEFAULT_TIMEZONE)
+    identifier_source = timezone_candidate.presence || DEFAULT_TIMEZONE
     @current_timezone = timezone ? timezone.to_s : DEFAULT_TIMEZONE
+    @current_timezone_identifier =
+      if timezone
+        zone_identifier(timezone, identifier_source)
+      else
+        identifier_source
+      end
   end
 
   def persist_preference_cookie!

@@ -112,9 +112,7 @@ class AccountService
   # This ensures JWT generation and other type checks work correctly
   #
   # @return [Class] User or Staff class
-  def class
-    accountable.class
-  end
+  delegate :class, to: :accountable
 
   # Override is_a? to check against the underlying model
   # This ensures Pundit and other type checks work correctly
@@ -168,9 +166,7 @@ class AccountService
   # Get all email addresses associated with this account
   #
   # @return [ActiveRecord::Relation] Collection of email records
-  def emails
-    accountable.emails
-  end
+  delegate :emails, to: :accountable
 
   # Get all telephone numbers associated with this account
   # Note: Staff accounts don't have telephone authentication

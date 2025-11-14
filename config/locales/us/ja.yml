@@ -899,9 +899,16 @@ ja:
               dark: 夜間の業務や長時間の操作で目の負担を軽減します。
               system: OSのテーマ変更に合わせて自動で切り替わります。
             submit: テーマ設定を保存
+        resets:
+          title: 設定のリセット
+          description: このブラウザに保存された設定データを削除します。
+          button: 設定をリセットする
+          confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
+          back: 設定一覧に戻る
     org:
       preferences:
         title: 設定
+        locale_settings: ロケール設定
         back_to_settings: 設定一覧に戻る
         regions:
           title: 地域・言語の設定
@@ -947,6 +954,12 @@ ja:
               dark: 夜間対応や照度の低い環境での常時監視に適しています。
               system: 管理端末のテーマ変更に合わせて自動で切り替わります。
             submit: テーマ設定を保存
+        resets:
+          title: 設定のリセット
+          description: このブラウザに保存された設定データを削除します。
+          button: 設定をリセットする
+          confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
+          back: 設定一覧に戻る
     com:
       preferences:
         title: 設定
@@ -1013,6 +1026,12 @@ ja:
               dark: 夜間オペレーションや長時間監視で目の疲れを抑えます。
               system: 管理端末のテーマ変更に合わせて自動で切り替わります。
             submit: テーマ設定を保存
+        resets:
+          title: 設定のリセット
+          description: このブラウザに保存された設定データを削除します。
+          button: 設定をリセットする
+          confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
+          back: 設定一覧に戻る
   support:
     array:
       last_word_connector: 、

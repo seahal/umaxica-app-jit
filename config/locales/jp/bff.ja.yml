@@ -152,3 +152,12 @@ ja:
             success: "成功！"
             failure: "失敗！"
   confirm_policy_error: "ポリシーエラー"
+  top:
+    app:
+      preference:
+        resets:
+          title: "設定のリセット"
+          description: "お好みの設定を消すことができます"
+          confirm: "リセット"
+          button: "リセット"
+          back: "戻る"

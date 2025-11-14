@@ -149,3 +149,12 @@ en:
             invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
             max_attempts: "Maximum verification attempts exceeded. Please request a new code."
             expired: "Verification code has expired. Please request a new code."
+  top:
+    app:
+      preference:
+        resets:
+          title: "設定のリセット"
+          description: "reset your preference setting."
+          confirm: "RESET"
+          button: "RESET"
+          back: "Back???"
