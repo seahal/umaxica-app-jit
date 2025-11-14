@@ -51,7 +51,10 @@ module QueryCanonicalizer
     current = request.query_parameters.slice(*keys)
     expected = normalize_params(request.query_parameters)
 
-    # 既に“意味（対象キーの値集合）”が一致していれば何もしない（ループ防止）
+    # 既に"意味（対象キーの値集合）"が一致していれば何もしない（ループ防止）
+    # NOTE: This intentionally adds default parameters even if not originally present.
+    # This is the desired behavior to ensure consistent URLs with normalized parameters.
+    # The loop prevention check (current == expected) prevents infinite redirects.
     return if current == expected
 
     # 並びを安定化（アルファベット順）して相対URLへ 302

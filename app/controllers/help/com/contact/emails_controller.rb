@@ -83,9 +83,10 @@ module Help
           session_data = session[:com_contact_email_verification]
           return false if session_data.nil?
 
-          # セッションデータが一致し、有効期限内であることを確認
+          # CRITICAL: Verify ALL session attributes match to prevent session hijacking
           session_data["id"] == contact_email.id &&
             session_data["contact_id"] == @contact.id &&
+            session_data["contact_id"] == contact_email.com_contact_id &&
             session_data["expires_at"].to_i > Time.now.to_i
         end
       end
