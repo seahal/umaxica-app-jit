@@ -23,7 +23,7 @@ module Sign
           end
 
           begin
-            user = find_or_create_user_from(auth_hash)
+            user = with_identity_writing { find_or_create_user_from(auth_hash) }
 
             reset_session
             session[:user_id] = user.id
@@ -120,8 +120,12 @@ module Sign
         end
 
         def sync_user_apple_auth!(user, uid)
+          return if user.blank? || uid.blank?
+
           record = UserAppleAuth.find_or_initialize_by(user: user)
           record.update!(token: uid)
+        rescue ActiveRecord::StatementInvalid => e
+          Rails.logger.warn("UserAppleAuth sync skipped: #{e.message}")
         end
 
         def persist_email!(user, auth_hash)
@@ -150,6 +154,9 @@ module Sign
           normalized = provider.to_s.downcase
           return "apple" if normalized == "apple"
           "google"
+        end
+        def with_identity_writing(&block)
+          IdentitiesRecord.connected_to(role: :writing, &block)
         end
       end
     end

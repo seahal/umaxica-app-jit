@@ -15,7 +15,7 @@ module Sign
         def callback
           auth_hash = request.env["omniauth.auth"]
 
-          if auth_hash.blank? || !valid_auth_hash?(auth_hash)
+          unless valid_auth_hash?(auth_hash)
             Rails.logger.warn "Invalid or missing auth_hash"
             flash[:alert] = t("sign.app.registration.oauth.google.failure.error")
             redirect_to new_sign_app_registration_path
@@ -23,39 +23,8 @@ module Sign
           end
 
           begin
-            # Google OAuth情報からユーザーを検索または作成
-            google_auth = UserGoogleAuth.find_by(token: auth_hash.uid)
+            user = with_identity_writing { find_or_create_user_from(auth_hash) }
 
-            if google_auth
-              # 既存のGoogle認証を持つユーザーでログイン
-              user = google_auth.user
-              Rails.logger.info "Existing Google OAuth user: #{user.id}"
-            else
-              # 新規ユーザー作成（登録フロー）
-              # OAuth経由なのでランダムなパスワードを生成（ユーザーは知る必要なし）
-              random_password = SecureRandom.hex(32)
-              user = User.create!(
-                password: random_password,
-                password_confirmation: random_password
-              )
-              UserGoogleAuth.create!(
-                user: user,
-                token: auth_hash.uid
-              )
-
-              # メールアドレスも保存
-              if auth_hash.info.email.present?
-                UserEmail.create!(
-                  user: user,
-                  email: auth_hash.info.email,
-                  verified: true # Googleで認証済み
-                )
-              end
-
-              Rails.logger.info "New Google OAuth user created: #{user.id}"
-            end
-
-            # セッション作成
             reset_session
             session[:user_id] = user.id
 
@@ -79,8 +48,115 @@ module Sign
         private
 
         def valid_auth_hash?(auth_hash)
-          auth_hash.provider == "google_oauth2" &&
+          auth_hash.present? &&
+            auth_hash.provider == "google_oauth2" &&
             auth_hash.uid.present?
+        end
+
+        def find_or_create_user_from(auth_hash)
+          google_auth = GoogleAuth.find_by(uid: auth_hash.uid)
+
+          if google_auth
+            google_auth.update!(google_auth_attributes(auth_hash))
+            Rails.logger.info "Existing Google OAuth user: #{google_auth.user_id}"
+            sync_user_google_auth!(google_auth.user, auth_hash.uid)
+            persist_email!(google_auth.user, auth_hash)
+            google_auth.user
+          else
+            create_user_from_google(auth_hash)
+          end
+        end
+
+        def create_user_from_google(auth_hash)
+          random_password = SecureRandom.hex(32)
+
+          User.transaction do
+            user = User.create!(
+              password: random_password,
+              password_confirmation: random_password
+            )
+
+            GoogleAuth.create!(google_auth_attributes(auth_hash).merge(user: user))
+            sync_user_google_auth!(user, auth_hash.uid)
+            persist_email!(user, auth_hash)
+
+            Rails.logger.info "New Google OAuth user created: #{user.id}"
+            user
+          end
+        end
+
+        def google_auth_attributes(auth_hash)
+          info = auth_hash.info || OmniAuth::AuthHash.new
+          credentials = auth_hash.credentials || OmniAuth::AuthHash.new
+          extra = auth_hash.extra || OmniAuth::AuthHash.new
+
+          {
+            provider: auth_hash.provider,
+            uid: auth_hash.uid,
+            email: info.email,
+            name: info.name.presence || build_full_name(info),
+            image_url: info.image || info.image_url,
+            access_token: credentials.token,
+            refresh_token: credentials.refresh_token,
+            expires_at: normalize_expires_at(credentials.expires_at),
+            raw_info: extract_raw_info(extra)
+          }
+        end
+
+        def build_full_name(info)
+          return info.name if info.respond_to?(:name) && info.name.present?
+
+          parts = []
+          parts << info.first_name if info.respond_to?(:first_name) && info.first_name.present?
+          parts << info.last_name if info.respond_to?(:last_name) && info.last_name.present?
+          parts.compact.join(" ").presence
+        end
+
+        def extract_raw_info(extra)
+          raw_info = if extra.respond_to?(:raw_info)
+                       extra.raw_info
+          else
+                       extra[:raw_info]
+          end
+
+          return if raw_info.blank?
+
+          raw_info.respond_to?(:to_json) ? raw_info.to_json : raw_info.to_s
+        rescue StandardError
+          nil
+        end
+
+        def normalize_expires_at(value)
+          return if value.blank?
+          return Time.zone.at(value) if value.is_a?(Numeric)
+
+          Time.zone.parse(value.to_s)
+        rescue ArgumentError
+          nil
+        end
+
+        def persist_email!(user, auth_hash)
+          email = auth_hash.dig(:info, :email) || auth_hash.info&.email
+          return if email.blank?
+
+          normalized_email = email.to_s.downcase
+
+          UserEmail.find_or_create_by!(user: user, address: normalized_email) do |user_email|
+            user_email.confirm_policy = true
+          end
+        end
+
+        def sync_user_google_auth!(user, uid)
+          return if user.blank? || uid.blank?
+
+          record = UserGoogleAuth.find_or_initialize_by(user: user)
+          record.update!(token: uid)
+        rescue ActiveRecord::StatementInvalid => e
+          Rails.logger.warn("UserGoogleAuth sync skipped: #{e.message}")
+        end
+
+        def with_identity_writing(&block)
+          IdentitiesRecord.connected_to(role: :writing, &block)
         end
       end
     end

@@ -34,6 +34,9 @@ Rails.application.routes.draw do
         end
         # Social SignUp or LogIn
         namespace :oauth do
+          get "apple/callback", to: "apples#callback", as: "apple_callback"
+          get "google/callback", to: "googles#callback", as: "google_callback"
+          get "google_oauth2/callback", to: "googles#callback", as: "google_oauth2_callback"
           resource :apple, only: [ :create ] do
             get :callback
             get :failure
@@ -57,7 +60,6 @@ Rails.application.routes.draw do
               post :verify
             end
           end
-          resources :recoveries
           # TODO: Implement TOTP settings management
           resources :totps, only: [ :index, :new, :create, :edit ]
           # TODO: Implement telephone settings management
@@ -66,6 +68,8 @@ Rails.application.routes.draw do
           # resources :emails
           resource :apple, only: [ :show ]
           resource :google, only: [ :show ]
+          # TODO : Implement recovery code management
+          resources :secrets
         end
         # TODO: Implement token refresh functionality
         # namespace :token do
@@ -97,15 +101,10 @@ Rails.application.routes.draw do
         namespace :setting do
           # TODO: Implement TOTP settings (index, new, edit, update actions only)
           # resources :totp, only: [ :index, :new, :create, :edit, :update ]
-          resources :passkeys, only: [ :index, :edit, :update, :new ] do
-            # TODO: Implement passkey challenge and verify
-            # collection do
-            #   post :challenge
-            #   post :verify
-            # end
-          end
+          resources :passkeys, only: [ :index, :edit, :update, :new ]
           # TODO: Implement email settings index
           # resources :emails, only: [ :index ]
+          resources :secrets
         end
         #
         resource :withdrawal, only: %i[new create edit update]

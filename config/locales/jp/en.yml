@@ -76,17 +76,6 @@ en:
               google: "Continue with Google"
               apple: "Continue with Apple"
             disclaimer: "We will never post or share anything without your permission."
-        oauth:
-          apple:
-            callback:
-              success: "Signed in with Apple successfully."
-            failure:
-              error: "Apple authentication failed"
-          google:
-            callback:
-              success: "Signed in with Google successfully."
-            failure:
-              error: "Google authentication failed"
         links:
           sign_in_html: "Already registered? %{link}"
           sign_in_text: "Sign in"
@@ -165,9 +154,6 @@ en:
             passkey: "Passkey"
             recovery: "Recovery code"
             registration: "Need an account?"
-        edit:
-          title: "Do you want to sign out?"
-          description: "End your current session and return to the sign-in page."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -833,3 +819,16 @@ en:
               dark: "Ideal for night shifts or reducing eye strain."
               system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
+  controller:
+    sign:
+      app:
+        setting:
+          show:
+            page_title: "Settings"
+          index:
+            totp: "TOTP"
+            passkey: "Passkey"
+            secret: "Recovery Code"
+        registration:
+          email: "registration with email address???"
+          telephone: "registration with telephone."

@@ -29,6 +29,8 @@ ComContactCategory.create_or_find_by!(title: 'SECURITY_ISSUE', description: 'roo
 ComContactCategory.create_or_find_by!(title: 'OTHERS', description: 'root of corporate site status inquiries', parent_title: 'NULL')
 AppContactCategory.create_or_find_by!(title: 'NULL', description: 'NULL')
 AppContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
+AppContactCategory.create_or_find_by!(title: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
+OrgContactCategory.create_or_find_by!(title: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
 OrgContactCategory.create_or_find_by!(title: 'NULL_ORG_CATEGORY', description: 'NULL')
 OrgContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
 AppContactCategory.create_or_find_by!(title: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')

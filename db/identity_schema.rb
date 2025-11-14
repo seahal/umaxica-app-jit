@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_08_08_064848) do
+ActiveRecord::Schema[8.2].define(version: 2025_11_14_051724) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -71,6 +71,15 @@ ActiveRecord::Schema[8.2].define(version: 2025_08_08_064848) do
     t.binary "webauthn_id", null: false
     t.index ["staff_id"], name: "index_staff_identity_passkeys_on_staff_id"
     t.index ["webauthn_id"], name: "index_staff_identity_passkeys_on_webauthn_id", unique: true
+  end
+
+  create_table "staff_identity_secrets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "last_used_at"
+    t.string "password_digest"
+    t.uuid "staff_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["staff_id"], name: "index_staff_identity_secrets_on_staff_id"
   end
 
   create_table "staff_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -162,6 +171,15 @@ ActiveRecord::Schema[8.2].define(version: 2025_08_08_064848) do
     t.index ["webauthn_id"], name: "index_user_identity_passkeys_on_webauthn_id", unique: true
   end
 
+  create_table "user_identity_secrets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "last_used_at"
+    t.string "password_digest"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id"], name: "index_user_identity_secrets_on_user_id"
+  end
+
   create_table "user_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "external_id"
@@ -208,7 +226,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_08_08_064848) do
   add_foreign_key "apple_auths", "users"
   add_foreign_key "google_auths", "users"
   add_foreign_key "staff_identity_passkeys", "staffs"
+  add_foreign_key "staff_identity_secrets", "staffs"
   add_foreign_key "staff_passkeys", "staffs"
   add_foreign_key "user_identity_passkeys", "users"
+  add_foreign_key "user_identity_secrets", "users"
   add_foreign_key "user_passkeys", "users"
 end
