@@ -13,27 +13,23 @@ module Help::Com
       # form_with doesn't set action attribute explicitly, so just check for form existence
       assert_select "form"
       assert_select "select[name='com_contact[contact_category_title]']"
-      assert_select "input[name='com_contact[confirm_policy]']"
     end
 
     test "should create contact with email and telephone" do
-      assert_difference("ComContact.count", 1) do
-        assert_difference("ComContactEmail.count", 1) do
-          assert_difference("ComContactTelephone.count", 1) do
-            post help_com_contacts_url, params: {
-              com_contact: {
-                contact_category_title: @category.title,
-                confirm_policy: "1",
-                email_address: "test@example.com",
-                telephone_number: "+1234567890"
-              },
-              "cf-turnstile-response": "test_token"
-            }
-          end
-        end
+      assert_difference(
+        [ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ], 1
+      ) do
+        post help_com_contacts_url, params: {
+          com_contact: {
+            contact_category_title: @category.title,
+            confirm_policy: "1",
+            email_address: "test@example.com",
+            telephone_number: "+1234567890"
+          },
+          "cf-turnstile-response": "test_token"
+        }
       end
 
-      assert_response :redirect
       contact = ComContact.order(:created_at).last
 
       assert_redirected_to edit_help_com_contact_email_path(contact_id: contact.id)

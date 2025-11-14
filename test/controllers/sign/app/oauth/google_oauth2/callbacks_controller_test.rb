@@ -21,9 +21,7 @@ module Sign
             get sign_app_oauth_google_oauth2_callback_url, headers: { "Host" => @host }
           end
 
-          assert_redirected_to sign_app_root_url(host: @host)
-          assert_equal I18n.t("sign.app.registration.oauth.google.callback.success"), flash[:notice]
-          assert_not_nil session[:user_id]
+          assert_oauth_success("sign.app.registration.oauth.google.callback.success")
         end
 
         test "should handle OAuth callback with origin" do
@@ -35,11 +33,18 @@ module Sign
                 env: { "omniauth.origin" => "/original-page" }
           end
 
-          assert_redirected_to sign_app_root_url(host: @host)
-          assert_equal I18n.t("sign.app.registration.oauth.google.callback.success"), flash[:notice]
+          assert_oauth_success("sign.app.registration.oauth.google.callback.success")
         end
 
         private
+
+        def assert_oauth_success(i18n_key)
+          assert_redirected_to sign_app_root_url(host: @host)
+          assert_equal(
+            [ I18n.t(i18n_key), true ],
+            [ flash[:notice], session[:user_id].present? ]
+          )
+        end
 
         def mock_google_auth_hash(overrides = {})
           base = {
