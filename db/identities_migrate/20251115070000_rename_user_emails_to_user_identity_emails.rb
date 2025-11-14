@@ -5,9 +5,13 @@ class RenameUserEmailsToUserIdentityEmails < ActiveRecord::Migration[8.2]
     return unless table_exists?(:user_emails)
 
     rename_table :user_emails, :user_identity_emails
-    rename_index :user_identity_emails,
-                 "index_user_emails_on_user_id",
-                 "index_user_identity_emails_on_user_id"
+
+    # Check if index still has old name before renaming
+    if index_exists?(:user_identity_emails, :user_id, name: "index_user_emails_on_user_id")
+      rename_index :user_identity_emails,
+                   "index_user_emails_on_user_id",
+                   "index_user_identity_emails_on_user_id"
+    end
   end
 
   def down

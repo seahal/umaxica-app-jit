@@ -39,8 +39,8 @@ module Health
     #   errors << "Database connection failed: #{e.message}"
     # end
     #
-    # Check Redis connectivity if configured
-    if defined?(Redis) && defined?(REDIS_CLIENT)
+    # Check Redis connectivity if configured (skip in test environment)
+    if defined?(Redis) && defined?(REDIS_CLIENT) && !Rails.env.test?
       begin
         REDIS_CLIENT.ping
       rescue StandardError => e

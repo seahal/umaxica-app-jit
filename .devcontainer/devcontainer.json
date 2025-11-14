@@ -112,7 +112,8 @@
 		"QT_QPA_PLATFORM": "wayland",
 		"GDK_BACKEND": "wayland"
 	},
-	"postCreateCommand": "bun install && bundle install && bin/rails db:create",
+	"postCreateCommand": "bun install && bundle install && .devcontainer/setup-db.sh",
+	"postStartCommand": ".devcontainer/setup-db.sh",
 	"updateContentCommand": "",
 	"updateRemoteUserUID": false,
 	"features": {

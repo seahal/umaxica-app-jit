@@ -5,9 +5,13 @@ class RenameUserTelephonesToUserIdentityTelephones < ActiveRecord::Migration[8.2
     return unless table_exists?(:user_telephones)
 
     rename_table :user_telephones, :user_identity_telephones
-    rename_index :user_identity_telephones,
-                 "index_user_telephones_on_user_id",
-                 "index_user_identity_telephones_on_user_id"
+
+    # Check if index still has old name before renaming
+    if index_exists?(:user_identity_telephones, :user_id, name: "index_user_telephones_on_user_id")
+      rename_index :user_identity_telephones,
+                   "index_user_telephones_on_user_id",
+                   "index_user_identity_telephones_on_user_id"
+    end
   end
 
   def down
