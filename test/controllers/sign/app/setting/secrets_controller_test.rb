@@ -2,10 +2,7 @@ require "test_helper"
 
 class Sign::App::Setting::SecretsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @user = User.create!(
-      webauthn_id: SecureRandom.hex(16),
-      password_digest: BCrypt::Password.create("password")
-    )
+    @user = User.create!(webauthn_id: SecureRandom.hex(16))
     @user_identity_secret = UserIdentitySecret.create!(
       user: @user,
       password_digest: "test_password_digest"

@@ -82,9 +82,6 @@ jobs:
       - name: Run bun audit
         run: bun audit
 
-      - name: Check unused routing config
-        run: bundle exec rails routes --unused
-
   # ====================
   # Linting - Ruby
   # ====================
@@ -107,6 +104,9 @@ jobs:
 
       - name: Run ERB Lint
         run: bundle exec erb_lint --lint-all
+
+      - name: Check unused routing config
+        run: bundle exec rails routes --unused
 
   # ====================
   # Linting - JavaScript/TypeScript

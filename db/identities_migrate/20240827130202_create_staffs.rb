@@ -7,7 +7,6 @@ class CreateStaffs < ActiveRecord::Migration[7.2]
     # FIXME: need hashed partition.
     create_table :staffs, id: :uuid do |t|
       t.string :webauthn_id
-      t.string :password_digest
       t.timestamps
     end
   end

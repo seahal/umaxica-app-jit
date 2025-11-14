@@ -72,10 +72,8 @@ module Sign
           random_password = SecureRandom.hex(32)
 
           User.transaction do
-            user = User.create!(
-              password: random_password,
-              password_confirmation: random_password
-            )
+            user = User.create!
+            create_identity_secret!(user, random_password)
 
             AppleAuth.create!(apple_auth_attributes(auth_hash).merge(user: user))
             sync_user_apple_auth!(user, auth_hash.uid)
@@ -157,6 +155,14 @@ module Sign
         end
         def with_identity_writing(&block)
           IdentitiesRecord.connected_to(role: :writing, &block)
+        end
+
+        def create_identity_secret!(user, password)
+          UserIdentitySecret.create!(
+            user: user,
+            password: password,
+            password_confirmation: password
+          )
         end
       end
     end

@@ -122,7 +122,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_14_051724) do
 
   create_table "staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "password_digest"
     t.datetime "updated_at", null: false
     t.string "webauthn_id"
   end
@@ -218,7 +217,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_14_051724) do
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "password_digest"
     t.datetime "updated_at", null: false
     t.string "webauthn_id"
   end

@@ -10,7 +10,6 @@
 #  webauthn_id :string
 #
 class Staff < IdentitiesRecord
-  has_secure_password algorithm: :argon2
   has_many :staff_emails, dependent: :destroy
   has_many :emails, class_name: "StaffEmail", dependent: :destroy
 end

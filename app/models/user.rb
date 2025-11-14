@@ -10,7 +10,6 @@
 #  webauthn_id :string
 #
 class User < IdentitiesRecord
-  has_secure_password algorithm: :argon2
   has_many :user_emails, dependent: :destroy
   has_many :user_telephones, dependent: :destroy
   has_one :user_apple_auth, dependent: :destroy
