@@ -8,6 +8,12 @@ en:
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
+  controller:
+    help:
+      com:
+        contacts:
+          create:
+            success: "Your inquiry has been received. Please check your email address."
   sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"
@@ -359,6 +365,24 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+        locale:
+          edit:
+            title: "Locale Settings"
+            description: "Manage corporate language and timezone preferences for this browser."
+            language_section: "Language Settings"
+            language_label: "Language"
+            language_prompt: "Choose your language..."
+            language_options:
+              ja: "日本語"
+              en: "English"
+            timezone_section: "Timezone Settings"
+            timezone_label: "Timezone"
+            timezone_prompt: "Choose your timezone..."
+            timezone_options:
+              UTC: "Coordinated Universal Time (UTC)"
+              JST: "Japan Standard Time (JST)"
+            submit: "Update Settings"
+            cancel: "Cancel"
         theme:
           edit:
             title: "Choose Dark or Light Theme"

@@ -14,7 +14,7 @@ class HelpContactVerificationRoutesTest < ActionDispatch::IntegrationTest
 
     post help_com_contact_email_url(contact_id: @com_contact)
 
-    assert_response :created
+    assert_response :no_content
   end
 
   test "corporate contact telephone routes respond" do

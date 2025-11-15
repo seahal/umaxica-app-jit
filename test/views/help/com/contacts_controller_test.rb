@@ -32,7 +32,10 @@ module Help::Com
 
       contact = ComContact.order(:created_at).last
 
-      assert_redirected_to new_help_com_contact_email_path(contact_id: contact.id)
+      assert_redirected_to new_help_com_contact_email_url(
+        contact_id: contact.public_id,
+        host: "help.com.localhost"
+      )
       assert_equal I18n.t("help.com.contacts.create.success"), flash[:notice]
     end
 
