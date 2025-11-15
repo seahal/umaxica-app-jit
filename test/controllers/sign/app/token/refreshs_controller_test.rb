@@ -1,15 +1,14 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
-class Sign::App::Token::RefreshsControllerTest < ActionDispatch::IntegrationTest
-  test "should get show" do
-    # TODO: Implement show action test for token refresh
-    skip "TODO: implement show action test for token refresh"
-  end
-
-  test "should patch update" do
-    skip "Token refresh route not yet implemented"
-    # patch sign_app_token_refresh_url(1), headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
-    # TODO: Implement proper update action test
-    # assert_not false
+module Sign::App::Token
+  class RefreshsControllerTest < ActionDispatch::IntegrationTest
+    # TODO: Uncomment when sign_app_token_refresh_url route is available
+    # test "should get show" do
+    #   get sign_app_token_refresh_url
+    #
+    #   assert_response :success
+    # end
   end
 end

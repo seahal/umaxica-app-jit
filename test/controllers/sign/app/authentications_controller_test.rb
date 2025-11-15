@@ -6,8 +6,6 @@ class Sign::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
   #   assert_response :success
   #   assert_select "a[href=?]", new_sign_app_authentication_email_path(query)
   #   assert_select "a[href=?]", new_sign_app_authentication_telephone_path(query)
-  #   assert_select "a[href=?]", new_sign_app_authentication_passkey_path(query)
-  #   assert_select "a[href=?]", new_sign_app_authentication_recovery_path(query)
   #   assert_select "a[href=?]", new_sign_app_registration_path(query)
   # end
   #

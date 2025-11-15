@@ -6,6 +6,7 @@ module Top
       include Pundit::Authorization
       include ::RateLimit
       include ::DefaultUrlOptions
+      include ::QueryCanonicalizer
       include ::Top::Concerns::Regionalization
 
       allow_browser versions: :modern

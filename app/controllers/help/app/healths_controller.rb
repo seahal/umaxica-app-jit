@@ -4,7 +4,6 @@ module Help
   module App
     class HealthsController < ApplicationController
       include ::Health
-
       def show
         show_html
       end

@@ -16,6 +16,8 @@ Rails.application.routes.draw do
           resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
+          # for lx and tz settings.
+          resource :locale, only: [ :edit, :update ]
           # for dark/light mode
           resource :theme, only: [ :edit, :update ]
           # endpoint of reset preferences.
@@ -42,15 +44,16 @@ Rails.application.routes.draw do
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
           resource :theme, only: [ :edit, :update ]
+          # for lx and tz settings.
+          resource :locale, only: [ :edit, :update ]
           # endpoint of reset preferences.
           resource :reset, only: [ :edit, :destroy ]
         end
-        # # configurations
-        # resource :configuration, only: [ :show ]
-        # namespace :configuration do
-        #   # non-login user's email settings.
-        #   resources :emails, only: [ :edit, :update, :new, :create ]
-        # end
+        resource :configuration, only: [ :show ]
+        namespace :configuration do
+          # non-login user's email settings.
+          resources :emails, only: [ :edit, :update, :new, :create ]
+        end
       end
     end
 
@@ -72,6 +75,8 @@ Rails.application.routes.draw do
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
           resource :theme, only: [ :edit, :update ]
+          # for lx and tz settings.
+          resource :locale, only: [ :edit, :update ]
           # endpoint of reset preferences.
           resource :reset, only: [ :edit, :destroy ]
         end

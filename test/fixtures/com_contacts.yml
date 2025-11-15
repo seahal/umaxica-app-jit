@@ -3,8 +3,6 @@
 one:
   contact_category_title: CORPORATE_INQUIRY
   contact_status_title: NULL_COM_STATUS
-  com_contact_email: one
-  com_contact_telephone: one
   token: ''
   token_digest: null
   token_expires_at: null
@@ -16,8 +14,6 @@ one:
 two:
   contact_category_title: CORPORATE_PARTNERSHIP
   contact_status_title: NULL_COM_STATUS
-  com_contact_email: two
-  com_contact_telephone: two
   token: ''
   token_digest: null
   token_expires_at: null

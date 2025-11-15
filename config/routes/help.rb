@@ -12,8 +12,8 @@ Rails.application.routes.draw do
         # contact page
         resources :contacts, only: [ :new, :create ] do
           scope module: :contact do
-            resource :email, only: [ :edit, :update ]
-            resource :telephone, only: [ :edit, :update ]
+            resource :email, only: [ :new, :create ]
+            resource :telephone, only: [ :new, :create ]
           end
         end
       end
@@ -31,14 +31,13 @@ Rails.application.routes.draw do
         # contact page
         resources :contacts, only: [ :new, :create ] do
           scope module: :contact do
-            resource :email, only: [ :edit, :update ]
-            resource :telephone, only: [ :edit, :update ]
+            resource :email, only: [ :new, :create ]
+            resource :telephone, only: [ :new, :create ]
           end
         end
       end
     end
 
-    # For Staff's webpages api.jp.example.org
     constraints host: ENV["HELP_STAFF_URL"] do
       scope module: :org, as: :org do
         root to: "roots#index"
@@ -51,8 +50,8 @@ Rails.application.routes.draw do
         # contact page
         resources :contacts, only: [ :new, :create ] do
           scope module: :contact do
-            resource :email, only: [ :edit, :update ]
-            resource :telephone, only: [ :edit, :update ]
+            resource :email, only: [ :new, :create ]
+            resource :telephone, only: [ :new, :create ]
           end
         end
       end

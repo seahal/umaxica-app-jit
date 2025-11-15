@@ -1,23 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 none:
-  title: 'NULL_CONTACT_STATUS'
-  description: 'ROOT'
-
-corporate_root:
-  title: 'CORPORATE_SITE_STATUS'
+  title: 'NULL_ORG_STATUS'
   description: 'ROOT'
 
 organization_root:
   title: 'ORGANIZATION_SITE_STATUS'
   description: 'ROOT'
-
-corporate_security:
-  title: 'CORPORATE_SITE_SECURITY_ISSUE'
-  description: 'security issue'
-  parent_title: 'CORPORATE_SITE_STATUS'
-
-corporate_others:
-  title: 'CORPORATE_SITE_OTHERS'
-  description: 'others'
-  parent_title: 'CORPORATE_SITE_STATUS'

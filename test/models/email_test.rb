@@ -15,7 +15,7 @@ require "test_helper"
 
 
 class AccountTest < ActiveSupport::TestCase
-  [ StaffEmail, UserEmail ].each do |model|
+  [ StaffIdentityEmail, UserIdentityEmail ].each do |model|
     test "#{model} valid with address and confirm_policy" do
       record = model.new(address: "eg@example.com", confirm_policy: true)
 

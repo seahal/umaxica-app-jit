@@ -74,10 +74,10 @@ The SRS defines the business goals, functional expectations, and quality attribu
 - **FR-07**: Cookie consent toggles (`Preference::CookieController` using `Cookie` concern) must respect ePrivacy, storing permanent signed booleans for functional/performance/targeting cookies.
 
 ### 4.3 Identity, authentication, and account security (sign.*)
-- **FR-08**: Registration flows under `Sign::App::Registration` shall support email signup with Cloudflare Turnstile verification, HOTP issuance (ROTP), and `UserEmail` persistence using encrypted attributes.
+- **FR-08**: Registration flows under `Sign::App::Registration` shall support email signup with Cloudflare Turnstile verification, HOTP issuance (ROTP), and `UserIdentityEmail` persistence using encrypted attributes.
 - **FR-09**: Telephone registration controllers mirror email flow but dispatch OTP codes through `SmsService`, which must support AWS SNS, Infobip, and in-memory test providers selected via `Rails.application.config.sms_provider`.
 - **FR-10**: Authentication controllers (`Sign::App::Authentication::*`) must issue short-lived access tokens (JWT ES256) and encrypted refresh tokens using `Authn#log_in`. Logout must clear both cookies.
-- **FR-11**: Passkey management (`Sign::App::Setting::PasskeysController`) must expose `/setting/passkeys/challenge` and `/verify` endpoints compatible with WebAuthn spec and persist credentials in `UserPasskey`.
+- **FR-11**: Passkey management (`Sign::App::Setting::PasskeysController`) must expose `/setting/passkeys/challenge` and `/verify` endpoints compatible with WebAuthn spec and persist credentials in `UserPasskey`. Passkey-backed sessions always require an enrolled email or telephone identity (no passkey-only login) and may be used both for sign-in after that identity check and as an MFA factor.
 - **FR-12**: TOTP provisioning (`Sign::App::Setting::TotpsController`) must generate QR codes (`rqrcode`) with session-stored secrets, verify first token, and persist to `TimeBasedOneTimePassword` (encrypted key).
 - **FR-13**: OAuth integrations (Google/Apple) use OmniAuth and must be wired for CSRF-safe flows (move to GET in backlog but tracked here as compliance requirement).
 - **FR-14**: Withdrawal controllers must collect user intent and mark accounts for deletion once the `Authn` layer supports revocation.
@@ -147,7 +147,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 |----|-----------|
 | AC-01 | `GET https://www.umaxica.com/health` returns 200 HTML, `GET .../v1/health` returns JSON `{status:"OK"}` for each host namespace. |
 | AC-02 | Editing language/region/timezone/theme updates cookies and redirects back to the proper Top scope with query parameters preserved. |
-| AC-03 | Email registration flow issues an OTP via ActionMailer (or Kafka stub) only when Turnstile succeeds and saves `UserEmail` with encrypted address. |
+| AC-03 | Email registration flow issues an OTP via ActionMailer (or Kafka stub) only when Turnstile succeeds and saves `UserIdentityEmail` with encrypted address. |
 | AC-04 | Telephone registration rejects invalid E.164 numbers and uses the configured SMS provider. |
 | AC-05 | Passkey flow returns creation options, stores the challenge in session, and accepts subsequent verification payloads. |
 | AC-06 | Help contact form cannot submit without policy consent; valid submissions persist to `service_site_contacts` and emit a Mailer call. |

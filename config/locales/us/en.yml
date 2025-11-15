@@ -76,6 +76,17 @@ en:
               google: "Continue with Google"
               apple: "Continue with Apple"
             disclaimer: "We will never post or share anything without your permission."
+        oauth:
+          apple:
+            callback:
+              success: "Signed in with Apple successfully."
+            failure:
+              error: "Apple authentication failed"
+          google:
+            callback:
+              success: "Signed in with Google successfully."
+            failure:
+              error: "Google authentication failed"
         links:
           sign_in_html: "Already registered? %{link}"
           sign_in_text: "Sign in"
@@ -154,6 +165,9 @@ en:
             passkey: "Passkey"
             recovery: "Recovery code"
             registration: "Need an account?"
+        edit:
+          title: "Do you want to sign out?"
+          description: "End your current session and return to the sign-in page."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -353,6 +367,24 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+        locale:
+          edit:
+            title: "Locale Settings"
+            description: "Manage corporate language and timezone preferences for this browser."
+            language_section: "Language Settings"
+            language_label: "Language"
+            language_prompt: "Choose your language..."
+            language_options:
+              ja: "日本語"
+              en: "English"
+            timezone_section: "Timezone Settings"
+            timezone_label: "Timezone"
+            timezone_prompt: "Choose your timezone..."
+            timezone_options:
+              UTC: "Coordinated Universal Time (UTC)"
+              JST: "Japan Standard Time (JST)"
+            submit: "Update Settings"
+            cancel: "Cancel"
         theme:
           edit:
             title: "Choose Dark or Light Theme"
@@ -688,9 +720,22 @@ en:
               dark: "Ideal for night shifts or reducing eye strain."
               system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference cookies for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to Preferences"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference cookies for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to Preferences"
     org:
       preferences:
         title: "Preferences"
+        locale_settings: "Locale Settings"
         back_to_settings: "Back to Preferences"
         regions:
           title: "Region & Language Settings"
@@ -736,6 +781,12 @@ en:
               dark: "Favored for late-night monitoring without eye strain."
               system: "Keeps theme aligned with managed device policies."
             submit: "Save theme preference"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference cookies for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to Preferences"
     com:
       preferences:
         title: "Preferences"

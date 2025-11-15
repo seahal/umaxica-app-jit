@@ -14,7 +14,7 @@ class Sign::App::Registration::GooglesControllerTest < ActionDispatch::Integrati
     uri = URI.parse(response.redirect_url)
 
     assert_equal @host, uri.host
-    assert_equal "/auth/google_oauth2", uri.path
+    assert_equal "/google_oauth2", uri.path
   end
 
   test "new initiates OAuth flow" do

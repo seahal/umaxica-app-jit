@@ -7,23 +7,21 @@ class ComContactTopicTest < ActiveSupport::TestCase
   end
 
   def build_contact
-    email = ComContactEmail.create!(
-      id: SecureRandom.uuid,
+    contact = ComContact.new(confirm_policy: "1")
+    contact.save!
+
+    ComContactEmail.create!(
+      com_contact: contact,
       email_address: "test@example.com",
       expires_at: 1.day.from_now
     )
-    telephone = ComContactTelephone.create!(
-      id: SecureRandom.uuid,
+
+    ComContactTelephone.create!(
+      com_contact: contact,
       telephone_number: "+1234567890",
       expires_at: 1.day.from_now
     )
 
-    contact = ComContact.new(
-      com_contact_email: email,
-      com_contact_telephone: telephone,
-      confirm_policy: "1"
-    )
-    contact.save!
     contact
   end
 

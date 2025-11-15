@@ -97,7 +97,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     assert_predicate telephone, :valid?
   end
 
-  test "should use UUID as primary key" do
+  test "should use Nanoid as primary key" do
     contact = com_contacts(:one)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
@@ -106,7 +106,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     )
 
     assert_kind_of String, telephone.id
-    assert_equal 36, telephone.id.length
+    assert_equal 21, telephone.id.length
   end
 
   # rubocop:disable Minitest/MultipleAssertions

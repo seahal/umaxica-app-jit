@@ -3,12 +3,12 @@
 none:
   title: 'NULL_APP_CATEGORY'
   description: 'ROOT'
-one:
-  title: 'SERVICE_INQUIRY'
-  description: 'Service inquiry category'
-two:
-  title: 'SERVICE_SUPPORT'
-  description: 'Service support category'
-three:
-  title: 'SERVICE_FEEDBACK'
-  description: 'Service feedback category'
+application_inquiry:
+  title: 'APPLICATION_INQUIRY'
+  description: 'Application inquiry category'
+application_support:
+  title: 'APPLICATION_SUPPORT'
+  description: 'Application support category'
+application_feedback:
+  title: 'APPLICATION_FEEDBACK'
+  description: 'Application feedback category'

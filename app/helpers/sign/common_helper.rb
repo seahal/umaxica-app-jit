@@ -12,6 +12,7 @@ module Sign::CommonHelper
     time.in_time_zone(zone)
   end
 
+  # TODO: delete this method.
   def get_title(title = "")
     brand_name = (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
     return brand_name if title.blank?

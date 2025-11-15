@@ -3,12 +3,12 @@
 none:
   title: 'NULL_ORG_CATEGORY'
   description: 'ROOT'
-one:
-  title: 'STAFF_INQUIRY'
-  description: 'Staff inquiry category'
-two:
-  title: 'STAFF_SUPPORT'
-  description: 'Staff support category'
-three:
-  title: 'STAFF_FEEDBACK'
-  description: 'Staff feedback category'
+organization_inquiry:
+  title: 'ORGANIZATION_INQUIRY'
+  description: 'Organization inquiry category'
+organization_partnership:
+  title: 'ORGANIZATION_PARTNERSHIP'
+  description: 'Organization partnership category'
+organization_feedback:
+  title: 'ORGANIZATION_FEEDBACK'
+  description: 'Organization feedback category'

@@ -899,9 +899,16 @@ ja:
               dark: 夜間の業務や長時間の操作で目の負担を軽減します。
               system: OSのテーマ変更に合わせて自動で切り替わります。
             submit: テーマ設定を保存
+        resets:
+          title: 設定のリセット
+          description: このブラウザに保存された設定データを削除します。
+          button: 設定をリセットする
+          confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
+          back: 設定一覧に戻る
     org:
       preferences:
         title: 設定
+        locale_settings: ロケール設定
         back_to_settings: 設定一覧に戻る
         regions:
           title: 地域・言語の設定
@@ -947,6 +954,12 @@ ja:
               dark: 夜間対応や照度の低い環境での常時監視に適しています。
               system: 管理端末のテーマ変更に合わせて自動で切り替わります。
             submit: テーマ設定を保存
+        resets:
+          title: 設定のリセット
+          description: このブラウザに保存された設定データを削除します。
+          button: 設定をリセットする
+          confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
+          back: 設定一覧に戻る
     com:
       preferences:
         title: 設定
@@ -999,6 +1012,24 @@ ja:
             accept_functional_cookies: 機能性クッキーを許可
             accept_performance_cookies: パフォーマンスクッキーを許可
             accept_targeting_cookies: ターゲティングクッキーを許可
+        locale:
+          edit:
+            title: ロケール設定
+            description: 言語とタイムゾーンの設定を管理します
+            language_section: 言語設定
+            language_label: 言語
+            language_prompt: 言語を選択してください…
+            language_options:
+              ja: 日本語
+              en: English
+            timezone_section: タイムゾーン設定
+            timezone_label: タイムゾーン
+            timezone_prompt: タイムゾーンを選択してください…
+            timezone_options:
+              UTC: 協定世界時 (UTC)
+              JST: 日本標準時 (JST)
+            submit: 設定を更新
+            cancel: キャンセル
         theme:
           edit:
             title: テーマ設定（ライト／ダークの切り替え）
@@ -1013,6 +1044,12 @@ ja:
               dark: 夜間オペレーションや長時間監視で目の疲れを抑えます。
               system: 管理端末のテーマ変更に合わせて自動で切り替わります。
             submit: テーマ設定を保存
+        resets:
+          title: 設定のリセット
+          description: このブラウザに保存された設定データを削除します。
+          button: 設定をリセットする
+          confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
+          back: 設定一覧に戻る
   support:
     array:
       last_word_connector: 、

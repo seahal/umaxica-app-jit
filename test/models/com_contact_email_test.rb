@@ -118,7 +118,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     )
 
     assert_kind_of String, email.id
-    assert_equal 36, email.id.length
+    assert_equal 21, email.id.length
   end
 
   # rubocop:disable Minitest/MultipleAssertions

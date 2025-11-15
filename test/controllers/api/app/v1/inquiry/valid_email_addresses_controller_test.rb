@@ -6,14 +6,16 @@ class Api::App::V1::Inquiry::ValidEmailAddressControllerTest < ActionDispatch::I
 
     assert_equal "application/json", @response.media_type
     assert JSON.parse(@response.body)["valid"]
-    assert_response :success
+    assert_response :ok
   end
 
-  test "should get show invalid email address" do
+  test "should get show " do
     get api_app_v1_inquiry_valid_email_address_url Base64.urlsafe_encode64("a")
 
-    assert_not JSON.parse(@response.body)["valid"]
-    assert_response :success
+    body = JSON.parse(@response.body)
+
+    assert_kind_of Array, body["errors"], "Errors should be an array"
+    assert_response :unprocessable_entity
   end
 
   test "should not get invalid data" do

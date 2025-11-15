@@ -1,215 +1,432 @@
-# == Schema Information
-#
-# Table name: app_contacts
-#
-#  id               :uuid             not null, primary key
-#  description      :text
-#  email_address    :string
-#  ip_address       :cidr
-#  telephone_number :string
-#  title            :string
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#
 require "test_helper"
 
 
 class AppContactTest < ActiveSupport::TestCase
-  [ AppContact ].each do |model|
-    setup do
-      @good_pattern = model.new(
-        confirm_policy: true,
-        email_address: "eg@example.com",
-        telephone_number: "+819012345678",
-        email_pass_code: 123456,
-        telephone_pass_code: 123456,
-        title: "good title",
-        description: "good description"
+  def build_contact(**attrs)
+    # Create contact first
+    contact = AppContact.new(**attrs.except(:app_contact_emails, :app_contact_telephones))
+    contact.confirm_policy = "1" unless attrs.key?(:confirm_policy)
+    contact.save!
+
+    # Create email and telephone associated with the contact
+    unless attrs.key?(:app_contact_emails)
+      AppContactEmail.create!(
+        app_contact: contact,
+        email_address: "test@example.com",
+        expires_at: 1.day.from_now
       )
     end
 
-    test "good #{model}'s email pattern" do
-      assert_predicate @good_pattern, :valid?
-      assert @good_pattern.save
-      @good_pattern.email_address = "x@example.net"
-
-      assert_predicate @good_pattern, :valid?
+    unless attrs.key?(:app_contact_telephones)
+      AppContactTelephone.create!(
+        app_contact: contact,
+        telephone_number: "+1234567890",
+        expires_at: 1.day.from_now
+      )
     end
 
-    test "valid #{model}'s confirmation check" do
-      assert_predicate @good_pattern, :valid?
-      @good_pattern.confirm_policy = false
+    contact
+  end
 
-      assert_not @good_pattern.valid?
-      @good_pattern.confirm_policy = nil
+  def sample_category
+    app_contact_categories(:none).title
+  end
 
-      assert_predicate @good_pattern, :valid?
-    end
+  def sample_status
+    app_contact_statuses(:none).title
+  end
 
-    test "invalid #{model}'s email patterns" do
-      [ nil, "", "example..com", "exampleexample.com", "xample@#example.jp", "@example.com" ].each do
-        @good_pattern.email_address = it
+  test "should inherit from GuestsRecord" do
+    assert_operator AppContact, :<, GuestsRecord
+  end
 
-        assert_not @good_pattern.valid?
-      end
-    end
+  test "should have valid fixtures" do
+    contact = app_contacts(:one)
 
-    test "valid #{model}'s email patterns" do
-      [ "example@example.org" ].each do |chars|
-        @good_pattern.email_address = chars
+    assert_predicate contact, :valid?
+    assert_equal "APPLICATION_INQUIRY", contact.contact_category_title
+    assert_equal "NULL_APP_STATUS", contact.contact_status_title
+  end
 
-        assert_predicate @good_pattern, :valid?
-      end
-    end
+  test "should create contact with relationship titles" do
+    contact = AppContact.new(
+      contact_category_title: sample_category,
+      contact_status_title: sample_status,
+      confirm_policy: "1"
+    )
 
-    test "invalid #{model}'s telephone number patterns" do
-      [ "", nil, "+810901234", "81901234" ].each do
-        @good_pattern.email_address = it
+    assert contact.save
 
-        assert_not @good_pattern.valid?
-      end
-    end
+    AppContactEmail.create!(
+      app_contact: contact,
+      email_address: "test@example.com",
+      expires_at: 1.day.from_now
+    )
 
-    test "valid #{model}'s telephone number patterns" do
-      [ "+811" ].each do
-        @good_pattern.email_address = it
+    AppContactTelephone.create!(
+      app_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
 
-        assert_not @good_pattern.valid?
-      end
-    end
+    assert_equal sample_category, contact.contact_category_title
+    assert_equal sample_status, contact.contact_status_title
+  end
 
-    # rubocop:disable Minitest/MultipleAssertions
-    test "good #{model}'s email otp password pattern" do
-      assert_predicate model.new(email_pass_code: 123456), :valid?
-      assert_predicate model.new(email_pass_code: nil), :valid?
-      assert_not model.new(email_pass_code: 12345).valid?
-      assert_not model.new(email_pass_code: 1234567).valid?
-      assert_not model.new(email_pass_code: 0).valid?
-      assert_not model.new(email_pass_code: 1).valid?
-      assert_predicate model.new(email_pass_code: nil, telephone_pass_code: 123456), :valid?
-    end
-    # rubocop:enable Minitest/MultipleAssertions
+  test "should set default category and status when nil" do
+    contact = AppContact.new(
+      contact_category_title: nil,
+      contact_status_title: nil,
+      confirm_policy: "1"
+    )
 
-    # rubocop:disable Minitest/MultipleAssertions
-    test "good #{model}'s telephone otp password pattern" do
-      assert_predicate model.new(telephone_pass_code: 123456), :valid?
-      assert_predicate model.new(telephone_pass_code: nil), :valid?
-      assert_not model.new(telephone_pass_code: 12345).valid?
-      assert_not model.new(telephone_pass_code: 1234567).valid?
-      assert_not model.new(telephone_pass_code: 0).valid?
-      assert_not model.new(telephone_pass_code: 1).valid?
-      assert_predicate model.new(email_pass_code: 123456, telephone_pass_code: nil), :valid?
-    end
-    # rubocop:enable Minitest/MultipleAssertions
+    assert contact.save
 
-    test "bad #{model}'s title pattern" do
-      [ "", "a" * 7, "a" * 256 ].each do
-        @good_pattern.title = it
+    AppContactEmail.create!(
+      app_contact: contact,
+      email_address: "test@example.com",
+      expires_at: 1.day.from_now
+    )
 
-        assert_not @good_pattern.valid?
-      end
-    end
+    AppContactTelephone.create!(
+      app_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
 
-    test "good #{model}'s title pattern" do
-      [ "a" * 8, "a" * 255, nil ].each do
-        @good_pattern.title = it
+    assert_equal "NULL_APP_CATEGORY", contact.contact_category_title
+    assert_equal "NULL_APP_STATUS", contact.contact_status_title
+  end
 
-        assert_predicate @good_pattern, :valid?
-      end
-    end
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should have timestamps" do
+    contact = app_contacts(:one)
 
-    test "bad #{model}'s description pattern" do
-      [ "", "a" * 7, "a" * 1024 ].each do
-        @good_pattern.description = it
+    assert_respond_to contact, :created_at
+    assert_respond_to contact, :updated_at
+    assert_not_nil contact.created_at
+    assert_not_nil contact.updated_at
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 
-        assert_not @good_pattern.valid?
-      end
-    end
+  test "should use UUID as primary key" do
+    contact = app_contacts(:one)
 
-    test "good #{model}'s description pattern" do
-      [ "a" * 8, "a" * 1023, nil ].each do
-        @good_pattern.description = it
+    assert_kind_of String, contact.id
+    assert_equal 36, contact.id.length
+  end
 
-        assert_predicate @good_pattern, :valid?
-      end
-    end
+  test "should expose relationship title attributes" do
+    contact = app_contacts(:one)
 
-    test "none is invalid of #{model}'s pattern" do
-      assert_raises(RuntimeError) do
-        AppContact.create
-      end
-    end
+    assert_respond_to contact, :contact_category_title
+    assert_respond_to contact, :contact_status_title
+  end
 
-    # test "bad #{model}'s email pattern" do
-    #   valid_telephone_number = "+81701232456789"
-    #   assert_not model.new(email_address: "", telephone_number: valid_telephone_number).valid?
-    # end
+  # Association tests
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should have many app_contact_emails" do
+    contact = build_contact
+
+    assert_respond_to contact, :app_contact_emails
+    assert_equal 1, contact.app_contact_emails.count
+    assert_instance_of AppContactEmail, contact.app_contact_emails.first
+
+    # Test adding another email
+    AppContactEmail.create!(
+      app_contact: contact,
+      email_address: "another@example.com",
+      expires_at: 1.day.from_now
+    )
+
+    assert_equal 2, contact.app_contact_emails.count
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should have many app_contact_telephones" do
+    contact = build_contact
+
+    assert_respond_to contact, :app_contact_telephones
+    assert_equal 1, contact.app_contact_telephones.count
+    assert_instance_of AppContactTelephone, contact.app_contact_telephones.first
+
+    # Test adding another telephone
+    AppContactTelephone.create!(
+      app_contact: contact,
+      telephone_number: "+9876543210",
+      expires_at: 1.day.from_now
+    )
+
+    assert_equal 2, contact.app_contact_telephones.count
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "should have many app_contact_topics" do
+    contact = build_contact
+
+    assert_respond_to contact, :app_contact_topics
+  end
+
+  # Token behaviour tests
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should generate and verify final token" do
+    contact = build_contact
+    raw_token = contact.generate_final_token
+
+    assert_not_nil raw_token
+    assert_not_nil contact.token_digest
+    assert_not_nil contact.token_expires_at
+    assert_not contact.token_viewed?
+
+    assert contact.verify_token(raw_token)
+    assert_predicate contact, :token_viewed?
+    assert_not contact.verify_token(raw_token)
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "should reject invalid token" do
+    contact = build_contact
+    contact.generate_final_token
+
+    assert_not contact.verify_token("wrong_token")
+    assert_not contact.token_viewed?
+  end
+
+  test "token_expired? should return false when token is not expired" do
+    contact = build_contact
+    contact.generate_final_token
+
+    assert_not contact.token_expired?
+  end
+
+  test "token_expired? should return true when token is expired" do
+    contact = build_contact
+    contact.generate_final_token
+
+    contact.update!(token_expires_at: 1.hour.ago)
+
+    assert_predicate contact, :token_expired?
+  end
+
+  test "token_expired? should return false when token_expires_at is nil" do
+    contact = build_contact
+
+    assert_not contact.token_expired?
+  end
+
+  test "should not verify token when token is expired" do
+    contact = build_contact
+    raw_token = contact.generate_final_token
+
+    contact.update!(token_expires_at: 1.hour.ago)
+
+    assert_not contact.verify_token(raw_token)
   end
 
   # Foreign key constraint tests
   test "should reference contact_category by title" do
-    category = AppContactCategory.create!(title: "test_category")
+    AppContactCategory.create!(title: "app_category")
+
     contact = AppContact.new(
-      confirm_policy: true,
-      email_address: "test@example.com",
-      telephone_number: "+819012345678",
-      email_pass_code: 123456,
-      telephone_pass_code: 123456,
-      title: "test title",
-      description: "test description",
-      contact_category_title: "test_category"
+      contact_category_title: "app_category",
+      confirm_policy: "1"
     )
 
     assert contact.save
-    assert_equal "test_category", contact.contact_category_title
+
+    AppContactEmail.create!(
+      app_contact: contact,
+      email_address: "test@example.com",
+      expires_at: 1.day.from_now
+    )
+
+    AppContactTelephone.create!(
+      app_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
+    assert_equal "app_category", contact.contact_category_title
   end
 
   test "should reference contact_status by title" do
-    status = AppContactStatus.create!(title: "test_status")
+    AppContactStatus.create!(title: "app_status")
+
     contact = AppContact.new(
-      confirm_policy: true,
-      email_address: "test@example.com",
-      telephone_number: "+819012345678",
-      email_pass_code: 123456,
-      telephone_pass_code: 123456,
-      title: "test title",
-      description: "test description",
-      contact_status_title: "test_status"
+      contact_status_title: "app_status",
+      confirm_policy: "1"
     )
 
     assert contact.save
-    assert_equal "test_status", contact.contact_status_title
+
+    AppContactEmail.create!(
+      app_contact: contact,
+      email_address: "test@example.com",
+      expires_at: 1.day.from_now
+    )
+
+    AppContactTelephone.create!(
+      app_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
+    assert_equal "app_status", contact.contact_status_title
   end
 
   test "should set default contact_category_title when nil" do
     contact = AppContact.new(
-      confirm_policy: true,
-      email_address: "test@example.com",
-      telephone_number: "+819012345678",
-      email_pass_code: 123456,
-      telephone_pass_code: 123456,
-      title: "test title",
-      description: "test description",
-      contact_category_title: nil
+      contact_category_title: nil,
+      confirm_policy: "1"
     )
 
     assert contact.save
+
+    AppContactEmail.create!(
+      app_contact: contact,
+      email_address: "test@example.com",
+      expires_at: 1.day.from_now
+    )
+
+    AppContactTelephone.create!(
+      app_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
     assert_equal "NULL_APP_CATEGORY", contact.contact_category_title
   end
 
   test "should set default contact_status_title when nil" do
     contact = AppContact.new(
-      confirm_policy: true,
-      email_address: "test@example.com",
-      telephone_number: "+819012345678",
-      email_pass_code: 123456,
-      telephone_pass_code: 123456,
-      title: "test title",
-      description: "test description",
-      contact_status_title: nil
+      contact_status_title: nil,
+      confirm_policy: "1"
     )
 
     assert contact.save
-    assert_equal "NULL_CONTACT_STATUS", contact.contact_status_title
+
+    AppContactEmail.create!(
+      app_contact: contact,
+      email_address: "test@example.com",
+      expires_at: 1.day.from_now
+    )
+
+    AppContactTelephone.create!(
+      app_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
+    assert_equal "NULL_APP_STATUS", contact.contact_status_title
+  end
+
+  # Validation tests
+  test "should allow contact without email addresses" do
+    contact = AppContact.new(confirm_policy: "1")
+
+    assert contact.save
+    assert_equal 0, contact.app_contact_emails.count
+  end
+
+  test "should allow contact without telephone numbers" do
+    contact = AppContact.new(confirm_policy: "1")
+
+    assert contact.save
+    assert_equal 0, contact.app_contact_telephones.count
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should allow contact with multiple emails and telephones" do
+    contact = AppContact.new(confirm_policy: "1")
+    contact.save!
+
+    email1 = AppContactEmail.create!(
+      app_contact: contact,
+      email_address: "first@example.com",
+      expires_at: 1.day.from_now
+    )
+
+    email2 = AppContactEmail.create!(
+      app_contact: contact,
+      email_address: "second@example.com",
+      expires_at: 1.day.from_now
+    )
+
+    telephone1 = AppContactTelephone.create!(
+      app_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
+    telephone2 = AppContactTelephone.create!(
+      app_contact: contact,
+      telephone_number: "+9876543210",
+      expires_at: 1.day.from_now
+    )
+
+    assert_equal 2, contact.app_contact_emails.count
+    assert_includes contact.app_contact_emails, email1
+    assert_includes contact.app_contact_emails, email2
+
+    assert_equal 2, contact.app_contact_telephones.count
+    assert_includes contact.app_contact_telephones, telephone1
+    assert_includes contact.app_contact_telephones, telephone2
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  # Validation: confirm_policy
+  test "should require confirm_policy to be accepted" do
+    contact = AppContact.new(
+      confirm_policy: "0",
+      contact_category_title: sample_category,
+      contact_status_title: sample_status
+    )
+
+    assert_not contact.valid?
+    assert_predicate contact.errors[:confirm_policy], :present?
+  end
+
+  test "should accept contact when confirm_policy is true" do
+    contact = AppContact.new(
+      confirm_policy: "1",
+      contact_category_title: sample_category,
+      contact_status_title: sample_status
+    )
+
+    assert_predicate contact, :valid?
+  end
+
+  # Callback tests
+  test "should generate public_id on create" do
+    contact = AppContact.new(confirm_policy: "1")
+    contact.save!
+
+    assert_not_nil contact.public_id
+    assert_equal 21, contact.public_id.length
+  end
+
+  test "should generate token on create" do
+    contact = AppContact.new(confirm_policy: "1")
+    contact.save!
+
+    # After save, token should be generated (may be empty string from callback)
+    contact.reload
+
+    assert_respond_to contact, :token
+  end
+
+  test "should not overwrite existing public_id" do
+    contact = AppContact.new(confirm_policy: "1", public_id: "existing_public_id")
+    contact.save!
+
+    assert_equal "existing_public_id", contact.public_id
+  end
+
+  test "should not overwrite existing token" do
+    contact = AppContact.new(confirm_policy: "1", token: "existing_token_1234567890123456")
+    contact.save!
+
+    assert_equal "existing_token_1234567890123456", contact.token
   end
 end

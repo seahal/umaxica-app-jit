@@ -2,10 +2,12 @@
 
 require "test_helper"
 
-class Sign::App::Setting::GooglesControllerTest < ActionDispatch::IntegrationTest
-  test "should get index" do
-    get sign_app_setting_google_url
+module Sign::App::Setting
+  class GooglesControllerTest < ActionDispatch::IntegrationTest
+    test "should get show" do
+      get sign_app_setting_google_url
 
-    assert_response :success
+      assert_response :success
+    end
   end
 end

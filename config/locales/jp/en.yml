@@ -8,6 +8,12 @@ en:
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
+  controller:
+    help:
+      com:
+        contacts:
+          create:
+            success: "Your inquiry has been received. Please check your email address."
   sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"
@@ -141,6 +147,12 @@ en:
               dark: "Ideal for night shifts or reducing eye strain."
               system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference cookies for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to Preferences"
     org:
       authentication:
         new:
@@ -353,6 +365,24 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+        locale:
+          edit:
+            title: "Locale Settings"
+            description: "Manage corporate language and timezone preferences for this browser."
+            language_section: "Language Settings"
+            language_label: "Language"
+            language_prompt: "Choose your language..."
+            language_options:
+              ja: "日本語"
+              en: "English"
+            timezone_section: "Timezone Settings"
+            timezone_label: "Timezone"
+            timezone_prompt: "Choose your timezone..."
+            timezone_options:
+              UTC: "Coordinated Universal Time (UTC)"
+              JST: "Japan Standard Time (JST)"
+            submit: "Update Settings"
+            cancel: "Cancel"
         theme:
           edit:
             title: "Choose Dark or Light Theme"
@@ -655,6 +685,7 @@ en:
         cookie_settings: "Cookie Settings"
         region_settings: "Region & Language Settings"
         theme_settings: "Theme Settings"
+        locale_settings: "set locale"
         themes:
           updated: "Theme updated to %{theme}"
           invalid: "Invalid theme selected"
@@ -692,6 +723,24 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+        locale:
+          edit:
+            title: "Locale Settings"
+            description: "Manage your language and timezone preferences"
+            language_section: "Language Settings"
+            language_label: "Language"
+            language_prompt: "Choose your language..."
+            language_options:
+              ja: "日本語"
+              en: "English"
+            timezone_section: "Timezone Settings"
+            timezone_label: "Timezone"
+            timezone_prompt: "Choose your timezone..."
+            timezone_options:
+              UTC: "Coordinated Universal Time (UTC)"
+              JST: "Japan Standard Time (JST)"
+            submit: "Update Settings"
+            cancel: "Cancel"
         theme:
           edit:
             title: "Choose Dark or Light Theme"
@@ -709,6 +758,7 @@ en:
     org:
       preferences:
         title: "Preferences"
+        locale_settings: "Locale Settings"
         themes:
           updated: "Admin theme updated to %{theme}"
           invalid: "Invalid admin theme selected"
@@ -749,10 +799,28 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+        locale:
+          edit:
+            title: "Locale Settings"
+            description: "Manage your language and timezone preferences"
+            language_section: "Language Settings"
+            language_label: "Language"
+            language_prompt: "Choose your language..."
+            language_options:
+              ja: "日本語"
+              en: "English"
+            timezone_section: "Timezone Settings"
+            timezone_label: "Timezone"
+            timezone_prompt: "Choose your timezone..."
+            timezone_options:
+              UTC: "Coordinated Universal Time (UTC)"
+              JST: "Japan Standard Time (JST)"
+            submit: "Update Settings"
+            cancel: "Cancel"
         theme:
           edit:
             title: "Choose Dark or Light Theme"
-            description: "Configure the default theme for your organization’s operators."
+            description: "Configure the default theme for your organization's operators."
             legend: "Select a theme"
             options:
               light: "Light — optimized for bright operations centers"
@@ -763,6 +831,12 @@ en:
               dark: "Helps reduce eye strain during overnight shifts."
               system: "Automatically aligns with centrally managed device preferences."
             submit: "Save theme preference"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference cookies for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to Preferences"
     com:
       preferences:
         title: "Preferences"
@@ -819,3 +893,22 @@ en:
               dark: "Ideal for night shifts or reducing eye strain."
               system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference cookies for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to Preferences"
+  controller:
+    sign:
+      app:
+        setting:
+          show:
+            page_title: "Settings"
+          index:
+            totp: "TOTP"
+            passkey: "Passkey"
+            secret: "Recovery Code"
+        registration:
+          email: "registration with email address???"
+          telephone: "registration with telephone."

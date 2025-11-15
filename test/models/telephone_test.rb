@@ -14,7 +14,7 @@ require "test_helper"
 
 class TelephoneTest < ActiveSupport::TestCase
   test "includes confirm attribute accessors" do
-    telephone = StaffTelephone.new
+    telephone = StaffIdentityTelephone.new
 
     telephone.confirm_policy = true
     telephone.confirm_using_mfa = false
@@ -30,7 +30,7 @@ class TelephoneTest < ActiveSupport::TestCase
 
   # rubocop:disable Minitest/MultipleAssertions
   test "confirm_policy acceptance skipped when number missing but pass_code present" do
-    validator = StaffTelephone.validators_on(:confirm_policy).find do |v|
+    validator = StaffIdentityTelephone.validators_on(:confirm_policy).find do |v|
       v.is_a?(ActiveModel::Validations::AcceptanceValidator)
     end
 
@@ -40,8 +40,8 @@ class TelephoneTest < ActiveSupport::TestCase
 
     assert_respond_to condition, :call
 
-    skip_validation = StaffTelephone.new(number: nil, pass_code: "654321")
-    require_validation = StaffTelephone.new(number: "user@example.com", pass_code: nil)
+    skip_validation = StaffIdentityTelephone.new(number: nil, pass_code: "654321")
+    require_validation = StaffIdentityTelephone.new(number: "user@example.com", pass_code: nil)
 
     assert condition.call(skip_validation)
     assert_not condition.call(require_validation)
@@ -50,7 +50,7 @@ class TelephoneTest < ActiveSupport::TestCase
 
   # rubocop:disable Minitest/MultipleAssertions
   test "pass_code validation skipped when pass_code missing but number present" do
-    validator = StaffTelephone.validators_on(:pass_code).find do |v|
+    validator = StaffIdentityTelephone.validators_on(:pass_code).find do |v|
       v.is_a?(ActiveModel::Validations::PresenceValidator)
     end
 
@@ -60,8 +60,8 @@ class TelephoneTest < ActiveSupport::TestCase
 
     assert_respond_to condition, :call
 
-    skip_validation = StaffTelephone.new(number: "user@example.com", pass_code: nil)
-    require_validation = StaffTelephone.new(number: nil, pass_code: "123456")
+    skip_validation = StaffIdentityTelephone.new(number: "user@example.com", pass_code: nil)
+    require_validation = StaffIdentityTelephone.new(number: nil, pass_code: "123456")
 
     assert condition.call(skip_validation)
     assert_not condition.call(require_validation)

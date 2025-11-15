@@ -3,21 +3,21 @@
 raise '[SAFEGUARD] db:seed only use for dev env.' unless Rails.env.development?
 
 #
-# StaffEmailStaff.find_or_create_by(
+# StaffIdentityEmailStaff.find_or_create_by(
 #   staff: Staff.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c47'),
-#   email: StaffEmail.find_or_create_by(address: 'first.staff@example.com'))
+#   email: StaffIdentityEmail.find_or_create_by(address: 'first.staff@example.com'))
 
-# UserEmailUser.find_or_create_by(
+# UserIdentityEmailUser.find_or_create_by(
 #   user: User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38'),
-#   email: UserEmail.find_or_create_by(address: 'first.user@example.com')
+#   email: UserIdentityEmail.find_or_create_by(address: 'first.user@example.com')
 # )
 
 # CREATE IDENTIFIER REGION CODES
 # RegionCode.create_or_find_by(id: 392)
 
 # CREATE TERM
-Document.find_or_create_by(id: '01000', parent_id: nil, prev_id: nil, succ_id: nil, title: 'TERM', description: '')
-Document.find_or_create_by(id: '01001', parent_id: nil, prev_id: nil, succ_id: nil, title: 'PRIVACY', description: '')
+# ComDocument.find_or_create_by(id: '01000', parent_id: nil, prev_id: nil, succ_id: nil, title: 'TERM', description: '')
+# ComDocument.find_or_create_by(id: '01001', parent_id: nil, prev_id: nil, succ_id: nil, title: 'PRIVACY', description: '')
 
 # USER
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38')
@@ -29,6 +29,8 @@ ComContactCategory.create_or_find_by!(title: 'SECURITY_ISSUE', description: 'roo
 ComContactCategory.create_or_find_by!(title: 'OTHERS', description: 'root of corporate site status inquiries', parent_title: 'NULL')
 AppContactCategory.create_or_find_by!(title: 'NULL', description: 'NULL')
 AppContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
+AppContactCategory.create_or_find_by!(title: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
+OrgContactCategory.create_or_find_by!(title: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
 OrgContactCategory.create_or_find_by!(title: 'NULL_ORG_CATEGORY', description: 'NULL')
 OrgContactCategory.create_or_find_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
 AppContactCategory.create_or_find_by!(title: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')

@@ -14,7 +14,7 @@ module Sign
             expires: 10.minutes.from_now
           }
 
-          @user_email = UserEmail.new
+          @user_email = UserIdentityEmail.new
         end
 
         def create

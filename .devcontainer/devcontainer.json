@@ -112,7 +112,8 @@
 		"QT_QPA_PLATFORM": "wayland",
 		"GDK_BACKEND": "wayland"
 	},
-	"postCreateCommand": "bun install && bundle install && bin/rails db:create",
+	"postCreateCommand": "bun install && bundle install && .devcontainer/setup-db.sh",
+	"postStartCommand": ".devcontainer/setup-db.sh",
 	"updateContentCommand": "",
 	"updateRemoteUserUID": false,
 	"features": {
@@ -122,7 +123,8 @@
 		"ghcr.io/devcontainers/features/aws-cli:1": {}
 	},
 	"mounts": [
-		"source=${localEnv:CLAUDE_CONFIG_DIR},target=/home/jit/.claude,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.codex,target=/home/jit/.codex,type=bind,consistency=cached",
 		"source=${localEnv:HOME}/.config/gh,target=/home/jit/.config/gh,type=bind,consistency=cached",
 		"source=${localEnv:HOME}/.config/git,target=/home/jit/.config/git,type=bind,consistency=cached",
 		"source=${localEnv:HOME}/.gitconfig,target=/home/jit/.gitconfig,type=bind,consistency=cached",

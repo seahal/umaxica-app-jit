@@ -1,0 +1,2 @@
+class StaffService
+end

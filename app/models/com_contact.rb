@@ -1,8 +1,7 @@
 class ComContact < GuestsRecord
   # Associations
-
-  belongs_to :com_contact_email
-  belongs_to :com_contact_telephone
+  has_many :com_contact_emails, dependent: :destroy
+  has_many :com_contact_telephones, dependent: :destroy
   belongs_to :com_contact_category,
              class_name: "ComContactCategory",
              foreign_key: :contact_category_title,
@@ -19,12 +18,33 @@ class ComContact < GuestsRecord
 
   attr_accessor :confirm_policy
 
-  # Callbacks
   after_initialize :set_default_category_and_status, if: :new_record?
+  # Callbacks
+  before_create :generate_public_id
+  before_create :generate_token
 
   # Validations
   validates :confirm_policy, acceptance: true
   validates :contact_category_title, presence: true
+
+  # State transition helpers
+
+  # State check methods
+  def email_pending?
+    contact_status_title == "SET_UP" || contact_status_title == "NULL_COM_STATUS"
+  end
+
+  def email_verified?
+    contact_status_title == "CHECKED_EMAIL_ADDRESS"
+  end
+
+  def phone_verified?
+    contact_status_title == "CHECKED_TELEPHONE_NUMBER"
+  end
+
+  def completed?
+    contact_status_title == "COMPLETED_CONTACT_ACTION"
+  end
 
   # State transition helpers
   def can_verify_email?
@@ -41,17 +61,17 @@ class ComContact < GuestsRecord
 
   def verify_email!
     return false unless can_verify_email?
-    update!(status: :email_verified)
+    update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
     return false unless can_verify_phone?
-    update!(status: :phone_verified)
+    update!(contact_status_title: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
     return false unless can_complete?
-    update!(status: :completed)
+    update!(contact_status_title: "COMPLETED_CONTACT_ACTION")
   end
 
   # Token management
@@ -82,6 +102,14 @@ class ComContact < GuestsRecord
   end
 
   private
+
+  def generate_public_id
+    self.public_id ||= Nanoid.generate(size: 21)
+  end
+
+  def generate_token
+    self.token ||= SecureRandom.alphanumeric(32)
+  end
 
   def set_default_category_and_status
     self.contact_category_title ||= "NULL_COM_CATEGORY"

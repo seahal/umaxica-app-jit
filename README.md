@@ -69,26 +69,27 @@
 ## Environments & Endpoints
   - Corporate site:
     - `www.umaxica.app`
-    - `api.[jp|us].umaxica.com`
-    - `news.[jp|us].umaxica.com`
-    - `docs.[jp|us].umaxica.com`
-    - `news.[jp|us].umaxica.com`
+    - `[jp|us].api.umaxica.com`
+    - `[jp|us].news.umaxica.com`
+    - `[jp|us].docs.umaxica.com`
+    - `[jp|us].news.umaxica.com`
   - Service endpoints:
     - `www.umaxica.app`
     - `sign.umaxica.app`
-    - `api.[jp|us].umaxica.app`
-    - `docs.[jp|us].umaxica.app`
-    - `help.[jp|us].umaxica.app`
-    - `news.[jp|us].umaxica.app`
+    - `[jp|us].api.umaxica.app`
+    - `[jp|us].docs.umaxica.app`
+    - `[jp|us].help.umaxica.app`
+    - `[jp|us].news.umaxica.app`
   - Staff site:
     - `www.umaxica.org`
     - `sign.umaxica.org`
-    - `api.[jp|us].umaxica.org`
-    - `docs.[jp|us].umaxica.org`
-    - `help.[jp|us].umaxica.org`
-    - `news.[jp|us].umaxica.org`
+    - `[jp|us].api.umaxica.org`
+    - `[jp|us].docs.umaxica.org`
+    - `[jp|us].help.umaxica.org`
+    - `[jp|us].news.umaxica.org`
   - Network endpoints:
-    - `asset-[jp|us].umaxica.net` ... NOTE: This endopoints are not run on Ruby on Rails
+    - `asset-[jp|us].umaxica.net`
+      - NOTE: This endopoints are not run on Ruby on Rails
 
 ## Secrets & Credentials
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.
@@ -103,6 +104,7 @@
 - Frontend assets not updating: `bin/rails assets:clobber` followed by a rebuild.
 - Tests failing due to missing databases: `bin/rails db:create`
 - If your devcontainer fails to start, rebuilding it might resolve the issue.
+- The credentials key will be shared with you separately.
 
 ## Known Issues & Limitations
 - This is a work in progress.

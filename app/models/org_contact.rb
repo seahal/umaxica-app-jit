@@ -1,7 +1,7 @@
 class OrgContact < GuestsRecord
   # Associations
-  belongs_to :org_contact_email
-  belongs_to :org_contact_telephone
+  has_many :org_contact_emails, dependent: :destroy
+  has_many :org_contact_telephones, dependent: :destroy
   belongs_to :org_contact_category,
              class_name: "OrgContactCategory",
              foreign_key: :contact_category_title,
@@ -18,8 +18,10 @@ class OrgContact < GuestsRecord
 
   attr_accessor :confirm_policy
 
-  # Callbacks
   after_initialize :set_default_category_and_status, if: :new_record?
+  # Callbacks
+  before_create :generate_public_id
+  before_create :generate_token
 
   # Validations
   validates :confirm_policy, acceptance: true
@@ -81,6 +83,14 @@ class OrgContact < GuestsRecord
   end
 
   private
+
+  def generate_public_id
+    self.public_id ||= Nanoid.generate(size: 21)
+  end
+
+  def generate_token
+    self.token ||= SecureRandom.alphanumeric(32)
+  end
 
   def set_default_category_and_status
     self.contact_category_title ||= "NULL_ORG_CATEGORY"

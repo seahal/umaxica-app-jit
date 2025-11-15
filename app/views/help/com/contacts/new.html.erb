@@ -1,7 +1,7 @@
 <h1><%= title t('help.com.contacts.new.page_title') %></h1>
 
-<%= form_with model: ComContact.new, url: help_com_contacts_path, scope: :com_contact do |form| %>
-  <% if defined?(@contact) && @contact&.errors&.any? %>
+<%= form_with model: @contact || ComContact.new, url: help_com_contacts_path, scope: :com_contact do |form| %>
+  <% if @contact&.errors&.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
       <h2><%= pluralize(@contact.errors.count, "error") %> prohibited this contact from being saved:</h2>
 
@@ -14,7 +14,7 @@
   <% end %>
 
   <div>
-    <%= form.checkbox :confirm_policy %>
+    <%= form.checkbox :confirm_policy, checked: @contact&.confirm_policy == "1" %>
     <%= form.label :confirm_policy, t('help.com.contacts.new.confirm_policy') %>
   </div>
 

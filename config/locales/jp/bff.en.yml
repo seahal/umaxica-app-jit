@@ -107,9 +107,11 @@ en:
             email_label: "Email Address"
             submit: "Send verification code"
           create:
-            success: "Verification code sent. Please check your email."
+            success: "Email address verified successfully."
             failure: "Unable to send verification code. Please try again."
             turnstile_error: "Security verification failed. Please refresh the page and try again."
+            hotp_code_required: "Please enter the verification code."
+            hotp_code_invalid: "Invalid verification code. Please try again."
           edit:
             page_title: "Enter Verification Code"
             heading: "Verify your email"
@@ -149,3 +151,12 @@ en:
             invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
             max_attempts: "Maximum verification attempts exceeded. Please request a new code."
             expired: "Verification code has expired. Please request a new code."
+  top:
+    app:
+      preference:
+        resets:
+          title: "設定のリセット"
+          description: "reset your preference setting."
+          confirm: "RESET"
+          button: "RESET"
+          back: "Back???"

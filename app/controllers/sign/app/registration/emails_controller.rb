@@ -14,7 +14,7 @@ module Sign
           session[:user_email_registration] = nil
 
           # make user email
-          @user_email = UserEmail.new
+          @user_email = UserIdentityEmail.new
         end
 
         def edit
@@ -24,7 +24,7 @@ module Sign
                  status: :bad_request and return if session[:user_email_registration].nil?
 
           if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"] && session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
-            @user_email = UserEmail.new
+            @user_email = UserIdentityEmail.new
           else
             redirect_to new_sign_app_registration_email_path,
                         notice: t("sign.app.registration.email.edit.your_session_was_expired")
@@ -36,7 +36,7 @@ module Sign
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
-          @user_email = UserEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
+          @user_email = UserIdentityEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32 # NOTE: you would wonder why this code was written ...
           otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
@@ -68,7 +68,7 @@ module Sign
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in_staff? || logged_in_user?
 
-          @user_email = UserEmail.new(address: session[:user_email_registration]["address"],
+          @user_email = UserIdentityEmail.new(address: session[:user_email_registration]["address"],
                                       pass_code: params["user_email"]["pass_code"])
 
           if [

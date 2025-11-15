@@ -23,20 +23,29 @@ Rails.application.routes.draw do
         resource :authentication, only: %i[new edit destroy]
         namespace :authentication do
           resource :email, only: %i[new create]
-          # TODO: Implement telephone authentication
-          # resource :telephone, only: %i[new create]
-          resource :passkey, only: %i[new create]
-          resource :recovery, only: %i[new create]
+          resource :telephone, only: %i[new create]
           # TODO(human): Refactor OAuth flow to use only GET requests for better security
           # Change from POST create to GET show to eliminate CSRF protection bypass
           resource :apple, only: %i[new create]
           resource :google, only: %i[new]
         end
-        namespace :socail do
-          # OAuth required pages
-          get ":provider/callback", to: "sessions#create"
-          get "failure", to: redirect("/") # TODO: Fix this
+        # Social SignUp or LogIn
+        namespace :oauth do
+          get "apple/callback", to: "apples#callback", as: "apple_callback"
+          get "google/callback", to: "googles#callback", as: "google_callback"
+          get "google_oauth2/callback", to: "googles#callback", as: "google_oauth2_callback"
+          resource :apple, only: [ :create ] do
+            get :callback
+            get :failure
+          end
+          resource :google, only: [ :create ] do
+            get :callback
+            get :failure
+          end
         end
+        get "/auth/google/callback", to: "oauth/googles#callback"
+        get "/auth/apple/callback", to: "oauth/apples#callback"
+        get "/auth/failure", to: "oauth/apples#failure"
         # Withdrawal
         resource :withdrawal, only: %i[new create edit update]
         # Settings with logined user
@@ -48,7 +57,6 @@ Rails.application.routes.draw do
               post :verify
             end
           end
-          resources :recoveries
           # TODO: Implement TOTP settings management
           resources :totps, only: [ :index, :new, :create, :edit ]
           # TODO: Implement telephone settings management
@@ -57,6 +65,8 @@ Rails.application.routes.draw do
           # resources :emails
           resource :apple, only: [ :show ]
           resource :google, only: [ :show ]
+          # TODO : Implement recovery code management
+          resources :secrets
         end
         # TODO: Implement token refresh functionality
         # namespace :token do
@@ -88,15 +98,10 @@ Rails.application.routes.draw do
         namespace :setting do
           # TODO: Implement TOTP settings (index, new, edit, update actions only)
           # resources :totp, only: [ :index, :new, :create, :edit, :update ]
-          resources :passkeys, only: [ :index, :edit, :update, :new ] do
-            # TODO: Implement passkey challenge and verify
-            # collection do
-            #   post :challenge
-            #   post :verify
-            # end
-          end
+          resources :passkeys, only: [ :index, :edit, :update, :new ]
           # TODO: Implement email settings index
           # resources :emails, only: [ :index ]
+          resources :secrets
         end
         #
         resource :withdrawal, only: %i[new create edit update]
