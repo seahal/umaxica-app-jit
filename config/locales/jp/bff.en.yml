@@ -107,9 +107,11 @@ en:
             email_label: "Email Address"
             submit: "Send verification code"
           create:
-            success: "Verification code sent. Please check your email."
+            success: "Email address verified successfully."
             failure: "Unable to send verification code. Please try again."
             turnstile_error: "Security verification failed. Please refresh the page and try again."
+            hotp_code_required: "Please enter the verification code."
+            hotp_code_invalid: "Invalid verification code. Please try again."
           edit:
             page_title: "Enter Verification Code"
             heading: "Verify your email"

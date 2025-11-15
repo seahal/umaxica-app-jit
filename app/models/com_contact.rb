@@ -29,6 +29,23 @@ class ComContact < GuestsRecord
 
   # State transition helpers
 
+  # State check methods
+  def email_pending?
+    contact_status_title == "SET_UP" || contact_status_title == "NULL_COM_STATUS"
+  end
+
+  def email_verified?
+    contact_status_title == "CHECKED_EMAIL_ADDRESS"
+  end
+
+  def phone_verified?
+    contact_status_title == "CHECKED_TELEPHONE_NUMBER"
+  end
+
+  def completed?
+    contact_status_title == "COMPLETED_CONTACT_ACTION"
+  end
+
   # State transition helpers
   def can_verify_email?
     email_pending?
@@ -44,17 +61,17 @@ class ComContact < GuestsRecord
 
   def verify_email!
     return false unless can_verify_email?
-    update!(status: :email_verified)
+    update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
     return false unless can_verify_phone?
-    update!(status: :phone_verified)
+    update!(contact_status_title: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
     return false unless can_complete?
-    update!(status: :completed)
+    update!(contact_status_title: "COMPLETED_CONTACT_ACTION")
   end
 
   # Token management

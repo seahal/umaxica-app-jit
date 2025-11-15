@@ -40,10 +40,13 @@ module Help
         end
 
         if @contact.save
-          # Generate OTP and send email
-          sec, counter, token = generate_hotp_code
+          # Update status to SET_UP
+          @contact.update!(contact_status_title: "SET_UP")
 
-          # ここに へとｔBlue を保存する処理を追加すること
+          # Generate HOTP and save to email record
+          token = @email.generate_hotp!
+
+          # Send email with HOTP code
           Email::Com::ContactMailer.with(
             email_address: @email.email_address,
             pass_code: token
@@ -74,7 +77,17 @@ module Help
       end
 
       def help_corporate_host
-        ENV["HELP_CORPORATE_URL"].presence || request.host
+        host_value = ENV["HELP_CORPORATE_URL"].presence || request.host
+        return request.host if host_value.blank?
+
+        # Extract hostname from URL or host string, removing port if present
+        begin
+          uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
+          uri.host || host_value.split(":").first
+        rescue URI::InvalidURIError
+          # If parsing fails, try to extract hostname by removing port
+          host_value.split(":").first
+        end
       end
     end
   end

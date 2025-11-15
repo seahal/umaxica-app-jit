@@ -45,6 +45,38 @@ class ComContactEmail < GuestsRecord
     !activated && (verifier_expired? || verifier_attempts_left <= 0)
   end
 
+  # Generate and store HOTP secret, counter, and code
+  def generate_hotp!
+    secret = ROTP::Base32.random
+    hotp = ROTP::HOTP.new(secret)
+    counter = rand(1...1_000_000) * 2
+    code = hotp.at(counter)
+
+    self.hotp_secret = secret
+    self.hotp_counter = counter
+    self.verifier_expires_at = 15.minutes.from_now
+    self.verifier_attempts_left = 3
+    save!
+
+    code # Return code only once
+  end
+
+  # Verify HOTP code
+  def verify_hotp_code(raw_code)
+    return false if verifier_attempts_left <= 0
+    return false if verifier_expires_at && Time.current >= verifier_expires_at
+    return false unless hotp_secret && hotp_counter
+
+    hotp = ROTP::HOTP.new(hotp_secret)
+    if hotp.verify(raw_code.to_s, hotp_counter) == hotp_counter
+      update!(activated: true, verifier_attempts_left: 0)
+      true
+    else
+      update!(verifier_attempts_left: verifier_attempts_left - 1)
+      false
+    end
+  end
+
   private
 
   # TODO: rewrite this code to be concerned ... how about public_id.rb ?

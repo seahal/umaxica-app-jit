@@ -7,3 +7,22 @@ none:
 service_root:
   title: 'SERVICE_SITE_STATUS'
   description: 'ROOT'
+
+set_up:
+  title: 'SET_UP'
+  description: 'first step completed'
+
+checked_email_address:
+  title: 'CHECKED_EMAIL_ADDRESS'
+  description: 'second step completed'
+  parent_title: 'SET_UP'
+
+checked_telephone_number:
+  title: 'CHECKED_TELEPHONE_NUMBER'
+  description: 'third step completed'
+  parent_title: 'CHECKED_EMAIL_ADDRESS'
+
+completed_contact_action:
+  title: 'COMPLETED_CONTACT_ACTION'
+  description: 'contact action completed'
+  parent_title: 'CHECKED_TELEPHONE_NUMBER'

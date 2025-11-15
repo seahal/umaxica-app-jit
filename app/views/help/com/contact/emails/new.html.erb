@@ -1,0 +1,26 @@
+<h1><%= title t('help.com.contact.emails.edit.page_title') %></h1>
+
+<p><%= t('help.com.contact.emails.edit.description') %></p>
+
+<%= form_with model: @contact_email, url: help_com_contact_email_path(contact_id: @contact.public_id), scope: :com_contact_email do |form| %>
+  <% if @contact_email&.errors&.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(@contact_email.errors.count, "error") %> prohibited this verification from being completed:</h2>
+
+      <ul class="list-disc ml-6">
+        <% @contact_email.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :hotp_code, t('help.com.contact.emails.edit.code_label') %>
+    <%= form.text_field :hotp_code, maxlength: 6, pattern: "[0-9]{6}", placeholder: "000000", autocomplete: "one-time-code" %>
+  </div>
+
+  <%= form.submit t('help.com.contact.emails.edit.submit') %>
+<% end %>
+
+

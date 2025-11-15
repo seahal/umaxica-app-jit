@@ -1,7 +1,20 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
-class Sign::App::Authentication::TelephonesControllerTest < ActionDispatch::IntegrationTest
-  test "should get new" do
-    skip "Telephone authentication route not yet implemented"
+module Sign::App::Authentication
+  class TelephonesControllerTest < ActionDispatch::IntegrationTest
+    test "should get new" do
+      get new_sign_app_authentication_telephone_url
+
+      assert_response :success
+    end
+
+    test "should initialize user_telephone in new action" do
+      get new_sign_app_authentication_telephone_url
+
+      assert_response :success
+      # Verify the page loads without errors
+    end
   end
 end

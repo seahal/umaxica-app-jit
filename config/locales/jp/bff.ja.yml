@@ -107,9 +107,11 @@ ja:
             email_label: "メールアドレス"
             submit: "確認コードを送信"
           create:
-            success: "確認コードを送信しました。メールをご確認ください。"
+            success: "メールアドレスの確認が完了しました。"
             failure: "確認コードを送信できませんでした。もう一度お試しください。"
             turnstile_error: "セキュリティ検証に失敗しました。ページを更新して再度お試しください。"
+            hotp_code_required: "確認コードを入力してください。"
+            hotp_code_invalid: "確認コードが正しくありません。もう一度お試しください。"
           edit:
             page_title: "確認コードの入力"
             heading: "メールアドレスを確認"
