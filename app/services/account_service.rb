@@ -62,6 +62,21 @@ class AccountService
     new(record)
   end
 
+  # Provide ActiveRecord-style finders so callers can use keywords instead of explicit helpers.
+  #
+  # @param email [String, nil]
+  # @param telephone [String, nil]
+  # @return [AccountService, nil]
+  def self.find_by(email: nil, telephone: nil)
+    return nil if email.blank? && telephone.blank?
+
+    if email.present?
+      find_by_email(email)
+    elsif telephone.present?
+      find_by_telephone(telephone)
+    end
+  end
+
   # Find an account by email address
   #
   # @param email [String] The email address to search for
@@ -109,7 +124,7 @@ class AccountService
   # -------------------
 
   # Override class method to return the underlying model's class
-  # This ensures JWT generation and other type checks work correctly
+  # This ensures JWT generation and type checks continue to lean on the wrapped model.
   #
   # @return [Class] User or Staff class
   delegate :class, to: :accountable

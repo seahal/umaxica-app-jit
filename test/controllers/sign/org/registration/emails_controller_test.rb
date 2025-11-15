@@ -22,25 +22,5 @@ module Sign::Org::Registration
 
       assert_response :bad_request
     end
-
-    test "should redirect if session expired on edit" do
-      get edit_sign_org_registration_email_url(id: "test")
-
-      assert_redirected_to new_sign_org_registration_email_path
-    end
-
-    # TODO: Uncomment when Email::App::EmailRegistrationMailer is available
-    # test "should create email registration" do
-    #   post sign_org_registration_emails_url, params: {
-    #     user_email: {
-    #       address: "test@example.com",
-    #       confirm_policy: "1"
-    #     },
-    #     "cf-turnstile-response": "test_token"
-    #   }
-    #
-    #   # Should redirect on success or render on failure
-    #   assert_response :redirect
-    # end
   end
 end

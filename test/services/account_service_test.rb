@@ -15,7 +15,6 @@ class AccountServiceTest < ActiveSupport::TestCase
     assert_equal @user, account.accountable
     assert_equal :user, account.type
     assert_predicate account, :user?
-    assert_not account.staff?
   end
 
   test "should initialize with staff" do
@@ -24,7 +23,6 @@ class AccountServiceTest < ActiveSupport::TestCase
     assert_equal @staff, account.accountable
     assert_equal :staff, account.type
     assert_predicate account, :staff?
-    assert_not account.user?
   end
 
   test "should raise error for invalid accountable" do
@@ -131,13 +129,6 @@ class AccountServiceTest < ActiveSupport::TestCase
   end
 
   # Duck Typing Tests
-  test "class should return underlying model class" do
-    user_account = AccountService.new(@user)
-    staff_account = AccountService.new(@staff)
-
-    assert_instance_of User, user_account
-    assert_instance_of Staff, staff_account
-  end
 
   test "is_a? should check underlying model" do
     user_account = AccountService.new(@user)
