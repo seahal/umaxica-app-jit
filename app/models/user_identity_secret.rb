@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# frozen_string_literal: true
-
 class UserIdentitySecret < IdentitiesRecord
   MAX_SECRETS_PER_USER = 10
 

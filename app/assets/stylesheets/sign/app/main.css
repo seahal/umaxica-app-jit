@@ -1,5 +1,8 @@
-@import url("../../bff/app/main.css");
-
-.recoveries-error {
-	color: #dc2626;
+body {
+	font-family: "Helvetica Neue",
+	Arial,
+	"Hiragino Kaku Gothic ProN",
+	"Hiragino Sans",
+	Meiryo,
+	sans-serif;
 }
