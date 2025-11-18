@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 4e0ac466a690e1480600aebb746b0353337bcd45
+  revision: 6388aec724df438bb7ed6909a710fcbd88bd45a3
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -119,7 +119,7 @@ GEM
     arrayfields (4.9.2)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1182.0)
+    aws-partitions (1.1183.0)
     aws-sdk-core (3.237.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
@@ -145,7 +145,7 @@ GEM
     bigdecimal (3.3.1)
     bindata (2.5.1)
     bindex (0.8.1)
-    bootsnap (1.18.6)
+    bootsnap (1.19.0)
       msgpack (~> 1.2)
     brakeman (7.1.1)
       racc
@@ -402,7 +402,7 @@ GEM
       logger
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
-    minitest (5.26.1)
+    minitest (5.26.2)
     msgpack (1.8.0)
     multi_json (1.17.0)
     multi_xml (0.7.2)
@@ -762,7 +762,7 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
-    rubocop-rails (2.33.4)
+    rubocop-rails (2.34.0)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
       rack (>= 1.1)
@@ -949,7 +949,7 @@ DEPENDENCIES
   yard
 
 RUBY VERSION
-   ruby 3.4.7p58
+   ruby 3.5.0.preview1
 
 BUNDLED WITH
    2.6.9

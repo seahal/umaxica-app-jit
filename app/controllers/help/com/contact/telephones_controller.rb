@@ -55,7 +55,7 @@ module Help
               flash.now[:alert] = t(".invalid_code",
                                    attempts_left: @contact_telephone.otp_attempts_left)
             end
-            render :edit, status: :unprocessable_entity
+            render :edit, status: :unprocessable_content
           end
         end
 

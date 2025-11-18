@@ -24,7 +24,7 @@ module Bff
           redirect_to preference_root_path
         else
           flash.now[:alert] ||= t("bff.#{preference_context}.preference.emails.new.failure")
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       end
 
@@ -40,7 +40,7 @@ module Bff
           redirect_to preference_root_path
         else
           flash.now[:alert] = t("bff.shared.preference_emails.update_failure")
-          render :edit, status: :unprocessable_entity
+          render :edit, status: :unprocessable_content
         end
       end
 

@@ -13,7 +13,7 @@ module Api
               render json: {
                 valid: false,
                 errors: validness.errors.full_messages_for(:telephone_number)
-              }, status: :unprocessable_entity
+              }, status: :unprocessable_content
             end
           end
         end

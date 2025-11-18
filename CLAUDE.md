@@ -7,35 +7,71 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Rails 8.0 application with a sophisticated multi-domain, multi-database architecture:
 
 ### Domain Structure
-- **WWW (Web Interface)**: Three distinct domains serving different user types
-  - `WWW_CORPORATE_URL` (com): Corporate/client site
-  - `WWW_SERVICE_URL` (app): Main service application
-  - `WWW_STAFF_URL` (org): Staff administration interface
-- **API**: Corresponding API endpoints for each domain
-  - `API_CORPORATE_URL`, `API_SERVICE_URL`, `API_STAFF_URL`
-- **Additional Services**: docs, news endpoints
+アプリケーションは複数のエンドポイントで構成され、各エンドポイントが3つのドメイン(com/app/org)を持ちます:
+
+- **TOP**: トップページとプリファレンス管理
+  - `TOP_CORPORATE_URL` (com): コーポレートサイトトップ
+  - `TOP_SERVICE_URL` (app): サービスアプリトップ
+  - `TOP_STAFF_URL` (org): スタッフ管理画面トップ
+
+- **SIGN**: 認証・登録・ログイン・退会
+  - `SIGN_SERVICE_URL` (app): ユーザー認証ページ
+  - `SIGN_STAFF_URL` (org): スタッフ認証ページ
+  - WebAuthn, TOTP, Apple/Google OAuth対応
+
+- **BFF**: Backend for Frontend
+  - `BFF_CORPORATE_URL` (com): クライアント向けBFF
+  - `BFF_SERVICE_URL` (app): サービス向けBFF
+  - `BFF_STAFF_URL` (org): スタッフ向けBFF
+
+- **API**: RESTful API エンドポイント
+  - `API_CORPORATE_URL` (com): コーポレート向けAPI
+  - `API_SERVICE_URL` (app): サービス向けAPI
+  - `API_STAFF_URL` (org): スタッフ向けAPI
+
+- **HELP**: ヘルプ・問い合わせページ
+  - `HELP_CORPORATE_URL`, `HELP_SERVICE_URL`, `HELP_STAFF_URL`
+
+- **DOCS**: ドキュメントページ
+  - `DOCS_CORPORATE_URL`, `DOCS_SERVICE_URL`, `DOCS_STAFF_URL`
+
+- **NEWS**: ニュースページ
+  - `NEWS_CORPORATE_URL`, `NEWS_SERVICE_URL`, `NEWS_STAFF_URL`
 
 ### Multi-Database Setup
-The application uses 10+ separate PostgreSQL databases with primary/replica configurations:
-- `universal` - Universal identifiers and user data
-- `identifier` - Authentication and identity management
-- `guest` - Guest contact information and communication
-- `profile` - User profiles and preferences
-- `token` - Session and authentication tokens
-- `business` - Business logic and entities
-- `message` - Messaging system
-- `notification` - Notification management
-- `cache` - Application caching
-- `speciality` - Domain-specific features
-- `storage` - File storage metadata
+The application uses 10 separate PostgreSQL databases with primary/replica configurations:
 
-Each database has primary/replica pairs with separate migration paths in `db/{database_name}_migrate/`.
+**マイグレーション管理されているDB** (migration paths: `db/{database_name}_migrate/`):
+- `universal` (universals_migrate) - Universal identifiers and user data
+- `identity` (identities_migrate) - Authentication and identity management
+- `guest` (guests_migrate) - Guest contact information and communication
+- `profile` (profiles_migrate) - User profiles and preferences
+- `token` (tokens_migrate) - Session and authentication tokens
+- `business` (businesses_migrate) - Business logic and entities
+- `speciality` (specialities_migrate) - Domain-specific features
+- `primary` (migrate) - Primary database
+
+**スキーマのみ管理されているDB** (schema files exist, no migration directory):
+- `notification` (notification_schema.rb) - Notification management
+- `cache` (cache_schema.rb) - Application caching
+- `storage` (storage_schema.rb) - File storage metadata
+
+**注意**:
+- 各データベースは`config/database.yml`でプライマリ/レプリカペアとして構成されています
+- データベース接続名: `{db_name}` (primary), `{db_name}_replica` (replica)
+- ドキュメントに記載されていた`message`データベースは実際には存在しません
 
 ### Controller Organization
-Controllers are organized by domain module:
-- `app/controllers/www/{com,app,org}/` - Web controllers for each domain
-- `app/controllers/api/{com,app,org}/` - API controllers for each domain
-- `app/controllers/concerns/` - Shared controller logic
+Controllers are organized by endpoint module and domain:
+- `app/controllers/top/{com,app,org}/` - トップページコントローラー
+- `app/controllers/sign/{app,org}/` - 認証・登録コントローラー
+- `app/controllers/bff/{com,app,org}/` - BFFコントローラー
+- `app/controllers/api/{com,app,org}/` - APIコントローラー
+- `app/controllers/help/{com,app,org}/` - ヘルプ・問い合わせコントローラー
+- `app/controllers/docs/{com,app,org}/` - ドキュメントコントローラー
+- `app/controllers/news/{com,app,org}/` - ニュースコントローラー
+- `app/controllers/concerns/` - 共通コントローラーロジック
+- `app/controllers/{endpoint}/concerns/` - エンドポイント固有のConcerns
 
 ### Key Technologies
 - **Authentication**: WebAuthn, TOTP, Apple/Google OAuth, recovery codes
@@ -64,13 +100,13 @@ bundle exec rails db:migrate
 
 ### Development Server
 ```bash
-# Start all services (web server, Karafka, asset building)
-foreman start -f Procfile.dev.dev
+# Start all services (web server, asset building)
+foreman start -f Procfile.dev
 
 # Or individually:
 bundle exec rails server -p 3000 -b '0.0.0.0'
-bundle exec karafka server
 bun run build --watch
+# bundle exec karafka server  # 現在は無効化されています
 ```
 
 ### Testing
@@ -82,7 +118,7 @@ bundle exec rails test
 bundle exec rails test test/models/user_test.rb
 
 # Run tests for specific controller
-bundle exec rails test test/views/top/app/authentications_controller_test.rb
+bundle exec rails test test/controllers/sign/app/authentications_controller_test.rb
 
 # Continuous testing with Guard
 bundle exec guard
@@ -109,17 +145,20 @@ bundle exec bundler-audit
 
 ### Database Operations
 ```bash
-# Create migration for specific database
-bundle exec rails generate migration CreateUsers --database=identifier
+# Create migration for specific database (use the database key name from database.yml)
+bundle exec rails generate migration CreateUsers --database=identity
 
 # Run migrations for specific database
-bundle exec rails db:migrate:identifier
+bundle exec rails db:migrate:identity
 
 # Run all database migrations
 bundle exec rails db:migrate
 
 # Reset all databases
 bundle exec rails db:drop db:create db:migrate
+
+# 注意: データベース名は database.yml のキー名を使用
+# 例: identity, universal, guest, profile, token, business, speciality
 ```
 
 ## Key Patterns
@@ -138,28 +177,107 @@ Shared model logic is in `app/models/concerns/`:
 - Email/telephone verification workflows
 
 ### Database Connections
-Models inherit from domain-specific base classes:
+Models inherit from database-specific base classes:
 - `UniversalRecord` - Universal database
-- `IdentitiesRecord` - Identifier database
-- `GuestsRecord` - Guest database
-- etc.
+- `IdentityRecord` - Identity database (認証・識別情報)
+- `GuestRecord` - Guest database (ゲスト連絡情報)
+- `ProfileRecord` - Profile database (ユーザープロフィール)
+- `TokenRecord` - Token database (セッション・認証トークン)
+- `BusinessRecord` - Business database (ビジネスロジック)
+- `SpecialityRecord` - Speciality database (特殊機能)
+- `NotificationRecord` - Notification database (通知管理)
+- `CacheRecord` - Cache database (キャッシュ)
+- `StorageRecord` - Storage database (ストレージメタデータ)
 
 ### View Components
 Uses ViewComponent gem for reusable UI components. Components are in `app/components/`.
 
 ### Route Organization
-Routes are split by domain in `config/routes/`:
-- `www.rb` - Web interface routes
-- `api.rb` - API endpoint routes
-- `docs.rb` - Documentation routes
-- `news.rb` - News/content routes
+Routes are split by endpoint in `config/routes/`:
+- `top.rb` - トップページルート (com/app/org)
+- `sign.rb` - 認証・登録ルート (app/org)
+- `bff.rb` - BFFルート (com/app/org)
+- `api.rb` - APIルート (com/app/org)
+- `help.rb` - ヘルプ・問い合わせルート (com/app/org)
+- `docs.rb` - ドキュメントルート (com/app/org)
+- `news.rb` - ニュースルート (com/app/org)
+
+各ルートファイルは、ホスト制約(`constraints host:`)で3つのドメイン(com/app/org)に分岐し、
+それぞれに対応するコントローラーモジュールにルーティングします。
+
+#### 主要なルート構成
+
+**TOP** (`config/routes/top.rb`):
+- `root` - トップページ (`roots#index`)
+- `resource :health` - ヘルスチェック
+- `namespace :v1` - API v1エンドポイント
+- `resource :preference` - プリファレンス設定
+- `namespace :preference` - Cookie, Region, Locale, Theme, Reset設定
+- `resource :configuration` (appのみ) - メール設定
+
+**SIGN** (`config/routes/sign.rb`):
+- `root` - サインページトップ
+- `resource :registration` - ユーザー登録
+  - `resources :emails` - メールアドレス登録
+  - `resources :telephones` - 電話番号登録
+  - `resources :googles` - Google OAuth登録
+- `resource :authentication` - 認証・ログイン
+  - `resource :email`, `resource :telephone` - メール/電話認証
+  - `resource :apple`, `resource :google` - OAuth認証
+- `namespace :oauth` - OAuthコールバック処理
+  - `apple/callback`, `google/callback`
+- `resource :withdrawal` - 退会処理
+- `resource :setting` - ログインユーザー設定
+  - `resources :passkeys` - WebAuthn設定
+  - `resources :totps` - TOTP設定
+  - `resources :secrets` - リカバリーコード管理
+
+**BFF** (`config/routes/bff.rb`):
+- `root` - BFFトップ
+- `resource :health` - ヘルスチェック
+- `namespace :v1` - API v1
+- `resource :preference` - プリファレンス
+- `namespace :preference` - メール設定
+
+**API** (`config/routes/api.rb`):
+- `resource :health` - ヘルスチェック
+- `namespace :v1` - API v1
+  - `namespace :inquiry` (appのみ):
+    - `resources :valid_email_addresses` - メールアドレス検証
+    - `resources :valid_telephone_numbers` - 電話番号検証
+
+**HELP** (`config/routes/help.rb`):
+- `root` - ヘルプトップ
+- `resource :health` - ヘルスチェック
+- `resources :contacts` - 問い合わせ
+  - `scope module: :contact`:
+    - `resource :email` - メール問い合わせ
+    - `resource :telephone` - 電話問い合わせ
+
+**DOCS** / **NEWS** (`config/routes/docs.rb` / `news.rb`):
+- `root` - ドキュメント/ニューストップ
+- `resource :health` - ヘルスチェック
+- `namespace :v1` - API v1
 
 ## Environment Variables
 
 Key environment variables required:
-- `WWW_CORPORATE_URL`, `WWW_SERVICE_URL`, `WWW_STAFF_URL` - Domain URLs
-- `API_CORPORATE_URL`, `API_SERVICE_URL`, `API_STAFF_URL` - API URLs
-- `POSTGRESQL_*` - Database connection settings
+
+### Domain URLs (各エンドポイント × 3ドメイン)
+- `TOP_CORPORATE_URL`, `TOP_SERVICE_URL`, `TOP_STAFF_URL`
+- `SIGN_SERVICE_URL`, `SIGN_STAFF_URL` (SIGNはcomなし)
+- `BFF_CORPORATE_URL`, `BFF_SERVICE_URL`, `BFF_STAFF_URL`
+- `API_CORPORATE_URL`, `API_SERVICE_URL`, `API_STAFF_URL`
+- `HELP_CORPORATE_URL`, `HELP_SERVICE_URL`, `HELP_STAFF_URL`
+- `DOCS_CORPORATE_URL`, `DOCS_SERVICE_URL`, `DOCS_STAFF_URL`
+- `NEWS_CORPORATE_URL`, `NEWS_SERVICE_URL`, `NEWS_STAFF_URL`
+
+### Database Settings
+- `POSTGRESQL_USER`, `POSTGRESQL_PASSWORD` - DB認証情報
+- `POSTGRESQL_*_PUB`, `POSTGRESQL_*_SUB` - 各DBのプライマリ/レプリカホスト
+  - 例: `POSTGRESQL_UNIVERSAL_PUB`, `POSTGRESQL_UNIVERSAL_SUB`
+
+### Application Settings
 - `RAILS_MAX_THREADS` - Threading configuration
 - `RACK_ATTACK_API_KEY` - API key for Rack::Attack authentication
 
@@ -168,7 +286,8 @@ Key environment variables required:
 - Always run `bundle install` after pulling changes due to frequent gem updates
 - Use domain-specific controllers and routes - check the constraint blocks in routes
 - Database migrations must specify the correct database with `--database` flag
-- Test files follow the domain structure: `test/controllers/{domain}/{subdomain}/`
+- Test files follow the endpoint/domain structure: `test/controllers/{endpoint}/{domain}/{version}/`
+  - 例: `test/controllers/api/app/v1/`, `test/controllers/sign/app/`
 - Asset compilation uses Bun - ensure Bun is installed locally
 - The application expects Docker Compose for local database setup
 
