@@ -1,5 +1,3 @@
-name: "jit"
-
 services:
   core:
     build:
@@ -18,11 +16,16 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "3001:3000"
-    tmpfs:
-      - /home/jit/workspace/log:size=2G,uid=${UID:-1000},gid=${GID:-1000}
-      - /home/jit/workspace/tmp:size=4G,uid=${UID:-1000},gid=${GID:-1000}
     volumes:
       - .:/home/jit/workspace
+      - type: tmpfs
+        target: /home/jit/workspace/log
+        tmpfs:
+          size: 2147483648
+      - type: tmpfs
+        target: /home/jit/workspace/tmp
+        tmpfs:
+          size: 4294967296
     networks:
       - backend
       - frontend
@@ -48,8 +51,8 @@ services:
     volumes:
       - minio-volume:/data
     ports:
-      - "127.0.0.1:9000:9000" # API
-      - "127.0.0.1:9001:9001" # Console
+      - "127.0.0.1:${MINIO_API_PORT:-19000}:9000" # API
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-19001}:9001" # Console
     networks:
       - backend
     restart: unless-stopped

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 4c53863e354ad94dbfaf0643d9cdc99393a1a583
+  revision: 798ff7691a33b4033ead766b2ad16aacb10cc9f6
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -486,7 +486,7 @@ GEM
       opentelemetry-instrumentation-active_support (~> 0.10)
     opentelemetry-instrumentation-active_support (0.10.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-all (0.87.0)
+    opentelemetry-instrumentation-all (0.88.0)
       opentelemetry-instrumentation-active_model_serializers (~> 0.24.0)
       opentelemetry-instrumentation-anthropic (~> 0.3.0)
       opentelemetry-instrumentation-aws_lambda (~> 0.6.0)
@@ -495,7 +495,7 @@ GEM
       opentelemetry-instrumentation-concurrent_ruby (~> 0.24.0)
       opentelemetry-instrumentation-dalli (~> 0.29.0)
       opentelemetry-instrumentation-delayed_job (~> 0.25.1)
-      opentelemetry-instrumentation-ethon (~> 0.25.0)
+      opentelemetry-instrumentation-ethon (~> 0.26.0)
       opentelemetry-instrumentation-excon (~> 0.26.0)
       opentelemetry-instrumentation-faraday (~> 0.30.0)
       opentelemetry-instrumentation-grape (~> 0.5.0)
@@ -542,11 +542,11 @@ GEM
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-delayed_job (0.25.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-ethon (0.25.0)
+    opentelemetry-instrumentation-ethon (0.26.0)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-excon (0.26.0)
+    opentelemetry-instrumentation-excon (0.26.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-faraday (0.30.0)
+    opentelemetry-instrumentation-faraday (0.30.1)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-grape (0.5.0)
       opentelemetry-instrumentation-rack (~> 0.29)
@@ -556,11 +556,11 @@ GEM
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-gruf (0.5.0)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-http (0.27.0)
+    opentelemetry-instrumentation-http (0.27.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-http_client (0.26.0)
+    opentelemetry-instrumentation-http_client (0.26.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-httpx (0.5.0)
+    opentelemetry-instrumentation-httpx (0.5.1)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-koala (0.23.0)
       opentelemetry-instrumentation-base (~> 0.25)
@@ -573,7 +573,7 @@ GEM
       opentelemetry-helpers-sql
       opentelemetry-helpers-sql-obfuscation
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-net_http (0.26.0)
+    opentelemetry-instrumentation-net_http (0.26.1)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-pg (0.33.0)
       opentelemetry-helpers-sql
