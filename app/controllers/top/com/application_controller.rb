@@ -3,7 +3,7 @@
 module Top
   module Com
     class ApplicationController < ActionController::Base
-      include Pundit::Authorization
+      # include Pundit::Authorization
       include ::RateLimit
       include ::DefaultUrlOptions
       include ::Top::Concerns::Regionalization

@@ -6,7 +6,7 @@ module Sign
       include ::Authn
       include ::RateLimit
       include ::DefaultUrlOptions
-      include Pundit::Authorization
+      # include Pundit::Authorization
 
       allow_browser versions: :modern
 

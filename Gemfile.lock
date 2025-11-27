@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 798ff7691a33b4033ead766b2ad16aacb10cc9f6
+  revision: 8bbd44f8fe324eff6010d9c5a002c0d2cd72c617
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -102,8 +102,6 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    action_policy (0.7.5)
-      ruby-next-core (>= 1.0)
     action_text-trix (2.1.15)
       railties
     addressable (2.8.8)
@@ -303,6 +301,10 @@ GEM
     image_processing (1.14.0)
       mini_magick (>= 4.9.5, < 6)
       ruby-vips (>= 2.0.17, < 3)
+    importmap-rails (2.2.2)
+      actionpack (>= 6.0.0)
+      activesupport (>= 6.0.0)
+      railties (>= 6.0.0)
     io-console (0.8.1)
     irb (1.15.3)
       pp (>= 0.6.0)
@@ -312,8 +314,6 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
-    jsbundling-rails (1.3.1)
-      railties (>= 6.0.0)
     json (2.16.0)
     json-jwt (1.17.0)
       activesupport (>= 4.2)
@@ -647,8 +647,6 @@ GEM
     public_suffix (7.0.0)
     puma (7.1.0)
       nio4r (~> 2.0)
-    pundit (2.5.2)
-      activesupport (>= 3.0.0)
     racc (1.8.1)
     rack (3.2.4)
     rack-cors (3.0.0)
@@ -716,7 +714,6 @@ GEM
     rexml (3.4.4)
     roda (3.98.0)
       rack
-    rolify (6.0.1)
     rotp (6.3.0)
     rqrcode (3.1.1)
       chunky_png (~> 1.0)
@@ -785,7 +782,6 @@ GEM
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 5)
-    ruby-next-core (1.1.2)
     ruby-progressbar (1.13.0)
     ruby-vips (2.2.5)
       ffi (~> 1.12)
@@ -824,6 +820,8 @@ GEM
       activerecord (>= 7.2)
       railties (>= 7.2)
     ssrf_filter (1.3.0)
+    stimulus-rails (1.3.4)
+      railties (>= 6.0.0)
     stringio (3.1.8)
     thor (1.4.0)
     tilt (2.6.1)
@@ -835,6 +833,9 @@ GEM
       openssl-signature_algorithm (~> 1.0)
     trailblazer-option (0.1.2)
     tsort (0.2.0)
+    turbo-rails (2.0.20)
+      actionpack (>= 7.1.0)
+      railties (>= 7.1.0)
     typhoeus (1.5.0)
       ethon (>= 0.9.0, < 0.16.0)
     tzinfo (2.0.6)
@@ -877,7 +878,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  action_policy
   annotaterb
   argon2
   aws-sdk-sns
@@ -894,8 +894,8 @@ DEPENDENCIES
   foreman
   google-cloud-storage
   image_processing
+  importmap-rails
   jbuilder
-  jsbundling-rails
   jwt
   kaminari
   karafka
@@ -915,7 +915,6 @@ DEPENDENCIES
   pg
   propshaft
   puma
-  pundit
   rack
   rack-cors
   rack-mini-profiler
@@ -925,7 +924,6 @@ DEPENDENCIES
   rake
   redis
   reek
-  rolify
   rotp
   rqrcode
   rswag
@@ -943,6 +941,8 @@ DEPENDENCIES
   simplecov
   sitemap_generator
   solid_cache
+  stimulus-rails
+  turbo-rails
   tzinfo-data
   web-console
   webauthn
