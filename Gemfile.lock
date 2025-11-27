@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 4e0ac466a690e1480600aebb746b0353337bcd45
+  revision: 8bbd44f8fe324eff6010d9c5a002c0d2cd72c617
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -102,12 +102,10 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    action_policy (0.7.5)
-      ruby-next-core (>= 1.0)
     action_text-trix (2.1.15)
       railties
-    addressable (2.8.7)
-      public_suffix (>= 2.0.2, < 7.0)
+    addressable (2.8.8)
+      public_suffix (>= 2.0.2, < 8.0)
     aes_key_wrap (1.1.0)
     android_key_attestation (0.3.0)
     annotaterb (4.20.0)
@@ -119,8 +117,8 @@ GEM
     arrayfields (4.9.2)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1182.0)
-    aws-sdk-core (3.237.0)
+    aws-partitions (1.1188.0)
+    aws-sdk-core (3.239.2)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -128,8 +126,8 @@ GEM
       bigdecimal
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-sns (1.108.0)
-      aws-sdk-core (~> 3, >= 3.234.0)
+    aws-sdk-sns (1.109.0)
+      aws-sdk-core (~> 3, >= 3.239.1)
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -145,7 +143,7 @@ GEM
     bigdecimal (3.3.1)
     bindata (2.5.1)
     bindex (0.8.1)
-    bootsnap (1.18.6)
+    bootsnap (1.19.0)
       msgpack (~> 1.2)
     brakeman (7.1.1)
       racc
@@ -173,7 +171,7 @@ GEM
       ruby_parser (~> 3.0)
       sexp_processor (~> 4.1)
     concurrent-ruby (1.3.5)
-    connection_pool (2.5.4)
+    connection_pool (2.5.5)
     content_disposition (1.0.0)
     cose (1.3.1)
       cbor (~> 0.5.9)
@@ -288,7 +286,7 @@ GEM
       rake (>= 13)
     googleapis-common-protos-types (1.22.0)
       google-protobuf (~> 4.26)
-    googleauth (1.15.1)
+    googleauth (1.16.0)
       faraday (>= 1.0, < 3.a)
       google-cloud-env (~> 2.2)
       google-logging-utils (~> 0.1)
@@ -303,6 +301,10 @@ GEM
     image_processing (1.14.0)
       mini_magick (>= 4.9.5, < 6)
       ruby-vips (>= 2.0.17, < 3)
+    importmap-rails (2.2.2)
+      actionpack (>= 6.0.0)
+      activesupport (>= 6.0.0)
+      railties (>= 6.0.0)
     io-console (0.8.1)
     irb (1.15.3)
       pp (>= 0.6.0)
@@ -312,8 +314,6 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
-    jsbundling-rails (1.3.1)
-      railties (>= 6.0.0)
     json (2.16.0)
     json-jwt (1.17.0)
       activesupport (>= 4.2)
@@ -345,7 +345,7 @@ GEM
       karafka-rdkafka (>= 0.23.1)
       waterdrop (>= 2.8.14, < 3.0.0)
       zeitwerk (~> 2.3)
-    karafka-core (2.5.7)
+    karafka-core (2.5.8)
       karafka-rdkafka (>= 0.20.0)
       logger (>= 1.6.0)
     karafka-rdkafka (0.23.1)
@@ -402,7 +402,7 @@ GEM
       logger
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
-    minitest (5.26.1)
+    minitest (5.26.2)
     msgpack (1.8.0)
     multi_json (1.17.0)
     multi_xml (0.7.2)
@@ -447,7 +447,7 @@ GEM
     omniauth-oauth2 (1.8.0)
       oauth2 (>= 1.4, < 3)
       omniauth (~> 2.0)
-    omniauth-rails_csrf_protection (1.0.2)
+    omniauth-rails_csrf_protection (2.0.0)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
     openssl (3.3.2)
@@ -486,7 +486,7 @@ GEM
       opentelemetry-instrumentation-active_support (~> 0.10)
     opentelemetry-instrumentation-active_support (0.10.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-all (0.87.0)
+    opentelemetry-instrumentation-all (0.88.0)
       opentelemetry-instrumentation-active_model_serializers (~> 0.24.0)
       opentelemetry-instrumentation-anthropic (~> 0.3.0)
       opentelemetry-instrumentation-aws_lambda (~> 0.6.0)
@@ -495,7 +495,7 @@ GEM
       opentelemetry-instrumentation-concurrent_ruby (~> 0.24.0)
       opentelemetry-instrumentation-dalli (~> 0.29.0)
       opentelemetry-instrumentation-delayed_job (~> 0.25.1)
-      opentelemetry-instrumentation-ethon (~> 0.25.0)
+      opentelemetry-instrumentation-ethon (~> 0.26.0)
       opentelemetry-instrumentation-excon (~> 0.26.0)
       opentelemetry-instrumentation-faraday (~> 0.30.0)
       opentelemetry-instrumentation-grape (~> 0.5.0)
@@ -542,11 +542,11 @@ GEM
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-delayed_job (0.25.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-ethon (0.25.0)
+    opentelemetry-instrumentation-ethon (0.26.0)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-excon (0.26.0)
+    opentelemetry-instrumentation-excon (0.26.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-faraday (0.30.0)
+    opentelemetry-instrumentation-faraday (0.30.1)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-grape (0.5.0)
       opentelemetry-instrumentation-rack (~> 0.29)
@@ -556,11 +556,11 @@ GEM
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-gruf (0.5.0)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-http (0.27.0)
+    opentelemetry-instrumentation-http (0.27.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-http_client (0.26.0)
+    opentelemetry-instrumentation-http_client (0.26.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-httpx (0.5.0)
+    opentelemetry-instrumentation-httpx (0.5.1)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-koala (0.23.0)
       opentelemetry-instrumentation-base (~> 0.25)
@@ -573,7 +573,7 @@ GEM
       opentelemetry-helpers-sql
       opentelemetry-helpers-sql-obfuscation
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-net_http (0.26.0)
+    opentelemetry-instrumentation-net_http (0.26.1)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-pg (0.33.0)
       opentelemetry-helpers-sql
@@ -644,11 +644,9 @@ GEM
     psych (5.2.6)
       date
       stringio
-    public_suffix (6.0.2)
+    public_suffix (7.0.0)
     puma (7.1.0)
       nio4r (~> 2.0)
-    pundit (2.5.2)
-      activesupport (>= 3.0.0)
     racc (1.8.1)
     rack (3.2.4)
     rack-cors (3.0.0)
@@ -691,7 +689,7 @@ GEM
       ffi (~> 1.0)
     rbs (3.9.5)
       logger
-    rdoc (6.15.1)
+    rdoc (6.16.0)
       erb
       psych (>= 4.0.0)
       tsort
@@ -716,12 +714,11 @@ GEM
     rexml (3.4.4)
     roda (3.98.0)
       rack
-    rolify (6.0.1)
     rotp (6.3.0)
-    rqrcode (3.1.0)
+    rqrcode (3.1.1)
       chunky_png (~> 1.0)
       rqrcode_core (~> 2.0)
-    rqrcode_core (2.0.0)
+    rqrcode_core (2.0.1)
     rspec-core (3.13.6)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.6)
@@ -762,7 +759,7 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
-    rubocop-rails (2.33.4)
+    rubocop-rails (2.34.1)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
       rack (>= 1.1)
@@ -781,11 +778,10 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-graphviz (1.2.5)
       rexml
-    ruby-lsp (0.26.3)
+    ruby-lsp (0.26.4)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 5)
-    ruby-next-core (1.1.2)
     ruby-progressbar (1.13.0)
     ruby-vips (2.2.5)
       ffi (~> 1.12)
@@ -824,6 +820,8 @@ GEM
       activerecord (>= 7.2)
       railties (>= 7.2)
     ssrf_filter (1.3.0)
+    stimulus-rails (1.3.4)
+      railties (>= 6.0.0)
     stringio (3.1.8)
     thor (1.4.0)
     tilt (2.6.1)
@@ -835,6 +833,9 @@ GEM
       openssl-signature_algorithm (~> 1.0)
     trailblazer-option (0.1.2)
     tsort (0.2.0)
+    turbo-rails (2.0.20)
+      actionpack (>= 7.1.0)
+      railties (>= 7.1.0)
     typhoeus (1.5.0)
       ethon (>= 0.9.0, < 0.16.0)
     tzinfo (2.0.6)
@@ -846,7 +847,7 @@ GEM
     uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.9)
-    waterdrop (2.8.14)
+    waterdrop (2.8.15)
       karafka-core (>= 2.4.9, < 3.0.0)
       karafka-rdkafka (>= 0.23.1)
       zeitwerk (~> 2.3)
@@ -877,7 +878,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  action_policy
   annotaterb
   argon2
   aws-sdk-sns
@@ -894,8 +894,8 @@ DEPENDENCIES
   foreman
   google-cloud-storage
   image_processing
+  importmap-rails
   jbuilder
-  jsbundling-rails
   jwt
   kaminari
   karafka
@@ -915,7 +915,6 @@ DEPENDENCIES
   pg
   propshaft
   puma
-  pundit
   rack
   rack-cors
   rack-mini-profiler
@@ -925,7 +924,6 @@ DEPENDENCIES
   rake
   redis
   reek
-  rolify
   rotp
   rqrcode
   rswag
@@ -943,13 +941,15 @@ DEPENDENCIES
   simplecov
   sitemap_generator
   solid_cache
+  stimulus-rails
+  turbo-rails
   tzinfo-data
   web-console
   webauthn
   yard
 
 RUBY VERSION
-   ruby 3.4.7p58
+   ruby 4.0.0.preview2
 
 BUNDLED WITH
    2.6.9

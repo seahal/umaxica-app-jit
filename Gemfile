@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 # source "https://gem.coop"
 
-ruby "3.4.7"
+ruby "4.0.0-preview2"
 
 # rake
 gem "rake"
@@ -63,9 +63,9 @@ gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 # Authorization
-gem "pundit"
-gem "action_policy"
-gem "rolify"
+# gem "pundit"
+# gem "action_policy"
+# gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
 # OpenAPI
@@ -75,8 +75,10 @@ gem "rswag-api"
 gem "rswag-ui"
 # JWT
 gem "jwt"
-#
-gem "jsbundling-rails"
+# Hotwire
+gem "turbo-rails"
+gem "stimulus-rails"
+gem "importmap-rails"
 # for fastly cache purge
 gem "fastly"
 # easty to write tags in head.

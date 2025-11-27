@@ -9,6 +9,9 @@ plugins:
 
 # .rubocop.yml
 AllCops:
+  # Target Ruby version
+  TargetRubyVersion: 3.4
+
   # Enable caching
   UseCache: true
 

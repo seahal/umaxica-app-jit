@@ -3,7 +3,7 @@
 module Bff
   module App
     class ApplicationController < ActionController::Base
-      include Pundit::Authorization
+      # include Pundit::Authorization
       include ::RateLimit
       include ::DefaultUrlOptions
       include ::Bff::Concerns::Regionalization

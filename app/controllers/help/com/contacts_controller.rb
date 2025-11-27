@@ -35,7 +35,7 @@ module Help
           @email_address = params.dig(:com_contact, :email_address) || ""
           @telephone_number = params.dig(:com_contact, :telephone_number) || ""
           @contact_categories = ComContactCategory.all
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
           return
         end
 
@@ -62,7 +62,7 @@ module Help
           @email_address = params.dig(:com_contact, :email_address) || ""
           @telephone_number = params.dig(:com_contact, :telephone_number) || ""
           @contact_categories = ComContactCategory.all
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       end
 

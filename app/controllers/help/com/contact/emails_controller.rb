@@ -14,7 +14,7 @@ module Help
 
           if hotp_code.blank?
             @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.create.hotp_code_required"))
-            render :new, status: :unprocessable_entity
+            render :new, status: :unprocessable_content
             return
           end
 
@@ -26,7 +26,7 @@ module Help
             ), notice: I18n.t("help.com.contact.emails.create.success")
           else
             @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.create.hotp_code_invalid"))
-            render :new, status: :unprocessable_entity
+            render :new, status: :unprocessable_content
           end
         end
 
