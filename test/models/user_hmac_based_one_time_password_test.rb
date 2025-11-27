@@ -11,6 +11,6 @@ require "test_helper"
 
 class UserHmacBasedOneTimePasswordTest < ActiveSupport::TestCase
   test "the truth" do
-    skip "TODO: cover user HOTP behavior"
+    skip "TODO: implement user HOTP model test"
   end
 end

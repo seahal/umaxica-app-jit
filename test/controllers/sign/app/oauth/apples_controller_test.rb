@@ -33,10 +33,7 @@ class Sign::App::Oauth::ApplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle callback with missing auth_hash" do
-    # Skip this test due to OmniAuth CSRF protection in test environment
-    # The callback endpoint requires proper OmniAuth state management
-    # which is difficult to mock in integration tests
-    skip "OmniAuth CSRF protection prevents direct callback testing without proper OAuth flow"
+    skip "OmniAuth callback flow requires CSRF state setup; pending proper mock"
   end
 
   test "should handle callback with invalid provider in auth_hash" do

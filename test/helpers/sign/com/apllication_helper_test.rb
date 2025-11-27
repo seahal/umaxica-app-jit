@@ -6,8 +6,7 @@ module Sign
   module Com
     class ApplicationHelperTest < ActionView::TestCase
       test "sample" do
-        # assert_equal Time.new, to_localtime(Time.new)
-        skip "TODO: implement application helper sample test"
+        skip "TODO: add helper tests"
       end
     end
   end

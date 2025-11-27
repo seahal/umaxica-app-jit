@@ -2,19 +2,7 @@
 
 require "test_helper"
 
-class SmsProviders::InfobipTest < ActiveSupport::TestCase
-  test "send_message posts formatted payload and returns parsed json" do
-    skip "TODO: mock HTTP client and assert formatted payload"
-  end
 
-  test "send_message raises when response is unsuccessful" do
-    skip "TODO: simulate non-success response and assert failure"
-  end
-
-  test "send_message falls back to default base url and sender id" do
-    skip "TODO: cover Infobip defaults behavior"
-  end
-end
 
 class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
   setup do
