@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: fba2c79873ada02f70a02ea5d79544a498186030
+  revision: a0f5f810c2ac15cef1115c2a39a06abb35c34c31
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -693,7 +693,7 @@ GEM
       ffi (~> 1.0)
     rbs (3.9.5)
       logger
-    rdoc (6.16.0)
+    rdoc (6.16.1)
       erb
       psych (>= 4.0.0)
       tsort
@@ -780,8 +780,6 @@ GEM
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
       rubocop-ast (>= 1.44.0, < 2.0)
-    ruby-debug-ide (0.7.5)
-      rake (>= 0.8.1)
     ruby-graphviz (1.2.5)
       rexml
     ruby-lsp (0.26.4)
@@ -944,7 +942,6 @@ DEPENDENCIES
   rubocop-rails-omakase
   rubocop-rake
   rubocop-thread_safety
-  ruby-debug-ide
   ruby-lsp
   sha3
   shrine
