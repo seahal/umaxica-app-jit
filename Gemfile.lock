@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: a0f5f810c2ac15cef1115c2a39a06abb35c34c31
+  revision: 690ec8898318b8f50714e86676353ebe1551261e
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -767,7 +767,7 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
-    rubocop-rails (2.34.1)
+    rubocop-rails (2.34.2)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
       rack (>= 1.1)

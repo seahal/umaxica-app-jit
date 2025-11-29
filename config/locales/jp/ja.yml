@@ -71,7 +71,7 @@ ja:
           select_language_prompt: 言語を選択してください…
           select_timezone_prompt: タイムゾーンを選択してください…
           select_region_selector:
-            USA: アメリカ合衆国
+            USA: アメリカ
             JAPAN: 日本
           select_language_selector:
             JAPANESE: 日本語
