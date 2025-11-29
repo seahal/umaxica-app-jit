@@ -62,10 +62,6 @@ gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
-# Authorization
-# gem "pundit"
-# gem "action_policy"
-# gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
 # OpenAPI
@@ -110,6 +106,7 @@ group :development do
   gem "letter_opener"
   # Live Reload
   gem "rails_live_reload"
+  gem "hotwire-livereload"
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
