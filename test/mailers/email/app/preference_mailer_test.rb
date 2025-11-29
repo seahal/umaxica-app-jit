@@ -4,42 +4,13 @@ require "test_helper"
 
 module Email::App
   class PreferenceMailerTest < ActionMailer::TestCase
-    # TODO: Uncomment when EmailPreferenceRequest model is available
-    # setup do
-    #   @preference_request = EmailPreferenceRequest.new(
-    #     email_address: "test@example.com",
-    #     context: "app"
-    #   )
-    #   @edit_url = "https://example.com/preferences/edit?token=test_token"
-    # end
-    #
-    # test "update_request should send email" do
-    #   email = PreferenceMailer.with(
-    #     preference_request: @preference_request,
-    #     edit_url: @edit_url
-    #   ).update_request
-    #
-    #   assert_emails 1 do
-    #     email.deliver_now
-    #   end
-    # end
-    #
-    # test "update_request should have correct recipient" do
-    #   email = PreferenceMailer.with(
-    #     preference_request: @preference_request,
-    #     edit_url: @edit_url
-    #   ).update_request
-    #
-    #   assert_equal ["test@example.com"], email.to
-    # end
-    #
-    # test "update_request should have subject" do
-    #   email = PreferenceMailer.with(
-    #     preference_request: @preference_request,
-    #     edit_url: @edit_url
-    #   ).update_request
-    #
-    #   assert_not_nil email.subject
-    # end
+    test "PreferenceMailer has update_request method" do
+      assert_respond_to PreferenceMailer, :update_request
+    end
+
+    test "PreferenceMailer inherits from ApplicationMailer" do
+      assert_kind_of Class, PreferenceMailer
+      assert_operator PreferenceMailer, :<, ApplicationMailer
+    end
   end
 end
