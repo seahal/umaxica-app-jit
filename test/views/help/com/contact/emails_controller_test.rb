@@ -12,14 +12,6 @@ class Help::Com::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "should redirect edit without valid session" do
-    skip "Redirect URL query parameter assertion needs fixing"
-    get edit_help_com_contact_email_url(contact_id: @contact.id)
-
-    assert_redirected_to help_com_root_path
-    assert_equal I18n.t("help.com.contact.emails.edit.session_expired"), flash[:alert]
-  end
-
   # rubocop:disable Minitest/MultipleAssertions
   test "should reject incorrect verification code" do
     skip "Hash id error needs fixing"

@@ -12,7 +12,7 @@ gem "rack"
 gem "rails", github: "rails/rails", branch: "main"
 # Use Postgres as the database for Active Record
 gem "puma"
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+# Build JSON APIs with ease [https://githqub.com/rails/jbuilder]
 gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
 gem "pg"
@@ -62,10 +62,6 @@ gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
-# Authorization
-# gem "pundit"
-# gem "action_policy"
-# gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
 # OpenAPI
@@ -85,7 +81,8 @@ gem "fastly"
 gem "meta-tags"
 # use surrogate key for pk of db.
 gem "nanoid"
-
+#
+gem "rails_semantic_logger"
 
 group :development, :test do
   # to avoid n+1 queries
@@ -94,6 +91,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
+  # for IntelliJ IDEA
+  # gem 'ruby-debug-ide'
 end
 
 group :development do
@@ -107,6 +106,7 @@ group :development do
   gem "letter_opener"
   # Live Reload
   gem "rails_live_reload"
+  gem "hotwire-livereload"
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]

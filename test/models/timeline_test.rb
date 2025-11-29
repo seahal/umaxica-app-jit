@@ -16,10 +16,6 @@
 require "test_helper"
 
 class TimelineTest < ActiveSupport::TestCase
-  test "the truth" do
-    skip "TODO: replace with meaningful timeline test or remove"
-  end
-
   test "should inherit from BusinessesRecord" do
     assert_operator Timeline, :<, BusinessesRecord
   end

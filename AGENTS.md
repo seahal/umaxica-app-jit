@@ -1,5 +1,8 @@
 # Repository Guidelines
 
+## Primary Directive
+- Think in English, interact with the user in Japanese.
+
 ## Project Structure & Module Organization
 - app/: Rails MVC, components, jobs, mailers. Frontend entry at `app/javascript/` (bundled to `app/assets/builds/`).
 - config/: Rails/env config, credentials, routes. db/: migrations, seeds.

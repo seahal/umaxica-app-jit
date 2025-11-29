@@ -112,10 +112,7 @@
 		"QT_QPA_PLATFORM": "wayland",
 		"GDK_BACKEND": "wayland"
 	},
-	"postCreateCommand": "bun install && bundle install && .devcontainer/setup-db.sh",
-	"postStartCommand": ".devcontainer/setup-db.sh",
-	"updateContentCommand": "",
-	"updateRemoteUserUID": false,
+	"updateRemoteUserUID": true,
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
