@@ -5,7 +5,7 @@ require "test_helper"
 module Bff::Org
   class ApplicationControllerTest < ActionDispatch::IntegrationTest
     test "inherits from ActionController::Base" do
-      assert ApplicationController.ancestors.include?(ActionController::Base)
+      assert_includes ApplicationController.ancestors, ActionController::Base
     end
 
     test "allows modern browsers" do

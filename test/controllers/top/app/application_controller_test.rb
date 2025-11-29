@@ -7,16 +7,16 @@ module Top::App
     test "includes expected concerns" do
       controller = ApplicationController.new
 
-      assert controller.class.include?(RateLimit)
-      assert controller.class.include?(DefaultUrlOptions)
-      assert controller.class.include?(QueryCanonicalizer)
-      assert controller.class.include?(Top::Concerns::Regionalization)
+      assert_includes controller.class, RateLimit
+      assert_includes controller.class, DefaultUrlOptions
+      assert_includes controller.class, QueryCanonicalizer
     end
 
     test "logged_in_user? returns false" do
       controller = ApplicationController.new
 
-      assert_equal false, controller.send(:logged_in_user?)
+      assert_includes controller.class, Top::Concerns::Regionalization
+      assert_not controller.send(:logged_in_user?)
     end
   end
 end

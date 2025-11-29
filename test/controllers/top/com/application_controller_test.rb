@@ -7,9 +7,9 @@ module Top::Com
     test "includes expected concerns" do
       controller = ApplicationController.new
 
-      assert controller.class.include?(RateLimit)
-      assert controller.class.include?(DefaultUrlOptions)
-      assert controller.class.include?(Top::Concerns::Regionalization)
+      assert_includes controller.class, RateLimit
+      assert_includes controller.class, DefaultUrlOptions
+      assert_includes controller.class, Top::Concerns::Regionalization
     end
 
     test "allows modern browsers" do

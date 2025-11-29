@@ -7,8 +7,8 @@ module News::Com
     test "includes expected concerns" do
       controller = ApplicationController.new
 
-      assert controller.class.include?(DefaultUrlOptions)
-      assert controller.class.include?(RateLimit)
+      assert_includes controller.class, DefaultUrlOptions
+      assert_includes controller.class, RateLimit
     end
 
     test "allows modern browsers" do

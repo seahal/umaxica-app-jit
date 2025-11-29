@@ -7,9 +7,9 @@ module Sign::App
     test "includes expected concerns" do
       controller = ApplicationController.new
 
-      assert controller.class.include?(Authn)
-      assert controller.class.include?(RateLimit)
-      assert controller.class.include?(DefaultUrlOptions)
+      assert_includes controller.class, Authn
+      assert_includes controller.class, RateLimit
+      assert_includes controller.class, DefaultUrlOptions
     end
 
     test "authenticate_user! allows logged in users" do
