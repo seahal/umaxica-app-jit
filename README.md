@@ -5,7 +5,7 @@
 
 ## Prerequisites
 
-- Ruby 3.4.7 (defined in the `Gemfile`)
+- Ruby 3.4+ (see `Gemfile` for the exact version)
   - Bundler 2.5+ (shipped with modern Ruby installations)
 - Bun 1.3.x (plus Node.js 20+ if a package requires Node APIs)
 - Docker (recommended for local infrastructure parity)
@@ -50,7 +50,6 @@
   - Google Cloud (Cloud Run, Cloud Build, Cloud Storage, Artifact Registry, OAuth)
   - Apple (Social login)
 - Infrastructure as Code: Terraform (including TCP Terraform modules)
-- Sentry ... ?
 
 ## Tooling & Automation
 
@@ -71,8 +70,8 @@
     - `www.umaxica.app`
     - `[jp|us].api.umaxica.com`
     - `[jp|us].news.umaxica.com`
+    - `[jp|us].help.umaxica.com`
     - `[jp|us].docs.umaxica.com`
-    - `[jp|us].news.umaxica.com`
   - Service endpoints:
     - `www.umaxica.app`
     - `sign.umaxica.app`
