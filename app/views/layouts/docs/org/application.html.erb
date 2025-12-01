@@ -8,6 +8,7 @@
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "docs/org/main" %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <link rel="icon" href="https://perm.umaxica.org/favicon.ico" sizes="32x32">
 </head>
 <body class="px-4">
@@ -26,7 +27,6 @@
 <hr>
 
 <footer>
-
   <ul>
     <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">home</a></li>
     <li>Security</li>

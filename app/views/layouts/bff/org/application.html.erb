@@ -7,6 +7,7 @@
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "top/org/main" %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
  </head>
 <body class="px-4">
 <header>
@@ -60,7 +61,7 @@
     <li>Accessibility</li>
     <li>© <%= Time.now.year %> Umaxica</li>
   </ul>
-  <p>© <%= Time.now.year %> Umaxica.</p>
+  <%= render "concern/copyright" %>
 </footer>
 
 </body>
