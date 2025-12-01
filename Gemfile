@@ -75,6 +75,7 @@ gem "jwt"
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "importmap-rails"
+gem "tailwindcss-rails"
 # for fastly cache purge
 gem "fastly"
 # easty to write tags in head.

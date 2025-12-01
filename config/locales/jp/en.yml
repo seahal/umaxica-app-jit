@@ -871,6 +871,7 @@ en:
           update_settings: "Update Settings"
           cancel: "Cancel"
         reset_settings: "Reset Settings"
+        locale_settings: "locale"
       preference:
         cookie:
           edit:

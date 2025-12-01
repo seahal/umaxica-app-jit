@@ -1177,6 +1177,7 @@ ja:
           update_settings: 設定を更新
           cancel: キャンセル
         reset_settings: 設定のリセット
+        locale_settings: "ロケール"
       preference:
         cookie:
           edit:
