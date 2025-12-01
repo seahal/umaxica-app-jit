@@ -18,4 +18,15 @@ class Top::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a", minimum: 1
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should render copyright in footer" do
+    get top_org_preference_url
+
+    assert_select "footer" do
+      assert_select "small", text: /^©/
+      assert_select "small", text: /#{brand_name}$/
+    end
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 end

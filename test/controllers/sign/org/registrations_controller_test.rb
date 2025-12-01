@@ -23,5 +23,16 @@ module Sign::Org
       assert_response :success
       # Verify social providers are available
     end
+
+    # rubocop:disable Minitest/MultipleAssertions
+    test "should render copyright in footer" do
+      get new_sign_org_registration_url
+
+      assert_select "footer" do
+        assert_select "small", text: /^©/
+        assert_select "small", text: /#{brand_name}$/
+      end
+    end
+    # rubocop:enable Minitest/MultipleAssertions
   end
 end
