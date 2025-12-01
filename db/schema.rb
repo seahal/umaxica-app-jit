@@ -62,27 +62,3 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_03_000000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "universal_email_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "universal_staff_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "otp_private_key"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "universal_telephone_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "universal_user_identifiers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "otp_private_key"
-    t.datetime "updated_at", null: false
-  end
-end
