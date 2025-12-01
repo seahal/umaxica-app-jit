@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 8bbd44f8fe324eff6010d9c5a002c0d2cd72c617
+  revision: 930b51c875e96d81f2ff48552beb9d0677adfe49
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -689,7 +689,7 @@ GEM
       ffi (~> 1.0)
     rbs (3.9.5)
       logger
-    rdoc (6.16.0)
+    rdoc (6.16.1)
       erb
       psych (>= 4.0.0)
       tsort
