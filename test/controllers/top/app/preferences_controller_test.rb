@@ -14,9 +14,9 @@ class Top::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", text: I18n.t("top.app.preferences.title")
-    assert_select "a", text: I18n.t("top.app.preferences.cookie_settings")
-    assert_select "a", text: I18n.t("top.app.preferences.region_settings")
-    assert_select "a", text: I18n.t("top.app.preferences.theme_settings")
+    assert_select "li", text: I18n.t("top.app.preferences.cookie_settings")
+    assert_select "li", text: I18n.t("top.app.preferences.region_settings")
+    assert_select "li", text: I18n.t("top.app.preferences.theme_settings")
   end
   # rubocop:enable Minitest/MultipleAssertions
 

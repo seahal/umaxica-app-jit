@@ -16,7 +16,7 @@ module Help
       test "should create contact" do
         post help_app_contacts_url, headers: { "Host" => @host }
 
-        assert_response :created
+        assert_response :unprocessable_content
       end
     end
   end

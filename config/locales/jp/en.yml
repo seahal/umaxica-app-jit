@@ -14,6 +14,17 @@ en:
         contacts:
           create:
             success: "Your inquiry has been received. Please check your email address."
+      app:
+        contacts:
+          new:
+            page_title: "Contact Us"
+            confirm_policy: "I agree to the privacy policy"
+            contact_category_title: "Category"
+            email_address: "Email Address"
+            telephone_number: "Telephone Number"
+            cancel: "Cancel"
+          create:
+            success: "Your inquiry has been received. Please check your email address."
   sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"

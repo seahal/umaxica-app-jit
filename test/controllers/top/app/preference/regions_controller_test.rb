@@ -19,16 +19,14 @@ class Top::App::Preference::RegionsControllerTest < ActionDispatch::IntegrationT
     assert_select "form[method='post']" do
       assert_select "input[name='_method'][value='patch']", count: 1
 
-      assert_select ".region-section" do
-        assert_select "h2", text: I18n.t("top.app.preferences.regions.region_section")
-        assert_select "label[for='region']", text: I18n.t("top.app.preferences.regions.select_region")
-        assert_select "select#region option[value='US']"
-        assert_select "select#region option[value='JP']"
-      end
+      # New layout uses space-y-4 div instead of .region-section class
+      assert_select "h2", text: I18n.t("top.app.preferences.regions.region_section")
+      assert_select "label[for='region']", text: I18n.t("top.app.preferences.regions.select_region")
+      assert_select "select#region option[value='US']"
+      assert_select "select#region option[value='JP']"
 
-      assert_select ".form-actions" do
-        assert_select "input[type='submit']", count: 1
-      end
+      # Submit button
+      assert_select "input[type='submit']", count: 1
     end
   end
   # rubocop:enable Minitest/MultipleAssertions

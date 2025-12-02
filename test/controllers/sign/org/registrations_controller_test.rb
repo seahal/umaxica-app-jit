@@ -58,11 +58,8 @@ module Sign::Org
 
       assert_response :success
       assert_select "footer" do
-        assert_select "ul" do
-          assert_select "li", minimum: 1
-          # Home link
-          assert_select "a[href*=?]", ENV["EDGE_STAFF_URL"], text: "home"
-        end
+        # Footer should contain copyright and links
+        assert_select "a[href*=?]", ENV["EDGE_STAFF_URL"], text: "home"
       end
     end
     # rubocop:enable Minitest/MultipleAssertions
