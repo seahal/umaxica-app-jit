@@ -2,7 +2,6 @@
 
 require "test_helper"
 
-
 class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     get help_app_root_url
@@ -31,10 +30,11 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
         #        assert_select "h1", text: "#{ brand_name } (docs, app)"
         #
         assert_select "div", count: 1
-          # assert_select "footer", count: 1 do
-          #   assert_select "small", text: /^©/
-        end
+        # assert_select "footer", count: 1 do
+        #   assert_select "small", text: /^©/
       end
     end
+  end
 end
+
 # rubocop:enable Minitest/MultipleAssertions

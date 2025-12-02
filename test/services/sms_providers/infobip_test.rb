@@ -2,20 +2,6 @@
 
 require "test_helper"
 
-class SmsProviders::InfobipTest < ActiveSupport::TestCase
-  test "send_message posts formatted payload and returns parsed json" do
-    skip "TODO: mock HTTP client and assert formatted payload"
-  end
-
-  test "send_message raises when response is unsuccessful" do
-    skip "TODO: simulate non-success response and assert failure"
-  end
-
-  test "send_message falls back to default base url and sender id" do
-    skip "TODO: cover Infobip defaults behavior"
-  end
-end
-
 class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
   setup do
     @provider = SmsProviders::Infobip.new
@@ -62,8 +48,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     captured_options = nil
 
     mock_response = Object.new
-    def mock_response.code; "200"; end
-    def mock_response.body; '{"status": "success"}'; end
+
+    def mock_response.code
+      "200"
+    end
+
+    def mock_response.body
+      '{"status": "success"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) do |url, options|
@@ -85,8 +77,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     captured_options = nil
 
     mock_response = Object.new
-    def mock_response.code; "200"; end
-    def mock_response.body; '{"status": "success"}'; end
+
+    def mock_response.code
+      "200"
+    end
+
+    def mock_response.body
+      '{"status": "success"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) do |url, options|
@@ -103,8 +101,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
 
   test "send_message returns parsed JSON on success" do
     mock_response = Object.new
-    def mock_response.code; "200"; end
-    def mock_response.body; '{"status": "success", "messageId": "12345"}'; end
+
+    def mock_response.code
+      "200"
+    end
+
+    def mock_response.body
+      '{"status": "success", "messageId": "12345"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) { |url, options| mock_response }
@@ -118,8 +122,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
 
   test "send_message raises on non-2xx response" do
     mock_response = Object.new
-    def mock_response.code; "400"; end
-    def mock_response.body; '{"error": "Bad request"}'; end
+
+    def mock_response.code
+      "400"
+    end
+
+    def mock_response.body
+      '{"error": "Bad request"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) { |url, options| mock_response }
@@ -134,8 +144,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
 
   test "send_message handles 201 response as success" do
     mock_response = Object.new
-    def mock_response.code; "201"; end
-    def mock_response.body; '{"status": "created"}'; end
+
+    def mock_response.code
+      "201"
+    end
+
+    def mock_response.body
+      '{"status": "created"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) { |url, options| mock_response }
@@ -148,8 +164,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
 
   test "send_message handles 299 response as success" do
     mock_response = Object.new
-    def mock_response.code; "299"; end
-    def mock_response.body; '{"status": "ok"}'; end
+
+    def mock_response.code
+      "299"
+    end
+
+    def mock_response.body
+      '{"status": "ok"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) { |url, options| mock_response }
@@ -162,8 +184,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
 
   test "send_message raises on 300 response" do
     mock_response = Object.new
-    def mock_response.code; "300"; end
-    def mock_response.body; '{"error": "Multiple choices"}'; end
+
+    def mock_response.code
+      "300"
+    end
+
+    def mock_response.body
+      '{"error": "Multiple choices"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) { |url, options| mock_response }
@@ -177,8 +205,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
 
   test "send_message raises on 500 response" do
     mock_response = Object.new
-    def mock_response.code; "500"; end
-    def mock_response.body; '{"error": "Server error"}'; end
+
+    def mock_response.code
+      "500"
+    end
+
+    def mock_response.body
+      '{"error": "Server error"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) { |url, options| mock_response }
@@ -192,8 +226,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
 
   test "send_message calls http_client post method" do
     mock_response = Object.new
-    def mock_response.code; "200"; end
-    def mock_response.body; '{"status": "success"}'; end
+
+    def mock_response.code
+      "200"
+    end
+
+    def mock_response.body
+      '{"status": "success"}'
+    end
 
     mock_http = Object.new
     post_called = false
@@ -212,8 +252,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     captured_options = nil
 
     mock_response = Object.new
-    def mock_response.code; "200"; end
-    def mock_response.body; '{"status": "success"}'; end
+
+    def mock_response.code
+      "200"
+    end
+
+    def mock_response.body
+      '{"status": "success"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) do |url, options|
@@ -233,8 +279,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     captured_url = nil
 
     mock_response = Object.new
-    def mock_response.code; "200"; end
-    def mock_response.body; '{"status": "success"}'; end
+
+    def mock_response.code
+      "200"
+    end
+
+    def mock_response.body
+      '{"status": "success"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) do |url, options|
@@ -252,8 +304,14 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     captured_options = nil
 
     mock_response = Object.new
-    def mock_response.code; "200"; end
-    def mock_response.body; '{"status": "success"}'; end
+
+    def mock_response.code
+      "200"
+    end
+
+    def mock_response.body
+      '{"status": "success"}'
+    end
 
     mock_http = Object.new
     mock_http.define_singleton_method(:post) do |url, options|

@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class AppContactTest < ActiveSupport::TestCase
   def build_contact(**attrs)
     # Create contact first

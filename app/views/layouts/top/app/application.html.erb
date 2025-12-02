@@ -8,6 +8,7 @@
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "bff/app/main" %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
 </head>
 
 <body class="px-4">
@@ -29,14 +30,11 @@
 
 <footer>
   <ul>
-    <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Home</a></li>
-    <li><%= link_to 'Cookie', edit_top_app_preference_cookie_path %></li>
-    <li>Support</li>
-    <li>Privacy</li>
-    <li>Security</li>
-    <li>Accessibility</li>
+    <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= t('top.app.preferences.footer.home') %></a></li>
+    <li><%= link_to t('top.app.preferences.footer.preference'), top_app_preference_path %></li>
+    <li><%= link_to t('top.app.preferences.footer.privacy'), top_app_privacy_path %></li>
   </ul>
-  <p>© <%= Time.now.year %> <%= ENV['BRAND_NAME'] %></p>
+  <%= render "concern/copyright" %>
 </footer>
 
 </body>

@@ -7,6 +7,7 @@
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "top/app/main" %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <style>
       body {
           font-family: "Helvetica Neue",
@@ -64,7 +65,7 @@
     <li>Security</li>
     <li>Accessibility</li>
   </ul>
-  <p>© 2025 Umaxica.</p>
+  <%= render "concern/copyright" %>
 </footer>
 
 </body>

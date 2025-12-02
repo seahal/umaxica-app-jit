@@ -33,18 +33,15 @@ class Sign::App::Oauth::ApplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle callback with missing auth_hash" do
-    # Skip this test due to OmniAuth CSRF protection in test environment
-    # The callback endpoint requires proper OmniAuth state management
-    # which is difficult to mock in integration tests
-    skip "OmniAuth CSRF protection prevents direct callback testing without proper OAuth flow"
+    skip "OmniAuth callback flow requires CSRF state setup; pending proper mock"
   end
 
   test "should handle callback with invalid provider in auth_hash" do
     OmniAuth.config.test_mode = true
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new({
-      provider: "invalid_provider",
-      uid: "000123.abc456def789.1234"
-    })
+                                                                 provider: "invalid_provider",
+                                                                 uid: "000123.abc456def789.1234"
+                                                               })
 
     Rails.application.env_config["omniauth.auth"] = OmniAuth.config.mock_auth[:apple]
     get callback_sign_app_oauth_apple_url, headers: { "Host" => @host }
@@ -61,9 +58,9 @@ class Sign::App::Oauth::ApplesControllerTest < ActionDispatch::IntegrationTest
   test "should handle callback with missing uid in auth_hash" do
     OmniAuth.config.test_mode = true
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new({
-      provider: "apple",
-      uid: nil
-    })
+                                                                 provider: "apple",
+                                                                 uid: nil
+                                                               })
 
     Rails.application.env_config["omniauth.auth"] = OmniAuth.config.mock_auth[:apple]
     get callback_sign_app_oauth_apple_url, headers: { "Host" => @host }

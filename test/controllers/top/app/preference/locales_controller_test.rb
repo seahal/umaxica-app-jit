@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Top::App::Preference::LocalesControllerTest < ActionDispatch::IntegrationTest
   # rubocop:disable Minitest/MultipleAssertions
   test "GET edit renders form with language and timezone selects" do

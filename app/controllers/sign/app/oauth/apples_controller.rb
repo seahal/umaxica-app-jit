@@ -118,6 +118,7 @@ module Sign
           return "apple" if normalized == "apple"
           "google"
         end
+
         def with_identity_writing(&block)
           IdentitiesRecord.connected_to(role: :writing, &block)
         end

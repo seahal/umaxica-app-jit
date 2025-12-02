@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class IdentitiesRecordTest < ActiveSupport::TestCase
   test "should be abstract class" do
     assert_predicate IdentitiesRecord, :abstract_class?

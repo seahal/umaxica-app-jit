@@ -8,12 +8,15 @@
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "sign/org/main" %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <link rel="icon" href="https://perm.umaxica.org/favicon.ico" sizes="32x32">
 </head>
 <body class="px-4">
 <%= render "concern/flash_messages" %>
 <header>
-  <h1><a href="http://<%= ENV['EDGE_STAFF_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (sign, org)</a></h1>
+  <h1>
+    <a href="http://<%= ENV['EDGE_STAFF_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (sign, org)</a>
+  </h1>
 </header>
 
 <hr>
@@ -28,12 +31,6 @@
 
   <ul>
     <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">home</a></li>
-    <li>Security</li>
-    <li>Support</li>
-    <li>Terms</li>
-    <li>Privacy</li>
-    <li>Accessibility</li>
-    <li><%= link_to t('sign.org.preferences.title'), top_org_preference_path %></li>
   </ul>
   <%= render "concern/copyright" %>
 </footer>

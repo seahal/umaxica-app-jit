@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Top::Org::Preference::RegionsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:disable Minitest/MultipleAssertions
   test "GET edit renders form with region select only" do

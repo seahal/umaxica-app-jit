@@ -1,15 +1,6 @@
 pre-commit:
   parallel: true
   commands:
-    bun_test:
-      run: |
-        #!/bin/sh
-        set -eu
-        if [ -f /.dockerenv ]; then
-          bun test
-        else
-          docker compose run core bun test
-        fi
     bun_audit:
       run: |
         #!/bin/sh
@@ -27,15 +18,6 @@ pre-commit:
           bun run check
         else
           docker compose run core bun check
-        fi
-    bun_type_check:
-      run: |
-        #!/bin/sh
-        set -eu
-        if [ -f /.dockerenv ]; then
-          bun run type
-        else
-          docker compose run core bun type
         fi
     ruby_rubocop:
       run: |

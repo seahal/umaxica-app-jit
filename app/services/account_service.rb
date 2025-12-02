@@ -327,5 +327,6 @@ class AccountService
       raise ArgumentError, "Invalid type: #{type}. Must be :user or :staff"
     end
   end
+
   private_class_method :find_record
 end

@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class AvatarUploaderTest < ActiveSupport::TestCase
   DummyModel = Struct.new(:id) do
     def self.to_s
@@ -28,6 +27,7 @@ class AvatarUploaderTest < ActiveSupport::TestCase
     assert_includes allowlist, "jpeg"
     assert_includes allowlist, "gif"
   end
+
   # rubocop:enable Minitest/MultipleAssertions
 
   def test_filename_default

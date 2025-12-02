@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Email::Com::ApplicationMailerTest < ActionMailer::TestCase
   # rubocop:disable Minitest/MultipleAssertions
   test "applies default from address" do

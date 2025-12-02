@@ -8,7 +8,7 @@ module Www
   module App
     class ApplicationHelperTest < ActionView::TestCase
       test "obsolete - moved to Sign module" do
-        skip "This test has been moved to Sign::App::ApplicationHelperTest"
+        skip "obsolete - moved to Sign module"
       end
     end
   end

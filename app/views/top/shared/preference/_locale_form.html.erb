@@ -4,10 +4,10 @@
 <p class="locale-description"><%= t("top.#{scope}.preference.locale.edit.description") %></p>
 
 <% language_options = I18n.t("top.#{scope}.preference.locale.edit.language_options", default: {}).map do |code, label|
-  [ label, code ]
+  [label, code]
 end %>
 <% timezone_options = I18n.t("top.#{scope}.preference.locale.edit.timezone_options", default: {}).map do |identifier, label|
-  [ label, identifier ]
+  [label, identifier]
 end %>
 <% selected_language = @current_language.presence || PreferenceRegions::DEFAULT_LANGUAGE %>
 <% selected_timezone = @current_timezone_identifier.presence || PreferenceRegions::DEFAULT_TIMEZONE %>

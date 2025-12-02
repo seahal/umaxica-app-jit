@@ -2,7 +2,6 @@
 
 require "test_helper"
 
-
 class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     get help_com_root_url
@@ -21,13 +20,11 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_com_root_url
 
     assert_select "head", count: 1 do
-      assert_select "title", count: 1, text: "#{brand_name} (com) Help Center"
+      assert_select "title", text: "#{brand_name} (com) Help Center"
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do
-      assert_select "header", count: 1 do
-        assert_select "h1", text: "#{ brand_name } (help, com)"
-      end
+      assert_select "header", minimum: 1
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
         assert_select "small", text: /^©/

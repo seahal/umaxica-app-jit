@@ -3,72 +3,72 @@
 <div id="<%= widget_id %>"></div>
 
 <script nonce="<%= content_security_policy_nonce %>">
-(function() {
-  const widgetId = '<%= widget_id %>';
-  const container = document.getElementById(widgetId);
+    (function () {
+        const widgetId = '<%= widget_id %>';
+        const container = document.getElementById(widgetId);
 
-  if (!container) {
-    console.error('Turnstile container not found:', widgetId);
-    return;
-  }
+        if (!container) {
+            console.error('Turnstile container not found:', widgetId);
+            return;
+        }
 
-  function renderWidget() {
-    if (typeof turnstile === 'undefined') {
-      console.debug('Turnstile API not loaded yet, retrying...');
-      setTimeout(renderWidget, 100);
-      return;
-    }
+        function renderWidget() {
+            if (typeof turnstile === 'undefined') {
+                console.debug('Turnstile API not loaded yet, retrying...');
+                setTimeout(renderWidget, 100);
+                return;
+            }
 
-    console.debug('Rendering Turnstile widget in:', widgetId);
+            console.debug('Rendering Turnstile widget in:', widgetId);
 
-    try {
-      turnstile.render('#' + widgetId, {
-        sitekey: '<%= Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY) %>',
-        callback: function(token) {
-          console.debug('Turnstile verified:', token.substring(0, 20) + '...');
-        },
-        'error-callback': function() {
-          console.error('Turnstile error occurred');
-        },
-        'expired-callback': function() {
-          console.debug('Turnstile token expired');
-        },
-      });
-    } catch (e) {
-      console.error('Turnstile render error:', e);
-    }
-  }
+            try {
+                turnstile.render('#' + widgetId, {
+                    sitekey: '<%= Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY) %>',
+                    callback: function (token) {
+                        console.debug('Turnstile verified:', token.substring(0, 20) + '...');
+                    },
+                    'error-callback': function () {
+                        console.error('Turnstile error occurred');
+                    },
+                    'expired-callback': function () {
+                        console.debug('Turnstile token expired');
+                    },
+                });
+            } catch (e) {
+                console.error('Turnstile render error:', e);
+            }
+        }
 
-  // Load script if not already loaded
-  if (!window.turnstileScriptLoading && !window.turnstileScriptLoaded) {
-    console.debug('Loading Turnstile script...');
-    window.turnstileScriptLoading = true;
+        // Load script if not already loaded
+        if (!window.turnstileScriptLoading && !window.turnstileScriptLoaded) {
+            console.debug('Loading Turnstile script...');
+            window.turnstileScriptLoading = true;
 
-    const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-    script.async = true;
-    script.onload = function() {
-      console.debug('Turnstile script loaded');
-      window.turnstileScriptLoaded = true;
-      window.turnstileScriptLoading = false;
-      renderWidget();
-    };
-    script.onerror = function() {
-      console.error('Failed to load Turnstile script');
-      window.turnstileScriptLoading = false;
-    };
-    document.head.appendChild(script);
-  } else if (window.turnstileScriptLoaded) {
-    console.debug('Turnstile script already loaded');
-    renderWidget();
-  } else {
-    console.debug('Turnstile script loading in progress, waiting...');
-    const checkInterval = setInterval(function() {
-      if (window.turnstileScriptLoaded) {
-        clearInterval(checkInterval);
-        renderWidget();
-      }
-    }, 100);
-  }
-})();
+            const script = document.createElement('script');
+            script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+            script.async = true;
+            script.onload = function () {
+                console.debug('Turnstile script loaded');
+                window.turnstileScriptLoaded = true;
+                window.turnstileScriptLoading = false;
+                renderWidget();
+            };
+            script.onerror = function () {
+                console.error('Failed to load Turnstile script');
+                window.turnstileScriptLoading = false;
+            };
+            document.head.appendChild(script);
+        } else if (window.turnstileScriptLoaded) {
+            console.debug('Turnstile script already loaded');
+            renderWidget();
+        } else {
+            console.debug('Turnstile script loading in progress, waiting...');
+            const checkInterval = setInterval(function () {
+                if (window.turnstileScriptLoaded) {
+                    clearInterval(checkInterval);
+                    renderWidget();
+                }
+            }, 100);
+        }
+    })();
 </script>

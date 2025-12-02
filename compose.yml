@@ -8,7 +8,7 @@ services:
         DOCKER_UID: ${UID:-1000}
         DOCKER_GID: ${GID:-1000}
     env_file: docker/core/env
-    entrypoint: [ "/bin/bash", "docker/core/entrypoint.sh" ]
+    entrypoint: [ "/bin/bash", "/home/jit/workspace/docker/core/entrypoint.sh" ]
     command: [ "sleep", "infinity" ]
     restart: always
     tty: true
@@ -17,15 +17,9 @@ services:
     ports:
       - "3001:3000"
     volumes:
-      - .:/home/jit/workspace
-      - type: tmpfs
-        target: /home/jit/workspace/log
-        tmpfs:
-          size: 2147483648
-      - type: tmpfs
-        target: /home/jit/workspace/tmp
-        tmpfs:
-          size: 4294967296
+      - type: bind
+        source: .
+        target: /home/jit/workspace
     networks:
       - backend
       - frontend

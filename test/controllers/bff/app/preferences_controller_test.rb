@@ -23,4 +23,13 @@ class Bff::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "div.configuration-list ul li a", minimum: 1
   end
+
+  test "should render copyright in footer" do
+    get bff_app_preference_url
+
+    assert_select "footer" do
+      assert_select "small", text: /^©/
+      assert_select "small", text: /#{brand_name}$/
+    end
+  end
 end

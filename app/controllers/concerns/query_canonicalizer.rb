@@ -18,7 +18,7 @@ module QueryCanonicalizer
   # - ct: "sy"/"mu"/"dr" 以外は "sy"
   def normalize_params(raw)
     keys = DEFAULTS.keys
-    src  = raw.slice(*keys)
+    src = raw.slice(*keys)
 
     lx = case (src["lx"].presence)
     when "ja", "en" then src["lx"]
@@ -47,7 +47,7 @@ module QueryCanonicalizer
     # GET/HEAD 以外は触らない（POST系をリダイレクトすると危険）
     return unless request.get? || request.head?
 
-    keys    = DEFAULTS.keys
+    keys = DEFAULTS.keys
     current = request.query_parameters.slice(*keys)
     expected = normalize_params(request.query_parameters)
 
@@ -59,8 +59,8 @@ module QueryCanonicalizer
 
     # 並びを安定化（アルファベット順）して相対URLへ 302
     sorted = expected.sort_by { |k, _| k }.to_h
-    query  = Rack::Utils.build_query(sorted)
-    path   = request.path
+    query = Rack::Utils.build_query(sorted)
+    path = request.path
     location = query.empty? ? path : "#{path}?#{query}"
 
     redirect_to location,

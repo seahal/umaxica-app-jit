@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Email::App::RegistrationMailerTest < ActionMailer::TestCase
   # rubocop:disable Minitest/MultipleAssertions
   test "create" do

@@ -11,9 +11,12 @@ Rails.application.routes.draw do
         end
         # preferences
         resource :preference, only: [ :show ]
-        namespace :preference do
+        resource :privacy, only: [ :show ]
+        namespace :privacy do
           # for ePrivacy settings.
           resource :cookie, only: [ :edit, :update ]
+        end
+        namespace :preference do
           # for region settings.
           resource :region, only: [ :edit, :update ]
           # for lx and tz settings.
@@ -38,8 +41,6 @@ Rails.application.routes.draw do
         # preferences
         resource :preference, only: [ :show ]
         namespace :preference do
-          # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
@@ -48,6 +49,11 @@ Rails.application.routes.draw do
           resource :locale, only: [ :edit, :update ]
           # endpoint of reset preferences.
           resource :reset, only: [ :edit, :destroy ]
+        end
+        resource :privacy, only: [ :show ]
+        namespace :privacy do
+          # for ePrivacy settings.
+          resource :cookie, only: [ :edit, :update ]
         end
         resource :configuration, only: [ :show ]
         namespace :configuration do
@@ -69,8 +75,6 @@ Rails.application.routes.draw do
         # preferences
         resource :preference, only: [ :show ]
         namespace :preference do
-          # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
           # for region settings.
           resource :region, only: [ :edit, :update ]
           # for dark/light mode
@@ -79,6 +83,11 @@ Rails.application.routes.draw do
           resource :locale, only: [ :edit, :update ]
           # endpoint of reset preferences.
           resource :reset, only: [ :edit, :destroy ]
+        end
+        resource :privacy, only: [ :show ]
+        namespace :privacy do
+          # for ePrivacy settings.
+          resource :cookie, only: [ :edit, :update ]
         end
       end
     end

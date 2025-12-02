@@ -13,7 +13,6 @@
 #
 require "test_helper"
 
-
 class AccountTest < ActiveSupport::TestCase
   [ StaffIdentityEmail, UserIdentityEmail ].each do |model|
     test "#{model} valid with address and confirm_policy" do

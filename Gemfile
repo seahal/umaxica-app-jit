@@ -62,10 +62,6 @@ gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
-# Authorization
-# gem "pundit"
-# gem "action_policy"
-# gem "rolify"
 # Altanative way of Active Storage
 gem "carrierwave"
 # OpenAPI
@@ -79,13 +75,15 @@ gem "jwt"
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "importmap-rails"
+gem "tailwindcss-rails"
 # for fastly cache purge
 gem "fastly"
 # easty to write tags in head.
 gem "meta-tags"
 # use surrogate key for pk of db.
 gem "nanoid"
-
+#
+gem "rails_semantic_logger"
 
 group :development, :test do
   # to avoid n+1 queries
@@ -94,6 +92,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
+  # for IntelliJ IDEA
+  # gem 'ruby-debug-ide'
 end
 
 group :development do
@@ -107,6 +107,7 @@ group :development do
   gem "letter_opener"
   # Live Reload
   gem "rails_live_reload"
+  gem "hotwire-livereload"
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]

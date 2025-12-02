@@ -10,7 +10,6 @@ ARG DOCKER_GID=1000
 ARG DOCKER_USER=jit
 ARG DOCKER_GROUP=umaxica
 ARG GITHUB_ACTIONS=""
-ARG CLOUDFLARE_R2_TOKEN=""
 
 # ============================================================================
 # Production image (multi-stage build)
@@ -58,14 +57,15 @@ RUN apt-get update \
 
 # ============================================================================
 # ============================================================================
+
 FROM production-base AS production-build
 
-ARG BUN_VERSION
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
 
+# Install build tools required for gems
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     build-essential \
@@ -74,31 +74,23 @@ RUN apt-get update \
     libpq-dev \
     libvips-dev \
     libyaml-dev \
-    nodejs \
-    npm \
     pkg-config \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g bun@"${BUN_VERSION}" \
-    && npm cache clean --force
-
 COPY Gemfile Gemfile.lock ./
-RUN bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} \
+RUN --mount=type=cache,target=/usr/local/bundle \
+    --mount=type=cache,target=/root/.cache/bundle \
+    bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} \
     && bundle exec bootsnap precompile --gemfile \
     && bundle config set --local without 'development test' \
     && bundle clean --force \
     && rm -rf /usr/local/bundle/cache
 
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile \
-    && rm -rf /root/.bun/cache
 
 COPY . .
 
-RUN bun run build \
-    && rm -rf node_modules \
-    && install -d tmp/pids log \
+RUN install -d tmp/pids log \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
     && rm -f tmp/pids/server.pid
@@ -136,7 +128,8 @@ SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV TZ=UTC \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
-    BUNDLE_FORCE_RUBY_PLATFORM=1
+    BUNDLE_FORCE_RUBY_PLATFORM=1 \
+    NPM_CONFIG_CACHE=/tmp/npm-cache
 
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \

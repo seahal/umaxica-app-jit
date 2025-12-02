@@ -6,15 +6,16 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "news/app/main" %>
-  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 </head>
 
 <body class="px-4">
 <%= render "concern/flash_messages" %>
 <header>
-  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (news, app)</a></h1>
+  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (news,
+    app)</a></h1>
   <p>
     <%= link_to_if !@user&.active?, "logout?", new_sign_app_registration_path %>
     <%= link_to_unless @user&.active?, "login?", new_sign_app_registration_path %>

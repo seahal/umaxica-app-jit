@@ -23,4 +23,15 @@ class Bff::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "div.configuration-list ul li a", minimum: 1
   end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should render copyright in footer" do
+    get bff_org_preference_url
+
+    assert_select "footer" do
+      assert_select "small", text: /^©/
+      assert_select "small", text: /#{brand_name}$/
+    end
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 end

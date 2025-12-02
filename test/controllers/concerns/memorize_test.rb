@@ -2,7 +2,6 @@
 
 require "test_helper"
 
-
 class MemorizeConcernTest < ActiveSupport::TestCase
   setup do
     @memorize = Memorize::RedisMemorize.test_instance(prefix: "test", postfix: SecureRandom.uuid)
