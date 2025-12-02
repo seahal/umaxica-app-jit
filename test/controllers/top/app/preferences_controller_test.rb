@@ -36,8 +36,8 @@ class Top::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "footer" do
       assert_select "a", text: I18n.t("top.app.preferences.footer.home")
-      assert_select "a", text: I18n.t("top.app.preferences.footer.cookie"), href: edit_top_app_privacy_cookie_path
       assert_select "a", text: I18n.t("top.app.preferences.footer.preference"), href: top_app_preference_path
+      assert_select "a", text: I18n.t("top.app.preferences.footer.privacy"), href: top_app_privacy_path
     end
   end
   # rubocop:enable Minitest/MultipleAssertions

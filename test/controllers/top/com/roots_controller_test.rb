@@ -14,10 +14,11 @@ module Top::Com
     test "should display navigation links" do
       get top_com_root_url
 
-      assert_response :success
-      assert_select "h1", text: I18n.t("top.com.preferences.footer.home")
-      assert_select "a[href^=?]", top_com_preference_path, text: I18n.t("top.com.preferences.footer.preference")
-      assert_select "a[href^=?]", top_com_privacy_path, text: I18n.t("top.com.preferences.footer.privacy")
+      assert_select "footer" do
+        assert_select "a", text: I18n.t("top.com.preferences.footer.home")
+        assert_select "a[href^=?]", top_com_preference_path, text: I18n.t("top.com.preferences.footer.preference")
+        assert_select "a[href^=?]", top_com_privacy_path, text: I18n.t("top.com.preferences.footer.privacy")
+      end
     end
     # rubocop:enable Minitest/MultipleAssertions
   end
