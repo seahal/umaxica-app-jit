@@ -12,7 +12,7 @@ gem "rack"
 gem "rails", github: "rails/rails", branch: "main"
 # Use Postgres as the database for Active Record
 gem "puma"
-# Build JSON APIs with ease [https://githqub.com/rails/jbuilder]
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
 gem "pg"

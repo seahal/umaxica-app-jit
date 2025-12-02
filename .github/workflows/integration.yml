@@ -26,6 +26,7 @@ defaults:
 env:
   # CI Configuration
   CI: true
+  DOCKER_BUILDKIT: '1'
 
   # Version Configuration
   RUBY_VERSION: '4.0.0-preview2'

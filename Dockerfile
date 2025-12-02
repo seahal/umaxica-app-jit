@@ -57,14 +57,15 @@ RUN apt-get update \
 
 # ============================================================================
 # ============================================================================
+
 FROM production-base AS production-build
 
-ARG BUN_VERSION
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
 
+# Install build tools required for gems
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     build-essential \
@@ -73,14 +74,9 @@ RUN apt-get update \
     libpq-dev \
     libvips-dev \
     libyaml-dev \
-    nodejs \
-    npm \
     pkg-config \
     unzip \
     && rm -rf /var/lib/apt/lists/*
-
-RUN npm install -g bun@"${BUN_VERSION}" \
-    && npm cache clean --force
 
 COPY Gemfile Gemfile.lock ./
 RUN --mount=type=cache,target=/usr/local/bundle \
@@ -91,15 +87,10 @@ RUN --mount=type=cache,target=/usr/local/bundle \
     && bundle clean --force \
     && rm -rf /usr/local/bundle/cache
 
-COPY package.json bun.lock ./
-RUN --mount=type=cache,target=/root/.cache/bun \
-    bun install --frozen-lockfile
 
 COPY . .
 
-RUN bun run build \
-    && rm -rf node_modules \
-    && install -d tmp/pids log \
+RUN install -d tmp/pids log \
     && rm -rf tmp/cache \
     && find log -type f -exec truncate -s 0 {} + \
     && rm -f tmp/pids/server.pid
