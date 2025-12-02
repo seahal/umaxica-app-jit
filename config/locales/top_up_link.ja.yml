@@ -1,0 +1,35 @@
+ja:
+  top:
+    app:
+      preferences:
+        up_link: "うえへ"
+        back_to_settings: "設定一覧に戻る"
+        title: "地域と言語の設定"
+        cookie_settings: "クッキー設定"
+        region_settings: "地域設定"
+        theme_settings: "テーマ設定"
+        footer:
+          home: "ホーム"
+          privacy: "プライバシー"
+          preference: "設定"
+    com:
+      preferences:
+        up_link: "うえへ"
+        back_to_settings: "設定一覧に戻る"
+        title: "地域と言語の設定"
+        cookie_settings: "クッキー設定"
+        region_settings: "地域設定"
+        theme_settings: "テーマ設定"
+        footer:
+          home: "ホーム"
+          privacy: "プライバシー"
+          preference: "設定"
+    org:
+      preferences:
+        up_link: "うえへ"
+        back_to_settings: "設定一覧に戻る"
+        title: "地域と言語の設定"
+        footer:
+          home: "ホーム"
+          privacy: "プライバシー"
+          preference: "設定"

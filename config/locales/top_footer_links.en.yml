@@ -1,0 +1,20 @@
+en:
+  top:
+    app:
+      preferences:
+        footer:
+          home: "Home"
+          cookie: "Cookie"
+          preference: "Preference"
+    com:
+      preferences:
+        footer:
+          home: "Home"
+          cookie: "Cookie"
+          preference: "Preference"
+    org:
+      preferences:
+        footer:
+          home: "Home"
+          cookie: "Cookie"
+          preference: "Preference"
