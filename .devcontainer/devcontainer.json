@@ -113,6 +113,7 @@
 		"GDK_BACKEND": "wayland"
 	},
 	"updateRemoteUserUID": true,
+	"postCreateCommand": "bin/rails db:create",
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},

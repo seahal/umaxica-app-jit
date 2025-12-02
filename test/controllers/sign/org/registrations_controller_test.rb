@@ -34,5 +34,37 @@ module Sign::Org
       end
     end
     # rubocop:enable Minitest/MultipleAssertions
+
+    # rubocop:disable Minitest/MultipleAssertions
+    test "renders registration layout structure" do
+      get new_sign_org_registration_url
+
+      expected_brand = brand_name
+
+      assert_select "head", count: 1 do
+        assert_select "title", count: 1, text: "#{expected_brand} (org)"
+      end
+      assert_select "body", count: 1 do
+        assert_select "header", minimum: 1
+        assert_select "main", count: 1
+        assert_select "footer", count: 1
+      end
+    end
+    # rubocop:enable Minitest/MultipleAssertions
+
+    # rubocop:disable Minitest/MultipleAssertions
+    test "footer contains navigation links" do
+      get new_sign_org_registration_url
+
+      assert_response :success
+      assert_select "footer" do
+        assert_select "ul" do
+          assert_select "li", minimum: 1
+          # Home link
+          assert_select "a[href*=?]", ENV["EDGE_STAFF_URL"], text: "home"
+        end
+      end
+    end
+    # rubocop:enable Minitest/MultipleAssertions
   end
 end
