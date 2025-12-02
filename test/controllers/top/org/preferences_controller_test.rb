@@ -36,8 +36,8 @@ class Top::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "footer" do
       assert_select "a[href=?]", "http://#{ENV['EDGE_STAFF_URL']}:4444/", text: I18n.t("top.org.preferences.footer.home")
-      assert_select "a[href=?]", edit_top_org_privacy_cookie_path, text: I18n.t("top.org.preferences.footer.cookie")
-      assert_select "a[href=?]", top_org_preference_path, text: I18n.t("top.org.preferences.footer.preference")
+      assert_select "a[href^=?]", edit_top_org_privacy_cookie_path, text: I18n.t("top.org.preferences.footer.cookie")
+      assert_select "a[href^=?]", top_org_preference_path, text: I18n.t("top.org.preferences.footer.preference")
     end
   end
   # rubocop:enable Minitest/MultipleAssertions

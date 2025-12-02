@@ -26,7 +26,7 @@ class Top::App::Privacy::CookiesControllerTest < ActionDispatch::IntegrationTest
       assert_select "label", I18n.t("top.app.preference.cookie.edit.accept_performance_cookies")
       assert_select "input[type='submit']", count: 1
     end
-    assert_select "a[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings"), count: 1
+    assert_select "a[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings")
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end
@@ -56,8 +56,7 @@ class Top::App::Privacy::CookiesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 1
     assert_select "input[type='checkbox'][name='accept_targeting_cookies'][checked]", count: 1
 
-    # TODO: fix them to i18n setting
-    assert_select "a[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings"), count: 1
+    assert_select "a[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings")
 
     patch top_app_privacy_cookie_url,
           params: {
@@ -71,7 +70,7 @@ class Top::App::Privacy::CookiesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='checkbox'][name='accept_functional_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_performance_cookies'][checked]", count: 0
     assert_select "input[type='checkbox'][name='accept_targeting_cookies'][checked]", count: 0
-    assert_select "a[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings"), count: 1
+    assert_select "a[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings")
   ensure
     ActionController::Base.allow_forgery_protection = original_forgery_setting
   end

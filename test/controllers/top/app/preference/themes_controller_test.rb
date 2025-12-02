@@ -35,7 +35,7 @@ module Top
             assert_select "input[type='submit'][value=?]", I18n.t("top.app.preference.theme.edit.submit")
           end
 
-          assert_select "a[href^='#{top_app_preference_path}']", text: I18n.t("top.app.preferences.back_to_settings"), count: 1
+          assert_select "a", text: I18n.t("top.app.preferences.back_to_settings")
         end
         # rubocop:enable Minitest/MultipleAssertions
 

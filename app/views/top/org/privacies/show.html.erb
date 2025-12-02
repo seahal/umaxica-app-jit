@@ -4,10 +4,6 @@
   <li><%= link_to t('top.org.preferences.cookie_settings'), edit_top_org_privacy_cookie_url %></li>
 </ul>
 
-<p class="mt-10 text-right">
-  <%= link_to top_org_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst"),
-              class: "inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" do %>
-    <span>↑</span>
-    <span><%= t("top.org.preferences.up_link") %></span>
-  <% end %>
+<p class="mt-10">
+  <%= link_to "↑ #{t("top.org.preferences.up_link")}", top_org_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst") %>
 </p>

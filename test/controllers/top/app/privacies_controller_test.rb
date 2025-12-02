@@ -12,8 +12,7 @@ class Top::App::PrivaciesControllerTest < ActionDispatch::IntegrationTest
     get top_app_privacy_url
 
     assert_select "p.mt-10" do
-      # todo: rewrite this code
-      assert_select "a[href=?]", top_app_privacy_path(ct: "dr", lx: "en", ri: "us", tz: "jst"), text: /\A↑\s*#{Regexp.escape(I18n.t("top.app.preferences.up_link"))}\z/
+      assert_select "a[href=?]", top_app_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst"), text: /\A↑\s*#{Regexp.escape(I18n.t("top.app.preferences.up_link"))}\z/
     end
   end
 end

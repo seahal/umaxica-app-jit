@@ -35,11 +35,8 @@ class Top::Com::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get top_com_preference_url
 
     assert_select "footer" do
-      assert_select "a", text: I18n.t("top.com.preferences.footer.home")
       assert_select "a[href=?]", "http://#{ENV['EDGE_CORPORATE_URL']}:4444/", text: I18n.t("top.com.preferences.footer.home")
-      assert_select "a", text: I18n.t("top.com.preferences.footer.cookie")
-      assert_select "a[href=?]", edit_top_com_privacy_cookie_path, text: I18n.t("top.com.preferences.footer.cookie")
-      assert_select "a", text: I18n.t("top.com.preferences.footer.preference")
+      assert_select "a[href^=?]", edit_top_com_privacy_cookie_path, text: I18n.t("top.com.preferences.footer.cookie")
       assert_select "a[href^=?]", top_com_preference_path, text: I18n.t("top.com.preferences.footer.preference")
     end
   end

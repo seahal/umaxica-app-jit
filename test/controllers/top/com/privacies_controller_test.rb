@@ -12,7 +12,7 @@ class Top::Com::PrivaciesControllerTest < ActionDispatch::IntegrationTest
     get top_com_privacy_url
 
     assert_select "p.mt-10" do
-      assert_select "a[href=?]", top_com_privacy_path(ct: "dr", lx: "en", ri: "us", tz: "jst"), text: /\A↑\s*#{Regexp.escape(I18n.t("top.com.privacy.up_link"))}\z/
+      assert_select "a[href=?]", top_com_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst"), text: /\A↑\s*#{Regexp.escape(I18n.t("top.com.privacy.up_link"))}\z/
     end
   end
 end
