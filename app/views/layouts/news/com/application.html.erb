@@ -14,7 +14,9 @@
 <body class="px-4">
 <%= render "concern/flash_messages" %>
 <header>
-  <h1><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (news, com)</a></h1></header>
+  <h1>
+    <a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (news,
+      com)</a></h1></header>
 <hr>
 
 <main class="container mx-auto mt-28 px-5 block">

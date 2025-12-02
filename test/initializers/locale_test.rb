@@ -26,10 +26,10 @@ class LocaleInitializerTest < ActiveSupport::TestCase
 
     assert_nothing_raised { reload_locale_initializer }
     assert_includes_locale_path("config/locales/jp")
-    assert_equal [ :en, :ja ], I18n.available_locales.sort
+    assert_equal [:en, :ja], I18n.available_locales.sort
     assert_equal :ja, I18n.default_locale
-    assert_equal [ :en, :ja ], I18n.fallbacks[:en]
-    assert_equal [ :ja, :en ], I18n.fallbacks[:ja]
+    assert_equal [:en, :ja], I18n.fallbacks[:en]
+    assert_equal [:ja, :en], I18n.fallbacks[:ja]
   end
   # rubocop:enable Minitest/MultipleAssertions
 

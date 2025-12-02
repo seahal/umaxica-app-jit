@@ -2,7 +2,6 @@
 
 require "test_helper"
 
-
 class SmsProviders::TestProviderTest < ActiveSupport::TestCase
   def setup
     @provider = SmsProviders::Test.new

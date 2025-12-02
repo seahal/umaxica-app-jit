@@ -5,8 +5,8 @@ class Email::Com::ContactMailerTest < ActionMailer::TestCase
     mail = Email::Com::ContactMailer.with(email_address: "test@example.com", pass_code: "123456").create
 
     assert_equal "#{ENV.fetch('BRAND_NAME', 'Umaxica')} - Email Verification Code", mail.subject
-    assert_equal [ "test@example.com" ], mail.to
-    assert_equal [ "from@umaxica.net" ], mail.from
+    assert_equal ["test@example.com"], mail.to
+    assert_equal ["from@umaxica.net"], mail.from
   end
 
   test "create with pass_code parameter" do

@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Email::Org::ApplicationMailerTest < ActionMailer::TestCase
   # rubocop:disable Minitest/MultipleAssertions
   test "applies default from address" do
@@ -19,8 +18,8 @@ class Email::Org::ApplicationMailerTest < ActionMailer::TestCase
     I18n.backend.store_translations(:en, { test: { email: { org: { application_mailer: { subject: "Org Sample" } } } } })
     email = mailer.new.sample
 
-    assert_equal [ expected_from ], email.from
-    assert_equal [ "org-user@example.com" ], email.to
+    assert_equal [expected_from], email.from
+    assert_equal ["org-user@example.com"], email.to
     assert_equal I18n.t("test.email.org.application_mailer.subject"), email.subject
     assert_equal "hello", email.body.encoded
   end

@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Top::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     get top_org_preference_url

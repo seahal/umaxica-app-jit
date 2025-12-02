@@ -41,8 +41,8 @@ module Sign
         def assert_oauth_success(i18n_key)
           assert_redirected_to sign_app_root_url(host: @host)
           assert_equal(
-            [ I18n.t(i18n_key), true ],
-            [ flash[:notice], session[:user_id].present? ]
+            [I18n.t(i18n_key), true],
+            [flash[:notice], session[:user_id].present?]
           )
         end
 

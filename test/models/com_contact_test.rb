@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class ComContactTest < ActiveSupport::TestCase
   def build_contact(**attrs)
     # Create contact first

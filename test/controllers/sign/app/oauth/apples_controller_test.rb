@@ -39,9 +39,9 @@ class Sign::App::Oauth::ApplesControllerTest < ActionDispatch::IntegrationTest
   test "should handle callback with invalid provider in auth_hash" do
     OmniAuth.config.test_mode = true
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new({
-      provider: "invalid_provider",
-      uid: "000123.abc456def789.1234"
-    })
+                                                                 provider: "invalid_provider",
+                                                                 uid: "000123.abc456def789.1234"
+                                                               })
 
     Rails.application.env_config["omniauth.auth"] = OmniAuth.config.mock_auth[:apple]
     get callback_sign_app_oauth_apple_url, headers: { "Host" => @host }
@@ -58,9 +58,9 @@ class Sign::App::Oauth::ApplesControllerTest < ActionDispatch::IntegrationTest
   test "should handle callback with missing uid in auth_hash" do
     OmniAuth.config.test_mode = true
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new({
-      provider: "apple",
-      uid: nil
-    })
+                                                                 provider: "apple",
+                                                                 uid: nil
+                                                               })
 
     Rails.application.env_config["omniauth.auth"] = OmniAuth.config.mock_auth[:apple]
     get callback_sign_app_oauth_apple_url, headers: { "Host" => @host }

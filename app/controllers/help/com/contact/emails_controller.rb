@@ -21,9 +21,9 @@ module Help
           if @contact_email.verify_hotp_code(hotp_code)
             @contact.verify_email!
             redirect_to new_help_com_contact_telephone_url(
-              contact_id: @contact.public_id,
-              **help_email_redirect_options
-            ), notice: I18n.t("help.com.contact.emails.create.success")
+                          contact_id: @contact.public_id,
+                          **help_email_redirect_options
+                        ), notice: I18n.t("help.com.contact.emails.create.success")
           else
             @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.create.hotp_code_invalid"))
             render :new, status: :unprocessable_content

@@ -10,6 +10,7 @@ module Help
           @contact_telephone = @contact.com_contact_telephones.build
           render plain: placeholder_message(:new)
         end
+
         def edit
           Rails.logger.debug { "DEBUG: edit action called, @contact = #{@contact.inspect}" }
           # セッションから telephone ID を取得
@@ -53,7 +54,7 @@ module Help
               flash.now[:alert] = t(".expired")
             else
               flash.now[:alert] = t(".invalid_code",
-                                   attempts_left: @contact_telephone.otp_attempts_left)
+                                    attempts_left: @contact_telephone.otp_attempts_left)
             end
             render :edit, status: :unprocessable_content
           end

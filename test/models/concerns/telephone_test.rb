@@ -2,7 +2,6 @@
 
 require "test_helper"
 
-
 # Test with UserIdentityTelephone which includes Telephone
 class TelephoneTest < ActiveSupport::TestCase
   test "concern can be included in a class" do

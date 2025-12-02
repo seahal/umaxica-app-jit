@@ -1,4 +1,4 @@
-class AppContactStatus <  GuestsRecord
+class AppContactStatus < GuestsRecord
   has_many :app_contacts,
            foreign_key: :contact_status_title,
            primary_key: :title,

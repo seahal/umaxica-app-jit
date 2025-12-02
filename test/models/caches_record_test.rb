@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class CachesRecordTest < ActiveSupport::TestCase
   test "is abstract and inherits from ApplicationRecord" do
     assert_operator CachesRecord, :<, ApplicationRecord

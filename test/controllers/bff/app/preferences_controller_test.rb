@@ -24,7 +24,6 @@ class Bff::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
     assert_select "div.configuration-list ul li a", minimum: 1
   end
 
-
   test "should render copyright in footer" do
     get bff_app_preference_url
 

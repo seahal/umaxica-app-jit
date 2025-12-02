@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Top::App::PrivaciesControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
     get top_app_privacy_url

@@ -1,14 +1,14 @@
 <% flash.each do |key, message| %>
   <% Array(message).each do |text| %>
     <% variant =
-      case key.to_sym
-      when :notice, :success
-        { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-900", icon: "✓" }
-      when :alert, :error
-        { bg: "bg-rose-50", border: "border-rose-200", text: "text-rose-900", icon: "!" }
-      else
-        { bg: "bg-sky-50", border: "border-sky-200", text: "text-sky-900", icon: "i" }
-      end %>
+         case key.to_sym
+         when :notice, :success
+           { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-900", icon: "✓" }
+         when :alert, :error
+           { bg: "bg-rose-50", border: "border-rose-200", text: "text-rose-900", icon: "!" }
+         else
+           { bg: "bg-sky-50", border: "border-sky-200", text: "text-sky-900", icon: "i" }
+         end %>
     <div class="flex items-start gap-3 rounded-xl border px-4 py-3 shadow-sm <%= "#{variant[:bg]} #{variant[:border]}" %>">
       <div class="flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-sm font-semibold text-slate-700 ring-1 ring-slate-200">
         <%= variant[:icon] %>

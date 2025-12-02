@@ -13,10 +13,10 @@ module PreferenceConstants
 
   # Default preference values applied when no user preference is set
   DEFAULT_PREFERENCES = {
-    "lx" => "ja",   # Japanese language
-    "ri" => "jp",   # Japan region
-    "tz" => "jst",  # Japan Standard Time
-    "ct" => "sy"    # System theme (follows OS preference)
+    "lx" => "ja", # Japanese language
+    "ri" => "jp", # Japan region
+    "tz" => "jst", # Japan Standard Time
+    "ct" => "sy" # System theme (follows OS preference)
   }.freeze
 
   # Cookie key used to store user preferences

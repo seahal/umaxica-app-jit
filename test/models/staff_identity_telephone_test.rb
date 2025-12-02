@@ -90,7 +90,6 @@ class StaffIdentityTelephoneTest < ActiveSupport::TestCase
     assert_predicate staff_telephone.errors[:confirm_using_mfa], :any?
   end
 
-
   # SetId concern tests
   test "should generate UUID v7 before creation" do
     staff_telephone = StaffIdentityTelephone.new(@valid_attributes)

@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class OrgContactTest < ActiveSupport::TestCase
   def build_contact(**attrs)
     # Create contact first

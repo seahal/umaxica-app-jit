@@ -11,7 +11,6 @@
 #
 require "test_helper"
 
-
 class TelephoneTest < ActiveSupport::TestCase
   test "includes confirm attribute accessors" do
     telephone = StaffIdentityTelephone.new

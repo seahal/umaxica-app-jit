@@ -12,8 +12,6 @@ class Help::Com::Contact::TelephonesControllerTest < ActionDispatch::Integration
     )
   end
 
-
-
   # rubocop:disable Minitest/MultipleAssertions
   # test "should redirect edit without valid session" do
   #   get edit_help_com_contact_telephone_url(contact_id: @contact.id)
@@ -22,7 +20,6 @@ class Help::Com::Contact::TelephonesControllerTest < ActionDispatch::Integration
   #   assert_equal I18n.t("help.com.contact.telephones.edit.session_expired"), flash[:alert]
   # end
   # rubocop:enable Minitest/MultipleAssertions
-
 
   # # rubocop:disable Minitest/MultipleAssertions
   # test "should get edit with valid session" do

@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class ComContactTopicTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
     assert_operator ComContactTopic, :<, GuestsRecord

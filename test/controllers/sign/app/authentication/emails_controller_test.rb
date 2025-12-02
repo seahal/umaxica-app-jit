@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:disable Minitest/MultipleAssertions
   test "should get new" do

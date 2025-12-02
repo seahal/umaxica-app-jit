@@ -52,9 +52,9 @@ class Sign::App::Oauth::GooglesControllerTest < ActionDispatch::IntegrationTest
   test "should handle callback with invalid provider in auth_hash" do
     OmniAuth.config.test_mode = true
     OmniAuth.config.mock_auth[:google] = OmniAuth::AuthHash.new({
-      provider: "invalid_provider",
-      uid: "123456789"
-    })
+                                                                  provider: "invalid_provider",
+                                                                  uid: "123456789"
+                                                                })
 
     Rails.application.env_config["omniauth.auth"] = OmniAuth.config.mock_auth[:google]
     get callback_sign_app_oauth_google_url, headers: { "Host" => @host }

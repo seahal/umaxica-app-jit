@@ -71,7 +71,7 @@ module Sign
                  status: :bad_request and return if session[:user_email_registration].nil?
 
           @user_email = UserIdentityEmail.new(address: session[:user_email_registration]["address"],
-                                      pass_code: params["user_email"]["pass_code"])
+                                              pass_code: params["user_email"]["pass_code"])
 
           if [
             @user_email.valid?,

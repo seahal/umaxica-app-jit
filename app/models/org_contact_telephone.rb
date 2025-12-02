@@ -10,7 +10,7 @@ class OrgContactTelephone < GuestsRecord
 
   # Validations
   validates :telephone_number, presence: true,
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+            format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
 
   # Generate and store OTP
   def generate_otp!

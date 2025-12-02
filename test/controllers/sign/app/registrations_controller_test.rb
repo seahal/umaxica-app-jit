@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   def host
     ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"

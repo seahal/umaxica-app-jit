@@ -2,7 +2,6 @@
 
 require "test_helper"
 
-
 class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @prev_env = {

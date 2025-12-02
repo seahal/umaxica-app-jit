@@ -48,7 +48,7 @@ class DefaultUrlOptionsTest < ActiveSupport::TestCase
   test "read_cookie_preferences_for_url returns empty hash for non-hash JSON" do
     # Set a JSON array instead of hash
     cookie_jar = @controller.request.cookie_jar
-    cookie_jar.signed[:root_app_preferences] = JSON.generate([ "array", "value" ])
+    cookie_jar.signed[:root_app_preferences] = JSON.generate(["array", "value"])
 
     result = @controller.send(:read_cookie_preferences_for_url)
 

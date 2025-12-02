@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class ComContactTelephoneTest < ActiveSupport::TestCase
   test "should inherit from GuestsRecord" do
     assert_operator ComContactTelephone, :<, GuestsRecord
@@ -171,7 +170,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     contact = com_contacts(:one)
 
     # Invalid telephone formats
-    invalid_phones = [ "abc", "123-abc-4567", "!!!" ]
+    invalid_phones = ["abc", "123-abc-4567", "!!!"]
     invalid_phones.each do |invalid_phone|
       telephone = ComContactTelephone.new(
         com_contact: contact,
@@ -184,7 +183,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     end
 
     # Valid telephone formats
-    valid_phones = [ "+1234567890", "123-456-7890", "(123) 456-7890", "+81 90 1234 5678" ]
+    valid_phones = ["+1234567890", "123-456-7890", "(123) 456-7890", "+81 90 1234 5678"]
     valid_phones.each do |valid_phone|
       telephone = ComContactTelephone.new(
         com_contact: contact,

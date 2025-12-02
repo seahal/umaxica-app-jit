@@ -5,7 +5,6 @@ module Sign
     class HealthsController < ApplicationController
       include ::Health
 
-
       def show
         show_html
       end

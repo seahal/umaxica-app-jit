@@ -24,7 +24,7 @@ module Sign
             path: "/sign/apple",
             method: :post,
             data: { turbo: false
-          } } ]
+            } } ]
       end
     end
   end

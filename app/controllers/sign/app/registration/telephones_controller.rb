@@ -31,7 +31,7 @@ module Sign
                  status: :bad_request and return if logged_in? || logged_in?
 
           @user_telephone = UserIdentityTelephone.new(params.expect(user_telephone: [ :number, :confirm_policy,
-                                                                             :confirm_using_mfa ]))
+                                                                                     :confirm_using_mfa ]))
 
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32 # NOTE: you would wonder why this code was written ...

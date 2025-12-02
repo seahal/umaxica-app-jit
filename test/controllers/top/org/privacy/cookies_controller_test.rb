@@ -1,6 +1,5 @@
 require "test_helper"
 
-
 class Top::Org::Privacy::CookiesControllerTest < ActionDispatch::IntegrationTest
   # rubocop:disable Minitest/MultipleAssertions
   test "should get edit" do

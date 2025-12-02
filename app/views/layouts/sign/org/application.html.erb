@@ -14,7 +14,9 @@
 <body class="px-4">
 <%= render "concern/flash_messages" %>
 <header>
-  <h1><a href="http://<%= ENV['EDGE_STAFF_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (sign, org)</a></h1>
+  <h1>
+    <a href="http://<%= ENV['EDGE_STAFF_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (sign, org)</a>
+  </h1>
 </header>
 
 <hr>
