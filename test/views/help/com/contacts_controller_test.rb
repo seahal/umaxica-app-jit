@@ -51,7 +51,7 @@ module Help::Com
 
     test "should require valid category" do
       # Test with invalid/nil category
-      assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
+      assert_no_difference([ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ]) do
         post help_com_contacts_url, params: {
           com_contact: {
             contact_category_title: "", # Invalid: empty category
@@ -68,7 +68,7 @@ module Help::Com
     end
 
     test "should render new when validation fails" do
-      assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
+      assert_no_difference([ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ]) do
         post help_com_contacts_url, params: {
           com_contact: {
             contact_category_title: @category.title,

@@ -182,7 +182,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     contact = com_contacts(:one)
 
     # Invalid email formats
-    invalid_emails = ["invalid", "test@", "@example.com"]
+    invalid_emails = [ "invalid", "test@", "@example.com" ]
     invalid_emails.each do |invalid_email|
       email = ComContactEmail.new(
         com_contact: contact,
@@ -195,7 +195,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     end
 
     # Valid email formats
-    valid_emails = ["test@example.com", "user+tag@example.co.jp", "test.user@example.com"]
+    valid_emails = [ "test@example.com", "user+tag@example.co.jp", "test.user@example.com" ]
     valid_emails.each do |valid_email|
       email = ComContactEmail.new(
         com_contact: contact,

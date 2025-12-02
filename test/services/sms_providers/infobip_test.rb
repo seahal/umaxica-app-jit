@@ -50,11 +50,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "200";
+      "200"
     end
 
     def mock_response.body
-      '{"status": "success"}';
+      '{"status": "success"}'
     end
 
     mock_http = Object.new
@@ -79,11 +79,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "200";
+      "200"
     end
 
     def mock_response.body
-      '{"status": "success"}';
+      '{"status": "success"}'
     end
 
     mock_http = Object.new
@@ -103,11 +103,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "200";
+      "200"
     end
 
     def mock_response.body
-      '{"status": "success", "messageId": "12345"}';
+      '{"status": "success", "messageId": "12345"}'
     end
 
     mock_http = Object.new
@@ -124,11 +124,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "400";
+      "400"
     end
 
     def mock_response.body
-      '{"error": "Bad request"}';
+      '{"error": "Bad request"}'
     end
 
     mock_http = Object.new
@@ -146,11 +146,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "201";
+      "201"
     end
 
     def mock_response.body
-      '{"status": "created"}';
+      '{"status": "created"}'
     end
 
     mock_http = Object.new
@@ -166,11 +166,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "299";
+      "299"
     end
 
     def mock_response.body
-      '{"status": "ok"}';
+      '{"status": "ok"}'
     end
 
     mock_http = Object.new
@@ -186,11 +186,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "300";
+      "300"
     end
 
     def mock_response.body
-      '{"error": "Multiple choices"}';
+      '{"error": "Multiple choices"}'
     end
 
     mock_http = Object.new
@@ -207,11 +207,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "500";
+      "500"
     end
 
     def mock_response.body
-      '{"error": "Server error"}';
+      '{"error": "Server error"}'
     end
 
     mock_http = Object.new
@@ -228,11 +228,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "200";
+      "200"
     end
 
     def mock_response.body
-      '{"status": "success"}';
+      '{"status": "success"}'
     end
 
     mock_http = Object.new
@@ -254,11 +254,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "200";
+      "200"
     end
 
     def mock_response.body
-      '{"status": "success"}';
+      '{"status": "success"}'
     end
 
     mock_http = Object.new
@@ -281,11 +281,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "200";
+      "200"
     end
 
     def mock_response.body
-      '{"status": "success"}';
+      '{"status": "success"}'
     end
 
     mock_http = Object.new
@@ -306,11 +306,11 @@ class SmsProviders::InfobipIntegrationTest < ActiveSupport::TestCase
     mock_response = Object.new
 
     def mock_response.code
-      "200";
+      "200"
     end
 
     def mock_response.body
-      '{"status": "success"}';
+      '{"status": "success"}'
     end
 
     mock_http = Object.new

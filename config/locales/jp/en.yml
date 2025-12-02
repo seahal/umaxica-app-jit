@@ -247,6 +247,7 @@ en:
   root:
     app:
       preferences:
+        up_link: "Back to top"
         title: "Preferences"
         cookie_settings: "Cookie Settings"
         region_settings: "Region Settings"
@@ -325,6 +326,7 @@ en:
             confirmation_required: "Select the checkbox to confirm clearing your preference cookies."
     com:
       preferences:
+        up_link: "Back to top"
         title: "Preferences"
         cookie_settings: "Cookie Settings"
         region_settings: "Region Settings"
@@ -689,230 +691,6 @@ en:
       long: "%B %d, %Y %H:%M"
       short: "%d %b %H:%M"
     pm: pm
-  top:
-    app:
-      preferences:
-        title: "Preferences"
-        cookie_settings: "Cookie Settings"
-        region_settings: "Region & Language Settings"
-        theme_settings: "Theme Settings"
-        locale_settings: "set locale"
-        themes:
-          updated: "Theme updated to %{theme}"
-          invalid: "Invalid theme selected"
-        back_to_settings: "Back to Preferences"
-        regions:
-          title: "Region & Language Settings"
-          region_section: "Region Settings"
-          select_region: "Select Region"
-          language_section: "Language Settings"
-          select_language: "Select Language"
-          timezone_section: "Timezone Settings"
-          select_timezone: "Select Timezone"
-          select_region_prompt: "Choose your region..."
-          select_language_prompt: "Choose your language..."
-          select_timezone_prompt: "Choose your timezone..."
-          select_region_selector:
-            USA: "United States"
-            JAPAN: "Japan"
-          select_language_selector:
-            JAPANESE: "Japanese"
-            ENGLISH: "English"
-          select_timezone_selector:
-            UTC: "Coordinated Universal Time (UTC)"
-            JST: "Japan Standard Time (JST)"
-          update_settings: "Update Settings"
-          cancel: "Cancel"
-        resets:
-          title: "reset preferenece???"
-        reset_settings: "reset setting??"
-      preference:
-        cookie:
-          edit:
-            h1: "Cookie Preferences"
-            accept_necessary_cookies: "Allow strictly necessary cookies (required)"
-            accept_functional_cookies: "Allow functional cookies"
-            accept_performance_cookies: "Allow performance cookies"
-            accept_targeting_cookies: "Allow targeting cookies"
-        locale:
-          edit:
-            title: "Locale Settings"
-            description: "Manage your language and timezone preferences"
-            language_section: "Language Settings"
-            language_label: "Language"
-            language_prompt: "Choose your language..."
-            language_options:
-              ja: "日本語"
-              en: "English"
-            timezone_section: "Timezone Settings"
-            timezone_label: "Timezone"
-            timezone_prompt: "Choose your timezone..."
-            timezone_options:
-              UTC: "Coordinated Universal Time (UTC)"
-              JST: "Japan Standard Time (JST)"
-            submit: "Update Settings"
-            cancel: "Cancel"
-        theme:
-          edit:
-            title: "Choose Dark or Light Theme"
-            description: "Pick the display mode that fits your workspace and comfort."
-            legend: "Select a theme"
-            options:
-              light: "Light — bright backgrounds for well-lit spaces"
-              dark: "Dark — dimmed colors for low-light comfort"
-              system: "System default — follow your device settings"
-            hints:
-              light: "Great when you work during the day or in bright rooms."
-              dark: "Ideal for night shifts or reducing eye strain."
-              system: "Matches your operating system and switches automatically."
-            submit: "Save theme preference"
-    org:
-      preferences:
-        title: "Preferences"
-        locale_settings: "Locale Settings"
-        themes:
-          updated: "Admin theme updated to %{theme}"
-          invalid: "Invalid admin theme selected"
-        back_to_settings: "Back to Preferences"
-        regions:
-          title: "Region & Language Settings"
-          region_section: "Region Settings"
-          select_region: "Select Region"
-          language_section: "Language Settings"
-          select_language: "Select Language"
-          timezone_section: "Timezone Settings"
-          select_timezone: "Select Timezone"
-          select_region_prompt: "Choose your region..."
-          select_language_prompt: "Choose your language..."
-          select_timezone_prompt: "Choose your timezone..."
-          select_region_selector:
-            USA: "United States"
-            JAPAN: "Japan"
-          select_language_selector:
-            JAPANESE: "Japanese"
-            ENGLISH: "English"
-          select_timezone_selector:
-            UTC: "Coordinated Universal Time (UTC)"
-            JST: "Japan Standard Time (JST)"
-          update_settings: "Update Settings"
-          cancel: "Cancel"
-        cookie_settings: "Cookie Settings"
-        region_settings: "Region & Language Settings"
-        theme_settings: "Theme Settings"
-        reset_settings: "Reset Settings"
-        resets:
-          title: "Reset Preferences"
-      preference:
-        cookie:
-          edit:
-            h1: "Cookie Preferences"
-            accept_necessary_cookies: "Allow strictly necessary cookies (required)"
-            accept_functional_cookies: "Allow functional cookies"
-            accept_performance_cookies: "Allow performance cookies"
-            accept_targeting_cookies: "Allow targeting cookies"
-        locale:
-          edit:
-            title: "Locale Settings"
-            description: "Manage your language and timezone preferences"
-            language_section: "Language Settings"
-            language_label: "Language"
-            language_prompt: "Choose your language..."
-            language_options:
-              ja: "日本語"
-              en: "English"
-            timezone_section: "Timezone Settings"
-            timezone_label: "Timezone"
-            timezone_prompt: "Choose your timezone..."
-            timezone_options:
-              UTC: "Coordinated Universal Time (UTC)"
-              JST: "Japan Standard Time (JST)"
-            submit: "Update Settings"
-            cancel: "Cancel"
-        theme:
-          edit:
-            title: "Choose Dark or Light Theme"
-            description: "Configure the default theme for your organization's operators."
-            legend: "Select a theme"
-            options:
-              light: "Light — optimized for bright operations centers"
-              dark: "Dark — ideal for low-light monitoring rooms"
-              system: "System default — follow enterprise device settings"
-            hints:
-              light: "Keeps dashboards clear when your teams work in well-lit spaces."
-              dark: "Helps reduce eye strain during overnight shifts."
-              system: "Automatically aligns with centrally managed device preferences."
-            submit: "Save theme preference"
-        resets:
-          title: "Reset Preferences"
-          description: "Remove saved preference cookies for this browser."
-          button: "Clear preference data"
-          confirm: "This action deletes saved preference data for this browser. Continue?"
-          back: "Back to Preferences"
-    com:
-      preferences:
-        title: "Preferences"
-        cookie_settings: "Cookie Settings"
-        region_settings: "Region & Language Settings"
-        theme_settings: "Theme Settings"
-        back_to_settings: "Back to Preferences"
-        themes:
-          updated: "Theme updated to %{theme}"
-          invalid: "Invalid theme selected"
-        regions:
-          title: "Region & Language Settings"
-          region_section: "Region Settings"
-          select_region: "Select Region"
-          language_section: "Language Settings"
-          select_language: "Select Language"
-          timezone_section: "Timezone Settings"
-          select_timezone: "Select Timezone"
-          select_region_prompt: "Choose your region..."
-          select_country_prompt: "Choose your country..."
-          select_language_prompt: "Choose your language..."
-          select_timezone_prompt: "Choose your timezone..."
-          select_region_selector:
-            USA: "United States"
-            JAPAN: "Japan"
-          select_language_selector:
-            JAPANESE: "Japanese"
-            ENGLISH: "English"
-          select_timezone_selector:
-            UTC: "Coordinated Universal Time (UTC)"
-            JST: "Japan Standard Time (JST)"
-          update_settings: "Update Settings"
-          cancel: "Cancel"
-        reset_settings: "Reset Settings"
-        locale_settings: "locale"
-      preference:
-        cookie:
-          edit:
-            h1: "Cookie Preferences"
-            accept_necessary_cookies: "Allow strictly necessary cookies (required)"
-            accept_functional_cookies: "Allow functional cookies"
-            accept_performance_cookies: "Allow performance cookies"
-            accept_targeting_cookies: "Allow targeting cookies"
-        theme:
-          edit:
-            title: "Choose Dark or Light Theme"
-            description: "Pick the display mode that fits your workspace and comfort."
-            legend: "Select a theme"
-            options:
-              light: "Light — bright backgrounds for well-lit spaces"
-              dark: "Dark — dimmed colors for low-light comfort"
-              system: "System default — follow your device settings"
-            hints:
-              light: "Great when you work during the day or in bright rooms."
-              dark: "Ideal for night shifts or reducing eye strain."
-              system: "Matches your operating system and switches automatically."
-            submit: "Save theme preference"
-        resets:
-          title: "Reset Preferences"
-          description: "Remove saved preference cookies for this browser."
-          button: "Clear preference data"
-          confirm: "This action deletes saved preference data for this browser. Continue?"
-          back: "Back to Preferences"
-      privacy:
-        up_link: "up"
   controller:
     sign:
       app:
@@ -926,3 +704,214 @@ en:
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."
+  top:
+    app:
+      preferences:
+        footer:
+          privacy: "Privacy"
+    com:
+      preferences:
+        footer:
+          privacy: "Privacy"
+      preference:
+        up_link: "up to"
+    org:
+      preferences:
+        footer:
+          privacy: "Privacy"
+
+  bff:
+    shared:
+      preference_emails:
+        token_invalid: "That link is no longer valid. Request a new one to continue."
+        turnstile_error: "Turnstile verification failed. Please refresh and try again."
+        update_failure: "We could not save your preferences. Please try again."
+    app:
+      preferences:
+        title: "Email Preferences"
+        description: "Request a secure link to manage your email notifications without signing in."
+        email_settings: "Request email preferences"
+        email_settings_description: "Enter your email address and we will send a protected link."
+        token_guidance: "Use the link in the email to edit your preferences within two hours."
+        back_to_settings: "Back to preferences"
+      preference:
+        emails:
+          new:
+            page_title: "Request a preference link"
+            heading: "Request a secure link"
+            description: "Provide your email address to receive a one-time token link."
+            email_label: "Email address"
+            submit: "Email me the link"
+            success: "If the address is registered, we have emailed you a secure link."
+            failure: "We could not send the link; please check the input below."
+          edit:
+            page_title: "Edit email preferences"
+            heading: "Edit your email preferences"
+            description: "Use the one-time link we emailed you to adjust optional messages."
+            always_on: "Important service notifications"
+            always_on_description: "Critical messages stay enabled so you never miss updates."
+            product_updates_label: "Product updates"
+            product_updates_description: "Receive announcements about new releases and improvements."
+            promotional_messages_label: "Promotional messages"
+            promotional_messages_description: "Get offers, events, and marketing news."
+            submit: "Save preferences"
+    org:
+      preferences:
+        title: "Email Preferences"
+        description: "Staff can request an email link to manage notification subscriptions."
+        email_settings: "Request email preference link"
+        email_settings_description: "We will send a secure token link for editing staff alerts."
+        token_guidance: "Use the emailed link to change settings before it expires."
+        back_to_settings: "Back to preferences"
+      preference:
+        emails:
+          new:
+            page_title: "Request a staff preference link"
+            heading: "Request a secure staff link"
+            description: "Enter an email to receive a staff-specific one-time token link."
+            email_label: "Work email"
+            submit: "Send staff link"
+            success: "If the address exists, an email with the link has been sent."
+            failure: "Please fix any errors before requesting a new link."
+          edit:
+            page_title: "Adjust staff email preferences"
+            heading: "Update staff notification choices"
+            description: "Adjust which optional staff communications you receive."
+            always_on: "Important service notifications"
+            always_on_description: "Essential alerts remain enabled so you never miss critical updates."
+            product_updates_label: "Product updates"
+            product_updates_description: "Stay informed about new staff-facing products and features."
+            promotional_messages_label: "Promotional messages"
+            promotional_messages_description: "Allow promotional announcements and event invitations."
+            submit: "Save staff preferences"
+  email:
+    app:
+      preference_mailer:
+        update_request:
+          subject: "Update your email preferences"
+          greeting: "Hello,"
+          intro: "Click the link below to manage your email preferences."
+          cta: "Update my preferences"
+          expiration_notice: "The link expires in two hours and can only be used once."
+    org:
+      preference_mailer:
+        update_request:
+          subject: "Update your staff email preferences"
+          greeting: "Hello,"
+          intro: "Use the link below to manage staff email preferences."
+          cta: "Update staff preferences"
+          expiration_notice: "This link is single-use and expires in two hours."
+  help:
+    com:
+      contacts:
+        new:
+          page_title: "Contact Us"
+          heading: "Send us a message"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          contact_category_title: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          submit: "Continue"
+          cancel: "Cancel"
+        create:
+          success: "Thank you for contacting us. Please verify your email address."
+          failure: "Unable to process your request. Please check the form and try again."
+          turnstile_error: "Security verification failed. Please refresh the page and try again."
+          confirm_policy_error: "You must agree to the privacy policy to continue."
+      contact:
+        emails:
+          new:
+            page_title: "Verify Email Address"
+            heading: "Enter your email address"
+            description: "We will send a verification code to your email address."
+            email_label: "Email Address"
+            submit: "Send verification code"
+          create:
+            success: "Email address verified successfully."
+            failure: "Unable to send verification code. Please try again."
+            turnstile_error: "Security verification failed. Please refresh the page and try again."
+            hotp_code_required: "Please enter the verification code."
+            hotp_code_invalid: "Invalid verification code. Please try again."
+          edit:
+            page_title: "Enter Verification Code"
+            heading: "Verify your email"
+            description: "Enter the 6-digit code we sent to your email address."
+            code_label: "Verification Code"
+            submit: "Verify email"
+            session_expired: "Your session has expired. Please start over."
+            resend_code: "Resend code"
+          update:
+            success: "Email verified successfully. Please verify your phone number."
+            session_expired: "Your session has expired. Please start over."
+            invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
+            max_attempts: "Maximum verification attempts exceeded. Please request a new code."
+            expired: "Verification code has expired. Please request a new code."
+        telephones:
+          new:
+            page_title: "Verify Phone Number"
+            heading: "Enter your phone number"
+            description: "We will send a verification code via SMS to your phone number."
+            telephone_label: "Phone Number"
+            submit: "Send verification code"
+          create:
+            success: "Verification code sent. Please check your phone."
+            failure: "Unable to send verification code. Please try again."
+            turnstile_error: "Security verification failed. Please refresh the page and try again."
+          edit:
+            page_title: "Enter Verification Code"
+            heading: "Verify your phone number"
+            description: "Enter the 6-digit code we sent to your phone via SMS."
+            code_label: "Verification Code"
+            submit: "Verify phone number"
+            session_expired: "Your session has expired. Please start over."
+            resend_code: "Resend code"
+          update:
+            success: "Phone number verified successfully. Thank you for contacting us!"
+            session_expired: "Your session has expired. Please start over."
+            invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
+            max_attempts: "Maximum verification attempts exceeded. Please request a new code."
+            expired: "Verification code has expired. Please request a new code."
+  top:
+    app:
+      preference:
+        resets:
+          title: "設定のリセット"
+          description: "reset your preference setting."
+          confirm: "RESET"
+          button: "RESET"
+          back: "Back???"
+  top:
+    app:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region & Language Settings"
+        theme_settings: "Theme Settings"
+        up_link: "Back to top"
+        footer:
+          home: "Home"
+          cookie: "Cookie"
+          preference: "Preference"
+    com:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region & Language Settings"
+        theme_settings: "Theme Settings"
+        up_link: "Back to top"
+        footer:
+          home: "Home"
+          cookie: "Cookie"
+          preference: "Preference"
+    org:
+      preferences:
+        title: "Preferences"
+        cookie_settings: "Cookie Settings"
+        region_settings: "Region & Language Settings"
+        theme_settings: "Theme Settings"
+        up_link: "Back to top"
+        footer:
+          home: "Home"
+          cookie: "Cookie"
+          preference: "Preference"

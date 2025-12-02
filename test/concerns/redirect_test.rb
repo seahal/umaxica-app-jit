@@ -28,7 +28,7 @@ class RedirectTest < ActiveSupport::TestCase
 
     # Force reload of the constant
     Redirect.send(:remove_const, :ALLOWED_HOSTS) if Redirect.const_defined?(:ALLOWED_HOSTS)
-    Redirect.const_set(:ALLOWED_HOSTS, [ENV["APEX_CORPORATE_URL"],
+    Redirect.const_set(:ALLOWED_HOSTS, [ ENV["APEX_CORPORATE_URL"],
                                         ENV["APEX_SERVICE_URL"],
                                         ENV["APEX_STAFF_URL"],
                                         ENV["API_CORPORATE_URL"],
@@ -47,7 +47,7 @@ class RedirectTest < ActiveSupport::TestCase
                                         ENV["HELP_STAFF_URL"],
                                         ENV["EDGE_CORPORATE_URL"],
                                         ENV["EDGE_SERVICE_URL"],
-                                        ENV["EDGE_STAFF_URL"]].map(&:downcase).freeze)
+                                        ENV["EDGE_STAFF_URL"] ].map(&:downcase).freeze)
   end
 
   teardown do
