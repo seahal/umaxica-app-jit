@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 3320fac264ea45b26451695f14f7041a8dce2d34
+  revision: 56cec19ed453af52082776a42dc54a881ba3d544
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -414,7 +414,7 @@ GEM
     mini_portile2 (2.8.9)
     minitest (5.26.2)
     msgpack (1.8.0)
-    multi_json (1.17.0)
+    multi_json (1.18.0)
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
     nanoid (2.0.0)
@@ -838,7 +838,7 @@ GEM
     ssrf_filter (1.3.0)
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
-    stringio (3.1.8)
+    stringio (3.1.9)
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
