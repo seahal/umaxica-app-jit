@@ -911,6 +911,8 @@ en:
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
           back: "Back to Preferences"
+      privacy:
+        up_link: "up"
   controller:
     sign:
       app:

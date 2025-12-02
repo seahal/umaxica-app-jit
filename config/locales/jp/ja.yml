@@ -995,7 +995,7 @@ ja:
         cookie_settings: クッキー設定
         region_settings: 地域と言語の設定
         theme_settings: テーマ設定
-        back_to_settings: 設定一覧に戻る
+        back_to_settings: "設定"
         locale_settings: "ロケールを設定"
         regions:
           title: 地域・言語の設定
@@ -1228,3 +1228,5 @@ ja:
           button: 設定をリセットする
           confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
           back: 設定一覧に戻る
+      privacy:
+        up_link: "うえへ"

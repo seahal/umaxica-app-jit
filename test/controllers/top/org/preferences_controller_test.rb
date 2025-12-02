@@ -29,4 +29,24 @@ class Top::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "footer has navigation links" do
+    get top_org_preference_url
+
+    assert_select "footer" do
+      assert_select "a[href=?]", "http://#{ENV['EDGE_STAFF_URL']}:4444/", text: I18n.t("top.org.preferences.footer.home")
+      assert_select "a[href=?]", edit_top_org_privacy_cookie_path, text: I18n.t("top.org.preferences.footer.cookie")
+      assert_select "a[href=?]", top_org_preference_path, text: I18n.t("top.org.preferences.footer.preference")
+    end
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "renders localized up link on preference page" do
+    get top_org_preference_url
+
+    assert_select "p.mt-10" do
+      assert_select "a[href=?]", top_org_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst"), text: /\A↑\s*#{Regexp.escape(I18n.t("top.org.preferences.up_link"))}\z/
+    end
+  end
 end

@@ -28,14 +28,9 @@
 
 <footer>
   <ul>
-    <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">home</a></li>
-    <li>
-      <%= link_to 'Cookie', edit_top_org_preference_cookie_path %></li>
-    <li>Security</li>
-    <li>Support</li>
-    <li>Terms</li>
-    <li>Privacy</li>
-    <li>Accessibility</li>
+    <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/"><%= t('top.org.preferences.footer.home') %></a></li>
+    <li><%= link_to t('top.org.preferences.footer.cookie'), edit_top_org_privacy_cookie_path %></li>
+    <li><%= link_to t('top.org.preferences.footer.preference'), top_org_preference_path %></li>
   </ul>
   <%= render "concern/copyright" %>
 </footer>
