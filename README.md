@@ -14,14 +14,9 @@
 ## Initial Setup
 
 1. Install Ruby dependencies: `bundle install`
-2. Install JavaScript/TypeScript dependencies: `bun install`
-3. Prepare the database (creates, migrates, seeds as needed): `bin/rails db:prepare`
-4. ... run `bin/dev`
-
-## Local Development
-- Run the full development stack (`web`, `Karafka`, watchers, etc.): `foreman start -f Procfile.dev`
-- Alternatively, launch the Rails server directly: `bin/rails s -p 3000 -b 0.0.0.0`
-- Watch and rebuild assets during development: `bun run build --watch`
+1. Install JavaScript/TypeScript dependencies: `bun install`
+1. Prepare the database (creates, migrates, seeds as needed): `bin/rails db:prepare`
+1. ... run `bin/dev`
 
 ## Testing
 
@@ -33,7 +28,6 @@
 - Ruby style checks: `bundle exec rubocop`
 - ERB templates: `bundle exec erb_lint .`
 - Frontend formatting and linting: `bun run format`, `bun run lint`
-- Type checking: `bun run typecheck`
 
 ## Key Services & Integrations
 
@@ -93,6 +87,7 @@
 ## Secrets & Credentials
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.
 - Run `git-secrets --scan` (hooked via Lefthook) before committing to prevent accidental secret leakage.
+- We store our cryptographic keys in Cloud KMS.
 
 ## Useful References
 - [Official Ruby on Rails Guides](https://rubyonrails.org/)

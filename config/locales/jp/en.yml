@@ -719,6 +719,7 @@ en:
       preferences:
         footer:
           privacy: "Privacy"
+        reset_settings: "Reset Settings"
 
   bff:
     shared:

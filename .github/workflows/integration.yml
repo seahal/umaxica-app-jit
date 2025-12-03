@@ -286,6 +286,30 @@ jobs:
           retention-days: 7
 
   # ====================
+  # Linting - JavaScript
+  # ====================
+  lint-js:
+    name: JavaScript Formatting (Biome)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BUN_VERSION: ${{ env.BUN_VERSION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Install Bun dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check Biome formatting and linting.
+        run: bun run check
+
+  # ====================
   # Security - Docker Image Scan
   # ====================
   image-check:
