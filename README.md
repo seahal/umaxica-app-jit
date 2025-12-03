@@ -14,9 +14,9 @@
 ## Initial Setup
 
 1. Install Ruby dependencies: `bundle install`
-1. Install JavaScript/TypeScript dependencies: `bun install`
-1. Prepare the database (creates, migrates, seeds as needed): `bin/rails db:prepare`
-1. ... run `bin/dev`
+2. Install JavaScript/TypeScript dependencies: `bun install`
+3. Prepare the database (creates, migrates, seeds as needed): `bin/rails db:prepare`
+4. ... run `bin/dev`
 
 ## Testing
 
@@ -89,16 +89,16 @@
 - Run `git-secrets --scan` (hooked via Lefthook) before committing to prevent accidental secret leakage.
 - We store our cryptographic keys in Cloud KMS.
 
-## Useful References
-- [Official Ruby on Rails Guides](https://rubyonrails.org/)
-- [RubyGem](https://rubygems.org/)
-- [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
-
 ## Troubleshooting
 - Frontend assets not updating: `bin/rails assets:clobber` followed by a rebuild.
 - Tests failing due to missing databases: `bin/rails db:create`
 - If your devcontainer fails to start, rebuilding it might resolve the issue.
 - The credentials key will be shared with you separately.
+
+## Useful References
+- [Official Ruby on Rails Guides](https://rubyonrails.org/)
+- [RubyGem](https://rubygems.org/)
+- [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
 
 ## Known Issues & Limitations
 - This is a work in progress.

@@ -53,6 +53,22 @@ module Help
             Rails.logger.debug { "Generated URL: #{redirect_url}" }
             Rails.logger.debug "=====================\n"
 
+            # Generate HOTP for telephone verification and send via email
+            @contact_telephone = @contact.com_contact_telephones.first
+
+            if @contact_telephone
+              # Generate HOTP code
+              telephone_token = @contact_telephone.generate_hotp!
+
+              # Send email with HOTP code for telephone verification
+              Email::Com::ContactTelephoneMailer.with(
+                email_address: @contact_email.email_address,
+                pass_code: telephone_token
+              ).verify.deliver_now
+            else
+              Rails.logger.warn "No telephone record found for contact #{@contact.public_id}"
+            end
+
             redirect_to redirect_url, notice: I18n.t("help.com.contact.emails.update.success")
           else
             # Reload to get updated attempts_left, but save it before reload clears errors
@@ -78,11 +94,11 @@ module Help
           end
 
           @contact = ComContact.find_by(public_id: contact_id)
+
           if @contact.nil?
             raise StandardError, "Contact not found"
           end
 
-          # Validate status must be SET_UP
           unless @contact.contact_status_title == "SET_UP"
             raise StandardError, "Invalid contact status: expected SET_UP, got #{@contact.contact_status_title}"
           end

@@ -4,10 +4,22 @@ module Help
       include CloudflareTurnstile
       include Rotp
 
+      def show
+      end
+      def show
+        @contact = ComContact.find_by!(public_id: params[:id])
+        @topic = @contact.com_contact_topics.last
+      end
       def new
-        @email_address = ""
-        @telephone_number = ""
+        @email_address = "" # todo: remove if not used
+        @telephone_number = "" # todo: remove if not used
         @contact_categories = ComContactCategory.all
+      end
+
+
+      def edit
+        @contact = ComContact.find_by!(public_id: params[:id])
+        @topic = @contact.com_contact_topics.build
       end
 
       def create
@@ -66,7 +78,23 @@ module Help
         end
       end
 
+
+      def update
+        @contact = ComContact.find_by!(public_id: params[:id])
+        @topic = @contact.com_contact_topics.build(topic_params)
+
+        if @topic.save
+          redirect_to help_com_contact_url(@contact, **help_email_redirect_options), notice: I18n.t("help.com.contacts.update.success")
+        else
+          render :edit, status: :unprocessable_content
+        end
+      end
+
       private
+
+      def topic_params
+        params.expect(com_contact_topic: [ :title, :description ])
+      end
 
       def help_email_redirect_options
         {

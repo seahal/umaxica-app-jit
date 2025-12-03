@@ -1351,6 +1351,8 @@ ja:
           failure: "お問い合わせを送信できませんでした。入力内容をご確認ください。"
           turnstile_error: "セキュリティ検証に失敗しました。ページを更新して再度お試しください。"
           confirm_policy_error: "続行するには、プライバシーポリシーに同意する必要があります。"
+        update:
+          success: "お問い合わせを受け付けました"
       contact:
         emails:
           new:

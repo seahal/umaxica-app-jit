@@ -52,7 +52,7 @@ class ComContactEmail < GuestsRecord
   def generate_hotp!
     secret = ROTP::Base32.random
     hotp = ROTP::HOTP.new(secret)
-    counter = rand(1...1_000_000) * 2
+    counter = SecureRandom.random_number(1_000_000)
     code = hotp.at(counter)
 
     self.hotp_secret = secret

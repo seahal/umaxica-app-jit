@@ -1,28 +1,55 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-none:
-  title: 'NULL_COM_STATUS'
-  description: 'ROOT'
+NULL_COM_STATUS:
+  title: "NULL_COM_STATUS"
+  description: "root of service site status inquiries"
+  parent_title: ~
+  position: 0
+  active: true
+  created_at: "2025-12-03 13:28:11.892787000 +0000"
+  updated_at: "2025-12-03 13:28:11.892787000 +0000"
 
-service_root:
-  title: 'SERVICE_SITE_STATUS'
-  description: 'ROOT'
+NULL:
+  title: "NULL"
+  description: "root of service site status inquiries"
+  parent_title: ~
+  position: 0
+  active: true
+  created_at: "2025-12-03 13:28:11.898338000 +0000"
+  updated_at: "2025-12-03 13:28:11.898338000 +0000"
 
-set_up:
-  title: 'SET_UP'
-  description: 'first step completed'
+SET_UP:
+  title: "SET_UP"
+  description: "first step completed"
+  parent_title: ~
+  position: 0
+  active: true
+  created_at: "2025-12-03 13:28:11.901861000 +0000"
+  updated_at: "2025-12-03 13:28:11.901861000 +0000"
 
-checked_email_address:
-  title: 'CHECKED_EMAIL_ADDRESS'
-  description: 'second step completed'
-  parent_title: 'SET_UP'
+CHECKED_EMAIL_ADDRESS:
+  title: "CHECKED_EMAIL_ADDRESS"
+  description: "second step completed"
+  parent_title: "SET_UP"
+  position: 0
+  active: true
+  created_at: "2025-12-03 13:28:11.906957000 +0000"
+  updated_at: "2025-12-03 13:28:11.906957000 +0000"
 
-checked_telephone_number:
-  title: 'CHECKED_TELEPHONE_NUMBER'
-  description: 'third step completed'
-  parent_title: 'CHECKED_EMAIL_ADDRESS'
+CHECKED_TELEPHONE_NUMBER:
+  title: "CHECKED_TELEPHONE_NUMBER"
+  description: "second step completed"
+  parent_title: "CHECKED_EMAIL_ADDRESS"
+  position: 0
+  active: true
+  created_at: "2025-12-03 13:28:11.910891000 +0000"
+  updated_at: "2025-12-03 13:28:11.910891000 +0000"
 
-completed_contact_action:
-  title: 'COMPLETED_CONTACT_ACTION'
-  description: 'contact action completed'
-  parent_title: 'CHECKED_TELEPHONE_NUMBER'
+COMPLETED_CONTACT_ACTION:
+  title: "COMPLETED_CONTACT_ACTION"
+  description: "second step completed"
+  parent_title: "CHECKED_TELEPHONE_NUMBER"
+  position: 0
+  active: true
+  created_at: "2025-12-03 13:28:11.914816000 +0000"
+  updated_at: "2025-12-03 13:28:11.914816000 +0000"

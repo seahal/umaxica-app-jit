@@ -21,3 +21,25 @@ two:
   created_at: 2025-10-27 10:00:00
   updated_at: 2025-10-27 10:00:00
   public_id: "97463105827291840536"
+
+verified_email_pending:
+  contact_category_title: CORPORATE_INQUIRY
+  contact_status_title: SET_UP
+  token: ''
+  token_digest: null
+  token_expires_at: null
+  token_viewed: false
+  created_at: 2025-10-27 11:00:00
+  updated_at: 2025-10-27 11:00:00
+  public_id: "97463105827291840537"
+
+verified_email_complete:
+  contact_category_title: CORPORATE_INQUIRY
+  contact_status_title: CHECKED_EMAIL_ADDRESS
+  token: ''
+  token_digest: null
+  token_expires_at: null
+  token_viewed: false
+  created_at: 2025-10-27 12:00:00
+  updated_at: 2025-10-27 12:00:00
+  public_id: "97463105827291840538"

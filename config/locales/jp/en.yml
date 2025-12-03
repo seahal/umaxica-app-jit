@@ -820,6 +820,8 @@ en:
           failure: "Unable to process your request. Please check the form and try again."
           turnstile_error: "Security verification failed. Please refresh the page and try again."
           confirm_policy_error: "You must agree to the privacy policy to continue."
+        update:
+          success: "Your inquiry has been received."
       contact:
         emails:
           new:
