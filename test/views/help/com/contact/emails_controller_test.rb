@@ -1,9 +1,12 @@
 require "test_helper"
+require "uri"
 
 class Help::Com::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
   setup do
     # Load fixture as ActiveRecord model, not Hash
     @contact = ComContact.find_by!(public_id: com_contacts(:one)["public_id"])
+    # Delete any existing emails for this contact to avoid conflicts
+    @contact.com_contact_emails.destroy_all
     # Create email for the contact since resource is singular
     @contact_email = ComContactEmail.create!(
       com_contact: @contact,

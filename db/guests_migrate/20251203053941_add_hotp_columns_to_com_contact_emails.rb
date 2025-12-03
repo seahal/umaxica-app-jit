@@ -1,6 +1,8 @@
 class AddHotpColumnsToComContactEmails < ActiveRecord::Migration[8.2]
   def change
-    add_column :com_contact_emails, :hotp_secret, :string
-    add_column :com_contact_emails, :hotp_counter, :integer
+    change_table :com_contact_emails, bulk: true do |t|
+      t.string :hotp_secret
+      t.integer :hotp_counter
+    end
   end
 end

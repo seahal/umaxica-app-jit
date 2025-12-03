@@ -5,31 +5,67 @@ module Help
         before_action :load_and_validate_contact
 
         def new
-          debugger
           @contact_email = ComContactEmail.find_by(com_contact_id: @contact.id)
         end
 
         def create
-          pp params
-          # unless @contact_email
-          # hotp_code = params.dig(:com_contact_email, :hotp_code)
+          @contact_email = ComContactEmail.find_by(com_contact_id: @contact.id)
 
-          # if hotp_code.blank?
-          #   @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.create.hotp_code_required"))
-          #   render :new, status: :unprocessable_content
-          #   return
-          # end
+          unless @contact_email
+            raise StandardError, "Contact email not found"
+          end
 
-          # if @contact_email.verify_hotp_code(hotp_code)
-          #   @contact.verify_email!
-          #   redirect_to new_help_com_contact_telephone_url(
-          #                 contact_id: @contact.public_id,
-          #                 **help_email_redirect_options
-          #               ), notice: I18n.t("help.com.contact.emails.create.success")
-          # else
-          #   @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.create.hotp_code_invalid"))
-          #   render :new, status: :unprocessable_content
-          # end
+          hotp_code = params.dig(:com_contact_email, :hotp_code)
+
+          if hotp_code.blank?
+            @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.create.hotp_code_required"))
+            render :new, status: :unprocessable_content
+            return
+          end
+
+          # Check if attempts left
+          if @contact_email.verifier_attempts_left <= 0
+            @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.max_attempts"))
+            render :new, status: :unprocessable_content
+            return
+          end
+
+          # Check if expired
+          if @contact_email.verifier_expires_at && Time.current >= @contact_email.verifier_expires_at
+            @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.expired"))
+            render :new, status: :unprocessable_content
+            return
+          end
+
+          if @contact_email.verify_hotp_code(hotp_code)
+            # Update contact status to CHECKED_EMAIL_ADDRESS
+            @contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+
+            Rails.logger.debug "\n=== REDIRECT DEBUG ==="
+            Rails.logger.debug { "Query params: #{request.query_parameters.inspect}" }
+            Rails.logger.debug { "Preserved params: #{preserved_locale_query_params.inspect}" }
+            Rails.logger.debug { "Redirect options: #{help_email_redirect_options.inspect}" }
+            redirect_url = new_help_com_contact_telephone_url(
+              @contact,
+              **preserved_locale_query_params,
+              **help_email_redirect_options
+            )
+            Rails.logger.debug { "Generated URL: #{redirect_url}" }
+            Rails.logger.debug "=====================\n"
+
+            redirect_to redirect_url, notice: I18n.t("help.com.contact.emails.update.success")
+          else
+            # Reload to get updated attempts_left, but save it before reload clears errors
+            @contact_email.reload
+            attempts_left = @contact_email.verifier_attempts_left
+
+            if attempts_left > 0
+              @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.invalid_code", attempts_left: attempts_left))
+            else
+              @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.max_attempts"))
+            end
+            render :new, status: :unprocessable_content
+          end
         end
 
         private
@@ -70,6 +106,10 @@ module Help
           rescue URI::InvalidURIError
             host_value.split(":").first
           end
+        end
+
+        def preserved_locale_query_params
+          request.query_parameters.slice("ct", "lx", "ri", "tz").compact
         end
       end
     end

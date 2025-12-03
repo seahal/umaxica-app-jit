@@ -842,6 +842,8 @@ en:
             submit: "Verify email"
             session_expired: "Your session has expired. Please start over."
             resend_code: "Resend code"
+            telephone_link: "Verify phone number"
+            retry: "Start over"
           update:
             success: "Email verified successfully. Please verify your phone number."
             session_expired: "Your session has expired. Please start over."

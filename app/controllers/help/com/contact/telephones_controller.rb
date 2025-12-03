@@ -63,7 +63,17 @@ module Help
         private
 
         def load_contact
-          @contact = ComContact.find(params[:contact_id])
+          contact_id = params[:contact_id]
+
+          if contact_id.blank?
+            raise StandardError, "Contact ID is required"
+          end
+
+          @contact = ComContact.find_by(public_id: contact_id)
+          if @contact.nil?
+            raise StandardError, "Contact not found"
+          end
+
           Rails.logger.debug { "DEBUG: loaded @contact = #{@contact.inspect}, class = #{@contact.class}" }
         end
 

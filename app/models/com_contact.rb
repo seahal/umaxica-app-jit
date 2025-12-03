@@ -101,6 +101,11 @@ class ComContact < GuestsRecord
     token_expires_at && Time.current >= token_expires_at
   end
 
+  # Override to_param to use public_id in URLs
+  def to_param
+    public_id
+  end
+
   private
 
   def generate_public_id

@@ -1373,6 +1373,8 @@ ja:
             submit: "メールアドレスを確認"
             session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             resend_code: "コードを再送信"
+            telephone_link: "電話番号を確認"
+            retry: "やりなおす"
           update:
             success: "メールアドレスが確認されました。電話番号を確認してください。"
             session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
