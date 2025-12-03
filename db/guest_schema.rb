@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_03_053941) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -30,7 +30,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-12-03 13:54:26", null: false
+    t.timestamptz "expires_at", default: "2025-12-04 05:45:47", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -58,7 +58,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.uuid "app_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-03 13:54:26", null: false
+    t.timestamptz "expires_at", default: "2025-12-04 05:45:47", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -102,7 +102,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-12-03 13:54:29", null: false
+    t.timestamptz "expires_at", default: "2025-12-04 05:45:48", null: false
+    t.integer "hotp_counter"
+    t.string "hotp_secret"
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -139,7 +141,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-03 13:54:29", null: false
+    t.timestamptz "expires_at", default: "2025-12-04 05:45:48", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -156,7 +158,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-03 13:54:29", null: false
+    t.timestamptz "expires_at", default: "2025-12-04 05:45:48", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
@@ -196,7 +198,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-12-03 13:54:28", null: false
+    t.timestamptz "expires_at", default: "2025-12-04 05:45:48", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
@@ -224,7 +226,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_12_034939) do
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-03 13:54:28", null: false
+    t.timestamptz "expires_at", default: "2025-12-04 05:45:48", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
