@@ -27,8 +27,6 @@ class ComContact < GuestsRecord
   validates :confirm_policy, acceptance: true
   validates :contact_category_title, presence: true
 
-  # State transition helpers
-
   # State check methods
   def email_pending?
     contact_status_title == "SET_UP" || contact_status_title == "NULL_COM_STATUS"

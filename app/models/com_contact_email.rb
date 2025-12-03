@@ -8,6 +8,9 @@ class ComContactEmail < GuestsRecord
   # Validations
   validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
+  # Encryptions
+  encrypts :hotp_secret
+
   # Generate and store email verification code
   # TODO: Rewrite this code to otp generator
   def generate_verifier!
