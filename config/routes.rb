@@ -3,14 +3,14 @@
 Rails.application.routes.draw do
   # global
   # top level pages
+  # TODO: RENAME => apex
   draw :top
   # sign in / up
   draw :sign
   # regional
   ## top endpoint
+  # TODO: RENAME => back
   draw :bff
-  # api endpoint url
-  draw :api
   # endpoint for docs
   draw :docs
   # endpoint for news
