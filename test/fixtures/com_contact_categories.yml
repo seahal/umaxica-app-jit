@@ -1,14 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-none:
-  title: 'NULL_COM_CATEGORY'
+SECURITY_ISSUE:
+  title: 'SECURITY_ISSUE'
   description: 'ROOT'
-one:
-  title: 'CORPORATE_INQUIRY'
-  description: 'Corporate inquiry category'
-two:
-  title: 'CORPORATE_PARTNERSHIP'
-  description: 'Corporate partnership category'
-three:
-  title: 'CORPORATE_GENERAL'
-  description: 'Corporate general category'
+OTHERS:
+  title: 'OTHERS'
+  description: 'Miscellaneous inquiries'
+NONE:
+  title: 'NONE'
+  description: 'NONE'

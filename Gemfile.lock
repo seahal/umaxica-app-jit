@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: c397e502a12a837899c17686eadec6f706a25d78
+  revision: 740e11d44c433182aaeedc7310e2df95ced56d6d
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -318,7 +318,7 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
-    json (2.16.0)
+    json (2.17.0)
     json-jwt (1.17.0)
       activesupport (>= 4.2)
       aes_key_wrap
@@ -657,6 +657,8 @@ GEM
     public_suffix (7.0.0)
     puma (7.1.0)
       nio4r (~> 2.0)
+    pundit (2.5.2)
+      activesupport (>= 3.0.0)
     racc (1.8.1)
     rack (3.2.4)
     rack-cors (3.0.0)
@@ -728,6 +730,7 @@ GEM
     rexml (3.4.4)
     roda (3.98.0)
       rack
+    rolify (6.0.1)
     rotp (6.3.0)
     rqrcode (3.1.1)
       chunky_png (~> 1.0)
@@ -938,6 +941,7 @@ DEPENDENCIES
   pg
   propshaft
   puma
+  pundit
   rack
   rack-cors
   rack-mini-profiler
@@ -948,6 +952,7 @@ DEPENDENCIES
   rake
   redis
   reek
+  rolify
   rotp
   rqrcode
   rswag

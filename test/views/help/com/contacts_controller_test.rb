@@ -3,7 +3,7 @@ require "test_helper"
 module Help::Com
   class ContactsControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @category = com_contact_categories(:one)
+      @category = com_contact_categories(:SECURITY_ISSUE)
     end
 
     test "should get new" do

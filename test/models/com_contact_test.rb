@@ -28,11 +28,11 @@ class ComContactTest < ActiveSupport::TestCase
   end
 
   def sample_category
-    com_contact_categories(:one).title
+    com_contact_categories(:SECURITY_ISSUE).title
   end
 
   def sample_status
-    com_contact_statuses(:none).title
+    com_contact_statuses(:NONE).title
   end
 
   test "should inherit from GuestsRecord" do
@@ -43,8 +43,8 @@ class ComContactTest < ActiveSupport::TestCase
     contact = com_contacts(:one)
 
     assert_predicate contact, :valid?
-    assert_equal "CORPORATE_INQUIRY", contact.contact_category_title
-    assert_equal "NULL_COM_STATUS", contact.contact_status_title
+    assert_equal "SECURITY_ISSUE", contact.contact_category_title
+    assert_equal "NONE", contact.contact_status_title
   end
 
   test "should create contact with relationship titles" do
@@ -93,8 +93,8 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NULL_COM_CATEGORY", contact.contact_category_title
-    assert_equal "NULL_COM_STATUS", contact.contact_status_title
+    assert_equal "NONE", contact.contact_category_title
+    assert_equal "NONE", contact.contact_status_title
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -266,10 +266,10 @@ class ComContactTest < ActiveSupport::TestCase
   end
 
   test "should reference contact_status by title" do
-    ComContactStatus.create!(title: "com_status")
+    ComContactStatus.create!(title: "SECURITY_ISSUE")
 
     contact = ComContact.new(
-      contact_status_title: "com_status",
+      contact_status_title: "SECURITY_ISSUE",
       confirm_policy: "1"
     )
 
@@ -287,7 +287,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "com_status", contact.contact_status_title
+    assert_equal "SECURITY_ISSUE", contact.contact_status_title
   end
 
   test "should set default contact_category_title when nil" do
@@ -310,7 +310,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NULL_COM_CATEGORY", contact.contact_category_title
+    assert_equal "NONE", contact.contact_category_title
   end
 
   test "should set default contact_status_title when nil" do
@@ -333,7 +333,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NULL_COM_STATUS", contact.contact_status_title
+    assert_equal "NONE", contact.contact_status_title
   end
 
   # Validation tests

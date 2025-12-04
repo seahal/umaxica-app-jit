@@ -8,11 +8,28 @@ module Help
       class EmailsControllerTest < ActionDispatch::IntegrationTest
         setup do
           @host = ENV["HELP_CORPORATE_URL"] || "help.com.localhost"
-          @contact = com_contacts(:verified_email_pending)
-          # Clear any fixture emails to avoid conflicts
-          @contact.com_contact_emails.destroy_all
-          @contact.com_contact_telephones.destroy_all
-          # Recreate email to avoid encryption issues with fixtures
+          # Ensure required statuses exist (parent first)
+          ComContactStatus.find_or_create_by!(title: "NULL_COM_STATUS") do |status|
+            status.description = "root status"
+            status.parent_title = nil
+            status.position = 0
+            status.active = true
+          end
+          ComContactStatus.find_or_create_by!(title: "SET_UP") do |status|
+            status.description = "first step completed"
+            status.parent_title = "NULL_COM_STATUS"
+            status.position = 0
+            status.active = true
+          end
+          # Create a fresh contact with correct status instead of using fixture
+          @contact = ComContact.create!(
+            contact_category_title: "CORPORATE_INQUIRY",
+            contact_status_title: "SET_UP",
+            confirm_policy: "1"
+          )
+          # Reload to ensure status is persisted
+          @contact.reload
+          # Create email for verification
           @contact_email = @contact.com_contact_emails.create!(
             email_address: "test@example.com",
             verifier_attempts_left: 3,

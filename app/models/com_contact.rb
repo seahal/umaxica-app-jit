@@ -115,7 +115,8 @@ class ComContact < GuestsRecord
   end
 
   def set_default_category_and_status
-    self.contact_category_title ||= "NULL_COM_CATEGORY"
-    self.contact_status_title ||= "NULL_COM_STATUS"
+    # Only set defaults if values are not already set (nil or empty)
+    self.contact_category_title = "NONE" if contact_category_title.nil?
+    self.contact_status_title = "NONE" if contact_status_title.nil?
   end
 end

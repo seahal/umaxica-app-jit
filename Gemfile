@@ -84,6 +84,9 @@ gem "meta-tags"
 gem "nanoid"
 #
 gem "rails_semantic_logger"
+# Authentication
+gem "rolify"
+gem "pundit"
 
 group :development, :test do
   # to avoid n+1 queries

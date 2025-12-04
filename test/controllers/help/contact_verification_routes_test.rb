@@ -19,13 +19,14 @@ class HelpContactVerificationRoutesTest < ActionDispatch::IntegrationTest
   # end
 
   test "corporate contact telephone routes respond" do
-    get new_help_com_contact_telephone_url(contact_id: @com_contact)
+    verified_contact = com_contacts(:verified_email_complete)
+    get new_help_com_contact_telephone_url(contact_id: verified_contact)
 
     assert_response :success
 
-    post help_com_contact_telephone_url(contact_id: @com_contact)
+    post help_com_contact_telephone_url(contact_id: verified_contact)
 
-    assert_response :created
+    assert_response :unprocessable_content
   end
 
   test "service contact email routes respond" do
