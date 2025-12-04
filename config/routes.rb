@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   # regional
   ## top endpoint
   # TODO: RENAME => back
-  draw :bff
+  draw :back
   # endpoint for docs
   draw :docs
   # endpoint for news
