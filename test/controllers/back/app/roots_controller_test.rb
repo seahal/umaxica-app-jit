@@ -4,11 +4,13 @@ require "test_helper"
 
 module Back::App
   class RootsControllerTest < ActionDispatch::IntegrationTest
-    test "should redirect to BFF_SERVICE_URL" do
-      get bff_app_root_url
+    BACK_SERVICE_URL = ENV.fetch("BACK_SERVICE_URL", "back-service.example.com")
+
+    test "should redirect to BACK_SERVICE_URL" do
+      get back_app_root_url
 
       assert_response :redirect
-      assert_redirected_to "https://#{ENV['BFF_SERVICE_URL']}"
+      assert_redirected_to "https://#{BACK_SERVICE_URL}"
     end
   end
 end

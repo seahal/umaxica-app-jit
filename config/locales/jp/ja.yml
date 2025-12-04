@@ -758,7 +758,7 @@ ja:
           back: 設定一覧に戻る
       privacy:
         up_link: "うえへ"
-  bff:
+  back:
     shared:
       preference_emails:
         token_invalid: "リンクの有効期限が切れています。新しくリクエストしてください。"

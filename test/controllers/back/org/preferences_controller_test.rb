@@ -4,13 +4,13 @@ require "test_helper"
 
 class Back::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
-    get bff_org_preference_url
+    get back_org_preference_url
 
     assert_response :success
   end
 
   test "show page should display content" do
-    get bff_org_preference_url
+    get back_org_preference_url
 
     assert_response :success
     assert_select "h1"
@@ -18,7 +18,7 @@ class Back::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show page should have links in configuration list" do
-    get bff_org_preference_url
+    get back_org_preference_url
 
     assert_response :success
     assert_select "div.configuration-list ul li a", minimum: 1
@@ -26,7 +26,7 @@ class Back::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should render copyright in footer" do
-    get bff_org_preference_url
+    get back_org_preference_url
 
     assert_select "footer" do
       assert_select "small", text: /^©/

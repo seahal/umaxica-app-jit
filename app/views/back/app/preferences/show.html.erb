@@ -1,13 +1,13 @@
-<h1><%= title t('bff.app.preferences.title') %></h1>
+<h1><%= title t('back.app.preferences.title') %></h1>
 
-<p><%= t('bff.app.preferences.description') %></p>
+<p><%= t('back.app.preferences.description') %></p>
 
 <div class="configuration-list">
   <ul>
     <li>
-      <%= link_to t('bff.app.preferences.email_settings'), new_bff_app_preference_email_path, class: 'configuration-link' %>
-      <p class="text-sm text-gray-600"><%= t('bff.app.preferences.email_settings_description') %></p>
+      <%= link_to t('back.app.preferences.email_settings'), new_back_app_preference_email_path, class: 'configuration-link' %>
+      <p class="text-sm text-gray-600"><%= t('back.app.preferences.email_settings_description') %></p>
     </li>
   </ul>
-  <p class="text-sm text-gray-500 mt-4"><%= t('bff.app.preferences.token_guidance') %></p>
+  <p class="text-sm text-gray-500 mt-4"><%= t('back.app.preferences.token_guidance') %></p>
 </div>

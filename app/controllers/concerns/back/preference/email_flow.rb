@@ -20,10 +20,10 @@ module Back
 
         if turnstile_passed? && @email_preference_request.save
           deliver_email_preference_link(@email_preference_request)
-          flash[:notice] = t("bff.#{preference_context}.preference.emails.new.success")
+          flash[:notice] = t("back.#{preference_context}.preference.emails.new.success")
           redirect_to preference_root_path
         else
-          flash.now[:alert] ||= t("bff.#{preference_context}.preference.emails.new.failure")
+          flash.now[:alert] ||= t("back.#{preference_context}.preference.emails.new.failure")
           render :new, status: :unprocessable_content
         end
       end
@@ -36,10 +36,10 @@ module Back
         @email_preferences = normalized_preference_params
 
         if @email_preference_request.mark_preferences!(@email_preferences)
-          flash[:notice] = t("bff.#{preference_context}.preference.emails.edit.success")
+          flash[:notice] = t("back.#{preference_context}.preference.emails.edit.success")
           redirect_to preference_root_path
         else
-          flash.now[:alert] = t("bff.shared.preference_emails.update_failure")
+          flash.now[:alert] = t("back.shared.preference_emails.update_failure")
           render :edit, status: :unprocessable_content
         end
       end
@@ -72,7 +72,7 @@ module Back
 
       def append_turnstile_error
         @email_preference_request.errors.add(:base, :turnstile)
-        flash.now[:alert] ||= t("bff.shared.preference_emails.turnstile_error")
+        flash.now[:alert] ||= t("back.shared.preference_emails.turnstile_error")
       end
 
       def load_email_preference_request
@@ -81,16 +81,16 @@ module Back
       end
 
       def invalid_token
-        flash[:alert] = t("bff.shared.preference_emails.token_invalid")
+        flash[:alert] = t("back.shared.preference_emails.token_invalid")
         redirect_to preference_email_new_path
       end
 
       def preference_root_path
-        send("bff_#{preference_context}_preference_path")
+        send("back_#{preference_context}_preference_path")
       end
 
       def preference_email_new_path
-        send("new_bff_#{preference_context}_preference_email_path")
+        send("new_back_#{preference_context}_preference_email_path")
       end
 
       def deliver_email_preference_link(request)

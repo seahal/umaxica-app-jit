@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  scope module: :back, as: :bff do
+  scope module: :back, as: :back do
     # for client site
     constraints host: ENV["BACK_CORPORATE_URL"] do
       scope module: :com, as: :com do

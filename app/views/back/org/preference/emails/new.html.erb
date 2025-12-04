@@ -1,12 +1,12 @@
-<% content_for :page_title, t('bff.org.preference.emails.new.page_title') %>
+<% content_for :page_title, t('back.org.preference.emails.new.page_title') %>
 
-<h1><%= t('bff.org.preference.emails.new.heading') %></h1>
+<h1><%= t('back.org.preference.emails.new.heading') %></h1>
 
-<p><%= t('bff.org.preference.emails.new.description') %></p>
+<p><%= t('back.org.preference.emails.new.description') %></p>
 
 <%= render "concern/flash_messages" %>
 
-<%= form_with model: @email_preference_request, url: bff_org_preference_emails_path, local: true do |f| %>
+<%= form_with model: @email_preference_request, url: back_org_preference_emails_path, local: true do |f| %>
   <% if @email_preference_request.errors.any? %>
     <div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-md mb-4">
       <ul class="space-y-1 text-sm">
@@ -18,7 +18,7 @@
   <% end %>
 
   <div class="form-group mb-4">
-    <%= f.label :email_address, t('bff.org.preference.emails.new.email_label'), class: 'block text-sm font-medium text-gray-700' %>
+    <%= f.label :email_address, t('back.org.preference.emails.new.email_label'), class: 'block text-sm font-medium text-gray-700' %>
     <%= f.email_field :email_address, required: true, autocomplete: 'email', class: 'mt-1 block w-full border border-gray-300 rounded-md p-2' %>
   </div>
 
@@ -27,7 +27,7 @@
   </div>
 
   <div class="form-actions flex items-center gap-3">
-    <%= f.submit t('bff.org.preference.emails.new.submit'), class: 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700' %>
-    <%= link_to t('bff.org.preferences.back_to_settings'), bff_org_preference_path, class: 'text-sm text-gray-700 hover:underline' %>
+    <%= f.submit t('back.org.preference.emails.new.submit'), class: 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700' %>
+    <%= link_to t('back.org.preferences.back_to_settings'), back_org_preference_path, class: 'text-sm text-gray-700 hover:underline' %>
   </div>
 <% end %>

@@ -721,7 +721,7 @@ en:
           privacy: "Privacy"
         reset_settings: "Reset Settings"
 
-  bff:
+  back:
     shared:
       preference_emails:
         token_invalid: "That link is no longer valid. Request a new one to continue."
