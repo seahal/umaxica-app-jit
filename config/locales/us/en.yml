@@ -668,7 +668,7 @@ en:
     precision:
       format:
         delimiter: ''
-  top:
+  apex:
     app:
       preferences:
         title: "Preferences"

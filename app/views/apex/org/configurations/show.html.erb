@@ -1,0 +1,18 @@
+<% content_for :page_title, t('apex.org.configurations.title') %>
+
+<h1><%= t('apex.org.configurations.title') %></h1>
+
+<p><%= t('apex.org.configurations.description') %></p>
+
+<div class="configuration-list">
+  <ul>
+    <li>
+      <%= link_to t('apex.org.configurations.i18n_settings'), edit_apex_org_preference_region_path, class: 'configuration-link' %>
+      <p class="text-sm text-gray-600"><%= t('apex.org.configurations.i18n_settings_description') %></p>
+    </li>
+    <li>
+      <%= link_to t('apex.org.configurations.email_settings'), new_apex_org_configuration_email_path, class: 'configuration-link' %>
+      <p class="text-sm text-gray-600"><%= t('apex.org.configurations.email_settings_description') %></p>
+    </li>
+  </ul>
+</div>

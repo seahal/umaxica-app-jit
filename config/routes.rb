@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   # global
   # top level pages
   # TODO: RENAME => apex
-  draw :top
+  draw :apex
   # sign in / up
   draw :sign
   # regional

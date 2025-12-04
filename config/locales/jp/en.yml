@@ -704,7 +704,7 @@ en:
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."
-  top:
+  apex:
     app:
       preferences:
         footer:
@@ -877,7 +877,7 @@ en:
             invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
             max_attempts: "Maximum verification attempts exceeded. Please request a new code."
             expired: "Verification code has expired. Please request a new code."
-  top:
+  apex:
     app:
       preference:
         resets:
@@ -886,7 +886,7 @@ en:
           confirm: "RESET"
           button: "RESET"
           back: "Back???"
-  top:
+  apex:
     app:
       preferences:
         title: "Preferences"

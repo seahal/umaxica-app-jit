@@ -44,7 +44,7 @@ ja:
         authentication:
           destroy:
             jump_obj: sign in with email
-    top:
+    apex:
       app:
         preferences:
           themes:
@@ -847,7 +847,7 @@ ja:
     precision:
       format:
         delimiter: ''
-  top:
+  apex:
     app:
       preferences:
         title: 設定

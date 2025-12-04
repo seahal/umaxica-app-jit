@@ -1,0 +1,12 @@
+<% content_for :page_title, "#{ENV['BRAND_NAME']} (org)" %>
+
+<section>
+  <h1>Welcome to <%= ENV['BRAND_NAME'] %> (org)</h1>
+
+  <nav>
+    <ul>
+      <li><%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_path %></li>
+      <li><%= link_to t('apex.org.preferences.footer.privacy'), apex_org_privacy_path %></li>
+    </ul>
+  </nav>
+</section>
