@@ -3,6 +3,11 @@ en:
   hello: "Hello world 2"
   messages:
     region_settings_updated_successfully: "Region settings updated successfully."
+    user_registration_error: "An error occurred during user registration."
+    access_blocked_auth_error: "Access blocked: Authentication error"
+    email_successfully_created: "Verification code has been sent to your email."
+    telephone_successfully_created: "Verification code has been sent to your phone."
+    sample_successfully_updated: "Registration completed successfully."
   common:
     ok: "OK"
   errors:
@@ -93,6 +98,13 @@ en:
         email:
           new:
             page_title: "UMAXICA (sign, app)"
+            link_to_other_methods: "Try other methods?"
+            link_to_sign_in: "Already have an account?"
+        telephone:
+          new:
+            page_title: "Sign up with phone number"
+            link_to_other_methods: "Try other methods?"
+            link_to_sign_in: "Already have an account?"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"

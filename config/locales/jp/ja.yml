@@ -266,6 +266,9 @@ ja:
     region_settings_updated_successfully: 地域設定が正常に更新されました。
     user_registration_error: ユーザー登録中にエラーが発生しました。
     access_blocked_auth_error: 'アクセスをブロック: 認証エラーです'
+    email_successfully_created: メールアドレスの確認コードを送信しました。
+    telephone_successfully_created: 電話番号の確認コードを送信しました。
+    sample_successfully_updated: 登録が完了しました。
   sign:
     app:
       authentication:
@@ -347,6 +350,13 @@ ja:
         email:
           new:
             page_title: "UMAXICA (sign, app)"
+            link_to_other_methods: "他の方法で登録しますか？"
+            link_to_sign_in: "ログインしますか？"
+        telephone:
+          new:
+            page_title: "電話番号で登録"
+            link_to_other_methods: "他の方法で登録しますか？"
+            link_to_sign_in: "ログインしますか？"
     org:
       authentication:
         new:

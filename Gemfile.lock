@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 740e11d44c433182aaeedc7310e2df95ced56d6d
+  revision: 0f3585ee229f1b3ee700a3e11a1527ff7ad364b8
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -318,7 +318,7 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
-    json (2.17.0)
+    json (2.17.1)
     json-jwt (1.17.0)
       activesupport (>= 4.2)
       aes_key_wrap

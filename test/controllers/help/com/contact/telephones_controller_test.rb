@@ -40,7 +40,8 @@ module Help
             confirm_policy: "1"
           )
           # Create telephone for verification
-          @contact_telephone = @contact.com_contact_telephones.create!(
+          @contact_telephone = ComContactTelephone.create!(
+            com_contact: @contact,
             telephone_number: "+15555555555",
             verifier_attempts_left: 3,
             verifier_expires_at: 15.minutes.from_now
@@ -75,7 +76,8 @@ module Help
           @contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
           # Recreate telephone fresh to avoid encryption issues in parallel tests
           ComContactTelephone.where(com_contact_id: @contact.id).delete_all
-          fresh_telephone = @contact.com_contact_telephones.create!(
+          fresh_telephone = ComContactTelephone.create!(
+            com_contact: @contact,
             telephone_number: "+15555555555",
             verifier_attempts_left: 3,
             verifier_expires_at: 15.minutes.from_now

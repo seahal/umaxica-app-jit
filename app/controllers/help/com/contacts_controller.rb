@@ -6,14 +6,15 @@ module Help
 
       def show
       end
+
       def show
         @contact = ComContact.find_by!(public_id: params[:id])
         @topic = @contact.com_contact_topics.last
       end
+
       def new
         @contact_categories = ComContactCategory.all
       end
-
 
       def edit
         @contact = ComContact.find_by!(public_id: params[:id])
@@ -31,11 +32,11 @@ module Help
         )
 
         # Build associated email and telephone
-        @email = @contact.com_contact_emails.build(
+        @email = @contact.build_com_contact_email(
           email_address: params.dig(:com_contact, :email_address)
         )
 
-        @telephone = @contact.com_contact_telephones.build(
+        @telephone = @contact.build_com_contact_telephone(
           telephone_number: params.dig(:com_contact, :telephone_number)
         )
 
@@ -76,7 +77,6 @@ module Help
         end
       end
 
-
       def update
         @contact = ComContact.find_by!(public_id: params[:id])
         @topic = @contact.com_contact_topics.build(topic_params)
@@ -92,7 +92,7 @@ module Help
       private
 
       def send_topic_notification(contact, topic)
-        contact_email = contact.com_contact_emails.order(created_at: :desc).first
+        contact_email = contact.com_contact_email
 
         unless contact_email
           Rails.logger.warn("Skipping topic notification for contact #{contact.public_id}: no email address configured")

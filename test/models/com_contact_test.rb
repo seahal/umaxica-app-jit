@@ -3,12 +3,12 @@ require "test_helper"
 class ComContactTest < ActiveSupport::TestCase
   def build_contact(**attrs)
     # Create contact first
-    contact = ComContact.new(**attrs.except(:com_contact_emails, :com_contact_telephones))
+    contact = ComContact.new(**attrs.except(:com_contact_email, :com_contact_telephone))
     contact.confirm_policy = "1" unless attrs.key?(:confirm_policy)
     contact.save!
 
     # Create email and telephone associated with the contact
-    unless attrs.key?(:com_contact_emails)
+    unless attrs.key?(:com_contact_email)
       ComContactEmail.create!(
         com_contact: contact,
         email_address: "test@example.com",
@@ -16,7 +16,7 @@ class ComContactTest < ActiveSupport::TestCase
       )
     end
 
-    unless attrs.key?(:com_contact_telephones)
+    unless attrs.key?(:com_contact_telephone)
       ComContactTelephone.create!(
         com_contact: contact,
         telephone_number: "+1234567890",
@@ -124,40 +124,24 @@ class ComContactTest < ActiveSupport::TestCase
 
   # Association tests
   # rubocop:disable Minitest/MultipleAssertions
-  test "should have many com_contact_emails" do
+  test "should have one com_contact_email" do
     contact = build_contact
 
-    assert_respond_to contact, :com_contact_emails
-    assert_equal 1, contact.com_contact_emails.count
-    assert_instance_of ComContactEmail, contact.com_contact_emails.first
-
-    # Test adding another email
-    ComContactEmail.create!(
-      com_contact: contact,
-      email_address: "another@example.com",
-      expires_at: 1.day.from_now
-    )
-
-    assert_equal 2, contact.com_contact_emails.count
+    assert_respond_to contact, :com_contact_email
+    assert_not_nil contact.com_contact_email
+    assert_instance_of ComContactEmail, contact.com_contact_email
+    assert_equal "test@example.com", contact.com_contact_email.email_address
   end
   # rubocop:enable Minitest/MultipleAssertions
 
   # rubocop:disable Minitest/MultipleAssertions
-  test "should have many com_contact_telephones" do
+  test "should have one com_contact_telephone" do
     contact = build_contact
 
-    assert_respond_to contact, :com_contact_telephones
-    assert_equal 1, contact.com_contact_telephones.count
-    assert_instance_of ComContactTelephone, contact.com_contact_telephones.first
-
-    # Test adding another telephone
-    ComContactTelephone.create!(
-      com_contact: contact,
-      telephone_number: "+9876543210",
-      expires_at: 1.day.from_now
-    )
-
-    assert_equal 2, contact.com_contact_telephones.count
+    assert_respond_to contact, :com_contact_telephone
+    assert_not_nil contact.com_contact_telephone
+    assert_instance_of ComContactTelephone, contact.com_contact_telephone
+    assert_equal "+1234567890", contact.com_contact_telephone.telephone_number
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -337,56 +321,44 @@ class ComContactTest < ActiveSupport::TestCase
   end
 
   # Validation tests
-  test "should allow contact without email addresses" do
+  test "should allow contact without email address" do
     contact = ComContact.new(confirm_policy: "1")
 
     assert contact.save
-    assert_equal 0, contact.com_contact_emails.count
+    assert_nil contact.com_contact_email
   end
 
-  test "should allow contact without telephone numbers" do
+  test "should allow contact without telephone number" do
     contact = ComContact.new(confirm_policy: "1")
 
     assert contact.save
-    assert_equal 0, contact.com_contact_telephones.count
+    assert_nil contact.com_contact_telephone
   end
 
   # rubocop:disable Minitest/MultipleAssertions
-  test "should allow contact with multiple emails and telephones" do
+  test "should allow contact with email and telephone" do
     contact = ComContact.new(confirm_policy: "1")
     contact.save!
 
-    email1 = ComContactEmail.create!(
+    email = ComContactEmail.create!(
       com_contact: contact,
-      email_address: "first@example.com",
+      email_address: "test@example.com",
       expires_at: 1.day.from_now
     )
 
-    email2 = ComContactEmail.create!(
-      com_contact: contact,
-      email_address: "second@example.com",
-      expires_at: 1.day.from_now
-    )
-
-    telephone1 = ComContactTelephone.create!(
+    telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
       expires_at: 1.day.from_now
     )
 
-    telephone2 = ComContactTelephone.create!(
-      com_contact: contact,
-      telephone_number: "+9876543210",
-      expires_at: 1.day.from_now
-    )
+    assert_not_nil contact.com_contact_email
+    assert_equal email, contact.com_contact_email
+    assert_equal "test@example.com", contact.com_contact_email.email_address
 
-    assert_equal 2, contact.com_contact_emails.count
-    assert_includes contact.com_contact_emails, email1
-    assert_includes contact.com_contact_emails, email2
-
-    assert_equal 2, contact.com_contact_telephones.count
-    assert_includes contact.com_contact_telephones, telephone1
-    assert_includes contact.com_contact_telephones, telephone2
+    assert_not_nil contact.com_contact_telephone
+    assert_equal telephone, contact.com_contact_telephone
+    assert_equal "+1234567890", contact.com_contact_telephone.telephone_number
   end
   # rubocop:enable Minitest/MultipleAssertions
 end

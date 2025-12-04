@@ -102,9 +102,6 @@ module Theme
       Rails.application.routes.url_helpers.edit_apex_org_preference_theme_url(**query)
     when "com"
       Rails.application.routes.url_helpers.edit_apex_com_preference_theme_url(**query)
-    else
-      # Root domain theme functionality has been moved to Hono
-      raise NotImplementedError, "Theme functionality has been moved to Hono application"
     end
   end
 

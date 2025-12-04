@@ -11,11 +11,11 @@ module Back
         def edit
           # Edit email preference form
         end
+
         def create
           # Create email preference
           head :ok
         end
-
 
         def update
           # Update email preference

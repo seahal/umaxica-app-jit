@@ -11,11 +11,11 @@ module Apex
         def edit
           # Edit email configuration form
         end
+
         def create
           # Create email configuration
           head :ok
         end
-
 
         def update
           # Update email configuration

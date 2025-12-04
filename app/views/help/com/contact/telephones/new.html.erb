@@ -12,7 +12,8 @@
               method: :post do |form| %>
   <% if @contact_telephone&.errors&.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-      <h2><%= pluralize(@contact_telephone.errors.count, "error") %> prohibited this verification from being completed:</h2>
+      <h2><%= pluralize(@contact_telephone.errors.count, "error") %> prohibited this verification from being
+        completed:</h2>
 
       <ul class="list-disc ml-6">
         <% @contact_telephone.errors.each do |error| %>

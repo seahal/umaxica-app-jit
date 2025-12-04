@@ -28,10 +28,10 @@ module Sign
 
         def create
           render plain: t("sign.app.authentication.telephone.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in? || logged_in?
+                 status: :bad_request and return if logged_in?
 
-          @user_telephone = UserIdentityTelephone.new(params.expect(user_telephone: [ :number, :confirm_policy,
-                                                                                     :confirm_using_mfa ]))
+          @user_telephone = UserIdentityTelephone.new(params.expect(user_identity_telephone: [ :number, :confirm_policy,
+                                                                                                :confirm_using_mfa ]))
 
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32 # NOTE: you would wonder why this code was written ...
@@ -42,7 +42,7 @@ module Sign
 
           if res["success"] && @user_telephone.valid?
             SmsService.send_message(
-              to: Rails.application.credentials.dig(:TELEPHONE_FROM_NUMBER),
+              to: @user_telephone.number,
               message: "PassCode => #{num}",
               subject: "PassCode => #{num}"
             )
@@ -66,7 +66,7 @@ module Sign
         def update
           # FIXME: write test code!
           render plain: t("sign.app.authentication.telephone.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_staff? || logged_in_user?
+                 status: :bad_request and return if logged_in?
 
           registration_session = session[:user_telephone_registration]
           if registration_session.blank?
@@ -76,7 +76,7 @@ module Sign
 
           @user_telephone = UserIdentityTelephone.new(
             number: registration_session["number"],
-            pass_code: params.dig("user_telephone", "pass_code"),
+            pass_code: params.dig("user_identity_telephone", "pass_code"),
             confirm_policy: registration_session.fetch("confirm_policy", true),
             confirm_using_mfa: registration_session.fetch("confirm_using_mfa", true)
           )

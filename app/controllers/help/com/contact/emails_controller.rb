@@ -41,20 +41,14 @@ module Help
             # Update contact status to CHECKED_EMAIL_ADDRESS
             @contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
 
-            Rails.logger.debug "\n=== REDIRECT DEBUG ==="
-            Rails.logger.debug { "Query params: #{request.query_parameters.inspect}" }
-            Rails.logger.debug { "Preserved params: #{preserved_locale_query_params.inspect}" }
-            Rails.logger.debug { "Redirect options: #{help_email_redirect_options.inspect}" }
             redirect_url = new_help_com_contact_telephone_url(
               @contact,
               **preserved_locale_query_params,
               **help_email_redirect_options
             )
-            Rails.logger.debug { "Generated URL: #{redirect_url}" }
-            Rails.logger.debug "=====================\n"
 
             # Generate HOTP for telephone verification and send via email
-            @contact_telephone = @contact.com_contact_telephones.first
+            @contact_telephone = @contact.com_contact_telephone
 
             if @contact_telephone
               # Generate HOTP code

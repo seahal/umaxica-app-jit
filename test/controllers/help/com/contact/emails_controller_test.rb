@@ -42,13 +42,15 @@ module Help
           # Reload to ensure status is persisted
           @contact.reload
           # Create email for verification
-          @contact_email = @contact.com_contact_emails.create!(
+          @contact_email = ComContactEmail.create!(
+            com_contact: @contact,
             email_address: "test@example.com",
             verifier_attempts_left: 3,
             verifier_expires_at: 15.minutes.from_now
           )
           # Create telephone for email verification flow
-          @contact_telephone = @contact.com_contact_telephones.create!(
+          @contact_telephone = ComContactTelephone.create!(
+            com_contact: @contact,
             telephone_number: "+15551234567",
             verifier_attempts_left: 3
           )
@@ -87,7 +89,8 @@ module Help
           )
           # Recreate telephone fresh to avoid encryption issues in parallel tests
           ComContactTelephone.where(com_contact_id: @contact.id).delete_all
-          fresh_telephone = @contact.com_contact_telephones.create!(
+          fresh_telephone = ComContactTelephone.create!(
+            com_contact: @contact,
             telephone_number: "+15551234567",
             verifier_attempts_left: 3
           )
