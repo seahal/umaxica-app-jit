@@ -1,6 +1,13 @@
 require "test_helper"
 
 class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    @original_send_message = AwsSmsService.method(:send_message)
+  end
+
+  teardown do
+    AwsSmsService.define_singleton_method(:send_message, @original_send_message)
+  end
   test "new renders successfully" do
     get new_sign_org_registration_telephone_url, headers: default_headers
 
@@ -11,11 +18,13 @@ class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::Integr
     number = "+819012345678"
     delivered_to = nil
 
-    SmsService.stub :send_message, ->(**kwargs) { delivered_to = kwargs[:to] } do
-      post sign_org_registration_telephones_url,
-           params: telephone_params(number),
-           headers: default_headers
+    AwsSmsService.define_singleton_method(:send_message) do |**kwargs|
+      delivered_to = kwargs[:to]
     end
+
+    post sign_org_registration_telephones_url,
+         params: telephone_params(number),
+         headers: default_headers
 
     assert_response :redirect
     assert_equal number, delivered_to
@@ -33,11 +42,16 @@ class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::Integr
   # rubocop:disable Minitest/MultipleAssertions
   test "update succeeds with valid pending registration session" do
     otp_code = nil
-    SmsService.stub :send_message, ->(**kwargs) { otp_code = extract_otp(kwargs[:message]); true } do
-      post sign_org_registration_telephones_url,
-           params: telephone_params("+814512345678"),
-           headers: default_headers
+    test_instance = self
+
+    AwsSmsService.define_singleton_method(:send_message) do |**kwargs|
+      otp_code = test_instance.send(:extract_otp, kwargs[:message])
+      true
     end
+
+    post sign_org_registration_telephones_url,
+         params: telephone_params("+814512345678"),
+         headers: default_headers
 
     registration_id = response.location[%r{/registration/telephones/([^/]+)/edit}, 1]
 
@@ -55,11 +69,16 @@ class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::Integr
 
   test "update rejects invalid otp code" do
     otp_code = nil
-    SmsService.stub :send_message, ->(**kwargs) { otp_code = extract_otp(kwargs[:message]); true } do
-      post sign_org_registration_telephones_url,
-           params: telephone_params("+819055566666"),
-           headers: default_headers
+    test_instance = self
+
+    AwsSmsService.define_singleton_method(:send_message) do |**kwargs|
+      otp_code = test_instance.send(:extract_otp, kwargs[:message])
+      true
     end
+
+    post sign_org_registration_telephones_url,
+         params: telephone_params("+819055566666"),
+         headers: default_headers
 
     registration_id = response.location[%r{/registration/telephones/([^/]+)/edit}, 1]
 

@@ -108,7 +108,7 @@ Your abstract spec has:
 - "Cooldown timers" with UI countdown
 
 Honest take: This is senior engineer over-design. For your MVP:
-- Start with concrete implementations (ActionMailer, SmsService, SecureRandom)
+- Start with concrete implementations (ActionMailer, AwsSmsService, SecureRandom)
 - Add adapter interfaces only when you need to swap (you already did this for SMS ✓)
 - Don't build a Clock adapter "for tests" - use travel_to in tests
 - Don't build an audit log until you have a compliance requirement
@@ -130,8 +130,8 @@ But you only have healths_controller.rb in top/com/.
 
 9. Service Layer Pattern
 
-Your existing services (SmsService, AccountService, etc.) are class methods:
-class SmsService
+Your existing services (AwsSmsService, AccountService, etc.) are class methods:
+class AwsSmsService
 class << self
 def send_message(to:, message:, subject: nil)
 
@@ -208,7 +208,7 @@ Recommended: Drop it to 5/10 by:
 
 + Concrete Implementations (MVP):
 +   ActionMailer (with your existing email/com/ structure)
-+   SmsService (already done ✓)
++   AwsSmsService (already done ✓)
 +   Rack::Attack + Turnstile gem
 +   Rails.cache for rate limiting
 +   Argon2 for hashing (already in Gemfile ✓)

@@ -37,6 +37,8 @@ gem "shrine"
 gem "image_processing"
 # for Amazon SNS
 gem "aws-sdk-sns"
+gem "aws-sdk-connect"
+gem "aws-sdk-polly"
 # for Active Storage
 gem "google-cloud-storage", require: false
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
@@ -87,6 +89,7 @@ gem "rails_semantic_logger"
 # Authentication
 gem "rolify"
 gem "pundit"
+
 
 group :development, :test do
   # to avoid n+1 queries
