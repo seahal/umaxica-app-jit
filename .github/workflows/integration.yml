@@ -6,8 +6,6 @@ on:
     branches: [develop]
   pull_request:
     branches: [main]
-  schedule:
-    - cron: '0 4 * * *' # Daily at 06:00 UTC
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -292,8 +290,6 @@ jobs:
     name: JavaScript Formatting (Biome)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      BUN_VERSION: ${{ env.BUN_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5

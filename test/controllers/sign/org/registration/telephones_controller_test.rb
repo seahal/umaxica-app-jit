@@ -94,6 +94,7 @@ class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::Integr
     assert_response :unprocessable_content
   end
 
+
   private
 
   def telephone_params(number)

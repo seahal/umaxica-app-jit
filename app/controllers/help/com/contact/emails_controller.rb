@@ -51,16 +51,12 @@ module Help
             @contact_telephone = @contact.com_contact_telephone
 
             if @contact_telephone
-              # Generate HOTP code
-              telephone_token = @contact_telephone.generate_hotp!
+              ActiveRecord::Base.transaction do
+                # Generate HOTP code
+                telephone_token = @contact_telephone.generate_hotp!
 
-              # Send email with HOTP code for telephone verification
-              Email::Com::ContactTelephoneMailer.with(
-                email_address: @contact_email.email_address,
-                pass_code: telephone_token
-              ).verify.deliver_now
-            else
-              Rails.logger.warn "No telephone record found for contact #{@contact.public_id}"
+                AwsSmsService.new.send_message(to: @contact_telephone.telephone_number, message: "hello! #{telephone_token}")
+              end
             end
 
             redirect_to redirect_url, notice: I18n.t("help.com.contact.emails.update.success")
