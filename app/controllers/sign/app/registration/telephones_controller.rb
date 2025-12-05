@@ -13,7 +13,7 @@ module Sign
 
         def edit
           render plain: t("sign.app.registration.telephone.edit.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_staff? || logged_in_user?
+                 status: :bad_request and return if logged_in?
           render plain: t("sign.app.registration.telephone.edit.forbidden_action"),
                  status: :bad_request and return if session[:user_telephone_registration].nil?
 
@@ -22,7 +22,7 @@ module Sign
             @user_telephone = UserIdentityTelephone.new
           else
             redirect_to new_sign_app_registration_telephone_path,
-                        notice: t("sign.app.registration.telephone.edit.your_session_was_expired")
+                        notice: t("sign.app.registration.telephone.edit.session_expired")
           end
         end
 
@@ -57,7 +57,7 @@ module Sign
               expires_at: 12.minutes.from_now.to_i
             }
 
-            redirect_to edit_sign_app_registration_telephone_path(id), notice: t("messages.telephone_successfully_created")
+            redirect_to edit_sign_app_registration_telephone_path(id), notice: t("sign.app.registration.telephone.create.verification_code_sent")
           else
             render :new, status: :unprocessable_content
           end
@@ -71,7 +71,7 @@ module Sign
           registration_session = session[:user_telephone_registration]
           if registration_session.blank?
             redirect_to new_sign_app_registration_telephone_path,
-                        notice: t("sign.app.registration.telephone.edit.your_session_was_expired") and return
+                        notice: t("sign.app.registration.telephone.edit.session_expired") and return
           end
 
           @user_telephone = UserIdentityTelephone.new(
@@ -88,7 +88,7 @@ module Sign
           ].all?
             @user_telephone.save!
             session[:user_telephone_registration] = nil
-            redirect_to "/", notice: t("messages.sample_successfully_updated")
+            redirect_to "/", notice: t("sign.app.registration.telephone.update.success")
           else
             render :edit, status: :unprocessable_content
           end

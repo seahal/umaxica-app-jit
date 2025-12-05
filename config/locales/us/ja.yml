@@ -41,6 +41,22 @@ ja:
           google:
             new:
               jump_obj: sign in with google
+          email:
+            create:
+              verification_code_sent: "確認コードをメールアドレスに送信しました。"
+            edit:
+              return_page: 戻る
+              session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            update:
+              success: "メールアドレスが確認されました。"
+          telephone:
+            create:
+              verification_code_sent: "確認コードをSMSで送信しました。"
+            edit:
+              return_page: 戻る
+              session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            update:
+              success: "電話番号が確認されました。"
         authentication:
           destroy:
             jump_obj: sign in with email
@@ -677,6 +693,9 @@ ja:
     email_successfully_created: Email was successfully created.
     auth_error_occurred: 認証エラーが発生しました。もう一度お試しください。
   activerecord:
+    attributes:
+      user_identity_email:
+        address: メールアドレス
     errors:
       messages:
         record_invalid: 'バリデーションに失敗しました: %{errors}'

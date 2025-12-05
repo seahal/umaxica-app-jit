@@ -15,7 +15,6 @@ Rails.application.routes.draw do
         namespace :registration do
           resources :emails, only: %i[new create edit update]
           resources :telephones, only: %i[new create edit update]
-          resources :googles, only: %i[new]
           # TODO: Implement Apple Sign-in registration
           # resources :apples, only: %i[new]
         end

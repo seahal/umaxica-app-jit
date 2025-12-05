@@ -51,8 +51,24 @@ ja:
           google:
             new:
               jump_obj: sign in with google
-          email: "メールで登録"
-          telephone: "電話で登録"
+          email:
+            label: "メールで登録"
+            create:
+              verification_code_sent: "確認コードをメールアドレスに送信しました。"
+            edit:
+              return_page: 戻る
+              session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            update:
+              success: "メールアドレスが確認されました。"
+          telephone:
+            label: "電話で登録"
+            create:
+              verification_code_sent: "確認コードをSMSで送信しました。"
+            edit:
+              return_page: 戻る
+              session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            update:
+              success: "電話番号が確認されました。"
         authentication:
           destroy:
             jump_obj: sign in with email
@@ -392,6 +408,9 @@ ja:
           new:
             title: TOTP no shinki
   activerecord:
+    attributes:
+      user_identity_email:
+        address: メールアドレス
     errors:
       messages:
         record_invalid: 'バリデーションに失敗しました: %{errors}'

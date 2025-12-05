@@ -100,11 +100,25 @@ en:
             page_title: "UMAXICA (sign, app)"
             link_to_other_methods: "Try other methods?"
             link_to_sign_in: "Already have an account?"
+          create:
+            verification_code_sent: "Verification code has been sent to your email address."
+          edit:
+            return_page: "Back"
+            session_expired: "Your session has expired. Please start over."
+          update:
+            success: "Email address has been verified."
         telephone:
           new:
             page_title: "Sign up with phone number"
             link_to_other_methods: "Try other methods?"
             link_to_sign_in: "Already have an account?"
+          create:
+            verification_code_sent: "Verification code has been sent via SMS."
+          edit:
+            return_page: "Back"
+            session_expired: "Your session has expired. Please start over."
+          update:
+            success: "Phone number has been verified."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -475,6 +489,9 @@ en:
               system: "Automatically adapts when your device switches modes."
             submit: "Save theme preference"
   activerecord:
+    attributes:
+      user_identity_email:
+        address: Email address
     errors:
       messages:
         record_invalid: 'Validation failed: %{errors}'
