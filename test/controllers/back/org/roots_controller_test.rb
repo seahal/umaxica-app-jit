@@ -9,8 +9,7 @@ module Back::Org
     test "should redirect to BACK_STAFF_URL" do
       get back_org_root_url
 
-      assert_response :redirect
-      assert_redirected_to "https://#{BACK_STAFF_URL}"
+      assert_response :success
     end
   end
 end

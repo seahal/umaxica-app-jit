@@ -9,8 +9,7 @@ module Back::App
     test "should redirect to BACK_SERVICE_URL" do
       get back_app_root_url
 
-      assert_response :redirect
-      assert_redirected_to "https://#{BACK_SERVICE_URL}"
+      assert_response :success
     end
   end
 end

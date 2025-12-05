@@ -3,6 +3,7 @@
 <head>
   <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (com) JP" %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="turbo-refresh-scroll" content="preserve">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "top/com/main" %>
@@ -21,16 +22,6 @@
 </main>
 
 <nav>
-  <% breadcrumbs.tap do |links| %>
-    <% if links.any? %>
-      <ul>
-        <% links.each do |link| %>
-          <li> <%= link_to link.text, link.url, class: (link.current? ? "current" : nil) %></li>
-        <% end %>
-        <li>...</li>
-      </ul>
-    <% end %>
-  <% end %>
 </nav>
 
 <hr>
