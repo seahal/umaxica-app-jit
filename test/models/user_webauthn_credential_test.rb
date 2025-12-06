@@ -1,13 +1,11 @@
 require "test_helper"
 
 class UserWebauthnCredentialTest < ActiveSupport::TestCase
-  # Tests that don't require database tables
-
   test "should have authenticator_type enum defined" do
-    # Test enum values without database access
     assert_includes UserWebauthnCredential.authenticator_types.keys, "platform"
     assert_includes UserWebauthnCredential.authenticator_types.keys, "roaming"
   end
+
   test "should have user association defined" do
     association = UserWebauthnCredential.reflect_on_association(:user)
 
@@ -17,5 +15,28 @@ class UserWebauthnCredentialTest < ActiveSupport::TestCase
 
   test "should inherit from IdentitiesRecord" do
     assert_operator UserWebauthnCredential, :<, IdentitiesRecord
+  end
+
+  test "should be valid with attributes" do
+    user = User.new
+    user.save!(validate: false)
+
+    credential = UserWebauthnCredential.new(
+      user: user,
+      external_id: "test-id-#{SecureRandom.hex}",
+      public_key: "key",
+      nickname: "my key",
+      sign_count: 0
+    )
+
+    assert_predicate credential, :valid?
+  end
+
+  test "should require external_id and public_key" do
+    credential = UserWebauthnCredential.new
+
+    assert_not credential.valid?
+    assert_predicate credential.errors[:external_id], :present?
+    assert_predicate credential.errors[:public_key], :present?
   end
 end

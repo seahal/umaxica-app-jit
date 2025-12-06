@@ -17,19 +17,38 @@ module Sign::App::Registration
       assert_nil session[:user_telephone_registration]
     end
 
-    # TODO: Uncomment when logged_in_staff? and logged_in_user? methods are available
-    # test "should render bad request if logged in on edit" do
-    #   # This would require authentication setup
-    #   get edit_sign_app_registration_telephone_url(id: "test")
-    #
-    #   # Should return bad request if not logged in but session is nil
-    #   assert_response :bad_request
-    # end
-    #
-    # test "should redirect if session expired on edit" do
-    #   get edit_sign_app_registration_telephone_url(id: "test")
-    #
-    #   assert_redirected_to new_sign_app_registration_telephone_path
-    # end
+    test "edit returns bad_request when not logged in and no session" do
+      get edit_sign_app_registration_telephone_url(id: "test-id"), headers: default_headers
+
+      assert_response :bad_request
+    end
+
+    test "i18n flash messages for telephone registration flow exist" do
+      # Check that all required i18n keys for telephone registration exist
+      session_expired_key = "sign.app.registration.telephone.edit.session_expired"
+      create_key = "sign.app.registration.telephone.create.verification_code_sent"
+      update_key = "sign.app.registration.telephone.update.success"
+
+      assert_not_nil I18n.t(session_expired_key, default: nil)
+      assert_not_nil I18n.t(create_key, default: nil)
+      assert_not_nil I18n.t(update_key, default: nil)
+    end
+
+    test "return page link text uses i18n" do
+      # Check that the return page link text key exists
+      return_page_key = "controller.sign.app.registration.telephone.edit.return_page"
+
+      assert_not_nil I18n.t(return_page_key, default: nil)
+    end
+
+    private
+
+    def default_headers
+      { "Host" => host }
+    end
+
+    def host
+      ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    end
   end
 end

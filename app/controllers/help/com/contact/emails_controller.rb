@@ -5,11 +5,16 @@ module Help
         before_action :load_and_validate_contact
 
         def new
-          @contact_email = @contact.com_contact_emails.first
+          @contact_email = ComContactEmail.find_by(com_contact_id: @contact.id)
         end
 
         def create
-          @contact_email = @contact.com_contact_emails.first
+          @contact_email = ComContactEmail.find_by(com_contact_id: @contact.id)
+
+          unless @contact_email
+            raise StandardError, "Contact email not found"
+          end
+
           hotp_code = params.dig(:com_contact_email, :hotp_code)
 
           if hotp_code.blank?
@@ -18,14 +23,53 @@ module Help
             return
           end
 
+          # Check if attempts left
+          if @contact_email.verifier_attempts_left <= 0
+            @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.max_attempts"))
+            render :new, status: :unprocessable_content
+            return
+          end
+
+          # Check if expired
+          if @contact_email.verifier_expires_at && Time.current >= @contact_email.verifier_expires_at
+            @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.expired"))
+            render :new, status: :unprocessable_content
+            return
+          end
+
           if @contact_email.verify_hotp_code(hotp_code)
-            @contact.verify_email!
-            redirect_to new_help_com_contact_telephone_url(
-                          contact_id: @contact.public_id,
-                          **help_email_redirect_options
-                        ), notice: I18n.t("help.com.contact.emails.create.success")
+            # Update contact status to CHECKED_EMAIL_ADDRESS
+            @contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+
+            redirect_url = new_help_com_contact_telephone_url(
+              @contact,
+              **preserved_locale_query_params,
+              **help_email_redirect_options
+            )
+
+            # Generate HOTP for telephone verification and send via email
+            @contact_telephone = @contact.com_contact_telephone
+
+            if @contact_telephone
+              ActiveRecord::Base.transaction do
+                # Generate HOTP code
+                telephone_token = @contact_telephone.generate_hotp!
+
+                AwsSmsService.new.send_message(to: @contact_telephone.telephone_number, message: "hello! #{telephone_token}")
+              end
+            end
+
+            redirect_to redirect_url, notice: I18n.t("help.com.contact.emails.update.success")
           else
-            @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.create.hotp_code_invalid"))
+            # Reload to get updated attempts_left, but save it before reload clears errors
+            @contact_email.reload
+            attempts_left = @contact_email.verifier_attempts_left
+
+            if attempts_left > 0
+              @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.invalid_code", attempts_left: attempts_left))
+            else
+              @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.max_attempts"))
+            end
             render :new, status: :unprocessable_content
           end
         end
@@ -34,20 +78,18 @@ module Help
 
         def load_and_validate_contact
           contact_id = params[:contact_id]
+
           if contact_id.blank?
-            Rails.logger.error("Contact validation failed: contact_id is blank")
             raise StandardError, "Contact ID is required"
           end
 
           @contact = ComContact.find_by(public_id: contact_id)
+
           if @contact.nil?
-            Rails.logger.error("Contact validation failed: contact not found for public_id=#{contact_id}")
             raise StandardError, "Contact not found"
           end
 
-          # Validate status must be SET_UP
           unless @contact.contact_status_title == "SET_UP"
-            Rails.logger.error("Contact validation failed: invalid status. Expected SET_UP, got #{@contact.contact_status_title} for contact_id=#{contact_id}")
             raise StandardError, "Invalid contact status: expected SET_UP, got #{@contact.contact_status_title}"
           end
         end
@@ -70,6 +112,10 @@ module Help
           rescue URI::InvalidURIError
             host_value.split(":").first
           end
+        end
+
+        def preserved_locale_query_params
+          request.query_parameters.slice("ct", "lx", "ri", "tz").compact
         end
       end
     end

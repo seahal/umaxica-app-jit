@@ -1,64 +1,56 @@
-# == Schema Information
-#
-# Table name: user_identity_passkeys
-#
-#  id          :uuid             not null, primary key
-#  description :string           not null
-#  public_key  :text             not null
-#  sign_count  :bigint           default(0), not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  external_id :uuid             not null
-#  user_id     :bigint           not null
-#  webauthn_id :uuid             not null
-#
-# Indexes
-#
-#  index_user_identity_passkeys_on_user_id  (user_id)
-#
 require "test_helper"
 
 class UserIdentityPasskeyTest < ActiveSupport::TestCase
-  test "should create passkey with valid attributes" do
-    passkey = UserIdentityPasskey.new(
-      description: "Test Passkey",
-      public_key: "test_public_key",
-      sign_count: 0,
+  def setup
+    @user = users(:one)
+    @passkey = UserIdentityPasskey.new(
+      user: @user,
+      webauthn_id: SecureRandom.uuid,
       external_id: SecureRandom.uuid,
-      user_id: 999999, # Use dummy ID to avoid constraint
-      webauthn_id: SecureRandom.uuid
+      public_key: "test-key",
+      description: "My Passkey",
+      sign_count: 0
     )
-    # Test attribute assignment without actual save
-    assert_equal "Test Passkey", passkey.description
-    assert_equal "test_public_key", passkey.public_key
+  end
+
+  test "should be valid" do
+    assert_predicate @passkey, :valid?
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should require webauthn_id, public_key, description, sign_count" do
+    @passkey.webauthn_id = nil
+
+    assert_not @passkey.valid?
+    @passkey.webauthn_id = "test-id"
+
+    @passkey.public_key = nil
+
+    assert_not @passkey.valid?
+    @passkey.public_key = "test-key"
+
+    @passkey.description = nil
+
+    assert_not @passkey.valid?
+    @passkey.description = "desc"
+
+    @passkey.sign_count = nil
+
+    assert_not @passkey.valid?
+  end
+
+  test "should set default sign_count and description" do
+    passkey = UserIdentityPasskey.new(user: @user, webauthn_id: "id2", public_key: "key2")
+    passkey.save # trigger callback
+
     assert_equal 0, passkey.sign_count
+    assert_not_nil passkey.description
   end
 
-  test "should belong to user" do
-    assert_respond_to UserIdentityPasskey.new, :user
-  end
+  test "should validate uniqueness of webauthn_id" do
+      @passkey.save!
+      duplicate = @passkey.dup
 
-  test "should have description field" do
-    passkey = UserIdentityPasskey.new(description: "Test Description")
-
-    assert_equal "Test Description", passkey.description
-  end
-
-  test "should have public_key field" do
-    passkey = UserIdentityPasskey.new(public_key: "test_key")
-
-    assert_equal "test_key", passkey.public_key
-  end
-
-  test "should inherit from IdentityRecord" do
-    assert_includes UserIdentityPasskey.ancestors, IdentityRecord
-  end
-
-  test "should have required database columns" do
-    required_columns = %w[description public_key sign_count external_id user_id webauthn_id]
-
-    required_columns.each do |column|
-      assert_includes UserIdentityPasskey.column_names, column
-    end
+      assert_not duplicate.valid?
   end
 end

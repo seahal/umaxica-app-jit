@@ -1,0 +1,21 @@
+<h1>お問い合わせ完了</h1>
+
+<div class="border border-slate-200 rounded-xl p-6 shadow-sm bg-white">
+  <p>お問い合わせを受け付けました。</p>
+
+  <% if @topic %>
+    <div class="mt-4">
+      <h2 class="font-bold">タイトル</h2>
+      <p><%= @topic.title %></p>
+    </div>
+
+    <div class="mt-4">
+      <h2 class="font-bold">内容</h2>
+      <p><%= simple_format(@topic.description) %></p>
+    </div>
+  <% end %>
+
+  <div class="mt-6">
+    <%= link_to "トップに戻る", help_com_root_path, class: "text-blue-600 hover:underline" %>
+  </div>
+</div>

@@ -41,7 +41,7 @@ module Sign
           id = SecureRandom.uuid_v7
 
           if res["success"] && @user_telephone.valid?
-            SmsService.send_message(
+            AwsSmsService.send_message(
               to: @user_telephone.number,
               message: "PassCode => #{num}",
               subject: "PassCode => #{num}"

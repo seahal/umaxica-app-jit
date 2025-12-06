@@ -3,7 +3,7 @@
 require "test_helper"
 
 class DefaultUrlOptionsTest < ActiveSupport::TestCase
-  class TestController < Top::App::ApplicationController
+  class TestController < Apex::App::ApplicationController
     include DefaultUrlOptions
 
     attr_accessor :request, :response

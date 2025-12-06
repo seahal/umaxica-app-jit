@@ -1,0 +1,2 @@
+module Stakeholder
+end

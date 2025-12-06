@@ -16,5 +16,11 @@ module Sign::App::Authentication
       assert_response :success
       # Verify the page loads without errors
     end
+
+    test "should return ok on create when not logged in" do
+      post sign_app_authentication_telephone_url
+
+      assert_response :ok
+    end
   end
 end

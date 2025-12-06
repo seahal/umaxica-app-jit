@@ -18,7 +18,7 @@ module Rotp
     raise unless pass_code
     raise unless telephone_number
 
-    SmsService.send_message(
+    AwsSmsService.send_message(
       to: telephone_number,
       message: "PassCode => #{pass_code}",
       subject: "PassCode"

@@ -34,7 +34,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
     ├─ Valkey (sessions, rate limit, Memorize)
     ├─ Kafka (email topic via Karafka)
     ├─ ActionMailer + SMTP
-    ├─ SmsService → AWS SNS / Infobip
+    ├─ AwsSmsService → AWS SNS / Infobip
     └─ OpenTelemetry exporter → Tempo / Logs → Loki / Dashboards → Grafana
 ```
 
@@ -43,7 +43,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 |-------|------------|
 | Presentation | Namespaced controllers and Turbo/React views under `app/javascript` |
 | Domain Logic | Concerns in `app/controllers/concerns`, services in `app/services`, models per DB |
-| Integration | `app/mailers`, `app/consumers`, `SmsService`, `Karafka`, OTEL instrumentation |
+| Integration | `app/mailers`, `app/consumers`, `AwsSmsService`, `Karafka`, OTEL instrumentation |
 | Infrastructure | Compose services (Postgres, Valkey, Kafka, MinIO, Loki, Tempo, Grafana), Bun/Tailwind build chain |
 
 ---
@@ -100,7 +100,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - `Help::Com::ContactsController` handles `new/create/show`.
 - `ServiceSiteContact` (GuestsRecord) encrypts email, phone, title, description; requires either email or telephone plus policy consent.
 - Turnstile integration ensures bot mitigation; errors are logged via `Rails.logger`.
-- OTP dispatch uses `Email::App::ContactMailer` and `SmsService`.
+- OTP dispatch uses `Email::App::ContactMailer` and `AwsSmsService`.
 
 ### 3.6 Docs & News Namespaces
 - Mirror the top namespace with simpler controller sets (root + health endpoints).
@@ -124,7 +124,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - Tailwind CSS compiled via CLI (`@tailwindcss/cli`) invoked from the same Bun script.
 
 ### 3.10 Services & Integrations
-- `SmsService` delegates to provider classes under `app/services/sms_providers` (AWS SNS, Infobip, Test). Providers validate parameters and call respective APIs with credentials loaded from Rails credentials.
+- `AwsSmsService` delegates to provider classes under `app/services/sms_providers` (AWS SNS, Infobip, Test). Providers validate parameters and call respective APIs with credentials loaded from Rails credentials.
 - Other service placeholders (`AccountService`, `CoreService`, `EntityService`) mark future boundaries (business/customer mgmt, tokens).
 - `RedisMemorize` (inside `Memorize`) encrypts values using `ActiveSupport::MessageEncryptor` (derived from `secret_key_base`).
 
@@ -208,7 +208,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | HTTP/Turbo | `/`, `/health`, `/v1/health`, `/preference/*`, `/sign/*`, `/help/contacts`, `/api/v1/inquiry/*`, `/bff/*` | Host-specific responses; `allow_browser` enforces modern clients. |
 | Cloudflare Turnstile | `https://challenges.cloudflare.com/turnstile/v0/siteverify` | Called server-side with secret key, form response, and client IP. |
 | ActionMailer | `Email::App::RegistrationMailer`, `Email::App::ContactMailer`, etc. | Default sender from credentials `SMTP_FROM_ADDRESS`; uses `mailer/app/mailer` layout. |
-| Sms providers | AWS SNS / Infobip / test driver | Called via `SmsService.send_message` with provider-specific client objects. |
+| Sms providers | AWS SNS / Infobip / test driver | Called via `AwsSmsService.send_message` with provider-specific client objects. |
 | Kafka | topic `email` | `karafka.rb` defines producers/consumers; `EmailConsumer` to process messages. |
 | OpenTelemetry | OTLP exporter | Default endpoint `http://tempo:4318/v1/traces` (configurable). |
 | Storage | MinIO / Google Cloud Storage | `google-cloud-storage` + `shrine` used for file storage (future). |
@@ -234,7 +234,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 - **Bot mitigation**: Cloudflare Turnstile required for registration/contact forms; server logs failures.
 - **Rate limiting**: Configured via `RateLimit` concern (Valkey backend).
 - **Data encryption**: Active Record encryption for PII (emails, phones, private keys, titles, descriptions). `ServiceSiteContact` ensures deterministic encryption for lookups where needed.
-- **Passkeys & OTP**: WebAuthn for passkeys, ROTP for HOTP/TOTP, RQRCode for QR codes, SmsService for SMS OTP.
+- **Passkeys & OTP**: WebAuthn for passkeys, ROTP for HOTP/TOTP, RQRCode for QR codes, AwsSmsService for SMS OTP.
 - **Redirect safety**: `Redirect::ALLOWED_HOSTS` enumerates acceptable targets; `generate_redirect_url` rejects unknown hosts.
 - **Browser allowlist**: `allow_browser versions: :modern` prevents outdated user agents from hitting sensitive surfaces.
 - **Secrets management**: Rails credentials provide JWT keys, Turnstile secrets, SMTP and AWS keys; Compose expects sanitized `.env`.

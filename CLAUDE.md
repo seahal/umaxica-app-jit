@@ -9,25 +9,20 @@ This is a Rails 8.0 application with a sophisticated multi-domain, multi-databas
 ### Domain Structure
 アプリケーションは複数のエンドポイントで構成され、各エンドポイントが3つのドメイン(com/app/org)を持ちます:
 
-- **TOP**: トップページとプリファレンス管理
-  - `TOP_CORPORATE_URL` (com): コーポレートサイトトップ
-  - `TOP_SERVICE_URL` (app): サービスアプリトップ
-  - `TOP_STAFF_URL` (org): スタッフ管理画面トップ
+- **APEX** (旧TOP): トップページとプリファレンス管理
+  - `APEX_CORPORATE_URL` (com): コーポレートサイトトップ
+  - `APEX_SERVICE_URL` (app): サービスアプリトップ
+  - `APEX_STAFF_URL` (org): スタッフ管理画面トップ
 
 - **SIGN**: 認証・登録・ログイン・退会
-  - `SIGN_SERVICE_URL` (app): ユーザー認証ページ
-  - `SIGN_STAFF_URL` (org): スタッフ認証ページ
+  - `SIGN_SERVICE_URL` (app): ユーザー認証ページ（完全実装済み）
+  - `SIGN_STAFF_URL` (org): スタッフ認証ページ（基本機能のみ、認証フロー未実装）
   - WebAuthn, TOTP, Apple/Google OAuth対応
 
-- **BFF**: Backend for Frontend
-  - `BFF_CORPORATE_URL` (com): クライアント向けBFF
-  - `BFF_SERVICE_URL` (app): サービス向けBFF
-  - `BFF_STAFF_URL` (org): スタッフ向けBFF
-
-- **API**: RESTful API エンドポイント
-  - `API_CORPORATE_URL` (com): コーポレート向けAPI
-  - `API_SERVICE_URL` (app): サービス向けAPI
-  - `API_STAFF_URL` (org): スタッフ向けAPI
+- **BACK** (旧BFF): Backend for Frontend
+  - `BACK_CORPORATE_URL` (com): クライアント向けBFF
+  - `BACK_SERVICE_URL` (app): サービス向けBFF
+  - `BACK_STAFF_URL` (org): スタッフ向けBFF
 
 - **HELP**: ヘルプ・問い合わせページ
   - `HELP_CORPORATE_URL`, `HELP_SERVICE_URL`, `HELP_STAFF_URL`
@@ -63,10 +58,9 @@ The application uses 10 separate PostgreSQL databases with primary/replica confi
 
 ### Controller Organization
 Controllers are organized by endpoint module and domain:
-- `app/controllers/top/{com,app,org}/` - トップページコントローラー
+- `app/controllers/apex/{com,app,org}/` - トップページコントローラー
 - `app/controllers/sign/{app,org}/` - 認証・登録コントローラー
-- `app/controllers/bff/{com,app,org}/` - BFFコントローラー
-- `app/controllers/api/{com,app,org}/` - APIコントローラー
+- `app/controllers/back/{com,app,org}/` - BFFコントローラー
 - `app/controllers/help/{com,app,org}/` - ヘルプ・問い合わせコントローラー
 - `app/controllers/docs/{com,app,org}/` - ドキュメントコントローラー
 - `app/controllers/news/{com,app,org}/` - ニュースコントローラー
@@ -194,10 +188,9 @@ Uses ViewComponent gem for reusable UI components. Components are in `app/compon
 
 ### Route Organization
 Routes are split by endpoint in `config/routes/`:
-- `top.rb` - トップページルート (com/app/org)
+- `apex.rb` - トップページルート (com/app/org)
 - `sign.rb` - 認証・登録ルート (app/org)
-- `bff.rb` - BFFルート (com/app/org)
-- `api.rb` - APIルート (com/app/org)
+- `back.rb` - BFFルート (com/app/org)
 - `help.rb` - ヘルプ・問い合わせルート (com/app/org)
 - `docs.rb` - ドキュメントルート (com/app/org)
 - `news.rb` - ニュースルート (com/app/org)
@@ -207,44 +200,49 @@ Routes are split by endpoint in `config/routes/`:
 
 #### 主要なルート構成
 
-**TOP** (`config/routes/top.rb`):
+**APEX** (`config/routes/apex.rb`):
 - `root` - トップページ (`roots#index`)
 - `resource :health` - ヘルスチェック
 - `namespace :v1` - API v1エンドポイント
-- `resource :preference` - プリファレンス設定
-- `namespace :preference` - Cookie, Region, Locale, Theme, Reset設定
-- `resource :configuration` (appのみ) - メール設定
+- `resource :preference` - プリファレンス表示
+- `resource :privacy` - プライバシー表示
+- `namespace :privacy` - Cookie設定
+- `namespace :preference` - Region, Locale, Theme, Reset設定
+- `resource :configuration` (appのみ) - 設定表示
+- `namespace :configuration` - Email設定 (appのみ)
 
 **SIGN** (`config/routes/sign.rb`):
-- `root` - サインページトップ
-- `resource :registration` - ユーザー登録
-  - `resources :emails` - メールアドレス登録
-  - `resources :telephones` - 電話番号登録
-  - `resources :googles` - Google OAuth登録
-- `resource :authentication` - 認証・ログイン
-  - `resource :email`, `resource :telephone` - メール/電話認証
-  - `resource :apple`, `resource :google` - OAuth認証
-- `namespace :oauth` - OAuthコールバック処理
-  - `apple/callback`, `google/callback`
-- `resource :withdrawal` - 退会処理
-- `resource :setting` - ログインユーザー設定
-  - `resources :passkeys` - WebAuthn設定
-  - `resources :totps` - TOTP設定
-  - `resources :secrets` - リカバリーコード管理
+- **app** (完全実装):
+  - `root` - サインページトップ
+  - `resource :registration` - ユーザー登録
+    - `resources :emails` - メールアドレス登録
+    - `resources :telephones` - 電話番号登録
+    - `resources :googles` - Google OAuth登録
+  - `resource :authentication` - 認証・ログイン
+    - `resource :email`, `resource :telephone` - メール/電話認証
+    - `resource :apple`, `resource :google` - OAuth認証
+  - `namespace :oauth` - OAuthコールバック処理
+    - `apple/callback`, `google/callback`
+  - `resource :withdrawal` - 退会処理
+  - `resource :setting` - ログインユーザー設定
+    - `resources :passkeys` - WebAuthn設定
+    - `resources :totps` - TOTP設定
+    - `resources :secrets` - リカバリーコード管理
+- **org** (基本機能のみ):
+  - `root` - サインページトップ
+  - `resource :registration` - スタッフ登録（基本のみ）
+    - `resources :emails`, `resources :telephones`
+  - `resource :authentication` - 認証（newのみ）
+  - `namespace :setting` - 設定
+    - `resources :passkeys`, `resources :secrets`
+  - `resource :withdrawal` - 退会処理
 
-**BFF** (`config/routes/bff.rb`):
+**BACK** (`config/routes/back.rb`):
 - `root` - BFFトップ
 - `resource :health` - ヘルスチェック
 - `namespace :v1` - API v1
-- `resource :preference` - プリファレンス
-- `namespace :preference` - メール設定
-
-**API** (`config/routes/api.rb`):
-- `resource :health` - ヘルスチェック
-- `namespace :v1` - API v1
-  - `namespace :inquiry` (appのみ):
-    - `resources :valid_email_addresses` - メールアドレス検証
-    - `resources :valid_telephone_numbers` - 電話番号検証
+- `resource :preference` - プリファレンス (app/orgのみ)
+- `namespace :preference` - Email設定 (app/orgのみ)
 
 **HELP** (`config/routes/help.rb`):
 - `root` - ヘルプトップ
@@ -264,10 +262,9 @@ Routes are split by endpoint in `config/routes/`:
 Key environment variables required:
 
 ### Domain URLs (各エンドポイント × 3ドメイン)
-- `TOP_CORPORATE_URL`, `TOP_SERVICE_URL`, `TOP_STAFF_URL`
+- `APEX_CORPORATE_URL`, `APEX_SERVICE_URL`, `APEX_STAFF_URL`
 - `SIGN_SERVICE_URL`, `SIGN_STAFF_URL` (SIGNはcomなし)
-- `BFF_CORPORATE_URL`, `BFF_SERVICE_URL`, `BFF_STAFF_URL`
-- `API_CORPORATE_URL`, `API_SERVICE_URL`, `API_STAFF_URL`
+- `BACK_CORPORATE_URL`, `BACK_SERVICE_URL`, `BACK_STAFF_URL`
 - `HELP_CORPORATE_URL`, `HELP_SERVICE_URL`, `HELP_STAFF_URL`
 - `DOCS_CORPORATE_URL`, `DOCS_SERVICE_URL`, `DOCS_STAFF_URL`
 - `NEWS_CORPORATE_URL`, `NEWS_SERVICE_URL`, `NEWS_STAFF_URL`
@@ -287,9 +284,10 @@ Key environment variables required:
 - Use domain-specific controllers and routes - check the constraint blocks in routes
 - Database migrations must specify the correct database with `--database` flag
 - Test files follow the endpoint/domain structure: `test/controllers/{endpoint}/{domain}/{version}/`
-  - 例: `test/controllers/api/app/v1/`, `test/controllers/sign/app/`
+  - 例: `test/controllers/apex/app/`, `test/controllers/sign/app/`
 - Asset compilation uses Bun - ensure Bun is installed locally
 - The application expects Docker Compose for local database setup
+- **注意**: 実際のコントローラー構造とルートファイル名は `apex`, `back` を使用（環境変数は従来の命名を維持）
 
 ### 禁止事項
 - `.env`ファイルの作成・変更

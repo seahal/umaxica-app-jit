@@ -3,6 +3,8 @@
 <head>
   <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (app) Newsroom" %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="turbo-refresh-method" content="morph">
+  <meta name="turbo-refresh-scroll" content="preserve">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "news/app/main" %>
@@ -16,10 +18,6 @@
 <header>
   <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (news,
     app)</a></h1>
-  <p>
-    <%= link_to_if !@user&.active?, "logout?", new_sign_app_registration_path %>
-    <%= link_to_unless @user&.active?, "login?", new_sign_app_registration_path %>
-  </p>
 </header>
 
 <hr>

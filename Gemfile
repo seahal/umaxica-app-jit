@@ -37,8 +37,9 @@ gem "shrine"
 gem "image_processing"
 # for Amazon SNS
 gem "aws-sdk-sns"
-# for Active Storage
-gem "google-cloud-storage", require: false
+gem "aws-sdk-connect"
+gem "aws-sdk-polly"
+
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
@@ -62,8 +63,7 @@ gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
-# Altanative way of Active Storage
-gem "carrierwave"
+
 # OpenAPI
 gem "ostruct"
 gem "rswag"
@@ -84,6 +84,10 @@ gem "meta-tags"
 gem "nanoid"
 #
 gem "rails_semantic_logger"
+# Authentication
+gem "rolify"
+gem "pundit"
+
 
 group :development, :test do
   # to avoid n+1 queries

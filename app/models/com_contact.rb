@@ -1,7 +1,7 @@
 class ComContact < GuestsRecord
   # Associations
-  has_many :com_contact_emails, dependent: :destroy
-  has_many :com_contact_telephones, dependent: :destroy
+  has_one :com_contact_email, dependent: :destroy
+  has_one :com_contact_telephone, dependent: :destroy
   belongs_to :com_contact_category,
              class_name: "ComContactCategory",
              foreign_key: :contact_category_title,
@@ -26,8 +26,6 @@ class ComContact < GuestsRecord
   # Validations
   validates :confirm_policy, acceptance: true
   validates :contact_category_title, presence: true
-
-  # State transition helpers
 
   # State check methods
   def email_pending?
@@ -101,6 +99,11 @@ class ComContact < GuestsRecord
     token_expires_at && Time.current >= token_expires_at
   end
 
+  # Override to_param to use public_id in URLs
+  def to_param
+    public_id
+  end
+
   private
 
   def generate_public_id
@@ -112,7 +115,8 @@ class ComContact < GuestsRecord
   end
 
   def set_default_category_and_status
-    self.contact_category_title ||= "NULL_COM_CATEGORY"
-    self.contact_status_title ||= "NULL_COM_STATUS"
+    # Only set defaults if values are not already set (nil or empty)
+    self.contact_category_title = "NONE" if contact_category_title.nil?
+    self.contact_status_title = "NONE" if contact_status_title.nil?
   end
 end

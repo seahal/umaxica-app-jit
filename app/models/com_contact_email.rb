@@ -8,6 +8,9 @@ class ComContactEmail < GuestsRecord
   # Validations
   validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
+  # Encryptions
+  encrypts :hotp_secret
+
   # Generate and store email verification code
   # TODO: Rewrite this code to otp generator
   def generate_verifier!
@@ -49,7 +52,7 @@ class ComContactEmail < GuestsRecord
   def generate_hotp!
     secret = ROTP::Base32.random
     hotp = ROTP::HOTP.new(secret)
-    counter = rand(1...1_000_000) * 2
+    counter = SecureRandom.random_number(1_000_000)
     code = hotp.at(counter)
 
     self.hotp_secret = secret

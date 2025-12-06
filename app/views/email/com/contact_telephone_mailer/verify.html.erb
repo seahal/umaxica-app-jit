@@ -1,0 +1,21 @@
+<h1><%= ENV.fetch('BRAND_NAME', 'Umaxica') %> - Telephone Verification</h1>
+
+<p>Thank you for providing your contact information.</p>
+
+<p>Your telephone verification code is:</p>
+
+<h2 style="font-size: 32px; letter-spacing: 8px; font-family: monospace; background-color: #f3f4f6; padding: 16px; text-align: center;">
+  <%= @pass_code %>
+</h2>
+
+<p>Please enter this code on the telephone verification page to complete your contact submission.</p>
+
+<p><strong>This code will expire in 10 minutes.</strong></p>
+
+<p>If you didn't request this code, please ignore this email.</p>
+
+<hr>
+
+<p style="color: #6b7280; font-size: 12px;">
+  This is an automated message from <%= ENV.fetch('BRAND_NAME', 'Umaxica') %>. Please do not reply to this email.
+</p>

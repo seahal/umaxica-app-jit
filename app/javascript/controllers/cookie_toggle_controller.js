@@ -5,14 +5,14 @@ export default class extends Controller {
 	static targets = ["checkbox", "status"];
 
 	connect() {
-		console.log("Cookie toggle controller connected!");
-		console.log("Status target exists:", this.hasStatusTarget);
-		console.log("Checkbox targets count:", this.checkboxTargets.length);
+		// console.log("Cookie toggle controller connected!");
+		// console.log("Status target exists:", this.hasStatusTarget);
+		// console.log("Checkbox targets count:", this.checkboxTargets.length);
 		this.updateStatus();
 	}
 
 	toggle(event) {
-		console.log("Toggle called", event.target.checked);
+		// console.log("Toggle called", event.target.checked);
 		this.updateStatus();
 	}
 
@@ -23,7 +23,7 @@ export default class extends Controller {
 			).length;
 			const totalCount = this.checkboxTargets.length;
 			this.statusTarget.textContent = `${checkedCount} / ${totalCount} cookies enabled`;
-			console.log(`Updated status: ${checkedCount} / ${totalCount}`);
+			// console.log(`Updated status: ${checkedCount} / ${totalCount}`);
 		} else {
 			console.error("Status target not found!");
 		}

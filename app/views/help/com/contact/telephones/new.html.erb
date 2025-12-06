@@ -1,0 +1,38 @@
+<h1><%= title t('help.com.contact.telephones.edit.page_title') %></h1>
+
+<p><%= t('help.com.contact.telephones.edit.description') %></p>
+
+<%- query_params = request.query_parameters -%>
+<%- preserved_locale_params = query_params.slice("ct", "lx", "ri", "tz") -%>
+<%- retry_contact_params = preserved_locale_params.merge("query" => query_params["query"] || "") -%>
+
+<%= form_with model: @contact_telephone,
+              url: help_com_contact_telephone_path(contact_id: @contact.public_id),
+              scope: :com_contact_telephone,
+              method: :post do |form| %>
+  <% if @contact_telephone&.errors&.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(@contact_telephone.errors.count, "error") %> prohibited this verification from being
+        completed:</h2>
+
+      <ul class="list-disc ml-6">
+        <% @contact_telephone.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :hotp_code, t('help.com.contact.telephones.edit.code_label') %>
+    <%= form.text_field :hotp_code, maxlength: 6, pattern: "[0-9]{6}", placeholder: "000000", autocomplete: "one-time-code", inputmode: "numeric" %>
+  </div>
+
+  <%= form.submit t('help.com.contact.telephones.edit.submit') %>
+<% end %>
+
+<div class="mt-4 text-sm">
+  <%= link_to t('help.com.contact.telephones.edit.retry'),
+              new_help_com_contact_path(retry_contact_params),
+              class: "font-medium text-sky-700 hover:underline" %>
+</div>

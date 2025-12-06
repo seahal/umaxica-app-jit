@@ -62,7 +62,7 @@ Rails 8 Monolith (Top / Sign / Help / Docs / News / API / BFF)
     │ ├─ Postgres clusters (identity, guest, universal, profile, token, etc.)
     │ ├─ Valkey (sessions, rate limiting, Memorize cache)
     │ ├─ Kafka via Karafka (email topic)
-    │ ├─ ActionMailer + SMTP / SmsService providers
+    │ ├─ ActionMailer + SMTP / AwsSmsService providers
     │ └─ OpenTelemetry exporter (Tempo) + Loki logging
 Downstream: Google Cloud (Run/Build/Storage), Cloudflare R2, Fastly CDN
 ```
@@ -82,7 +82,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 
 ### 3.3 Layered components
 1. **Presentation**: ActionController namespaces + Turbo/React bundles. Entry file `app/javascript/application.js` imports per-surface view scripts (e.g., `views/sign/app/application.ts`, `views/passkey.js`). Layouts load compiled bundles from `app/assets/builds`.
-2. **Domain Logic**: Concerns handle cross-cutting rules (auth, region, theme, cookie consent, Turnstile, rate limiting, redirect sanitization). Models inherit from base records (`IdentitiesRecord`, `GuestsRecord`, etc.) to target specific DB clusters. Services (e.g., `SmsService`, `AccountService`) encapsulate integration logic.
+2. **Domain Logic**: Concerns handle cross-cutting rules (auth, region, theme, cookie consent, Turnstile, rate limiting, redirect sanitization). Models inherit from base records (`IdentitiesRecord`, `GuestsRecord`, etc.) to target specific DB clusters. Services (e.g., `AwsSmsService`, `AccountService`) encapsulate integration logic.
 3. **Integration**: ActionMailer namespaces, Karafka consumer, Sms providers, Active Storage/Shrine, OpenTelemetry instrumentation, Redis/Valkey caching, Kafka messaging, external CDNs/cloud providers.
 
 ---
@@ -98,7 +98,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 
 ### 4.2 Sign (identity & security)
 - Registration flow (`Sign::App::Registration::EmailsController`) resets session, validates Turnstile, issues HOTP tokens (ROTP), stores metadata in `session[:user_email_registration]`, and sends OTP with `Email::App::RegistrationMailer`.
-- Telephone registration mirrors email and uses `SmsService`, which chooses between AWS SNS, Infobip, or a test driver.
+- Telephone registration mirrors email and uses `AwsSmsService`, which chooses between AWS SNS, Infobip, or a test driver.
 - Authentication controllers set up JWT access/refresh cookies using the `Authn` concern (`generate_access_token`, `log_in`, `log_out`, `logged_in?`).
 - Passkey endpoints (`Sign::App::Setting::PasskeysController`) expose `/setting/passkeys/challenge` and `/setting/passkeys/verify`, storing challenges in session and credentials in `UserPasskey`.
 - TOTP settings (`Sign::App::Setting::TotpsController`) create QR codes via `RQRCode`, persist encrypted secrets in `TimeBasedOneTimePassword`, and verify initial codes.
@@ -122,7 +122,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 ### 4.6 Background services
 - `karafka.rb` configures Kafka brokers (Docker vs host), client/group IDs, instrumentation, and topics (currently `email`). Karafka Web UI is enabled for debugging.
 - `EmailConsumer` (stub) will eventually decrypt and dispatch ActionMailer jobs off Kafka payloads.
-- `SmsProviders::*` classes implement provider-specific HTTP clients; `SmsService` selects the configured provider.
+- `SmsProviders::*` classes implement provider-specific HTTP clients; `AwsSmsService` selects the configured provider.
 - `Memorize` concern wraps a Redis pool with per-session prefixes and encryption for ephemeral key/value storage.
 
 ---
@@ -170,9 +170,9 @@ Migrations are split into `db/<context>_migrate`. UUID v7 IDs are generated (`Se
 
 ## 7. Security & Compliance View
 - **Authentication/Authorization**: `Authn` concern issues ES256 JWTs (15 min) + encrypted refresh tokens (1 year). Pundit is included for future fine-grained policies.  
-- **Bot & abuse protection**: Cloudflare Turnstile enforced on registration/contact flows; `RateLimit` prevents abuse; `allow_browser versions: :modern` blocks outdated clients.  
-- **Data protection**: Active Record encryption (deterministic where needed) shields email/phone/title/description fields; OTP secrets stored encrypted; preference cookies signed/HTTP-only.  
-- **Multi-factor methods**: WebAuthn (passkeys) and ROTP (TOTP/HOTP) available; `SmsService` + email OTP support fallback.  
+- **Bot & abuse protection**: Cloudflare Turnstile enforced on registration/contact flows; `RateLimit` prevents abuse; `allow_browser versions: :modern` blocks outdated clients.
+- **Data protection**: Active Record encryption (deterministic where needed) shields email/phone/title/description fields; OTP secrets stored encrypted; preference cookies signed/HTTP-only.
+- **Multi-factor methods**: WebAuthn (passkeys) and ROTP (TOTP/HOTP) available; `AwsSmsService` + email OTP support fallback.
 - **Redirect safety**: `Redirect::ALLOWED_HOSTS` enumerates permitted targets; Base64-encoded jump tokens validated before allowing cross-host redirects.  
 - **Secrets**: Rails credentials store JWT keys, Cloudflare Turnstile secrets, Redis URLs, AWS keys, SMTP secrets. Compose `.env` wiring required for local runs.  
 - **Logging & auditing**: Rails logs feed Loki; OTEL traces capture request IDs and hostnames for auditability.

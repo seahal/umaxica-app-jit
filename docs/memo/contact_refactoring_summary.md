@@ -132,7 +132,7 @@ Methods added:
 2. **Rate Limiting**: Implement Rack::Attack for IP/email/phone throttling
 3. **Controllers**: Build controllers for the top/com domain (formerly www/com)
 4. **Mailers**: Create email verification mailer
-5. **SMS Integration**: Wire up OTP sending via existing SmsService
+5. **SMS Integration**: Wire up OTP sending via existing AwsSmsService
 6. **Anti-abuse**: Add Turnstile/reCAPTCHA verification
 7. **Routes**: Define the 8-step contact flow routes
 

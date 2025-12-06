@@ -213,6 +213,8 @@ COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.l
 RUN npm install -g bun@"${BUN_VERSION}" \
     && npm cache clean --force
 
+RUN npm install -g pnpm@latest-10
+
 RUN rm -rf /home/jit/.npm
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \

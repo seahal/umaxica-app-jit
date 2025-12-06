@@ -99,6 +99,21 @@ en:
         email:
           new:
             page_title: "UMAXICA (sign, app)"
+          create:
+            verification_code_sent: "Verification code has been sent to your email address."
+          edit:
+            return_page: "Back"
+            session_expired: "Your session has expired. Please start over."
+          update:
+            success: "Email address has been verified."
+        telephone:
+          create:
+            verification_code_sent: "Verification code has been sent via SMS."
+          edit:
+            return_page: "Back"
+            session_expired: "Your session has expired. Please start over."
+          update:
+            success: "Phone number has been verified."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -474,6 +489,9 @@ en:
               system: "Automatically adapts when your device switches modes."
             submit: "Save theme preference"
   activerecord:
+    attributes:
+      user_identity_email:
+        address: Email address
     errors:
       messages:
         record_invalid: 'Validation failed: %{errors}'
@@ -704,7 +722,7 @@ en:
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."
-  top:
+  apex:
     app:
       preferences:
         footer:
@@ -719,8 +737,9 @@ en:
       preferences:
         footer:
           privacy: "Privacy"
+        reset_settings: "Reset Settings"
 
-  bff:
+  back:
     shared:
       preference_emails:
         token_invalid: "That link is no longer valid. Request a new one to continue."
@@ -819,6 +838,8 @@ en:
           failure: "Unable to process your request. Please check the form and try again."
           turnstile_error: "Security verification failed. Please refresh the page and try again."
           confirm_policy_error: "You must agree to the privacy policy to continue."
+        update:
+          success: "Your inquiry has been received."
       contact:
         emails:
           new:
@@ -841,6 +862,8 @@ en:
             submit: "Verify email"
             session_expired: "Your session has expired. Please start over."
             resend_code: "Resend code"
+            telephone_link: "Verify phone number"
+            retry: "Start over"
           update:
             success: "Email verified successfully. Please verify your phone number."
             session_expired: "Your session has expired. Please start over."
@@ -872,7 +895,7 @@ en:
             invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
             max_attempts: "Maximum verification attempts exceeded. Please request a new code."
             expired: "Verification code has expired. Please request a new code."
-  top:
+  apex:
     app:
       preference:
         resets:
@@ -881,7 +904,7 @@ en:
           confirm: "RESET"
           button: "RESET"
           back: "Back???"
-  top:
+  apex:
     app:
       preferences:
         title: "Preferences"

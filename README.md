@@ -18,11 +18,6 @@
 3. Prepare the database (creates, migrates, seeds as needed): `bin/rails db:prepare`
 4. ... run `bin/dev`
 
-## Local Development
-- Run the full development stack (`web`, `Karafka`, watchers, etc.): `foreman start -f Procfile.dev`
-- Alternatively, launch the Rails server directly: `bin/rails s -p 3000 -b 0.0.0.0`
-- Watch and rebuild assets during development: `bun run build --watch`
-
 ## Testing
 
 - Rails test suite (parallelized): `bundle exec rails test`
@@ -33,7 +28,6 @@
 - Ruby style checks: `bundle exec rubocop`
 - ERB templates: `bundle exec erb_lint .`
 - Frontend formatting and linting: `bun run format`, `bun run lint`
-- Type checking: `bun run typecheck`
 
 ## Key Services & Integrations
 
@@ -93,17 +87,18 @@
 ## Secrets & Credentials
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.
 - Run `git-secrets --scan` (hooked via Lefthook) before committing to prevent accidental secret leakage.
-
-## Useful References
-- [Official Ruby on Rails Guides](https://rubyonrails.org/)
-- [RubyGem](https://rubygems.org/)
-- [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
+- We store our cryptographic keys in Cloud KMS.
 
 ## Troubleshooting
 - Frontend assets not updating: `bin/rails assets:clobber` followed by a rebuild.
 - Tests failing due to missing databases: `bin/rails db:create`
 - If your devcontainer fails to start, rebuilding it might resolve the issue.
 - The credentials key will be shared with you separately.
+
+## Useful References
+- [Official Ruby on Rails Guides](https://rubyonrails.org/)
+- [RubyGem](https://rubygems.org/)
+- [Rails Security Checklist](https://github.com/eliotsykes/rails-security-checklist)
 
 ## Known Issues & Limitations
 - This is a work in progress.
