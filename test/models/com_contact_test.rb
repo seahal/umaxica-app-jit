@@ -361,4 +361,25 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal "+1234567890", contact.com_contact_telephone.telephone_number
   end
   # rubocop:enable Minitest/MultipleAssertions
+  # Validation: confirm_policy
+  test "should require confirm_policy to be accepted" do
+    contact = ComContact.new(
+      confirm_policy: "0",
+      contact_category_title: sample_category,
+      contact_status_title: sample_status
+    )
+
+    assert_not contact.valid?
+    assert_predicate contact.errors[:confirm_policy], :present?
+  end
+
+  test "should accept contact when confirm_policy is true" do
+    contact = ComContact.new(
+      confirm_policy: "1",
+      contact_category_title: sample_category,
+      contact_status_title: sample_status
+    )
+
+    assert_predicate contact, :valid?
+  end
 end

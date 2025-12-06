@@ -34,7 +34,7 @@ class Apex::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get apex_org_preference_url
 
     assert_select "footer" do
-      assert_select "a[href=?]", "http://#{ENV['EDGE_STAFF_URL']}:4444/", text: I18n.t("apex.org.preferences.footer.home")
+      assert_select "a[href=?]", "https://#{ENV['EDGE_STAFF_URL']}", text: I18n.t("apex.org.preferences.footer.home")
       assert_select "a[href^=?]", apex_org_preference_path, text: I18n.t("apex.org.preferences.footer.preference")
       assert_select "a[href^=?]", apex_org_privacy_path, text: I18n.t("apex.org.preferences.footer.privacy")
     end

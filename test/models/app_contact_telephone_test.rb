@@ -1,0 +1,70 @@
+require "test_helper"
+
+class AppContactTelephoneTest < ActiveSupport::TestCase
+  def setup
+    @app_contact = app_contacts(:one)
+    @telephone = AppContactTelephone.new(
+      app_contact: @app_contact,
+      telephone_number: "+819012345678"
+    )
+  end
+
+  test "should be valid" do
+    assert_predicate @telephone, :valid?
+  end
+
+  test "should require telephone_number" do
+    @telephone.telephone_number = nil
+
+    assert_not @telephone.valid?
+  end
+
+  test "should validate telephone format" do
+    valid_numbers = %w[+12125551234 090-1234-5678 1234567890]
+    valid_numbers.each do |num|
+      @telephone.telephone_number = num
+
+      assert_predicate @telephone, :valid?, "#{num.inspect} should be valid"
+    end
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "generate_otp! should create a code and set expiration" do
+    freeze_time do
+      raw_otp = @telephone.generate_otp!
+
+      assert_not_nil @telephone.otp_digest
+      assert_equal 6, raw_otp.length
+      assert_equal 10.minutes.from_now, @telephone.otp_expires_at
+      assert_equal 3, @telephone.otp_attempts_left
+    end
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "verify_otp should return true for correct code" do
+    raw_otp = @telephone.generate_otp!
+
+    assert @telephone.verify_otp(raw_otp)
+    assert @telephone.reload.activated
+    assert_equal 0, @telephone.otp_attempts_left
+  end
+
+  test "verify_otp should return false for incorrect code" do
+    @telephone.generate_otp!
+
+    assert_not @telephone.verify_otp("000000")
+    assert_not @telephone.activated
+    assert_equal 2, @telephone.otp_attempts_left
+  end
+
+  test "can_resend_otp? logic" do
+    assert_not @telephone.can_resend_otp?
+    @telephone.generate_otp!
+
+    assert_not @telephone.can_resend_otp?
+
+    travel 11.minutes do
+      assert_predicate @telephone, :can_resend_otp?
+    end
+  end
+end
