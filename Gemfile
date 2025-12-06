@@ -39,8 +39,7 @@ gem "image_processing"
 gem "aws-sdk-sns"
 gem "aws-sdk-connect"
 gem "aws-sdk-polly"
-# for Active Storage
-gem "google-cloud-storage", require: false
+
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
@@ -64,8 +63,7 @@ gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
-# Altanative way of Active Storage
-gem "carrierwave"
+
 # OpenAPI
 gem "ostruct"
 gem "rswag"
