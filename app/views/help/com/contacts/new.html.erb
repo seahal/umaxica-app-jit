@@ -3,6 +3,7 @@
 <%= form_with model: @contact || ComContact.new,
               url: help_com_contacts_path,
               scope: :com_contact,
+              data: { turbo: false },
               html: { class: "border border-slate-200 rounded-xl p-6 shadow-sm bg-white" } do |form| %>
   <% if @contact&.errors&.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">

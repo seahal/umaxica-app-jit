@@ -6,7 +6,7 @@
 
 <%= render "concern/flash_messages" %>
 
-<%= form_with model: @email_preference_request, url: back_org_preference_emails_path, local: true do |f| %>
+<%= form_with model: @email_preference_request, url: back_org_preference_emails_path, local: true, data: { turbo: false } do |f| %>
   <% if @email_preference_request.errors.any? %>
     <div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-md mb-4">
       <ul class="space-y-1 text-sm">

@@ -5,6 +5,7 @@
 
   <nav>
     <ul>
+      <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>"><%= t('apex.org.preferences.footer.home') %></a></li>
       <li><%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_path %></li>
       <li><%= link_to t('apex.org.preferences.footer.privacy'), apex_org_privacy_path %></li>
     </ul>

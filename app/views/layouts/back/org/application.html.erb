@@ -3,6 +3,7 @@
 <head>
   <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (org) JP" %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="turbo-refresh-method" content="morph">
   <meta name="turbo-refresh-scroll" content="preserve">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
@@ -20,15 +21,6 @@
 
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>
-
-  <nav>
-    <ul>
-      <li></li>
-    </ul>
-    <% if defined?(breadcrumbs) %>
-      <%= breadcrumbs pretext: "You are here: ", separator: " &rsaquo; " %>
-    <% end %>
-  </nav>
 </main>
 
 <nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
