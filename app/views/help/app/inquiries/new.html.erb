@@ -1,6 +1,6 @@
 <h1><%= t('controller.help.app.contacts.new.page_title') %></h1>
 
-<%= form_with model: @service_site_contact, url: help_app_inquiries_path do |form| %>
+<%= form_with model: @service_site_contact, url: help_app_inquiries_path, data: { turbo: false } do |form| %>
   <% if @service_site_contact.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
       <h2><%= pluralize(@service_site_contact.errors.count, "error") %> prohibited this sample from being saved:</h2>

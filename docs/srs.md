@@ -75,7 +75,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 
 ### 4.3 Identity, authentication, and account security (sign.*)
 - **FR-08**: Registration flows under `Sign::App::Registration` shall support email signup with Cloudflare Turnstile verification, HOTP issuance (ROTP), and `UserIdentityEmail` persistence using encrypted attributes.
-- **FR-09**: Telephone registration controllers mirror email flow but dispatch OTP codes through `SmsService`, which must support AWS SNS, Infobip, and in-memory test providers selected via `Rails.application.config.sms_provider`.
+- **FR-09**: Telephone registration controllers mirror email flow but dispatch OTP codes through `AwsSmsService`, which must support AWS SNS, Infobip, and in-memory test providers selected via `Rails.application.config.sms_provider`.
 - **FR-10**: Authentication controllers (`Sign::App::Authentication::*`) must issue short-lived access tokens (JWT ES256) and encrypted refresh tokens using `Authn#log_in`. Logout must clear both cookies.
 - **FR-11**: Passkey management (`Sign::App::Setting::PasskeysController`) must expose `/setting/passkeys/challenge` and `/verify` endpoints compatible with WebAuthn spec and persist credentials in `UserPasskey`. Passkey-backed sessions always require an enrolled email or telephone identity (no passkey-only login) and may be used both for sign-in after that identity check and as an MFA factor.
 - **FR-12**: TOTP provisioning (`Sign::App::Setting::TotpsController`) must generate QR codes (`rqrcode`) with session-stored secrets, verify first token, and persist to `TimeBasedOneTimePassword` (encrypted key).
@@ -135,7 +135,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 
 ### 6.3 External services & integrations
 - Email providers: AWS SES, Resend (future), ActionMailer + SMTP credentials.
-- SMS: AWS SNS, Infobip, or custom provider via `SmsService`.
+- SMS: AWS SNS, Infobip, or custom provider via `AwsSmsService`.
 - Cloud providers: Google Cloud (Cloud Run/Build/Storage/Artifact Registry) for deployment, Cloudflare (R2, Turnstile, DNS), Fastly (asset CDN).
 - Observability: Tempo/Loki/Grafana stack via Docker; production may forward to managed Grafana Cloud.
 

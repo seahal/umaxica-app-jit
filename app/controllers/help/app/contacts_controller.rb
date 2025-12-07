@@ -3,10 +3,17 @@ module Help
     class ContactsController < ApplicationController
       include CloudflareTurnstile
       include Rotp
+      before_action :set_contact, only: %i[show edit]
 
+      def show; end
       def new
         @email_address = ""
         @telephone_number = ""
+        @contact_categories = AppContactCategory.all
+      end
+
+
+      def edit
         @contact_categories = AppContactCategory.all
       end
 
@@ -88,6 +95,10 @@ module Help
           # If parsing fails, try to extract hostname by removing port
           host_value.split(":").first
         end
+      end
+
+      def set_contact
+        @contact = AppContact.find_by!(public_id: params[:id])
       end
     end
   end

@@ -39,6 +39,28 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     assert_response :bad_request
   end
 
+  test "i18n flash messages for email registration flow exist" do
+    # Check that all required i18n keys for email registration exist
+    session_expired_key = "sign.app.registration.email.edit.session_expired"
+    create_key = "sign.app.registration.email.create.verification_code_sent"
+    update_key = "sign.app.registration.email.update.success"
+
+    assert_not_nil I18n.t(session_expired_key, default: nil)
+    assert_not_nil I18n.t(create_key, default: nil)
+    assert_not_nil I18n.t(update_key, default: nil)
+  end
+
+  test "telephone i18n flash messages exist" do
+    # Check that all required i18n keys for telephone registration exist
+    session_expired_key = "sign.app.registration.telephone.edit.session_expired"
+    create_key = "sign.app.registration.telephone.create.verification_code_sent"
+    update_key = "sign.app.registration.telephone.update.success"
+
+    assert_not_nil I18n.t(session_expired_key, default: nil)
+    assert_not_nil I18n.t(create_key, default: nil)
+    assert_not_nil I18n.t(update_key, default: nil)
+  end
+
   private
 
   def default_headers

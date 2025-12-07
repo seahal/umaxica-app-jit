@@ -1,0 +1,29 @@
+<h1><%= title "Organization contact helper" %></h1>
+
+<section class="space-y-6 text-slate-900">
+  <p class="text-sm text-slate-600">
+    Updates are currently coordinated by the account success team.
+    Share the reference below or create a new ticket if the scope changed.
+  </p>
+
+  <%= render "help/shared/contact_overview", contact: @contact %>
+
+  <% if @contact_categories.present? %>
+    <div class="rounded-md border border-slate-200 bg-white p-4 shadow-sm">
+      <h2 class="text-base font-semibold">Suggested categories</h2>
+      <p class="mt-1 text-sm text-slate-600">Select one of the available options when you file a revised request.</p>
+      <ul class="mt-3 list-disc space-y-1 pl-4 text-sm text-slate-700">
+        <% @contact_categories.each do |category| %>
+          <li><%= category.title %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="flex flex-wrap gap-3">
+    <%= link_to "Back to details", help_org_contact_path(@contact),
+                class: "inline-flex items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" %>
+    <%= link_to "Create follow-up request", new_help_org_contact_path,
+                class: "inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800" %>
+  </div>
+</section>

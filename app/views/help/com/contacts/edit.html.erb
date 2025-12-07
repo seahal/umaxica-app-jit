@@ -1,0 +1,35 @@
+<h1>お問い合わせ内容入力</h1>
+
+<%= form_with model: @topic,
+              url: help_com_contact_path(@contact),
+              method: :patch,
+              scope: :com_contact_topic,
+              html: { class: "border border-slate-200 rounded-xl p-6 shadow-sm bg-white" } do |form| %>
+  <% if @topic&.errors&.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(@topic.errors.count, "error") %> prohibited this topic from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% @topic.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title, "タイトル" %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :description, "内容" %>
+    <%= form.text_area :description, rows: 10 %>
+  </div>
+
+  <div>
+    <%= link_to "キャンセル", help_com_root_path %>
+  </div>
+
+  <%= form.submit "送信" %>
+<% end %>

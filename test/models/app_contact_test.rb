@@ -223,6 +223,21 @@ class AppContactTest < ActiveSupport::TestCase
     assert_not contact.verify_token(raw_token)
   end
 
+  test "verify_token should return false for incorrect token" do
+    contact = build_contact
+    contact.generate_final_token
+
+    assert_not contact.verify_token("wrongtoken")
+  end
+
+  test "verify_token should return false if token viewed" do
+    contact = build_contact
+    raw = contact.generate_final_token
+
+    assert contact.verify_token(raw)
+    assert_not contact.verify_token(raw)
+  end
+
   # Foreign key constraint tests
   test "should reference contact_category by title" do
     AppContactCategory.create!(title: "app_category")

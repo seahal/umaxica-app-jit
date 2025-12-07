@@ -1,0 +1,13 @@
+<% content_for :page_title, "#{ENV['BRAND_NAME']} (app)" %>
+
+<section>
+  <h1>Welcome to <%= ENV['BRAND_NAME'] %> (app)</h1>
+
+  <nav>
+    <ul>
+      <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>"><%= t('apex.app.preferences.footer.home') %></a></li>
+      <li><%= link_to t('apex.app.preferences.footer.preference'), apex_app_preference_path %></li>
+      <li><%= link_to t('apex.app.preferences.footer.privacy'), apex_app_privacy_path %></li>
+    </ul>
+  </nav>
+</section>

@@ -3,6 +3,7 @@ class ComContactTelephone < GuestsRecord
 
   before_create :generate_id
   encrypts :telephone_number, deterministic: true
+  encrypts :hotp_secret
   # Bridge OTP helpers to stored verifier_* columns
   alias_attribute :otp_digest, :verifier_digest
   alias_attribute :otp_expires_at, :verifier_expires_at

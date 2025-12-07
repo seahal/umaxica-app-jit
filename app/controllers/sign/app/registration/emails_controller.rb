@@ -6,7 +6,6 @@ module Sign
         include ::Redirect
 
         def new
-          # FIXME: write test code!
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
@@ -27,7 +26,7 @@ module Sign
             @user_email = UserIdentityEmail.new
           else
             redirect_to new_sign_app_registration_email_path,
-                        notice: t("sign.app.registration.email.edit.your_session_was_expired")
+                        notice: t("sign.app.registration.email.edit.session_expired")
           end
         end
 
@@ -36,7 +35,7 @@ module Sign
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
-          @user_email = UserIdentityEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
+          @user_email = UserIdentityEmail.new(params.expect(user_identity_email: [ :address, :confirm_policy ]))
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32 # NOTE: you would wonder why this code was written ...
           otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
@@ -57,7 +56,7 @@ module Sign
             Email::App::RegistrationMailer.with({ hotp_token: num,
                                                   email_address: @user_email.address }).create.deliver_now
 
-            redirect_to edit_sign_app_registration_email_path(id), notice: t("messages.email_successfully_created")
+            redirect_to edit_sign_app_registration_email_path(id), notice: t("sign.app.registration.email.create.verification_code_sent")
           else
             render :new, status: :unprocessable_content
           end
@@ -66,10 +65,10 @@ module Sign
         def update
           # FIXME: write test code!
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in_staff? || logged_in_user?
+                 status: :bad_request and return if logged_in?
 
           @user_email = UserIdentityEmail.new(address: session[:user_email_registration]["address"],
-                                              pass_code: params["user_email"]["pass_code"])
+                                              pass_code: params["user_identity_email"]["pass_code"])
 
           if [
             @user_email.valid?,
@@ -78,7 +77,7 @@ module Sign
           ].all?
             @user_email.save!
             session[:user_email_registration] = nil
-            redirect_to "/", notice: t("messages.sample_successfully_updated")
+            redirect_to "/", notice: t("sign.app.registration.email.update.success")
           else
             render :edit, status: :unprocessable_content
           end

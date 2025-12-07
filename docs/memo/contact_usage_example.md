@@ -90,7 +90,7 @@ raw_otp = phone.generate_otp!
 # => "654321" (6-digit OTP)
 
 # Send via SMS
-SmsService.send_message(
+AwsSmsService.send_message(
   to: phone.telephone_number,
   message: "Your verification code: #{raw_otp}"
 )

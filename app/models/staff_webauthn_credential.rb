@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class StaffWebauthnCredential < IdentitiesRecord
+  self.table_name = "staff_passkeys"
+  alias_attribute :nickname, :name
+  attribute :authenticator_type, :integer
+
   belongs_to :staff
 
   validates :external_id, presence: true, uniqueness: true

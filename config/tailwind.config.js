@@ -1,4 +1,5 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
+const plugin = require("tailwindcss/plugin");
 
 module.exports = {
 	content: [
@@ -18,5 +19,15 @@ module.exports = {
 		require("@tailwindcss/forms"),
 		require("@tailwindcss/typography"),
 		require("@tailwindcss/container-queries"),
+		plugin(({ addBase, theme }) => {
+			addBase({
+				"a:link": {
+					color: theme("colors.blue.600"),
+				},
+				"a:visited": {
+					color: theme("colors.blue.600"),
+				},
+			});
+		}),
 	],
 };

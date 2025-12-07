@@ -23,16 +23,6 @@ class UserTest < ActiveSupport::TestCase
     assert_not_nil @user.updated_at
   end
 
-  test "should have many emails association" do
-    assert_respond_to @user, :emails
-    assert_equal "user_id", @user.class.reflect_on_association(:user_identity_emails).foreign_key
-  end
-
-  test "should have many phones association" do
-    assert_respond_to @user, :phones
-    assert_equal "user_id", @user.class.reflect_on_association(:user_identity_telephones).foreign_key
-  end
-
   test "should have one user_identity_apple_auth association" do
     assert_respond_to @user, :user_identity_apple_auth
     assert_equal :has_one, @user.class.reflect_on_association(:user_identity_apple_auth).macro

@@ -6,8 +6,6 @@ on:
     branches: [develop]
   pull_request:
     branches: [main]
-  schedule:
-    - cron: '0 4 * * *' # Daily at 06:00 UTC
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -123,19 +121,19 @@ jobs:
       IDENTIFIER_REGION_CODE: '392'
       IDENTIFIER_INSTANCE_ID: '0123456789'
 
-      # Domain URLs - Top Level
-      TOP_CORPORATE_URL: com.localhost
-      TOP_SERVICE_URL: app.localhost
-      TOP_STAFF_URL: org.localhost
+      # Domain URLs - APEX
+      APEX_CORPORATE_URL: com.localhost
+      APEX_SERVICE_URL: app.localhost
+      APEX_STAFF_URL: org.localhost
 
       # Domain URLs - Sign
       SIGN_SERVICE_URL: sign.app.localhost
       SIGN_STAFF_URL: sign.org.localhost
 
-      # Domain URLs - BFF
-      BFF_CORPORATE_URL: top.com.localhost
-      BFF_SERVICE_URL: top.app.localhost
-      BFF_STAFF_URL: top.org.localhost
+      # Domain URLs - BACK
+      BACK_CORPORATE_URL: back.com.localhost
+      BACK_SERVICE_URL: back.app.localhost
+      BACK_STAFF_URL: back.org.localhost
 
       # Domain URLs - API
       API_CORPORATE_URL: api.com.localhost
@@ -284,6 +282,28 @@ jobs:
             log/test.log
             tmp/screenshots/
           retention-days: 7
+
+  # ====================
+  # Linting - JavaScript
+  # ====================
+  lint-js:
+    name: JavaScript Formatting (Biome)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Install Bun dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check Biome formatting and linting.
+        run: bun run check
 
   # ====================
   # Security - Docker Image Scan

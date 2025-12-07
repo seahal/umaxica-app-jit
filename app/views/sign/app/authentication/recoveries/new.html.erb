@@ -1,6 +1,6 @@
-<h1 class="font-bold text-4xl"><%= t("sign.app.authentication.recovery.new.page_title") %></h1>
+<h1 class="font-bold text-4xl"><%= title t("sign.app.authentication.recovery.new.page_title") %></h1>
 <p class="mt-2 text-sm text-slate-600"><%= t("sign.app.authentication.recovery.new.description") %></p>
-<%= form_with model: @user_recover_code, url: sign_app_authentication_recovery_path do |f| %>
+<%= form_with model: @user_recover_code, url: sign_app_authentication_recovery_path, data: { turbo: false } do |f| %>
 
   <% if @user_recover_code.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">

@@ -15,6 +15,12 @@ ja:
       otp:
         invalid_input: Pass Code の値に問題があります
   controller:
+    apex:
+      org:
+        preferences:
+          themes:
+            invalid: 無効な管理テーマが選択されました
+            updated: 管理テーマを%{theme}に更新しました
     sign:
       app:
         setting:
@@ -45,8 +51,24 @@ ja:
           google:
             new:
               jump_obj: sign in with google
-          email: "メールで登録"
-          telephone: "電話で登録"
+          email:
+            label: "メールで登録"
+            create:
+              verification_code_sent: "確認コードをメールアドレスに送信しました。"
+            edit:
+              return_page: 戻る
+              session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            update:
+              success: "メールアドレスが確認されました。"
+          telephone:
+            label: "電話で登録"
+            create:
+              verification_code_sent: "確認コードをSMSで送信しました。"
+            edit:
+              return_page: 戻る
+              session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+            update:
+              success: "電話番号が確認されました。"
         authentication:
           destroy:
             jump_obj: sign in with email
@@ -110,82 +132,36 @@ ja:
               dark: 夜間の作業や目の疲れを軽減したいときに最適です。
               system: OS のテーマ変更に連動して切り替わります。
           submit: テーマ設定を保存
-    top:
-      app:
-        preferences:
-          up_link: "うえへ"
-          title: "プリファレンス"
-          cookie_settings: "クッキーの設定"
-          region_settings: "地域と言語の設定"
-          theme_settings: "テーマの設定"
-          back_to_settings: "設定一覧に戻る"
-          footer:
-            home: "ホーム"
-            cookie: "クッキー"
-            preference: "プリファレンス"
-          themes:
-            updated: テーマを%{theme}に更新しました
-            invalid: 無効なテーマが選択されました
-      com:
-        preferences:
-          up_link: "うえへ"
-          title: "プリファレンス"
-          cookie_settings: "クッキーの設定"
-          region_settings: "地域と言語の設定"
-          theme_settings: "テーマの設定"
-          back_to_settings: "設定一覧に戻る"
-          footer:
-            home: "ホーム"
-            cookie: "クッキー"
-            preference: "プリファレンス"
-          themes:
-            updated: テーマを%{theme}に更新しました
-            invalid: 無効なテーマが選択されました
-      org:
-        preferences:
-          up_link: "うえへ"
-          title: "プリファレンス"
-          cookie_settings: "クッキーの設定"
-          region_settings: "地域と言語の設定"
-          theme_settings: "テーマの設定"
-          back_to_settings: "設定一覧に戻る"
-          footer:
-            home: "ホーム"
-            cookie: "クッキー"
-            preference: "プリファレンス"
-          themes:
-            updated: テーマを%{theme}に更新しました
-            invalid: 無効なテーマが選択されました
-    root:
-      app:
-        preference:
-          show:
-            page_title: konomi
-          cookie:
-            edit:
-              page_title: クッキーの設定
-              accept_necessary_cookies: 必要なクッキーの許可について（必須）
-              accept_tracking_cookies: トラッキングの許可について
-              accept_functional_cookies: 機能性クッキーの許可について
-              accept_performance_cookies: パフォーマンスクッキーの許可について
-              accept_targeting_cookies: ターゲティングクッキーの許可について
-          theme:
-            edit:
-              title: テーマ設定（ライト／ダークの切り替え）
-              description: 表示モードを選択して作業環境に合わせましょう。
-              legend: テーマの選択
-              options:
-                light: ライト — 明るい背景で日中の作業に最適
-                dark: ダーク — 暗い環境で目に優しい配色
-                system: システム設定 — 端末の設定に合わせて自動切り替え
-              hints:
-                light: 共有スペースや明るいオフィスでの利用におすすめです。
-                dark: 夜間の作業や目の疲れを軽減したいときに最適です。
-                system: OS のテーマ変更に連動して切り替わります。
-              submit: テーマ設定を保存
-          email:
-            new:
-              page_title: emailの設定
+  root:
+    app:
+      preference:
+        show:
+          page_title: konomi
+        cookie:
+          edit:
+            page_title: クッキーの設定
+            accept_necessary_cookies: 必要なクッキーの許可について（必須）
+            accept_tracking_cookies: トラッキングの許可について
+            accept_functional_cookies: 機能性クッキーの許可について
+            accept_performance_cookies: パフォーマンスクッキーの許可について
+            accept_targeting_cookies: ターゲティングクッキーの許可について
+        theme:
+          edit:
+            title: テーマ設定（ライト／ダークの切り替え）
+            description: 表示モードを選択して作業環境に合わせましょう。
+            legend: テーマの選択
+            options:
+              light: ライト — 明るい背景で日中の作業に最適
+              dark: ダーク — 暗い環境で目に優しい配色
+              system: システム設定 — 端末の設定に合わせて自動切り替え
+            hints:
+              light: 共有スペースや明るいオフィスでの利用におすすめです。
+              dark: 夜間の作業や目の疲れを軽減したいときに最適です。
+              system: OS のテーマ変更に連動して切り替わります。
+            submit: テーマ設定を保存
+        email:
+          new:
+            page_title: emailの設定
       com:
         preference:
           show:
@@ -301,128 +277,14 @@ ja:
               dark: 夜間監視や長時間の操作で目の負担を軽減します。
               system: 端末のテーマ切り替えに合わせて自動で変更します。
             submit: テーマ設定を保存
-    top:
-      app:
-        preferences: &top_preferences_shared
-          title: 設定
-          cookie_settings: クッキー設定
-          region_settings: 地域と言語の設定
-          locale_settings: 言語とタイムゾーンの設定
-          theme_settings: テーマ設定
-          themes:
-            updated: テーマを%{theme}に更新しました
-            invalid: 無効なテーマが選択されました
-          back_to_settings: 設定一覧に戻る
-          regions:
-            title: 地域・言語の設定
-            region_section: 地域設定
-            select_region: 地域を選択
-            language_section: 言語設定
-            select_language: 言語を選択
-            timezone_section: タイムゾーン設定
-            select_timezone: タイムゾーンを選択
-            select_region_prompt: 地域を選択してください…
-            select_language_prompt: 言語を選択してください…
-            select_timezone_prompt: タイムゾーンを選択してください…
-            select_region_selector:
-              USA: アメリカ合衆国
-              JAPAN: 日本
-            select_language_selector:
-              JAPANESE: 日本語
-              ENGLISH: 英語
-            select_timezone_selector:
-              UTC: 協定世界時 (UTC)
-              JST: 日本標準時 (JST)
-            update_settings: 設定を更新
-            cancel: キャンセル
-        preference:
-          cookie:
-            edit:
-              h1: クッキー設定
-              accept_necessary_cookies: 必須クッキーを許可 (必須)
-              accept_functional_cookies: 機能性クッキーを許可
-              accept_performance_cookies: パフォーマンスクッキーを許可
-              accept_targeting_cookies: ターゲティングクッキーを許可
-          theme:
-            edit:
-              title: テーマ設定（ライト／ダークの切り替え）
-              description: 表示モードを作業環境に合わせて選択します。
-              legend: テーマの選択
-              options:
-                light: ライト — 明るい環境向けの配色
-                dark: ダーク — 低照度環境で目に優しい配色
-                system: システム設定 — 端末の設定に追従
-              hints:
-                light: 日中作業や共有スペースでの利用におすすめです。
-                dark: 夜間の監視業務や長時間利用で目の負担を軽減します。
-                system: OSのテーマ変更にあわせて自動で切り替わります。
-              submit: テーマ設定を保存
-        preference:
-            cookie:
-              edit:
-                h1: クッキー設定
-                accept_necessary_cookies: 必須クッキーを許可 (必須)
-                accept_functional_cookies: 機能性クッキーを許可
-                accept_performance_cookies: パフォーマンスクッキーを許可
-                accept_targeting_cookies: ターゲティングクッキーを許可
-      org:
-        preferences:
-          <<: *top_preferences_shared
-          themes:
-            updated: 管理テーマを%{theme}に更新しました
-            invalid: 無効な管理テーマが選択されました
-        preference:
-          cookie:
-            edit:
-              h1: クッキー設定
-              accept_necessary_cookies: 必須クッキーを許可 (必須)
-              accept_functional_cookies: 機能性クッキーを許可
-              accept_performance_cookies: パフォーマンスクッキーを許可
-              accept_targeting_cookies: ターゲティングクッキーを許可
-          theme:
-            edit:
-              title: テーマ設定（ライト／ダークの切り替え）
-              description: 組織のオペレーター向けにデフォルトの表示モードを設定します。
-              legend: テーマの選択
-              options:
-                light: ライト — 明るい運用センター向けの配色
-                dark: ダーク — 低照度の監視室で見やすい配色
-                system: システム設定 — 管理デバイスの設定に追従
-              hints:
-                light: 明るい環境でダッシュボードを視認しやすく保ちます。
-                dark: 夜間シフトでも目の疲れを抑えながらモニタリングできます。
-                system: 組織で管理される端末のテーマ変更に自動で合わせます。
-              submit: テーマ設定を保存
-    help:
-      com:
-        contacts:
-          create:
-            success: お問い合わせを受け付けました。メールアドレスを確認してください。
-      app:
-        contacts:
-          new:
-            page_title: お問い合わせページ
-            confirm_policy: プライバシーポリシーに同意します
-            contact_category_title: お問い合わせ種別
-            email_address: メールアドレス
-            telephone_number: 電話番号
-            cancel: キャンセル
-          show:
-            page_title: お問い合わせページ
-            page_description: jyuri sare mashita
-          error:
-            page_title: エラーが生じました
-            page_description: はじめからやりなおしてください
-            back_to_contact_root_page: もどる
-          create:
-            success: お問い合わせを受け付けました。メールアドレスを確認してください。
-            failure: 入力内容をご確認のうえ、もう一度送信してください。
-            turnstile_error: セキュリティ検証に失敗しました。時間をおいて再度お試しください。
   hello: やぁ、せかい
   messages:
     region_settings_updated_successfully: 地域設定が正常に更新されました。
     user_registration_error: ユーザー登録中にエラーが発生しました。
     access_blocked_auth_error: 'アクセスをブロック: 認証エラーです'
+    email_successfully_created: メールアドレスの確認コードを送信しました。
+    telephone_successfully_created: 電話番号の確認コードを送信しました。
+    sample_successfully_updated: 登録が完了しました。
   sign:
     app:
       authentication:
@@ -451,10 +313,13 @@ ja:
             registration: 登録しますか？
           create:
             you_have_already_logged_in: あなたはログインしています
+            email_not_found: 登録済みのメールアドレスが見つかりませんでした。
+            verification_code_sent: 確認コードをメールアドレスに送信しました。
+            turnstile_error: セキュリティ検証に失敗しました。ページを更新して再度お試しください。
         telephone:
           new:
             page_title: 電話番号でサインイン
-            description: 登録済みの電話番号を入力し、ワンタイムコードで認証します。
+            description: このきのうはまだじっそうされていません
             you_have_already_logged_in: あなたはログインしています
         recovery:
           new:
@@ -504,6 +369,13 @@ ja:
         email:
           new:
             page_title: "UMAXICA (sign, app)"
+            link_to_other_methods: "他の方法で登録しますか？"
+            link_to_sign_in: "ログインしますか？"
+        telephone:
+          new:
+            page_title: "電話番号で登録"
+            link_to_other_methods: "他の方法で登録しますか？"
+            link_to_sign_in: "ログインしますか？"
     org:
       authentication:
         new:
@@ -538,289 +410,10 @@ ja:
         totp:
           new:
             title: TOTP no shinki
-  root:
-    app:
-      preferences:
-        title: 設定
-        cookie_settings: クッキー設定
-        region_settings: 地域設定
-        email_preferences: メール設定
-        theme_settings: テーマ設定（ライト／ダークの切り替え）
-        reset_settings: 設定のクリア
-        regions:
-          title: 地域・言語設定
-          region_section: 地域設定
-          language_section: 言語設定
-          timezone_section: タイムゾーン設定
-          select_region: 地域を選択
-          select_country: 国を選択
-          select_language: 言語を選択
-          select_timezone: タイムゾーンを選択
-          select_region_prompt: 地域を選択してください...
-          select_country_prompt: 国を選択してください...
-          select_language_prompt: 言語を選択してください...
-          select_timezone_prompt: タイムゾーンを選択してください...
-          update_settings: 設定を更新
-          cancel: キャンセル
-          select_region_selector:
-            USA: アメリカ合衆国
-            JAPAN: 日本
-          select_language_selector:
-            JAPANESE: 日本語
-            ENGLISH: 英語
-          select_timezone_selector:
-            UTC: UTC(協定世界時)
-            JST: JST(日本標準時)
-        themes:
-          updated: テーマを%{theme}に更新しました
-          invalid: 無効なテーマが選択されました
-        back_to_settings: 設定一覧に戻る
-      preference:
-        cookie:
-          edit:
-            h1: クッキーの設定
-            accept_necessary_cookies: 必要なクッキーの許可について（必須）
-            accept_tracking_cookies: トラッキングの許可について
-            accept_functional_cookies: 機能性クッキーの許可について
-            accept_performance_cookies: パフォーマンスクッキーの許可について
-            accept_targeting_cookies: ターゲティングクッキーの許可について
-        theme:
-          edit:
-            title: ライト／ダークテーマの選択
-            description: 使用環境に合わせてライトテーマかダークテーマを選択してください。
-            legend: テーマを選ぶ
-            options:
-              light: ライトテーマ（明るい背景）
-              dark: ダークテーマ（暗めの背景）
-              system: システム設定に合わせる
-            hints:
-              light: 日中の作業や明るい部屋での利用に向いています。
-              dark: 夜間や目の負担を減らしたい時におすすめです。
-              system: 端末のテーマ設定に合わせて自動で切り替わります。
-            submit: テーマ設定を保存
-        reset:
-          edit:
-            title: 設定クッキーをリセット
-            description: このブラウザに保存している表示設定クッキーを削除します。
-            confirmation: 元に戻せない操作です。
-            confirmation_label: すべての設定クッキーを削除することに同意します
-            submit: 設定クッキーをクリア
-          destroy:
-            success: 設定クッキーをクリアしました。
-            confirmation_required: クッキーを削除するにはチェックボックスにチェックを入れてください。
-        themes:
-          updated: テーマを%{theme}に更新しました
-          invalid: 無効なテーマが選択されました
-        emails:
-          updated: メール設定が正常に更新されました
-          invalid: メール設定が無効です
-        regions:
-          title: 地域・言語設定
-          region_section: 地域設定
-          language_section: 言語設定
-          timezone_section: タイムゾーン設定
-          select_region: 地域を選択
-          select_country: 国を選択
-          select_language: 言語を選択
-          select_timezone: タイムゾーンを選択
-          select_region_prompt: 地域を選択してください...
-          select_country_prompt: 国を選択してください...
-          select_language_prompt: 言語を選択してください...
-          select_timezone_prompt: タイムゾーンを選択してください...
-          update_settings: 設定を更新
-          cancel: キャンセル
-        languages:
-          updated: 言語を%{language}に更新しました
-          unsupported: サポートされていない言語が選択されました
-        timezones:
-          updated: タイムゾーンを%{timezone}に更新しました
-          invalid: 無効なタイムゾーンが選択されました
-    com:
-      preferences:
-        title: 設定
-        cookie_settings: クッキー設定
-        region_settings: 地域設定
-        email_preferences: メール設定
-        theme_settings: テーマ設定（ライト／ダークの切り替え）
-        emails:
-          updated: メール設定が正常に更新されました
-          none_selected: 設定が選択されていません
-        themes:
-          updated: 企業テーマを%{theme}に更新しました
-          invalid: 無効なテーマが選択されました
-        regions:
-          title: 企業地域・言語設定
-          region_section: 地域設定
-          language_section: 言語設定
-          timezone_section: タイムゾーン設定
-          select_region: 地域を選択
-          select_country: 国を選択
-          select_language: 言語を選択
-          select_timezone: タイムゾーンを選択
-          select_region_prompt: 地域を選択してください...
-          select_country_prompt: 国を選択してください...
-          select_language_prompt: 言語を選択してください...
-          select_timezone_prompt: タイムゾーンを選択してください...
-          update_settings: 設定を更新
-          cancel: キャンセル
-          select_region_selector:
-            USA: アメリカ合衆国
-            JAPAN: 日本
-          select_language_selector:
-            JAPANESE: 日本語
-            ENGLISH: 英語
-          select_timezone_selector:
-            UTC: UTC(協定世界時)
-            JST: JST(日本標準時)
-        back_to_settings: 設定一覧に戻る
-      preference:
-        cookie:
-          edit:
-            h1: クッキーの設定
-            accept_necessary_cookies: 必要なクッキーの許可について（必須）
-            accept_tracking_cookies: トラッキングの許可について
-            accept_functional_cookies: 機能性クッキーの許可について
-            accept_performance_cookies: パフォーマンスクッキーの許可について
-            accept_targeting_cookies: ターゲティングクッキーの許可について
-        theme:
-          edit:
-            title: ライト／ダークテーマの選択
-            description: 社内の閲覧環境に合わせてテーマを切り替えましょう。
-            legend: テーマを選ぶ
-            options:
-              light: ライトテーマ（明るい背景）
-              dark: ダークテーマ（暗めの背景）
-              system: システム設定に合わせる
-            hints:
-              light: プレゼンテーションや会議室での利用に最適です。
-              dark: 監視や夜間の作業での目の疲れを軽減します。
-              system: 社内端末の設定に追従して自動で切り替えます。
-            submit: テーマ設定を保存
-        regions:
-          title: 企業地域・言語設定
-          region_section: 地域設定
-          language_section: 言語設定
-          timezone_section: タイムゾーン設定
-          select_region: 地域を選択
-          select_language: 言語を選択
-          select_timezone: タイムゾーンを選択
-          select_region_prompt: 地域を選択してください...
-          select_country_prompt: 国を選択してください...
-          select_language_prompt: 言語を選択してください...
-          select_timezone_prompt: タイムゾーンを選択してください...
-          update_settings: 設定を更新
-          cancel: キャンセル
-        emails:
-          updated: メール設定が正常に更新されました
-          none_selected: 設定が選択されていません
-        languages:
-          updated: 言語設定を%{language}に更新しました
-          unsupported: サポートされていない言語が選択されました
-        themes:
-          updated: 企業テーマを%{theme}に更新しました
-          invalid: 無効なテーマが選択されました
-        timezones:
-          updated: タイムゾーンを%{timezone}に更新しました
-          invalid: 無効なタイムゾーンが選択されました
-    org:
-      customers:
-        created: 顧客%{name}が正常に作成されました
-        updated: 顧客が正常に更新されました
-        deleted: 顧客%{name}が正常に削除されました
-        name_email_required: 名前とメールアドレスが必要です
-        invalid_data: 無効な顧客データです
-      preferences:
-        title: 設定
-        cookie_settings: クッキー設定
-        region_settings: 地域設定
-        email_preferences: メール設定
-        theme_settings: テーマ設定（ライト／ダークの切り替え）
-        regions:
-          title: 地域・言語設定
-          region_section: 地域設定
-          language_section: 言語設定
-          timezone_section: タイムゾーン設定
-          select_region: 地域を選択
-          select_language: 言語を選択
-          select_timezone: タイムゾーンを選択
-          cancel: 戻る
-          select_region_selector:
-            USA: アメリカ合衆国
-            JAPAN: 日本
-          select_language_selector:
-            JAPANESE: 日本語
-            ENGLISH: 英語
-          select_timezone_selector:
-            UTC: UTC(協定世界時)
-            JST: JST(日本標準時)
-        themes:
-          updated: 管理テーマを%{theme}に更新しました
-          invalid: 無効な管理テーマが選択されました
-        back_to_settings: 設定一覧に戻る
-      preference:
-        cookie:
-          edit:
-            h1: クッキーの設定
-            accept_necessary_cookies: 必要なクッキーの許可について（必須）
-            accept_tracking_cookies: トラッキングの許可について
-            accept_functional_cookies: 機能性クッキーの許可について
-            accept_performance_cookies: パフォーマンスクッキーの許可について
-            accept_targeting_cookies: ターゲティングクッキーの許可について
-        theme:
-          edit:
-            title: ライト／ダークテーマの選択
-            description: 管理画面を快適に利用できるテーマを選択してください。
-            legend: テーマを選ぶ
-            options:
-              light: ライトテーマ（明るい背景）
-              dark: ダークテーマ（暗めの背景）
-              system: システム設定に合わせる
-            hints:
-              light: チームでのレビューや昼間の作業に向いています。
-              dark: 夜間の当番やモニタリング作業で見やすくなります。
-              system: 端末のモード変更に合わせて自動で切り替わります。
-            submit: テーマ設定を保存
-        regions:
-          title: 地域・言語設定
-          region_section: 地域設定
-          language_section: 言語設定
-          timezone_section: 管理タイムゾーン設定
-          select_region: 地域を選択
-          select_country: 国を選択
-          select_language: 管理言語を選択
-          select_timezone: 管理タイムゾーンを選択
-          select_region_prompt: 地域を選択してください...
-          select_country_prompt: 国を選択してください...
-          select_language_prompt: 管理言語を選択してください...
-          select_timezone_prompt: 管理タイムゾーンを選択してください...
-          cancel: キャンセル
-        languages:
-          updated: 管理言語を%{language}に更新しました
-          unsupported: サポートされていない管理言語が選択されました
-        themes:
-          updated: 管理テーマを%{theme}に更新しました
-          invalid: 無効な管理テーマが選択されました
-        timezones:
-          updated: 管理タイムゾーンを%{timezone}に更新しました
-          invalid: 管理インターフェースで無効なタイムゾーンが選択されました
-        privacies:
-          updated: プライバシー設定が正常に更新されました
-          invalid: 無効なプライバシー設定です
-    telephone_successfully_created: Telephone was successfully created.
-    sample_successfully_updated: Sample was successfully updated.
-    abc_successfully_created: Abc was successfully created.
-    abc_successfully_updated: Abc was successfully updated.
-    abc_successfully_destroyed: Abc was successfully destroyed.
-    user_recovery_code_successfully_created: User recovery code was successfully created.
-    user_recovery_code_successfully_updated: User recovery code was successfully updated.
-    user_recovery_code_successfully_destroyed: User recovery code was successfully
-      destroyed.
-    totp_successfully_created: TOTP was successfully created.
-    passkey_updated_successfully: Passkey updated successfully.
-    passkey_removed_successfully: Passkey removed successfully.
-    email_successfully_created: Email was successfully created.
-    auth_error_occurred: 認証エラーが発生しました。もう一度お試しください。
   activerecord:
+    attributes:
+      user_identity_email:
+        address: メールアドレス
     errors:
       messages:
         record_invalid: 'バリデーションに失敗しました: %{errors}'
@@ -1003,15 +596,24 @@ ja:
       long: '%Y/%m/%d %H:%M'
       short: '%m/%d %H:%M'
     pm: 午後
-  top:
+  apex:
     app:
-      preferences:
+      preferences: &apex_preferences_shared
         title: 設定
         cookie_settings: クッキー設定
         region_settings: 地域と言語の設定
+        locale_settings: 言語とタイムゾーンの設定
         theme_settings: テーマ設定
-        back_to_settings: "設定"
-        locale_settings: "ロケールを設定"
+        themes:
+          updated: テーマを%{theme}に更新しました
+          invalid: 無効なテーマが選択されました
+        back_to_settings: 設定一覧に戻る
+        up_link: "うえへ"
+        footer:
+          home: "ホーム"
+          cookie: "クッキー"
+          preference: "プリファレンス"
+          privacy: "プライバシー"
         regions:
           title: 地域・言語の設定
           region_section: 地域設定
@@ -1034,11 +636,8 @@ ja:
             JST: 日本標準時 (JST)
           update_settings: 設定を更新
           cancel: キャンセル
-        resets:
-          title: "設定のリセット"
-        reset_settings: "設定の変更？"
-        footer:
-          privacy: "プライバシー"
+        timezones:
+          invalid: 無効なタイムゾーンが選択されました
       preference:
         cookie:
           edit:
@@ -1068,7 +667,7 @@ ja:
         theme:
           edit:
             title: テーマ設定（ライト／ダークの切り替え）
-            description: 管理画面の表示モードを環境に合わせて選択します。
+            description: 表示モードを作業環境に合わせて選択します。
             legend: テーマの選択
             options:
               light: ライト — 明るい環境向けの配色
@@ -1087,39 +686,10 @@ ja:
           back: 設定一覧に戻る
     org:
       preferences:
-        title: 設定
-        locale_settings: ロケール設定
-        back_to_settings: 設定一覧に戻る
-        regions:
-          title: 地域・言語の設定
-          region_section: 地域設定
-          select_region: 地域を選択
-          language_section: 言語設定
-          select_language: 言語を選択
-          timezone_section: タイムゾーン設定
-          select_timezone: タイムゾーンを選択
-          select_region_prompt: 地域を選択してください…
-          select_language_prompt: 言語を選択してください…
-          select_timezone_prompt: タイムゾーンを選択してください…
-          select_region_selector:
-            USA: アメリカ合衆国
-            JAPAN: 日本
-          select_language_selector:
-            JAPANESE: 日本語
-            ENGLISH: 英語
-          select_timezone_selector:
-            UTC: 協定世界時 (UTC)
-            JST: 日本標準時 (JST)
-          update_settings: 設定を更新
-          cancel: キャンセル
-        cookie_settings: クッキー設定
-        region_settings: 地域と言語の設定
-        theme_settings: テーマ設定
-        reset_settings: 設定のリセット
-        resets:
-          title: 設定のリセット
-        footer:
-          privacy: "プライバシー"
+        <<: *apex_preferences_shared
+        themes:
+          updated: 管理テーマを%{theme}に更新しました
+          invalid: 無効な管理テーマが選択されました
       preference:
         cookie:
           edit:
@@ -1168,41 +738,10 @@ ja:
           back: 設定一覧に戻る
     com:
       preferences:
-        title: 設定
-        cookie_settings: クッキー設定
-        region_settings: 地域と言語の設定
-        theme_settings: テーマ設定
-        back_to_settings: 設定一覧に戻る
+        <<: *apex_preferences_shared
         themes:
           updated: "%{theme} にテーマを更新しました"
           invalid: 無効なテーマが選択されました
-        regions:
-          title: 地域・言語の設定
-          region_section: 地域設定
-          select_region: 地域を選択
-          language_section: 言語設定
-          select_language: 言語を選択
-          timezone_section: タイムゾーン設定
-          select_timezone: タイムゾーンを選択
-          select_region_prompt: 地域を選択してください…
-          select_country_prompt: 国を選択してください…
-          select_language_prompt: 言語を選択してください…
-          select_timezone_prompt: タイムゾーンを選択してください…
-          select_region_selector:
-            USA: アメリカ合衆国
-            JAPAN: 日本
-          select_language_selector:
-            JAPANESE: 日本語
-            ENGLISH: 英語
-          select_timezone_selector:
-            UTC: 協定世界時 (UTC)
-            JST: 日本標準時 (JST)
-          update_settings: 設定を更新
-          cancel: キャンセル
-        reset_settings: 設定のリセット
-        locale_settings: "ロケール"
-        footer:
-          privacy: "プライバシー"
       preference:
         cookie:
           edit:
@@ -1249,10 +788,9 @@ ja:
           button: 設定をリセットする
           confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
           back: 設定一覧に戻る
-        up_link: "うえへ"
       privacy:
         up_link: "うえへ"
-  bff:
+  back:
     shared:
       preference_emails:
         token_invalid: "リンクの有効期限が切れています。新しくリクエストしてください。"
@@ -1351,6 +889,8 @@ ja:
           failure: "お問い合わせを送信できませんでした。入力内容をご確認ください。"
           turnstile_error: "セキュリティ検証に失敗しました。ページを更新して再度お試しください。"
           confirm_policy_error: "続行するには、プライバシーポリシーに同意する必要があります。"
+        update:
+          success: "お問い合わせを受け付けました"
       contact:
         emails:
           new:
@@ -1373,6 +913,8 @@ ja:
             submit: "メールアドレスを確認"
             session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             resend_code: "コードを再送信"
+            telephone_link: "電話番号を確認"
+            retry: "やりなおす"
           update:
             success: "メールアドレスが確認されました。電話番号を確認してください。"
             session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
@@ -1407,46 +949,3 @@ ja:
             success: "成功！"
             failure: "失敗！"
   confirm_policy_error: "ポリシーエラー"
-  top:
-    app:
-      preference:
-        resets:
-          title: "設定のリセット"
-          description: "お好みの設定を消すことができます"
-          confirm: "リセット"
-          button: "リセット"
-          back: "戻る"
-      preferences:
-        title: "プリファレンス"
-        cookie_settings: "クッキーの設定"
-        region_settings: "地域と言語の設定"
-        theme_settings: "テーマの設定"
-        up_link: "うえへ"
-        footer:
-          home: "ホーム"
-          privacy: "プライバシー"
-          preference: "プリファレンス"
-    com:
-      privacy:
-        up_link: "↑ うえへ"
-      preferences:
-        title: "プリファレンス"
-        cookie_settings: "クッキーの設定"
-        region_settings: "地域と言語の設定"
-        theme_settings: "テーマの設定"
-        up_link: "↑ うえへ"
-        footer:
-          home: "ホーム"
-          privacy: "プライバシー"
-          preference: "プリファレンス"
-    org:
-      preferences:
-        title: "プリファレンス"
-        cookie_settings: "クッキーの設定"
-        region_settings: "地域と言語の設定"
-        theme_settings: "テーマの設定"
-        up_link: "うえへ"
-        footer:
-          home: "ホーム"
-          privacy: "プライバシー"
-          preference: "プリファレンス"

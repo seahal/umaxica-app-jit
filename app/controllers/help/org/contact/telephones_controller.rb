@@ -15,7 +15,16 @@ module Help
         private
 
         def set_contact
-          @contact = OrgContact.find(params[:contact_id])
+          contact_id = params[:contact_id]
+
+          if contact_id.blank?
+            raise StandardError, "Contact ID is required"
+          end
+
+          @contact = OrgContact.find_by(public_id: contact_id)
+          if @contact.nil?
+            raise StandardError, "Contact not found"
+          end
         end
 
         def placeholder_message(action)

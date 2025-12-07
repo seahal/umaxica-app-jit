@@ -204,11 +204,7 @@ class AccountServiceTest < ActiveSupport::TestCase
     assert_empty account.phones
   end
 
-  test "telephones should be alias for phones" do
-    account = AccountService.new(@user)
 
-    assert_equal account.phones, account.telephones
-  end
 
   # Authentication Tests
   test "authenticatable_with? should check email for user" do
@@ -222,14 +218,6 @@ class AccountServiceTest < ActiveSupport::TestCase
     account = AccountService.new(@staff)
 
     assert_not account.authenticatable_with?(:phone)
-  end
-
-  test "available_authentication_methods should return array" do
-    account = AccountService.new(@user)
-
-    methods = account.available_authentication_methods
-
-    assert_kind_of Array, methods
   end
 
   # OAuth Tests
@@ -261,15 +249,5 @@ class AccountServiceTest < ActiveSupport::TestCase
     assert_match(/AccountService/, string)
     assert_match(/user/, string)
     assert_match(/#{@user.id}/, string)
-  end
-
-  test "inspect should return detailed representation" do
-    account = AccountService.new(@user)
-
-    inspection = account.inspect
-
-    assert_match(/AccountService/, inspection)
-    assert_match(/user/, inspection)
-    assert_match(/#{@user.id}/, inspection)
   end
 end

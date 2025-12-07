@@ -106,7 +106,7 @@ This TS defines how the Rails-based Umaxica App (JIT) will be verified across ev
 ### 7.3 Identity & Security (Sign)
 - **TC-SIGN-201** Email registration happy path (Turnstile bypass in test): `POST /sign/.../registration/emails` -> expect session metadata, OTP mail, redirect to `edit`. Submitting correct OTP persists `UserIdentityEmail` and clears session.
 - **TC-SIGN-202** Expired OTP: set `expires_at` in session to past time; `#update` returns 422 with error.
-- **TC-SIGN-203** Telephone registration: invalid E.164 rejected; valid number triggers `SmsService`.
+- **TC-SIGN-203** Telephone registration: invalid E.164 rejected; valid number triggers `AwsSmsService`.
 - **TC-SIGN-204** Passkey challenge: POST `/setting/passkeys/challenge`; expect JSON options with challenge stored in session. Replay fails once challenge consumed.
 - **TC-SIGN-205** TOTP creation: GET `/setting/totps/new` returns QR data; POST with valid token persists encrypted secret; invalid token re-renders with error.
 - **TC-SIGN-206** JWT issuance: calling `Authn#log_in` writes `access_token` (ES256) and encrypted `refresh_token`; tampering with token triggers `JWT::VerificationError`.

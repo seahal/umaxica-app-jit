@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-# This test file has been removed as preferences functionality has been moved to Top::Org
+# This test file has been removed as preferences functionality has been moved to Apex::Org
