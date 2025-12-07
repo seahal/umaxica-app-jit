@@ -208,7 +208,7 @@ ja:
         telephone:
           new:
             page_title: 電話番号でサインイン
-            description: 登録済みの電話番号を入力し、ワンタイムコードで認証します。
+            description: このきのうはまだじっそうされていません
             you_have_already_logged_in: あなたはログインしています
         recovery:
           new:

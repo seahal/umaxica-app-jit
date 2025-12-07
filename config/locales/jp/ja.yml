@@ -313,10 +313,13 @@ ja:
             registration: 登録しますか？
           create:
             you_have_already_logged_in: あなたはログインしています
+            email_not_found: 登録済みのメールアドレスが見つかりませんでした。
+            verification_code_sent: 確認コードをメールアドレスに送信しました。
+            turnstile_error: セキュリティ検証に失敗しました。ページを更新して再度お試しください。
         telephone:
           new:
             page_title: 電話番号でサインイン
-            description: 登録済みの電話番号を入力し、ワンタイムコードで認証します。
+            description: このきのうはまだじっそうされていません
             you_have_already_logged_in: あなたはログインしています
         recovery:
           new:

@@ -51,6 +51,24 @@ en:
           new:
             page_title: "Sign in with your phone number"
             description: "Provide your registered phone number to receive a one-time verification code."
+        email:
+          new:
+            page_title: "sign up with email address"
+            you_have_already_logged_in: "You have already logged in"
+          create:
+            you_have_already_logged_in: "You have already logged in"
+            email_not_found: "Email address not found"
+            verification_code_sent: "Verification code has been sent to your email address."
+            turnstile_error: "Security verification failed. Please refresh and try again."
+          edit:
+            you_have_already_logged_in: "You have already logged in"
+            session_expired: "Your session has expired. Please start over."
+            page_title: "Verify your email address"
+            return_page: "Back"
+          update:
+            you_have_already_logged_in: "You have already logged in"
+            invalid_code: "Invalid verification code"
+            success: "Email address has been verified."
       recovery:
         new:
           page_title: "Use a recovery code"

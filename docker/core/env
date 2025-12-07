@@ -6,13 +6,14 @@ RUBY_PATH=/usr/local/bin/ruby
 BUNDLE_JOBS=8
 BUNDLE_PATH=vendor/bundle
 BUNDLE_FORCE_RUBY_PLATFORM=false
-NODE_ENV=development
 # Rails Configuration
 RAILS_ENV=development
 RACK_ENV=development
 PORT=3000
 BINDING=0.0.0.0
 OPEN_TELEMETRY=false
+# Node Environment
+NODE_ENV=development
 # Identifiers
 SINGLETON_DEFAULT_SALT=hoge
 IDENTIFIER_REGION_CODE=392
