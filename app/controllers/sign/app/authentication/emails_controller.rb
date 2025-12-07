@@ -3,6 +3,8 @@ module Sign
     module Authentication
       class EmailsController < ApplicationController
         include ::CloudflareTurnstile
+        include EmailValidation
+        include SecureOtpStorage
 
         def new
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
@@ -15,11 +17,18 @@ module Sign
           render plain: t("sign.app.authentication.email.edit.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
-          if session[:user_email_authentication].nil?
+          otp_id = session[:user_email_authentication_id]
+          if otp_id.nil?
             redirect_to new_sign_app_authentication_email_path,
                         notice: t("sign.app.authentication.email.edit.session_expired")
           else
-            @user_email = UserIdentityEmail.new(address: session[:user_email_authentication]["address"])
+            otp_data = get_otp_secret(otp_id)
+            if otp_data.nil?
+              redirect_to new_sign_app_authentication_email_path,
+                          notice: t("sign.app.authentication.email.edit.session_expired")
+            else
+              @user_email = UserIdentityEmail.new(address: otp_data[:address])
+            end
           end
         end
 
@@ -32,11 +41,19 @@ module Sign
           res = cloudflare_turnstile_validation
 
           if res["success"] && address.present?
-            # Check if email exists in database
-            existing_email = UserIdentityEmail.find_by(address: address)
+            # Validate and normalize email
+            normalized_address = validate_and_normalize_email(address)
+            if normalized_address.nil?
+              @user_email = UserIdentityEmail.new(address: address)
+              @user_email.errors.add(:address, t("sign.app.authentication.email.create.invalid_format"))
+              render :new, status: :unprocessable_content and return
+            end
+
+            # Check if email exists in database (with timing attack protection)
+            existing_email = find_email_with_timing_protection(normalized_address)
 
             if existing_email.nil?
-              @user_email = UserIdentityEmail.new(address: address)
+              @user_email = UserIdentityEmail.new(address: normalized_address)
               @user_email.errors.add(:address, t("sign.app.authentication.email.create.email_not_found"))
               render :new, status: :unprocessable_content and return
             end
@@ -50,14 +67,12 @@ module Sign
             otp_code = hotp.at(otp_count_number)
             id = SecureRandom.uuid_v7
 
-            # Store in session
-            session[:user_email_authentication] = {
-              id: id,
-              address: @user_email.address,
-              otp_private_key: otp_private_key,
-              otp_counter: otp_count_number,
-              expires_at: 12.minutes.from_now.to_i
-            }
+            # Store OTP secret in Redis (NOT in session/cookie)
+            expires_at = 12.minutes.from_now.to_i
+            store_otp_secret(id, @user_email.address, otp_private_key, otp_count_number, expires_at)
+
+            # Store only the reference ID in session
+            session[:user_email_authentication_id] = id
 
             # Send email with OTP
             Email::App::RegistrationMailer.with(
@@ -77,8 +92,10 @@ module Sign
           render plain: t("sign.app.authentication.email.update.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
-          token = session[:user_email_authentication]
-          if token.nil? || token["expires_at"].to_i <= Time.now.to_i
+          otp_id = session[:user_email_authentication_id]
+          otp_data = get_otp_secret(otp_id) if otp_id.present?
+
+          if otp_data.nil? || otp_data[:expires_at].to_i <= Time.now.to_i
             redirect_to new_sign_app_authentication_email_path,
                         notice: t("sign.app.authentication.email.edit.session_expired") and return
           end
@@ -91,11 +108,12 @@ module Sign
             render :edit, status: :unprocessable_content and return
           end
 
-          hotp = ROTP::HOTP.new(token["otp_private_key"])
-          expected_code = hotp.at(token["otp_counter"]).to_s
+          hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+          expected_code = hotp.at(otp_data[:otp_counter]).to_s
 
           if expected_code == @user_email.pass_code
-            session[:user_email_authentication] = nil
+            delete_otp_secret(otp_id)
+            session[:user_email_authentication_id] = nil
             redirect_to "/", notice: t("sign.app.authentication.email.update.success")
           else
             @user_email.errors.add(:pass_code, t("sign.app.authentication.email.update.invalid_code"))

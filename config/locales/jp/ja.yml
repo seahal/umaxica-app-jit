@@ -946,6 +946,8 @@ ja:
             invalid_code: "確認コードが正しくありません。残り%{attempts_left}回の試行が可能です。"
             max_attempts: "確認の試行回数が上限に達しました。新しいコードをリクエストしてください。"
             expired: "確認コードの有効期限が切れました。新しいコードをリクエストしてください。"
-            success: "成功！"
-            failure: "失敗！"
-  confirm_policy_error: "ポリシーエラー"
+    contact:
+      errors:
+        id_required: "お問い合わせIDは必須です"
+        not_found: "お問い合わせが見つかりません"
+        invalid_status: "無効なお問い合わせステータス: SET_UPが予想されていますが、%{current_status}です"

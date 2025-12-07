@@ -66,9 +66,10 @@ module Help
         test "should show error for invalid contact status" do
           @contact.update!(contact_status_title: "NONE")
 
-          assert_raises(StandardError) do
-            get new_help_com_contact_email_url(@contact), headers: { "Host" => @host }
-          end
+          get new_help_com_contact_email_url(@contact), headers: { "Host" => @host }
+
+          assert_response :unprocessable_entity
+          assert_match(/無効なお問い合わせステータス|Invalid contact status/, response.body)
         end
 
         test "should require hotp_code parameter" do

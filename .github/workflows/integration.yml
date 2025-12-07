@@ -135,11 +135,6 @@ jobs:
       BACK_SERVICE_URL: back.app.localhost
       BACK_STAFF_URL: back.org.localhost
 
-      # Domain URLs - API
-      API_CORPORATE_URL: api.com.localhost
-      API_SERVICE_URL: api.app.localhost
-      API_STAFF_URL: api.org.localhost
-
       # Domain URLs - Docs
       DOCS_CORPORATE_URL: docs.com.localhost
       DOCS_SERVICE_URL: docs.app.localhost

@@ -1,7 +1,10 @@
+require_relative "../../../../exceptions/help_contact_error"
+
 module Help
   module Com
     module Contact
       class EmailsController < ApplicationController
+        rescue_from Help::ContactError, with: :handle_contact_error
         before_action :load_and_validate_contact
 
         def new
@@ -55,7 +58,7 @@ module Help
                 # Generate HOTP code
                 telephone_token = @contact_telephone.generate_hotp!
 
-                AwsSmsService.new.send_message(to: @contact_telephone.telephone_number, message: "hello! #{telephone_token}")
+                AwsSmsService.new.send_message(to: @contact_telephone.telephone_number, message: "PassCode => #{telephone_token}")
               end
             end
 
@@ -79,19 +82,17 @@ module Help
         def load_and_validate_contact
           contact_id = params[:contact_id]
 
-          if contact_id.blank?
-            raise StandardError, "Contact ID is required"
-          end
+          raise Help::ContactIdRequiredError if contact_id.blank?
 
           @contact = ComContact.find_by(public_id: contact_id)
 
-          if @contact.nil?
-            raise StandardError, "Contact not found"
-          end
+          raise Help::ContactNotFoundError if @contact.nil?
 
-          unless @contact.contact_status_title == "SET_UP"
-            raise StandardError, "Invalid contact status: expected SET_UP, got #{@contact.contact_status_title}"
-          end
+          raise Help::InvalidContactStatusError.new(@contact.contact_status_title) unless @contact.contact_status_title == "SET_UP"
+        end
+
+        def handle_contact_error(error)
+          render plain: error.message, status: error.status_code
         end
 
         def help_email_redirect_options
