@@ -12,13 +12,6 @@ module Help::CommonHelper
     time.in_time_zone(zone)
   end
 
-  def get_title(title = "")
-    brand_name = (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    return brand_name if title.blank?
-
-    "#{ title } | #{ brand_name }"
-  end
-
   def get_timezone
     "jst"
   end

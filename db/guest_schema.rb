@@ -30,7 +30,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-12-08 12:28:39", null: false
+    t.timestamptz "expires_at", default: "2025-12-08 12:04:06", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -58,7 +58,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.uuid "app_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-08 12:28:39", null: false
+    t.timestamptz "expires_at", default: "2025-12-08 12:04:06", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -102,7 +102,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-12-08 12:28:40", null: false
+    t.timestamptz "expires_at", default: "2025-12-08 12:04:06", null: false
     t.integer "hotp_counter"
     t.string "hotp_secret"
     t.integer "remaining_views", limit: 2, default: 10, null: false
@@ -141,7 +141,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-08 12:28:40", null: false
+    t.timestamptz "expires_at", default: "2025-12-08 12:04:06", null: false
     t.integer "hotp_counter"
     t.string "hotp_secret"
     t.integer "remaining_views", limit: 2, default: 10, null: false
@@ -161,7 +161,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.text "description"
-    t.timestamptz "expires_at", default: "2025-12-08 12:28:40", null: false
+    t.timestamptz "expires_at", default: "2025-12-08 12:04:06", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
@@ -202,7 +202,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-12-08 12:28:40", null: false
+    t.timestamptz "expires_at", default: "2025-12-08 12:04:06", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
@@ -230,7 +230,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-08 12:28:40", null: false
+    t.timestamptz "expires_at", default: "2025-12-08 12:04:06", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
