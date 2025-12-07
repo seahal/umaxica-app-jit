@@ -1,0 +1,16 @@
+<h1><%= title "Organization contact overview" %></h1>
+
+<section class="space-y-6 text-slate-900">
+  <p class="text-sm text-slate-600">
+    Internal teams can reference this page while triaging enterprise inquiries.
+  </p>
+
+  <%= render "help/shared/contact_overview", contact: @contact %>
+
+  <div class="flex flex-wrap gap-3">
+    <%= link_to "Open edit helper", edit_help_org_contact_path(@contact),
+                class: "inline-flex items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" %>
+    <%= link_to "Start another request", new_help_org_contact_path,
+                class: "inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800" %>
+  </div>
+</section>

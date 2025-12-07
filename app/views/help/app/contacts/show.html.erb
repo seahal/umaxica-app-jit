@@ -1,0 +1,17 @@
+<h1><%= title "Contact request overview" %></h1>
+
+<section class="space-y-6 text-slate-900">
+  <p class="text-sm text-slate-600">
+    Use this lightweight page to confirm the request identifier that the customer shared with you
+    and make sure the inquiry is still in the intake pipeline.
+  </p>
+
+  <%= render "help/shared/contact_overview", contact: @contact %>
+
+  <div class="flex flex-wrap gap-3">
+    <%= link_to "Open edit helper", edit_help_app_contact_path(@contact),
+                class: "inline-flex items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" %>
+    <%= link_to "Start another request", new_help_app_contact_path,
+                class: "inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800" %>
+  </div>
+</section>
