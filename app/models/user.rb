@@ -11,6 +11,7 @@
 #
 class User < IdentitiesRecord
   include Stakeholder
+  belongs_to :user_identity_status, optional: true
   has_many :user_identity_emails, dependent: :destroy
   has_many :user_identity_telephones, dependent: :destroy
   has_one :user_identity_apple_auth, dependent: :destroy
@@ -18,6 +19,7 @@ class User < IdentitiesRecord
   has_many :user_sessions, dependent: :destroy
   has_many :user_time_based_one_time_password, dependent: :destroy
   has_many :user_webauthn_credentials, dependent: :destroy
+  has_many :user_identity_audits, dependent: :destroy
 
   def staff?
     false

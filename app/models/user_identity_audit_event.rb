@@ -1,0 +1,2 @@
+class UserIdentityAuditEvent < IdentitiesRecord
+end

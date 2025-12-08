@@ -19,6 +19,16 @@ raise '[SAFEGUARD] db:seed only use for dev env.' unless Rails.env.development?
 # ComDocument.find_or_create_by(id: '01000', parent_id: nil, prev_id: nil, succ_id: nil, title: 'TERM', description: '')
 # ComDocument.find_or_create_by(id: '01001', parent_id: nil, prev_id: nil, succ_id: nil, title: 'PRIVACY', description: '')
 
+#
+## UserIdentityStatus
+UserIdentityStatus.create_or_find_by(id: "NONE")
+UserIdentityStatus.create_or_find_by(id: "PRE_WITHDRAWAL_CONDITON")
+UserIdentityStatus.create_or_find_by(id: "WITHDRAWAL_COMPLETED")
+## StaffIdentityStatus
+StaffIdentityStatus.create_or_find_by(id: "NONE")
+StaffIdentityStatus.create_or_find_by(id: "PRE_WITHDRAWAL_CONDITON")
+StaffIdentityStatus.create_or_find_by(id: "WITHDRAWAL_COMPLETED")
+
 # USER
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38')
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')

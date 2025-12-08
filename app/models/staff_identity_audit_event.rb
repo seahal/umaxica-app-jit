@@ -1,0 +1,2 @@
+class StaffIdentityAuditEvent < IdentitiesRecord
+end
