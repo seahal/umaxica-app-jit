@@ -18,4 +18,12 @@ class User < IdentitiesRecord
   has_many :user_sessions, dependent: :destroy
   has_many :user_time_based_one_time_password, dependent: :destroy
   has_many :user_webauthn_credentials, dependent: :destroy
+
+  def staff?
+    !true
+  end
+
+  def user?
+    !false
+  end
 end

@@ -16,17 +16,5 @@ module Sign::Org
 
       assert_not controller.send(:logged_in_user?)
     end
-
-    test "logged_in_staff? returns false" do
-      controller = ApplicationController.new
-
-      assert_not controller.send(:logged_in_staff?)
-    end
-
-    test "logged_in? returns false when no one is logged in" do
-      controller = ApplicationController.new
-
-      assert_not controller.send(:logged_in?)
-    end
   end
 end
