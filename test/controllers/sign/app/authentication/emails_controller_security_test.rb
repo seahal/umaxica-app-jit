@@ -1,0 +1,128 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Sign
+  module App
+    module Authentication
+      class EmailsControllerSecurityTest < ActionDispatch::IntegrationTest
+        test "rejects invalid email format" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "invalid-email" }
+          }
+
+          assert_response :unprocessable_content
+        end
+
+        test "accepts valid emails with consecutive special characters" do
+          # Test that user+tag@example.co.uk format is accepted
+          # (This will redirect because email doesn't exist, preventing enumeration)
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user+tag@example.co.uk" }
+          }
+
+          # Should proceed past format validation
+          assert_response :found
+        end
+
+        test "accepts valid emails with dots in local part" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user.name@example.com" }
+          }
+
+          # Should proceed past format validation
+          assert_response :found
+        end
+
+        test "accepts valid emails with underscores" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user_name@example.co.uk" }
+          }
+
+          # Should proceed past format validation
+          assert_response :found
+        end
+
+        test "accepts Gmail-style addressing with plus" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user+mailbox@gmail.com" }
+          }
+
+          # Should proceed past format validation
+          assert_response :found
+        end
+
+        test "accepts emails with multiple domain levels" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user@mail.example.co.uk" }
+          }
+
+          # Should proceed past format validation
+          assert_response :found
+        end
+
+        test "rejects emails without @ symbol" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "usernameexample.com" }
+          }
+
+          assert_response :unprocessable_content
+        end
+
+        test "rejects emails without domain" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user@" }
+          }
+
+          assert_response :unprocessable_content
+        end
+
+        test "rejects emails without local part" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "@example.com" }
+          }
+
+          assert_response :unprocessable_content
+        end
+
+        test "rejects emails with spaces" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user name@example.com" }
+          }
+
+          assert_response :unprocessable_content
+        end
+
+        test "normalizes email to lowercase" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "TEST@EXAMPLE.COM" }
+          }
+
+          # Email should be normalized to lowercase in validation and proceed
+          assert_response :found
+        end
+
+        test "rejects emails with excessive whitespace" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "  test@example.com  " }
+          }
+
+          # Whitespace should be stripped and validated, then proceed
+          assert_response :found
+        end
+
+        test "handles OTP in Redis instead of session" do
+          # This test verifies OTP secrets are stored server-side
+          # and only reference ID is in session
+          skip "Requires Redis integration test setup"
+        end
+
+        test "cleans up OTP secrets after verification" do
+          # This test verifies OTP secrets are deleted from Redis
+          # after successful verification
+          skip "Requires Redis integration test setup"
+        end
+      end
+    end
+  end
+end

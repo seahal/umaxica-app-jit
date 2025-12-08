@@ -1,0 +1,66 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class ApplicationErrorTest < ActiveSupport::TestCase
+  def test_application_error_inherits_from_standard_error
+    error = ApplicationError.new
+
+    assert_kind_of StandardError, error
+  end
+
+  def test_application_error_initializes_with_defaults
+    error = ApplicationError.new
+
+    assert_nil error.i18n_key
+    assert_equal :internal_server_error, error.status_code
+    assert_empty(error.context)
+  end
+
+  def test_application_error_with_i18n_key
+    error = ApplicationError.new("test.error.key", :bad_request)
+
+    assert_equal "test.error.key", error.i18n_key
+    assert_equal :bad_request, error.status_code
+  end
+
+  def test_application_error_with_context
+    context = { user_id: 123, action: "create" }
+    error = ApplicationError.new("test.error.key", :bad_request, **context)
+
+    assert_equal context, error.context
+  end
+
+  def test_application_error_translates_i18n_key_to_message
+    error = ApplicationError.new("test.error.key", :bad_request)
+
+    assert_includes error.message.downcase, "translation missing"
+  end
+
+  def test_application_error_can_be_raised_and_caught
+    assert_raises(ApplicationError) do
+      raise ApplicationError.new("test.error.key")
+    end
+  end
+
+  def test_application_error_attributes_are_readable
+    error = ApplicationError.new("test.error.key", :forbidden)
+
+    assert_equal "test.error.key", error.i18n_key
+    assert_equal :forbidden, error.status_code
+  end
+
+  def test_application_error_without_i18n_key_has_message_with_class_name
+    error = ApplicationError.new
+
+    assert_operator error.message.length, :>, 0
+  end
+
+  def test_application_error_with_multiple_context_keys
+    context = { user_id: 1, resource: "document", action: "delete" }
+    error = ApplicationError.new("test.error.key", :forbidden, **context)
+
+    assert_equal 3, error.context.size
+    assert_equal 1, error.context[:user_id]
+  end
+end

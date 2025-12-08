@@ -105,6 +105,9 @@ module Theme
     end
   end
 
+  # Extracts theme-related query parameters (lx, ri, tz) for redirect URLs
+  # Handles various parameter formats that Rails might receive from forms/URLs
+  # Returns a hash with extracted values, filtering out empty ones
   def theme_redirect_params
     THEME_QUERY_KEYS.each_with_object({}) do |key, memo|
       raw = params[key]
@@ -115,19 +118,28 @@ module Theme
     end
   end
 
+  # Safely extracts a scalar value from various parameter types.
+  # Rails may receive parameters as ActionController::Parameters, Hash, Array,
+  # or scalar values depending on how they're submitted. This method handles all cases
+  # by extracting the first non-blank value from nested structures.
   def extract_theme_param_value(raw)
     candidate =
       case raw
       when ActionController::Parameters
+        # ActionController::Parameters acts like a hash, extract first value
         raw.to_unsafe_h.values.first
       when Hash
+        # For hash params, extract the first value
         raw.values.first
       when Array
+        # For array params, extract first non-blank value
         raw.compact_blank.first
       else
+        # Use scalar value as-is
         raw
       end
 
+    # Convert to string and return only if present (not empty/whitespace)
     candidate.to_s.presence
   end
 

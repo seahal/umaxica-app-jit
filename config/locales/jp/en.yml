@@ -913,6 +913,11 @@ en:
             invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
             max_attempts: "Maximum verification attempts exceeded. Please request a new code."
             expired: "Verification code has expired. Please request a new code."
+    contact:
+      errors:
+        id_required: "Contact ID is required"
+        not_found: "Contact not found"
+        invalid_status: "Invalid contact status: expected SET_UP, got %{current_status}"
   apex:
     app:
       preference:

@@ -31,7 +31,7 @@ When asked to perform tasks, use the following commands:
 ## Coding Conventions & Architecture
 
 - **Authentication**: Use `webauthn` for passkeys, `rotp` for TOTP, and `omniauth` for social logins (Apple, Google).
-- **Authorization**: Use `pundit` for policy-based authorization and `rolify` for role management.
+- **Authorization**: Use `pundit` for policy-based authorization.
 - **API Development**: Use `jbuilder` for creating JSON responses. API documentation is managed with `rswag`.
 - **Asynchronous Jobs**: Define consumers in `app/consumers` to process messages from Kafka topics. Use Karafka for this.
 - **Service Objects**: Place business logic that doesn't fit in models or controllers into service objects located in `app/services`.

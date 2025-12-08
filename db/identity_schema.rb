@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_11_15_073000) do
+ActiveRecord::Schema[8.2].define(version: 2025_11_15_084000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -55,6 +55,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_073000) do
   create_table "staff_identity_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
+    t.text "otp_counter"
+    t.datetime "otp_expires_at"
+    t.string "otp_private_key"
     t.bigint "staff_id"
     t.datetime "updated_at", null: false
     t.index ["staff_id"], name: "index_staff_identity_emails_on_staff_id"
@@ -85,6 +88,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_073000) do
   create_table "staff_identity_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "number"
+    t.text "otp_counter"
+    t.datetime "otp_expires_at"
+    t.string "otp_private_key"
     t.bigint "staff_id"
     t.datetime "updated_at", null: false
     t.index ["staff_id"], name: "index_staff_identity_telephones_on_staff_id"
@@ -152,6 +158,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_073000) do
   create_table "user_identity_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
+    t.text "otp_counter"
+    t.datetime "otp_expires_at"
+    t.string "otp_private_key"
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_user_identity_emails_on_user_id"
@@ -182,6 +191,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_073000) do
   create_table "user_identity_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "number"
+    t.text "otp_counter"
+    t.datetime "otp_expires_at"
+    t.string "otp_private_key"
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_user_identity_telephones_on_user_id"

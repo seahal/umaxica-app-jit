@@ -23,8 +23,9 @@ module Sign
           render plain: t("sign.app.registration.email.edit.forbidden_action"),
                  status: :bad_request and return if session[:user_email_registration].nil?
 
-          if session[:user_email_registration] && session[:user_email_registration]["id"] == params["id"] && session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
-            @user_email = UserIdentityEmail.new
+          registration_session = session[:user_email_registration]
+          if registration_session && registration_session["id"] == params["id"] && registration_session["expires_at"].to_i > Time.now.to_i
+            @user_email = UserIdentityEmail.find_by(id: params["id"]) || UserIdentityEmail.new
           else
             redirect_to new_sign_org_registration_email_path,
                         notice: t("sign.app.registration.email.edit.your_session_was_expired")
@@ -38,26 +39,28 @@ module Sign
 
           @user_email = UserIdentityEmail.new(params.expect(user_email: [ :address, :confirm_policy ]))
           res = cloudflare_turnstile_validation
-          otp_private_key = ROTP::Base32.random_base32 # NOTE: you would wonder why this code was written ...
+          otp_private_key = ROTP::Base32.random_base32
           otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
           hotp = ROTP::HOTP.new(otp_private_key)
           num = hotp.at(otp_count_number)
-          id = SecureRandom.uuid_v7
+          expires_at = 12.minutes.from_now.to_i
 
           if res["success"] && @user_email.valid?
+            # Save email and store OTP in database
+            @user_email.save!
+            @user_email.store_otp(otp_private_key, otp_count_number, expires_at)
+
+            # Store only the reference ID in session
             session[:user_email_registration] = {
-              id: id,
-              address: @user_email.address,
-              otp_private_key: otp_private_key,
-              otp_counter: otp_count_number,
-              expires_at: 12.minutes.from_now.to_i
+              id: @user_email.id,
+              expires_at: expires_at
             }
 
             # FIXME: use kafka!
             Email::App::EmailRegistrationMailer.with({ hotp_token: num,
                                                        mail_address: @user_email.address }).create.deliver_now
 
-            redirect_to edit_sign_org_registration_email_path(id), notice: t("messages.email_successfully_created")
+            redirect_to edit_sign_org_registration_email_path(@user_email.id), notice: t("messages.email_successfully_created")
           else
             render :new, status: :unprocessable_content
           end
@@ -67,23 +70,38 @@ module Sign
           # FIXME: write test code!
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
-          render plain: t("sign.app.registration.email.edit.forbidden_action"),
-                 status: :bad_request and return if session[:user_email_registration].nil?
 
-          @user_email = UserIdentityEmail.new(address: session[:user_email_registration]["address"],
-                                              pass_code: params["user_email"]["pass_code"])
-
-          if [
-            @user_email.valid?,
-            session[:user_email_registration]["id"] == params["id"],
-            session[:user_email_registration]["expires_at"].to_i > Time.now.to_i
-          ].all?
-            @user_email.save!
-            session[:user_email_registration] = nil
-            redirect_to "/", notice: t("messages.sample_successfully_updated")
-          else
-            render :edit, status: :unprocessable_content
+          registration_session = session[:user_email_registration]
+          if registration_session.blank? || registration_session["id"] != params["id"]
+            render :edit, status: :unprocessable_content and return
           end
+
+          # Retrieve email record with OTP
+          @user_email = UserIdentityEmail.find_by(id: params["id"])
+          if @user_email.blank? || @user_email.otp_expired? || registration_session["expires_at"].to_i <= Time.now.to_i
+            render :edit, status: :unprocessable_content and return
+          end
+
+          # Verify OTP using secure_compare
+          submitted_code = params["user_email"]["pass_code"]
+          otp_data = @user_email.get_otp
+          if otp_data.blank? || submitted_code.blank?
+            @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.invalid_code"))
+            render :edit, status: :unprocessable_content and return
+          end
+
+          # Verify OTP with timing attack protection
+          hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+          expected_code = hotp.at(otp_data[:otp_counter]).to_s
+          unless ActiveSupport::SecurityUtils.secure_compare(expected_code, submitted_code)
+            @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.invalid_code"))
+            render :edit, status: :unprocessable_content and return
+          end
+
+          # Clear OTP and complete registration
+          @user_email.clear_otp
+          session[:user_email_registration] = nil
+          redirect_to "/", notice: t("messages.sample_successfully_updated")
         end
       end
     end

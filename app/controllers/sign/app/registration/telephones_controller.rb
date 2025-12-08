@@ -17,9 +17,10 @@ module Sign
           render plain: t("sign.app.registration.telephone.edit.forbidden_action"),
                  status: :bad_request and return if session[:user_telephone_registration].nil?
 
-          if [ session[:user_telephone_registration]["id"] == params["id"],
-              session[:user_telephone_registration]["expires_at"].to_i > Time.now.to_i ].all?
-            @user_telephone = UserIdentityTelephone.new
+          registration_session = session[:user_telephone_registration]
+          if [ registration_session["id"] == params["id"],
+              registration_session["expires_at"].to_i > Time.now.to_i ].all?
+            @user_telephone = UserIdentityTelephone.find_by(id: params["id"]) || UserIdentityTelephone.new
           else
             redirect_to new_sign_app_registration_telephone_path,
                         notice: t("sign.app.registration.telephone.edit.session_expired")
@@ -34,30 +35,33 @@ module Sign
                                                                                                 :confirm_using_mfa ]))
 
           res = cloudflare_turnstile_validation
-          otp_private_key = ROTP::Base32.random_base32 # NOTE: you would wonder why this code was written ...
+          otp_private_key = ROTP::Base32.random_base32
           otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
           hotp = ROTP::HOTP.new(otp_private_key)
           num = hotp.at(otp_count_number)
-          id = SecureRandom.uuid_v7
+          expires_at = 12.minutes.from_now.to_i
 
           if res["success"] && @user_telephone.valid?
+            # Save telephone and store OTP in database
+            @user_telephone.save!
+            @user_telephone.store_otp(otp_private_key, otp_count_number, expires_at)
+
+            # Store only the reference ID and expiry in session
+            session[:user_telephone_registration] = {
+              id: @user_telephone.id,
+              confirm_policy: boolean_value(@user_telephone.confirm_policy),
+              confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
+              expires_at: expires_at
+            }
+
+            # Send SMS with OTP
             AwsSmsService.send_message(
               to: @user_telephone.number,
               message: "PassCode => #{num}",
               subject: "PassCode => #{num}"
             )
 
-            session[:user_telephone_registration] = {
-              id: id,
-              number: @user_telephone.number,
-              confirm_policy: boolean_value(@user_telephone.confirm_policy),
-              confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
-              otp_private_key: otp_private_key,
-              otp_counter: otp_count_number,
-              expires_at: 12.minutes.from_now.to_i
-            }
-
-            redirect_to edit_sign_app_registration_telephone_path(id), notice: t("sign.app.registration.telephone.create.verification_code_sent")
+            redirect_to edit_sign_app_registration_telephone_path(@user_telephone.id), notice: t("sign.app.registration.telephone.create.verification_code_sent")
           else
             render :new, status: :unprocessable_content
           end
@@ -69,29 +73,40 @@ module Sign
                  status: :bad_request and return if logged_in?
 
           registration_session = session[:user_telephone_registration]
-          if registration_session.blank?
-            redirect_to new_sign_app_registration_telephone_path,
-                        notice: t("sign.app.registration.telephone.edit.session_expired") and return
+          if registration_session.blank? || registration_session["id"] != params["id"]
+            render :edit, status: :unprocessable_content and return
           end
 
-          @user_telephone = UserIdentityTelephone.new(
-            number: registration_session["number"],
-            pass_code: params.dig("user_identity_telephone", "pass_code"),
+          # Retrieve telephone record with OTP
+          @user_telephone = UserIdentityTelephone.find_by(id: params["id"])
+          if @user_telephone.blank? || @user_telephone.otp_expired? || registration_session["expires_at"].to_i <= Time.now.to_i
+            render :edit, status: :unprocessable_content and return
+          end
+
+          # Verify OTP using secure_compare
+          submitted_code = params.dig("user_identity_telephone", "pass_code")
+          otp_data = @user_telephone.get_otp
+          if otp_data.blank? || submitted_code.blank?
+            @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.invalid_code"))
+            render :edit, status: :unprocessable_content and return
+          end
+
+          # Verify OTP with timing attack protection
+          hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+          expected_code = hotp.at(otp_data[:otp_counter]).to_s
+          unless ActiveSupport::SecurityUtils.secure_compare(expected_code, submitted_code)
+            @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.invalid_code"))
+            render :edit, status: :unprocessable_content and return
+          end
+
+          # Update attributes and clear OTP
+          @user_telephone.update!(
             confirm_policy: registration_session.fetch("confirm_policy", true),
             confirm_using_mfa: registration_session.fetch("confirm_using_mfa", true)
           )
-
-          if [
-            @user_telephone.valid?,
-            registration_session["id"] == params["id"],
-            registration_session["expires_at"].to_i > Time.now.to_i
-          ].all?
-            @user_telephone.save!
-            session[:user_telephone_registration] = nil
-            redirect_to "/", notice: t("sign.app.registration.telephone.update.success")
-          else
-            render :edit, status: :unprocessable_content
-          end
+          @user_telephone.clear_otp
+          session[:user_telephone_registration] = nil
+          redirect_to "/", notice: t("sign.app.registration.telephone.update.success")
         end
 
         private

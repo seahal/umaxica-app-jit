@@ -9,7 +9,7 @@ module Authn
   ACCESS_TOKEN_EXPIRY = 15.minutes
 
   included do
-    helper_method :logged_in?
+    helper_method :logged_in?, :current_user, :current_staff
   end
 
   # TODO: Implement!
@@ -69,6 +69,36 @@ module Authn
       true
     rescue JWT::ExpiredSignature, JWT::VerificationError
       false
+    end
+  end
+
+  # Get current user from access token
+  def current_user
+    return nil if cookies[:access_token].blank?
+    return @current_user if defined?(@current_user)
+
+    begin
+      payload = verify_access_token(cookies[:access_token])
+      return nil unless payload["type"] == "user"
+
+      @current_user = User.find_by(id: payload["sub"])
+    rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
+      @current_user = nil
+    end
+  end
+
+  # Get current staff from access token
+  def current_staff
+    return nil if cookies[:access_token].blank?
+    return @current_staff if defined?(@current_staff)
+
+    begin
+      payload = verify_access_token(cookies[:access_token])
+      return nil unless payload["type"] == "staff"
+
+      @current_staff = Staff.find_by(id: payload["sub"])
+    rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
+      @current_staff = nil
     end
   end
 

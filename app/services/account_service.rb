@@ -21,10 +21,6 @@ class AccountService
            :persisted?, :new_record?, :destroyed?,
            to: :accountable
 
-  # Delegate authorization methods (Rolify)
-  delegate :add_role, :has_role?, :remove_role, :roles,
-           to: :accountable, allow_nil: true
-
   # Initialize a new AccountService wrapper
   #
   # @param accountable [User, Staff] The underlying model instance

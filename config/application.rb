@@ -67,6 +67,9 @@ module Jit
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Add app/errors to autoload paths
+    config.autoload_paths << Rails.root.join("app/errors")
+
     ### Added by user
     if [ "test", "production", "development" ].include? Rails.env
       config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key

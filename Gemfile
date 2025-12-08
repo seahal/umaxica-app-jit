@@ -39,7 +39,6 @@ gem "image_processing"
 gem "aws-sdk-sns"
 gem "aws-sdk-connect"
 gem "aws-sdk-polly"
-
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # OpenTelemetry
@@ -63,7 +62,6 @@ gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
-
 # OpenAPI
 gem "ostruct"
 gem "rswag"
@@ -85,7 +83,6 @@ gem "nanoid"
 #
 gem "rails_semantic_logger"
 # Authentication
-gem "rolify"
 gem "pundit"
 
 
