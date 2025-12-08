@@ -31,4 +31,12 @@ class StaffTest < ActiveSupport::TestCase
   test "should have many telephones association" do
     assert_equal "staff_id", @staff.class.reflect_on_association(:staff_identity_telephones).foreign_key
   end
+
+  test "staff? should return true" do
+    assert_predicate @staff, :staff?
+  end
+
+  test "user? should return false" do
+    assert_not @staff.user?
+  end
 end

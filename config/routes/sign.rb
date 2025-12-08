@@ -53,9 +53,9 @@ Rails.application.routes.draw do
           # TODO: Implement TOTP settings management
           resources :totps, only: [ :index, :new, :create, :edit ]
           # TODO: Implement telephone settings management
-          resources :telephones
+          # resources :telephones
           # TODO: Implement email settings management
-          resources :emails
+          # resources :emails
           # sign in with ***
           resource :apple, only: [ :show ]
           resource :google, only: [ :show ]
@@ -67,7 +67,7 @@ Rails.application.routes.draw do
         #   resources :refreshs, only: [ :update ]
         # end
         # Withdrawal
-        resource :withdrawal
+        resource :withdrawal, only: %i[new create]
       end
     end
 
@@ -100,7 +100,7 @@ Rails.application.routes.draw do
           resources :secrets
         end
         #
-        resource :withdrawal
+        resource :withdrawal, only: %i[new create]
         # TODO: Implement owner management
         # resources :owner
         # TODO: Implement customer management

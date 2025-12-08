@@ -47,4 +47,12 @@ class UserTest < ActiveSupport::TestCase
     assert_respond_to @user, :user_webauthn_credentials
     assert_equal :has_many, @user.class.reflect_on_association(:user_webauthn_credentials).macro
   end
+
+  test "staff? should return false" do
+    assert_not @user.staff?
+  end
+
+  test "user? should return true" do
+    assert_predicate @user, :user?
+  end
 end

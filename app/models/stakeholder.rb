@@ -1,9 +1,9 @@
 module Stakeholder
   def staff?
-    raise
+    raise NotImplementedError, "#{self.class} must implement staff? method"
   end
 
   def user?
-    raise
+    raise NotImplementedError, "#{self.class} must implement user? method"
   end
 end

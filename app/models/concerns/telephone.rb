@@ -70,8 +70,9 @@ module Telephone
   end
 
   def increment_attempts!
-    self.otp_attempts_count += 1
-    self.locked_at = Time.current if otp_attempts_count >= 3
-    save!
+    # Use atomic increment to prevent race condition with concurrent requests
+    self.class.increment_counter(:otp_attempts_count, id, touch: true) # rubocop:disable Rails/SkipsModelValidations
+    reload
+    update!(locked_at: Time.current) if otp_attempts_count >= 3
   end
 end

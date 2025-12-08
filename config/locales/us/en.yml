@@ -122,6 +122,7 @@ en:
       withdrawal:
         create:
           success: "Withdrawal processed (dummy)"
+          already_withdrawn: "Account is already withdrawn"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -200,6 +201,7 @@ en:
       withdrawal:
         create:
           success: "Withdrawal processed (dummy)"
+          already_withdrawn: "Account is already withdrawn"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"

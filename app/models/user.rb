@@ -20,10 +20,10 @@ class User < IdentitiesRecord
   has_many :user_webauthn_credentials, dependent: :destroy
 
   def staff?
-    !true
+    false
   end
 
   def user?
-    !false
+    true
   end
 end

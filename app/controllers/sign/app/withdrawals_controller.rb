@@ -9,6 +9,12 @@ module Sign
       end
 
       def create
+        # Check if user is already withdrawn
+        if current_user.withdrawn_at.present?
+          redirect_to sign_app_root_path, alert: t("sign.app.withdrawal.create.already_withdrawn")
+          return
+        end
+
         # Soft delete: set withdrawn_at to current time
         # User can still login for 1 month and can recover via update
         current_user.update(withdrawn_at: Time.current)
