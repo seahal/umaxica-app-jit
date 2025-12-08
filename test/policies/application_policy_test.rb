@@ -3,65 +3,71 @@
 require "test_helper"
 
 class ApplicationPolicyTest < ActiveSupport::TestCase
+  class TestRecord
+    def initialize; end
+  end
+
+  class TestPolicy < ApplicationPolicy; end
+
   def setup
-    @user = "user"
-    @record = "record"
-    @policy = ApplicationPolicy.new(@user, @record)
+    @user = nil
+    @record = TestRecord.new
+    @policy = TestPolicy.new(@user, @record)
   end
 
-  test "index? should return false" do
-    assert_not @policy.index?
+  # Default behavior tests
+  def test_index_returns_false_by_default
+    assert_not @policy.send(:index?)
   end
 
-  test "show? should return false" do
-    assert_not @policy.show?
+  def test_show_returns_false_by_default
+    assert_not @policy.send(:show?)
   end
 
-  test "create? should return false" do
-    assert_not @policy.create?
+  def test_create_returns_false_by_default
+    assert_not @policy.send(:create?)
   end
 
-  test "new? should delegate to create?" do
-    assert_equal @policy.create?, @policy.new?
+  def test_new_delegates_to_create
+    assert_equal @policy.send(:create?), @policy.send(:new?)
   end
 
-  test "update? should return false" do
-    assert_not @policy.update?
+  def test_update_returns_false_by_default
+    assert_not @policy.send(:update?)
   end
 
-  test "edit? should delegate to update?" do
-    assert_equal @policy.update?, @policy.edit?
+  def test_edit_delegates_to_update
+    assert_equal @policy.send(:update?), @policy.send(:edit?)
   end
 
-  test "destroy? should return false" do
-    assert_not @policy.destroy?
+  def test_destroy_returns_false_by_default
+    assert_not @policy.send(:destroy?)
   end
 
-  test "should store user in instance variable" do
-    assert_equal @user, @policy.user
+  # Scope tests
+  def test_scope_initialization
+    scope_obj = ApplicationPolicy::Scope.new(@user, [])
+
+    assert scope_obj
   end
 
-  test "should store record in instance variable" do
-    assert_equal @record, @policy.record
-  end
-
-  class ScopeTest < ActiveSupport::TestCase
-    def setup
-      @user = "user"
-      @scope = "scope"
-      @policy_scope = ApplicationPolicy::Scope.new(@user, @scope)
+  def test_scope_resolve_raises_not_implemented_error
+    scope_obj = ApplicationPolicy::Scope.new(@user, [])
+    assert_raises(NoMethodError) do
+      scope_obj.resolve
     end
+  end
 
-    test "resolve should raise NoMethodError" do
-      assert_raises(NoMethodError) { @policy_scope.resolve }
-    end
+  # Attributes tests
+  def test_user_attribute_is_accessible
+    policy = ApplicationPolicy.new(@user, @record)
 
-    test "should have access to user" do
-      assert_equal @user, @policy_scope.send(:user)
-    end
+    assert_nil policy.user
+  end
 
-    test "should have access to scope" do
-      assert_equal @scope, @policy_scope.send(:scope)
-    end
+  def test_record_attribute_is_accessible
+    policy = ApplicationPolicy.new(@user, @record)
+
+    assert_equal @record, policy.record
   end
 end

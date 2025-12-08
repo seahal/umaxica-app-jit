@@ -1,5 +1,3 @@
-require_relative "../../../../exceptions/help_contact_error"
-
 module Help
   module Com
     module Contact

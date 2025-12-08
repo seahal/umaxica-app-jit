@@ -28,7 +28,7 @@ env:
 
   # Version Configuration
   RUBY_VERSION: '4.0.0-preview2'
-  BUN_VERSION: '1.3.3'
+  BUN_VERSION: '1.3.4'
 
   # Rails Configuration
   RAILS_ENV: test
