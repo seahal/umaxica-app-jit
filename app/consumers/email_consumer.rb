@@ -1,19 +1,53 @@
 # frozen_string_literal: true
 
-# Example consumer that prints messages payloads
+# Email consumer for processing email sending jobs from Kafka
 class EmailConsumer < ApplicationConsumer
   def consume
-    #  Karafka.producer.produce_sync(topic: 'email', payload: Marshal.dump({mailer: Email::App::RegistrationMailer, params: {abc: "abc", efg: "efg"}.transform_values{ encrypt(it) } }) )
-    #  {email_address: "", pass_code: "1234"}.transform_values{ encrypt(it) }
+    # Process messages from Kafka
+    # Expected payload format: JSON with { mailer_class: "MailerClassName", params: {...} }
     messages.each do |message|
-      # get from kafka over karafka
-      # FIXME: vulne
-      # var = Marshal.load(message.raw_payload)
-      # decrypt
-      # params = var.params.transform_values { decrypt(it) }
-      # send mail
-      # var.mailer.with(params).create.deliver_now
+      process_email_message(message)
+    rescue StandardError => e
+      Rails.logger.error "Failed to process email message: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      # Consider adding dead letter queue handling here
     end
+  end
+
+  private
+
+  def process_email_message(message)
+    # Parse JSON payload (safer than Marshal.load)
+    payload = JSON.parse(message.raw_payload)
+
+    mailer_class = payload["mailer_class"]
+    params = payload["params"] || {}
+
+    # Validate mailer class exists and is allowed
+    unless valid_mailer?(mailer_class)
+      Rails.logger.error "Invalid mailer class: #{mailer_class}"
+      return
+    end
+
+    # Decrypt params if needed
+    # decrypted_params = params.transform_values { |v| decrypt(v) }
+
+    # Send email
+    mailer = mailer_class.constantize
+    mailer.with(params).deliver_now
+
+    Rails.logger.info "Email sent via #{mailer_class} with params: #{params.keys}"
+  end
+
+  def valid_mailer?(mailer_class)
+    # Whitelist of allowed mailer classes to prevent code injection
+    allowed_mailers = [
+      "Email::App::RegistrationMailer",
+      "Email::Org::RegistrationMailer"
+      # Add other allowed mailers here
+    ]
+
+    allowed_mailers.include?(mailer_class)
   end
 
   # Run anything upon partition being revoked
