@@ -6,13 +6,9 @@ module Sign
       def new
       end
 
-      def edit
-      end
-
       def create
-      end
-
-      def update
+        # TODO: Implement withdrawal logic
+        redirect_to sign_app_root_path, notice: t("sign.app.withdrawal.create.success")
       end
     end
   end

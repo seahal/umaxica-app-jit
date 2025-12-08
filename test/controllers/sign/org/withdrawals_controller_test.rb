@@ -15,20 +15,9 @@ class Sign::Org::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_select("html[lang=?]", "ja")
   end
 
-  test "should get edit" do
-    get edit_sign_org_withdrawal_url, headers: { "Host" => ENV["SIGN_STAFF_URL"] }
+  test "should create withdrawal" do
+    post sign_org_withdrawal_url, headers: { "Host" => ENV["SIGN_STAFF_URL"] }
 
-    assert_response :success
-  end
-
-  test "should respond to create action" do
-    # Test that the controller has a create action
-    assert_includes Sign::Org::WithdrawalsController.instance_methods, :create
-  end
-
-  test "should patch update" do
-    patch sign_org_withdrawal_url, headers: { "Host" => ENV["SIGN_STAFF_URL"] }
-
-    assert_response :success
+    assert_redirected_to %r{\A#{sign_org_root_url}}
   end
 end

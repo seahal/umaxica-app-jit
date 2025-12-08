@@ -114,6 +114,7 @@ module Sign
                 log_in(@user_email.user)
                 redirect_to "/", notice: t("sign.app.authentication.email.update.success")
               else
+                @user_email.increment_attempts!
                 @user_email.errors.add(:pass_code, t("sign.app.authentication.email.update.invalid_code"))
                 render :edit, status: :unprocessable_content
               end

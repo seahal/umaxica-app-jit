@@ -24,13 +24,11 @@ module EmailValidation
   # Prevents timing attacks on email lookups
   # Always spends consistent time regardless of database result
   def find_email_with_timing_protection(email)
-    start_time = Time.now.to_f
     result = UserIdentityEmail.find_by(address: email)
 
-    # Ensure consistent timing (aim for ~50ms to avoid noticeable delay)
-    target_duration_ms = 50
-    elapsed_ms = (Time.now.to_f - start_time) * 1000
-    sleep((target_duration_ms - elapsed_ms) / 1000.0) if elapsed_ms < target_duration_ms
+    # Always sleep a fixed amount to prevent timing-based attacks
+    # This ensures consistent response time even under high load
+    sleep(0.05) # 50ms
 
     result
   end

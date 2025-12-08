@@ -34,8 +34,12 @@ class EmailTest < ActiveSupport::TestCase
     email2 = UserIdentityEmail.create!(address: "test2@example.com", confirm_policy: true)
 
     # Different emails should have different encrypted values
-    raw1 = UserIdentityEmail.connection.execute("SELECT address FROM user_identity_emails WHERE id = '#{email1.id}'").first
-    raw2 = UserIdentityEmail.connection.execute("SELECT address FROM user_identity_emails WHERE id = '#{email2.id}'").first
+    raw1 = UserIdentityEmail.connection.execute(
+      UserIdentityEmail.sanitize_sql_array([ "SELECT address FROM user_identity_emails WHERE id = ?", email1.id ])
+    ).first
+    raw2 = UserIdentityEmail.connection.execute(
+      UserIdentityEmail.sanitize_sql_array([ "SELECT address FROM user_identity_emails WHERE id = ?", email2.id ])
+    ).first
 
     assert_not_equal raw1["address"], raw2["address"]
   end

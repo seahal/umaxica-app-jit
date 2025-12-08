@@ -29,13 +29,15 @@ module Email
     update!(
       otp_private_key: otp_private_key,
       otp_counter: otp_counter,
-      otp_expires_at: Time.zone.at(expires_at)
+      otp_expires_at: Time.zone.at(expires_at),
+      otp_attempts_count: 0,
+      locked_at: nil
     )
   end
 
   # Retrieves OTP secret from this email record
   def get_otp
-    return nil if otp_private_key.blank? || otp_expired?
+    return nil if otp_private_key.blank? || otp_expired? || locked?
 
     {
       otp_private_key: otp_private_key,
@@ -49,7 +51,9 @@ module Email
     update!(
       otp_private_key: nil,
       otp_counter: nil,
-      otp_expires_at: nil
+      otp_expires_at: nil,
+      otp_attempts_count: 0,
+      locked_at: nil
     )
   end
 
@@ -60,6 +64,16 @@ module Email
 
   # Checks if OTP is still active
   def otp_active?
-    !otp_expired?
+    !otp_expired? && !locked?
+  end
+
+  def locked?
+    locked_at.present? || otp_attempts_count >= 3
+  end
+
+  def increment_attempts!
+    self.otp_attempts_count += 1
+    self.locked_at = Time.current if otp_attempts_count >= 3
+    save!
   end
 end

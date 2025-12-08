@@ -23,12 +23,9 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # preferences
-        resource :preference, only: [ :show ]
-        namespace :preference do
-          # non-login user's email settings.
-          resources :emails, only: [ :edit, :update, :new, :create ]
-        end
+        # configuration
+        # namespace :configuration do
+        # end
       end
     end
 
@@ -43,12 +40,9 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # preferences
-        resource :preference, only: [ :show ]
-        namespace :preference do
-          # non-login user's email settings.
-          resources :emails, only: [ :edit, :update, :new, :create ]
-        end
+        # configuration
+        # namespace :configuration do
+        # end
       end
     end
   end

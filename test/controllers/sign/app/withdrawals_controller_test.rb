@@ -7,9 +7,9 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get edit" do
-    get edit_sign_app_withdrawal_url
+  test "should create withdrawal" do
+    post sign_app_withdrawal_url
 
-    assert_response :success
+    assert_redirected_to %r{\A#{sign_app_root_url}}
   end
 end

@@ -119,6 +119,9 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
+      withdrawal:
+        create:
+          success: "Withdrawal processed (dummy)"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -194,6 +197,9 @@ en:
         edit:
           title: "Do you want to sign out?"
           description: "End your current session and return to the sign-in page."
+      withdrawal:
+        create:
+          success: "Withdrawal processed (dummy)"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"

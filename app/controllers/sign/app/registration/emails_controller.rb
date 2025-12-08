@@ -93,6 +93,7 @@ module Sign
           hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
           expected_code = hotp.at(otp_data[:otp_counter]).to_s
           unless ActiveSupport::SecurityUtils.secure_compare(expected_code, submitted_code)
+            @user_email.increment_attempts!
             @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.invalid_code"))
             render :edit, status: :unprocessable_content and return
           end

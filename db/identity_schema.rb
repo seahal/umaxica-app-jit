@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_11_15_084000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_08_054612) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -55,6 +55,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_084000) do
   create_table "staff_identity_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
+    t.datetime "locked_at"
+    t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter"
     t.datetime "otp_expires_at"
     t.string "otp_private_key"
@@ -87,7 +89,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_084000) do
 
   create_table "staff_identity_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "locked_at"
     t.string "number"
+    t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter"
     t.datetime "otp_expires_at"
     t.string "otp_private_key"
@@ -158,6 +162,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_084000) do
   create_table "user_identity_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
+    t.datetime "locked_at"
+    t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter"
     t.datetime "otp_expires_at"
     t.string "otp_private_key"
@@ -190,7 +196,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_15_084000) do
 
   create_table "user_identity_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "locked_at"
     t.string "number"
+    t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter"
     t.datetime "otp_expires_at"
     t.string "otp_private_key"
