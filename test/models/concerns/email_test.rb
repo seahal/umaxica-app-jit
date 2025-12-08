@@ -40,13 +40,51 @@ class EmailTest < ActiveSupport::TestCase
     assert_not_equal raw1["address"], raw2["address"]
   end
 
-  test "validates email format" do
-    # Valid emails
+  test "validates email format with basic formats" do
     assert_predicate UserIdentityEmail.new(address: "test@example.com", confirm_policy: true), :valid?
     assert_predicate UserIdentityEmail.new(address: "user+tag@example.co.jp", confirm_policy: true), :valid?
+  end
 
-    # Invalid email
+  test "validates email format with consecutive special characters" do
+    assert_predicate UserIdentityEmail.new(address: "user+tag@example.co.uk", confirm_policy: true), :valid?
+    assert_predicate UserIdentityEmail.new(address: "user+tag+123@example.com", confirm_policy: true), :valid?
+  end
+
+  test "validates email format with dots and underscores" do
+    assert_predicate UserIdentityEmail.new(address: "user.name@example.com", confirm_policy: true), :valid?
+    assert_predicate UserIdentityEmail.new(address: "user_name@example.co.uk", confirm_policy: true), :valid?
+  end
+
+  test "validates email format with multiple domain levels" do
+    assert_predicate UserIdentityEmail.new(address: "user@mail.example.co.uk", confirm_policy: true), :valid?
+    assert_predicate UserIdentityEmail.new(address: "user.tag@sub.example.com", confirm_policy: true), :valid?
+  end
+
+  test "validates email format with Gmail-style addressing" do
+    assert_predicate UserIdentityEmail.new(address: "user+mailbox@gmail.com", confirm_policy: true), :valid?
+  end
+
+  test "validates email format with mixed special characters" do
+    assert_predicate UserIdentityEmail.new(address: "user-name_tag+123@example.co.uk", confirm_policy: true), :valid?
+  end
+
+  test "validates email format with numeric addresses" do
+    assert_predicate UserIdentityEmail.new(address: "1234567890@example.com", confirm_policy: true), :valid?
+  end
+
+  test "validates email format with single label domains and localhost" do
+    assert_predicate UserIdentityEmail.new(address: "user@localhost", confirm_policy: true), :valid?
+    assert_predicate UserIdentityEmail.new(address: "user@example", confirm_policy: true), :valid?
+  end
+
+  test "rejects invalid email formats" do
     assert_not UserIdentityEmail.new(address: "invalid-email", confirm_policy: true).valid?
+    assert_not UserIdentityEmail.new(address: "user@", confirm_policy: true).valid?
+    assert_not UserIdentityEmail.new(address: "@example.com", confirm_policy: true).valid?
+  end
+
+  test "rejects email with spaces" do
+    assert_not UserIdentityEmail.new(address: "user @example.com", confirm_policy: true).valid?
   end
 
   test "validates email presence" do

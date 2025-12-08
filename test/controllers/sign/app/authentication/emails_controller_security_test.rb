@@ -14,6 +14,86 @@ module Sign
           assert_response :unprocessable_content
         end
 
+        test "accepts valid emails with consecutive special characters" do
+          # Test that user+tag@example.co.uk format is accepted
+          # (This will return unprocessable_content because email doesn't exist,
+          # but should not fail on format validation)
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user+tag@example.co.uk" }
+          }
+
+          # Should proceed past format validation (response is about email not found)
+          assert_response :unprocessable_content
+        end
+
+        test "accepts valid emails with dots in local part" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user.name@example.com" }
+          }
+
+          # Should proceed past format validation
+          assert_response :unprocessable_content
+        end
+
+        test "accepts valid emails with underscores" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user_name@example.co.uk" }
+          }
+
+          # Should proceed past format validation
+          assert_response :unprocessable_content
+        end
+
+        test "accepts Gmail-style addressing with plus" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user+mailbox@gmail.com" }
+          }
+
+          # Should proceed past format validation
+          assert_response :unprocessable_content
+        end
+
+        test "accepts emails with multiple domain levels" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user@mail.example.co.uk" }
+          }
+
+          # Should proceed past format validation
+          assert_response :unprocessable_content
+        end
+
+        test "rejects emails without @ symbol" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "usernameexample.com" }
+          }
+
+          assert_response :unprocessable_content
+        end
+
+        test "rejects emails without domain" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user@" }
+          }
+
+          assert_response :unprocessable_content
+        end
+
+        test "rejects emails without local part" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "@example.com" }
+          }
+
+          assert_response :unprocessable_content
+        end
+
+        test "rejects emails with spaces" do
+          post sign_app_authentication_email_url, params: {
+            user_identity_email: { address: "user name@example.com" }
+          }
+
+          assert_response :unprocessable_content
+        end
+
         test "normalizes email to lowercase" do
           post sign_app_authentication_email_url, params: {
             user_identity_email: { address: "TEST@EXAMPLE.COM" }

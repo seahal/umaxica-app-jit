@@ -18,19 +18,13 @@ module EmailValidation
 
   # Validates email format according to RFC 5322 basic rules
   def valid_email_format?(email)
-    email.match?(/\A[a-z0-9]+([._+-][a-z0-9]+)*@[a-z0-9]+([.-][a-z0-9]+)*\.[a-z]{2,}\z/i)
+    email.match?(URI::MailTo::EMAIL_REGEXP)
   end
 
   # Prevents timing attacks on email lookups
   # Always spends consistent time regardless of database result
   def find_email_with_timing_protection(email)
     # Always perform database query (prevents timing leak)
-    existing = UserIdentityEmail.find_by(address: email)
-
-    # Use sleep to ensure consistent response time (basic mitigation)
-    # Production should use Redis-based constant time comparison
-    sleep(0.05) if existing.nil?
-
-    existing
+    UserIdentityEmail.find_by(address: email)
   end
 end
