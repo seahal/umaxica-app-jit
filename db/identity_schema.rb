@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_08_230132) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_08_230200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -45,13 +45,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230132) do
     t.index ["user_id"], name: "index_google_auths_on_user_id"
   end
 
-  create_table "staff_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.binary "hmac_based_one_time_password_id", null: false
-    t.binary "staff_id", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -61,7 +54,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230132) do
     t.uuid "actor_id"
     t.datetime "created_at", null: false
     t.text "current_value"
-    t.string "event_type"
+    t.string "event_id", limit: 255, null: false
     t.string "ip_address"
     t.text "previous_value"
     t.uuid "staff_id", null: false
@@ -179,13 +172,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230132) do
     t.index ["user_id"], name: "index_user_google_auths_on_user_id"
   end
 
-  create_table "user_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.binary "hmac_based_one_time_password_id", null: false
-    t.datetime "updated_at", null: false
-    t.binary "user_id", null: false
-  end
-
   create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -195,7 +181,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230132) do
     t.uuid "actor_id"
     t.datetime "created_at", null: false
     t.text "current_value"
-    t.string "event_type"
+    t.string "event_id", limit: 255, null: false
     t.string "ip_address"
     t.text "previous_value"
     t.datetime "timestamp"
@@ -215,6 +201,13 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230132) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_user_identity_emails_on_user_id"
+  end
+
+  create_table "user_identity_one_time_passwords", id: false, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.binary "hmac_based_one_time_password_id", null: false
+    t.datetime "updated_at", null: false
+    t.binary "user_id", null: false
   end
 
   create_table "user_identity_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -297,11 +290,13 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230132) do
 
   add_foreign_key "apple_auths", "users"
   add_foreign_key "google_auths", "users"
+  add_foreign_key "staff_identity_audits", "staff_identity_audit_events", column: "event_id"
   add_foreign_key "staff_identity_audits", "staffs"
   add_foreign_key "staff_identity_passkeys", "staffs"
   add_foreign_key "staff_identity_secrets", "staffs"
   add_foreign_key "staff_passkeys", "staffs"
   add_foreign_key "staffs", "staff_identity_statuses", column: "staff_status_id"
+  add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_identity_audits", "users"
   add_foreign_key "user_identity_passkeys", "users"
   add_foreign_key "user_identity_secrets", "users"

@@ -506,6 +506,7 @@ en:
         restrict_dependent_destroy:
           has_one: Cannot delete record because a dependent %{record} exists
           has_many: Cannot delete record because dependent %{record} exist
+        identity_audit_event_format_invalid: 'must be composed of uppercase letters and underscores only'
   date:
     abbr_day_names:
       - Sun
