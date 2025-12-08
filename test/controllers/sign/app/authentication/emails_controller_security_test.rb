@@ -16,14 +16,13 @@ module Sign
 
         test "accepts valid emails with consecutive special characters" do
           # Test that user+tag@example.co.uk format is accepted
-          # (This will return unprocessable_content because email doesn't exist,
-          # but should not fail on format validation)
+          # (This will redirect because email doesn't exist, preventing enumeration)
           post sign_app_authentication_email_url, params: {
             user_identity_email: { address: "user+tag@example.co.uk" }
           }
 
-          # Should proceed past format validation (response is about email not found)
-          assert_response :unprocessable_content
+          # Should proceed past format validation
+          assert_response :found
         end
 
         test "accepts valid emails with dots in local part" do
@@ -32,7 +31,7 @@ module Sign
           }
 
           # Should proceed past format validation
-          assert_response :unprocessable_content
+          assert_response :found
         end
 
         test "accepts valid emails with underscores" do
@@ -41,7 +40,7 @@ module Sign
           }
 
           # Should proceed past format validation
-          assert_response :unprocessable_content
+          assert_response :found
         end
 
         test "accepts Gmail-style addressing with plus" do
@@ -50,7 +49,7 @@ module Sign
           }
 
           # Should proceed past format validation
-          assert_response :unprocessable_content
+          assert_response :found
         end
 
         test "accepts emails with multiple domain levels" do
@@ -59,7 +58,7 @@ module Sign
           }
 
           # Should proceed past format validation
-          assert_response :unprocessable_content
+          assert_response :found
         end
 
         test "rejects emails without @ symbol" do
@@ -99,8 +98,8 @@ module Sign
             user_identity_email: { address: "TEST@EXAMPLE.COM" }
           }
 
-          # Email should be normalized to lowercase in validation
-          assert_response :unprocessable_content
+          # Email should be normalized to lowercase in validation and proceed
+          assert_response :found
         end
 
         test "rejects emails with excessive whitespace" do
@@ -108,8 +107,8 @@ module Sign
             user_identity_email: { address: "  test@example.com  " }
           }
 
-          # Whitespace should be stripped and validated
-          assert_response :unprocessable_content
+          # Whitespace should be stripped and validated, then proceed
+          assert_response :found
         end
 
         test "handles OTP in Redis instead of session" do

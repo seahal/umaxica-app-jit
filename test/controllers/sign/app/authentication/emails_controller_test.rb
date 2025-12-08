@@ -50,25 +50,30 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     assert_select "input[name='user_identity_email[address]']"
   end
 
-  test "POST create without valid email returns error" do
+  test "POST create without valid email redirects (enumeration protection)" do
     post sign_app_authentication_email_url,
          params: { user_identity_email: { address: "nonexistent@example.com" } },
          headers: { "Host" => @host }
 
-    # Should render the new view with errors
-    assert_response :unprocessable_content
+    # Should redirect to edit to prevent enumeration
+    assert_response :found
+    assert_redirected_to %r{/authentication/email/edit}
   end
 
+  # rubocop:disable Minitest/MultipleAssertions
   test "POST create with unknown email does not issue otp" do
     assert_no_difference -> { ActionMailer::Base.deliveries.count } do
       post sign_app_authentication_email_url,
            params: { user_identity_email: { address: "missing-user@example.com" } },
            headers: { "Host" => @host }
 
-      assert_response :unprocessable_content
-      assert_nil session[:user_email_authentication]
+      assert_response :found
+      assert_redirected_to %r{/authentication/email/edit}
+      # Session should not have ID, but might have address
+      assert_nil session[:user_email_authentication_id]
     end
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "POST create with existing email generates OTP and redirects to edit" do
     skip "Pending Turnstile mock implementation"
