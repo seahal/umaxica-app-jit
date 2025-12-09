@@ -134,6 +134,18 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
+        withdrawal:
+          create:
+            already_withdrawn: "You have already withdrawn your account."
+            success: "Your account has been withdrawn. Thank you for using our service."
+            failed: "Failed to process withdrawal. Please try again later."
+          update:
+            recovered: "Your account has been recovered. You can log in now."
+            cannot_recover: "Recovery period has expired. Please contact support."
+            failed: "Failed to recover account. Please try again later."
+          destroy:
+            deleted: "Account has been permanently deleted."
+            not_withdrawn: "Account is not withdrawn; cannot delete."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"

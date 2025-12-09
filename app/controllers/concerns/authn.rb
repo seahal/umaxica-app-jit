@@ -77,8 +77,9 @@ module Authn
     return @current_user if defined?(@current_user)
 
     # Test helpers can inject a current user via request header to support
-    # controller instance dispatch in tests. Value should be the user id.
-    if request && (test_user_id = request.headers["X-TEST-CURRENT-USER"])
+    # controller instance dispatch in tests. Only allow this in the test
+    # environment to avoid an authentication backdoor in production.
+    if Rails.env.test? && request && (test_user_id = request.headers["X-TEST-CURRENT-USER"])
       @current_user = User.find_by(id: test_user_id)
       return @current_user
     end
@@ -100,8 +101,9 @@ module Authn
     return @current_staff if defined?(@current_staff)
 
     # Test helpers can inject a current staff via request header to support
-    # controller instance dispatch in tests. Value should be the staff id.
-    if request && (test_staff_id = request.headers["X-TEST-CURRENT-STAFF"])
+    # controller instance dispatch in tests. Only allow this in the test
+    # environment to avoid an authentication backdoor in production.
+    if Rails.env.test? && request && (test_staff_id = request.headers["X-TEST-CURRENT-STAFF"])
       @current_staff = Staff.find_by(id: test_staff_id)
       return @current_staff
     end

@@ -20,16 +20,22 @@ module Sign
 
         # Soft delete: set withdrawn_at to current time
         # Staff can still login for 1 month and can recover via update
-        current_staff.update(withdrawn_at: Time.current)
-        reset_session
-        redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.create.success")
+        if current_staff.update(withdrawn_at: Time.current)
+          reset_session
+          redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.create.success")
+        else
+          redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.create.failed")
+        end
       end
 
       def update
         # Recovery: clear withdrawn_at if within 1 month
         if current_staff.withdrawn_at.present? && current_staff.withdrawn_at > 1.month.ago
-          current_staff.update(withdrawn_at: nil)
-          redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.update.recovered")
+          if current_staff.update(withdrawn_at: nil)
+            redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.update.recovered")
+          else
+            redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.update.failed")
+          end
         else
           redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.update.cannot_recover")
         end

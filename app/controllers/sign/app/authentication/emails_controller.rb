@@ -114,12 +114,17 @@ module Sign
                 log_in(@user_email.user)
                 redirect_to "/", notice: t("sign.app.authentication.email.update.success")
               else
+                # Increment attempts first, then present the correct error message.
+                # This ensures that a request that causes the attempts to reach
+                # the locked threshold will show a locked message immediately.
+                @user_email.increment_attempts!
+
                 if @user_email.locked?
                   @user_email.errors.add(:pass_code, t("sign.app.authentication.email.locked"))
                 else
-                  @user_email.increment_attempts!
                   @user_email.errors.add(:pass_code, t("sign.app.authentication.email.update.invalid_code"))
                 end
+
                 render :edit, status: :unprocessable_content
               end
             else
