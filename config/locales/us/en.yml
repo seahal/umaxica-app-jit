@@ -37,6 +37,8 @@ en:
           new:
             page_title: "Register a passkey"
             description: "Use one of your trusted devices to add a passkey for passwordless sign-in."
+        email:
+          locked: "Your account is locked. Please try again later."
         telephone:
           new:
             page_title: "Sign in with your phone number"
@@ -129,6 +131,14 @@ en:
         create:
           success: "Withdrawal processed (dummy)"
           already_withdrawn: "Account is already withdrawn"
+          failed: "Failed to process withdrawal. Please try again later."
+        update:
+          recovered: "Your account has been recovered. You can log in now."
+          cannot_recover: "Recovery period has expired. Please contact support."
+          failed: "Failed to recover account. Please try again later."
+        destroy:
+          deleted: "Account has been permanently deleted."
+          not_withdrawn: "Account is not withdrawn; cannot delete."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"

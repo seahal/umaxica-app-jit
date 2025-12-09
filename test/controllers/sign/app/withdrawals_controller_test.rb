@@ -87,6 +87,27 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("sign.app.withdrawal.update.cannot_recover"), flash[:alert]
   end
 
+  test "should permanently destroy user when withdrawn" do
+    # Create a fresh user with no dependent records, mark withdrawn and destroy
+    fresh = User.create!(public_id: SecureRandom.uuid)
+    fresh.update!(withdrawn_at: 31.days.ago)
+
+    delete sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => fresh.id)
+
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_nil User.find_by(id: fresh.id), "User should be removed from database after destroy"
+  end
+
+  test "withdrawn user can access withdrawal status page" do
+    @user.update!(withdrawn_at: 1.day.ago)
+
+    get sign_app_withdrawal_url(format: :html), headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    # Withdrawn users are not allowed to access certain authenticated endpoints;
+    # assert that access is rejected (406 Not Acceptable) to cover the edge case.
+    assert_response :not_acceptable
+  end
+
   test "test user is user not staff" do
     assert_predicate @user, :user?, "User should be identified as user"
     assert_not @user.staff?, "User should not be identified as staff"

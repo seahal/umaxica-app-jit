@@ -205,6 +205,7 @@ ja:
             registration: 登録しますか？
           create:
             you_have_already_logged_in: あなたはログインしています
+            locked: "アカウントがロックされています。しばらく経ってから再度お試しください。"
         telephone:
           new:
             page_title: 電話番号でサインイン

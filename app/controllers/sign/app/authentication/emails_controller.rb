@@ -118,15 +118,15 @@ module Sign
                 ensure_min_elapsed(start_time)
                 redirect_to "/", notice: t("sign.app.authentication.email.update.success")
               else
-                # Increment attempts first, then present the correct error message.
-                # This ensures that a request that causes the attempts to reach
-                # the locked threshold will show a locked message immediately.
+                # Increment attempts first. If not locked yet, present remaining attempts.
                 @user_email.increment_attempts!
 
                 if @user_email.locked?
                   @user_email.errors.add(:pass_code, t("sign.app.authentication.email.locked"))
                 else
-                  @user_email.errors.add(:pass_code, t("sign.app.authentication.email.update.invalid_code"))
+                  remaining = [ 3 - @user_email.otp_attempts_count, 0 ].max
+                  # Prefer localized message with attempts interpolation when available
+                  @user_email.errors.add(:pass_code, t("sign.app.authentication.email.update.invalid_code", attempts_left: remaining))
                 end
 
                 ensure_min_elapsed(start_time)

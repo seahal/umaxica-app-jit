@@ -75,6 +75,14 @@ module Email
     # Use atomic increment to prevent race condition with concurrent requests
     self.class.increment_counter(:otp_attempts_count, id, touch: true) # rubocop:disable Rails/SkipsModelValidations
     reload
-    update!(locked_at: Time.current) if otp_attempts_count >= 3
+    # Atomically set locked_at only when attempts reached threshold and not already set.
+    affected = self.class.where(id: id, locked_at: nil)
+           .where(otp_attempts_count: 3..)
+           # Skip model validations intentionally: this is a guarded atomic DB update
+           # to avoid race conditions when multiple processes increment simultaneously.
+           # rubocop:disable Rails/SkipsModelValidations
+           .update_all(locked_at: Time.current)
+    # rubocop:enable Rails/SkipsModelValidations
+    reload if affected.positive?
   end
 end

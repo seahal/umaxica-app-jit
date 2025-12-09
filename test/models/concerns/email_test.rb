@@ -161,4 +161,25 @@ class EmailTest < ActiveSupport::TestCase
     assert_equal 0, email.otp_attempts_count
     assert_nil email.locked_at
   end
+
+  test "increment_attempts! is thread-safe under concurrent access" do
+    email = UserIdentityEmail.create!(address: "concurrent@example.com", confirm_policy: true)
+
+    # rubocop:disable ThreadSafety/NewThread
+    threads = 10.times.map do
+      Thread.new do
+        10.times do
+          ActiveRecord::Base.connection_pool.with_connection do
+            # Use a fresh instance to better simulate concurrent requests
+            UserIdentityEmail.find(email.id).increment_attempts!
+          end
+        end
+      end
+    end
+
+    threads.each(&:join)
+
+    # rubocop:enable ThreadSafety/NewThread
+    assert_equal 100, email.reload.otp_attempts_count
+  end
 end
