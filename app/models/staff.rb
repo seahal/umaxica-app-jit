@@ -13,6 +13,7 @@ class Staff < IdentitiesRecord
   # Staff represents an operator account for the staff/admin console.
   # It mirrors `User` for identity concerns but is used for staff-scoped access.
   include Stakeholder
+  include Withdrawable
 
   belongs_to :staff_identity_status, optional: true
   has_many :staff_identity_emails, dependent: :destroy

@@ -17,4 +17,10 @@ class ComTimeline < BusinessesRecord
   belongs_to :com_timeline_status, optional: true
 
   include Timeline
+
+  has_many :com_timeline_audits,
+           class_name: "ComTimelineAudit",
+           primary_key: "id",
+           inverse_of: :com_timeline,
+           dependent: :restrict_with_exception
 end

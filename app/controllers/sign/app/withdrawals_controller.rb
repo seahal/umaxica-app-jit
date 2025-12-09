@@ -15,14 +15,14 @@ module Sign
 
       def create
         # Check if user is already withdrawn
-        if current_user.withdrawn_at.present?
+        if current_user.withdrawn?
           redirect_to sign_app_root_path, alert: t("sign.app.withdrawal.create.already_withdrawn")
           return
         end
 
         # Soft delete: set withdrawn_at to current time
-        # User can still login for 1 month and can recover via update
         if current_user.update(withdrawn_at: Time.current)
+          # Reset session only after successful DB update
           reset_session
           redirect_to sign_app_root_path, notice: t("sign.app.withdrawal.create.success")
         else
@@ -31,8 +31,8 @@ module Sign
       end
 
       def update
-        # Recovery: clear withdrawn_at if within 1 month
-        if current_user.withdrawn_at.present? && current_user.withdrawn_at > 1.month.ago
+        # Recovery: clear withdrawn_at if within the model-configured recovery window
+        if current_user.can_recover?
           if current_user.update(withdrawn_at: nil)
             redirect_to sign_app_root_path, notice: t("sign.app.withdrawal.update.recovered")
           else
@@ -45,13 +45,24 @@ module Sign
 
       def destroy
         # Only allow permanent removal if account was previously withdrawn
-        if current_user.withdrawn_at.present?
-          current_user.destroy
-          reset_session
-          redirect_to sign_app_root_path, notice: t("sign.app.withdrawal.destroy.deleted")
-        else
-          redirect_to sign_app_root_path, alert: t("sign.app.withdrawal.destroy.not_withdrawn")
+        unless current_user.withdrawn?
+          redirect_to sign_app_root_path, alert: t("sign.app.withdrawal.destroy.not_withdrawn") and return
         end
+
+        # Log intent and perform destroy inside a transaction. Prefer background job
+        # for heavy deletions; here we attempt synchronous destroy with graceful handling.
+        Rails.logger.info("Permanent user deletion requested: #{current_user.id}")
+
+        User.transaction do
+          if current_user.destroy
+            reset_session
+            redirect_to sign_app_root_path, notice: t("sign.app.withdrawal.destroy.deleted") and return
+          else
+            raise ActiveRecord::Rollback
+          end
+        end
+
+        redirect_to sign_app_root_path, alert: t("sign.app.withdrawal.destroy.failed")
       end
     end
   end

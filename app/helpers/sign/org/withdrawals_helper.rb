@@ -3,25 +3,25 @@ module Sign
     module WithdrawalsHelper
       # Check if staff user is in withdrawn state
       def user_withdrawn?
-        current_staff&.withdrawn_at.present?
+        current_staff&.withdrawn?
       end
 
-      # Calculate days remaining for recovery (1 month = 30 days)
+      # Calculate days remaining for recovery
       def days_until_permanent_deletion
         return nil unless user_withdrawn?
 
-        withdrawal_date = current_staff.withdrawn_at
-        recovery_deadline = withdrawal_date + 30.days
-        days_remaining = ((recovery_deadline - Time.current) / 1.day).ceil
+        recovery_deadline = current_staff.recovery_deadline
+        return 0 unless recovery_deadline
 
-        [ days_remaining, 0 ].max # Don't return negative numbers
+        days_remaining = ((recovery_deadline - Time.current) / 1.day).ceil
+        [ days_remaining, 0 ].max
       end
 
       # Check if recovery period has expired
       def recovery_period_expired?
         return false unless user_withdrawn?
 
-        Time.current >= current_staff.withdrawn_at + 30.days
+        current_staff.recovery_deadline.present? && Time.current >= current_staff.recovery_deadline
       end
     end
   end

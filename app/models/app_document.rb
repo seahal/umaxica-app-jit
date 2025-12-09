@@ -16,6 +16,12 @@
 class AppDocument < BusinessesRecord
   belongs_to :app_document_status, optional: true
 
+  has_many :app_document_audits,
+           class_name: "AppDocumentAudit",
+           primary_key: "id",
+           inverse_of: :app_document,
+           dependent: :restrict_with_exception
+
   encrypts :title
   encrypts :description
 end

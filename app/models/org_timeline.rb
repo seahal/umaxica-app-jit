@@ -17,4 +17,10 @@ class OrgTimeline < BusinessesRecord
   belongs_to :org_timeline_status, optional: true
 
   include Timeline
+
+  has_many :org_timeline_audits,
+           class_name: "OrgTimelineAudit",
+           primary_key: "id",
+           inverse_of: :org_timeline,
+           dependent: :restrict_with_exception
 end

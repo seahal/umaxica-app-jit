@@ -51,47 +51,38 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create withdrawal and set withdrawn_at" do
-    skip "JWT setup needed for integration tests"
+    post sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
-    jwt_token = login_user
-    post sign_app_withdrawal_url, headers: request_headers.merge("Cookie" => "access_token=#{jwt_token}")
-
-    assert_redirected_to sign_app_root_url
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
     assert_operator @user.withdrawn_at, :<=, Time.current
   end
 
   test "should prevent double withdrawal" do
-    skip "JWT setup needed for integration tests"
     @user.update!(withdrawn_at: 1.day.ago)
 
-    jwt_token = login_user
-    post sign_app_withdrawal_url, headers: request_headers.merge("Cookie" => "access_token=#{jwt_token}")
+    post sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
-    assert_redirected_to sign_app_root_url
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
     assert_equal I18n.t("sign.app.withdrawal.create.already_withdrawn"), flash[:alert]
   end
 
   test "should allow recovery within 1 month" do
-    skip "JWT setup needed for integration tests"
     @user.update!(withdrawn_at: 15.days.ago)
 
-    jwt_token = login_user
-    patch sign_app_withdrawal_url, headers: request_headers.merge("Cookie" => "access_token=#{jwt_token}")
+    patch sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
-    assert_redirected_to sign_app_root_url
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
     assert_nil @user.reload.withdrawn_at
     assert_equal I18n.t("sign.app.withdrawal.update.recovered"), flash[:notice]
   end
 
   test "should prevent recovery after 1 month" do
-    skip "JWT setup needed for integration tests"
     @user.update!(withdrawn_at: 45.days.ago)
 
-    jwt_token = login_user
-    patch sign_app_withdrawal_url, headers: request_headers.merge("Cookie" => "access_token=#{jwt_token}")
+    patch sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
-    assert_redirected_to sign_app_root_url
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
     assert_equal I18n.t("sign.app.withdrawal.update.cannot_recover"), flash[:alert]
   end

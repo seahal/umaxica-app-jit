@@ -18,4 +18,10 @@ class OrgDocument < BusinessesRecord
 
   encrypts :title
   encrypts :description
+
+  has_many :org_document_audits,
+           class_name: "OrgDocumentAudit",
+           primary_key: "id",
+           inverse_of: :org_document,
+           dependent: :restrict_with_exception
 end

@@ -301,9 +301,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_143000) do
   add_foreign_key "staff_identity_passkeys", "staffs"
   add_foreign_key "staff_identity_secrets", "staffs"
   add_foreign_key "staff_passkeys", "staffs"
+  add_foreign_key "staffs", "staff_identity_statuses"
   add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_identity_audits", "users"
   add_foreign_key "user_identity_passkeys", "users"
   add_foreign_key "user_identity_secrets", "users"
   add_foreign_key "user_passkeys", "users"
+  add_foreign_key "users", "user_identity_statuses"
 end

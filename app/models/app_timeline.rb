@@ -17,4 +17,10 @@ class AppTimeline < BusinessesRecord
   belongs_to :app_timeline_status, optional: true
 
   include Timeline
+
+  has_many :app_timeline_audits,
+           class_name: "AppTimelineAudit",
+           primary_key: "id",
+           inverse_of: :app_timeline,
+           dependent: :restrict_with_exception
 end

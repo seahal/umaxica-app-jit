@@ -9,7 +9,17 @@ module Authn
   ACCESS_TOKEN_EXPIRY = 15.minutes
 
   included do
-    helper_method :logged_in?, :current_user, :current_staff
+    helper_method :logged_in?, :current_user, :current_staff, :active_user?, :active_staff?
+  end
+
+  # Returns true when the current user exists and is not withdrawn
+  def active_user?
+    current_user.present? && current_user.active?
+  end
+
+  # Returns true when the current staff exists and is not withdrawn
+  def active_staff?
+    current_staff.present? && current_staff.active?
   end
 
   # TODO: Implement!
@@ -62,6 +72,11 @@ module Authn
 
   # TODO: Implement!
   def logged_in?
+    # Resolve current user/staff (this will honor test-header injection in
+    # the test environment) and treat the request as authenticated when
+    # either is present.
+    return true if current_user.present? || current_staff.present?
+
     return false if cookies[:access_token].blank?
 
     begin
@@ -91,6 +106,8 @@ module Authn
       return nil unless payload["type"] == "user"
 
       @current_user = User.find_by(id: payload["sub"])
+      # Treat withdrawn accounts as unauthenticated
+      @current_user = nil if @current_user&.respond_to?(:withdrawn?) && @current_user.withdrawn?
     rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
       @current_user = nil
     end
@@ -115,6 +132,8 @@ module Authn
       return nil unless payload["type"] == "staff"
 
       @current_staff = Staff.find_by(id: payload["sub"])
+      # Treat withdrawn staff as unauthenticated
+      @current_staff = nil if @current_staff&.respond_to?(:withdrawn?) && @current_staff.withdrawn?
     rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
       @current_staff = nil
     end

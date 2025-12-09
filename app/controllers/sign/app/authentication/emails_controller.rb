@@ -96,6 +96,9 @@ module Sign
             redirect_to new_sign_app_authentication_email_path, notice: t("sign.app.authentication.email.edit.session_expired") and return
           end
 
+          # Start monotonic timer to protect against timing attacks
+          start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
           @user_email.pass_code = update_pass_code_params[:pass_code]
 
           unless @user_email.valid?
@@ -112,6 +115,7 @@ module Sign
                 @user_email.clear_otp
                 session[:user_email_authentication_id] = nil
                 log_in(@user_email.user)
+                ensure_min_elapsed(start_time)
                 redirect_to "/", notice: t("sign.app.authentication.email.update.success")
               else
                 # Increment attempts first, then present the correct error message.
@@ -125,14 +129,20 @@ module Sign
                   @user_email.errors.add(:pass_code, t("sign.app.authentication.email.update.invalid_code"))
                 end
 
+                ensure_min_elapsed(start_time)
+
                 render :edit, status: :unprocessable_content
               end
             else
+              ensure_min_elapsed(start_time)
               redirect_to new_sign_app_authentication_email_path, notice: t("sign.app.authentication.email.edit.session_expired")
             end
           else
             ActiveSupport::SecurityUtils.secure_compare("000000", @user_email.pass_code)
             @user_email.errors.add(:pass_code, t("sign.app.authentication.email.update.invalid_code"))
+
+            ensure_min_elapsed(start_time)
+
             render :edit, status: :unprocessable_content
           end
         end
@@ -143,6 +153,12 @@ module Sign
           params.expect(user_identity_email: [ :pass_code ])
         rescue ActionController::ParameterMissing
           {}
+        end
+
+        def ensure_min_elapsed(start_time, target_seconds = 0.01)
+          elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
+          remaining = target_seconds - elapsed
+          sleep(remaining) if remaining.positive?
         end
       end
     end

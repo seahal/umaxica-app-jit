@@ -13,13 +13,12 @@ module Sign
 
       def create
         # Check if staff is already withdrawn
-        if current_staff.withdrawn_at.present?
+        if current_staff.withdrawn?
           redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.create.already_withdrawn")
           return
         end
 
         # Soft delete: set withdrawn_at to current time
-        # Staff can still login for 1 month and can recover via update
         if current_staff.update(withdrawn_at: Time.current)
           reset_session
           redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.create.success")
@@ -29,8 +28,8 @@ module Sign
       end
 
       def update
-        # Recovery: clear withdrawn_at if within 1 month
-        if current_staff.withdrawn_at.present? && current_staff.withdrawn_at > 1.month.ago
+        # Recovery: clear withdrawn_at if within the model-configured recovery window
+        if current_staff.can_recover?
           if current_staff.update(withdrawn_at: nil)
             redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.update.recovered")
           else
@@ -43,13 +42,22 @@ module Sign
 
       def destroy
         # Only allow permanent removal if staff was previously withdrawn
-        if current_staff.withdrawn_at.present?
-          current_staff.destroy
-          reset_session
-          redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.destroy.deleted")
-        else
-          redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.destroy.not_withdrawn")
+        unless current_staff.withdrawn?
+          redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.destroy.not_withdrawn") and return
         end
+
+        Rails.logger.info("Permanent staff deletion requested: #{current_staff.id}")
+
+        Staff.transaction do
+          if current_staff.destroy
+            reset_session
+            redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.destroy.deleted") and return
+          else
+            raise ActiveRecord::Rollback
+          end
+        end
+
+        redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.destroy.failed")
       end
     end
   end

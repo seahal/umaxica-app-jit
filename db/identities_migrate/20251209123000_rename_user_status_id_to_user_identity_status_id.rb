@@ -19,7 +19,7 @@ class RenameUserStatusIdToUserIdentityStatusId < ActiveRecord::Migration[7.0]
       remove_index :users, :user_status_id
     end
 
-    add_index :users, :user_identity_status_id, name: 'index_users_on_user_identity_status_id'
+    add_index :users, :user_identity_status_id, name: 'index_users_on_user_identity_status_id' unless index_exists?(:users, :user_identity_status_id, name: 'index_users_on_user_identity_status_id')
 
     # Add foreign key pointing to user_identity_statuses.id
     add_foreign_key :users, :user_identity_statuses, column: :user_identity_status_id, primary_key: :id
