@@ -1,4 +1,4 @@
-class CreateDocuments < ActiveRecord::Migration[8.0]
+class CreateDocuments < ActiveRecord::Migration[8.2]
   def change
     create_table :documents, id: :uuid do |t|
       t.binary :parent_id

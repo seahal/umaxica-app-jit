@@ -142,13 +142,13 @@ class AccountService
 
   # Create a new session for this account
   #
-  # @return [UserSession, StaffSession] The created session
+  # @return [UserToken, StaffToken] The created session
   def create_session!
     case type
     when :user
-      UserSession.create!(user: accountable)
+      UserToken.create!(user: accountable)
     when :staff
-      StaffSession.create!(staff: accountable)
+      StaffToken.create!(staff: accountable)
     end
   end
 

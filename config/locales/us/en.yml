@@ -10,6 +10,8 @@ en:
     sample_successfully_updated: "Registration completed successfully."
   common:
     ok: "OK"
+  model:
+    identity_audit_event_format_invalid: "Invalid event ID format. Only uppercase letters and underscores are allowed."
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
@@ -35,6 +37,8 @@ en:
           new:
             page_title: "Register a passkey"
             description: "Use one of your trusted devices to add a passkey for passwordless sign-in."
+        email:
+          locked: "Your account is locked. Please try again later."
         telephone:
           new:
             page_title: "Sign in with your phone number"
@@ -119,6 +123,22 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
+        email:
+          update:
+            invalid_code: "Invalid verification code"
+            locked: "Account is locked due to too many failed attempts"
+      withdrawal:
+        create:
+          success: "Withdrawal processed (dummy)"
+          already_withdrawn: "Account is already withdrawn"
+          failed: "Failed to process withdrawal. Please try again later."
+        update:
+          recovered: "Your account has been recovered. You can log in now."
+          cannot_recover: "Recovery period has expired. Please contact support."
+          failed: "Failed to recover account. Please try again later."
+        destroy:
+          deleted: "Account has been permanently deleted."
+          not_withdrawn: "Account is not withdrawn; cannot delete."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -179,6 +199,18 @@ en:
               system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
     org:
+      withdrawal:
+        create:
+          already_withdrawn: "You have already withdrawn your account."
+          success: "Your account has been withdrawn. Thank you for using our service."
+          failed: "Failed to process withdrawal. Please try again later."
+        update:
+          recovered: "Your account has been recovered. You can log in now."
+          cannot_recover: "Recovery period has expired. Please contact support."
+          failed: "Failed to recover account. Please try again later."
+        destroy:
+          deleted: "Account has been permanently deleted."
+          not_withdrawn: "Account is not withdrawn; cannot delete."
       authentication:
         new:
           page_title: "Choose how to sign in"
@@ -194,6 +226,10 @@ en:
         edit:
           title: "Do you want to sign out?"
           description: "End your current session and return to the sign-in page."
+      withdrawal:
+        create:
+          success: "Withdrawal processed (dummy)"
+          already_withdrawn: "Account is already withdrawn"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -498,6 +534,7 @@ en:
         restrict_dependent_destroy:
           has_one: Cannot delete record because a dependent %{record} exists
           has_many: Cannot delete record because dependent %{record} exist
+        identity_audit_event_format_invalid: 'must be composed of uppercase letters and underscores only'
   date:
     abbr_day_names:
       - Sun

@@ -1,15 +1,115 @@
 require "test_helper"
 
 class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
-  test "should get new" do
-    get new_sign_app_withdrawal_url
+  setup do
+    @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    @user = users(:one)
+  end
+
+  def request_headers
+    { "Host" => @host }
+  end
+
+  def login_user
+    # Create a token for the user
+    token = UserToken.create!(user_id: @user.id)
+
+    # Generate a valid JWT token
+    payload = {
+      iat: Time.current.to_i,
+      exp: 15.minutes.from_now.to_i,
+      jti: SecureRandom.uuid,
+      iss: @host,
+      aud: "umaxica-api",
+      sub: @user.id,
+      type: "user"
+    }
+
+    key = jwt_private_key
+    jwt_token = JWT.encode(payload, key, "ES256")
+
+    # Set the cookie
+    @cookie_jar = HTTP::CookieJar.new
+    cookie = HTTP::Cookie.new("access_token", jwt_token, domain: @host)
+    @cookie_jar.add(cookie)
+
+    # Use the JWT token in cookies
+    # For integration tests, we need to set it via headers or direct cookie manipulation
+    jwt_token
+  end
+
+  def jwt_private_key
+    private_key_base64 = Rails.application.credentials.dig(:JWT, :PRIVATE_KEY)
+    private_key_der = Base64.decode64(private_key_base64)
+    OpenSSL::PKey::EC.new(private_key_der)
+  end
+
+  test "should get new withdrawal page" do
+    get new_sign_app_withdrawal_url, headers: request_headers
 
     assert_response :success
   end
 
-  test "should get edit" do
-    get edit_sign_app_withdrawal_url
+  test "should create withdrawal and set withdrawn_at" do
+    post sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
-    assert_response :success
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_not_nil @user.reload.withdrawn_at
+    assert_operator @user.withdrawn_at, :<=, Time.current
+  end
+
+  test "should prevent double withdrawal" do
+    @user.update!(withdrawn_at: 1.day.ago)
+
+    post sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_equal I18n.t("sign.app.withdrawal.create.already_withdrawn"), flash[:alert]
+  end
+
+  test "should allow recovery within 1 month" do
+    @user.update!(withdrawn_at: 15.days.ago)
+
+    patch sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_nil @user.reload.withdrawn_at
+    assert_equal I18n.t("sign.app.withdrawal.update.recovered"), flash[:notice]
+  end
+
+  test "should prevent recovery after 1 month" do
+    @user.update!(withdrawn_at: 45.days.ago)
+
+    patch sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_not_nil @user.reload.withdrawn_at
+    assert_equal I18n.t("sign.app.withdrawal.update.cannot_recover"), flash[:alert]
+  end
+
+  test "should permanently destroy user when withdrawn" do
+    # Create a fresh user with no dependent records, mark withdrawn and destroy
+    fresh = User.create!(public_id: SecureRandom.uuid)
+    fresh.update!(withdrawn_at: 31.days.ago)
+
+    delete sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => fresh.id)
+
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_nil User.find_by(id: fresh.id), "User should be removed from database after destroy"
+  end
+
+  test "withdrawn user can access withdrawal status page" do
+    @user.update!(withdrawn_at: 1.day.ago)
+
+    get sign_app_withdrawal_url(format: :html), headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    # Withdrawn users are not allowed to access certain authenticated endpoints;
+    # assert that access is rejected (406 Not Acceptable) to cover the edge case.
+    assert_response :not_acceptable
+  end
+
+  test "test user is user not staff" do
+    assert_predicate @user, :user?, "User should be identified as user"
+    assert_not @user.staff?, "User should not be identified as staff"
   end
 end

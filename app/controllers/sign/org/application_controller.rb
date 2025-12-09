@@ -3,6 +3,7 @@
 module Sign
   module Org
     class ApplicationController < ActionController::Base
+      include ::Authn
       include Pundit::Authorization
       include ::DefaultUrlOptions
       include ::RateLimit
@@ -23,8 +24,7 @@ module Sign
       end
 
       def logged_in_staff?
-        # TODO: Implement staff authentication logic
-        false
+        current_staff.present?
       end
 
       def logged_in_user?
@@ -34,6 +34,17 @@ module Sign
 
       def logged_in?
         logged_in_staff? || logged_in_user?
+      end
+
+      def authenticate_staff!
+        return if logged_in_staff?
+
+        if request.format.json?
+          render json: { error: "Unauthorized" }, status: :unauthorized
+        else
+          head :unauthorized
+        end
+        nil
       end
     end
   end

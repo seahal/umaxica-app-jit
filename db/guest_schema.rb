@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -30,7 +30,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-12-09 03:16:10", null: false
+    t.timestamptz "expires_at", default: "2025-12-10 14:12:39", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
     t.timestamptz "token_expires_at"
@@ -58,7 +58,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.uuid "app_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-09 03:16:10", null: false
+    t.timestamptz "expires_at", default: "2025-12-10 14:12:39", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
@@ -68,6 +68,20 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.index ["app_contact_id"], name: "index_app_contact_telephones_on_app_contact_id"
     t.index ["telephone_number"], name: "index_app_contact_telephones_on_telephone_number"
     t.index ["verifier_expires_at"], name: "index_app_contact_telephones_on_verifier_expires_at"
+  end
+
+  create_table "app_contact_topics", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "activated", default: false, null: false
+    t.uuid "app_contact_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "deletable", default: false, null: false
+    t.timestamptz "expires_at", default: "2025-12-10 14:12:42", null: false
+    t.integer "otp_attempts_left", limit: 2, default: 3, null: false
+    t.string "otp_digest", limit: 255
+    t.timestamptz "otp_expires_at"
+    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.datetime "updated_at", null: false
+    t.index ["app_contact_id"], name: "index_app_contact_topics_on_app_contact_id"
   end
 
   create_table "app_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -102,7 +116,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-12-09 03:16:11", null: false
+    t.timestamptz "expires_at", default: "2025-12-10 14:12:40", null: false
     t.integer "hotp_counter"
     t.string "hotp_secret"
     t.integer "remaining_views", limit: 2, default: 10, null: false
@@ -141,7 +155,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-09 03:16:11", null: false
+    t.timestamptz "expires_at", default: "2025-12-10 14:12:40", null: false
     t.integer "hotp_counter"
     t.string "hotp_secret"
     t.integer "remaining_views", limit: 2, default: 10, null: false
@@ -161,7 +175,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.text "description"
-    t.timestamptz "expires_at", default: "2025-12-09 03:16:11", null: false
+    t.timestamptz "expires_at", default: "2025-12-10 14:12:40", null: false
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
@@ -202,7 +216,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
-    t.timestamptz "expires_at", default: "2025-12-09 03:16:11", null: false
+    t.timestamptz "expires_at", default: "2025-12-10 14:12:40", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "token_digest", limit: 255
@@ -230,7 +244,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
-    t.timestamptz "expires_at", default: "2025-12-09 03:16:11", null: false
+    t.timestamptz "expires_at", default: "2025-12-10 14:12:40", null: false
     t.uuid "org_contact_id", null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
@@ -241,6 +255,20 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
     t.index ["org_contact_id"], name: "index_org_contact_telephones_on_org_contact_id"
     t.index ["telephone_number"], name: "index_org_contact_telephones_on_telephone_number"
     t.index ["verifier_expires_at"], name: "index_org_contact_telephones_on_verifier_expires_at"
+  end
+
+  create_table "org_contact_topics", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "activated", default: false, null: false
+    t.datetime "created_at", null: false
+    t.boolean "deletable", default: false, null: false
+    t.timestamptz "expires_at", default: "2025-12-10 14:12:42", null: false
+    t.uuid "org_contact_id", null: false
+    t.integer "otp_attempts_left", limit: 2, default: 3, null: false
+    t.string "otp_digest", limit: 255
+    t.timestamptz "otp_expires_at"
+    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.datetime "updated_at", null: false
+    t.index ["org_contact_id"], name: "index_org_contact_topics_on_org_contact_id"
   end
 
   create_table "org_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -262,6 +290,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
 
   add_foreign_key "app_contact_emails", "app_contacts"
   add_foreign_key "app_contact_telephones", "app_contacts"
+  add_foreign_key "app_contact_topics", "app_contacts"
   add_foreign_key "app_contacts", "app_contact_categories", column: "contact_category_title", primary_key: "title"
   add_foreign_key "app_contacts", "app_contact_statuses", column: "contact_status_title", primary_key: "title"
   add_foreign_key "com_contact_histories", "com_contacts"
@@ -270,6 +299,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_03_124554) do
   add_foreign_key "com_contacts", "com_contact_statuses", column: "contact_status_title", primary_key: "title"
   add_foreign_key "org_contact_emails", "org_contacts"
   add_foreign_key "org_contact_telephones", "org_contacts"
+  add_foreign_key "org_contact_topics", "org_contacts"
   add_foreign_key "org_contacts", "org_contact_categories", column: "contact_category_title", primary_key: "title"
   add_foreign_key "org_contacts", "org_contact_statuses", column: "contact_status_title", primary_key: "title"
 end

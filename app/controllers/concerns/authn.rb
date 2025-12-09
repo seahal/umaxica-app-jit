@@ -9,7 +9,17 @@ module Authn
   ACCESS_TOKEN_EXPIRY = 15.minutes
 
   included do
-    helper_method :logged_in?, :current_user, :current_staff
+    helper_method :logged_in?, :current_user, :current_staff, :active_user?, :active_staff?
+  end
+
+  # Returns true when the current user exists and is not withdrawn
+  def active_user?
+    current_user.present? && current_user.active?
+  end
+
+  # Returns true when the current staff exists and is not withdrawn
+  def active_staff?
+    current_staff.present? && current_staff.active?
   end
 
   # TODO: Implement!
@@ -62,6 +72,11 @@ module Authn
 
   # TODO: Implement!
   def logged_in?
+    # Resolve current user/staff (this will honor test-header injection in
+    # the test environment) and treat the request as authenticated when
+    # either is present.
+    return true if current_user.present? || current_staff.present?
+
     return false if cookies[:access_token].blank?
 
     begin
@@ -74,14 +89,25 @@ module Authn
 
   # Get current user from access token
   def current_user
-    return nil if cookies[:access_token].blank?
     return @current_user if defined?(@current_user)
+
+    # Test helpers can inject a current user via request header to support
+    # controller instance dispatch in tests. Only allow this in the test
+    # environment to avoid an authentication backdoor in production.
+    if Rails.env.test? && request && (test_user_id = request.headers["X-TEST-CURRENT-USER"])
+      @current_user = User.find_by(id: test_user_id)
+      return @current_user
+    end
+
+    return nil if cookies[:access_token].blank?
 
     begin
       payload = verify_access_token(cookies[:access_token])
       return nil unless payload["type"] == "user"
 
       @current_user = User.find_by(id: payload["sub"])
+      # Treat withdrawn accounts as unauthenticated
+      @current_user = nil if @current_user&.respond_to?(:withdrawn?) && @current_user.withdrawn?
     rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
       @current_user = nil
     end
@@ -89,14 +115,25 @@ module Authn
 
   # Get current staff from access token
   def current_staff
-    return nil if cookies[:access_token].blank?
     return @current_staff if defined?(@current_staff)
+
+    # Test helpers can inject a current staff via request header to support
+    # controller instance dispatch in tests. Only allow this in the test
+    # environment to avoid an authentication backdoor in production.
+    if Rails.env.test? && request && (test_staff_id = request.headers["X-TEST-CURRENT-STAFF"])
+      @current_staff = Staff.find_by(id: test_staff_id)
+      return @current_staff
+    end
+
+    return nil if cookies[:access_token].blank?
 
     begin
       payload = verify_access_token(cookies[:access_token])
       return nil unless payload["type"] == "staff"
 
       @current_staff = Staff.find_by(id: payload["sub"])
+      # Treat withdrawn staff as unauthenticated
+      @current_staff = nil if @current_staff&.respond_to?(:withdrawn?) && @current_staff.withdrawn?
     rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
       @current_staff = nil
     end

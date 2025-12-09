@@ -60,6 +60,7 @@ en:
             email_not_found: "Email address not found"
             verification_code_sent: "Verification code has been sent to your email address."
             turnstile_error: "Security verification failed. Please refresh and try again."
+            locked: "Your account is locked. Please try again later."
           edit:
             you_have_already_logged_in: "You have already logged in"
             session_expired: "Your session has expired. Please start over."
@@ -127,11 +128,24 @@ en:
         telephone:
           create:
             verification_code_sent: "Verification code has been sent via SMS."
+            locked: "Your account is locked. Please try again later."
           edit:
             return_page: "Back"
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
+        withdrawal:
+          create:
+            already_withdrawn: "You have already withdrawn your account."
+            success: "Your account has been withdrawn. Thank you for using our service."
+            failed: "Failed to process withdrawal. Please try again later."
+          update:
+            recovered: "Your account has been recovered. You can log in now."
+            cannot_recover: "Recovery period has expired. Please contact support."
+            failed: "Failed to recover account. Please try again later."
+          destroy:
+            deleted: "Account has been permanently deleted."
+            not_withdrawn: "Account is not withdrawn; cannot delete."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -516,6 +530,7 @@ en:
         restrict_dependent_destroy:
           has_one: Cannot delete record because a dependent %{record} exists
           has_many: Cannot delete record because dependent %{record} exist
+        identity_audit_event_format_invalid: 'must be composed of uppercase letters and underscores only'
   date:
     abbr_day_names:
       - Sun

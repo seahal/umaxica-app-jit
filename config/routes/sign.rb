@@ -41,8 +41,6 @@ Rails.application.routes.draw do
         get "/auth/google/callback", to: "oauth/googles#callback"
         get "/auth/apple/callback", to: "oauth/apples#callback"
         get "/auth/failure", to: "oauth/apples#failure"
-        # Withdrawal
-        resource :withdrawal, only: %i[new create edit update]
         # Settings with logined user
         resource :setting, only: %i[show]
         namespace :setting do
@@ -58,6 +56,7 @@ Rails.application.routes.draw do
           # resources :telephones
           # TODO: Implement email settings management
           # resources :emails
+          # sign in with ***
           resource :apple, only: [ :show ]
           resource :google, only: [ :show ]
           # TODO : Implement recovery code management
@@ -67,6 +66,8 @@ Rails.application.routes.draw do
         # namespace :token do
         #   resources :refreshs, only: [ :update ]
         # end
+        # Withdrawal
+        resource :withdrawal
       end
     end
 
@@ -99,7 +100,7 @@ Rails.application.routes.draw do
           resources :secrets
         end
         #
-        resource :withdrawal, only: %i[new create edit update]
+        resource :withdrawal
         # TODO: Implement owner management
         # resources :owner
         # TODO: Implement customer management

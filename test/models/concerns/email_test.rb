@@ -34,8 +34,12 @@ class EmailTest < ActiveSupport::TestCase
     email2 = UserIdentityEmail.create!(address: "test2@example.com", confirm_policy: true)
 
     # Different emails should have different encrypted values
-    raw1 = UserIdentityEmail.connection.execute("SELECT address FROM user_identity_emails WHERE id = '#{email1.id}'").first
-    raw2 = UserIdentityEmail.connection.execute("SELECT address FROM user_identity_emails WHERE id = '#{email2.id}'").first
+    raw1 = UserIdentityEmail.connection.execute(
+      UserIdentityEmail.sanitize_sql_array([ "SELECT address FROM user_identity_emails WHERE id = ?", email1.id ])
+    ).first
+    raw2 = UserIdentityEmail.connection.execute(
+      UserIdentityEmail.sanitize_sql_array([ "SELECT address FROM user_identity_emails WHERE id = ?", email2.id ])
+    ).first
 
     assert_not_equal raw1["address"], raw2["address"]
   end
@@ -107,5 +111,75 @@ class EmailTest < ActiveSupport::TestCase
 
     assert_not email.valid?
     assert_predicate email.errors[:confirm_policy], :any?
+  end
+
+  test "increment_attempts! increases otp_attempts_count atomically" do
+    email = UserIdentityEmail.create!(address: "test@example.com", confirm_policy: true)
+    initial_count = email.otp_attempts_count
+
+    email.increment_attempts!
+
+    assert_equal initial_count + 1, email.reload.otp_attempts_count
+  end
+
+  test "locked? returns false when attempts < 3" do
+    email = UserIdentityEmail.create!(address: "test@example.com", confirm_policy: true)
+
+    assert_not email.locked?
+
+    email.increment_attempts!
+
+    assert_not email.reload.locked?
+
+    email.increment_attempts!
+
+    assert_not email.reload.locked?
+  end
+
+  test "locked? returns true when attempts >= 3" do
+    email = UserIdentityEmail.create!(address: "test@example.com", confirm_policy: true)
+
+    3.times { email.increment_attempts! }
+
+    assert_predicate email.reload, :locked?
+  end
+
+  test "locked? returns true when locked_at is set" do
+    email = UserIdentityEmail.create!(address: "test@example.com", confirm_policy: true)
+    email.update!(locked_at: Time.current)
+
+    assert_predicate email, :locked?
+  end
+
+  test "clear_otp resets attempts and locked_at" do
+    email = UserIdentityEmail.create!(address: "test@example.com", confirm_policy: true)
+    3.times { email.increment_attempts! }
+    email.update!(locked_at: Time.current)
+
+    email.clear_otp
+
+    assert_equal 0, email.otp_attempts_count
+    assert_nil email.locked_at
+  end
+
+  test "increment_attempts! is thread-safe under concurrent access" do
+    email = UserIdentityEmail.create!(address: "concurrent@example.com", confirm_policy: true)
+
+    # rubocop:disable ThreadSafety/NewThread
+    threads = 10.times.map do
+      Thread.new do
+        10.times do
+          ActiveRecord::Base.connection_pool.with_connection do
+            # Use a fresh instance to better simulate concurrent requests
+            UserIdentityEmail.find(email.id).increment_attempts!
+          end
+        end
+      end
+    end
+
+    threads.each(&:join)
+
+    # rubocop:enable ThreadSafety/NewThread
+    assert_equal 100, email.reload.otp_attempts_count
   end
 end

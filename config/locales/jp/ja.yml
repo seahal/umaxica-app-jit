@@ -14,6 +14,7 @@ ja:
         invalid_input: Captcha を操作してください
       otp:
         invalid_input: Pass Code の値に問題があります
+    identity_audit_event_format_invalid: "イベントIDの形式が無効です。大文字とアンダースコアのみ使用可能です。"
   controller:
     apex:
       org:
@@ -64,11 +65,24 @@ ja:
             label: "電話で登録"
             create:
               verification_code_sent: "確認コードをSMSで送信しました。"
+              locked: "アカウントがロックされています。しばらく経ってから再度お試しください。"
             edit:
               return_page: 戻る
               session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             update:
               success: "電話番号が確認されました。"
+        withdrawal:
+          create:
+            already_withdrawn: "既に退会済みです。"
+            success: "退会が完了しました。ご利用ありがとうございました。"
+            failed: "退会処理に失敗しました。後でもう一度お試しください。"
+          update:
+            recovered: "アカウントを復旧しました。ログインできます。"
+            cannot_recover: "復旧期間が終了しています。サポートにお問い合わせください。"
+            failed: "復旧処理に失敗しました。後でもう一度お試しください。"
+          destroy:
+            deleted: "アカウントを完全に削除しました。"
+            not_withdrawn: "退会済みでないため、削除できません。"
         authentication:
           destroy:
             jump_obj: sign in with email
@@ -420,59 +434,60 @@ ja:
         restrict_dependent_destroy:
           has_one: '%{record}が存在しているので削除できません'
           has_many: '%{record}が存在しているので削除できません'
+        identity_audit_event_format_invalid: 'は大文字とアンダースコアのみで構成される必要があります'
   date:
     abbr_day_names:
-    - 日
-    - 月
-    - 火
-    - 水
-    - 木
-    - 金
-    - 土
+      - 日
+      - 月
+      - 火
+      - 水
+      - 木
+      - 金
+      - 土
     abbr_month_names:
-    - null
-    - 1月
-    - 2月
-    - 3月
-    - 4月
-    - 5月
-    - 6月
-    - 7月
-    - 8月
-    - 9月
-    - 10月
-    - 11月
-    - 12月
+      - null
+      - 1月
+      - 2月
+      - 3月
+      - 4月
+      - 5月
+      - 6月
+      - 7月
+      - 8月
+      - 9月
+      - 10月
+      - 11月
+      - 12月
     day_names:
-    - 日曜日
-    - 月曜日
-    - 火曜日
-    - 水曜日
-    - 木曜日
-    - 金曜日
-    - 土曜日
+      - 日曜日
+      - 月曜日
+      - 火曜日
+      - 水曜日
+      - 木曜日
+      - 金曜日
+      - 土曜日
     formats:
       default: '%Y/%m/%d'
       long: '%Y年%m月%d日(%a)'
       short: '%m/%d'
     month_names:
-    - null
-    - 1月
-    - 2月
-    - 3月
-    - 4月
-    - 5月
-    - 6月
-    - 7月
-    - 8月
-    - 9月
-    - 10月
-    - 11月
-    - 12月
+      - null
+      - 1月
+      - 2月
+      - 3月
+      - 4月
+      - 5月
+      - 6月
+      - 7月
+      - 8月
+      - 9月
+      - 10月
+      - 11月
+      - 12月
     order:
-    - :year
-    - :month
-    - :day
+      - :year
+      - :month
+      - :day
   datetime:
     distance_in_words:
       about_x_hours: 約%{count}時間
@@ -919,6 +934,7 @@ ja:
             success: "メールアドレスが確認されました。電話番号を確認してください。"
             session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             invalid_code: "確認コードが正しくありません。残り%{attempts_left}回の試行が可能です。"
+            locked: "確認コードの試行回数が上限に達しました。アカウントがロックされています。"
             max_attempts: "確認の試行回数が上限に達しました。新しいコードをリクエストしてください。"
             expired: "確認コードの有効期限が切れました。新しいコードをリクエストしてください。"
         telephones:

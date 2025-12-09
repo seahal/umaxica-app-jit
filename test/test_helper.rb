@@ -3,10 +3,12 @@
 # Disable debugger socket in CI sandboxes that set RUBY_DEBUG_OPEN by default.
 ENV.delete("RUBY_DEBUG_OPEN")
 
-if ENV["RAILS_ENV"] == "test"
-  require "simplecov"
-  SimpleCov.minimum_coverage 70
-  SimpleCov.start "rails"
+if ENV["SKIP_SIMPLECOV"].blank?
+  if ENV["RAILS_ENV"] == "test"
+    require "simplecov"
+    SimpleCov.minimum_coverage 70
+    SimpleCov.start "rails"
+  end
 end
 
 ENV["REGION_CODE"] ||= "jp"

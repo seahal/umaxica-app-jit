@@ -10,20 +10,150 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_10_27_130101) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_09_175000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.timestamptz "created_at", null: false
+  create_table "app_document_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.uuid "app_document_audit_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["app_document_audit_id"], name: "index_app_document_audit_events_on_app_document_audit_id"
+  end
+
+  create_table "app_document_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.uuid "app_document_id", null: false
+    t.datetime "created_at", null: false
+    t.text "current_value"
+    t.string "event_id", limit: 255, null: false
+    t.string "ip_address"
+    t.text "previous_value"
+    t.datetime "timestamp"
+    t.datetime "updated_at", null: false
+    t.index ["app_document_id"], name: "index_app_document_audits_on_app_document_id"
+  end
+
+  create_table "app_document_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "app_documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "app_document_status_id", limit: 255
+    t.datetime "created_at", null: false
     t.string "description"
-    t.string "entity_status_id"
-    t.binary "parent_id"
-    t.binary "prev_id"
-    t.binary "staff_id"
-    t.binary "succ_id"
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
     t.string "title"
-    t.timestamptz "updated_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "app_timeline_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "app_timeline_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.uuid "app_timeline_id", null: false
+    t.datetime "created_at", null: false
+    t.text "current_value"
+    t.string "event_id", limit: 255, null: false
+    t.string "ip_address"
+    t.text "previous_value"
+    t.datetime "timestamp"
+    t.datetime "updated_at", null: false
+    t.index ["app_timeline_id"], name: "index_app_timeline_audits_on_app_timeline_id"
+  end
+
+  create_table "app_timeline_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "app_timelines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "app_timeline_status_id", limit: 255
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_document_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_document_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.uuid "com_document_id", null: false
+    t.datetime "created_at", null: false
+    t.text "current_value"
+    t.string "event_id", limit: 255, null: false
+    t.string "ip_address"
+    t.text "previous_value"
+    t.datetime "timestamp"
+    t.datetime "updated_at", null: false
+    t.index ["com_document_id"], name: "index_com_document_audits_on_com_document_id"
+  end
+
+  create_table "com_document_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "com_document_status_id", limit: 255
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_timeline_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_timeline_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.uuid "com_timeline_id", null: false
+    t.datetime "created_at", null: false
+    t.text "current_value"
+    t.string "event_id", limit: 255, null: false
+    t.string "ip_address"
+    t.text "previous_value"
+    t.datetime "timestamp"
+    t.datetime "updated_at", null: false
+    t.index ["com_timeline_id"], name: "index_com_timeline_audits_on_com_timeline_id"
+  end
+
+  create_table "com_timeline_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_timelines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "com_timeline_status_id", limit: 255
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
   end
 
   create_table "entity_statuses", id: :string, force: :cascade do |t|
@@ -31,15 +161,86 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_130101) do
     t.timestamptz "updated_at", null: false
   end
 
-  create_table "timelines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.timestamptz "created_at", null: false
+  create_table "org_document_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "org_document_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.datetime "created_at", null: false
+    t.text "current_value"
+    t.string "event_id", limit: 255, null: false
+    t.string "ip_address"
+    t.uuid "org_document_id", null: false
+    t.text "previous_value"
+    t.datetime "timestamp"
+    t.datetime "updated_at", null: false
+    t.index ["org_document_id"], name: "index_org_document_audits_on_org_document_id"
+  end
+
+  create_table "org_document_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "org_documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.string "description"
-    t.string "entity_status_id"
+    t.string "org_document_status_id", limit: 255
     t.uuid "parent_id"
     t.uuid "prev_id"
     t.uuid "staff_id"
     t.uuid "succ_id"
     t.string "title"
-    t.timestamptz "updated_at", null: false
+    t.datetime "updated_at", null: false
   end
+
+  create_table "org_timeline_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "org_timeline_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.datetime "created_at", null: false
+    t.text "current_value"
+    t.string "event_id", limit: 255, null: false
+    t.string "ip_address"
+    t.uuid "org_timeline_id", null: false
+    t.text "previous_value"
+    t.datetime "timestamp"
+    t.datetime "updated_at", null: false
+    t.index ["org_timeline_id"], name: "index_org_timeline_audits_on_org_timeline_id"
+  end
+
+  create_table "org_timeline_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "org_timelines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "org_timeline_status_id", limit: 255
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "app_document_audits", "app_document_audit_events", column: "event_id"
+  add_foreign_key "app_document_audits", "app_documents"
+  add_foreign_key "app_timeline_audits", "app_timeline_audit_events", column: "event_id"
+  add_foreign_key "app_timeline_audits", "app_timelines"
+  add_foreign_key "com_document_audits", "com_document_audit_events", column: "event_id"
+  add_foreign_key "com_document_audits", "com_documents"
+  add_foreign_key "com_timeline_audits", "com_timeline_audit_events", column: "event_id"
+  add_foreign_key "com_timeline_audits", "com_timelines"
+  add_foreign_key "org_document_audits", "org_document_audit_events", column: "event_id"
+  add_foreign_key "org_document_audits", "org_documents"
+  add_foreign_key "org_timeline_audits", "org_timeline_audit_events", column: "event_id"
+  add_foreign_key "org_timeline_audits", "org_timelines"
 end

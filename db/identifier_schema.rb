@@ -152,7 +152,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_130019) do
     t.index ["user_id"], name: "index_user_google_auths_on_user_id"
   end
 
-  create_table "user_hmac_based_one_time_passwords", id: false, force: :cascade do |t|
+  create_table "user_identity_one_time_passwords", id: false, force: :cascade do |t|
     t.timestamptz "created_at", null: false
     t.binary "hmac_based_one_time_password_id", null: false
     t.timestamptz "updated_at", null: false

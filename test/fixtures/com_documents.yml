@@ -1,0 +1,9 @@
+one:
+  title: Com Document One
+  description: First com document
+  com_document_status_id: ACTIVE
+
+two:
+  title: Com Document Two
+  description: Second com document
+  com_document_status_id: ACTIVE

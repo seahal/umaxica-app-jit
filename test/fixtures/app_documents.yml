@@ -1,0 +1,9 @@
+one:
+  title: App Document One
+  description: First app document
+  app_document_status_id: ACTIVE
+
+two:
+  title: App Document Two
+  description: Second app document
+  app_document_status_id: ACTIVE
