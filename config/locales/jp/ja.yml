@@ -14,6 +14,7 @@ ja:
         invalid_input: Captcha を操作してください
       otp:
         invalid_input: Pass Code の値に問題があります
+    identity_audit_event_format_invalid: "イベントIDの形式が無効です。大文字とアンダースコアのみ使用可能です。"
   controller:
     apex:
       org:
@@ -64,6 +65,7 @@ ja:
             label: "電話で登録"
             create:
               verification_code_sent: "確認コードをSMSで送信しました。"
+              locked: "アカウントがロックされています。しばらく経ってから再度お試しください。"
             edit:
               return_page: 戻る
               session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
@@ -920,6 +922,7 @@ ja:
             success: "メールアドレスが確認されました。電話番号を確認してください。"
             session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             invalid_code: "確認コードが正しくありません。残り%{attempts_left}回の試行が可能です。"
+            locked: "確認コードの試行回数が上限に達しました。アカウントがロックされています。"
             max_attempts: "確認の試行回数が上限に達しました。新しいコードをリクエストしてください。"
             expired: "確認コードの有効期限が切れました。新しいコードをリクエストしてください。"
         telephones:

@@ -39,10 +39,12 @@ module Sign
       def authenticate_staff!
         return if logged_in_staff?
 
-        respond_to do |format|
-          format.json { render json: { error: "Unauthorized" }, status: :unauthorized }
-          format.any { head :unauthorized }
+        if request.format.json?
+          render json: { error: "Unauthorized" }, status: :unauthorized
+        else
+          head :unauthorized
         end
+        nil
       end
     end
   end

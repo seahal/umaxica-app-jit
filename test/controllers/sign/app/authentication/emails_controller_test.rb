@@ -91,4 +91,54 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     assert_response :redirect
   end
+
+  test "timing attack protection in update action" do
+    # Create and verify an email
+    test_email = UserIdentityEmail.create!(address: "timing_test@example.com", confirm_policy: true)
+    test_email.update!(pass_code: "123456", otp_attempts_count: 0)
+
+    # Start session
+    post sign_app_authentication_email_url,
+         params: {
+           user_identity_email: { address: test_email.address },
+           "cf-turnstile-response" => "test_token"
+         },
+         headers: { "Host" => @host }
+
+    follow_redirect!
+    session_id = cookies["user_email_authentication_id"]
+
+    # Measure time for valid code
+    start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    patch sign_app_authentication_email_url,
+          params: { user_identity_email: { pass_code: "123456" } },
+          headers: { "Host" => @host, "Cookie" => "user_email_authentication_id=#{session_id}" }
+    valid_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
+
+    # Reset for invalid code test
+    test_email.update!(pass_code: "123456", otp_attempts_count: 0)
+    post sign_app_authentication_email_url,
+         params: {
+           user_identity_email: { address: test_email.address },
+           "cf-turnstile-response" => "test_token"
+         },
+         headers: { "Host" => @host }
+
+    follow_redirect!
+    session_id = cookies["user_email_authentication_id"]
+
+    # Measure time for invalid code
+    start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    patch sign_app_authentication_email_url,
+          params: { user_identity_email: { pass_code: "999999" } },
+          headers: { "Host" => @host, "Cookie" => "user_email_authentication_id=#{session_id}" }
+    invalid_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
+
+    # Times should be similar (within 50% tolerance for timing attack protection)
+    time_difference = (valid_time - invalid_time).abs
+    max_allowed_difference = [ valid_time, invalid_time ].max * 0.5
+
+    assert_operator time_difference, :<=, max_allowed_difference,
+                    "Response times differ too much: valid=#{valid_time.round(4)}s, invalid=#{invalid_time.round(4)}s"
+  end
 end

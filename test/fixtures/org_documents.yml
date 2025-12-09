@@ -1,0 +1,9 @@
+one:
+  title: Org Document One
+  description: First org document
+  org_document_status_id: ACTIVE
+
+two:
+  title: Org Document Two
+  description: Second org document
+  org_document_status_id: ACTIVE

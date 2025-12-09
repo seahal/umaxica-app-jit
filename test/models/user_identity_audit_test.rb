@@ -104,4 +104,16 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     assert_not audit.valid?
     assert_not_empty audit.errors[:user_identity_audit_event]
   end
+
+  test "validates foreign key constraint on event_id" do
+    audit = UserIdentityAudit.new(
+      user: @user,
+      event_id: "NON_EXISTENT_EVENT",
+      timestamp: Time.current
+    )
+
+    assert_raises ActiveRecord::InvalidForeignKey do
+      audit.save!(validate: false)
+    end
+  end
 end

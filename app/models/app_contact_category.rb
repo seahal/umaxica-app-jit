@@ -1,3 +1,5 @@
+# NOTE: For Regional usage.
+
 class AppContactCategory < GuestsRecord
   self.primary_key = :title
 

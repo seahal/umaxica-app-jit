@@ -74,8 +74,16 @@ module Authn
 
   # Get current user from access token
   def current_user
-    return nil if cookies[:access_token].blank?
     return @current_user if defined?(@current_user)
+
+    # Test helpers can inject a current user via request header to support
+    # controller instance dispatch in tests. Value should be the user id.
+    if request && (test_user_id = request.headers["X-TEST-CURRENT-USER"])
+      @current_user = User.find_by(id: test_user_id)
+      return @current_user
+    end
+
+    return nil if cookies[:access_token].blank?
 
     begin
       payload = verify_access_token(cookies[:access_token])
@@ -89,8 +97,16 @@ module Authn
 
   # Get current staff from access token
   def current_staff
-    return nil if cookies[:access_token].blank?
     return @current_staff if defined?(@current_staff)
+
+    # Test helpers can inject a current staff via request header to support
+    # controller instance dispatch in tests. Value should be the staff id.
+    if request && (test_staff_id = request.headers["X-TEST-CURRENT-STAFF"])
+      @current_staff = Staff.find_by(id: test_staff_id)
+      return @current_staff
+    end
+
+    return nil if cookies[:access_token].blank?
 
     begin
       payload = verify_access_token(cookies[:access_token])

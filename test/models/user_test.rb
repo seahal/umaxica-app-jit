@@ -33,10 +33,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal :has_one, @user.class.reflect_on_association(:user_identity_google_auth).macro
   end
 
-  test "should have many user_sessions association" do
-    assert_respond_to @user, :user_sessions
-    assert_equal :has_many, @user.class.reflect_on_association(:user_sessions).macro
-  end
 
   test "should have many user_time_based_one_time_password association" do
     assert_respond_to @user, :user_time_based_one_time_password

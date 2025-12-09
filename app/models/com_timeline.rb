@@ -1,24 +1,20 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 # == Schema Information
 #
-# Table name: timelines
+# Table name: com_timelines
 #
 #  id               :uuid             not null, primary key
 #  description      :string
 #  title            :string
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  entity_status_id :string
+#  com_timeline_status_id :string
 #  parent_id        :uuid
 #  prev_id          :uuid
 #  staff_id         :uuid
 #  succ_id          :uuid
 #
-one:
-  parent_id:
-  succ_id:
-  parent_id:
-  title: MyString
-  description: MyString
+class ComTimeline < BusinessesRecord
+  belongs_to :com_timeline_status, optional: true
 
+  include Timeline
+end

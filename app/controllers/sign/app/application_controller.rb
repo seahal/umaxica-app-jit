@@ -27,10 +27,12 @@ module Sign
         return if logged_in?
 
         # Halt the request with 401 for both HTML and JSON.
-        respond_to do |format|
-          format.json { render json: { error: "Unauthorized" }, status: :unauthorized }
-          format.any { head :unauthorized }
+        if request.format.json?
+          render json: { error: "Unauthorized" }, status: :unauthorized
+        else
+          head :unauthorized
         end
+        nil
       end
     end
   end

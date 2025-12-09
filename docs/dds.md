@@ -182,7 +182,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | `ServiceSiteContact` | `GuestsRecord` | Encrypts email/phone/title/description, validates OTP codes, stores `ip_address` |
 | `TimeBasedOneTimePassword` | `UniversalRecord` | Encrypts `private_key`, stores `last_otp_at`, `first_token` virtual attr |
 | `UserPasskey` | `ApplicationRecord` | Validates `webauthn_id`, `public_key`, `description`, `sign_count` |
-| `UserToken`, `UserSession` | `TokensRecord` | Reference tokens for JWT refresh handling |
+| `UserToken`, `StaffToken` | `TokensRecord` | Reference tokens for JWT refresh handling |
 | `IdentifierRegionCode` and join tables | `UniversalRecord` | Future mapping for personas/staff region codes |
 
 ### 5.2 Cookies & Sessions

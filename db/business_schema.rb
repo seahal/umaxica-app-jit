@@ -10,20 +10,76 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_10_27_130101) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_09_005000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.timestamptz "created_at", null: false
+  create_table "app_document_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "app_documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "app_document_status_id", limit: 255
+    t.datetime "created_at", null: false
     t.string "description"
-    t.string "entity_status_id"
-    t.binary "parent_id"
-    t.binary "prev_id"
-    t.binary "staff_id"
-    t.binary "succ_id"
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
     t.string "title"
-    t.timestamptz "updated_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "app_timeline_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "app_timelines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "app_timeline_status_id", limit: 255
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_document_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "com_document_status_id", limit: 255
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_timeline_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "com_timelines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "com_timeline_status_id", limit: 255
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
   end
 
   create_table "entity_statuses", id: :string, force: :cascade do |t|
@@ -31,15 +87,37 @@ ActiveRecord::Schema[8.2].define(version: 2025_10_27_130101) do
     t.timestamptz "updated_at", null: false
   end
 
-  create_table "timelines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.timestamptz "created_at", null: false
+  create_table "org_document_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "org_documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.string "description"
-    t.string "entity_status_id"
+    t.string "org_document_status_id", limit: 255
     t.uuid "parent_id"
     t.uuid "prev_id"
     t.uuid "staff_id"
     t.uuid "succ_id"
     t.string "title"
-    t.timestamptz "updated_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "org_timeline_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "org_timelines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "org_timeline_status_id", limit: 255
+    t.uuid "parent_id"
+    t.uuid "prev_id"
+    t.uuid "staff_id"
+    t.uuid "succ_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
   end
 end

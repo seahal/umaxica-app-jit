@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_08_230200) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_09_143000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -60,6 +60,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230200) do
     t.uuid "staff_id", null: false
     t.datetime "timestamp"
     t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_staff_identity_audits_on_event_id"
     t.index ["staff_id"], name: "index_staff_identity_audits_on_staff_id"
   end
 
@@ -149,11 +150,13 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230200) do
   create_table "staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "public_id", limit: 255
-    t.string "staff_status_id", limit: 255, default: "NONE", null: false
+    t.string "staff_identity_status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.string "webauthn_id"
+    t.datetime "withdrawn_at"
     t.index ["public_id"], name: "index_staffs_on_public_id", unique: true
-    t.index ["staff_status_id"], name: "index_staffs_on_staff_status_id"
+    t.index ["staff_identity_status_id"], name: "index_staffs_on_staff_identity_status_id"
+    t.index ["withdrawn_at"], name: "index_staffs_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"
   end
 
   create_table "user_apple_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -187,6 +190,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230200) do
     t.datetime "timestamp"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.index ["event_id"], name: "index_user_identity_audits_on_event_id"
     t.index ["user_id"], name: "index_user_identity_audits_on_user_id"
   end
 
@@ -282,10 +286,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230200) do
     t.datetime "created_at", null: false
     t.string "public_id", limit: 255
     t.datetime "updated_at", null: false
-    t.string "user_status_id", limit: 255, default: "NONE", null: false
+    t.string "user_identity_status_id", limit: 255, default: "NONE", null: false
     t.string "webauthn_id"
+    t.datetime "withdrawn_at"
     t.index ["public_id"], name: "index_users_on_public_id", unique: true
-    t.index ["user_status_id"], name: "index_users_on_user_status_id"
+    t.index ["user_identity_status_id"], name: "index_users_on_user_identity_status_id"
+    t.index ["withdrawn_at"], name: "index_users_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"
   end
 
   add_foreign_key "apple_auths", "users"
@@ -295,11 +301,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_08_230200) do
   add_foreign_key "staff_identity_passkeys", "staffs"
   add_foreign_key "staff_identity_secrets", "staffs"
   add_foreign_key "staff_passkeys", "staffs"
-  add_foreign_key "staffs", "staff_identity_statuses", column: "staff_status_id"
   add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_identity_audits", "users"
   add_foreign_key "user_identity_passkeys", "users"
   add_foreign_key "user_identity_secrets", "users"
   add_foreign_key "user_passkeys", "users"
-  add_foreign_key "users", "user_identity_statuses", column: "user_status_id"
 end

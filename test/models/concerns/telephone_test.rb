@@ -70,4 +70,53 @@ class TelephoneTest < ActiveSupport::TestCase
     assert_not duplicate.valid?
     assert_predicate duplicate.errors[:number], :any?
   end
+
+  test "increment_attempts! increases otp_attempts_count atomically" do
+    telephone = UserIdentityTelephone.create!(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true)
+    initial_count = telephone.otp_attempts_count
+
+    telephone.increment_attempts!
+
+    assert_equal initial_count + 1, telephone.reload.otp_attempts_count
+  end
+
+  test "locked? returns false when attempts < 3" do
+    telephone = UserIdentityTelephone.create!(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true)
+
+    assert_not telephone.locked?
+
+    telephone.increment_attempts!
+
+    assert_not telephone.reload.locked?
+
+    telephone.increment_attempts!
+
+    assert_not telephone.reload.locked?
+  end
+
+  test "locked? returns true when attempts >= 3" do
+    telephone = UserIdentityTelephone.create!(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true)
+
+    3.times { telephone.increment_attempts! }
+
+    assert_predicate telephone.reload, :locked?
+  end
+
+  test "locked? returns true when locked_at is set" do
+    telephone = UserIdentityTelephone.create!(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true)
+    telephone.update!(locked_at: Time.current)
+
+    assert_predicate telephone, :locked?
+  end
+
+  test "clear_otp resets attempts and locked_at" do
+    telephone = UserIdentityTelephone.create!(number: "+1234567890", confirm_policy: true, confirm_using_mfa: true)
+    3.times { telephone.increment_attempts! }
+    telephone.update!(locked_at: Time.current)
+
+    telephone.clear_otp
+
+    assert_equal 0, telephone.otp_attempts_count
+    assert_nil telephone.locked_at
+  end
 end

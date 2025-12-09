@@ -10,6 +10,8 @@ en:
     sample_successfully_updated: "Registration completed successfully."
   common:
     ok: "OK"
+  model:
+    identity_audit_event_format_invalid: "Invalid event ID format. Only uppercase letters and underscores are allowed."
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
@@ -119,6 +121,10 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
+        email:
+          update:
+            invalid_code: "Invalid verification code"
+            locked: "Account is locked due to too many failed attempts"
       withdrawal:
         create:
           success: "Withdrawal processed (dummy)"
