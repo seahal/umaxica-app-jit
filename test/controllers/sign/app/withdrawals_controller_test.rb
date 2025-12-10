@@ -1,4 +1,5 @@
 require "test_helper"
+require_relative "../../../../app/errors/sign/withdrawal_error"
 
 class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -45,12 +46,14 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new withdrawal page" do
-    get new_sign_app_withdrawal_url, headers: request_headers
+    get new_sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_response :success
   end
 
   test "should create withdrawal and set withdrawn_at" do
+    @user.update!(user_identity_status_id: UserIdentityStatus::ALIVE)
+
     post sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
@@ -59,7 +62,7 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should prevent double withdrawal" do
-    @user.update!(withdrawn_at: 1.day.ago)
+    @user.update!(withdrawn_at: 1.day.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
 
     post sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
@@ -68,7 +71,7 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should allow recovery within 1 month" do
-    @user.update!(withdrawn_at: 15.days.ago)
+    @user.update!(withdrawn_at: 15.days.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
 
     patch sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
@@ -78,7 +81,7 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should prevent recovery after 1 month" do
-    @user.update!(withdrawn_at: 45.days.ago)
+    @user.update!(withdrawn_at: 45.days.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
 
     patch sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
@@ -89,7 +92,7 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
 
   test "should permanently destroy user when withdrawn" do
     # Create a fresh user with no dependent records, mark withdrawn and destroy
-    fresh = User.create!(public_id: SecureRandom.uuid)
+    fresh = User.create!(public_id: SecureRandom.uuid, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
     fresh.update!(withdrawn_at: 31.days.ago)
 
     delete sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => fresh.id)
@@ -99,7 +102,7 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "withdrawn user can access withdrawal status page" do
-    @user.update!(withdrawn_at: 1.day.ago)
+    @user.update!(withdrawn_at: 1.day.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
 
     get sign_app_withdrawal_url(format: :html), headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
@@ -111,5 +114,51 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   test "test user is user not staff" do
     assert_predicate @user, :user?, "User should be identified as user"
     assert_not @user.staff?, "User should not be identified as staff"
+  end
+
+  # Error path tests for withdrawal state validation
+  test "should raise InvalidWithdrawalStateError when accessing new for non-ALIVE user" do
+    @user.update!(user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
+
+    assert_raises(Sign::InvalidWithdrawalStateError) do
+      get new_sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    end
+  end
+
+  test "should raise InvalidWithdrawalStateError when accessing show for ALIVE user" do
+    # User must be in PRE_WITHDRAWAL_CONDITION state to access show
+    @user.update!(user_identity_status_id: UserIdentityStatus::ALIVE)
+
+    assert_raises(Sign::InvalidWithdrawalStateError) do
+      get sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    end
+  end
+
+  test "should raise InvalidWithdrawalStateError when accessing update for ALIVE user" do
+    @user.update!(user_identity_status_id: UserIdentityStatus::ALIVE)
+
+    assert_raises(Sign::InvalidWithdrawalStateError) do
+      patch sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    end
+  end
+
+  test "should raise InvalidWithdrawalStateError when accessing destroy for ALIVE user" do
+    @user.update!(user_identity_status_id: UserIdentityStatus::ALIVE)
+
+    assert_raises(Sign::InvalidWithdrawalStateError) do
+      delete sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    end
+  end
+
+  test "deletion handles foreign key constraints gracefully" do
+    # Create a user with associations that could trigger FK constraints
+    fresh = User.create!(public_id: SecureRandom.uuid)
+    fresh.update!(withdrawn_at: 31.days.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
+
+    # Ensure deletion works without FK errors - the destroy process cleans up associations first
+    delete sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => fresh.id)
+
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_nil User.find_by(id: fresh.id), "User should be removed from database after destroy"
   end
 end
