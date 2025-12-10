@@ -15,13 +15,12 @@
 
 1. Install Ruby dependencies: `bundle install`
 2. Install JavaScript/TypeScript dependencies: `bun install`
-3. Prepare the database (creates, migrates, seeds as needed): `bin/rails db:prepare`
+3. Prepare the database (creates, migrates, seeds as`
 4. ... run `bin/dev`
 
 ## Testing
-
 - Rails test suite (parallelized): `bundle exec rails test`
-- JavaScript/TypeScript tests: `bun test`
+- Coverage can be calculated (or measured) when you execute the test suite using the command `COVERAGE=true bin/rails test.`
 
 ## Linting & Formatting
 

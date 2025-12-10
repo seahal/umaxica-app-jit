@@ -8,6 +8,7 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+
   test "sets lang attribute on html element" do
     get help_com_root_url(format: :html)
 
@@ -32,4 +33,10 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  private
+
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

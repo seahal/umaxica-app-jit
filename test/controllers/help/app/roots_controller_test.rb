@@ -27,14 +27,18 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_select "body", count: 1 do
       assert_select "div", count: 1 do
-        #        assert_select "h1", text: "#{ brand_name } (docs, app)"
-        #
+        # assert_select "h1", text: "#{ brand_name } (docs, app)"
         assert_select "div", count: 1
         # assert_select "footer", count: 1 do
         #   assert_select "small", text: /^©/
       end
     end
   end
-end
+  # rubocop:enable Minitest/MultipleAssertions
 
-# rubocop:enable Minitest/MultipleAssertions
+  private
+
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
+end

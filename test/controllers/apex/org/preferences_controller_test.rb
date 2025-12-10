@@ -1,6 +1,14 @@
 require "test_helper"
 
 class Apex::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
+  private
+
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
+
+  public
+
   test "should get show" do
     get apex_org_preference_url
 

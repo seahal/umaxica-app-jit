@@ -13,6 +13,7 @@ concurrency:
 
 permissions:
   contents: read
+  security-events: write
   issues: write
   checks: write
   pull-requests: write
@@ -71,6 +72,29 @@ jobs:
         run: bundle exec bundle audit check --update
 
   # ====================
+  # Secret Leaks Detection
+  # ====================
+  gitleaks:
+    name: Secret leaks (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_REPORT_PATH: gitleaks.sarif
+          GITLEAKS_FORMAT: sarif
+          GITLEAKS_FAIL: true
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gitleaks.sarif
+        continue-on-error: true
+
+  # ====================
   # Linting - Ruby
   # ====================
   lint-ruby:
@@ -95,6 +119,9 @@ jobs:
 
       - name: Check unused routing config
         run: bundle exec rails routes --unused
+
+      - name: Check importmap integrity
+        run: bin/rails importmap:audit
 
   # ====================
   # Testing - Rails
@@ -258,7 +285,7 @@ jobs:
           bin/rails db:migrate
 
       - name: Run Rails tests
-        run: bundle exec rails test
+        run: COVERAGE=true bundle exec rails test
 
       - name: Upload test coverage
         if: always()
@@ -289,6 +316,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -297,8 +330,12 @@ jobs:
       - name: Install Bun dependencies
         run: bun install --frozen-lockfile
 
-      - name: Check Biome formatting and linting.
+      - name: Check Bun dependencies for vulnerabilities
+        run: bun audit
+
+      - name: Check Biome formatting and linting
         run: bun run check
+
 
   # ====================
   # Security - Docker Image Scan
