@@ -1,4 +1,3 @@
----
 en:
   hello: "Hello world 2"
   messages:
@@ -139,6 +138,10 @@ en:
         destroy:
           deleted: "Account has been permanently deleted."
           not_withdrawn: "Account is not withdrawn; cannot delete."
+        errors:
+          invalid_state: "Cannot perform this action. Your account is in an invalid state: %{current_status}"
+          recovery_not_available: "Your account cannot be recovered at this time. The recovery period has expired."
+          deletion_failed: "Failed to delete your account. Please try again or contact support."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -211,6 +214,10 @@ en:
         destroy:
           deleted: "Account has been permanently deleted."
           not_withdrawn: "Account is not withdrawn; cannot delete."
+        errors:
+          invalid_state: "Cannot perform this action. Your account is in an invalid state: %{current_status}"
+          recovery_not_available: "Your account cannot be recovered at this time. The recovery period has expired."
+          deletion_failed: "Failed to delete your account. Please try again or contact support."
       authentication:
         new:
           page_title: "Choose how to sign in"
@@ -792,6 +799,24 @@ en:
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
           back: "Back to Preferences"
+  sign:
+    org:
+      withdrawal:
+        create:
+          already_withdrawn: "You have already withdrawn."
+          success: "Your account has been withdrawn. Thank you for using our service."
+          failed: "Failed to process withdrawal. Please try again later."
+        update:
+          recovered: "Your account has been recovered. You can log in now."
+          cannot_recover: "Recovery period has expired. Please contact support."
+          failed: "Failed to recover account. Please try again later."
+        destroy:
+          deleted: "Account has been permanently deleted."
+          not_withdrawn: "Account is not withdrawn; cannot delete."
+          failed: "Failed to permanently delete the account."
+        show:
+          title: "Withdrawal status"
+          active: "Your account is active"
         resets:
           title: "Reset Preferences"
           description: "Remove saved preference cookies for this browser."

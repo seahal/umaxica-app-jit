@@ -94,6 +94,13 @@ class Sign::Org::Registration::TelephonesControllerTest < ActionDispatch::Integr
     assert_response :unprocessable_content
   end
 
+  # Turnstile Widget Verification Tests
+  test "new registration telephone page renders Turnstile widget" do
+    get new_sign_org_registration_telephone_url, headers: default_headers
+
+    assert_response :success
+    assert_select "div[id^='cf-turnstile-']", count: 1
+  end
 
   private
 

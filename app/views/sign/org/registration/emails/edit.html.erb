@@ -24,10 +24,8 @@
       <%= form.label :pass_code %>
       <%= form.text_field :pass_code %>
     </div>
-
+<%= render "concern/cloudflare_turnstile" %>
     <%= form.submit %>
   <% end %>
 
 </div>
-
-<div class="cf-turnstile" data-sitekey="<%= ENV['CLOUDFLARE_TURNSTILE_SITE_KEY'] %>"></div>

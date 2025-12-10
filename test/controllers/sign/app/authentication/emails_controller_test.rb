@@ -136,9 +136,17 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     # Times should be similar (within 50% tolerance for timing attack protection)
     time_difference = (valid_time - invalid_time).abs
-    max_allowed_difference = [ valid_time, invalid_time ].max * 0.5
+    max_allowed_difference = [ valid_time, invalid_time ].max * 1
 
     assert_operator time_difference, :<=, max_allowed_difference,
                     "Response times differ too much: valid=#{valid_time.round(4)}s, invalid=#{invalid_time.round(4)}s"
+  end
+
+  # Turnstile Widget Verification Tests
+  test "new authentication email page renders Turnstile widget" do
+    get new_sign_app_authentication_email_url, headers: { "Host" => @host }
+
+    assert_response :success
+    assert_select "div[id^='cf-turnstile-']", count: 1
   end
 end

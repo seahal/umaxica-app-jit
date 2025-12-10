@@ -1,0 +1,11 @@
+<%# Simple withdrawal status page used by Sign::App::WithdrawalsController#show %>
+<div class="withdrawal-status">
+  <h1><%= t("sign.app.withdrawal.show.title", default: "Withdrawal status") %></h1>
+
+  <% if defined?(@current_user) && @current_user && @current_user.respond_to?(:withdrawn_at) && @current_user.withdrawn_at.present? %>
+    <p><strong><%= t("sign.app.withdrawal.create.already_withdrawn", default: "Your account has been withdrawn") %></strong></p>
+    <p><%= l(@current_user.withdrawn_at) if @current_user.withdrawn_at %></p>
+  <% else %>
+    <p><%= t("sign.app.withdrawal.show.active", default: "Your account is active") %></p>
+  <% end %>
+</div>

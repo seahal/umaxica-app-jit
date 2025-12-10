@@ -1,6 +1,11 @@
-<h1><%= t('.title', default: 'Withdrawal') %></h1>
-<p><%= t('.description', default: 'Are you sure you want to withdraw?') %></p>
+<h1><%= t('sign.app.withdrawal.new.title', default: 'Withdrawal') %></h1>
+<p><%= t('sign.app.withdrawal.new.description', default: 'Are you sure you want to withdraw?') %></p>
 
 <%= form_with url: sign_app_withdrawal_path, method: :post, local: true do |f| %>
-  <%= f.submit t('.submit', default: 'Withdraw'), class: "btn btn-danger" %>
+  <div>
+    <%= f.check_box :confirm_create_recovery_code %>
+    <%= f.label :confirm_create_recovery_code, "Confirm create recovery code" %>
+  </div>
+  <%= render "concern/cloudflare_turnstile" %>
+  <%= f.submit t('sign.app.withdrawal.new.submit', default: 'Withdraw'), class: "btn btn-danger" %>
 <% end %>

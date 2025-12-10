@@ -1,14 +1,20 @@
 {
 	"name": "umaxica-app-jit-dc",
-	"dockerComposeFile": ["../compose.yml", "./compose.override.yml"],
+	"dockerComposeFile": [
+		"../compose.yml",
+		"./compose.override.yml"
+	],
 	"service": "core",
 	"remoteUser": "jit",
 	"containerUser": "jit",
 	"workspaceFolder": "/home/jit/workspace",
 	"overrideCommand": true,
-	"forwardPorts": [3002],
+	"forwardPorts": [
+		3002
+	],
 	"remoteEnv": {
-		"EDITOR": "code --wait --reuse-window"
+		"EDITOR": "code --wait --reuse-window",
+		"DEBUGGER_DISABLE": "1"
 	},
 	"customizations": {
 		"vscode": {
@@ -97,7 +103,9 @@
 		"jetbrains": {
 			"remoteId": "intellij",
 			"backend": "intellij",
-			"plugins": ["org.jetbrains.plugins.ruby"],
+			"plugins": [
+				"org.jetbrains.plugins.ruby"
+			],
 			"containerEnv": {
 				"DEVCONTAINER_IDE": "jetbrains",
 				"DEVCONTAINER_AUTO_START_BIN_DEV": "0"
@@ -108,12 +116,14 @@
 	"containerEnv": {
 		"DEVCONTAINER_AUTO_START_BIN_DEV": "1",
 		"NODE_OPTIONS": "--max-old-space-size=4096",
-		"RUBY_DEBUG_OPEN": "true",
 		"QT_QPA_PLATFORM": "wayland",
-		"GDK_BACKEND": "wayland"
+		"GDK_BACKEND": "wayland",
+		"RUBY_YJIT_ENABLE": "1",
+		"RUBY_YJIT_CALL_THRESHOLD": "10",
+		"RUBY_DEBUG_OPEN": "false"
 	},
 	"updateRemoteUserUID": true,
-	"postCreateCommand": "bin/rails db:create",
+	"postCreateCommand": "RAILS_ENV=test bin/rails db:create",
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},

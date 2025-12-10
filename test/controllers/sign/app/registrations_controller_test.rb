@@ -1,10 +1,6 @@
 require "test_helper"
 
 class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
-  def host
-    ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
-  end
-
   test "should get new" do
     get new_sign_app_registration_url(format: :html), headers: { "Host" => host }
 
@@ -72,4 +68,14 @@ class Sign::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  private
+
+  def host
+    ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+  end
+
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

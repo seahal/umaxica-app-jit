@@ -72,6 +72,14 @@ ja:
             update:
               success: "電話番号が確認されました。"
         withdrawal:
+          new:
+            title: "退会"
+            description: "アカウントを退会しようとしています。この操作でアカウントが一時的に無効化され、復旧期間中は復帰できます。"
+            submit: "アカウントを退会する"
+          edit:
+            title: "アカウント復旧"
+            description: "あなたのアカウントは現在退会状態です。下のボタンをクリックしてアカウントを復旧してください。"
+            submit: "アカウントを復旧する"
           create:
             already_withdrawn: "既に退会済みです。"
             success: "退会が完了しました。ご利用ありがとうございました。"
@@ -301,6 +309,11 @@ ja:
     sample_successfully_updated: 登録が完了しました。
   sign:
     app:
+      root:
+        title: "Sign へようこそ"
+        description: "はじめるためのアクションを選択してください"
+        registration: "登録"
+        authentication: "ログイン"
       authentication:
         new:
           page_title: サインイン方法を選ぶ
@@ -701,7 +714,7 @@ ja:
           back: 設定一覧に戻る
     org:
       preferences:
-        <<: *apex_preferences_shared
+        !!merge <<: *apex_preferences_shared
         themes:
           updated: 管理テーマを%{theme}に更新しました
           invalid: 無効な管理テーマが選択されました
@@ -753,7 +766,7 @@ ja:
           back: 設定一覧に戻る
     com:
       preferences:
-        <<: *apex_preferences_shared
+        !!merge <<: *apex_preferences_shared
         themes:
           updated: "%{theme} にテーマを更新しました"
           invalid: 無効なテーマが選択されました
@@ -967,3 +980,4 @@ ja:
         id_required: "お問い合わせIDは必須です"
         not_found: "お問い合わせが見つかりません"
         invalid_status: "無効なお問い合わせステータス: SET_UPが予想されていますが、%{current_status}です"
+  description: "退会"

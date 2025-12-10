@@ -2,5 +2,10 @@
 <p><%= t('.description', default: 'Are you sure you want to withdraw?') %></p>
 
 <%= form_with url: sign_org_withdrawal_path, method: :post, local: true do |f| %>
+  <div>
+    <%= f.check_box :confirm_create_recovery_code %>
+    <%= f.label :confirm_create_recovery_code, "Confirm create recovery code" %>
+  </div>
+<%= render "concern/cloudflare_turnstile" %>
   <%= f.submit t('.submit', default: 'Withdraw'), class: "btn btn-danger" %>
 <% end %>

@@ -1,48 +1,39 @@
 # CI/CD Pipeline for Umaxica App
 name: 'CI'
-
 on:
   push:
     branches: [develop]
   pull_request:
     branches: [main]
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 permissions:
   contents: read
+  security-events: write
   issues: write
   checks: write
   pull-requests: write
-
 defaults:
   run:
     shell: bash
-
 env:
   # CI Configuration
   CI: true
   DOCKER_BUILDKIT: '1'
-
   # Version Configuration
   RUBY_VERSION: '4.0.0-preview2'
   BUN_VERSION: '1.3.4'
-
   # Rails Configuration
   RAILS_ENV: test
   RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
   NODE_ENV: test
-
   # Bundler Configuration
   BUNDLE_WITH: test
   BUNDLE_JOBS: 4
-
   # Database Configuration
   POSTGRESQL_USER: postgres
   POSTGRESQL_PASSWORD: password
-
   # Region Configuration
   REGION_CODE: jp
   APEX_REGION: true
@@ -57,19 +48,37 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
-
       - name: Run Brakeman security scanner
         run: bundle exec brakeman -z -q
-
       - name: Run bundle-audit
         run: bundle exec bundle audit check --update
-
+  # ====================
+  # Secret Leaks Detection
+  # ====================
+  gitleaks:
+    name: Secret leaks (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_REPORT_PATH: gitleaks.sarif
+          GITLEAKS_FORMAT: sarif
+          GITLEAKS_FAIL: true
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gitleaks.sarif
+        continue-on-error: true
   # ====================
   # Linting - Ruby
   # ====================
@@ -80,22 +89,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
-
       - name: Run RuboCop
         run: bundle exec rubocop --fail-fast
-
       - name: Run ERB Lint
         run: bundle exec erb_lint --lint-all
-
       - name: Check unused routing config
         run: bundle exec rails routes --unused
-
+      - name: Check importmap integrity
+        run: bin/importmap audit
   # ====================
   # Testing - Rails
   # ====================
@@ -107,59 +113,47 @@ jobs:
       # Rails & Rack
       RACK_ENV: test
       RAILS_MAX_THREADS: 5
-
       # Redis
       REDIS_URL: redis://valkey:6379/0
-
       # Application
       NAME: UMAXICA
       BRAND_NAME: UMAXICA
       PORT: 3000
-
       # Identifiers
       SINGLETON_DEFAULT_SALT: hoge
       IDENTIFIER_REGION_CODE: '392'
       IDENTIFIER_INSTANCE_ID: '0123456789'
-
       # Domain URLs - APEX
       APEX_CORPORATE_URL: com.localhost
       APEX_SERVICE_URL: app.localhost
       APEX_STAFF_URL: org.localhost
-
       # Domain URLs - Sign
       SIGN_SERVICE_URL: sign.app.localhost
       SIGN_STAFF_URL: sign.org.localhost
-
       # Domain URLs - BACK
       BACK_CORPORATE_URL: back.com.localhost
       BACK_SERVICE_URL: back.app.localhost
       BACK_STAFF_URL: back.org.localhost
-
       # Domain URLs - Docs
       DOCS_CORPORATE_URL: docs.com.localhost
       DOCS_SERVICE_URL: docs.app.localhost
       DOCS_STAFF_URL: docs.org.localhost
-
       # Domain URLs - News
       NEWS_CORPORATE_URL: news.com.localhost
       NEWS_SERVICE_URL: news.app.localhost
       NEWS_STAFF_URL: news.org.localhost
-
       # Domain URLs - Help
       HELP_CORPORATE_URL: help.com.localhost
       HELP_SERVICE_URL: help.app.localhost
       HELP_STAFF_URL: help.org.localhost
-
       # Domain URLs - Edge
       EDGE_CORPORATE_URL: localhost:5170
       EDGE_SERVICE_URL: localhost:5171
       EDGE_STAFF_URL: localhost:5172
-
       # PostgreSQL - Connection
       POSTGRESQL_USER: root
       POSTGRESQL_PORT: 5432
       POSTGRESQL_PASSWORD: password
-
       # PostgreSQL - Primary/Replica Hosts
       POSTGRESQL_UNIVERSAL_PUB: localhost
       POSTGRESQL_UNIVERSAL_SUB: localhost
@@ -183,14 +177,11 @@ jobs:
       POSTGRESQL_SPECIALITY_SUB: localhost
       POSTGRESQL_STORAGE_PUB: localhost
       POSTGRESQL_STORAGE_SUB: localhost
-
       # Kafka
       KAFKA_BROKERS: kafka:29092
-
       # Email
       RESEND_SMTP_ENDPOINT: smtp.resend.com
       RESEND_SMTP_USER_NAME: resend
-
       # Object Storage
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
@@ -204,27 +195,18 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
       valkey:
         image: valkey/valkey:8-alpine
         ports:
           - 6379:6379
         options: >-
-          --health-cmd "valkey-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
+          --health-cmd "valkey-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
       zookeeper:
         image: confluentinc/cp-zookeeper:7.4.0
         env:
           ZOOKEEPER_CLIENT_PORT: 2181
           ZOOKEEPER_TICK_TIME: 2000
-
       kafka:
         image: confluentinc/cp-kafka:7.4.0
         env:
@@ -237,29 +219,21 @@ jobs:
         ports:
           - 9092:9092
         options: >-
-          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092"
-          --health-interval 30s
-          --health-timeout 10s
-          --health-retries 5
-
+          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092" --health-interval 30s --health-timeout 10s --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
-
       - name: Setup test databases
         run: |
           bin/rails db:create
           bin/rails db:migrate
-
       - name: Run Rails tests
-        run: bundle exec rails test
-
+        run: COVERAGE=true bundle exec rails test
       - name: Upload test coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -267,7 +241,6 @@ jobs:
           name: rails-coverage-report
           path: coverage/
           retention-days: 30
-
       - name: Upload test logs
         if: failure()
         uses: actions/upload-artifact@v4
@@ -277,7 +250,6 @@ jobs:
             log/test.log
             tmp/screenshots/
           retention-days: 7
-
   # ====================
   # Linting - JavaScript
   # ====================
@@ -288,18 +260,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ env.BUN_VERSION }}
-
       - name: Install Bun dependencies
         run: bun install --frozen-lockfile
-
-      - name: Check Biome formatting and linting.
+      - name: Check Bun dependencies for vulnerabilities
+        run: bun audit
+      - name: Check Biome formatting and linting
         run: bun run check
-
   # ====================
   # Security - Docker Image Scan
   # ====================
@@ -310,14 +285,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-
       - name: Build Docker image
         run: |
           docker build . \
             --target production \
             --tag asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }} \
             --file Dockerfile
-
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:

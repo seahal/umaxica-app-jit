@@ -22,5 +22,13 @@ module Sign::App::Authentication
 
       assert_response :ok
     end
+
+    # Turnstile Widget Verification Tests
+    test "new authentication telephone page renders Turnstile widget" do
+      get new_sign_app_authentication_telephone_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+
+      assert_response :success
+      assert_select "div[id^='cf-turnstile-']", count: 1
+    end
   end
 end

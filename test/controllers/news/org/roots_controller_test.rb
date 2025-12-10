@@ -103,4 +103,10 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  private
+
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

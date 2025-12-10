@@ -5,6 +5,8 @@ module Back
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
 
+      protect_from_forgery with: :exception
+
       allow_browser versions: :modern
 
       rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized

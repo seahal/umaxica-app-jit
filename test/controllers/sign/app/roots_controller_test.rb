@@ -6,13 +6,14 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "GET / redirects to new registration path" do
     get sign_app_root_url
 
-    assert_response :redirect
-    assert_match %r{^#{new_sign_app_registration_url}}, response.location
+    # Controller now renders the root index page with links to registration
+    assert_response :success
+    assert_select "h1", minimum: 1
   end
 
   test "GET / returns redirect status" do
     get sign_app_root_url
 
-    assert_response :redirect
+    assert_response :success
   end
 end

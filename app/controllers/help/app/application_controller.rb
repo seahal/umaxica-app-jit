@@ -4,8 +4,14 @@ module Help
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
+
+      protect_from_forgery with: :exception
       include ::DefaultUrlOptions
+
+      protect_from_forgery with: :exception
       include Pundit::Authorization
+
+      protect_from_forgery with: :exception
 
       allow_browser versions: :modern
 
