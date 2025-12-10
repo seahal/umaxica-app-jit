@@ -329,6 +329,22 @@ ja:
               dark: 夜間の作業や目の疲れを軽減したいときに最適です。
               system: OS のテーマ変更に連動して切り替わります。
             submit: テーマ設定を保存
+      withdrawal:
+        create:
+          success: "退会が完了しました。"
+          already_withdrawn: "既に退会済みです。"
+          failed: "退会処理に失敗しました。後でもう一度お試しください。"
+        update:
+          recovered: "アカウントを復旧しました。ログインできます。"
+          cannot_recover: "復旧期間が終了しています。サポートにお問い合わせください。"
+          failed: "復旧処理に失敗しました。後でもう一度お試しください。"
+        destroy:
+          deleted: "アカウントを完全に削除しました。"
+          not_withdrawn: "退会済みでないため、削除できません。"
+        errors:
+          invalid_state: "この操作は実行できません。アカウントの状態が無効です: %{current_status}"
+          recovery_not_available: "このアカウントは復旧できません。復旧期間が終了しています。"
+          deletion_failed: "アカウント削除に失敗しました。もう一度お試しいただくか、サポートにお問い合わせください。"
     org:
       withdrawal:
         create:
@@ -343,6 +359,10 @@ ja:
           deleted: "アカウントを完全に削除しました。"
           not_withdrawn: "退会済みでないため、削除できません。"
           failed: "アカウントの完全削除に失敗しました。"
+        errors:
+          invalid_state: "この操作は実行できません。アカウントの状態が無効です: %{current_status}"
+          recovery_not_available: "このアカウントは復旧できません。復旧期間が終了しています。"
+          deletion_failed: "アカウント削除に失敗しました。もう一度お試しいただくか、サポートにお問い合わせください。"
         show:
           title: "退会ステータス"
           active: "アカウントは有効です"

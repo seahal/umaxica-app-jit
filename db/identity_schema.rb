@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_09_143000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_10_070454) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -280,6 +280,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_143000) do
   create_table "user_time_based_one_time_passwords", id: false, force: :cascade do |t|
     t.binary "time_based_one_time_password_id", null: false
     t.binary "user_id", null: false
+    t.index ["user_id"], name: "index_user_time_based_one_time_passwords_on_user_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

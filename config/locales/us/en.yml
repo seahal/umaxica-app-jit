@@ -138,6 +138,10 @@ en:
         destroy:
           deleted: "Account has been permanently deleted."
           not_withdrawn: "Account is not withdrawn; cannot delete."
+        errors:
+          invalid_state: "Cannot perform this action. Your account is in an invalid state: %{current_status}"
+          recovery_not_available: "Your account cannot be recovered at this time. The recovery period has expired."
+          deletion_failed: "Failed to delete your account. Please try again or contact support."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -210,6 +214,10 @@ en:
         destroy:
           deleted: "Account has been permanently deleted."
           not_withdrawn: "Account is not withdrawn; cannot delete."
+        errors:
+          invalid_state: "Cannot perform this action. Your account is in an invalid state: %{current_status}"
+          recovery_not_available: "Your account cannot be recovered at this time. The recovery period has expired."
+          deletion_failed: "Failed to delete your account. Please try again or contact support."
       authentication:
         new:
           page_title: "Choose how to sign in"
