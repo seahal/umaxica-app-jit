@@ -2,6 +2,7 @@ module Sign
   module App
     class WithdrawalsController < ApplicationController
       before_action :authenticate_user!, only: [ :show, :create, :update, :destroy ]
+      before_action :set_i18n_defaults, only: %i[new show]
 
       def show
         # Show withdrawal status page for the current user
@@ -63,6 +64,14 @@ module Sign
         end
 
         redirect_to sign_app_root_path, alert: t("sign.app.withdrawal.destroy.failed")
+      end
+
+      private
+
+      def set_i18n_defaults
+        @current_region = params[:ct]&.upcase || "US"
+        @current_language = params[:lx]&.upcase || I18n.locale.to_s.upcase.first(2)
+        @current_timezone = params[:tz].presence || Time.zone&.name || "Etc/UTC"
       end
     end
   end
