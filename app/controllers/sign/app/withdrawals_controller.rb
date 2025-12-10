@@ -1,7 +1,7 @@
 module Sign
   module App
     class WithdrawalsController < ApplicationController
-      before_action :current_user
+      before_action :set_current_user
 
       def show
         # Use the foreign-key string field for checks to avoid hitting a nil
@@ -84,15 +84,8 @@ module Sign
       end
 
     private
-      def current_user
-        # In test environment we allow overriding the current user via
-        # the `X-TEST-CURRENT-USER` header. Fall back to `User.first`.
-        test_user_id = request.headers["X-TEST-CURRENT-USER"] || request.env["HTTP_X_TEST_CURRENT_USER"]
-        if test_user_id.present?
-          @current_user = User.find_by(id: test_user_id)
-        end
-
-        @current_user ||= User.first
+      def set_current_user
+        @current_user = current_user
       end
     end
   end
