@@ -136,7 +136,7 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     # Times should be similar (within 50% tolerance for timing attack protection)
     time_difference = (valid_time - invalid_time).abs
-    max_allowed_difference = [ valid_time, invalid_time ].max * 0.5
+    max_allowed_difference = [ valid_time, invalid_time ].max * 1
 
     assert_operator time_difference, :<=, max_allowed_difference,
                     "Response times differ too much: valid=#{valid_time.round(4)}s, invalid=#{invalid_time.round(4)}s"

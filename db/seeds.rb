@@ -22,11 +22,13 @@ raise '[SAFEGUARD] db:seed only use for dev env.' unless Rails.env.development?
 #
 ## UserIdentityStatus
 UserIdentityStatus.create_or_find_by(id: "NONE")
-UserIdentityStatus.create_or_find_by(id: "PRE_WITHDRAWAL_CONDITON")
+UserIdentityStatus.create_or_find_by(id: "ALIVE")
+UserIdentityStatus.create_or_find_by(id: "PRE_WITHDRAWAL_CONDITION")
 UserIdentityStatus.create_or_find_by(id: "WITHDRAWAL_COMPLETED")
 ## StaffIdentityStatus
 StaffIdentityStatus.create_or_find_by(id: "NONE")
-StaffIdentityStatus.create_or_find_by(id: "PRE_WITHDRAWAL_CONDITON")
+StaffIdentityStatus.create_or_find_by(id: "ALIVE")
+StaffIdentityStatus.create_or_find_by(id: "PRE_WITHDRAWAL_CONDITION")
 StaffIdentityStatus.create_or_find_by(id: "WITHDRAWAL_COMPLETED")
 
 # USER

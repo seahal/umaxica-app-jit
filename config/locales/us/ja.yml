@@ -256,6 +256,17 @@ ja:
           links:
             sign_in_html: すでにアカウントをお持ちですか？%{link}
             sign_in_text: ログインする
+        oauth:
+          apple:
+            callback:
+              success: "Signed in with Apple successfully."
+            failure:
+              error: "Apple authentication failed"
+          google:
+            callback:
+              success: "Signed in with Google successfully."
+            failure:
+              error: "Google authentication failed"
         email:
           new:
             page_title: "UMAXICA (sign, app)"
@@ -331,6 +342,10 @@ ja:
         destroy:
           deleted: "アカウントを完全に削除しました。"
           not_withdrawn: "退会済みでないため、削除できません。"
+          failed: "アカウントの完全削除に失敗しました。"
+        show:
+          title: "退会ステータス"
+          active: "アカウントは有効です"
       authentication:
         new:
           page_title: サインイン方法を選択
@@ -698,8 +713,7 @@ ja:
     abc_successfully_destroyed: Abc was successfully destroyed.
     user_recovery_code_successfully_created: User recovery code was successfully created.
     user_recovery_code_successfully_updated: User recovery code was successfully updated.
-    user_recovery_code_successfully_destroyed: User recovery code was successfully
-      destroyed.
+    user_recovery_code_successfully_destroyed: User recovery code was successfully destroyed.
     totp_successfully_created: TOTP was successfully created.
     passkey_updated_successfully: Passkey updated successfully.
     passkey_removed_successfully: Passkey removed successfully.

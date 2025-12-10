@@ -1,3 +1,14 @@
+none:
+  id: "NONE"
+
+alive:
+  id: "ALIVE"
+
+pre_withdrawal_condition:
+  id: "PRE_WITHDRAWAL_CONDITION"
+
+withdrawal_completed:
+  id: "WITHDRAWAL_COMPLETED"
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 none:

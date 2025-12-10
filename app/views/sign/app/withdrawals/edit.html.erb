@@ -1,2 +1,6 @@
-<h1>Www::App::Withdrawals#edit</h1>
-<p>Find me in app/views/www/app/withdrawals/edit.html.erb</p>
+<h1><%= t('sign.app.withdrawal.edit.title', default: 'Recover Account') %></h1>
+<p><%= t('sign.app.withdrawal.edit.description', default: 'Your account is in withdrawal status. Click below to recover it.') %></p>
+
+<%= form_with url: sign_app_withdrawal_path, method: :patch, local: true do |f| %>
+  <%= f.submit t('sign.app.withdrawal.edit.submit', default: 'Recover Account'), class: "btn btn-primary" %>
+<% end %>

@@ -1,4 +1,3 @@
----
 en:
   hello: "Hello world 2"
   messages:
@@ -30,6 +29,11 @@ en:
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
     app:
+      root:
+        title: "Welcome to Sign"
+        description: "Choose an action to get started"
+        registration: "Sign Up"
+        authentication: "Sign In"
       authentication:
         new:
           page_title: "Choose how to sign in"
@@ -135,6 +139,14 @@ en:
           update:
             success: "Phone number has been verified."
         withdrawal:
+          new:
+            title: "Withdrawal"
+            description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
+            submit: "Withdraw Account"
+          edit:
+            title: "Recover Account"
+            description: "Your account is currently in withdrawal status. Click the button below to recover your account."
+            submit: "Recover Account"
           create:
             already_withdrawn: "You have already withdrawn your account."
             success: "Your account has been withdrawn. Thank you for using our service."
@@ -771,7 +783,6 @@ en:
         footer:
           privacy: "Privacy"
         reset_settings: "Reset Settings"
-
   back:
     shared:
       preference_emails:
@@ -976,3 +987,4 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+  description: "Withdrawal"

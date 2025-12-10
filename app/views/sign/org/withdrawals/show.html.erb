@@ -1,0 +1,11 @@
+<%# Simple withdrawal status page for staff (Sign::Org::WithdrawalsController#show) %>
+<div class="withdrawal-status">
+  <h1><%= t("sign.org.withdrawal.show.title", default: "Withdrawal status") %></h1>
+
+  <% if defined?(current_staff) && current_staff && current_staff.respond_to?(:withdrawn_at) && current_staff.withdrawn_at.present? %>
+    <p><strong><%= t("sign.org.withdrawal.create.already_withdrawn", default: "Your staff account has been withdrawn") %></strong></p>
+    <p><%= l(current_staff.withdrawn_at) if current_staff.withdrawn_at %></p>
+  <% else %>
+    <p><%= t("sign.org.withdrawal.show.active", default: "Your account is active") %></p>
+  <% end %>
+</div>

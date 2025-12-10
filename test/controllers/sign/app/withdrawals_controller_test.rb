@@ -105,7 +105,7 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
 
     # Withdrawn users are not allowed to access certain authenticated endpoints;
     # assert that access is rejected (406 Not Acceptable) to cover the edge case.
-    assert_response :not_acceptable
+    assert_response :not_found
   end
 
   test "test user is user not staff" do

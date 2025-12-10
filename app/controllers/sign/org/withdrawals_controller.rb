@@ -4,6 +4,9 @@ module Sign
       before_action :authenticate_staff!, only: [ :show, :create, :update, :destroy ]
 
       def show
+        # If staff is already withdrawn, do not expose the show page
+        return head(:not_found) if current_staff.withdrawn_at.present?
+
         # Show withdrawal status for the current staff
         @withdrawn_at = current_staff.withdrawn_at
       end
@@ -48,13 +51,23 @@ module Sign
 
         Rails.logger.info("Permanent staff deletion requested: #{current_staff.id}")
 
-        Staff.transaction do
-          if current_staff.destroy
-            reset_session
-            redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.destroy.deleted") and return
-          else
-            raise ActiveRecord::Rollback
+        begin
+          Staff.transaction do
+            # destroy related records that may block deletion
+            StaffIdentityPasskey.where(staff_id: current_staff.id).destroy_all if defined?(StaffIdentityPasskey)
+            current_staff.staff_identity_emails.destroy_all if current_staff.respond_to?(:staff_identity_emails)
+            current_staff.staff_identity_telephones.destroy_all if current_staff.respond_to?(:staff_identity_telephones)
+            current_staff.staff_identity_audits.destroy_all if current_staff.respond_to?(:staff_identity_audits)
+
+            if current_staff.destroy
+              reset_session
+              redirect_to sign_org_root_path, notice: t("sign.org.withdrawal.destroy.deleted") and return
+            else
+              raise ActiveRecord::Rollback
+            end
           end
+        rescue ActiveRecord::InvalidForeignKey => e
+          Rails.logger.warn("Failed to fully destroy staff #{current_staff.id}: #{e.message}")
         end
 
         redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.destroy.failed")
