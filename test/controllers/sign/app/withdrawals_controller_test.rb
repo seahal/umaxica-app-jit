@@ -171,4 +171,43 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "div[id^='cf-turnstile-']", count: 1
   end
+
+  # Checkbox visibility tests
+  test "new withdrawal page renders confirm_create_recovery_code checkbox" do
+    @user.update!(user_identity_status_id: UserIdentityStatus::ALIVE)
+
+    get new_sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    assert_response :success
+    assert_select "input[type='checkbox'][name='confirm_create_recovery_code']"
+    assert_select "label", text: "Confirm create recovery code"
+  end
+
+  test "edit withdrawal page renders confirm_create_recovery_code checkbox" do
+    @user.update!(withdrawn_at: 1.day.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
+
+    get edit_sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    assert_response :success
+    assert_select "input[type='checkbox'][name='confirm_create_recovery_code']"
+    assert_select "label", text: "Confirm create recovery code"
+  end
+
+  test "create accepts confirm_create_recovery_code parameter" do
+    @user.update!(user_identity_status_id: UserIdentityStatus::ALIVE)
+
+    post sign_app_withdrawal_url, params: { confirm_create_recovery_code: "1" }, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_not_nil @user.reload.withdrawn_at
+  end
+
+  test "update accepts confirm_create_recovery_code parameter" do
+    @user.update!(withdrawn_at: 15.days.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
+
+    patch sign_app_withdrawal_url, params: { confirm_create_recovery_code: "1" }, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_nil @user.reload.withdrawn_at
+  end
 end
