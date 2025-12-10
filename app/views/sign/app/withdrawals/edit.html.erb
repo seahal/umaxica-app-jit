@@ -2,5 +2,6 @@
 <p><%= t('sign.app.withdrawal.edit.description', default: 'Your account is in withdrawal status. Click below to recover it.') %></p>
 
 <%= form_with url: sign_app_withdrawal_path, method: :patch, local: true do |f| %>
+<%= render "concern/cloudflare_turnstile" %>
   <%= f.submit t('sign.app.withdrawal.edit.submit', default: 'Recover Account'), class: "btn btn-primary" %>
 <% end %>

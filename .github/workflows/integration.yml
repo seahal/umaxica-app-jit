@@ -121,7 +121,7 @@ jobs:
         run: bundle exec rails routes --unused
 
       - name: Check importmap integrity
-        run: bin/rails importmap:audit
+        run: bin/importmap audit
 
   # ====================
   # Testing - Rails

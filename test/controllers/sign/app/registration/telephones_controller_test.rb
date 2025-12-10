@@ -41,6 +41,14 @@ module Sign::App::Registration
       assert_not_nil I18n.t(return_page_key, default: nil)
     end
 
+    # Turnstile Widget Verification Tests
+    test "new registration telephone page renders Turnstile widget" do
+      get new_sign_app_registration_telephone_url, headers: default_headers
+
+      assert_response :success
+      assert_select "div[id^='cf-turnstile-']", count: 1
+    end
+
     private
 
     def default_headers

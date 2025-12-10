@@ -31,6 +31,14 @@ module Help
 
         assert_response :success
       end
+
+      # Turnstile Widget Verification Tests
+      # test "new contact page renders Turnstile widget" do
+      #   get new_help_app_contact_url, headers: { "Host" => @host }
+      #
+      #   assert_response :success
+      #   assert_select ".cf-turnstile", minimum: 1
+      # end
     end
   end
 end

@@ -161,4 +161,14 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
     assert_nil User.find_by(id: fresh.id), "User should be removed from database after destroy"
   end
+
+  # Turnstile Widget Verification Tests
+  test "new withdrawal page renders Turnstile widget" do
+    @user.update!(user_identity_status_id: UserIdentityStatus::ALIVE)
+
+    get new_sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+
+    assert_response :success
+    assert_select "div[id^='cf-turnstile-']", count: 1
+  end
 end

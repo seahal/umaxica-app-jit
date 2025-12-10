@@ -8,6 +8,7 @@ module Sign
       include ::DefaultUrlOptions
       include ::RateLimit
 
+      protect_from_forgery with: :exception
       allow_browser versions: :modern
 
       rescue_from Pundit::NotAuthorizedError, with: :staff_not_authorized

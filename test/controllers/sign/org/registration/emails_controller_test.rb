@@ -22,5 +22,13 @@ module Sign::Org::Registration
 
       assert_response :bad_request
     end
+
+    # Turnstile Widget Verification Tests
+    test "new registration email page renders Turnstile widget" do
+      get new_sign_org_registration_email_url, headers: { "Host" => ENV["SIGN_STAFF_URL"] }
+
+      assert_response :success
+      assert_select "div[id^='cf-turnstile-']", count: 1
+    end
   end
 end
