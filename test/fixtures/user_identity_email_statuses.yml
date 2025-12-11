@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+unverified:
+  id: "UNVERIFIED"
+
+verified:
+  id: "VERIFIED"
+
+suspended:
+  id: "SUSPENDED"
+
+deleted:
+  id: "DELETED"

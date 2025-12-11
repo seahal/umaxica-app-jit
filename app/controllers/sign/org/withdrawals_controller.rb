@@ -1,18 +1,10 @@
 module Sign
   module Org
     class WithdrawalsController < ApplicationController
-      before_action :authenticate_staff!, only: [ :show, :create, :update, :destroy ]
+      before_action :authenticate_staff!, only: [ :create, :update, :destroy ]
 
-      def show
-        # If staff is already withdrawn, do not expose the show page
-        return head(:not_found) if current_staff.withdrawn_at.present?
-
-        # Show withdrawal status for the current staff
-        @withdrawn_at = current_staff.withdrawn_at
-      end
       def new
       end
-
 
       def create
         # Check if staff is already withdrawn

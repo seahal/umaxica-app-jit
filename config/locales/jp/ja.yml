@@ -72,13 +72,33 @@ ja:
             update:
               success: "電話番号が確認されました。"
         withdrawal:
+          show:
+            title: "退会ステータス"
+            withdrawn: "あなたのアカウントは退会済みです"
+            withdrawn_date: "退会日時: %{date}"
+            recovery: "アカウント復旧"
+            recovery_notice: "復旧期間内であればアカウントを復旧できます。"
+            recover_button: "アカウントを復旧する"
+            recovery_expired: "復旧期間が終了しています。"
+            active: "あなたのアカウントはアクティブです"
+            withdrawal_actions: "退会オプション"
+            temporary_withdrawal: "一時退会"
+            temporary_notice: "アカウントが一時的に無効化され、復旧期間内は復帰できます。"
+            withdraw_button: "アカウントを退会する"
+            confirm_withdrawal: "本当に退会してよろしいですか？"
+            permanent_deletion: "永久削除"
+            permanent_notice: "アカウントと関連するすべてのデータが永久に削除されます。この操作は取り消せません。"
+            delete_button: "アカウントを永久削除する"
+            confirm_deletion: "この操作は取り消せません。本当に削除してよろしいですか？"
           new:
             title: "退会"
             description: "アカウントを退会しようとしています。この操作でアカウントが一時的に無効化され、復旧期間中は復帰できます。"
+            recovery_code_label: "リカバリーコード確認"
             submit: "アカウントを退会する"
           edit:
             title: "アカウント復旧"
             description: "あなたのアカウントは現在退会状態です。下のボタンをクリックしてアカウントを復旧してください。"
+            recovery_code_label: "リカバリーコード確認"
             submit: "アカウントを復旧する"
           create:
             already_withdrawn: "既に退会済みです。"
@@ -89,8 +109,11 @@ ja:
             cannot_recover: "復旧期間が終了しています。サポートにお問い合わせください。"
             failed: "復旧処理に失敗しました。後でもう一度お試しください。"
           destroy:
+            success: "アカウントを完全に削除しました。"
             deleted: "アカウントを完全に削除しました。"
             not_withdrawn: "退会済みでないため、削除できません。"
+            failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
+          authenticate_error: "認証が必要です。ログインしてください。"
         authentication:
           destroy:
             jump_obj: sign in with email

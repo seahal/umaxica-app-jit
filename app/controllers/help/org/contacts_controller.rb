@@ -4,7 +4,9 @@ module Help
       before_action :set_contact, only: %i[show edit]
 
       def show; end
+
       def new
+        @contact = OrgContact.new
         @contact_categories = OrgContactCategory.order(:title)
         render plain: "org contact form placeholder"
       end

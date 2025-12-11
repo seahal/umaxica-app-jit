@@ -67,7 +67,7 @@ Rails.application.routes.draw do
         #   resources :refreshs, only: [ :update ]
         # end
         # Withdrawal
-        resource :withdrawal
+        resource :withdrawal, except: :show
       end
     end
 
@@ -81,13 +81,6 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # registration staff page
-        # 変更後（sign/app と同じパターン）
-        resource :registration, only: [ :new ]
-        namespace :registration do
-          resources :emails, only: %i[new create edit update]
-          resources :telephones, only: %i[new create edit update]
-        end
         # Sign up pages
         # TODO: Implement authentication actions (show, update, put, delete, create)
         resource :authentication, only: [ :new ]
@@ -100,7 +93,7 @@ Rails.application.routes.draw do
           resources :secrets
         end
         #
-        resource :withdrawal
+        resource :withdrawal, except: :show
         # TODO: Implement owner management
         # resources :owner
         # TODO: Implement customer management

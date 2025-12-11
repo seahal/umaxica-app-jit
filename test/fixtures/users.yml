@@ -11,12 +11,14 @@
 #
 one:
   id: "550e8400-e29b-41d4-a716-446655440020"
+  public_id: "test_user_one"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
   user_identity_status_id: 'ALIVE'
 
 two:
   id: "550e8400-e29b-41d4-a716-446655440021"
+  public_id: "test_user_two"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
   user_identity_status_id: 'ALIVE'

@@ -6,120 +6,117 @@ default: &default
   timeout: 5000
   username: <%= ENV["POSTGRESQL_USER"] %>
   password: <%= ENV["POSTGRESQL_PASSWORD"] %>
-
 development:
   universal:
-    <<: *default
+    !!merge <<: *default
     database: development_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
     migrations_paths: db/universals_migrate
   universal_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: development_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
     migrations_paths: db/universals_migrate
   guest:
-    <<: *default
+    !!merge <<: *default
     database: development_guest_db
     host: <%=  ENV["POSTGRESQL_GUEST_PUB"] %>
     migrations_paths: db/guests_migrate
-  guest_replica: 
-    <<: *default
+  guest_replica:
+    !!merge <<: *default
     replica: true
     database: development_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_SUB"] %>
     migrations_paths: db/guests_migrate
   identity:
-    <<: *default
+    !!merge <<: *default
     database: development_identity_db
     host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] %>
     migrations_paths: db/identities_migrate
   identity_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: development_identity_db
     host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] %>
     migrations_paths: db/identities_migrate
   profile:
-    <<: *default
+    !!merge <<: *default
     database: development_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_PUB"] %>
     migrations_paths: db/profiles_migrate
   profile_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: development_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_SUB"] %>
     migrations_paths: db/profiles_migrate
   token:
-    <<: *default
+    !!merge <<: *default
     database: development_token_db
     host: <%= ENV["POSTGRESQL_TOKEN_PUB"] %>
     migrations_paths: db/tokens_migrate
   token_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: development_token_db
     host: <%= ENV["POSTGRESQL_TOKEN_SUB"] %>
     migrations_paths: db/tokens_migrate
   business:
-    <<: *default
+    !!merge <<: *default
     database: development_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] %>
     migrations_paths: db/businesses_migrate
   business_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: development_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
   notification:
-    <<: *default
+    !!merge <<: *default
     database: development_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] %>
     migrations_paths: db/notifications_migrate
   notification_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: development_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] %>
     migrations_paths: db/notifications_migrate
   cache:
-    <<: *default
+    !!merge <<: *default
     database: development_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_PUB"] %>
     migrations_paths: db/caches_migrate
   cache_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: development_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
     migrations_paths: db/caches_migrate
   speciality:
-    <<: *default
+    !!merge <<: *default
     database: development_speciality_db
     host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
     migrations_paths: db/specialities_migrate
   speciality_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: development_speciality_db
     host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
     migrations_paths: db/specialities_migrate
   storage:
-    <<: *default
+    !!merge <<: *default
     database: development_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_PUB"] %>
     migrations_paths: db/storages_migrate
   storage_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: development_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_SUB"] %>
     migrations_paths: db/storages_migrate
-
-
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
@@ -128,140 +125,119 @@ development:
 # Do not set this db to the same as development or production.
 test:
   universal:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
     migrations_paths: db/universals_migrate
   universal_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
+    database: test_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
     migrations_paths: db/universals_migrate
   guest:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_PUB"] %>
     migrations_paths: db/guests_migrate
   guest_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
     database: test_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_SUB"] %>
     migrations_paths: db/guests_migrate
   identity:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_identity_db
     host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] %>
     migrations_paths: db/identities_migrate
   identity_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
     database: test_identity_db
     host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] %>
     migrations_paths: db/identities_migrate
   profile:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_PUB"] %>
     migrations_paths: db/profiles_migrate
   profile_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
     database: test_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_SUB"] %>
     migrations_paths: db/profiles_migrate
   token:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_token_db
     host: <%= ENV["POSTGRESQL_TOKEN_PUB"] %>
     migrations_paths: db/tokens_migrate
   token_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
     database: test_token_db
     host: <%= ENV["POSTGRESQL_TOKEN_SUB"] %>
     migrations_paths: db/tokens_migrate
   notification:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] %>
     migrations_paths: db/notifications_migrate
   notification_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
     database: test_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] %>
     migrations_paths: db/notifications_migrate
   speciality:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_speciality_db
     host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
     migrations_paths: db/specialities_migrate
   speciality_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
     database: test_speciality_db
     host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
     migrations_paths: db/specialities_migrate
   cache:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_PUB"] %>
     migrations_paths: db/caches_migrate
   cache_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
     database: test_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
     migrations_paths: db/caches_migrate
   storage:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_PUB"] %>
     migrations_paths: db/storages_migrate
   storage_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
     database: test_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_SUB"] %>
     migrations_paths: db/storages_migrate
   business:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     database: test_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] %>
     migrations_paths: db/businesses_migrate
   business_replica:
-    <<: *default
-    pool: 800
+    !!merge <<: *default
     replica: true
     database: test_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
-
-
 # FIXME: please implement below code
 production:
   universal:
-    <<: *default
+    !!merge <<: *default
     database: production_universal_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL&.HOST %>
@@ -269,7 +245,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL&.PASSWORD %>
     migrations_paths: db/universals_migrate
   universal_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_universal_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
@@ -278,7 +254,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL_REPLICA&.PASSWORD %>
     migrations_paths: db/universals_migrate
   guest:
-    <<: *default
+    !!merge <<: *default
     database: production_guest_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.GUEST&.HOST %>
@@ -286,7 +262,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.GUEST&.PASSWORD %>
     migrations_paths: db/guests_migrate
   guest_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_guest_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
@@ -295,7 +271,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.GUEST_REPLICA&.PASSWORD %>
     migrations_paths: db/guests_migrate
   identity:
-    <<: *default
+    !!merge <<: *default
     database: production_identity_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.identity&.HOST %>
@@ -303,7 +279,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.identity&.PASSWORD %>
     migrations_paths: db/identities_migrate
   identity_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_identity_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
@@ -312,7 +288,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.IDENTITY_REPLICA&.PASSWORD %>
     migrations_paths: db/identities_migrate
   profile:
-    <<: *default
+    !!merge <<: *default
     database: production_profile_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.PROFILE&.HOST %>
@@ -320,7 +296,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.PROFILE&.PASSWORD %>
     migrations_paths: db/profiles_migrate
   profile_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_profile_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
@@ -329,7 +305,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.PROFILE_REPLICA&.PASSWORD %>
     migrations_paths: db/profiles_migrate
   token:
-    <<: *default
+    !!merge <<: *default
     database: production_token_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.TOKEN&.HOST %>
@@ -337,7 +313,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.TOKEN&.PASSWORD %>
     migrations_paths: db/tokens_migrate
   token_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_token_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
@@ -346,7 +322,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.TOKEN_REPLICA&.PASSWORD %>
     migrations_paths: db/tokens_migrate
   business:
-    <<: *default
+    !!merge <<: *default
     database: production_business_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.BUSINESS&.HOST %>
@@ -354,7 +330,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.BUSINESS&.PASSWORD %>
     migrations_paths: db/businesses_migrate
   business_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_business_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
@@ -363,7 +339,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.BUSINESS_REPLICA&.PASSWORD %>
     migrations_paths: db/businesses_migrate
   notification:
-    <<: *default
+    !!merge <<: *default
     database: production_notification_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.NOTIFICATION&.HOST %>
@@ -371,7 +347,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.NOTIFICATION&.PASSWORD %>
     migrations_paths: db/notifications_migrate
   notification_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_notification_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
@@ -380,7 +356,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.NOTIFICATION_REPLICA&.PASSWORD %>
     migrations_paths: db/notifications_migrate
   speciality:
-    <<: *default
+    !!merge <<: *default
     database: production_speciality_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.SPECIALITY&.HOST %>
@@ -388,7 +364,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.SPECIALITY&.PASSWORD %>
     migrations_paths: db/specialities_migrate
   speciality_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_speciality_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
@@ -397,7 +373,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.SPECIALITY_REPLICA&.PASSWORD %>
     migrations_paths: db/specialities_migrate
   cache:
-    <<: *default
+    !!merge <<: *default
     database: production_cache_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.SPECIALITY&.HOST %>
@@ -405,7 +381,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.CACHE&.PASSWORD %>
     migrations_paths: db/caches_migrate
   cache_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_cache_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
@@ -414,7 +390,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.CACHE_REPLICA&.PASSWORD %>
     migrations_paths: db/caches_migrate
   storage:
-    <<: *default
+    !!merge <<: *default
     database: production_storage_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
     host: <%= Rails.application.credentials&.DATABASE&.SPECIALITY&.HOST %>
@@ -422,7 +398,7 @@ production:
     password: <%= Rails.application.credentials&.DATABASE&.STORAGE&.PASSWORD %>
     migrations_paths: db/storages_migrate
   storage_replica:
-    <<: *default
+    !!merge <<: *default
     replica: true
     database: production_storage_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>

@@ -139,13 +139,33 @@ en:
           update:
             success: "Phone number has been verified."
         withdrawal:
+          show:
+            title: "Withdrawal Status"
+            withdrawn: "Your account has been withdrawn"
+            withdrawn_date: "Withdrawn at: %{date}"
+            recovery: "Account Recovery"
+            recovery_notice: "Your account can be recovered within the recovery period."
+            recover_button: "Recover Account"
+            recovery_expired: "The recovery period has expired."
+            active: "Your account is active"
+            withdrawal_actions: "Withdrawal Options"
+            temporary_withdrawal: "Temporary Withdrawal"
+            temporary_notice: "Your account will be temporarily withdrawn and can be recovered within the grace period."
+            withdraw_button: "Withdraw Account"
+            confirm_withdrawal: "Are you sure?"
+            permanent_deletion: "Permanent Deletion"
+            permanent_notice: "Your account and all associated data will be permanently deleted. This action cannot be undone."
+            delete_button: "Permanently Delete Account"
+            confirm_deletion: "This cannot be undone. Are you sure?"
           new:
             title: "Withdrawal"
             description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
+            recovery_code_label: "Confirm recovery code"
             submit: "Withdraw Account"
           edit:
             title: "Recover Account"
             description: "Your account is currently in withdrawal status. Click the button below to recover your account."
+            recovery_code_label: "Confirm recovery code"
             submit: "Recover Account"
           create:
             already_withdrawn: "You have already withdrawn your account."

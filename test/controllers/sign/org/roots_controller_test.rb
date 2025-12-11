@@ -7,7 +7,7 @@ class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get sign_org_root_url
 
     assert_response :redirect
-    assert_match %r{^#{new_sign_org_registration_url}}, response.location
+    assert_match %r{^#{new_sign_org_authentication_url}}, response.location
   end
 
   test "GET / returns redirect status" do
