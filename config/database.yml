@@ -9,130 +9,110 @@ default: &default
 development:
   universal:
     !!merge <<: *default
-    pool: 800
     database: development_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
     migrations_paths: db/universals_migrate
   universal_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
     migrations_paths: db/universals_migrate
   guest:
     !!merge <<: *default
-    pool: 800
     database: development_guest_db
     host: <%=  ENV["POSTGRESQL_GUEST_PUB"] %>
     migrations_paths: db/guests_migrate
   guest_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_SUB"] %>
     migrations_paths: db/guests_migrate
   identity:
     !!merge <<: *default
-    pool: 800
     database: development_identity_db
     host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] %>
     migrations_paths: db/identities_migrate
   identity_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_identity_db
     host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] %>
     migrations_paths: db/identities_migrate
   profile:
     !!merge <<: *default
-    pool: 800
     database: development_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_PUB"] %>
     migrations_paths: db/profiles_migrate
   profile_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_SUB"] %>
     migrations_paths: db/profiles_migrate
   token:
     !!merge <<: *default
-    pool: 800
     database: development_token_db
     host: <%= ENV["POSTGRESQL_TOKEN_PUB"] %>
     migrations_paths: db/tokens_migrate
   token_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_token_db
     host: <%= ENV["POSTGRESQL_TOKEN_SUB"] %>
     migrations_paths: db/tokens_migrate
   business:
     !!merge <<: *default
-    pool: 800
     database: development_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] %>
     migrations_paths: db/businesses_migrate
   business_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
   notification:
     !!merge <<: *default
-    pool: 800
     database: development_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] %>
     migrations_paths: db/notifications_migrate
   notification_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] %>
     migrations_paths: db/notifications_migrate
   cache:
     !!merge <<: *default
-    pool: 800
     database: development_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_PUB"] %>
     migrations_paths: db/caches_migrate
   cache_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
     migrations_paths: db/caches_migrate
   speciality:
     !!merge <<: *default
-    pool: 800
     database: development_speciality_db
     host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
     migrations_paths: db/specialities_migrate
   speciality_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_speciality_db
     host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
     migrations_paths: db/specialities_migrate
   storage:
     !!merge <<: *default
-    pool: 800
     database: development_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_PUB"] %>
     migrations_paths: db/storages_migrate
   storage_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: development_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_SUB"] %>
@@ -146,130 +126,110 @@ development:
 test:
   universal:
     !!merge <<: *default
-    pool: 800
     database: test_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
     migrations_paths: db/universals_migrate
   universal_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
     migrations_paths: db/universals_migrate
   guest:
     !!merge <<: *default
-    pool: 800
     database: test_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_PUB"] %>
     migrations_paths: db/guests_migrate
   guest_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_SUB"] %>
     migrations_paths: db/guests_migrate
   identity:
     !!merge <<: *default
-    pool: 800
     database: test_identity_db
     host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] %>
     migrations_paths: db/identities_migrate
   identity_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_identity_db
     host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] %>
     migrations_paths: db/identities_migrate
   profile:
     !!merge <<: *default
-    pool: 800
     database: test_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_PUB"] %>
     migrations_paths: db/profiles_migrate
   profile_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_SUB"] %>
     migrations_paths: db/profiles_migrate
   token:
     !!merge <<: *default
-    pool: 800
     database: test_token_db
     host: <%= ENV["POSTGRESQL_TOKEN_PUB"] %>
     migrations_paths: db/tokens_migrate
   token_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_token_db
     host: <%= ENV["POSTGRESQL_TOKEN_SUB"] %>
     migrations_paths: db/tokens_migrate
   notification:
     !!merge <<: *default
-    pool: 800
     database: test_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] %>
     migrations_paths: db/notifications_migrate
   notification_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_notification_db
     host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] %>
     migrations_paths: db/notifications_migrate
   speciality:
     !!merge <<: *default
-    pool: 800
     database: test_speciality_db
     host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
     migrations_paths: db/specialities_migrate
   speciality_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_speciality_db
     host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
     migrations_paths: db/specialities_migrate
   cache:
     !!merge <<: *default
-    pool: 800
     database: test_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_PUB"] %>
     migrations_paths: db/caches_migrate
   cache_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
     migrations_paths: db/caches_migrate
   storage:
     !!merge <<: *default
-    pool: 800
     database: test_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_PUB"] %>
     migrations_paths: db/storages_migrate
   storage_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_SUB"] %>
     migrations_paths: db/storages_migrate
   business:
     !!merge <<: *default
-    pool: 800
     database: test_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] %>
     migrations_paths: db/businesses_migrate
   business_replica:
     !!merge <<: *default
-    pool: 800
     replica: true
     database: test_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>

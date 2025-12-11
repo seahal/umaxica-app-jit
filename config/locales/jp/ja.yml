@@ -109,8 +109,11 @@ ja:
             cannot_recover: "復旧期間が終了しています。サポートにお問い合わせください。"
             failed: "復旧処理に失敗しました。後でもう一度お試しください。"
           destroy:
+            success: "アカウントを完全に削除しました。"
             deleted: "アカウントを完全に削除しました。"
             not_withdrawn: "退会済みでないため、削除できません。"
+            failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
+          authenticate_error: "認証が必要です。ログインしてください。"
         authentication:
           destroy:
             jump_obj: sign in with email

@@ -17,7 +17,6 @@ class User < IdentitiesRecord
   has_one :user_identity_google_auth, dependent: :destroy
   has_many :user_identity_emails, dependent: :destroy
   has_many :user_identity_telephones, dependent: :destroy
-  has_many :user_time_based_one_time_password, dependent: :destroy
   has_many :user_webauthn_credentials, dependent: :destroy
   has_many :user_identity_audits, dependent: :destroy
   has_many :user_tokens, dependent: :destroy # , disable_joins: true

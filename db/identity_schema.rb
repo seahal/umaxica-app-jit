@@ -340,11 +340,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
     t.index ["user_id"], name: "index_user_recovery_codes_on_user_id"
   end
 
-  create_table "user_time_based_one_time_passwords", id: false, force: :cascade do |t|
-    t.binary "time_based_one_time_password_id", null: false
-    t.binary "user_id", null: false
-  end
-
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "public_id", limit: 255
