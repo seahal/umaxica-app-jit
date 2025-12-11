@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_10_070454) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_11_100100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -43,6 +43,52 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_10_070454) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["user_id"], name: "index_google_auths_on_user_id"
+  end
+
+  create_table "organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "domain"
+    t.string "name"
+    t.uuid "parent_organization"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "key"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "role_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "organization_id", null: false
+    t.uuid "role_id", null: false
+    t.uuid "staff_id"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id"
+    t.index ["organization_id"], name: "index_role_assignments_on_organization_id"
+    t.index ["role_id"], name: "index_role_assignments_on_role_id"
+    t.index ["staff_id", "organization_id", "role_id"], name: "index_role_assignments_on_staff_org_role", unique: true
+    t.index ["user_id", "organization_id", "role_id"], name: "index_role_assignments_on_user_org_role", unique: true
+  end
+
+  create_table "role_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "permission_id", null: false
+    t.uuid "role_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
+    t.index ["role_id", "permission_id"], name: "index_role_permissions_on_role_permission", unique: true
+  end
+
+  create_table "roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "key"
+    t.string "name"
+    t.datetime "updated_at", null: false
   end
 
   create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
@@ -254,6 +300,15 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_10_070454) do
     t.index ["user_id"], name: "index_user_identity_telephones_on_user_id"
   end
 
+  create_table "user_organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "organization_id", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["organization_id"], name: "index_user_organizations_on_organization_id"
+    t.index ["user_id"], name: "index_user_organizations_on_user_id"
+  end
+
   create_table "user_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "external_id"
@@ -280,7 +335,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_10_070454) do
   create_table "user_time_based_one_time_passwords", id: false, force: :cascade do |t|
     t.binary "time_based_one_time_password_id", null: false
     t.binary "user_id", null: false
-    t.index ["user_id"], name: "index_user_time_based_one_time_passwords_on_user_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -297,6 +351,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_10_070454) do
 
   add_foreign_key "apple_auths", "users"
   add_foreign_key "google_auths", "users"
+  add_foreign_key "role_assignments", "organizations"
+  add_foreign_key "role_assignments", "roles"
+  add_foreign_key "role_permissions", "permissions"
+  add_foreign_key "role_permissions", "roles"
   add_foreign_key "staff_identity_audits", "staff_identity_audit_events", column: "event_id"
   add_foreign_key "staff_identity_audits", "staffs"
   add_foreign_key "staff_identity_passkeys", "staffs"
@@ -307,6 +365,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_10_070454) do
   add_foreign_key "user_identity_audits", "users"
   add_foreign_key "user_identity_passkeys", "users"
   add_foreign_key "user_identity_secrets", "users"
+  add_foreign_key "user_organizations", "organizations"
+  add_foreign_key "user_organizations", "users"
   add_foreign_key "user_passkeys", "users"
   add_foreign_key "users", "user_identity_statuses"
 end

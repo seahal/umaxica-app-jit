@@ -13,15 +13,18 @@ class User < IdentitiesRecord
   include Stakeholder
   include Withdrawable
   belongs_to :user_identity_status, optional: true
-  has_many :user_identity_emails, dependent: :destroy
-  has_many :user_identity_telephones, dependent: :destroy
   has_one :user_identity_apple_auth, dependent: :destroy
   has_one :user_identity_google_auth, dependent: :destroy
-  # has_many :user_sessions, dependent: :destroy
+  has_many :user_identity_emails, dependent: :destroy
+  has_many :user_identity_telephones, dependent: :destroy
   has_many :user_time_based_one_time_password, dependent: :destroy
   has_many :user_webauthn_credentials, dependent: :destroy
   has_many :user_identity_audits, dependent: :destroy
   has_many :user_tokens, dependent: :destroy # , disable_joins: true
+  has_many :user_organizations, dependent: :destroy
+  has_many :organizations, through: :user_organizations
+  has_many :role_assignments, dependent: :destroy
+  has_many :roles, through: :role_assignments
 
   before_validation :ensure_public_id
 
@@ -38,6 +41,6 @@ class User < IdentitiesRecord
   private
 
   def ensure_public_id
-    self.public_id ||= SecureRandom.uuid
+    self.public_id ||= SecureRandom.uuid # TODO: use nanoid
   end
 end

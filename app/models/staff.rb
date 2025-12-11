@@ -20,6 +20,8 @@ class Staff < IdentitiesRecord
   has_many :staff_identity_telephones, dependent: :destroy
   has_many :staff_identity_audits, dependent: :destroy
   has_many :emails, class_name: "StaffIdentityEmail", dependent: :destroy
+  has_many :role_assignments, dependent: :destroy
+  has_many :roles, through: :role_assignments
 
   def staff?
     true
@@ -36,6 +38,6 @@ class Staff < IdentitiesRecord
   private
 
   def ensure_public_id
-    self.public_id ||= SecureRandom.uuid
+    self.public_id ||= SecureRandom.uuid # TODO: use nanoid
   end
 end

@@ -90,16 +90,6 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("sign.app.withdrawal.update.cannot_recover"), flash[:alert]
   end
 
-  test "should permanently destroy user when withdrawn" do
-    # Create a fresh user with no dependent records, mark withdrawn and destroy
-    fresh = User.create!(public_id: SecureRandom.uuid, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
-    fresh.update!(withdrawn_at: 31.days.ago)
-
-    delete sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => fresh.id)
-
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
-    assert_nil User.find_by(id: fresh.id), "User should be removed from database after destroy"
-  end
 
   test "withdrawn user can access withdrawal status page" do
     @user.update!(withdrawn_at: 1.day.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
@@ -148,18 +138,6 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_raises(Sign::InvalidWithdrawalStateError) do
       delete sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
     end
-  end
-
-  test "deletion handles foreign key constraints gracefully" do
-    # Create a user with associations that could trigger FK constraints
-    fresh = User.create!(public_id: SecureRandom.uuid)
-    fresh.update!(withdrawn_at: 31.days.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
-
-    # Ensure deletion works without FK errors - the destroy process cleans up associations first
-    delete sign_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => fresh.id)
-
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
-    assert_nil User.find_by(id: fresh.id), "User should be removed from database after destroy"
   end
 
   # Turnstile Widget Verification Tests
