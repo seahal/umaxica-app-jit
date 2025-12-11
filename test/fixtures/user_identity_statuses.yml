@@ -1,3 +1,5 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
 none:
   id: "NONE"
 
@@ -9,13 +11,3 @@ pre_withdrawal_condition:
 
 withdrawal_completed:
   id: "WITHDRAWAL_COMPLETED"
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-none:
-  id: NONE
-
-pre_withdrawal_conditon:
-  id: PRE_WITHDRAWAL_CONDITON
-
-withdrawal_completed:
-  id: WITHDRAWAL_COMPLETED

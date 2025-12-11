@@ -4,6 +4,7 @@ class UserIdentityStatus < IdentitiesRecord
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: true
 
   # Status constants
+  NONE = "NONE"
   ALIVE = "ALIVE"
   PRE_WITHDRAWAL_CONDITION = "PRE_WITHDRAWAL_CONDITION"
   WITHDRAWAL_COMPLETED = "WITHDRAWAL_COMPLETED"
