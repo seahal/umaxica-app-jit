@@ -7,3 +7,19 @@ none:
 organization_root:
   title: 'ORGANIZATION_SITE_STATUS'
   description: 'ROOT'
+
+set_up:
+  title: 'SET_UP'
+  description: 'first step completed'
+
+email_verified:
+  title: 'CHECKED_EMAIL_ADDRESS'
+  description: 'second step completed'
+
+phone_verified:
+  title: 'CHECKED_TELEPHONE_NUMBER'
+  description: 'third step completed'
+
+completed:
+  title: 'COMPLETED_CONTACT_ACTION'
+  description: 'contact completed'

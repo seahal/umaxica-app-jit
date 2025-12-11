@@ -67,7 +67,7 @@ Rails.application.routes.draw do
         #   resources :refreshs, only: [ :update ]
         # end
         # Withdrawal
-        resource :withdrawal
+        resource :withdrawal, except: :show
       end
     end
 
@@ -100,7 +100,7 @@ Rails.application.routes.draw do
           resources :secrets
         end
         #
-        resource :withdrawal
+        resource :withdrawal, except: :show
         # TODO: Implement owner management
         # resources :owner
         # TODO: Implement customer management

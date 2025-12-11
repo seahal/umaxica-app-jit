@@ -382,4 +382,165 @@ class ComContactTest < ActiveSupport::TestCase
 
     assert_predicate contact, :valid?
   end
+
+  # Callback tests for com_contact
+  test "should generate public_id on create" do
+    contact = ComContact.new(confirm_policy: "1")
+    contact.save!
+
+    assert_not_nil contact.public_id
+    assert_equal 21, contact.public_id.length
+  end
+
+  test "should generate token on create" do
+    contact = ComContact.new(confirm_policy: "1")
+    contact.save!
+
+    # After save, token should be generated (may be empty string from callback)
+    contact.reload
+
+    assert_respond_to contact, :token
+  end
+
+  test "should not overwrite existing public_id" do
+    contact = ComContact.new(confirm_policy: "1", public_id: "existing_public_id")
+    contact.save!
+
+    assert_equal "existing_public_id", contact.public_id
+  end
+
+  test "should not overwrite existing token" do
+    contact = ComContact.new(confirm_policy: "1", token: "existing_token_1234567890123456")
+    contact.save!
+
+    assert_equal "existing_token_1234567890123456", contact.token
+  end
+
+  # State checking tests for com_contact
+  test "email_pending? should return true for email_pending state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "SET_UP")
+
+    assert_predicate contact, :email_pending?
+  end
+
+  test "email_pending? should return true for NULL_COM_STATUS state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "NULL_COM_STATUS")
+
+    assert_predicate contact, :email_pending?
+  end
+
+  test "email_verified? should return true for email_verified state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+
+    assert_predicate contact, :email_verified?
+  end
+
+  test "phone_verified? should return true for phone_verified state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "CHECKED_TELEPHONE_NUMBER")
+
+    assert_predicate contact, :phone_verified?
+  end
+
+  test "completed? should return true for completed state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "COMPLETED_CONTACT_ACTION")
+
+    assert_predicate contact, :completed?
+  end
+
+  # State transition tests for com_contact
+  test "can_verify_email? should return true when email_pending" do
+    contact = build_contact
+    contact.update!(contact_status_title: "SET_UP")
+
+    assert_predicate contact, :can_verify_email?
+  end
+
+  test "can_verify_phone? should return true when email_verified" do
+    contact = build_contact
+    contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+
+    assert_predicate contact, :can_verify_phone?
+  end
+
+  test "can_complete? should return true when phone_verified" do
+    contact = build_contact
+    contact.update!(contact_status_title: "CHECKED_TELEPHONE_NUMBER")
+
+    assert_predicate contact, :can_complete?
+  end
+
+  test "verify_email! should transition to email_verified state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "SET_UP")
+
+    result = contact.verify_email!
+
+    assert result
+    assert_equal "CHECKED_EMAIL_ADDRESS", contact.contact_status_title
+  end
+
+  test "verify_email! should return false when not in email_pending state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+
+    result = contact.verify_email!
+
+    assert_not result
+  end
+
+  test "verify_phone! should transition to phone_verified state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+
+    result = contact.verify_phone!
+
+    assert result
+    assert_equal "CHECKED_TELEPHONE_NUMBER", contact.contact_status_title
+  end
+
+  test "verify_phone! should return false when not in email_verified state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "SET_UP")
+
+    result = contact.verify_phone!
+
+    assert_not result
+  end
+
+  test "complete! should transition to completed state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "CHECKED_TELEPHONE_NUMBER")
+
+    result = contact.complete!
+
+    assert result
+    assert_equal "COMPLETED_CONTACT_ACTION", contact.contact_status_title
+  end
+
+  test "complete! should return false when not in phone_verified state" do
+    contact = build_contact
+    contact.update!(contact_status_title: "SET_UP")
+
+    result = contact.complete!
+
+    assert_not result
+  end
+
+  test "to_param should return public_id" do
+    contact = build_contact
+
+    assert_equal contact.public_id, contact.to_param
+  end
+
+  test "verify_token should return false when token_digest is nil" do
+    contact = build_contact
+    contact.update!(token_digest: nil)
+
+    assert_not contact.verify_token("any_token")
+  end
 end

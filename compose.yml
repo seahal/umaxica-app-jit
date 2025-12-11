@@ -134,7 +134,7 @@ services:
     restart: unless-stopped
 
   kafka:
-    image: confluentinc/cp-kafka:7.9.0
+    image: confluentinc/cp-kafka:7.7.7
     depends_on:
       zookeeper:
         condition: service_started

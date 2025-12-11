@@ -182,4 +182,154 @@ class EmailTest < ActiveSupport::TestCase
     # rubocop:enable ThreadSafety/NewThread
     assert_equal 100, email.reload.otp_attempts_count
   end
+
+  # OTP method tests
+  # rubocop:disable Minitest/MultipleAssertions
+  test "store_otp stores OTP configuration" do
+    email = UserIdentityEmail.create!(address: "otp@example.com", confirm_policy: true)
+    otp_key = "secret_key_123"
+    otp_counter = 10
+    expires_at = 1.hour.from_now.to_i
+
+    email.store_otp(otp_key, otp_counter, expires_at)
+
+    assert_equal otp_key, email.otp_private_key
+    assert_equal otp_counter.to_s, email.otp_counter.to_s
+    assert_equal 0, email.otp_attempts_count
+    assert_nil email.locked_at
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "get_otp returns OTP configuration when valid" do
+    email = UserIdentityEmail.create!(address: "otp2@example.com", confirm_policy: true)
+    otp_key = "secret_key_456"
+    otp_counter = 20
+    expires_at = 1.hour.from_now.to_i
+
+    email.store_otp(otp_key, otp_counter, expires_at)
+    otp_data = email.get_otp
+
+    assert_not_nil otp_data
+    assert_equal otp_key, otp_data[:otp_private_key]
+    assert_equal otp_counter, otp_data[:otp_counter]
+  end
+
+  test "get_otp returns nil when OTP is expired" do
+    email = UserIdentityEmail.create!(address: "otp3@example.com", confirm_policy: true)
+    otp_key = "secret_key_789"
+    otp_counter = 30
+    expires_at = 1.hour.ago.to_i  # Already expired
+
+    email.store_otp(otp_key, otp_counter, expires_at)
+    otp_data = email.get_otp
+
+    assert_nil otp_data
+  end
+
+  test "get_otp returns nil when OTP is locked" do
+    email = UserIdentityEmail.create!(address: "otp4@example.com", confirm_policy: true)
+    otp_key = "secret_key_101"
+    otp_counter = 40
+    expires_at = 1.hour.from_now.to_i
+
+    email.store_otp(otp_key, otp_counter, expires_at)
+    email.update!(locked_at: Time.current)
+
+    otp_data = email.get_otp
+
+    assert_nil otp_data
+  end
+
+  test "get_otp returns nil when otp_private_key is blank" do
+    email = UserIdentityEmail.create!(address: "otp5@example.com", confirm_policy: true)
+
+    otp_data = email.get_otp
+
+    assert_nil otp_data
+  end
+
+  test "otp_expired? returns true when otp_expires_at is nil" do
+    email = UserIdentityEmail.create!(address: "otp6@example.com", confirm_policy: true)
+
+    assert_predicate email, :otp_expired?
+  end
+
+  test "otp_expired? returns true when otp_expires_at is in the past" do
+    email = UserIdentityEmail.create!(address: "otp7@example.com", confirm_policy: true)
+    email.update!(otp_expires_at: 1.hour.ago)
+
+    assert_predicate email, :otp_expired?
+  end
+
+  test "otp_expired? returns false when otp_expires_at is in the future" do
+    email = UserIdentityEmail.create!(address: "otp8@example.com", confirm_policy: true)
+    email.update!(otp_expires_at: 1.hour.from_now)
+
+    assert_not email.otp_expired?
+  end
+
+  test "otp_active? returns true when OTP is not expired and not locked" do
+    email = UserIdentityEmail.create!(address: "otp9@example.com", confirm_policy: true)
+    email.update!(otp_expires_at: 1.hour.from_now, locked_at: nil)
+
+    assert_predicate email, :otp_active?
+  end
+
+  test "otp_active? returns false when OTP is expired" do
+    email = UserIdentityEmail.create!(address: "otp10@example.com", confirm_policy: true)
+    email.update!(otp_expires_at: 1.hour.ago)
+
+    assert_not email.otp_active?
+  end
+
+  test "otp_active? returns false when OTP is locked" do
+    email = UserIdentityEmail.create!(address: "otp11@example.com", confirm_policy: true)
+    email.update!(otp_expires_at: 1.hour.from_now, locked_at: Time.current)
+
+    assert_not email.otp_active?
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "clear_otp clears all OTP data" do
+    email = UserIdentityEmail.create!(address: "otp12@example.com", confirm_policy: true)
+    email.store_otp("key", 50, 1.hour.from_now.to_i)
+    email.update!(locked_at: Time.current, otp_attempts_count: 2)
+
+    email.clear_otp
+
+    assert_nil email.otp_private_key
+    assert_nil email.otp_counter
+    assert_nil email.otp_expires_at
+    assert_equal 0, email.otp_attempts_count
+    assert_nil email.locked_at
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "validates address with pass_code when address is nil" do
+    email = UserIdentityEmail.new(address: nil, pass_code: "123456")
+
+    assert_predicate email, :valid?
+  end
+
+  test "validates pass_code presence when pass_code is not nil" do
+    email = UserIdentityEmail.new(address: nil, pass_code: nil)
+
+    assert_not email.valid?
+  end
+
+  test "validates pass_code length exactly 6" do
+    email = UserIdentityEmail.new(address: nil, pass_code: "12345")
+
+    assert_not email.valid?
+
+    email = UserIdentityEmail.new(address: nil, pass_code: "1234567")
+
+    assert_not email.valid?
+  end
+
+  test "validates pass_code is integer" do
+    email = UserIdentityEmail.new(address: nil, pass_code: "12345a")
+
+    assert_not email.valid?
+  end
 end

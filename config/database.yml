@@ -154,6 +154,7 @@ test:
     !!merge <<: *default
     pool: 800
     replica: true
+    database: test_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
     migrations_paths: db/universals_migrate
   guest:

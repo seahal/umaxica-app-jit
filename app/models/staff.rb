@@ -38,6 +38,6 @@ class Staff < IdentitiesRecord
   private
 
   def ensure_public_id
-    self.public_id ||= SecureRandom.uuid # TODO: use nanoid
+    self.public_id ||= Nanoid.generate(size: 21)
   end
 end

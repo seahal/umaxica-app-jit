@@ -428,4 +428,67 @@ class OrgContactTest < ActiveSupport::TestCase
 
     assert_equal "existing_token_1234567890123456", contact.token
   end
+
+  test "to_param should return public_id" do
+    contact = build_contact
+
+    assert_equal contact.public_id, contact.to_param
+  end
+
+  test "verify_token should return false when token_digest is nil" do
+    contact = build_contact
+    contact.update!(token_digest: nil)
+
+    assert_not contact.verify_token("any_token")
+  end
+
+  # State transition tests for org_contact
+  test "should respond to transition methods" do
+    contact = build_contact
+
+    assert_respond_to contact, :verify_email!
+    assert_respond_to contact, :verify_phone!
+    assert_respond_to contact, :complete!
+  end
+
+  test "should respond to predicate methods" do
+    contact = build_contact
+
+    assert_respond_to contact, :can_verify_email?
+    assert_respond_to contact, :can_verify_phone?
+    assert_respond_to contact, :can_complete?
+  end
+
+  # Additional branch coverage tests
+  test "verify_token returns false when token has been viewed" do
+    contact = build_contact
+    raw_token = contact.generate_final_token
+    contact.verify_token(raw_token)
+    contact.reload
+
+    # Second verification should fail because token_viewed is true
+    assert_not contact.verify_token(raw_token)
+  end
+
+  test "to_param returns different value for each contact" do
+    contact1 = build_contact
+    contact2 = build_contact
+
+    assert_not_equal contact1.to_param, contact2.to_param
+  end
+
+  test "contact can be created with minimal attributes" do
+    contact = OrgContact.new(confirm_policy: "1")
+
+    assert contact.save
+    assert_not_nil contact.id
+  end
+
+  test "default category is set on initialize" do
+    contact = OrgContact.new(confirm_policy: "1")
+    contact.save!
+
+    assert_equal "NULL_ORG_CATEGORY", contact.contact_category_title
+    assert_equal "NULL_ORG_STATUS", contact.contact_status_title
+  end
 end
