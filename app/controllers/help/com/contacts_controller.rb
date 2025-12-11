@@ -5,14 +5,12 @@ module Help
       include Rotp
 
       def show
-      end
-
-      def show
         @contact = ComContact.find_by!(public_id: params[:id])
         @topic = @contact.com_contact_topics.last
       end
 
       def new
+        @contact = ComContact.new
         @contact_categories = ComContactCategory.all
       end
 

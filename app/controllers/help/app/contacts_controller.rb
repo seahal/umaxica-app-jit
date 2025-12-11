@@ -7,6 +7,7 @@ module Help
 
       def show; end
       def new
+        @contact = AppContact.new
         @email_address = ""
         @telephone_number = ""
         @contact_categories = AppContactCategory.all
