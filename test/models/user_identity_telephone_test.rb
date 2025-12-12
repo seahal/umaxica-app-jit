@@ -46,9 +46,11 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
   test "should require valid phone number format" do
     user_telephone = UserIdentityTelephone.new(@valid_attributes.merge(number: "invalid!@#"))
 
-    assert_not user_telephone.valid?
-    # Error message will be in the current locale (Japanese in test environment)
-    assert_includes user_telephone.errors[:number], "は不正な値です"
+    I18n.with_locale(:ja) do
+      assert_not user_telephone.valid?
+      # Error message will be in the current locale (Japanese)
+      assert_includes user_telephone.errors[:number], "は不正な値です"
+    end
   end
 
   test "should accept phone number with country code" do

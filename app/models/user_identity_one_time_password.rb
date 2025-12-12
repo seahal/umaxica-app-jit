@@ -15,4 +15,12 @@ class UserIdentityOneTimePassword < IdentitiesRecord
 
   validates :private_key, presence: true, length: { maximum: 1024 }
   validates :last_otp_at, presence: true
+
+  after_initialize :generate_private_key_if_blank
+
+  private
+
+  def generate_private_key_if_blank
+    self.private_key ||= ROTP::Base32.random_base32
+  end
 end

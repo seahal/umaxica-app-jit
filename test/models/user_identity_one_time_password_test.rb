@@ -58,14 +58,15 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     assert_in_delta @last_otp_at, record.last_otp_at, 1.second
   end
 
-  test "validates presence of private_key" do
+  test "auto-generates private_key if blank" do
     record = UserIdentityOneTimePassword.new(
       user: @user,
       last_otp_at: @last_otp_at
     )
 
-    assert_not record.valid?
-    assert_not_empty record.errors[:private_key]
+    # Private key should be generated automatically
+    assert_not_nil record.private_key
+    assert_predicate record, :valid?
   end
 
   test "validates presence of last_otp_at" do
