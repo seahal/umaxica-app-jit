@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_12_163548) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_12_163549) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -271,6 +271,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_163548) do
     t.datetime "updated_at", null: false
     t.binary "user_id", null: false
     t.string "user_identity_one_time_password_status_id"
+    t.index ["user_identity_one_time_password_status_id"], name: "idx_on_user_identity_one_time_password_status_id_01264db86c"
   end
 
   create_table "user_identity_passkey_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|

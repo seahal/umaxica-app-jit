@@ -33,9 +33,6 @@ module Sign
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
-          # Clear any existing unverified emails for this session
-          UserIdentityEmail.where(user_identity_email_status_id: "UNVERIFIED_WITH_SIGN_UP").where("otp_expires_at > ?", Time.zone.now).delete_all
-
           # start to create new email record
           @user_email = UserIdentityEmail.new(params.expect(user_identity_email: [ :address, :confirm_policy ]))
           @user_email.user_identity_email_status_id = "UNVERIFIED_WITH_SIGN_UP"
@@ -107,14 +104,18 @@ module Sign
 
           # Clear OTP and complete registration
           @user_email.clear_otp
-          session[:user_email_registration] = nil
           @user_email.user_identity_email_status_id = "VERIFIED_WITH_SIGN_UP"
+
+          # Create user and link email atomically
           ActiveRecord::Base.transaction do
             @user = User.create
             @user_email.user_id = @user
             @user_email.save!
           end
-          session[:user] = @user.id
+
+          # Only clear session and set user after successful transaction
+          session[:user_email_registration] = nil
+          session[:user] = { id: @user.id }
           redirect_to "/", notice: t("sign.app.registration.email.update.success")
         end
       end

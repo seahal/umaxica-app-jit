@@ -44,7 +44,7 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
   end
 
   # rubocop:disable Minitest/MultipleAssertions
-  test "cannot register same email within 15 minutes" do
+  test "cannot register same email twice (uniqueness constraint)" do
     email = "test@example.com"
 
     # First registration attempt
@@ -60,13 +60,13 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     assert_response :redirect
 
-    # Verify record created
-    user_email = UserIdentityEmail.find_by(address: email)
-
-    assert_not_nil user_email
-    assert_equal "UNVERIFIED_WITH_SIGN_UP", user_email.user_identity_email_status_id
+    # Verify first record created
+    first_email = UserIdentityEmail.find_by(address: email)
+    assert_not_nil first_email
+    assert_equal "UNVERIFIED_WITH_SIGN_UP", first_email.user_identity_email_status_id
 
     # Second registration attempt immediately after
+    # This should fail due to address uniqueness constraint
     post sign_app_registration_emails_url,
       params: {
         user_identity_email: {
@@ -77,19 +77,11 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       },
       headers: default_headers
 
-    # Should still be redirect (success) because the controller deletes previous unverified attempts
-    # The requirement "cannot register same email" implies we should check if the OLD record is gone
-    # or if the new one replaced it.
-    # Based on the controller code:
-    # serIdentityEmail.where(user_identity_email_status_id: "UNVERIFIED_WITH_SIGN_UP").where("otp_expires_at > ?", Time.now).delete_all
-    # It seems it deletes unverified emails that are NOT expired.
-    # So if I register again immediately, the previous one is deleted and a new one is created.
-
-    # Let's verify the ID changed, meaning the old one was deleted and new one created
-    new_user_email = UserIdentityEmail.find_by(address: email)
-
-    assert_not_equal user_email.id, new_user_email.id
+    # Should get unprocessable content because email already exists (uniqueness validation)
+    # This is the secure behavior - we don't delete other users' records
+    assert_response :unprocessable_content
   end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "email record is deleted after max attempts" do
     email = "test_max_attempts@example.com"
