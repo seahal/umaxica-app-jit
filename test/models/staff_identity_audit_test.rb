@@ -3,10 +3,10 @@ require "test_helper"
 class StaffIdentityAuditTest < ActiveSupport::TestCase
   def setup
     @staff = staffs(:one)
-    @audit_event = StaffIdentityAuditEvent.create!(id: "TEST_AUDIT")
+    @audit_status = staff_identity_audit_statuses(:one)
     @audit = StaffIdentityAudit.create!(
       staff: @staff,
-      staff_identity_audit_event: @audit_event,
+      staff_identity_audit_status: @audit_status,
       timestamp: Time.current,
       ip_address: "192.168.1.1"
     )
@@ -23,17 +23,17 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     assert_equal :belongs_to, association.macro
   end
 
-  test "belongs to staff_identity_audit_event" do
-    association = StaffIdentityAudit.reflect_on_association(:staff_identity_audit_event)
+  test "belongs to staff_identity_audit_status" do
+    association = StaffIdentityAudit.reflect_on_association(:staff_identity_audit_status)
 
     assert_not_nil association
     assert_equal :belongs_to, association.macro
   end
 
-  test "can be created with staff and event" do
+  test "can be created with staff and status" do
     assert_not_nil @audit
     assert_equal @staff.id, @audit.staff_id
-    assert_equal "TEST_AUDIT", @audit.event_id
+    assert_equal @audit_status.id, @audit.status_id
   end
 
   test "timestamp can be set" do
@@ -48,7 +48,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
   test "actor_id is optional" do
     audit_without_actor = StaffIdentityAudit.create!(
       staff: @staff,
-      staff_identity_audit_event: @audit_event
+      staff_identity_audit_status: @audit_status
     )
 
     assert_nil audit_without_actor.actor_id
@@ -57,7 +57,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
   test "previous_value can be stored" do
     audit = StaffIdentityAudit.create!(
       staff: @staff,
-      staff_identity_audit_event: @audit_event,
+      staff_identity_audit_status: @audit_status,
       previous_value: '{"name": "old"}'
     )
 
@@ -67,7 +67,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
   test "current_value can be stored" do
     audit = StaffIdentityAudit.create!(
       staff: @staff,
-      staff_identity_audit_event: @audit_event,
+      staff_identity_audit_status: @audit_status,
       current_value: '{"name": "new"}'
     )
 
@@ -83,25 +83,25 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     assert_equal @staff, @audit.staff
   end
 
-  test "staff_identity_audit_event association loads event correctly" do
-    assert_equal @audit_event, @audit.staff_identity_audit_event
+  test "staff_identity_audit_status association loads status correctly" do
+    assert_equal @audit_status, @audit.staff_identity_audit_status
   end
 
   test "requires staff" do
     audit = StaffIdentityAudit.new(
-      staff_identity_audit_event: @audit_event
+      staff_identity_audit_status: @audit_status
     )
 
     assert_not audit.valid?
     assert_not_empty audit.errors[:staff]
   end
 
-  test "requires staff_identity_audit_event" do
+  test "requires staff_identity_audit_status" do
     audit = StaffIdentityAudit.new(
       staff: @staff
     )
 
     assert_not audit.valid?
-    assert_not_empty audit.errors[:staff_identity_audit_event]
+    assert_not_empty audit.errors[:staff_identity_audit_status]
   end
 end

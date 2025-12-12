@@ -5,6 +5,9 @@ class EnforceStaffIdentitySecretLimit < ActiveRecord::Migration[8.2]
   TRIGGER_NAME = "enforce_staff_identity_secrets_limit"
 
   def up
+    # Only create trigger if staff_identity_secrets table exists
+    return unless table_exists?(:staff_identity_secrets)
+
     execute <<~SQL.squish
       CREATE OR REPLACE FUNCTION #{FUNCTION_NAME}()
       RETURNS trigger AS $$
@@ -29,6 +32,8 @@ class EnforceStaffIdentitySecretLimit < ActiveRecord::Migration[8.2]
   end
 
   def down
+    return unless table_exists?(:staff_identity_secrets)
+
     execute <<~SQL.squish
       DROP TRIGGER IF EXISTS #{TRIGGER_NAME} ON staff_identity_secrets;
     SQL

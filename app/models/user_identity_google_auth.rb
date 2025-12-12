@@ -14,6 +14,7 @@ class UserIdentityGoogleAuth < IdentitiesRecord
   self.table_name = "user_google_auths"
 
   belongs_to :user
+  belongs_to :user_identity_google_auth_status, optional: true
 
   validates :token, presence: true
 end

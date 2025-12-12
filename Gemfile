@@ -80,8 +80,6 @@ gem "fastly"
 gem "meta-tags"
 # use surrogate key for pk of db.
 gem "nanoid"
-#
-gem "rails_semantic_logger"
 # Authentication
 gem "pundit"
 

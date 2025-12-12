@@ -81,8 +81,9 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # Sign up pages
-        # TODO: Implement authentication actions (show, update, put, delete, create)
+        # SignUp
+        resource :registration, only: :new
+        # Login
         resource :authentication, only: [ :new ]
         namespace :setting do
           # TODO: Implement TOTP settings (index, new, edit, update actions only)

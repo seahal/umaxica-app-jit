@@ -261,6 +261,13 @@ en:
         edit:
           title: "Do you want to sign out?"
           description: "End your current session and return to the sign-in page."
+      registration:
+        new:
+          page_title: "Staff Registration"
+          page_description: "Staff registration is currently under development."
+          links:
+            sign_in_text: "Already have an account?"
+            sign_in_link: "Sign in here"
       withdrawal:
         create:
           success: "Withdrawal processed (dummy)"

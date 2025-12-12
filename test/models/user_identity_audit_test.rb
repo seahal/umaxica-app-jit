@@ -3,10 +3,10 @@ require "test_helper"
 class UserIdentityAuditTest < ActiveSupport::TestCase
   def setup
     @user = users(:one)
-    @audit_event = UserIdentityAuditEvent.create!(id: "TEST_AUDIT")
+    @audit_status = user_identity_audit_statuses(:one)
     @audit = UserIdentityAudit.create!(
       user: @user,
-      user_identity_audit_event: @audit_event,
+      user_identity_audit_status: @audit_status,
       timestamp: Time.current,
       ip_address: "192.168.1.1"
     )
@@ -23,17 +23,17 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     assert_equal :belongs_to, association.macro
   end
 
-  test "belongs to user_identity_audit_event" do
-    association = UserIdentityAudit.reflect_on_association(:user_identity_audit_event)
+  test "belongs to user_identity_audit_status" do
+    association = UserIdentityAudit.reflect_on_association(:user_identity_audit_status)
 
     assert_not_nil association
     assert_equal :belongs_to, association.macro
   end
 
-  test "can be created with user and event" do
+  test "can be created with user and status" do
     assert_not_nil @audit
     assert_equal @user.id, @audit.user_id
-    assert_equal "TEST_AUDIT", @audit.event_id
+    assert_equal @audit_status.id, @audit.status_id
   end
 
   test "timestamp can be set" do
@@ -48,7 +48,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
   test "actor_id is optional" do
     audit_without_actor = UserIdentityAudit.create!(
       user: @user,
-      user_identity_audit_event: @audit_event
+      user_identity_audit_status: @audit_status
     )
 
     assert_nil audit_without_actor.actor_id
@@ -57,7 +57,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
   test "previous_value can be stored" do
     audit = UserIdentityAudit.create!(
       user: @user,
-      user_identity_audit_event: @audit_event,
+      user_identity_audit_status: @audit_status,
       previous_value: '{"email": "old@example.com"}'
     )
 
@@ -67,7 +67,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
   test "current_value can be stored" do
     audit = UserIdentityAudit.create!(
       user: @user,
-      user_identity_audit_event: @audit_event,
+      user_identity_audit_status: @audit_status,
       current_value: '{"email": "new@example.com"}'
     )
 
@@ -83,32 +83,32 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     assert_equal @user, @audit.user
   end
 
-  test "user_identity_audit_event association loads event correctly" do
-    assert_equal @audit_event, @audit.user_identity_audit_event
+  test "user_identity_audit_status association loads status correctly" do
+    assert_equal @audit_status, @audit.user_identity_audit_status
   end
 
   test "requires user" do
     audit = UserIdentityAudit.new(
-      user_identity_audit_event: @audit_event
+      user_identity_audit_status: @audit_status
     )
 
     assert_not audit.valid?
     assert_not_empty audit.errors[:user]
   end
 
-  test "requires user_identity_audit_event" do
+  test "requires user_identity_audit_status" do
     audit = UserIdentityAudit.new(
       user: @user
     )
 
     assert_not audit.valid?
-    assert_not_empty audit.errors[:user_identity_audit_event]
+    assert_not_empty audit.errors[:user_identity_audit_status]
   end
 
-  test "validates foreign key constraint on event_id" do
+  test "validates foreign key constraint on status_id" do
     audit = UserIdentityAudit.new(
       user: @user,
-      event_id: "NON_EXISTENT_EVENT",
+      status_id: "NON_EXISTENT_STATUS",
       timestamp: Time.current
     )
 

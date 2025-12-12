@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_11_03_000000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_12_163544) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -27,13 +27,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_11_03_000000) do
     t.datetime "updated_at", null: false
     t.index ["context"], name: "index_email_preference_requests_on_context"
     t.index ["token_digest"], name: "index_email_preference_requests_on_token_digest", unique: true
-  end
-
-  create_table "hmac_based_one_time_passwords", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "private_key", limit: 1024, null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "identifier_region_codes", id: :string, force: :cascade do |t|

@@ -256,6 +256,13 @@ en:
             passkey: "Passkey"
             recovery: "Recovery code"
             registration: "Need an account?"
+      registration:
+        new:
+          page_title: "Staff Registration"
+          page_description: "Staff registration is currently under development."
+          links:
+            sign_in_text: "Already have an account?"
+            sign_in_link: "Sign in here"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"

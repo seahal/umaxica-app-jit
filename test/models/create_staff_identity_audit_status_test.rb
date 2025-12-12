@@ -1,6 +1,6 @@
 require "test_helper"
 
-class CreateStaffIdentityAuditEventTest < ActiveSupport::TestCase
+class CreateStaffIdentityAuditStatusTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

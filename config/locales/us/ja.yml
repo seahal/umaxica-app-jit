@@ -423,6 +423,13 @@ ja:
             your_session_was_expired: 有効期間が切れたので、最初からやり直してください
           update:
             success: Telephone verification completed successfully.
+      registration:
+        new:
+          page_title: スタッフ登録
+          page_description: スタッフ登録は現在開発中です。
+          links:
+            sign_in_text: すでにアカウントをお持ちですか？
+            sign_in_link: ログインはこちら
       setting:
         totp:
           new:
