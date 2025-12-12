@@ -8,7 +8,7 @@ class CreateOrgContactTopics < ActiveRecord::Migration[8.2]
       t.string :otp_digest, limit: 255
       t.timestamptz :otp_expires_at
       t.integer :otp_attempts_left, limit: 2, default: 3, null: false
-      t.timestamptz :expires_at, null: false, default: 1.day.from_now
+      t.timestamptz :expires_at, null: false, default: -> { "CURRENT_TIMESTAMP + interval '1 day'" }
       t.timestamps
     end
   end

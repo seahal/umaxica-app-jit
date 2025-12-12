@@ -12,7 +12,7 @@ class CreateOrgContactEmails < ActiveRecord::Migration[8.1]
       t.string      :token_digest, limit: 255
       t.timestamptz :token_expires_at
       t.boolean     :token_viewed, default: false, null: false
-      t.timestamptz :expires_at, null: false, default: 1.day.from_now
+      t.timestamptz :expires_at, null: false, default: -> { "CURRENT_TIMESTAMP + interval '1 day'" }
       t.timestamps
     end
 

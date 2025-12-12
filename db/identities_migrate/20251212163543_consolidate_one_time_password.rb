@@ -1,9 +1,4 @@
 class ConsolidateOneTimePassword < ActiveRecord::Migration[8.2]
-  class HmacBasedOneTimePassword < ActiveRecord::Base
-    connects_to database: { writing: :universal, reading: :universal }
-    self.table_name = "hmac_based_one_time_passwords"
-  end
-
   class UserIdentityOneTimePassword < ActiveRecord::Base
     self.table_name = "user_identity_one_time_passwords"
   end
@@ -20,12 +15,20 @@ class ConsolidateOneTimePassword < ActiveRecord::Migration[8.2]
       dir.up do
         UserIdentityOneTimePassword.reset_column_information
         UserIdentityOneTimePassword.find_each do |record|
-          hmac = HmacBasedOneTimePassword.find_by(id: record.hmac_based_one_time_password_id)
+          # Query the universal database for the hmac record
+          universal_conn = ActiveRecord::Base.connection_handler.retrieve_connection("universal")
+          hmac = universal_conn.execute(
+            "SELECT private_key, last_otp_at FROM hmac_based_one_time_passwords WHERE id = $1",
+            [ record.hmac_based_one_time_password_id ]
+          ).first
+
           if hmac
+            # rubocop:disable Rails/SkipsModelValidations
             record.update_columns(
-              private_key: hmac.private_key,
-              last_otp_at: hmac.last_otp_at
+              private_key: hmac["private_key"],
+              last_otp_at: hmac["last_otp_at"]
             )
+            # rubocop:enable Rails/SkipsModelValidations
           end
         end
 

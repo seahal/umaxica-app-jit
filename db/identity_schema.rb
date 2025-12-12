@@ -266,8 +266,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_163546) do
 
   create_table "user_identity_one_time_passwords", id: false, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "last_otp_at"
-    t.string "private_key", limit: 1024
+    t.datetime "last_otp_at", null: false
+    t.string "private_key", limit: 1024, null: false
     t.datetime "updated_at", null: false
     t.binary "user_id", null: false
     t.string "user_identity_one_time_password_status_id"
