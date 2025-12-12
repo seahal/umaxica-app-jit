@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserIdentitySecretStatus < IdentitiesRecord
   has_many :user_identity_secrets, dependent: :restrict_with_error
 
