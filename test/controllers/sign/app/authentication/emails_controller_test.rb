@@ -149,4 +149,70 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     assert_response :success
     assert_select "div[id^='cf-turnstile-']", count: 1
   end
+
+  # Login Tests
+  test "successful OTP verification logs in user" do
+    skip "Pending OTP mocking implementation"
+    # Create a test user and email
+    user = User.create!(id: SecureRandom.uuid)
+    test_email = UserIdentityEmail.create!(
+      address: "login_test_#{SecureRandom.hex(4)}@example.com",
+      user_id: user.id
+    )
+
+    # Start authentication process
+    post sign_app_authentication_email_url,
+         params: { user_identity_email: { address: test_email.address } },
+         headers: { "Host" => @host }
+
+    assert_equal test_email.id.to_s, session[:user_email_authentication_id]
+
+    # Verify OTP to log in
+    patch sign_app_authentication_email_url,
+          params: { user_identity_email: { pass_code: "correct_code" } },
+          headers: { "Host" => @host }
+
+    # Check session has user
+    assert_equal user.id, session[:user][:id]
+    assert_nil session[:user_email_authentication_id]
+  end
+
+  test "user session is set after successful login" do
+    skip "Pending OTP mocking implementation"
+    user = User.create!(id: SecureRandom.uuid)
+    test_email = UserIdentityEmail.create!(
+      address: "session_test_#{SecureRandom.hex(4)}@example.com",
+      user_id: user.id
+    )
+
+    # Simulate successful OTP verification
+    post sign_app_authentication_email_url,
+         params: { user_identity_email: { address: test_email.address } },
+         headers: { "Host" => @host }
+
+    patch sign_app_authentication_email_url,
+          params: { user_identity_email: { pass_code: "correct_code" } },
+          headers: { "Host" => @host }
+
+    # Session should contain user id
+    assert_not_nil session[:user]
+    assert_equal user.id, session[:user][:id]
+  end
+
+  test "already logged in user cannot authenticate" do
+    skip "Pending session mocking implementation"
+    # Set up existing session with user
+    user = User.create!(id: SecureRandom.uuid)
+
+    # Manually set session before request
+    get new_sign_app_authentication_email_url,
+        headers: { "Host" => @host }
+
+    session[:user] = { id: user.id }
+
+    get new_sign_app_authentication_email_url,
+        headers: { "Host" => @host }
+
+    assert_response :bad_request
+  end
 end

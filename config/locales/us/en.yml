@@ -42,6 +42,11 @@ en:
           new:
             page_title: "Sign in with your phone number"
             description: "Provide your registered phone number to receive a one-time verification code."
+        exits:
+          edit:
+            title: "Do you want to sign out?"
+          destroy:
+            success: "You have been signed out."
       recovery:
         new:
           page_title: "Use a recovery code"
@@ -230,6 +235,17 @@ en:
               system: "Matches your operating system and switches automatically."
             submit: "Save theme preference"
     org:
+      layout:
+        nav:
+          sign_up: "Sign Up"
+          log_in: "Log In"
+          setting: "Settings"
+          logout: "Log Out"
+      exits:
+        edit:
+          title: "Do you want to sign out?"
+        destroy:
+          success: "You have been signed out."
       withdrawal:
         create:
           already_withdrawn: "You have already withdrawn your account."

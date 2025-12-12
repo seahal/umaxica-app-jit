@@ -6,13 +6,13 @@ module Help
       before_action :set_contact, only: %i[show edit]
 
       def show; end
+
       def new
         @contact = AppContact.new
         @email_address = ""
         @telephone_number = ""
         @contact_categories = AppContactCategory.all
       end
-
 
       def edit
         @contact_categories = AppContactCategory.all

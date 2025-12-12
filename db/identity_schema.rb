@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_12_163546) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_12_163548) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -181,7 +181,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_163546) do
   create_table "staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "public_id", limit: 255
-    t.string "staff_identity_status_id", limit: 255
+    t.string "staff_identity_status_id", limit: 255, default: "NONE"
     t.datetime "updated_at", null: false
     t.string "webauthn_id"
     t.datetime "withdrawn_at"
@@ -370,7 +370,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_163546) do
     t.datetime "created_at", null: false
     t.string "public_id", limit: 255
     t.datetime "updated_at", null: false
-    t.string "user_identity_status_id", limit: 255
+    t.string "user_identity_status_id", limit: 255, default: "NONE"
     t.string "webauthn_id"
     t.datetime "withdrawn_at"
     t.index ["public_id"], name: "index_users_on_public_id", unique: true

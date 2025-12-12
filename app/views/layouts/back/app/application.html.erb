@@ -26,10 +26,17 @@
 <header>
   <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Umaxica(www, app)</a></h1>
   <p>
-    <% if defined?(new_auth_app_registration_path) %>
-      <%= link_to_if !@user&.active?, "logout?", new_auth_app_registration_path %>
-      <%= link_to_unless @user&.active?, "login?", new_auth_app_registration_path %>
-    <% end %>
+    <% unless logged_in? %>
+    <ul>
+      <li><%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_registration_path %></li>
+      <li><%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_authentication_path %></li>
+    </ul>
+  <% else %>
+    <ul>
+      <li><%= link_to t("sign.app.layout.nav.setting"), sign_app_setting_path %></li>
+      <li><%= link_to t("sign.app.layout.nav.logout"), sign_app_authentication_path, data: { turbo_method: :delete } %></li>
+    </ul>
+  <% end %>
   </p>
 </header>
 

@@ -200,7 +200,7 @@ ja:
             description: 信頼できる端末を使ってパスキーを追加し、パスワードなしでサインインします。
         email:
           new:
-            page_title: email でページ登録
+            page_title: メールでページ登録
             you_have_already_logged_in: あなたはログインしています
             registration: 登録しますか？
           create:
@@ -374,6 +374,17 @@ ja:
           recovery_not_available: "このアカウントは復旧できません。復旧期間が終了しています。"
           deletion_failed: "アカウント削除に失敗しました。もう一度お試しいただくか、サポートにお問い合わせください。"
     org:
+      layout:
+        nav:
+          sign_up: "新規登録"
+          log_in: "ログイン"
+          setting: "設定"
+          logout: "ログアウト"
+      exits:
+        edit:
+          title: "ログアウトしますか？"
+        destroy:
+          success: "ログアウトしました"
       withdrawal:
         create:
           already_withdrawn: "既に退会済みです。"

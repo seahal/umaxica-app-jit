@@ -26,12 +26,15 @@ UserIdentityStatus.create_or_find_by(id: "ALIVE")
 UserIdentityStatus.create_or_find_by(id: "PRE_WITHDRAWAL_CONDITION")
 UserIdentityStatus.create_or_find_by(id: "WITHDRAWAL_COMPLETED")
 ## UserIdentityEmailStatus
+#
+UserIdentityEmailStatus.create_or_find_by(id: "NONE")
 UserIdentityEmailStatus.create_or_find_by(id: "UNVERIFIED_WITH_SIGN_UP")
 UserIdentityEmailStatus.create_or_find_by(id: "VERIFIED_WITH_SIGN_UP")
 UserIdentityEmailStatus.create_or_find_by(id: "ALIVE")
 UserIdentityEmailStatus.create_or_find_by(id: "SUSPENDED")
 UserIdentityEmailStatus.create_or_find_by(id: "DELETED")
 ## UserIdentityTelephoneStatus
+UserIdentityTelephoneStatus.create_or_find_by(id: "NONE")
 UserIdentityTelephoneStatus.create_or_find_by(id: "UNVERIFIED_WITH_SIGN_UP")
 UserIdentityTelephoneStatus.create_or_find_by(id: "VERIFIED_WITH_SIGN_UP")
 UserIdentityTelephoneStatus.create_or_find_by(id: "ALIVE")

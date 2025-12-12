@@ -26,6 +26,7 @@ class User < IdentitiesRecord
   has_many :roles, through: :role_assignments
 
   before_validation :ensure_public_id
+  before_create :set_default_status
 
   validates :public_id, presence: true, uniqueness: true
 
@@ -41,5 +42,9 @@ class User < IdentitiesRecord
 
   def ensure_public_id
     self.public_id ||= Nanoid.generate(size: 21)
+  end
+
+  def set_default_status
+    self.user_identity_status_id ||= UserIdentityStatus::NONE
   end
 end

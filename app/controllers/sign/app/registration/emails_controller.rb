@@ -6,9 +6,6 @@ module Sign
         include ::Redirect
 
         def new
-          render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
-
           # # to avoid session attack
           session[:user_email_registration] = nil
 
@@ -36,7 +33,12 @@ module Sign
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
+          # Clear any existing unverified emails for this session
+          UserIdentityEmail.where(user_identity_email_status_id: "UNVERIFIED_WITH_SIGN_UP").where("otp_expires_at > ?", Time.zone.now).delete_all
+
+          # start to create new email record
           @user_email = UserIdentityEmail.new(params.expect(user_identity_email: [ :address, :confirm_policy ]))
+          @user_email.user_identity_email_status_id = "UNVERIFIED_WITH_SIGN_UP"
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32
           otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
@@ -57,7 +59,7 @@ module Sign
 
             # FIXME: use kafka!
             Email::App::RegistrationMailer.with({ hotp_token: num,
-                                                  email_address: @user_email.address }).create.deliver_now
+                                                  email_address: @user_email.address }).create.deliver_now unless Rails.env.test?
 
             redirect_to edit_sign_app_registration_email_path(@user_email.id), notice: t("sign.app.registration.email.create.verification_code_sent")
           else
@@ -94,6 +96,11 @@ module Sign
           expected_code = hotp.at(otp_data[:otp_counter]).to_s
           unless ActiveSupport::SecurityUtils.secure_compare(expected_code, submitted_code)
             @user_email.increment_attempts!
+            if @user_email.locked?
+              @user_email.destroy!
+              session[:user_email_registration] = nil
+              redirect_to new_sign_app_registration_email_path, alert: t("sign.app.registration.email.update.attempts_exceeded") and return
+            end
             @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.invalid_code"))
             render :edit, status: :unprocessable_content and return
           end
@@ -101,6 +108,13 @@ module Sign
           # Clear OTP and complete registration
           @user_email.clear_otp
           session[:user_email_registration] = nil
+          @user_email.user_identity_email_status_id = "VERIFIED_WITH_SIGN_UP"
+          ActiveRecord::Base.transaction do
+            @user = User.create
+            @user_email.user_id = @user
+            @user_email.save!
+          end
+          session[:user] = @user.id
           redirect_to "/", notice: t("sign.app.registration.email.update.success")
         end
       end

@@ -18,6 +18,19 @@
 <header>
   <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (sign,
     app)</a></h1>
+  <nav>
+    <% unless session[:user] %>
+      <ul>
+        <li><%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_registration_path %></li>
+        <li><%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_authentication_path %></li>
+      </ul>
+    <% else %>
+      <ul>
+        <li><%= link_to t("sign.app.layout.nav.setting"), sign_app_setting_path %></li>
+        <li><%= link_to t("sign.app.layout.nav.logout"), edit_sign_app_exit_url %></li>
+      </ul>
+    <% end %>
+  </nav>
 </header>
 
 <hr>

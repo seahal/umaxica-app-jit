@@ -7,8 +7,8 @@ class Sign::Org::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should respond to delete action" do
-    # Test that the controller has a delete action
-    assert_includes Sign::Org::AuthenticationsController.instance_methods, :delete
+  test "should respond to destroy action" do
+    # Test that the controller has a destroy action
+    assert_includes Sign::Org::AuthenticationsController.instance_methods, :destroy
   end
 end

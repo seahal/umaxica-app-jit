@@ -117,6 +117,11 @@ ja:
         authentication:
           destroy:
             jump_obj: sign in with email
+        exits:
+          edit:
+            title: "ログアウトしますか？"
+          destroy:
+            success: "ログアウトしました"
       preferences:
         title: プリファレンス
         cookie_settings: クッキーの設定
@@ -332,6 +337,12 @@ ja:
     sample_successfully_updated: 登録が完了しました。
   sign:
     app:
+      layout:
+        nav:
+          sign_up: "新規登録"
+          log_in: "ログイン"
+          setting: "設定"
+          logout: "ログアウト"
       root:
         title: "Sign へようこそ"
         description: "はじめるためのアクションを選択してください"
@@ -358,7 +369,7 @@ ja:
             description: 信頼できる端末を使ってパスキーを追加し、パスワードなしでサインインします。
         email:
           new:
-            page_title: email でページ登録
+            page_title: メールでページ登録
             you_have_already_logged_in: あなたはログインしています
             registration: 登録しますか？
           create:
@@ -421,12 +432,31 @@ ja:
             page_title: "UMAXICA (sign, app)"
             link_to_other_methods: "他の方法で登録しますか？"
             link_to_sign_in: "ログインしますか？"
+          create:
+            verification_code_sent: 確認コードをメールアドレスに送信しました。
+          edit:
+            session_expired: セッションの有効期限が切れました。最初からやり直してください。
+          update:
+            invalid_code: パスコードが正しくありません
+            attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
+            success: 登録が完了しました。
         telephone:
           new:
             page_title: "電話番号で登録"
             link_to_other_methods: "他の方法で登録しますか？"
             link_to_sign_in: "ログインしますか？"
     org:
+      layout:
+        nav:
+          sign_up: "新規登録"
+          log_in: "ログイン"
+          setting: "設定"
+          logout: "ログアウト"
+      exits:
+        edit:
+          title: "ログアウトしますか？"
+        destroy:
+          success: "ログアウトしました"
       authentication:
         new:
           page_title: サインイン方法を選択

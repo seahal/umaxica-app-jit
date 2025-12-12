@@ -1,10 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+unverified_with_sign_up:
+  id: "UNVERIFIED_WITH_SIGN_UP"
+
+verified_with_sign_up:
+  id: "VERIFIED_WITH_SIGN_UP"
+
 unverified:
   id: "UNVERIFIED"
 
 verified:
-  id: "VERIFIED"
+  id: "ALIVE"
 
 suspended:
   id: "SUSPENDED"
