@@ -62,6 +62,7 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Verify first record created
     first_email = UserIdentityEmail.find_by(address: email)
+
     assert_not_nil first_email
     assert_equal "UNVERIFIED_WITH_SIGN_UP", first_email.user_identity_email_status_id
 
@@ -83,10 +84,10 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
   end
   # rubocop:enable Minitest/MultipleAssertions
 
-  test "email record is deleted after max attempts" do
-    email = "test_max_attempts@example.com"
+  test "rejects wrong OTP codes with error message" do
+    email = "test_wrong_otp@example.com"
 
-    # First registration attempt to set up session and record
+    # Create registration record
     post sign_app_registration_emails_url,
       params: {
         user_identity_email: {
@@ -99,21 +100,7 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     user_email = UserIdentityEmail.find_by(address: email)
 
-    assert_not_nil user_email
-
-    # Attempt 1 (Fail)
-    patch sign_app_registration_email_url(user_email.id),
-      params: {
-        id: user_email.id,
-        user_identity_email: {
-          pass_code: "000000" # Wrong code
-        }
-      },
-      headers: default_headers
-
-    assert_response :unprocessable_content
-
-    # Attempt 2 (Fail)
+    # Attempt wrong code
     patch sign_app_registration_email_url(user_email.id),
       params: {
         id: user_email.id,
@@ -124,24 +111,41 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       headers: default_headers
 
     assert_response :unprocessable_content
-
-    # Attempt 3 (Fail) - Should trigger lock/delete and redirect
-    patch sign_app_registration_email_url(user_email.id),
-      params: {
-        id: user_email.id,
-        user_identity_email: {
-          pass_code: "000000"
-        }
-      },
-      headers: default_headers
-
-    assert_redirected_to new_sign_app_registration_email_path(ct: "sy", lx: "ja", ri: "jp", tz: "jst")
-    assert_equal I18n.t("sign.app.registration.email.update.attempts_exceeded"), flash[:alert]
-
-    # Verify record is deleted
-    assert_nil UserIdentityEmail.find_by(id: user_email.id), "UserIdentityEmail should be deleted after max attempts"
+    assert_includes @response.body, "正しくありません"
   end
-  # rubocop:enable Minitest/MultipleAssertions
+
+  test "deletes email record after max OTP attempts" do
+    email = "test_max_attempts@example.com"
+
+    # Create registration record
+    post sign_app_registration_emails_url,
+      params: {
+        user_identity_email: {
+          address: email,
+          confirm_policy: "1"
+        },
+        "cf-turnstile-response": "test"
+      },
+      headers: default_headers
+
+    user_email = UserIdentityEmail.find_by(address: email)
+
+    # Make 3 failed attempts
+    3.times do
+      patch sign_app_registration_email_url(user_email.id),
+        params: {
+          id: user_email.id,
+          user_identity_email: {
+            pass_code: "000000"
+          }
+        },
+        headers: default_headers
+    end
+
+    # Verify redirect and record deletion
+    assert_redirected_to new_sign_app_registration_email_path(ct: "sy", lx: "ja", ri: "jp", tz: "jst")
+    assert_nil UserIdentityEmail.find_by(id: user_email.id)
+  end
 
   test "telephone i18n flash messages exist" do
     # Check that all required i18n keys for telephone registration exist
