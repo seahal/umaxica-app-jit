@@ -56,7 +56,7 @@ module Sign
 
             # FIXME: use kafka!
             Email::App::RegistrationMailer.with({ hotp_token: num,
-                                                  email_address: @user_email.address }).create.deliver_now unless Rails.env.test?
+                                                  email_address: @user_email.address }).create.deliver_now
 
             redirect_to edit_sign_app_registration_email_path(@user_email.id), notice: t("sign.app.registration.email.create.verification_code_sent")
           else
@@ -106,11 +106,18 @@ module Sign
           @user_email.clear_otp
           @user_email.user_identity_email_status_id = "VERIFIED_WITH_SIGN_UP"
 
-          # Create user and link email atomically
-          ActiveRecord::Base.transaction do
-            @user = User.create
-            @user_email.user_id = @user
-            @user_email.save!
+          # Create user and link email atomically within a transaction
+          begin
+            ActiveRecord::Base.transaction do
+              # Use create! to raise exception on validation failure
+              @user = User.create!
+              # Use association to set the user
+              @user_email.user = @user
+              @user_email.save!
+            end
+          rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved
+            @user_email.errors.add(:base, "登録処理に失敗しました。もう一度やり直してください。")
+            render :edit, status: :unprocessable_content and return
           end
 
           # Only clear session and set user after successful transaction
