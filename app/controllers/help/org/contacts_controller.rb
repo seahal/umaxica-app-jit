@@ -11,7 +11,6 @@ module Help
         render plain: "org contact form placeholder"
       end
 
-
       def edit
         @contact_categories = OrgContactCategory.order(:title)
       end

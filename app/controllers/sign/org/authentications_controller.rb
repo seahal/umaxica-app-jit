@@ -3,7 +3,7 @@ module Sign::Org
     def new
     end
 
-    def delete
+    def destroy
     end
   end
 end

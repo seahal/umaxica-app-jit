@@ -11,11 +11,5 @@ module Back::App
       assert_includes controller.class, DefaultUrlOptions
       assert_includes controller.class, Back::Concerns::Regionalization
     end
-
-    test "logged_in_user? returns false" do
-      controller = ApplicationController.new
-
-      assert_not controller.send(:logged_in_user?)
-    end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -55,6 +55,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
     t.index ["parent_organization"], name: "index_organizations_on_parent_organization"
   end
 
+  create_table "people", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "personality_id", null: false
+    t.string "personality_type", null: false
+    t.index ["personality_type", "personality_id"], name: "index_people_on_personality"
+  end
+
   create_table "role_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "role_id", null: false
@@ -85,8 +91,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
 
   create_table "staff_identity_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.datetime "created_at", null: false
-    t.text "current_value"
     t.string "event_id", limit: 255, null: false
     t.string "ip_address"
     t.text "previous_value"
@@ -128,15 +134,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
     t.binary "webauthn_id", null: false
     t.index ["staff_id"], name: "index_staff_identity_passkeys_on_staff_id"
     t.index ["webauthn_id"], name: "index_staff_identity_passkeys_on_webauthn_id", unique: true
-  end
-
-  create_table "staff_identity_secrets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "last_used_at"
-    t.string "password_digest"
-    t.uuid "staff_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["staff_id"], name: "index_staff_identity_secrets_on_staff_id"
   end
 
   create_table "staff_identity_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
@@ -190,7 +187,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
   create_table "staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "public_id", limit: 255
-    t.string "staff_identity_status_id", limit: 255
+    t.string "staff_identity_status_id", limit: 255, default: "NONE"
     t.datetime "updated_at", null: false
     t.string "webauthn_id"
     t.datetime "withdrawn_at"
@@ -204,7 +201,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
     t.string "token"
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.string "user_identity_apple_auth_status_id", limit: 255, default: "ACTIVE", null: false
     t.index ["user_id"], name: "index_user_apple_auths_on_user_id"
+    t.index ["user_identity_apple_auth_status_id"], name: "index_user_apple_auths_on_user_identity_apple_auth_status_id"
   end
 
   create_table "user_google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -212,7 +211,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
     t.string "token"
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.string "user_identity_google_auth_status_id", limit: 255, default: "ACTIVE", null: false
     t.index ["user_id"], name: "index_user_google_auths_on_user_id"
+    t.index ["user_identity_google_auth_status_id"], name: "index_user_google_auths_on_user_identity_google_auth_status_id"
+  end
+
+  create_table "user_identity_apple_auth_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
@@ -222,8 +228,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
 
   create_table "user_identity_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.datetime "created_at", null: false
-    t.text "current_value"
     t.string "event_id", limit: 255, null: false
     t.string "ip_address"
     t.text "previous_value"
@@ -254,11 +260,29 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
     t.index ["user_identity_email_status_id"], name: "index_user_identity_emails_on_user_identity_email_status_id"
   end
 
+  create_table "user_identity_google_auth_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_identity_one_time_password_statuses", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "user_identity_one_time_passwords", id: false, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.binary "hmac_based_one_time_password_id", null: false
+    t.datetime "last_otp_at", null: false
+    t.string "private_key", limit: 1024, null: false
     t.datetime "updated_at", null: false
     t.binary "user_id", null: false
+    t.string "user_identity_one_time_password_status_id"
+    t.index ["user_identity_one_time_password_status_id"], name: "idx_on_user_identity_one_time_password_status_id_01264db86c"
+  end
+
+  create_table "user_identity_passkey_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "user_identity_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -269,9 +293,16 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
     t.bigint "sign_count", default: 0, null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.string "user_identity_passkey_status_id", limit: 255, default: "ACTIVE", null: false
     t.uuid "webauthn_id", null: false
     t.index ["user_id"], name: "index_user_identity_passkeys_on_user_id"
+    t.index ["user_identity_passkey_status_id"], name: "idx_on_user_identity_passkey_status_id_f979a7d699"
     t.index ["webauthn_id"], name: "index_user_identity_passkeys_on_webauthn_id", unique: true
+  end
+
+  create_table "user_identity_secret_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "user_identity_secrets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -280,7 +311,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
     t.string "password_digest"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.string "user_identity_secret_status_id", limit: 255, default: "ACTIVE", null: false
     t.index ["user_id"], name: "index_user_identity_secrets_on_user_id"
+    t.index ["user_identity_secret_status_id"], name: "index_user_identity_secrets_on_user_identity_secret_status_id"
   end
 
   create_table "user_identity_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
@@ -344,7 +377,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
     t.datetime "created_at", null: false
     t.string "public_id", limit: 255
     t.datetime "updated_at", null: false
-    t.string "user_identity_status_id", limit: 255
+    t.string "user_identity_status_id", limit: 255, default: "NONE"
     t.string "webauthn_id"
     t.datetime "withdrawn_at"
     t.index ["public_id"], name: "index_users_on_public_id", unique: true
@@ -363,14 +396,18 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_11_170001) do
   add_foreign_key "staff_identity_audits", "staffs"
   add_foreign_key "staff_identity_emails", "staff_identity_email_statuses"
   add_foreign_key "staff_identity_passkeys", "staffs"
-  add_foreign_key "staff_identity_secrets", "staffs"
   add_foreign_key "staff_identity_telephones", "staff_identity_telephone_statuses"
   add_foreign_key "staff_passkeys", "staffs"
   add_foreign_key "staffs", "staff_identity_statuses"
+  add_foreign_key "user_apple_auths", "user_identity_apple_auth_statuses"
+  add_foreign_key "user_google_auths", "user_identity_google_auth_statuses"
   add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_identity_audits", "users"
   add_foreign_key "user_identity_emails", "user_identity_email_statuses"
+  add_foreign_key "user_identity_one_time_passwords", "user_identity_one_time_password_statuses"
+  add_foreign_key "user_identity_passkeys", "user_identity_passkey_statuses"
   add_foreign_key "user_identity_passkeys", "users"
+  add_foreign_key "user_identity_secrets", "user_identity_secret_statuses"
   add_foreign_key "user_identity_secrets", "users"
   add_foreign_key "user_identity_telephones", "user_identity_telephone_statuses"
   add_foreign_key "user_organizations", "organizations"

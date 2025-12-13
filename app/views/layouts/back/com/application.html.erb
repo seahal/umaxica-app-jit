@@ -15,7 +15,17 @@
 <body class="px-4">
 <header>
   <h1><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica(www, com)</a></h1></header>
-
+<% unless logged_in? %>
+  <ul>
+    <li><%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_registration_path %></li>
+    <li><%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_authentication_path %></li>
+  </ul>
+<% else %>
+  <ul>
+    <li><%= link_to t("sign.app.layout.nav.setting"), sign_app_setting_path %></li>
+    <li><%= link_to t("sign.app.layout.nav.logout"), sign_app_authentication_path, data: { turbo_method: :delete } %></li>
+  </ul>
+<% end %>
 <hr>
 
 <main class="container mx-auto mt-28 px-5 block">

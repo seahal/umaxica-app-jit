@@ -19,6 +19,7 @@ class Staff < IdentitiesRecord
   has_many :staff_identity_emails, dependent: :destroy
   has_many :staff_identity_telephones, dependent: :destroy
   has_many :staff_identity_audits, dependent: :destroy
+  has_many :user_identity_audits, as: :actor, dependent: :destroy
   has_many :emails, class_name: "StaffIdentityEmail", dependent: :destroy
   has_many :role_assignments, dependent: :destroy
   has_many :roles, through: :role_assignments
@@ -32,6 +33,7 @@ class Staff < IdentitiesRecord
   end
 
   before_validation :ensure_public_id
+  before_create :set_default_status
 
   validates :public_id, presence: true, uniqueness: true
 
@@ -39,5 +41,9 @@ class Staff < IdentitiesRecord
 
   def ensure_public_id
     self.public_id ||= Nanoid.generate(size: 21)
+  end
+
+  def set_default_status
+    self.staff_identity_status_id ||= StaffIdentityStatus::NONE
   end
 end

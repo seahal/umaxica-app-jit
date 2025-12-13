@@ -3,47 +3,58 @@ module Sign
     module Setting
       class TotpsController < ApplicationController
         def index
-          @utbotp = UserTimeBasedOneTimePassword.all
+          @totps = UserIdentityOneTimePassword.all
         end
 
         def new
-          # make private_key for TOTP
-          session[:private_key] ||= ROTP::Base32.random_base32
-          # generate totp object
-          totp = ROTP::TOTP.new(session[:private_key])
-          # put qrcode of totp objects
-          @png = RQRCode::QRCode.new(totp.provisioning_uri("umaxica")).as_png # ToDo: <= set account_id
-          @utbotp = UserTimeBasedOneTimePassword.new
+          generate_totp_session
+          @totp = UserIdentityOneTimePassword.new
         end
 
         def create
-          @utbotp = UserTimeBasedOneTimePassword.new(sample_params)
-          @utbotp.private_key = session[:private_key]
-          @utbotp.id = SecureRandom.uuid_v7
+          @totp = UserIdentityOneTimePassword.new(totp_params)
+          @totp.private_key = session[:private_key]
+          @totp.id = SecureRandom.uuid_v7
 
-          if ROTP::TOTP.new(@utbotp.private_key).verify(@utbotp.first_token)
-            @utbotp.save!
+          if verify_totp(@totp.private_key, @totp.first_token)
+            @totp.save!
             session[:private_key] = nil
             redirect_to sign_app_setting_totps_path, notice: t("messages.totp_successfully_created")
           else
-            @utbotp.valid?
-            totp = ROTP::TOTP.new(@utbotp.private_key)
-            @png = RQRCode::QRCode.new(totp.provisioning_uri("umaxica")).as_png
+            @totp.valid?
+            render_totp_qrcode(@totp.private_key)
             render :new, status: :unprocessable_content
           end
         end
-      end
 
-      private
+        private
 
-      # Use callbacks to share common setup or constraints between actions.
-      def set_sample
-        @sample = UserTimeBasedOneTimePassword.find(params.expect(:id))
-      end
+        def generate_totp_session
+          session[:private_key] ||= ROTP::Base32.random_base32
+          @png = generate_qrcode(session[:private_key])
+        end
 
-      # Only allow a list of trusted parameters through.
-      def sample_params
-        params.expect(time_based_one_time_password: [ :first_token ])
+        def render_totp_qrcode(private_key)
+          @png = generate_qrcode(private_key)
+        end
+
+        def generate_qrcode(private_key)
+          totp = ROTP::TOTP.new(private_key)
+          RQRCode::QRCode.new(totp.provisioning_uri(account_id)).as_png
+        end
+
+        def verify_totp(private_key, token)
+          ROTP::TOTP.new(private_key).verify(token)
+        end
+
+        def account_id
+          # TODO: Replace with actual account identifier
+          "umaxica"
+        end
+
+        def totp_params
+          params.expect(time_based_one_time_password: [ :first_token ])
+        end
       end
     end
   end

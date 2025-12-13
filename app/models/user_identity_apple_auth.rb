@@ -14,6 +14,7 @@ class UserIdentityAppleAuth < IdentitiesRecord
   self.table_name = "user_apple_auths"
 
   belongs_to :user
+  belongs_to :user_identity_apple_auth_status, optional: true
 
   validates :token, presence: true
 end

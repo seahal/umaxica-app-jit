@@ -1,28 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-# == Schema Information
+# Fixture is intentionally empty. These child table fixtures reference parent records
+# that are loaded after them (due to alphabetical fixture loading). This causes
+# foreign key constraint violations. Load child records dynamically in tests instead.
 #
-# Table name: user_identity_emails
-#
-#  id         :uuid             not null, primary key
-#  address    :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  user_id    :bigint
-#
-# Indexes
-#
-#  index_user_identity_emails_on_user_id  (user_id)
-#
-
-one:
-  id: "550e8400-e29b-41d4-a716-446655440220"
-  address: "user1@example.com"
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-
-two:
-  id: "550e8400-e29b-41d4-a716-446655440221"
-  address: "user2@example.com"
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+# Example:
+#   staff = staffs(:one)
+#   staff.staff_identity_passkeys.create!(description: "key1", external_id: SecureRandom.uuid, public_key: "pk", webauthn_id: SecureRandom.random_bytes(32))

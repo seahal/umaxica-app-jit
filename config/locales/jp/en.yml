@@ -29,6 +29,12 @@ en:
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
     app:
+      layout:
+        nav:
+          sign_up: "Sign Up"
+          log_in: "Log In"
+          setting: "Settings"
+          logout: "Log Out"
       root:
         title: "Welcome to Sign"
         description: "Choose an action to get started"
@@ -55,6 +61,11 @@ en:
           new:
             page_title: "Sign in with your phone number"
             description: "Provide your registered phone number to receive a one-time verification code."
+        exits:
+          edit:
+            title: "Do you want to sign out?"
+          destroy:
+            success: "You have been signed out."
         email:
           new:
             page_title: "sign up with email address"
@@ -244,6 +255,17 @@ en:
           confirm: "This action deletes saved preference data for this browser. Continue?"
           back: "Back to Preferences"
     org:
+      layout:
+        nav:
+          sign_up: "Sign Up"
+          log_in: "Log In"
+          setting: "Settings"
+          logout: "Log Out"
+      exits:
+        edit:
+          title: "Do you want to sign out?"
+        destroy:
+          success: "You have been signed out."
       authentication:
         new:
           page_title: "Choose how to sign in"
@@ -256,6 +278,13 @@ en:
             passkey: "Passkey"
             recovery: "Recovery code"
             registration: "Need an account?"
+      registration:
+        new:
+          page_title: "Staff Registration"
+          page_description: "Staff registration is currently under development."
+          links:
+            sign_in_text: "Already have an account?"
+            sign_in_link: "Sign in here"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"

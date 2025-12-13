@@ -2,14 +2,23 @@
 #
 # Table name: user_identity_one_time_passwords
 #
-#  created_at                      :datetime         not null
-#  updated_at                      :datetime         not null
-#  hmac_based_one_time_password_id :binary           not null
-#  user_id                         :binary           not null
+#  user_id                              :binary           not null
+#  user_identity_one_time_password_status_id :string
+#  private_key                          :string(1024)
+#  last_otp_at                          :datetime
+#  created_at                           :datetime         not null
+#  updated_at                           :datetime         not null
 #
 require "test_helper"
 
 class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
+  def setup
+    @user = users(:one)
+    @status = user_identity_one_time_password_statuses(:active)
+    @private_key = "test-secret-key-12345"
+    @last_otp_at = Time.current
+  end
+
   test "inherits from IdentitiesRecord" do
     assert_operator UserIdentityOneTimePassword, :<, IdentitiesRecord
   end
@@ -21,27 +30,63 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     assert_equal :belongs_to, association.macro
   end
 
-  test "belongs to hmac_based_one_time_password" do
-    association = UserIdentityOneTimePassword.reflect_on_association(:hmac_based_one_time_password)
+  test "belongs to user_identity_one_time_password_status" do
+    association = UserIdentityOneTimePassword.reflect_on_association(:user_identity_one_time_password_status)
 
     assert_not_nil association
     assert_equal :belongs_to, association.macro
   end
 
-  # test "loads user and hmac associations from fixtures" do
-  #   record = user_identity_one_time_passwords(:one)
+  test "has private_key attribute" do
+    record = UserIdentityOneTimePassword.new(
+      user: @user,
+      private_key: @private_key,
+      last_otp_at: @last_otp_at
+    )
 
-  #   assert_equal users(:one), record.user
-  #   assert_equal hmac_based_one_time_passwords(:one), record.hmac_based_one_time_password
-  # end
+    assert_equal @private_key, record.private_key
+  end
 
-  test "allows assignment of associations before persistence" do
-    user = users(:one)
-    hmac = hmac_based_one_time_passwords(:one)
+  test "has last_otp_at attribute" do
+    record = UserIdentityOneTimePassword.new(
+      user: @user,
+      private_key: @private_key,
+      last_otp_at: @last_otp_at
+    )
 
-    record = UserIdentityOneTimePassword.new(user:, hmac_based_one_time_password: hmac)
+    # Compare timestamps ignoring nanosecond precision
+    assert_in_delta @last_otp_at, record.last_otp_at, 1.second
+  end
 
-    assert_same user, record.user
-    assert_same hmac, record.hmac_based_one_time_password
+  test "auto-generates private_key if blank" do
+    record = UserIdentityOneTimePassword.new(
+      user: @user,
+      last_otp_at: @last_otp_at
+    )
+
+    # Private key should be generated automatically
+    assert_not_nil record.private_key
+    assert_predicate record, :valid?
+  end
+
+  test "validates presence of last_otp_at" do
+    record = UserIdentityOneTimePassword.new(
+      user: @user,
+      private_key: @private_key
+    )
+
+    assert_not record.valid?
+    assert_not_empty record.errors[:last_otp_at]
+  end
+
+  test "validates private_key length maximum" do
+    record = UserIdentityOneTimePassword.new(
+      user: @user,
+      private_key: "x" * 1025,
+      last_otp_at: @last_otp_at
+    )
+
+    assert_not record.valid?
+    assert_not_empty record.errors[:private_key]
   end
 end

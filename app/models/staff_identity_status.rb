@@ -3,4 +3,7 @@ class StaffIdentityStatus < IdentitiesRecord
   has_many :staffs, dependent: :restrict_with_error, inverse_of: :staff_identity_status
 
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: true
+
+  # Status constants
+  NONE = "NONE"
 end

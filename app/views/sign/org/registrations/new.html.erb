@@ -1,29 +1,15 @@
-<% content_for :page_title, t("sign.app.registration.new.page_title") %>
-<% product_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME", "Umaxica") } %>
+<% content_for :page_title, t("sign.org.registration.new.page_title") %>
 
 <section class="space-y-12" data-testid="registration-page">
   <header class="space-y-4">
-    <h1 class="text-3xl font-bold text-slate-900 md:text-4xl"><%= t("sign.app.registration.new.page_title") %></h1>
-    <p class="max-w-2xl text-base text-slate-600"><%= t("sign.app.registration.new.page_description", product: product_name) %></p>
+    <h1 class="text-3xl font-bold text-slate-900 md:text-4xl"><%= t("sign.org.registration.new.page_title") %></h1>
+    <p class="max-w-2xl text-base text-slate-600"><%= t("sign.org.registration.new.page_description") %></p>
   </header>
 
-  <section class="space-y-4" data-testid="registration-methods">
-    <h2 class="text-lg font-semibold text-slate-900"><%= t("sign.app.registration.new.methods.title") %></h2>
-    <div class="grid gap-4 md:grid-cols-2">
-      <% @registration_methods.each do |method| %>
-        <% translation_scope = "sign.app.registration.new.methods.#{method[:key]}" %>
-        <article class="flex h-full flex-col justify-between rounded-lg border border-slate-200 bg-white p-6 shadow-sm" data-testid="registration-method">
-          <div>
-            <h3 class="text-xl font-semibold text-slate-900"><%= t("#{translation_scope}.title") %></h3>
-            <p class="mt-2 text-sm text-slate-600"><%= t("#{translation_scope}.description", product: product_name) %></p>
-          </div>
-          <div class="mt-6">
-            <%= link_to t("#{translation_scope}.cta"),
-                        method[:path],
-                        class: "inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2" %>
-          </div>
-        </article>
-      <% end %>
-    </div>
+  <section class="space-y-4" data-testid="registration-links">
+    <p class="text-sm text-slate-700">
+      <%= t("sign.org.registration.new.links.sign_in_text") %>
+      <%= link_to t("sign.org.registration.new.links.sign_in_link"), new_sign_org_authentication_path, class: "font-medium text-slate-900 underline hover:text-slate-700" %>
+    </p>
   </section>
 </section>

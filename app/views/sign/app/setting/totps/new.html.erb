@@ -1,16 +1,16 @@
 <h1><%= t('sign.app.setting.totp.new.title') %></h1>
 
-<%= form_with model: @utbotp, url: sign_app_setting_totps_path do |form| %>
+<%= form_with model: @totp, url: sign_app_setting_totps_path do |form| %>
   <div>
     <%= image_tag "data:image/png;base64, #{Base64.strict_encode64(@png.to_s)}", alt: "QR Code" %>
   </div>
 
-  <% if @utbotp.errors.any? %>
+  <% if @totp.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-      <h2><%= pluralize(@utbotp.errors.count, "error") %> prohibited this sample from being saved:</h2>
+      <h2><%= pluralize(@totp.errors.count, "error") %> prohibited this totp from being saved:</h2>
 
       <ul class="list-disc ml-6">
-        <% @utbotp.errors.each do |error| %>
+        <% @totp.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
       </ul>

@@ -15,6 +15,17 @@
 <header>
   <h1 class="container mx-auto mt-28 px-5 flex">
     <a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">Umaxica(www, org)</a></h1>
+  <% unless session[:staff] %>
+    <ul>
+      <li><%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_registration_path %></li>
+      <li><%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_authentication_path %></li>
+    </ul>
+  <% else %>
+    <ul>
+      <li><%= link_to t("sign.app.layout.nav.setting"), sign_app_setting_path %></li>
+      <li><%= link_to t("sign.app.layout.nav.logout"), sign_app_authentication_path, data: { turbo_method: :delete } %></li>
+    </ul>
+  <% end %>
 </header>
 
 <hr>
@@ -52,7 +63,6 @@
     <li>Support</li>
     <li>Terms</li>
     <li>Privacy</li>
-    <li>Accessibility</li>
     <li>© <%= Time.now.year %> Umaxica</li>
   </ul>
   <%= render "concern/copyright" %>

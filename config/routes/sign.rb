@@ -66,6 +66,8 @@ Rails.application.routes.draw do
         # namespace :token do
         #   resources :refreshs, only: [ :update ]
         # end
+        # Sign out
+        resource :exit, only: [ :edit, :destroy ]
         # Withdrawal
         resource :withdrawal, except: :show
       end
@@ -81,9 +83,11 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # Sign up pages
-        # TODO: Implement authentication actions (show, update, put, delete, create)
-        resource :authentication, only: [ :new ]
+        # SignUp
+        resource :registration, only: :new
+        # Login
+        resource :authentication, only: [ :new, :destroy ]
+        resource :setting, only: [ :show ]
         namespace :setting do
           # TODO: Implement TOTP settings (index, new, edit, update actions only)
           # resources :totp, only: [ :index, :new, :create, :edit, :update ]
@@ -92,6 +96,8 @@ Rails.application.routes.draw do
           # resources :emails, only: [ :index ]
           resources :secrets
         end
+        # Sign out
+        resource :exit, only: [ :edit, :destroy ]
         #
         resource :withdrawal, except: :show
         # TODO: Implement owner management

@@ -26,12 +26,9 @@
 				"biomejs.biome",
 				"ms-azuretools.vscode-docker",
 				"GitHub.vscode-pull-request-github",
-				"ms-vscode.vscode-json",
-				"ms-vscode.vscode-yaml",
 				"ms-vscode.remote-explorer",
 				"rubocop.vscode-rubocop",
 				"oven.bun-vscode",
-				"openai.chatgpt",
 				"anthropic.claude-code",
 				"-sorbet.sorbet-vscode-extension",
 				"-dbaeumer.vscode-eslint",
@@ -123,7 +120,7 @@
 		"RUBY_DEBUG_OPEN": "false"
 	},
 	"updateRemoteUserUID": true,
-	"postCreateCommand": "RAILS_ENV=test bin/rails db:create",
+	"postCreateCommand": "RAILS_ENV=test bin/rails db:create || true",
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},

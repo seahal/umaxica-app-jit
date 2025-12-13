@@ -18,6 +18,7 @@
 #
 class UserIdentityPasskey < IdentityRecord
   belongs_to :user
+  belongs_to :user_identity_passkey_status, optional: true
 
   validates :webauthn_id, presence: true, uniqueness: true
   validates :public_key, presence: true

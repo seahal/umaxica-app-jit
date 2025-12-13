@@ -6,9 +6,6 @@ module Sign
         include ::Redirect
 
         def new
-          render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
-
           # # to avoid session attack
           session[:user_email_registration] = nil
 
@@ -36,7 +33,9 @@ module Sign
           render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
+          # start to create new email record
           @user_email = UserIdentityEmail.new(params.expect(user_identity_email: [ :address, :confirm_policy ]))
+          @user_email.user_identity_email_status_id = "UNVERIFIED_WITH_SIGN_UP"
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32
           otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
@@ -94,13 +93,36 @@ module Sign
           expected_code = hotp.at(otp_data[:otp_counter]).to_s
           unless ActiveSupport::SecurityUtils.secure_compare(expected_code, submitted_code)
             @user_email.increment_attempts!
+            if @user_email.locked?
+              @user_email.destroy!
+              session[:user_email_registration] = nil
+              redirect_to new_sign_app_registration_email_path, alert: t("sign.app.registration.email.update.attempts_exceeded") and return
+            end
             @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.invalid_code"))
             render :edit, status: :unprocessable_content and return
           end
 
           # Clear OTP and complete registration
           @user_email.clear_otp
+          @user_email.user_identity_email_status_id = "VERIFIED_WITH_SIGN_UP"
+
+          # Create user and link email atomically within a transaction
+          begin
+            ActiveRecord::Base.transaction do
+              # Use create! to raise exception on validation failure
+              @user = User.create!
+              # Use association to set the user
+              @user_email.user = @user
+              @user_email.save!
+            end
+          rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved
+            @user_email.errors.add(:base, "登録処理に失敗しました。もう一度やり直してください。")
+            render :edit, status: :unprocessable_content and return
+          end
+
+          # Only clear session and set user after successful transaction
           session[:user_email_registration] = nil
+          session[:user] = { id: @user.id }
           redirect_to "/", notice: t("sign.app.registration.email.update.success")
         end
       end

@@ -1,0 +1,8 @@
+active:
+  id: "ACTIVE"
+
+disabled:
+  id: "DISABLED"
+
+deleted:
+  id: "DELETED"

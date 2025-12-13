@@ -67,14 +67,14 @@ module Sign
         # TODO: Replace with actual session-based authentication
         # This is a placeholder implementation
         @current_user ||= begin
-          # Test environment: support X-TEST-CURRENT-USER header
-          test_user_id = request.headers["X-TEST-CURRENT-USER"]
-          if test_user_id.present?
-            User.find_by(id: test_user_id)
-          elsif session[:user_id].present?
-            User.find_by(id: session[:user_id])
-          end
-        end
+                            # Test environment: support X-TEST-CURRENT-USER header
+                            test_user_id = request.headers["X-TEST-CURRENT-USER"]
+                            if test_user_id.present?
+                              User.find_by(id: test_user_id)
+                            elsif session[:user_id].present?
+                              User.find_by(id: session[:user_id])
+                            end
+                          end
       end
     end
   end

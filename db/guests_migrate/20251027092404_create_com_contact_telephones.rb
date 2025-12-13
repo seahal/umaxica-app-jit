@@ -8,7 +8,7 @@ class CreateComContactTelephones < ActiveRecord::Migration[8.1]
       t.string :verifier_digest, limit: 255
       t.timestamptz :verifier_expires_at
       t.integer :verifier_attempts_left, limit: 2, default: 3, null: false
-      t.timestamptz :expires_at, null: false, default: 1.day.from_now
+      t.timestamptz :expires_at, null: false, default: -> { "CURRENT_TIMESTAMP + interval '1 day'" }
       t.timestamps
     end
 

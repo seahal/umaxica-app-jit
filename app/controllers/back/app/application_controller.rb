@@ -4,6 +4,7 @@ module Back
   module App
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
+      include Authn
 
       protect_from_forgery with: :exception
       include ::RateLimit
@@ -30,10 +31,6 @@ module Back
           format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
           format.any { head :forbidden }
         end
-      end
-
-      def logged_in_user?
-        false
       end
     end
   end

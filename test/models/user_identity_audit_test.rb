@@ -3,7 +3,7 @@ require "test_helper"
 class UserIdentityAuditTest < ActiveSupport::TestCase
   def setup
     @user = users(:one)
-    @audit_event = UserIdentityAuditEvent.create!(id: "TEST_AUDIT")
+    @audit_event = user_identity_audit_events(:one)
     @audit = UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
@@ -30,10 +30,10 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     assert_equal :belongs_to, association.macro
   end
 
-  test "can be created with user and event" do
+  test "can be created with user and status" do
     assert_not_nil @audit
     assert_equal @user.id, @audit.user_id
-    assert_equal "TEST_AUDIT", @audit.event_id
+    assert_equal @audit_event.id, @audit.event_id
   end
 
   test "timestamp can be set" do
@@ -64,14 +64,36 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     assert_equal '{"email": "old@example.com"}', audit.previous_value
   end
 
-  test "current_value can be stored" do
+  test "previous_value is encrypted in the database" do
+    plain_text = '{"email": "old@example.com"}'
     audit = UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
-      current_value: '{"email": "new@example.com"}'
+      previous_value: plain_text
     )
 
-    assert_equal '{"email": "new@example.com"}', audit.current_value
+    # モデルの encrypted_attributes に previous_value が含まれていることを確認
+    assert_includes UserIdentityAudit.encrypted_attributes, :previous_value
+
+    # データベースから直接取得（暗号化された値）
+    encrypted_value = UserIdentityAudit.connection.execute(
+      "SELECT previous_value FROM user_identity_audits WHERE id = '#{audit.id}' LIMIT 1"
+    ).first["previous_value"]
+
+    # 暗号化されているので、元の値と異なるはず
+    assert_not_equal plain_text, encrypted_value
+  end
+
+  test "previous_value is decrypted when accessed through model" do
+    plain_text = '{"email": "old@example.com"}'
+    audit = UserIdentityAudit.create!(
+      user: @user,
+      user_identity_audit_event: @audit_event,
+      previous_value: plain_text
+    )
+
+    # モデルから取得すると復号化されている
+    assert_equal plain_text, audit.reload.previous_value
   end
 
   test "has timestamps" do
@@ -83,7 +105,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     assert_equal @user, @audit.user
   end
 
-  test "user_identity_audit_event association loads event correctly" do
+  test "user_identity_audit_event association loads status correctly" do
     assert_equal @audit_event, @audit.user_identity_audit_event
   end
 
@@ -115,5 +137,64 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::InvalidForeignKey do
       audit.save!(validate: false)
     end
+  end
+
+  test "belongs to polymorphic actor" do
+    association = UserIdentityAudit.reflect_on_association(:actor)
+
+    assert_not_nil association
+    assert_equal :belongs_to, association.macro
+    assert_predicate association, :polymorphic?
+  end
+
+  test "can be created with a User as actor" do
+    actor_user = users(:one)
+    audit = UserIdentityAudit.create!(
+      user: @user,
+      user_identity_audit_event: @audit_event,
+      actor: actor_user
+    )
+
+    assert_equal actor_user.id, audit.actor_id
+    assert_equal "User", audit.actor_type
+    assert_equal actor_user, audit.actor
+  end
+
+  test "can be created with a Staff as actor" do
+    actor_staff = staffs(:one)
+    audit = UserIdentityAudit.create!(
+      user: @user,
+      user_identity_audit_event: @audit_event,
+      actor: actor_staff
+    )
+
+    assert_equal actor_staff.id, audit.actor_id
+    assert_equal "Staff", audit.actor_type
+    assert_equal actor_staff, audit.actor
+  end
+
+  test "User and Staff can both be actors in different audits" do
+    actor_user = users(:one)
+    actor_staff = staffs(:one)
+
+    # 同じ user に対する複数の audit で、異なるアクターを持つ
+    UserIdentityAudit.create!(
+      user: @user,
+      user_identity_audit_event: @audit_event,
+      actor: actor_user
+    )
+
+    UserIdentityAudit.create!(
+      user: @user,
+      user_identity_audit_event: @audit_event,
+      actor: actor_staff
+    )
+
+    # 同じ User に関連する複数の audit を取得
+    user_actors = @user.user_identity_audits.where(actor_type: "User")
+    staff_actors = @user.user_identity_audits.where(actor_type: "Staff")
+
+    assert_not_empty user_actors
+    assert_not_empty staff_actors
   end
 end
