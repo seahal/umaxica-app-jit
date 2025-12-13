@@ -376,7 +376,7 @@ production:
     !!merge <<: *default
     database: production_cache_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.SPECIALITY&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.CACHE&.HOST %>
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.CACHE&.PASSWORD %>
     migrations_paths: db/caches_migrate
@@ -385,7 +385,7 @@ production:
     replica: true
     database: production_cache_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.SPECIALITY&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.CACHE_REPLICA&.HOST %>
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.CACHE_REPLICA&.PASSWORD %>
     migrations_paths: db/caches_migrate
@@ -393,7 +393,7 @@ production:
     !!merge <<: *default
     database: production_storage_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.SPECIALITY&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.STORAGE&.HOST %>
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.STORAGE&.PASSWORD %>
     migrations_paths: db/storages_migrate
@@ -402,7 +402,7 @@ production:
     replica: true
     database: production_storage_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.SPECIALITY&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.STORAGE_REPLICA&.HOST %>
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.STORAGE_REPLICA&.PASSWORD %>
     migrations_paths: db/storages_migrate
