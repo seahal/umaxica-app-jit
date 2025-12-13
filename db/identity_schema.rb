@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_12_163549) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_13_143557) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -27,6 +27,15 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_163549) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["user_id"], name: "index_apple_auths_on_user_id"
+  end
+
+  create_table "comments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "body"
+    t.uuid "commentable_id", null: false
+    t.string "commentable_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
   end
 
   create_table "google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -53,6 +62,15 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_163549) do
     t.datetime "updated_at", null: false
     t.index ["domain"], name: "index_organizations_on_domain", unique: true, where: "(domain IS NOT NULL)"
     t.index ["parent_organization"], name: "index_organizations_on_parent_organization"
+  end
+
+  create_table "people", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.uuid "personality_id", null: false
+    t.string "personality_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["personality_type", "personality_id"], name: "index_people_on_personality"
   end
 
   create_table "role_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

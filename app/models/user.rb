@@ -13,6 +13,7 @@ class User < IdentitiesRecord
   include Stakeholder
   include Withdrawable
   belongs_to :user_identity_status, optional: true
+  has_many :people, as: :personality, dependent: :destroy
   has_one :user_identity_apple_auth, dependent: :destroy
   has_one :user_identity_google_auth, dependent: :destroy
   has_many :user_identity_emails, dependent: :destroy

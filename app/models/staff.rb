@@ -16,6 +16,7 @@ class Staff < IdentitiesRecord
   include Withdrawable
 
   belongs_to :staff_identity_status, optional: true
+  has_many :people, as: :personality, dependent: :destroy
   has_many :staff_identity_emails, dependent: :destroy
   has_many :staff_identity_telephones, dependent: :destroy
   has_many :staff_identity_audits, dependent: :destroy
