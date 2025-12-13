@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_13_143557) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -27,15 +27,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_143557) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["user_id"], name: "index_apple_auths_on_user_id"
-  end
-
-  create_table "comments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.text "body"
-    t.uuid "commentable_id", null: false
-    t.string "commentable_type", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
   end
 
   create_table "google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -65,11 +56,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_143557) do
   end
 
   create_table "people", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.text "body"
-    t.datetime "created_at", null: false
     t.uuid "personality_id", null: false
     t.string "personality_type", null: false
-    t.datetime "updated_at", null: false
     t.index ["personality_type", "personality_id"], name: "index_people_on_personality"
   end
 
@@ -96,23 +84,23 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_143557) do
     t.index ["organization_id"], name: "index_roles_on_organization_id"
   end
 
-  create_table "staff_identity_audit_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "staff_identity_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.datetime "created_at", null: false
-    t.text "current_value"
+    t.string "event_id", limit: 255, null: false
     t.string "ip_address"
     t.text "previous_value"
     t.uuid "staff_id", null: false
-    t.string "status_id", limit: 255, null: false
     t.datetime "timestamp"
     t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_staff_identity_audits_on_event_id"
     t.index ["staff_id"], name: "index_staff_identity_audits_on_staff_id"
-    t.index ["status_id"], name: "index_staff_identity_audits_on_status_id"
   end
 
   create_table "staff_identity_email_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
@@ -233,22 +221,22 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_143557) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_identity_audit_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "user_identity_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.datetime "created_at", null: false
-    t.text "current_value"
+    t.string "event_id", limit: 255, null: false
     t.string "ip_address"
     t.text "previous_value"
-    t.string "status_id", limit: 255, null: false
     t.datetime "timestamp"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.index ["status_id"], name: "index_user_identity_audits_on_status_id"
+    t.index ["event_id"], name: "index_user_identity_audits_on_event_id"
     t.index ["user_id"], name: "index_user_identity_audits_on_user_id"
   end
 
@@ -404,7 +392,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_143557) do
   add_foreign_key "role_assignments", "staffs", on_delete: :cascade
   add_foreign_key "role_assignments", "users", on_delete: :cascade
   add_foreign_key "roles", "organizations"
-  add_foreign_key "staff_identity_audits", "staff_identity_audit_statuses", column: "status_id"
+  add_foreign_key "staff_identity_audits", "staff_identity_audit_events", column: "event_id"
   add_foreign_key "staff_identity_audits", "staffs"
   add_foreign_key "staff_identity_emails", "staff_identity_email_statuses"
   add_foreign_key "staff_identity_passkeys", "staffs"
@@ -413,7 +401,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_143557) do
   add_foreign_key "staffs", "staff_identity_statuses"
   add_foreign_key "user_apple_auths", "user_identity_apple_auth_statuses"
   add_foreign_key "user_google_auths", "user_identity_google_auth_statuses"
-  add_foreign_key "user_identity_audits", "user_identity_audit_statuses", column: "status_id"
+  add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_identity_audits", "users"
   add_foreign_key "user_identity_emails", "user_identity_email_statuses"
   add_foreign_key "user_identity_one_time_passwords", "user_identity_one_time_password_statuses"

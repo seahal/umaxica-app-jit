@@ -1,0 +1,5 @@
+[allowlist]
+  description = "Allow test fixtures"
+  paths = [
+    '''test/fixtures/user_identity_one_time_passwords.yml'''
+  ]
