@@ -1,22 +1,25 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "minitest/mock"
 
 class ApplicationConsumerTest < ActiveSupport::TestCase
-  class PublicConsumer < ApplicationConsumer
-    public :decrypt
+  def setup
+    @consumer = ApplicationConsumer.new
   end
 
-  test "#decrypt delegates to ActiveRecord encryptor" do
-    consumer = PublicConsumer.allocate
-    encryptor = Minitest::Mock.new
-    encryptor.expect(:decrypt, "plain-text", [ "cipher-text" ])
+  test "#decrypt calls ActiveRecord::Encryption.encryptor.decrypt" do
+    encrypted_data = "some-encrypted-data"
+    decrypted_data = "some-decrypted-data"
 
-    ActiveRecord::Encryption.stub :encryptor, encryptor do
-      assert_equal "plain-text", consumer.decrypt("cipher-text")
+    encryptor_mock = Minitest::Mock.new
+    encryptor_mock.expect(:decrypt, decrypted_data, [ encrypted_data ])
+
+    ActiveRecord::Encryption.stub(:encryptor, encryptor_mock) do
+      result = @consumer.send(:decrypt, encrypted_data)
+
+      assert_equal decrypted_data, result
     end
 
-    encryptor.verify
+    encryptor_mock.verify
   end
 end

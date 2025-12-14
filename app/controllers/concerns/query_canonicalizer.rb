@@ -47,21 +47,30 @@ module QueryCanonicalizer
     # GET/HEAD 以外は触らない（POST系をリダイレクトすると危険）
     return unless request.get? || request.head?
 
-    keys = DEFAULTS.keys
-    current = request.query_parameters.slice(*keys)
+    # Normalize parameter values
     expected = normalize_params(request.query_parameters)
 
-    # 既に"意味（対象キーの値集合）"が一致していれば何もしない（ループ防止）
+    # Build canonical (sorted) query string
+    canonical = expected.sort_by { |k, _| k }.to_h
+    canonical_query = Rack::Utils.build_query(canonical)
+
+    # Build current query string from actual query parameters
+    # Filter to only include DEFAULTS keys while preserving original order
+    current_filtered = {}
+    request.query_parameters.each do |key, value|
+      current_filtered[key] = value if DEFAULTS.key?(key)
+    end
+    current_query = Rack::Utils.build_query(current_filtered)
+
+    # 既に"意味（対象キーの値集合）"が一致し、順序も正規化されていれば何もしない（ループ防止）
     # NOTE: This intentionally adds default parameters even if not originally present.
     # This is the desired behavior to ensure consistent URLs with normalized parameters.
-    # The loop prevention check (current == expected) prevents infinite redirects.
-    return if current == expected
+    # The loop prevention check prevents infinite redirects.
+    return if current_query == canonical_query
 
     # 並びを安定化（アルファベット順）して相対URLへ 302
-    sorted = expected.sort_by { |k, _| k }.to_h
-    query = Rack::Utils.build_query(sorted)
     path = request.path
-    location = query.empty? ? path : "#{path}?#{query}"
+    location = canonical_query.empty? ? path : "#{path}?#{canonical_query}"
 
     redirect_to location,
                 allow_other_host: false,

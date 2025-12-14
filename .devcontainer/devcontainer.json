@@ -35,7 +35,8 @@
 				"-esbenp.prettier-vscode",
 				"-eamodio.gitlens",
 				"KoichiSasada.vscode-rdbg",
-				"GitHub.copilot-chat"
+				"GitHub.copilot-chat",
+				"openai.chatgpt"
 			],
 			"settings": {
 				"extensions.verifySignature": false,
