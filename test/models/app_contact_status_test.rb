@@ -5,7 +5,7 @@ class AppContactStatusTest < ActiveSupport::TestCase
 
   def setup
     @model_class = AppContactStatus
-    @status = AppContactStatus.create!(title: "ACTIVE")
+    @status = AppContactStatus.create!(id: "ACTIVE")
     @contact = AppContact.create!(
         app_contact_status: @status
     )
@@ -17,12 +17,11 @@ class AppContactStatusTest < ActiveSupport::TestCase
 
   test "should nullify app_contact_status_id when destroyed" do
     # The model says `dependent: :nullify`
-    # Foreign key is `contact_status_title`? No, let's check model.
-    # `foreign_key: :contact_status_title`
+    # Foreign key is `contact_status_id`
 
     @status.destroy
     @contact.reload
 
-    assert_nil @contact.contact_status_title
+    assert_nil @contact.contact_status_id
   end
 end

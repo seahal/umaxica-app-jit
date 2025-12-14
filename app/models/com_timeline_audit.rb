@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ComTimelineAudit < BusinessesRecord
   self.table_name = "com_timeline_audits"
 

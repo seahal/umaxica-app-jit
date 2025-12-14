@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OrgContact < GuestsRecord
   # Associations
   has_many :org_contact_emails, dependent: :destroy
@@ -10,8 +12,7 @@ class OrgContact < GuestsRecord
              inverse_of: :org_contacts
   belongs_to :org_contact_status,
              class_name: "OrgContactStatus",
-             foreign_key: :contact_status_title,
-             primary_key: :title,
+             foreign_key: :contact_status_id,
              optional: true,
              inverse_of: :org_contacts
   has_many :org_contact_topics, dependent: :destroy
@@ -20,7 +21,8 @@ class OrgContact < GuestsRecord
 
   after_initialize :set_default_category_and_status, if: :new_record?
   # Callbacks
-  before_validation { self.contact_status_title = contact_status_title&.upcase }
+  before_validation { self.contact_category_title = contact_category_title&.upcase }
+  before_validation { self.contact_status_id = contact_status_id&.upcase }
   before_create :generate_public_id
   before_create :generate_token
 
@@ -100,6 +102,6 @@ class OrgContact < GuestsRecord
 
   def set_default_category_and_status
     self.contact_category_title ||= "NULL_ORG_CATEGORY"
-    self.contact_status_title ||= "NULL_ORG_STATUS"
+    self.contact_status_id ||= "NULL_ORG_STATUS"
   end
 end

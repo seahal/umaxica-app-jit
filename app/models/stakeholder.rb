@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Stakeholder
   def staff?
     raise NotImplementedError, "#{self.class} must implement staff? method"

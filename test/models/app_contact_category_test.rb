@@ -10,32 +10,32 @@ class AppContactCategoryTest < ActiveSupport::TestCase
   end
 
   test "should create contact category with title" do
-    category = AppContactCategory.new(title: "app_inquiry")
+    category = AppContactCategory.new(id: "app_inquiry")
 
     assert category.save
-    assert_equal "app_inquiry", category.title
+    assert_equal "APP_INQUIRY", category.id
   end
 
   test "should find contact category by title" do
-    category = AppContactCategory.create!(title: "app_support")
-    found = AppContactCategory.find("app_support")
+    category = AppContactCategory.create!(id: "app_support")
+    found = AppContactCategory.find("APP_SUPPORT")
 
-    assert_equal category.title, found.title
+    assert_equal category.id, found.id
   end
 
   test "should have unique title" do
-    AppContactCategory.create!(title: "unique_app_category_#{SecureRandom.hex(4)}")
+    AppContactCategory.create!(id: "unique_app_category_#{SecureRandom.hex(4)}")
     category_title = "duplicate_app_test_#{SecureRandom.hex(4)}"
-    AppContactCategory.create!(title: category_title)
+    AppContactCategory.create!(id: category_title)
 
-    assert_raises(ActiveRecord::RecordNotUnique) do
-      AppContactCategory.create!(title: category_title)
+    assert_raises(ActiveRecord::RecordInvalid) do
+      AppContactCategory.create!(id: category_title)
     end
   end
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
-    category = AppContactCategory.create!(title: "test_app_category")
+    category = AppContactCategory.create!(id: "test_app_category")
 
     assert_respond_to category, :created_at
     assert_respond_to category, :updated_at

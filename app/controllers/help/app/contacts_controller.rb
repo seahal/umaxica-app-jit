@@ -49,7 +49,7 @@ module Help
 
         if @contact.save
           # Update status to SET_UP
-          @contact.update!(contact_status_title: "SET_UP")
+          @contact.update!(contact_status_id: "SET_UP")
 
           # Generate HOTP and save to email record
           token = @email.generate_hotp!

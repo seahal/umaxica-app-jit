@@ -1,8 +1,9 @@
-class UserIdentityTelephoneStatus < IdentitiesRecord
-  has_many :user_identity_telephones, dependent: :restrict_with_error
+# frozen_string_literal: true
 
-  before_validation { self.id = id&.upcase }
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false }, format: { with: /\A[A-Z0-9_]+\z/ }
+class UserIdentityTelephoneStatus < IdentitiesRecord
+  include UppercaseIdValidation
+
+  has_many :user_identity_telephones, dependent: :restrict_with_error
 
   # Status constants
   UNVERIFIED = "UNVERIFIED"

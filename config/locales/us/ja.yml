@@ -49,6 +49,7 @@ ja:
               session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             update:
               success: "メールアドレスが確認されました。"
+              failed: "登録処理に失敗しました。もう一度やり直してください。"
           telephone:
             create:
               verification_code_sent: "確認コードをSMSで送信しました。"

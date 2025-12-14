@@ -6,6 +6,6 @@ class OrgContactStatusTest < ActiveSupport::TestCase
   setup do
     @model_class = OrgContactStatus
     @valid_id = "ACTIVE".freeze
-    @subject = @model_class.new(title: @valid_id)
+    @subject = @model_class.new(id: @valid_id)
   end
 end

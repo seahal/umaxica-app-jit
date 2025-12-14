@@ -115,6 +115,7 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Email address has been verified."
+            failed: "Registration failed. Please try again."
         telephone:
           new:
             page_title: "Sign up with phone number"

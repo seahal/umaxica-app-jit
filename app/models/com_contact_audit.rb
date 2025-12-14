@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ComContactAudit < GuestsRecord
   # Use existing table `com_contact_histories` for storage to avoid a migration
   # and keep backward compatibility with previously-named table.

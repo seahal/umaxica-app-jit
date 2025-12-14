@@ -10,32 +10,32 @@ class ComContactCategoryTest < ActiveSupport::TestCase
   end
 
   test "should create contact category with title" do
-    category = ComContactCategory.new(title: "com_inquiry")
+    category = ComContactCategory.new(id: "com_inquiry")
 
     assert category.save
-    assert_equal "com_inquiry", category.title
+    assert_equal "COM_INQUIRY", category.id
   end
 
   test "should find contact category by title" do
-    category = ComContactCategory.create!(title: "com_support")
-    found = ComContactCategory.find("com_support")
+    category = ComContactCategory.create!(id: "com_support")
+    found = ComContactCategory.find("COM_SUPPORT")
 
-    assert_equal category.title, found.title
+    assert_equal category.id, found.id
   end
 
   test "should have unique title" do
-    ComContactCategory.create!(title: "unique_com_category_#{SecureRandom.hex(4)}")
+    ComContactCategory.create!(id: "unique_com_category_#{SecureRandom.hex(4)}")
     category_title = "duplicate_com_test_#{SecureRandom.hex(4)}"
-    ComContactCategory.create!(title: category_title)
+    ComContactCategory.create!(id: category_title)
 
-    assert_raises(ActiveRecord::RecordNotUnique) do
-      ComContactCategory.create!(title: category_title)
+    assert_raises(ActiveRecord::RecordInvalid) do
+      ComContactCategory.create!(id: category_title)
     end
   end
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
-    category = ComContactCategory.create!(title: "test_com_category")
+    category = ComContactCategory.create!(id: "test_com_category")
 
     assert_respond_to category, :created_at
     assert_respond_to category, :updated_at

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ComContactTelephone < GuestsRecord
   belongs_to :com_contact
 

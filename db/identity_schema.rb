@@ -55,12 +55,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.index ["parent_organization"], name: "index_organizations_on_parent_organization"
   end
 
-  create_table "people", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "personality_id", null: false
-    t.string "personality_type", null: false
-    t.index ["personality_type", "personality_id"], name: "index_people_on_personality"
-  end
-
   create_table "role_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "role_id", null: false

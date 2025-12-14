@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ComDocumentAudit < BusinessesRecord
   self.table_name = "com_document_audits"
 

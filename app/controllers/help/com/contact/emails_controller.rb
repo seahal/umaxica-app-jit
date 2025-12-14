@@ -40,7 +40,7 @@ module Help
 
           if @contact_email.verify_hotp_code(hotp_code)
             # Update contact status to CHECKED_EMAIL_ADDRESS
-            @contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+            @contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
 
             redirect_url = new_help_com_contact_telephone_url(
               @contact,
@@ -86,7 +86,7 @@ module Help
 
           raise Help::ContactNotFoundError if @contact.nil?
 
-          raise Help::InvalidContactStatusError.new(@contact.contact_status_title) unless @contact.contact_status_title == "SET_UP"
+          raise Help::InvalidContactStatusError.new(@contact.contact_status_id) unless @contact.contact_status_id == "SET_UP"
         end
 
         def handle_contact_error(error)

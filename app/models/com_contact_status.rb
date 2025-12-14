@@ -1,11 +1,10 @@
+# frozen_string_literal: true
+
 class ComContactStatus < GuestsRecord
-  self.primary_key = :title
+  include UppercaseIdValidation
 
   has_many :com_contacts,
-           foreign_key: :contact_status_title,
+           foreign_key: :contact_status_id,
            inverse_of: :com_contact_status,
            dependent: :nullify
-
-  before_validation { self.title = title&.upcase }
-  validates :title, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false }, format: { with: /\A[A-Z0-9_]+\z/ }
 end

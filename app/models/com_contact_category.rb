@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 class ComContactCategory < GuestsRecord
   self.primary_key = :title
+
+  include UppercaseTitleValidation
 
   has_many :com_contacts,
            foreign_key: :contact_category_title,

@@ -2,7 +2,7 @@
 
 one:
   contact_category_title: ORGANIZATION_INQUIRY
-  contact_status_title: NULL_ORG_STATUS
+  contact_status_id: NULL_ORG_STATUS
   token: ''
   token_digest: null
   token_expires_at: null
@@ -13,7 +13,7 @@ one:
 
 two:
   contact_category_title: ORGANIZATION_PARTNERSHIP
-  contact_status_title: NULL_ORG_STATUS
+  contact_status_id: NULL_ORG_STATUS
   token: ''
   token_digest: null
   token_expires_at: null

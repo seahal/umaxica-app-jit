@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class UserIdentityPasskeyStatus < IdentitiesRecord
+  include UppercaseIdValidation
   has_many :user_identity_passkeys, dependent: :restrict_with_error
 
   before_validation { self.id = id&.upcase }

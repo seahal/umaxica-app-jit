@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_contacts
@@ -23,8 +25,7 @@ class AppContact < GuestsRecord
              inverse_of: :app_contacts
   belongs_to :app_contact_status,
              class_name: "AppContactStatus",
-             foreign_key: :contact_status_title,
-             primary_key: :title,
+             foreign_key: :contact_status_id,
              optional: true,
              inverse_of: :app_contacts
   has_many :app_contact_topics, dependent: :destroy
@@ -33,7 +34,8 @@ class AppContact < GuestsRecord
 
   after_initialize :set_default_category_and_status, if: :new_record?
   # Callbacks
-  before_validation { self.contact_status_title = contact_status_title&.upcase }
+  before_validation { self.contact_category_title = contact_category_title&.upcase }
+  before_validation { self.contact_status_id = contact_status_id&.upcase }
   before_create :generate_public_id
   before_create :generate_token
 
@@ -113,6 +115,6 @@ class AppContact < GuestsRecord
 
   def set_default_category_and_status
     self.contact_category_title ||= "NULL_APP_CATEGORY"
-    self.contact_status_title ||= "NULL_APP_STATUS"
+    self.contact_status_id ||= "NULL_APP_STATUS"
   end
 end

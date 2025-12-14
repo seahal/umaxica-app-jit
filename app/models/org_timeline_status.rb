@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: org_timeline_statuses
@@ -7,8 +9,7 @@
 #  updated_at :datetime         not null
 #
 class OrgTimelineStatus < BusinessesRecord
-  has_many :org_timelines, dependent: :restrict_with_error, inverse_of: :org_timeline_status
+  include UppercaseIdValidation
 
-  before_validation { self.id = id&.upcase }
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false }, format: { with: /\A[A-Z0-9_]+\z/ }
+  has_many :org_timelines, dependent: :restrict_with_error, inverse_of: :org_timeline_status
 end

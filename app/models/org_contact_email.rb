@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OrgContactEmail < GuestsRecord
   belongs_to :org_contact
 

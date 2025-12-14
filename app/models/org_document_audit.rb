@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OrgDocumentAudit < BusinessesRecord
   self.table_name = "org_document_audits"
 

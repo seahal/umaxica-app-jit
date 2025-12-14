@@ -28,11 +28,11 @@ class AppContactTest < ActiveSupport::TestCase
   end
 
   def sample_category
-    app_contact_categories(:none).title
+    app_contact_categories(:none).id
   end
 
   def sample_status
-    app_contact_statuses(:none).title
+    app_contact_statuses(:none).id
   end
 
   test "should inherit from GuestsRecord" do
@@ -44,13 +44,13 @@ class AppContactTest < ActiveSupport::TestCase
 
     assert_predicate contact, :valid?
     assert_equal "APPLICATION_INQUIRY", contact.contact_category_title
-    assert_equal "NULL_APP_STATUS", contact.contact_status_title
+    assert_equal "NULL_APP_STATUS", contact.contact_status_id
   end
 
   test "should create contact with relationship titles" do
     contact = AppContact.new(
       contact_category_title: sample_category,
-      contact_status_title: sample_status,
+      contact_status_id: sample_status,
       confirm_policy: "1"
     )
 
@@ -69,13 +69,13 @@ class AppContactTest < ActiveSupport::TestCase
     )
 
     assert_equal sample_category, contact.contact_category_title
-    assert_equal sample_status, contact.contact_status_title
+    assert_equal sample_status, contact.contact_status_id
   end
 
   test "should set default category and status when nil" do
     contact = AppContact.new(
       contact_category_title: nil,
-      contact_status_title: nil,
+      contact_status_id: nil,
       confirm_policy: "1"
     )
 
@@ -94,7 +94,7 @@ class AppContactTest < ActiveSupport::TestCase
     )
 
     assert_equal "NULL_APP_CATEGORY", contact.contact_category_title
-    assert_equal "NULL_APP_STATUS", contact.contact_status_title
+    assert_equal "NULL_APP_STATUS", contact.contact_status_id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -119,7 +119,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = app_contacts(:one)
 
     assert_respond_to contact, :contact_category_title
-    assert_respond_to contact, :contact_status_title
+    assert_respond_to contact, :contact_status_id
   end
 
   # Association tests
@@ -240,7 +240,7 @@ class AppContactTest < ActiveSupport::TestCase
 
   # Foreign key constraint tests
   test "should reference contact_category by title" do
-    AppContactCategory.create!(title: "app_category")
+    AppContactCategory.create!(id: "APP_CATEGORY")
 
     contact = AppContact.new(
       contact_category_title: "app_category",
@@ -261,14 +261,14 @@ class AppContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "app_category", contact.contact_category_title
+    assert_equal "APP_CATEGORY", contact.contact_category_title
   end
 
   test "should reference contact_status by title" do
-    AppContactStatus.create!(title: "APP_STATUS")
+    AppContactStatus.create!(id: "APP_STATUS")
 
     contact = AppContact.new(
-      contact_status_title: "app_status",
+      contact_status_id: "app_status",
       confirm_policy: "1"
     )
 
@@ -286,7 +286,7 @@ class AppContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "APP_STATUS", contact.contact_status_title
+    assert_equal "APP_STATUS", contact.contact_status_id
   end
 
   test "should set default contact_category_title when nil" do
@@ -312,9 +312,9 @@ class AppContactTest < ActiveSupport::TestCase
     assert_equal "NULL_APP_CATEGORY", contact.contact_category_title
   end
 
-  test "should set default contact_status_title when nil" do
+  test "should set default contact_status_id when nil" do
     contact = AppContact.new(
-      contact_status_title: nil,
+      contact_status_id: nil,
       confirm_policy: "1"
     )
 
@@ -332,7 +332,7 @@ class AppContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NULL_APP_STATUS", contact.contact_status_title
+    assert_equal "NULL_APP_STATUS", contact.contact_status_id
   end
 
   # Validation tests
@@ -394,7 +394,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = AppContact.new(
       confirm_policy: "0",
       contact_category_title: sample_category,
-      contact_status_title: sample_status
+      contact_status_id: sample_status
     )
 
     assert_not contact.valid?
@@ -405,7 +405,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = AppContact.new(
       confirm_policy: "1",
       contact_category_title: sample_category,
-      contact_status_title: sample_status
+      contact_status_id: sample_status
     )
 
     assert_predicate contact, :valid?
@@ -503,6 +503,6 @@ class AppContactTest < ActiveSupport::TestCase
     contact.save!
 
     assert_equal "NULL_APP_CATEGORY", contact.contact_category_title
-    assert_equal "NULL_APP_STATUS", contact.contact_status_title
+    assert_equal "NULL_APP_STATUS", contact.contact_status_id
   end
 end

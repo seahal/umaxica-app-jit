@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_timeline_statuses
@@ -7,8 +9,7 @@
 #  updated_at :datetime         not null
 #
 class ComTimelineStatus < BusinessesRecord
-  has_many :com_timelines, dependent: :restrict_with_error, inverse_of: :com_timeline_status
+  include UppercaseIdValidation
 
-  before_validation { self.id = id&.upcase }
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false }, format: { with: /\A[A-Z0-9_]+\z/ }
+  has_many :com_timelines, dependent: :restrict_with_error, inverse_of: :com_timeline_status
 end

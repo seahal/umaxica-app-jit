@@ -8,7 +8,7 @@ class CreateOrgContacts < ActiveRecord::Migration[8.1]
       t.boolean     :token_viewed, default: false, null: false
       t.inet :ip_address
       t.string :contact_category_title, limit: 255
-      t.string :contact_status_title, limit: 255
+      t.string :contact_status_id, limit: 255
       t.timestamps
     end
 
@@ -20,7 +20,7 @@ class CreateOrgContacts < ActiveRecord::Migration[8.1]
                     column: :contact_category_title,
                     primary_key: :title
     add_foreign_key :org_contacts, :org_contact_statuses,
-                    column: :contact_status_title,
-                    primary_key: :title
+                    column: :contact_status_id,
+                    primary_key: :id
   end
 end
