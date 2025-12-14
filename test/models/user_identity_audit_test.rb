@@ -3,7 +3,7 @@ require "test_helper"
 class UserIdentityAuditTest < ActiveSupport::TestCase
   def setup
     @user = users(:one)
-    @audit_event = user_identity_audit_events(:one)
+    @audit_event = user_identity_audit_events(:login_success)
     @audit = UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,

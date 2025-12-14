@@ -482,13 +482,13 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal "CHECKED_EMAIL_ADDRESS", contact.contact_status_id
   end
 
-  test "verify_email! should return false when not in email_pending state" do
+  test "verify_email! should raise error when not in email_pending state" do
     contact = build_contact
     contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
 
-    result = contact.verify_email!
-
-    assert_not result
+    assert_raises(StandardError) do
+      contact.verify_email!
+    end
   end
 
   test "verify_phone! should transition to phone_verified state" do
@@ -501,13 +501,13 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal "CHECKED_TELEPHONE_NUMBER", contact.contact_status_id
   end
 
-  test "verify_phone! should return false when not in email_verified state" do
+  test "verify_phone! should raise error when not in email_verified state" do
     contact = build_contact
     contact.update!(contact_status_id: "SET_UP")
 
-    result = contact.verify_phone!
-
-    assert_not result
+    assert_raises(StandardError) do
+      contact.verify_phone!
+    end
   end
 
   test "complete! should transition to completed state" do
@@ -520,13 +520,13 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal "COMPLETED_CONTACT_ACTION", contact.contact_status_id
   end
 
-  test "complete! should return false when not in phone_verified state" do
+  test "complete! should raise error when not in phone_verified state" do
     contact = build_contact
     contact.update!(contact_status_id: "SET_UP")
 
-    result = contact.complete!
-
-    assert_not result
+    assert_raises(StandardError) do
+      contact.complete!
+    end
   end
 
   test "to_param should return public_id" do

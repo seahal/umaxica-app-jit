@@ -1,7 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
+login_success:
   id: "LOGIN_SUCCESS"
 
-two:
+login_failure:
   id: "LOGIN_FAILURE"
+
+signed_up_with_email:
+  id: "SIGNED_UP_WITH_EMAIL"
+
+signed_up_with_telephone:
+  id: "SIGNED_UP_WITH_TELEPHONE"
+
+signed_up_with_apple:
+  id: "SIGNED_UP_WITH_APPLE"
+
+signed_up_with_google:
+  id: "SIGNED_UP_WITH_GOOGLE"

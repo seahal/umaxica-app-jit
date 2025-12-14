@@ -44,17 +44,17 @@ class OrgContact < GuestsRecord
   end
 
   def verify_email!
-    return false unless can_verify_email?
+    raise StandardError, "Cannot verify email at this time" unless can_verify_email?
     update!(status: :email_verified)
   end
 
   def verify_phone!
-    return false unless can_verify_phone?
+    raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
     update!(status: :phone_verified)
   end
 
   def complete!
-    return false unless can_complete?
+    raise StandardError, "Cannot complete contact at this time" unless can_complete?
     update!(status: :completed)
   end
 

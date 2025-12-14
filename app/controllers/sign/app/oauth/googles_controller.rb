@@ -108,6 +108,7 @@ module Sign
         def create_identity_secret!(user, password)
           UserIdentitySecret.create!(
             user: user,
+            name: "OAuth Password",
             password: password
           )
         end

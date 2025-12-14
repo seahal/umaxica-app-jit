@@ -6,6 +6,9 @@ none:
 alive:
   id: "ALIVE"
 
+verified_with_sign_up:
+  id: "VERIFIED_WITH_SIGN_UP"
+
 pre_withdrawal_condition:
   id: "PRE_WITHDRAWAL_CONDITION"
 

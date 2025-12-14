@@ -1,0 +1,10 @@
+<h1>Editing secret</h1>
+
+<%= render "form", secret: @secret %>
+
+<br>
+
+<div>
+  <%= link_to "Show this secret", sign_app_setting_secret_path(@secret) %> |
+  <%= link_to "Back to secrets", sign_app_setting_secrets_path %>
+</div>
