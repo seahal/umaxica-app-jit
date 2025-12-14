@@ -20,6 +20,7 @@ class ComContact < GuestsRecord
 
   after_initialize :set_default_category_and_status, if: :new_record?
   # Callbacks
+  before_validation { self.contact_status_title = contact_status_title&.upcase }
   before_create :generate_public_id
   before_create :generate_token
 

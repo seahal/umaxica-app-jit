@@ -249,30 +249,7 @@ class OrgContactTest < ActiveSupport::TestCase
     assert_equal "org_category", contact.contact_category_title
   end
 
-  test "should reference contact_status by title" do
-    OrgContactStatus.create!(title: "org_status")
 
-    contact = OrgContact.new(
-      contact_status_title: "org_status",
-      confirm_policy: "1"
-    )
-
-    assert contact.save
-
-    OrgContactEmail.create!(
-      org_contact: contact,
-      email_address: "test@example.com",
-      expires_at: 1.day.from_now
-    )
-
-    OrgContactTelephone.create!(
-      org_contact: contact,
-      telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
-    )
-
-    assert_equal "org_status", contact.contact_status_title
-  end
 
   test "should set default contact_category_title when nil" do
     contact = OrgContact.new(

@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Email
   extend ActiveSupport::Concern
+
+  MAX_OTP_ATTEMPTS = 3
 
   attr_accessor :confirm_policy, :pass_code
 
@@ -68,7 +72,7 @@ module Email
   end
 
   def locked?
-    locked_at.present? || otp_attempts_count >= 3
+    locked_at.present? || otp_attempts_count >= MAX_OTP_ATTEMPTS
   end
 
   def increment_attempts!
@@ -77,7 +81,7 @@ module Email
     reload
     # Atomically set locked_at only when attempts reached threshold and not already set.
     affected = self.class.where(id: id, locked_at: nil)
-                   .where(otp_attempts_count: 3..)
+                   .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
                    # Skip model validations intentionally: this is a guarded atomic DB update
                    # to avoid race conditions when multiple processes increment simultaneously.
                    # rubocop:disable Rails/SkipsModelValidations

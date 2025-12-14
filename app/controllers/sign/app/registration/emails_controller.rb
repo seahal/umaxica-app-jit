@@ -115,8 +115,9 @@ module Sign
               @user_email.user = @user
               @user_email.save!
             end
-          rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved
-            @user_email.errors.add(:base, "登録処理に失敗しました。もう一度やり直してください。")
+          rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved => e
+            Rails.logger.error("Registration failed: #{e.message}")
+            @user_email.errors.add(:base, t("sign.app.registration.email.update.failed"))
             render :edit, status: :unprocessable_content and return
           end
 

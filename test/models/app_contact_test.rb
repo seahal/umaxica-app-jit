@@ -265,7 +265,7 @@ class AppContactTest < ActiveSupport::TestCase
   end
 
   test "should reference contact_status by title" do
-    AppContactStatus.create!(title: "app_status")
+    AppContactStatus.create!(title: "APP_STATUS")
 
     contact = AppContact.new(
       contact_status_title: "app_status",
@@ -286,7 +286,7 @@ class AppContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "app_status", contact.contact_status_title
+    assert_equal "APP_STATUS", contact.contact_status_title
   end
 
   test "should set default contact_category_title when nil" do

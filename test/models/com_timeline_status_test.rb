@@ -1,9 +1,14 @@
 require "test_helper"
 
 class ComTimelineStatusTest < ActiveSupport::TestCase
+  include StatusModelTestHelper
+
   fixtures :com_timeline_statuses
 
   def setup
+    @model_class = ComTimelineStatus
+    @valid_id = "ACTIVE"
+    @subject = @model_class.new(id: @valid_id)
     @status = com_timeline_statuses(:ACTIVE)
   end
 

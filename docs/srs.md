@@ -7,14 +7,14 @@
 ## 1. Purpose and Scope
 
 ### 1.1 Purpose
-Umaxica App (JIT) replaces the legacy edge-only portal with a unified Ruby on Rails platform that serves every public surface owned by Umaxica—corporate, service, staff, help, docs, news, BFF, and API domains.  
+Umaxica App (JIT) replaces the legacy edge-only portal with a unified Ruby on Rails platform that serves every public surface owned by Umaxica—corporate, service, staff, help, docs, news, BFF, and API domains.
 The SRS defines the business goals, functional expectations, and quality attributes that the Rails monolith must satisfy while orchestrating user onboarding, customer support, and staff tooling across `umaxica.[app|com|org]` and auxiliary subdomains.
 
 ### 1.2 Scope
-- Domains in scope (production + regional mirrors):  
-  - Public sites: `www.umaxica.app`, `www.umaxica.com`, `www.umaxica.org`  
-  - Service endpoints: `sign.umaxica.*`, `api.jp.umaxica.*`, `docs.[jp|us].umaxica.*`, `help.[jp|us].umaxica.*`, `news.[jp|us].umaxica.*`  
-  - Staff estate: `www.umaxica.org`, `sign.umaxica.org`, `api.umaxica.org`, etc.  
+- Domains in scope (production + regional mirrors):
+  - Public sites: `www.umaxica.app`, `www.umaxica.com`, `www.umaxica.org`
+  - Service endpoints: `sign.umaxica.*`, `api.jp.umaxica.*`, `docs.[jp|us].umaxica.*`, `help.[jp|us].umaxica.*`, `news.[jp|us].umaxica.*`
+  - Staff estate: `www.umaxica.org`, `sign.umaxica.org`, `api.umaxica.org`, etc.
   - Network-only hosts (e.g., `asset-jp.umaxica.net`) are proxied but not powered by Rails.
 - Subsystems: top-level marketing pages, authentication (sign), help center/contact flows, documentation and news portals, BFF preference endpoints, public API endpoints for inquiry validation, and supporting infrastructure (Karafka, Kafka, Valkey, OpenTelemetry, MinIO, Fastly/Cloudflare integrations).
 
@@ -41,13 +41,13 @@ The SRS defines the business goals, functional expectations, and quality attribu
 ---
 
 ## 3. System Overview
-- **Runtime & language**: Ruby 3.4.7 / Rails 8.x monolith with multi-database (`connects_to`) separation (identity, universal, guest, profile, token, etc.) backed by PostgreSQL 18 (primary + replica).  
-- **Frontend toolchain**: Bun 1.3+ builds Tailwind + React/Turbo entrypoints (`app/javascript`). Assets land in `app/assets/builds` via `bun bun.config.js`.  
-- **Caching & session adjuncts**: Valkey (Redis-compatible) powers request rate limiting, `Memorize` ephemeral storage, signed preference cookies, and Rack session backing for Action Cable.  
-- **Messaging & async**: Kafka (via Karafka + WaterDrop) hosts the `email` topic consumed by `EmailConsumer` for OTP and notification fan-out.  
-- **Security & identity**: JWT auth cookies (ES256) via the `Authn` concern, WebAuthn passkeys, HOTP/TOTP (ROTP), SMS dispatchers (AWS SNS/Infobip/Test), and Cloudflare Turnstile for bot defense.  
-- **Observability**: OpenTelemetry instrumentation exports to Tempo via OTLP; logs/metrics land in Loki/Grafana (docker/observability stack).  
-- **Storage & CDN**: Active Storage/Shrine configured for Google Cloud Storage or MinIO (dev). Fastly and Cloudflare R2 provide CDN and asset edge.  
+- **Runtime & language**: Ruby 3.4.7 / Rails 8.x monolith with multi-database (`connects_to`) separation (identity, universal, guest, profile, token, etc.) backed by PostgreSQL 18 (primary + replica).
+- **Frontend toolchain**: Bun 1.3+ builds Tailwind + React/Turbo entrypoints (`app/javascript`). Assets land in `app/assets/builds` via `bun bun.config.js`.
+- **Caching & session adjuncts**: Valkey (Redis-compatible) powers request rate limiting, `Memorize` ephemeral storage, signed preference cookies, and Rack session backing for Action Cable.
+- **Messaging & async**: Kafka (via Karafka + WaterDrop) hosts the `email` topic consumed by `EmailConsumer` for OTP and notification fan-out.
+- **Security & identity**: JWT auth cookies (ES256) via the `Authn` concern, WebAuthn passkeys, HOTP/TOTP (ROTP), SMS dispatchers (AWS SNS/Infobip/Test), and Cloudflare Turnstile for bot defense.
+- **Observability**: OpenTelemetry instrumentation exports to Tempo via OTLP; logs/metrics land in Loki/Grafana (docker/observability stack).
+- **Storage & CDN**: Active Storage/Shrine configured for Google Cloud Storage or MinIO (dev). Fastly and Cloudflare R2 provide CDN and asset edge.
 - **Surface mapping** (driven by ENV such as `TOP_CORPORATE_URL`, `SIGN_SERVICE_URL`, etc.):
   | Surface | Host examples | Namespace | Responsibilites |
   |---------|---------------|-----------|-----------------|
@@ -96,6 +96,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 - **FR-21**: Personally identifiable records must reside in their designated database clusters (`IdentitiesRecord`, `GuestsRecord`, `UniversalRecord`, etc.) with `connects_to` wiring honoring read replicas for reporting workloads.
 - **FR-22**: Sensitive columns (emails, telephone numbers, OTP secrets) must use Active Record encryption with deterministic mode for lookups where required.
 - **FR-23**: Preference cookies (`root_app_preferences`) must be signed/HTTP-only/Lax by default, with same-site exceptions documented if a downstream domain (e.g., `help` forms) legitimately reads them.
+- **FR-24**: All database operations (create, update, delete) involving `User` and `Staff` entities must be recorded in the Audit log (`UserIdentityAudit`, `StaffIdentityAudit`) to ensure traceability and accountability.
 
 ### 4.7 Observability, CI/CD, and ops readiness
 - **FR-24**: OpenTelemetry instrumentation (`config/initializers/opentelemetry.rb`) must be active in production and optionally in development (when OTLP collector is reachable) to push traces to Tempo; spans must include hostnames to differentiate surfaces.
