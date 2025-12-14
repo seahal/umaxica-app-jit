@@ -446,6 +446,7 @@ ja:
             invalid_code: パスコードが正しくありません
             attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
             success: 登録が完了しました。
+            failed: 登録処理に失敗しました。もう一度やり直してください。
         telephone:
           new:
             page_title: "電話番号で登録"

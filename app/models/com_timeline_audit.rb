@@ -4,6 +4,7 @@ class ComTimelineAudit < BusinessesRecord
   self.table_name = "com_timeline_audits"
 
   belongs_to :com_timeline
+  belongs_to :actor, polymorphic: true, optional: true
 
   belongs_to :com_timeline_audit_event,
              class_name: "ComTimelineAuditEvent",

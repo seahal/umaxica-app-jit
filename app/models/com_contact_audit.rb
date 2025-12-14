@@ -6,6 +6,7 @@ class ComContactAudit < GuestsRecord
   self.table_name = "com_contact_histories"
 
   belongs_to :com_contact
+  belongs_to :actor, polymorphic: true, optional: true
 
   # This model tracks the audit/history of contact interactions
 end

@@ -145,7 +145,7 @@ module Sign
           if user_email.locked?
             { success: false, error: t("sign.app.authentication.email.locked") }
           else
-            remaining = [ UserIdentityEmail::MAX_OTP_ATTEMPTS - user_email.otp_attempts_count, 0 ].max
+            remaining = [ Email::MAX_OTP_ATTEMPTS - user_email.otp_attempts_count, 0 ].max
             { success: false, error: t("sign.app.authentication.email.update.invalid_code", attempts_left: remaining) }
           end
         end

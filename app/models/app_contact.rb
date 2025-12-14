@@ -58,17 +58,17 @@ class AppContact < GuestsRecord
 
   def verify_email!
     return false unless can_verify_email?
-    update!(status: :email_verified)
+    update!(contact_status_id: "EMAIL_VERIFIED")
   end
 
   def verify_phone!
     return false unless can_verify_phone?
-    update!(status: :phone_verified)
+    update!(contact_status_id: "PHONE_VERIFIED")
   end
 
   def complete!
     return false unless can_complete?
-    update!(status: :completed)
+    update!(contact_status_id: "COMPLETED")
   end
 
   # Token management
