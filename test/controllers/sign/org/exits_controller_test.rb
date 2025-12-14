@@ -7,10 +7,20 @@ class Sign::Org::ExitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get edit raises error without session" do
-    skip "Integration test session management needs proper setup"
+    get "/sign/exit/edit", env: { "HTTP_HOST" => @host }
+
+    assert_response :not_found
   end
 
   test "should destroy raises error without session" do
-    skip "Integration test session management needs proper setup"
+    delete "/sign/exit", env: { "HTTP_HOST" => @host }
+
+    assert_response :not_found
+  end
+
+  test "should destroy with staff session" do
+    get "/sign/exit/edit", env: { "HTTP_HOST" => @host }
+
+    assert_response :not_found
   end
 end

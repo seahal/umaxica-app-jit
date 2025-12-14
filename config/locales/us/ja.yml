@@ -330,6 +330,11 @@ ja:
               dark: 夜間の作業や目の疲れを軽減したいときに最適です。
               system: OS のテーマ変更に連動して切り替わります。
             submit: テーマ設定を保存
+      exits:
+        edit:
+          title: "ログアウトしますか？"
+        destroy:
+          success: "ログアウトしました"
       withdrawal:
         show:
           title: "退会ステータス"

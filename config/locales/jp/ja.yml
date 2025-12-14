@@ -72,6 +72,11 @@ ja:
               session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             update:
               success: "電話番号が確認されました。"
+        exits:
+          edit:
+            title: "ログアウトしますか？"
+          destroy:
+            success: "ログアウトしました"
         withdrawal:
           show:
             title: "退会ステータス"
