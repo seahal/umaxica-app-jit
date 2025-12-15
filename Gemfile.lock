@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 7ec52e52001bac43688008a9e47de82422582eff
+  revision: 68eeefc3091c293148bd0d96dae7ab93872cff8e
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -378,7 +378,7 @@ GEM
     nanoid (2.0.0)
     net-http (0.8.0)
       uri (>= 0.11.1)
-    net-imap (0.5.12)
+    net-imap (0.6.0)
       date
       net-protocol
     net-pop (0.1.2)
@@ -418,7 +418,7 @@ GEM
     omniauth-rails_csrf_protection (2.0.1)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
-    openssl (3.3.2)
+    openssl (4.0.0)
     openssl-signature_algorithm (1.3.0)
       openssl (> 2.0)
     opentelemetry-api (1.7.0)
