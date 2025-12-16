@@ -8,12 +8,12 @@ module Sign
 
         def new
           @totp = UserIdentityOneTimePassword.new
+          generate_totp_session
         end
 
         def create
           @totp = UserIdentityOneTimePassword.new(totp_params)
           @totp.private_key = session[:private_key]
-          @totp.id = SecureRandom.uuid_v7
           @totp.user = current_user
 
           if (last_otp_at = verify_totp(@totp.private_key, @totp.first_token))

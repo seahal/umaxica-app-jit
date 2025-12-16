@@ -15,6 +15,8 @@ class UserIdentityOneTimePassword < IdentitiesRecord
   belongs_to :user
   belongs_to :user_identity_one_time_password_status, optional: true, inverse_of: :user_identity_one_time_passwords
 
+  attr_accessor :first_token
+
   validates :private_key, presence: true, length: { maximum: 1024 }
   validates :last_otp_at, presence: true
 
