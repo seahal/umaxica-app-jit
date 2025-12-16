@@ -4,6 +4,7 @@ module Sign
       class EmailsController < ApplicationController
         include ::CloudflareTurnstile
         include EmailValidation
+        include ::Redirect
 
         before_action :ensure_not_logged_in
         before_action :load_user_email, only: %i[edit update]
@@ -32,8 +33,13 @@ module Sign
           end
 
           process_email_authentication(normalized_address)
-          redirect_to edit_sign_app_authentication_email_path,
-                      notice: t("sign.app.authentication.email.create.verification_code_sent")
+
+          # Preserve rd parameter if provided
+          redirect_params = { notice: t("sign.app.authentication.email.create.verification_code_sent") }
+          redirect_params[:rd] = params[:rd] if params[:rd].present?
+          session[:user_email_authentication_rd] = params[:rd] if params[:rd].present?
+
+          redirect_to edit_sign_app_authentication_email_path(redirect_params)
         end
 
         def update
@@ -49,7 +55,16 @@ module Sign
           ensure_min_elapsed(start_time)
 
           if result[:success]
-            redirect_to "/", notice: t("sign.app.authentication.email.update.success")
+            # Redirect to rd parameter if provided, otherwise to root
+            rd_param = params[:rd].presence || session[:user_email_authentication_rd]
+            session[:user_email_authentication_rd] = nil
+
+            if rd_param.present?
+              flash[:notice] = t("sign.app.authentication.email.update.success")
+              jump_to_generated_url(rd_param)
+            else
+              redirect_to "/", notice: t("sign.app.authentication.email.update.success")
+            end
           else
             @user_email.errors.add(:pass_code, result[:error])
             render :edit, status: :unprocessable_content
@@ -71,11 +86,15 @@ module Sign
             @user_email = UserIdentityEmail.find_by(id: session[:user_email_authentication_id])
             return if @user_email.present? && !@user_email.otp_expired?
 
-            redirect_to new_sign_app_authentication_email_path, notice: t("sign.app.authentication.email.edit.session_expired")
+            redirect_params = { notice: t("sign.app.authentication.email.edit.session_expired") }
+            redirect_params[:rd] = session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
+            redirect_to new_sign_app_authentication_email_path(redirect_params)
           elsif session[:user_email_authentication_address].present?
             @user_email = UserIdentityEmail.new(address: session[:user_email_authentication_address])
           else
-            redirect_to new_sign_app_authentication_email_path, notice: t("sign.app.authentication.email.edit.session_expired")
+            redirect_params = { notice: t("sign.app.authentication.email.edit.session_expired") }
+            redirect_params[:rd] = session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
+            redirect_to new_sign_app_authentication_email_path(redirect_params)
           end
         end
 

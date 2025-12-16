@@ -1,3 +1,6 @@
+# TODO: Refactor to use UserIdentitySecretsController
+# all methods are required for user authentication
+
 module Sign
   module App
     module Setting

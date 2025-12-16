@@ -26,10 +26,11 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     assert_select "a[href=?]", new_sign_app_authentication_email_path, count: 0
   end
 
-  test "edit returns bad_request when not logged in and no session" do
-    get edit_sign_app_registration_email_url(id: "test-id"), headers: default_headers
+  test "edit redirects to new when email record not found" do
+    get edit_sign_app_registration_email_url(id: "non-existent-id"), headers: default_headers
 
-    assert_response :bad_request
+    assert_response :redirect
+    assert_includes response.location, new_sign_app_registration_email_path
   end
 
   test "i18n flash messages for email registration flow exist" do
@@ -44,7 +45,7 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
   end
 
   # rubocop:disable Minitest/MultipleAssertions
-  test "cannot register same email twice (uniqueness constraint)" do
+  test "can re-register same email if previous registration was unverified" do
     email = "test@example.com"
 
     # First registration attempt
@@ -65,9 +66,10 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     assert_not_nil first_email
     assert_equal "UNVERIFIED_WITH_SIGN_UP", first_email.user_identity_email_status_id
+    first_email_id = first_email.id
 
     # Second registration attempt immediately after
-    # This should fail due to address uniqueness constraint
+    # This should delete the previous unverified record and create a new one
     post sign_app_registration_emails_url,
       params: {
         user_identity_email: {
@@ -78,9 +80,16 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       },
       headers: default_headers
 
-    # Should get unprocessable content because email already exists (uniqueness validation)
-    # This is the secure behavior - we don't delete other users' records
-    assert_response :unprocessable_content
+    # Should succeed because old unverified record is deleted
+    assert_response :redirect
+
+    # Verify old record was deleted and new record was created
+    assert_nil UserIdentityEmail.find_by(id: first_email_id)
+    new_email = UserIdentityEmail.find_by(address: email)
+
+    assert_not_nil new_email
+    assert_equal "UNVERIFIED_WITH_SIGN_UP", new_email.user_identity_email_status_id
+    assert_not_equal first_email_id, new_email.id
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -143,7 +152,8 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     end
 
     # Verify redirect and record deletion
-    assert_redirected_to new_sign_app_registration_email_path(ct: "sy", lx: "ja", ri: "jp", tz: "jst")
+    assert_response :redirect
+    assert_includes response.location, new_sign_app_registration_email_path
     assert_nil UserIdentityEmail.find_by(id: user_email.id)
   end
 
@@ -165,6 +175,68 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     assert_response :success
     assert_select "div[id^='cf-turnstile-']", count: 1
   end
+
+  test "turnstile validation error message i18n key exists" do
+    # Verify the turnstile error message key exists in all locales
+    assert_not_nil I18n.t("sign.app.registration.email.create.turnstile_validation_failed", locale: :ja, default: nil)
+    assert_not_nil I18n.t("sign.app.registration.email.create.turnstile_validation_failed", locale: :en, default: nil)
+  end
+
+  test "redirects to root when user is already logged in" do
+    # Create a user and log them in
+    user = User.create!(user_identity_status_id: "VERIFIED_WITH_SIGN_UP")
+
+    # Try to access registration page while logged in (using test header to inject current user)
+    get new_sign_app_registration_email_url,
+        headers: default_headers.merge({ "X-TEST-CURRENT-USER" => user.id })
+
+    assert_redirected_to "/"
+    assert_equal I18n.t("sign.app.registration.email.already_logged_in"), flash[:alert]
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "redirects to encoded URL after successful registration when rd parameter is provided" do
+    email = "redirect_test@example.com"
+    redirect_url = "https://#{ENV['APEX_SERVICE_URL']}/dashboard"
+    encoded_rd = Base64.urlsafe_encode64(redirect_url)
+
+    # Create registration record with rd parameter
+    post sign_app_registration_emails_url,
+      params: {
+        user_identity_email: {
+          address: email,
+          confirm_policy: "1"
+        },
+        "cf-turnstile-response": "test",
+        rd: encoded_rd
+      },
+      headers: default_headers
+
+    # Verify rd parameter is preserved in redirect
+    user_email = UserIdentityEmail.find_by(address: email)
+
+    assert_response :redirect
+    assert_includes response.location, "rd=#{CGI.escape(encoded_rd)}"
+
+    otp_data = user_email.get_otp
+    hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+    correct_code = hotp.at(otp_data[:otp_counter]).to_s
+
+    # Submit correct OTP with rd parameter
+    patch sign_app_registration_email_url(user_email.id),
+      params: {
+        id: user_email.id,
+        user_identity_email: {
+          pass_code: correct_code
+        },
+        rd: encoded_rd
+      },
+      headers: default_headers
+
+    # Should redirect to the encoded URL
+    assert_redirected_to redirect_url
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 
   # Transaction Tests for User Creation
   # rubocop:disable Minitest/MultipleAssertions
@@ -229,8 +301,8 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
   # rubocop:enable Minitest/MultipleAssertions
 
   # rubocop:disable Minitest/MultipleAssertions
-  test "clears session data after successful registration" do
-    email = "session_clear@example.com"
+  test "sets user session after successful registration" do
+    email = "session_set@example.com"
 
     # Create registration record
     post sign_app_registration_emails_url,
@@ -248,9 +320,6 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
     correct_code = hotp.at(otp_data[:otp_counter]).to_s
 
-    # Verify session was set during registration
-    assert_not_nil session[:user_email_registration]
-
     # Submit correct OTP
     patch sign_app_registration_email_url(user_email.id),
       params: {
@@ -260,9 +329,6 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
         }
       },
       headers: default_headers
-
-    # Verify registration session was cleared
-    assert_nil session[:user_email_registration]
 
     # Verify user session was set
     assert_not_nil session[:user]

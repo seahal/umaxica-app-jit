@@ -25,29 +25,6 @@ class RedirectTest < ActiveSupport::TestCase
     ENV["EDGE_CORPORATE_URL"] = "com.edge.localdomain"
     ENV["EDGE_SERVICE_URL"] = "app.edge.localdomain"
     ENV["EDGE_STAFF_URL"] = "org.edge.localdomain"
-
-    # Force reload of the constant
-    Redirect.send(:remove_const, :ALLOWED_HOSTS) if Redirect.const_defined?(:ALLOWED_HOSTS)
-    Redirect.const_set(:ALLOWED_HOSTS, [ ENV["APEX_CORPORATE_URL"],
-                                        ENV["APEX_SERVICE_URL"],
-                                        ENV["APEX_STAFF_URL"],
-                                        ENV["API_CORPORATE_URL"],
-                                        ENV["API_SERVICE_URL"],
-                                        ENV["API_STAFF_URL"],
-                                        ENV["SIGN_SERVICE_URL"],
-                                        ENV["SIGN_STAFF_URL"],
-                                        ENV["DOCS_CORPORATE_URL"],
-                                        ENV["DOCS_SERVICE_URL"],
-                                        ENV["DOCS_STAFF_URL"],
-                                        ENV["NEWS_CORPORATE_URL"],
-                                        ENV["NEWS_SERVICE_URL"],
-                                        ENV["NEWS_STAFF_URL"],
-                                        ENV["HELP_CORPORATE_URL"],
-                                        ENV["HELP_SERVICE_URL"],
-                                        ENV["HELP_STAFF_URL"],
-                                        ENV["EDGE_CORPORATE_URL"],
-                                        ENV["EDGE_SERVICE_URL"],
-                                        ENV["EDGE_STAFF_URL"] ].map(&:downcase).freeze)
   end
 
   teardown do

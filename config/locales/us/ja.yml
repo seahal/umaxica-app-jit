@@ -20,6 +20,12 @@ ja:
         setting:
           show:
             page_title: 設定
+          index:
+            totp: TOTP
+            passkey: パスキー
+            secret: リカバリーコード
+            google: Google
+            apple: Apple
           passkey:
             index:
               page_title: パスキーの一覧
@@ -334,7 +340,7 @@ ja:
         edit:
           title: "ログアウトしますか？"
         destroy:
-          success: "ログアウトしました"
+          success: "ログアウトします"
       withdrawal:
         show:
           title: "退会ステータス"
@@ -390,7 +396,7 @@ ja:
         edit:
           title: "ログアウトしますか？"
         destroy:
-          success: "ログアウトしました"
+          success: "ログアウトします"
       withdrawal:
         create:
           already_withdrawn: "既に退会済みです。"

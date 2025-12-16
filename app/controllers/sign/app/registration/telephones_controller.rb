@@ -4,6 +4,7 @@ module Sign
       class TelephonesController < ApplicationController
         include ::CloudflareTurnstile
 
+        # todo: verify not logged in
         def new
           @user_telephone = UserIdentityTelephone.new
 
@@ -11,6 +12,7 @@ module Sign
           session[:user_telephone_registration] = nil
         end
 
+        # todo: verify not logged in
         def edit
           render plain: t("sign.app.registration.telephone.edit.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
@@ -27,6 +29,7 @@ module Sign
           end
         end
 
+        # todo: verify not logged in
         def create
           render plain: t("sign.app.authentication.telephone.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
@@ -67,6 +70,7 @@ module Sign
           end
         end
 
+        # todo: verify not logged in
         def update
           # FIXME: write test code!
           render plain: t("sign.app.authentication.telephone.new.you_have_already_logged_in"),

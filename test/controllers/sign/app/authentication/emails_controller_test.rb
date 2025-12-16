@@ -220,4 +220,52 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     # This would require proper session handling which is complex in integration tests
     skip "Rails integration test session handling needs clarification"
   end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "redirects to encoded URL after successful login when rd parameter is provided" do
+    # Create a test user and email
+    test_email = UserIdentityEmail.create!(
+      address: "redirect_login_test_#{SecureRandom.hex(4)}@example.com"
+    )
+
+    redirect_url = "https://#{ENV['APEX_SERVICE_URL']}/dashboard"
+    encoded_rd = Base64.urlsafe_encode64(redirect_url)
+
+    # Start authentication with rd parameter
+    post sign_app_authentication_email_url,
+         params: {
+           user_identity_email: { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+           rd: encoded_rd
+         },
+         headers: { "Host" => @host }
+
+    assert_response :found
+    assert_includes response.location, "rd=#{CGI.escape(encoded_rd)}"
+    assert_equal test_email.id.to_s, session[:user_email_authentication_id]
+    assert_equal encoded_rd, session[:user_email_authentication_rd]
+
+    # Generate valid OTP code
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 12345
+    hotp = ROTP::HOTP.new(otp_private_key)
+    valid_pass_code = hotp.at(otp_counter).to_s
+
+    # Store OTP
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    # Verify OTP with rd parameter
+    patch sign_app_authentication_email_url,
+          params: {
+            user_identity_email: { pass_code: valid_pass_code },
+            rd: encoded_rd
+          },
+          headers: { "Host" => @host }
+
+    # Should redirect to the encoded URL
+    assert_response :found
+    assert_redirected_to redirect_url
+    assert_nil session[:user_email_authentication_rd]
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 end

@@ -31,6 +31,8 @@ ja:
             totp: TOTP
             passkey: パスキー
             secret: リカバリーコード
+            google: Google
+            apple: Apple
           passkey:
             index:
               page_title: パスキーの一覧
@@ -54,14 +56,19 @@ ja:
               jump_obj: sign in with google
           email:
             label: "メールで登録"
+            already_logged_in: "既にログインしています。"
             create:
               verification_code_sent: "確認コードをメールアドレスに送信しました。"
+              turnstile_validation_failed: "認証に失敗しました。もう一度お試しください。"
             edit:
               return_page: 戻る
               session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             update:
               success: "メールアドレスが確認されました。"
               failed: "登録処理に失敗しました。もう一度やり直してください。"
+              invalid_code: "確認コードが正しくありません。"
+              attempts_exceeded: "確認コードの入力回数が上限に達しました。最初からやり直してください。"
+              session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
           telephone:
             label: "電話で登録"
             create:
@@ -76,7 +83,7 @@ ja:
           edit:
             title: "ログアウトしますか？"
           destroy:
-            success: "ログアウトしました"
+            success: "ログアウトします"
         withdrawal:
           show:
             title: "退会ステータス"
@@ -127,7 +134,7 @@ ja:
           edit:
             title: "ログアウトしますか？"
           destroy:
-            success: "ログアウトしました"
+            success: "ログアウトします"
       preferences:
         title: プリファレンス
         cookie_settings: クッキーの設定
@@ -463,7 +470,7 @@ ja:
         edit:
           title: "ログアウトしますか？"
         destroy:
-          success: "ログアウトしました"
+          success: "ログアウトします"
       authentication:
         new:
           page_title: サインイン方法を選択

@@ -134,13 +134,19 @@ en:
         email:
           new:
             page_title: "UMAXICA (sign, app)"
+          already_logged_in: "You are already logged in."
           create:
             verification_code_sent: "Verification code has been sent to your email address."
+            turnstile_validation_failed: "Security verification failed. Please try again."
           edit:
             return_page: "Back"
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Email address has been verified."
+            failed: "Registration failed. Please try again."
+            invalid_code: "Invalid verification code."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
+            session_expired: "Your session has expired. Please start over."
         telephone:
           create:
             verification_code_sent: "Verification code has been sent via SMS."
@@ -814,6 +820,8 @@ en:
             totp: "TOTP"
             passkey: "Passkey"
             secret: "Recovery Code"
+            google: "Google"
+            apple: "Apple"
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."

@@ -5,79 +5,82 @@ module Sign
         include ::CloudflareTurnstile
         include ::Redirect
 
-        def new
-          # # to avoid session attack
-          session[:user_email_registration] = nil
+        before_action :ensure_not_logged_in
 
+        def new
           # make user email
           @user_email = UserIdentityEmail.new
         end
 
         def edit
-          render plain: t("sign.app.registration.email.edit.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
-          render plain: t("sign.app.registration.email.edit.forbidden_action"),
-                 status: :bad_request and return if session[:user_email_registration].nil?
-
-          registration_session = session[:user_email_registration]
-          if registration_session && registration_session["id"] == params["id"] && registration_session["expires_at"].to_i > Time.now.to_i
-            @user_email = UserIdentityEmail.find_by(id: params["id"]) || UserIdentityEmail.new
-          else
-            redirect_to new_sign_app_registration_email_path,
-                        notice: t("sign.app.registration.email.edit.session_expired")
+          @user_email = UserIdentityEmail.find_by(id: params["id"])
+          if @user_email.blank? || @user_email.otp_expired? || @user_email.user_identity_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
+            redirect_params = { notice: t("sign.app.registration.email.edit.session_expired") }
+            redirect_params[:rd] = params[:rd] if params[:rd].present?
+            redirect_to new_sign_app_registration_email_path(redirect_params)
           end
         end
 
         def create
           # FIXME: write test code!
-          render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
 
-          # start to create new email record
+          # Validate Cloudflare Turnstile first
+          turnstile_result = cloudflare_turnstile_validation
+
+          # Build new email record
           @user_email = UserIdentityEmail.new(params.expect(user_identity_email: [ :address, :confirm_policy ]))
           @user_email.user_identity_email_status_id = "UNVERIFIED_WITH_SIGN_UP"
-          res = cloudflare_turnstile_validation
+
+          # Check turnstile validation
+          unless turnstile_result["success"]
+            @user_email.errors.add(:base, t("sign.app.registration.email.create.turnstile_validation_failed"))
+            render :new, status: :unprocessable_content and return
+          end
+
+          # Delete existing unverified email with same address to allow re-registration
+          if @user_email.address.present?
+            UserIdentityEmail.where(
+              address: @user_email.address,
+              user_identity_email_status_id: "UNVERIFIED_WITH_SIGN_UP"
+            ).destroy_all
+          end
+
+          # Validate the new email
+          unless @user_email.valid?
+            render :new, status: :unprocessable_content and return
+          end
+
+          # Generate OTP
           otp_private_key = ROTP::Base32.random_base32
           otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
           hotp = ROTP::HOTP.new(otp_private_key)
           num = hotp.at(otp_count_number)
           expires_at = 12.minutes.from_now.to_i
 
-          if res["success"] && @user_email.valid?
-            # Save email and store OTP in database
-            @user_email.save!
-            @user_email.store_otp(otp_private_key, otp_count_number, expires_at)
+          # Save email and store OTP in database
+          @user_email.save!
+          @user_email.store_otp(otp_private_key, otp_count_number, expires_at)
 
-            # Store only the reference ID in session
-            session[:user_email_registration] = {
-              id: @user_email.id,
-              expires_at: expires_at
-            }
+          # Send email
+          # FIXME: use kafka!
+          Email::App::RegistrationMailer.with({ hotp_token: num,
+                                                email_address: @user_email.address }).create.deliver_now
 
-            # FIXME: use kafka!
-            Email::App::RegistrationMailer.with({ hotp_token: num,
-                                                  email_address: @user_email.address }).create.deliver_now
+          # Preserve rd parameter if provided
+          redirect_params = { notice: t("sign.app.registration.email.create.verification_code_sent") }
+          redirect_params[:rd] = params[:rd] if params[:rd].present?
 
-            redirect_to edit_sign_app_registration_email_path(@user_email.id), notice: t("sign.app.registration.email.create.verification_code_sent")
-          else
-            render :new, status: :unprocessable_content
-          end
+          redirect_to edit_sign_app_registration_email_path(@user_email.id, redirect_params)
         end
 
         def update
           # FIXME: write test code!
-          render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
-
-          registration_session = session[:user_email_registration]
-          if registration_session.blank? || registration_session["id"] != params["id"]
-            render :edit, status: :unprocessable_content and return
-          end
-
           # Retrieve email record with OTP
           @user_email = UserIdentityEmail.find_by(id: params["id"])
-          if @user_email.blank? || @user_email.otp_expired? || registration_session["expires_at"].to_i <= Time.now.to_i
-            render :edit, status: :unprocessable_content and return
+          if @user_email.blank? || @user_email.otp_expired? || @user_email.user_identity_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
+            redirect_params = { alert: t("sign.app.registration.email.update.session_expired") }
+            redirect_params[:rd] = params[:rd] if params[:rd].present?
+            redirect_to new_sign_app_registration_email_path(redirect_params) and return
           end
 
           # Verify OTP using secure_compare
@@ -95,8 +98,9 @@ module Sign
             @user_email.increment_attempts!
             if @user_email.locked?
               @user_email.destroy!
-              session[:user_email_registration] = nil
-              redirect_to new_sign_app_registration_email_path, alert: t("sign.app.registration.email.update.attempts_exceeded") and return
+              redirect_params = { alert: t("sign.app.registration.email.update.attempts_exceeded") }
+              redirect_params[:rd] = params[:rd] if params[:rd].present?
+              redirect_to new_sign_app_registration_email_path(redirect_params) and return
             end
             @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.invalid_code"))
             render :edit, status: :unprocessable_content and return
@@ -121,10 +125,24 @@ module Sign
             render :edit, status: :unprocessable_content and return
           end
 
-          # Only clear session and set user after successful transaction
-          session[:user_email_registration] = nil
+          # Set user session after successful transaction
           session[:user] = { id: @user.id }
-          redirect_to "/", notice: t("sign.app.registration.email.update.success")
+
+          # Redirect to rd parameter if provided, otherwise to root
+          if params[:rd].present?
+            flash[:notice] = t("sign.app.registration.email.update.success")
+            jump_to_generated_url(params[:rd])
+          else
+            redirect_to "/", notice: t("sign.app.registration.email.update.success")
+          end
+        end
+
+        private
+
+        def ensure_not_logged_in
+          if logged_in?
+            redirect_to "/", alert: t("sign.app.registration.email.already_logged_in")
+          end
         end
       end
     end
