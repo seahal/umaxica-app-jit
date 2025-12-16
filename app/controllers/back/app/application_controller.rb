@@ -5,14 +5,9 @@ module Back
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
       include Authn
-
-      protect_from_forgery with: :exception
+      include ::Authentication::User
       include ::RateLimit
-
-      protect_from_forgery with: :exception
       include ::DefaultUrlOptions
-
-      protect_from_forgery with: :exception
       include ::Back::Concerns::Regionalization
 
       protect_from_forgery with: :exception

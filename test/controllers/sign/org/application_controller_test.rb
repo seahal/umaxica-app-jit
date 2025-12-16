@@ -6,7 +6,10 @@ module Sign::Org
   class ApplicationControllerTest < ActionDispatch::IntegrationTest
     setup do
       @controller = Sign::Org::ApplicationController.new
-      @controller.request = ActionDispatch::TestRequest.create
+      @controller.request = ActionDispatch::TestRequest.create(
+        "rack.session" => {},
+        "rack.session.options" => { id: SecureRandom.hex(16) }
+      )
       @controller.response = ActionDispatch::TestResponse.new
       @staff = staffs(:one)
     end
@@ -21,8 +24,8 @@ module Sign::Org
     end
 
     test "authenticate_staff! allows access when staff is logged in" do
-      # Mock current_staff
-      @controller.instance_variable_set(:@current_staff, @staff)
+      # Mock session to simulate logged in staff
+      @controller.request.session[:staff] = { id: @staff.id }
       # Should not raise or redirect
       assert_nothing_raised do
         @controller.send(:authenticate_staff!)

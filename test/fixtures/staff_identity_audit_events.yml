@@ -5,3 +5,15 @@ one:
 
 two:
   id: "LOGIN_FAILURE"
+
+logged_in:
+  id: "LOGGED_IN"
+
+logged_out:
+  id: "LOGGED_OUT"
+
+login_failed:
+  id: "LOGIN_FAILED"
+
+token_refreshed:
+  id: "TOKEN_REFRESHED"

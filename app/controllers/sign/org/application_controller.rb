@@ -7,6 +7,7 @@ module Sign
       include Pundit::Authorization
       include ::DefaultUrlOptions
       include ::RateLimit
+      include ::Authentication::Staff
 
       protect_from_forgery with: :exception
       allow_browser versions: :modern
@@ -34,7 +35,7 @@ module Sign
       end
 
       def logged_in?
-        logged_in_staff? || logged_in_user?
+        logged_in_staff?
       end
 
       def authenticate_staff!
@@ -42,10 +43,11 @@ module Sign
 
         if request.format.json?
           render json: { error: "Unauthorized" }, status: :unauthorized
+          nil
         else
           head :unauthorized
+          nil
         end
-        nil
       end
     end
   end

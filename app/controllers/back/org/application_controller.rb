@@ -5,6 +5,7 @@ module Back
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
       include Authn
+      include ::Authentication::Staff
 
       protect_from_forgery with: :exception
 

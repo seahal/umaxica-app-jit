@@ -7,6 +7,7 @@ module Sign
       include ::RateLimit
       include ::DefaultUrlOptions
       include Pundit::Authorization
+      include ::Authentication::User
 
       protect_from_forgery with: :exception
       allow_browser versions: :modern
@@ -30,10 +31,11 @@ module Sign
         # Halt the request with 401 for both HTML and JSON.
         if request.format.json?
           render json: { error: "Unauthorized" }, status: :unauthorized
+          nil
         else
           head :unauthorized
+          nil
         end
-        nil
       end
     end
   end

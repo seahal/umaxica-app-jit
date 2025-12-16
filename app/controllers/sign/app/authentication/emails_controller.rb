@@ -59,8 +59,11 @@ module Sign
         private
 
         def ensure_not_logged_in
-          render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
-                 status: :bad_request if logged_in?
+          if logged_in?
+            render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
+                   status: :bad_request
+            nil
+          end
         end
 
         def load_user_email

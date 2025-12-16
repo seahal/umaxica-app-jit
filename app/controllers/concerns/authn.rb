@@ -1,4 +1,5 @@
 # FIXME: move to refresh_token and access_token models.
+# TODO: delete this concern.
 
 module Authn
   extend ActiveSupport::Concern
@@ -143,6 +144,8 @@ module Authn
     @current_staff
   end
 
+  private
+
   # TODO: Implement!
   def am_i_user?
     raise
@@ -247,6 +250,4 @@ module Authn
                           OpenSSL::PKey::EC.new(public_key_der)
                         end
   end
-
-  private
 end
