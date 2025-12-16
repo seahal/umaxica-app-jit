@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 07c919c179be1c53d6b8aa84fe86f40d43c622ce
+  revision: 93ef814f4c83ef7710bfb4c9f0d052d687b84f54
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -214,7 +214,7 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
-    erb (6.0.0)
+    erb (6.0.1)
     erb_lint (0.9.0)
       activesupport
       better_html (>= 2.0.1)
@@ -268,7 +268,7 @@ GEM
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
-    io-console (0.8.1)
+    io-console (0.8.2)
     irb (1.15.3)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
@@ -349,7 +349,7 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
-    loofah (2.24.1)
+    loofah (2.25.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     mail (2.9.0)
@@ -378,7 +378,7 @@ GEM
     nanoid (2.0.0)
     net-http (0.8.0)
       uri (>= 0.11.1)
-    net-imap (0.5.12)
+    net-imap (0.6.0)
       date
       net-protocol
     net-pop (0.1.2)
