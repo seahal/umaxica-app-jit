@@ -12,6 +12,7 @@ module Sign
           end
 
           post "/sign/app/sessions"
+
           assert_response :success
           assert_equal I18n.t("common.ok"), response.body
         end

@@ -3,30 +3,28 @@ require "test_helper"
 module Sign
   module App
     module Authentication
-      class GooglesControllerTest < ActionController::TestCase
-        def setup
-          @controller = GooglesController.new
-        end
-
+      class GooglesControllerTest < ActionDispatch::IntegrationTest
         test "should get new" do
-          with_routing do |map|
-            map.draw do
-              resources :googles, controller: "sign/app/authentication/googles", only: [:new, :create]
+          with_routing do |set|
+            set.draw do
+              get "/sign/app/authentication/googles/new", to: "sign/app/authentication/googles#new"
             end
 
-            get :new
+            get "/sign/app/authentication/googles/new"
+
             assert_response :redirect
             assert_redirected_to "/sign/google_oauth2"
           end
         end
 
         test "should post create" do
-          with_routing do |map|
-            map.draw do
-              resources :googles, controller: "sign/app/authentication/googles", only: [:new, :create]
+          with_routing do |set|
+            set.draw do
+              post "/sign/app/authentication/googles", to: "sign/app/authentication/googles#create"
             end
 
-            post :create
+            post "/sign/app/authentication/googles"
+
             assert_response :redirect
             assert_redirected_to "/sign/google_oauth2"
           end

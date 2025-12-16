@@ -3,30 +3,28 @@ require "test_helper"
 module Sign
   module App
     module Authentication
-      class ApplesControllerTest < ActionController::TestCase
-        def setup
-          @controller = ApplesController.new
-        end
-
+      class ApplesControllerTest < ActionDispatch::IntegrationTest
         test "should get new" do
-          with_routing do |map|
-            map.draw do
-              resources :apples, controller: "sign/app/authentication/apples", only: [:new, :create]
+          with_routing do |set|
+            set.draw do
+              get "/sign/app/authentication/apples/new", to: "sign/app/authentication/apples#new"
             end
 
-            get :new
+            get "/sign/app/authentication/apples/new"
+
             assert_response :redirect
             assert_redirected_to "/sign/apple"
           end
         end
 
         test "should post create" do
-          with_routing do |map|
-            map.draw do
-              resources :apples, controller: "sign/app/authentication/apples", only: [:new, :create]
+          with_routing do |set|
+            set.draw do
+              post "/sign/app/authentication/apples", to: "sign/app/authentication/apples#create"
             end
 
-            post :create
+            post "/sign/app/authentication/apples"
+
             assert_response :redirect
             assert_redirected_to "/sign/apple"
           end
