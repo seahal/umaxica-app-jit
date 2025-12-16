@@ -36,8 +36,7 @@
 				"-eamodio.gitlens",
 				"KoichiSasada.vscode-rdbg",
 				"GitHub.copilot-chat",
-				"openai.chatgpt",
-				"google.geminicodeassist"
+				"openai.chatgpt"
 			],
 			"settings": {
 				"extensions.verifySignature": false,

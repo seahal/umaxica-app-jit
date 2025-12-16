@@ -3,11 +3,10 @@ module Sign
     module Setting
       class TotpsController < ApplicationController
         def index
-          @totps = UserIdentityOneTimePassword.all
+          @totps = UserIdentityOneTimePassword.where(user_id: session[:user])
         end
 
         def new
-          generate_totp_session
           @totp = UserIdentityOneTimePassword.new
         end
 
@@ -15,8 +14,10 @@ module Sign
           @totp = UserIdentityOneTimePassword.new(totp_params)
           @totp.private_key = session[:private_key]
           @totp.id = SecureRandom.uuid_v7
+          @totp.user = current_user
 
-          if verify_totp(@totp.private_key, @totp.first_token)
+          if (last_otp_at = verify_totp(@totp.private_key, @totp.first_token))
+            @totp.last_otp_at = Time.zone.at(last_otp_at)
             @totp.save!
             session[:private_key] = nil
             redirect_to sign_app_setting_totps_path, notice: t("messages.totp_successfully_created")
