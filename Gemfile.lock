@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 68eeefc3091c293148bd0d96dae7ab93872cff8e
+  revision: 29cfc1e367ca706f3179fc48ebad3cd2d9379b6e
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -118,7 +118,7 @@ GEM
     ast (2.4.3)
     aws-eventstream (1.4.0)
     aws-partitions (1.1194.0)
-    aws-sdk-connect (1.228.0)
+    aws-sdk-connect (1.229.0)
       aws-sdk-core (~> 3, >= 3.239.1)
       aws-sigv4 (~> 1.5)
     aws-sdk-core (3.239.2)
@@ -214,7 +214,7 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
-    erb (6.0.0)
+    erb (6.0.1)
     erb_lint (0.9.0)
       activesupport
       better_html (>= 2.0.1)
@@ -349,7 +349,7 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
-    loofah (2.24.1)
+    loofah (2.25.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     mail (2.9.0)
@@ -833,7 +833,7 @@ GEM
     xml-simple (1.1.9)
       rexml
     yard (0.9.38)
-    zeitwerk (2.7.3)
+    zeitwerk (2.7.4)
 
 PLATFORMS
   ruby

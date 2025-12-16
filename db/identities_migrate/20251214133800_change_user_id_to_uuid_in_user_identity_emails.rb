@@ -9,7 +9,7 @@ class ChangeUserIdToUuidInUserIdentityEmails < ActiveRecord::Migration[8.2]
     # Remove the old column and add it back as uuid
     # Warning: This will lose existing data in the user_id column
     change_table :user_identity_emails, bulk: true do |t|
-      t.remove :user_id, :bigint
+      t.remove :user_id
       t.uuid :user_id
     end
 
@@ -29,7 +29,7 @@ class ChangeUserIdToUuidInUserIdentityEmails < ActiveRecord::Migration[8.2]
 
     # Remove the uuid column and add back as bigint
     change_table :user_identity_emails, bulk: true do |t|
-      t.remove :user_id, :uuid
+      t.remove :user_id
       t.bigint :user_id
     end
 

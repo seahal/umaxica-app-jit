@@ -48,8 +48,8 @@ module Sign
         end
 
         def account_id
-          # TODO: Replace with actual account identifier
-          "umaxica"
+          # Use user's email address if available, otherwise use public_id
+          current_user.user_identity_emails.first&.address || current_user.public_id
         end
 
         def totp_params
