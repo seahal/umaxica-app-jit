@@ -118,7 +118,7 @@ GEM
     ast (2.4.3)
     aws-eventstream (1.4.0)
     aws-partitions (1.1194.0)
-    aws-sdk-connect (1.228.0)
+    aws-sdk-connect (1.229.0)
       aws-sdk-core (~> 3, >= 3.239.1)
       aws-sigv4 (~> 1.5)
     aws-sdk-core (3.239.2)
