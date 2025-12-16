@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 class ComTimelineAuditEvent < BusinessesRecord
+  include UppercaseIdValidation
+
   self.table_name = "com_timeline_audit_events"
 
   has_many :com_timeline_audits,

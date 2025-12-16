@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_14_141739) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -53,12 +53,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.datetime "updated_at", null: false
     t.index ["domain"], name: "index_organizations_on_domain", unique: true, where: "(domain IS NOT NULL)"
     t.index ["parent_organization"], name: "index_organizations_on_parent_organization"
-  end
-
-  create_table "people", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "personality_id", null: false
-    t.string "personality_type", null: false
-    t.index ["personality_type", "personality_id"], name: "index_people_on_personality"
   end
 
   create_table "role_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -116,7 +110,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.text "otp_counter"
     t.datetime "otp_expires_at"
     t.string "otp_private_key"
-    t.bigint "staff_id"
+    t.uuid "staff_id"
     t.string "staff_identity_email_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.datetime "updated_at", null: false
     t.index ["staff_id"], name: "index_staff_identity_emails_on_staff_id"
@@ -154,7 +148,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.text "otp_counter"
     t.datetime "otp_expires_at"
     t.string "otp_private_key"
-    t.bigint "staff_id"
+    t.uuid "staff_id"
     t.string "staff_identity_telephone_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.datetime "updated_at", null: false
     t.index ["staff_id"], name: "index_staff_identity_telephones_on_staff_id"
@@ -179,7 +173,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.datetime "created_at", null: false
     t.date "expires_in"
     t.string "recovery_code_digest"
-    t.bigint "staff_id", null: false
+    t.uuid "staff_id"
     t.datetime "updated_at", null: false
     t.index ["staff_id"], name: "index_staff_recovery_codes_on_staff_id"
   end
@@ -200,7 +194,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.datetime "created_at", null: false
     t.string "token"
     t.datetime "updated_at", null: false
-    t.bigint "user_id"
+    t.uuid "user_id"
     t.string "user_identity_apple_auth_status_id", limit: 255, default: "ACTIVE", null: false
     t.index ["user_id"], name: "index_user_apple_auths_on_user_id"
     t.index ["user_identity_apple_auth_status_id"], name: "index_user_apple_auths_on_user_identity_apple_auth_status_id"
@@ -210,7 +204,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.datetime "created_at", null: false
     t.string "token"
     t.datetime "updated_at", null: false
-    t.bigint "user_id"
+    t.uuid "user_id"
     t.string "user_identity_google_auth_status_id", limit: 255, default: "ACTIVE", null: false
     t.index ["user_id"], name: "index_user_google_auths_on_user_id"
     t.index ["user_identity_google_auth_status_id"], name: "index_user_google_auths_on_user_identity_google_auth_status_id"
@@ -254,7 +248,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.datetime "otp_expires_at"
     t.string "otp_private_key"
     t.datetime "updated_at", null: false
-    t.bigint "user_id"
+    t.uuid "user_id"
     t.string "user_identity_email_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.index ["user_id"], name: "index_user_identity_emails_on_user_id"
     t.index ["user_identity_email_status_id"], name: "index_user_identity_emails_on_user_identity_email_status_id"
@@ -308,6 +302,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
   create_table "user_identity_secrets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "last_used_at"
+    t.string "name"
     t.string "password_digest"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
@@ -335,7 +330,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.datetime "otp_expires_at"
     t.string "otp_private_key"
     t.datetime "updated_at", null: false
-    t.bigint "user_id"
+    t.uuid "user_id"
     t.string "user_identity_telephone_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.index ["user_id"], name: "index_user_identity_telephones_on_user_id"
     t.index ["user_identity_telephone_status_id"], name: "idx_on_user_identity_telephone_status_id_a15207191e"
@@ -369,7 +364,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
     t.date "expires_in"
     t.string "recovery_code_digest"
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.uuid "user_id"
     t.index ["user_id"], name: "index_user_recovery_codes_on_user_id"
   end
 
@@ -395,23 +390,31 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_160233) do
   add_foreign_key "staff_identity_audits", "staff_identity_audit_events", column: "event_id"
   add_foreign_key "staff_identity_audits", "staffs"
   add_foreign_key "staff_identity_emails", "staff_identity_email_statuses"
+  add_foreign_key "staff_identity_emails", "staffs"
   add_foreign_key "staff_identity_passkeys", "staffs"
   add_foreign_key "staff_identity_telephones", "staff_identity_telephone_statuses"
+  add_foreign_key "staff_identity_telephones", "staffs"
   add_foreign_key "staff_passkeys", "staffs"
+  add_foreign_key "staff_recovery_codes", "staffs"
   add_foreign_key "staffs", "staff_identity_statuses"
   add_foreign_key "user_apple_auths", "user_identity_apple_auth_statuses"
+  add_foreign_key "user_apple_auths", "users"
   add_foreign_key "user_google_auths", "user_identity_google_auth_statuses"
+  add_foreign_key "user_google_auths", "users"
   add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_identity_audits", "users"
   add_foreign_key "user_identity_emails", "user_identity_email_statuses"
+  add_foreign_key "user_identity_emails", "users"
   add_foreign_key "user_identity_one_time_passwords", "user_identity_one_time_password_statuses"
   add_foreign_key "user_identity_passkeys", "user_identity_passkey_statuses"
   add_foreign_key "user_identity_passkeys", "users"
   add_foreign_key "user_identity_secrets", "user_identity_secret_statuses"
   add_foreign_key "user_identity_secrets", "users"
   add_foreign_key "user_identity_telephones", "user_identity_telephone_statuses"
+  add_foreign_key "user_identity_telephones", "users"
   add_foreign_key "user_organizations", "organizations"
   add_foreign_key "user_organizations", "users"
   add_foreign_key "user_passkeys", "users"
+  add_foreign_key "user_recovery_codes", "users"
   add_foreign_key "users", "user_identity_statuses"
 end

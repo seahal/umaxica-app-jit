@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_14_000011) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -44,7 +44,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
     t.index ["verifier_expires_at"], name: "index_app_contact_emails_on_verifier_expires_at"
   end
 
-  create_table "app_contact_statuses", primary_key: "title", id: { type: :string, limit: 255 }, force: :cascade do |t|
+  create_table "app_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.string "description", limit: 255, default: "", null: false
@@ -86,7 +86,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
 
   create_table "app_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "contact_category_title", limit: 255
-    t.string "contact_status_title", limit: 255
+    t.string "contact_status_id", limit: 255
     t.datetime "created_at", null: false
     t.inet "ip_address"
     t.string "public_id", limit: 21, null: false
@@ -133,6 +133,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
   end
 
   create_table "com_contact_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.string "actor_type"
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.uuid "parent_id"
@@ -141,7 +143,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
     t.index ["com_contact_id"], name: "index_com_contact_histories_on_com_contact_id"
   end
 
-  create_table "com_contact_statuses", primary_key: "title", id: { type: :string, limit: 255 }, force: :cascade do |t|
+  create_table "com_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.string "description", limit: 255, default: "", null: false
@@ -187,7 +189,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
 
   create_table "com_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "contact_category_title", limit: 255
-    t.string "contact_status_title", limit: 255
+    t.string "contact_status_id", limit: 255
     t.datetime "created_at", null: false
     t.inet "ip_address"
     t.string "public_id", limit: 21, null: false
@@ -231,7 +233,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
     t.index ["verifier_expires_at"], name: "index_org_contact_emails_on_verifier_expires_at"
   end
 
-  create_table "org_contact_statuses", primary_key: "title", id: { type: :string, limit: 255 }, force: :cascade do |t|
+  create_table "org_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.string "description", limit: 255, default: "", null: false
@@ -273,7 +275,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
 
   create_table "org_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "contact_category_title", limit: 255
-    t.string "contact_status_title", limit: 255
+    t.string "contact_status_id", limit: 255
     t.datetime "created_at", null: false
     t.inet "ip_address"
     t.string "public_id", limit: 21, null: false
@@ -292,14 +294,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_181000) do
   add_foreign_key "app_contact_telephones", "app_contacts"
   add_foreign_key "app_contact_topics", "app_contacts"
   add_foreign_key "app_contacts", "app_contact_categories", column: "contact_category_title", primary_key: "title"
-  add_foreign_key "app_contacts", "app_contact_statuses", column: "contact_status_title", primary_key: "title"
+  add_foreign_key "app_contacts", "app_contact_statuses", column: "contact_status_id"
   add_foreign_key "com_contact_histories", "com_contacts"
   add_foreign_key "com_contact_topics", "com_contacts"
   add_foreign_key "com_contacts", "com_contact_categories", column: "contact_category_title", primary_key: "title"
-  add_foreign_key "com_contacts", "com_contact_statuses", column: "contact_status_title", primary_key: "title"
+  add_foreign_key "com_contacts", "com_contact_statuses", column: "contact_status_id"
   add_foreign_key "org_contact_emails", "org_contacts"
   add_foreign_key "org_contact_telephones", "org_contacts"
   add_foreign_key "org_contact_topics", "org_contacts"
   add_foreign_key "org_contacts", "org_contact_categories", column: "contact_category_title", primary_key: "title"
-  add_foreign_key "org_contacts", "org_contact_statuses", column: "contact_status_title", primary_key: "title"
+  add_foreign_key "org_contacts", "org_contact_statuses", column: "contact_status_id"
 end

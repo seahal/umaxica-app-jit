@@ -1,7 +1,11 @@
+# frozen_string_literal: true
+
 # NOTE: For Regional usage.
 
 class AppContactCategory < GuestsRecord
   self.primary_key = :title
+
+  include UppercaseTitleValidation
 
   has_many :app_contacts,
            foreign_key: :contact_category_title,

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class UserIdentityGoogleAuthStatus < IdentitiesRecord
-  has_many :user_identity_google_auths, dependent: :restrict_with_error
+  include UppercaseIdValidation
 
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: true
+  has_many :user_identity_google_auths, dependent: :restrict_with_error
 
   # Status constants
   ACTIVE = "ACTIVE"

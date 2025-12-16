@@ -9,25 +9,25 @@ module Help
         setup do
           @host = ENV["HELP_CORPORATE_URL"] || "help.com.localhost"
           # Ensure required statuses exist (parent first)
-          ComContactStatus.find_or_create_by!(title: "NULL_COM_STATUS") do |status|
+          ComContactStatus.find_or_create_by!(id: "NULL_COM_STATUS") do |status|
             status.description = "root status"
             status.parent_title = nil
             status.position = 0
             status.active = true
           end
-          ComContactStatus.find_or_create_by!(title: "SET_UP") do |status|
+          ComContactStatus.find_or_create_by!(id: "SET_UP") do |status|
             status.description = "first step completed"
             status.parent_title = "NULL_COM_STATUS"
             status.position = 0
             status.active = true
           end
-          ComContactStatus.find_or_create_by!(title: "CHECKED_EMAIL_ADDRESS") do |status|
+          ComContactStatus.find_or_create_by!(id: "CHECKED_EMAIL_ADDRESS") do |status|
             status.description = "email verified"
             status.parent_title = "SET_UP"
             status.position = 0
             status.active = true
           end
-          ComContactStatus.find_or_create_by!(title: "NONE") do |status|
+          ComContactStatus.find_or_create_by!(id: "NONE") do |status|
             status.description = "initial state"
             status.parent_title = "NULL_COM_STATUS"
             status.position = 0
@@ -36,7 +36,7 @@ module Help
           # Create a fresh contact with correct status instead of using fixture
           @contact = ComContact.create!(
             contact_category_title: "NONE",
-            contact_status_title: "SET_UP",
+            contact_status_id: "SET_UP",
             confirm_policy: "1"
           )
           # Reload to ensure status is persisted
@@ -57,14 +57,14 @@ module Help
         end
 
         test "should get new with valid contact status" do
-          @contact.update!(contact_status_title: "SET_UP")
+          @contact.update!(contact_status_id: "SET_UP")
           get new_help_com_contact_email_url(@contact), headers: { "Host" => @host }
 
           assert_response :success
         end
 
         test "should show error for invalid contact status" do
-          @contact.update!(contact_status_title: "NONE")
+          @contact.update!(contact_status_id: "NONE")
 
           get new_help_com_contact_email_url(@contact), headers: { "Host" => @host }
 
@@ -73,7 +73,7 @@ module Help
         end
 
         test "should require hotp_code parameter" do
-          @contact.update!(contact_status_title: "SET_UP")
+          @contact.update!(contact_status_id: "SET_UP")
           post help_com_contact_email_url(@contact),
                params: { com_contact_email: { hotp_code: "" } },
                headers: { "Host" => @host }
@@ -82,7 +82,7 @@ module Help
         end
 
         test "should verify valid hotp code" do
-          @contact.update!(contact_status_title: "SET_UP")
+          @contact.update!(contact_status_id: "SET_UP")
           # Reset email state
           @contact_email.update!(
             verifier_attempts_left: 3,
@@ -106,11 +106,11 @@ module Help
           assert_match %r{/contacts/.*/telephone/new}, response.redirect_url
           @contact.reload
 
-          assert_equal "CHECKED_EMAIL_ADDRESS", @contact.contact_status_title
+          assert_equal "CHECKED_EMAIL_ADDRESS", @contact.contact_status_id
         end
 
         test "should reject invalid hotp code" do
-          @contact.update!(contact_status_title: "SET_UP")
+          @contact.update!(contact_status_id: "SET_UP")
           @contact_email.generate_hotp!
 
           post help_com_contact_email_url(@contact),
@@ -121,7 +121,7 @@ module Help
         end
 
         test "should reject expired hotp code" do
-          @contact.update!(contact_status_title: "SET_UP")
+          @contact.update!(contact_status_id: "SET_UP")
           code = @contact_email.generate_hotp!
           @contact_email.update!(verifier_expires_at: 1.minute.ago)
 
@@ -133,7 +133,7 @@ module Help
         end
 
         test "should enforce max attempts" do
-          @contact.update!(contact_status_title: "SET_UP")
+          @contact.update!(contact_status_id: "SET_UP")
           @contact_email.generate_hotp!
           @contact_email.update!(verifier_attempts_left: 0)
 

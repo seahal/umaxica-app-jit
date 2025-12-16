@@ -20,6 +20,7 @@
 [] Do NOT return sensitive tokens in responses (use secure cookies or headers)
 [] Do NOT pass authentication tokens in query parameters (use headers or secure cookies)
 [] Avoid exposing internal IDs or implementation details
+[] Ensure all User and Staff DB operations are recorded in Audit logs
 
 ### Consistency
 [] Do NOT mix naming conventions in the same response (user_id, UserId, idUser)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_09_175000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_13_000005) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,6 +23,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_175000) do
 
   create_table "app_document_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.uuid "app_document_id", null: false
     t.datetime "created_at", null: false
     t.text "current_value"
@@ -58,6 +59,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_175000) do
 
   create_table "app_timeline_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.uuid "app_timeline_id", null: false
     t.datetime "created_at", null: false
     t.text "current_value"
@@ -93,6 +95,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_175000) do
 
   create_table "com_document_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.uuid "com_document_id", null: false
     t.datetime "created_at", null: false
     t.text "current_value"
@@ -128,6 +131,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_175000) do
 
   create_table "com_timeline_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.uuid "com_timeline_id", null: false
     t.datetime "created_at", null: false
     t.text "current_value"
@@ -168,6 +172,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_175000) do
 
   create_table "org_document_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.datetime "created_at", null: false
     t.text "current_value"
     t.string "event_id", limit: 255, null: false
@@ -203,6 +208,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_09_175000) do
 
   create_table "org_timeline_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "actor_id"
+    t.string "actor_type"
     t.datetime "created_at", null: false
     t.text "current_value"
     t.string "event_id", limit: 255, null: false

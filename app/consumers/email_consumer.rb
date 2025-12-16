@@ -21,6 +21,7 @@ class EmailConsumer < ApplicationConsumer
     payload = JSON.parse(message.raw_payload)
 
     mailer_class = payload["mailer_class"]
+    mailer_action = payload["mailer_action"] || "create"
     params = payload["params"] || {}
 
     # Validate mailer class exists and is allowed
@@ -29,14 +30,17 @@ class EmailConsumer < ApplicationConsumer
       return
     end
 
+    # Convert string keys to symbols for ActionMailer params
+    symbolized_params = params.transform_keys(&:to_sym)
+
     # Decrypt params if needed
-    # decrypted_params = params.transform_values { |v| decrypt(v) }
+    # decrypted_params = symbolized_params.transform_values { |v| decrypt(v) }
 
     # Send email
     mailer = mailer_class.constantize
-    mailer.with(params).deliver_now
+    mailer.with(symbolized_params).public_send(mailer_action).deliver_now
 
-    Rails.logger.info "Email sent via #{mailer_class} with params: #{params.keys}"
+    Rails.logger.info "Email sent via #{mailer_class}##{mailer_action} with params: #{params.keys}"
   end
 
   def valid_mailer?(mailer_class)

@@ -1,25 +1,25 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 none:
-  title: 'NULL_APP_STATUS'
+  id: 'NULL_APP_STATUS'
   description: 'ROOT'
 
 app_root:
-  title: 'APP_SITE_STATUS'
+  id: 'APP_SITE_STATUS'
   description: 'ROOT'
 
 set_up:
-  title: 'SET_UP'
+  id: 'SET_UP'
   description: 'first step completed'
 
 email_verified:
-  title: 'CHECKED_EMAIL_ADDRESS'
+  id: 'CHECKED_EMAIL_ADDRESS'
   description: 'second step completed'
 
 phone_verified:
-  title: 'CHECKED_TELEPHONE_NUMBER'
+  id: 'CHECKED_TELEPHONE_NUMBER'
   description: 'third step completed'
 
 completed:
-  title: 'COMPLETED_CONTACT_ACTION'
+  id: 'COMPLETED_CONTACT_ACTION'
   description: 'contact completed'

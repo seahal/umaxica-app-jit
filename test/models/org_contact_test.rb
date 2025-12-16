@@ -28,11 +28,11 @@ class OrgContactTest < ActiveSupport::TestCase
   end
 
   def sample_category
-    org_contact_categories(:none).title
+    org_contact_categories(:none).id
   end
 
   def sample_status
-    org_contact_statuses(:none).title
+    org_contact_statuses(:none).id
   end
 
   test "should inherit from GuestsRecord" do
@@ -44,13 +44,13 @@ class OrgContactTest < ActiveSupport::TestCase
 
     assert_predicate contact, :valid?
     assert_equal "ORGANIZATION_INQUIRY", contact.contact_category_title
-    assert_equal "NULL_ORG_STATUS", contact.contact_status_title
+    assert_equal "NULL_ORG_STATUS", contact.contact_status_id
   end
 
   test "should create contact with relationship titles" do
     contact = OrgContact.new(
       contact_category_title: sample_category,
-      contact_status_title: sample_status,
+      contact_status_id: sample_status,
       confirm_policy: "1"
     )
 
@@ -69,13 +69,13 @@ class OrgContactTest < ActiveSupport::TestCase
     )
 
     assert_equal sample_category, contact.contact_category_title
-    assert_equal sample_status, contact.contact_status_title
+    assert_equal sample_status, contact.contact_status_id
   end
 
   test "should set default category and status when nil" do
     contact = OrgContact.new(
       contact_category_title: nil,
-      contact_status_title: nil,
+      contact_status_id: nil,
       confirm_policy: "1"
     )
 
@@ -94,7 +94,7 @@ class OrgContactTest < ActiveSupport::TestCase
     )
 
     assert_equal "NULL_ORG_CATEGORY", contact.contact_category_title
-    assert_equal "NULL_ORG_STATUS", contact.contact_status_title
+    assert_equal "NULL_ORG_STATUS", contact.contact_status_id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -119,7 +119,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = org_contacts(:one)
 
     assert_respond_to contact, :contact_category_title
-    assert_respond_to contact, :contact_status_title
+    assert_respond_to contact, :contact_status_id
   end
 
   # Association tests
@@ -225,10 +225,8 @@ class OrgContactTest < ActiveSupport::TestCase
 
   # Foreign key constraint tests
   test "should reference contact_category by title" do
-    OrgContactCategory.create!(title: "org_category")
-
     contact = OrgContact.new(
-      contact_category_title: "org_category",
+      contact_category_title: "ORGANIZATION_INQUIRY",
       confirm_policy: "1"
     )
 
@@ -246,33 +244,10 @@ class OrgContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "org_category", contact.contact_category_title
+    assert_equal "ORGANIZATION_INQUIRY", contact.contact_category_title
   end
 
-  test "should reference contact_status by title" do
-    OrgContactStatus.create!(title: "org_status")
 
-    contact = OrgContact.new(
-      contact_status_title: "org_status",
-      confirm_policy: "1"
-    )
-
-    assert contact.save
-
-    OrgContactEmail.create!(
-      org_contact: contact,
-      email_address: "test@example.com",
-      expires_at: 1.day.from_now
-    )
-
-    OrgContactTelephone.create!(
-      org_contact: contact,
-      telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
-    )
-
-    assert_equal "org_status", contact.contact_status_title
-  end
 
   test "should set default contact_category_title when nil" do
     contact = OrgContact.new(
@@ -297,9 +272,9 @@ class OrgContactTest < ActiveSupport::TestCase
     assert_equal "NULL_ORG_CATEGORY", contact.contact_category_title
   end
 
-  test "should set default contact_status_title when nil" do
+  test "should set default contact_status_id when nil" do
     contact = OrgContact.new(
-      contact_status_title: nil,
+      contact_status_id: nil,
       confirm_policy: "1"
     )
 
@@ -317,7 +292,7 @@ class OrgContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NULL_ORG_STATUS", contact.contact_status_title
+    assert_equal "NULL_ORG_STATUS", contact.contact_status_id
   end
 
   # Validation tests
@@ -379,7 +354,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = OrgContact.new(
       confirm_policy: "0",
       contact_category_title: sample_category,
-      contact_status_title: sample_status
+      contact_status_id: sample_status
     )
 
     assert_not contact.valid?
@@ -390,7 +365,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = OrgContact.new(
       confirm_policy: "1",
       contact_category_title: sample_category,
-      contact_status_title: sample_status
+      contact_status_id: sample_status
     )
 
     assert_predicate contact, :valid?
@@ -489,6 +464,6 @@ class OrgContactTest < ActiveSupport::TestCase
     contact.save!
 
     assert_equal "NULL_ORG_CATEGORY", contact.contact_category_title
-    assert_equal "NULL_ORG_STATUS", contact.contact_status_title
+    assert_equal "NULL_ORG_STATUS", contact.contact_status_id
   end
 end

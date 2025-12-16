@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_document_statuses
@@ -7,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 class ComDocumentStatus < BusinessesRecord
-  has_many :com_documents, dependent: :restrict_with_error, inverse_of: :com_document_status
+  include UppercaseIdValidation
 
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: true
+  has_many :com_documents, dependent: :restrict_with_error, inverse_of: :com_document_status
 end

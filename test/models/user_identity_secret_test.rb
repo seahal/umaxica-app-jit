@@ -25,6 +25,7 @@ class UserIdentitySecretTest < ActiveSupport::TestCase
   def create_secret!
     UserIdentitySecret.create!(
       user: @user,
+      name: "Secret-#{SecureRandom.hex(4)}",
       password: "SecurePass123!",
       password_confirmation: "SecurePass123!"
     )

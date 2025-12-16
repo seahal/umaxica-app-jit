@@ -28,11 +28,11 @@ class ComContactTest < ActiveSupport::TestCase
   end
 
   def sample_category
-    com_contact_categories(:SECURITY_ISSUE).title
+    com_contact_categories(:SECURITY_ISSUE).id
   end
 
   def sample_status
-    com_contact_statuses(:NONE).title
+    com_contact_statuses(:NONE).id
   end
 
   test "should inherit from GuestsRecord" do
@@ -44,13 +44,13 @@ class ComContactTest < ActiveSupport::TestCase
 
     assert_predicate contact, :valid?
     assert_equal "SECURITY_ISSUE", contact.contact_category_title
-    assert_equal "NONE", contact.contact_status_title
+    assert_equal "NONE", contact.contact_status_id
   end
 
   test "should create contact with relationship titles" do
     contact = ComContact.new(
       contact_category_title: sample_category,
-      contact_status_title: sample_status,
+      contact_status_id: sample_status,
       confirm_policy: "1"
     )
 
@@ -69,13 +69,13 @@ class ComContactTest < ActiveSupport::TestCase
     )
 
     assert_equal sample_category, contact.contact_category_title
-    assert_equal sample_status, contact.contact_status_title
+    assert_equal sample_status, contact.contact_status_id
   end
 
   test "should set default category and status when nil" do
     contact = ComContact.new(
       contact_category_title: nil,
-      contact_status_title: nil,
+      contact_status_id: nil,
       confirm_policy: "1"
     )
 
@@ -94,7 +94,7 @@ class ComContactTest < ActiveSupport::TestCase
     )
 
     assert_equal "NONE", contact.contact_category_title
-    assert_equal "NONE", contact.contact_status_title
+    assert_equal "NONE", contact.contact_status_id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -119,7 +119,7 @@ class ComContactTest < ActiveSupport::TestCase
     contact = com_contacts(:one)
 
     assert_respond_to contact, :contact_category_title
-    assert_respond_to contact, :contact_status_title
+    assert_respond_to contact, :contact_status_id
   end
 
   # Association tests
@@ -225,10 +225,8 @@ class ComContactTest < ActiveSupport::TestCase
 
   # Foreign key constraint tests
   test "should reference contact_category by title" do
-    ComContactCategory.create!(title: "com_category")
-
     contact = ComContact.new(
-      contact_category_title: "com_category",
+      contact_category_title: "OTHERS",
       confirm_policy: "1"
     )
 
@@ -246,14 +244,14 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "com_category", contact.contact_category_title
+    assert_equal "OTHERS", contact.contact_category_title
   end
 
   test "should reference contact_status by title" do
-    ComContactStatus.create!(title: "SECURITY_ISSUE")
+    ComContactStatus.create!(id: "SECURITY_ISSUE")
 
     contact = ComContact.new(
-      contact_status_title: "SECURITY_ISSUE",
+      contact_status_id: "SECURITY_ISSUE",
       confirm_policy: "1"
     )
 
@@ -271,7 +269,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "SECURITY_ISSUE", contact.contact_status_title
+    assert_equal "SECURITY_ISSUE", contact.contact_status_id
   end
 
   test "should set default contact_category_title when nil" do
@@ -297,9 +295,9 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal "NONE", contact.contact_category_title
   end
 
-  test "should set default contact_status_title when nil" do
+  test "should set default contact_status_id when nil" do
     contact = ComContact.new(
-      contact_status_title: nil,
+      contact_status_id: nil,
       confirm_policy: "1"
     )
 
@@ -317,7 +315,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NONE", contact.contact_status_title
+    assert_equal "NONE", contact.contact_status_id
   end
 
   # Validation tests
@@ -366,7 +364,7 @@ class ComContactTest < ActiveSupport::TestCase
     contact = ComContact.new(
       confirm_policy: "0",
       contact_category_title: sample_category,
-      contact_status_title: sample_status
+      contact_status_id: sample_status
     )
 
     assert_not contact.valid?
@@ -377,7 +375,7 @@ class ComContactTest < ActiveSupport::TestCase
     contact = ComContact.new(
       confirm_policy: "1",
       contact_category_title: sample_category,
-      contact_status_title: sample_status
+      contact_status_id: sample_status
     )
 
     assert_predicate contact, :valid?
@@ -419,35 +417,35 @@ class ComContactTest < ActiveSupport::TestCase
   # State checking tests for com_contact
   test "email_pending? should return true for email_pending state" do
     contact = build_contact
-    contact.update!(contact_status_title: "SET_UP")
+    contact.update!(contact_status_id: "SET_UP")
 
     assert_predicate contact, :email_pending?
   end
 
   test "email_pending? should return true for NULL_COM_STATUS state" do
     contact = build_contact
-    contact.update!(contact_status_title: "NULL_COM_STATUS")
+    contact.update!(contact_status_id: "NULL_COM_STATUS")
 
     assert_predicate contact, :email_pending?
   end
 
   test "email_verified? should return true for email_verified state" do
     contact = build_contact
-    contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+    contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
 
     assert_predicate contact, :email_verified?
   end
 
   test "phone_verified? should return true for phone_verified state" do
     contact = build_contact
-    contact.update!(contact_status_title: "CHECKED_TELEPHONE_NUMBER")
+    contact.update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
 
     assert_predicate contact, :phone_verified?
   end
 
   test "completed? should return true for completed state" do
     contact = build_contact
-    contact.update!(contact_status_title: "COMPLETED_CONTACT_ACTION")
+    contact.update!(contact_status_id: "COMPLETED_CONTACT_ACTION")
 
     assert_predicate contact, :completed?
   end
@@ -455,80 +453,80 @@ class ComContactTest < ActiveSupport::TestCase
   # State transition tests for com_contact
   test "can_verify_email? should return true when email_pending" do
     contact = build_contact
-    contact.update!(contact_status_title: "SET_UP")
+    contact.update!(contact_status_id: "SET_UP")
 
     assert_predicate contact, :can_verify_email?
   end
 
   test "can_verify_phone? should return true when email_verified" do
     contact = build_contact
-    contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+    contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
 
     assert_predicate contact, :can_verify_phone?
   end
 
   test "can_complete? should return true when phone_verified" do
     contact = build_contact
-    contact.update!(contact_status_title: "CHECKED_TELEPHONE_NUMBER")
+    contact.update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
 
     assert_predicate contact, :can_complete?
   end
 
   test "verify_email! should transition to email_verified state" do
     contact = build_contact
-    contact.update!(contact_status_title: "SET_UP")
+    contact.update!(contact_status_id: "SET_UP")
 
     result = contact.verify_email!
 
     assert result
-    assert_equal "CHECKED_EMAIL_ADDRESS", contact.contact_status_title
+    assert_equal "CHECKED_EMAIL_ADDRESS", contact.contact_status_id
   end
 
-  test "verify_email! should return false when not in email_pending state" do
+  test "verify_email! should raise error when not in email_pending state" do
     contact = build_contact
-    contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+    contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
 
-    result = contact.verify_email!
-
-    assert_not result
+    assert_raises(StandardError) do
+      contact.verify_email!
+    end
   end
 
   test "verify_phone! should transition to phone_verified state" do
     contact = build_contact
-    contact.update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+    contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
 
     result = contact.verify_phone!
 
     assert result
-    assert_equal "CHECKED_TELEPHONE_NUMBER", contact.contact_status_title
+    assert_equal "CHECKED_TELEPHONE_NUMBER", contact.contact_status_id
   end
 
-  test "verify_phone! should return false when not in email_verified state" do
+  test "verify_phone! should raise error when not in email_verified state" do
     contact = build_contact
-    contact.update!(contact_status_title: "SET_UP")
+    contact.update!(contact_status_id: "SET_UP")
 
-    result = contact.verify_phone!
-
-    assert_not result
+    assert_raises(StandardError) do
+      contact.verify_phone!
+    end
   end
 
   test "complete! should transition to completed state" do
     contact = build_contact
-    contact.update!(contact_status_title: "CHECKED_TELEPHONE_NUMBER")
+    contact.update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
 
     result = contact.complete!
 
     assert result
-    assert_equal "COMPLETED_CONTACT_ACTION", contact.contact_status_title
+    assert_equal "COMPLETED_CONTACT_ACTION", contact.contact_status_id
   end
 
-  test "complete! should return false when not in phone_verified state" do
+  test "complete! should raise error when not in phone_verified state" do
     contact = build_contact
-    contact.update!(contact_status_title: "SET_UP")
+    contact.update!(contact_status_id: "SET_UP")
 
-    result = contact.complete!
-
-    assert_not result
+    assert_raises(StandardError) do
+      contact.complete!
+    end
   end
 
   test "to_param should return public_id" do

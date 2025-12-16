@@ -17,6 +17,7 @@ class User < IdentitiesRecord
   has_one :user_identity_google_auth, dependent: :destroy
   has_many :user_identity_emails, dependent: :destroy
   has_many :user_identity_telephones, dependent: :destroy
+  has_many :user_identity_secrets, dependent: :destroy
   has_many :user_webauthn_credentials, dependent: :destroy
   has_many :user_identity_audits, dependent: :destroy
   has_many :staff_identity_audits, as: :actor, dependent: :destroy

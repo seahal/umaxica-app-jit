@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_timeline_statuses
@@ -7,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 class AppTimelineStatus < BusinessesRecord
-  has_many :app_timelines, dependent: :restrict_with_error, inverse_of: :app_timeline_status
+  include UppercaseIdValidation
 
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: true
+  has_many :app_timelines, dependent: :restrict_with_error, inverse_of: :app_timeline_status
 end

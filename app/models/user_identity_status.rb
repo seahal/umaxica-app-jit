@@ -1,7 +1,9 @@
-class UserIdentityStatus < IdentitiesRecord
-  has_many :users, dependent: :restrict_with_error
+# frozen_string_literal: true
 
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: true
+class UserIdentityStatus < IdentitiesRecord
+  include UppercaseIdValidation
+
+  has_many :users, dependent: :restrict_with_error
 
   # Status constants
   NONE = "NONE"

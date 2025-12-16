@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 class AppTimelineAuditEvent < BusinessesRecord
+  include UppercaseIdValidation
+
   self.table_name = "app_timeline_audit_events"
 
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')

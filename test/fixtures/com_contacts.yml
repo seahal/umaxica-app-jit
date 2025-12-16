@@ -2,7 +2,7 @@
 
 one:
   contact_category_title: SECURITY_ISSUE
-  contact_status_title: NONE
+  contact_status_id: NONE
   token: ''
   token_digest: null
   token_expires_at: null
@@ -13,7 +13,7 @@ one:
 
 two:
   contact_category_title: SECURITY_ISSUE
-  contact_status_title: NONE
+  contact_status_id: NONE
   token: ''
   token_digest: null
   token_expires_at: null
@@ -24,7 +24,7 @@ two:
 
 verified_email_pending:
   contact_category_title: SECURITY_ISSUE
-  contact_status_title: SET_UP
+  contact_status_id: SET_UP
   token: ''
   token_digest: null
   token_expires_at: null
@@ -35,7 +35,7 @@ verified_email_pending:
 
 verified_email_complete:
   contact_category_title: SECURITY_ISSUE
-  contact_status_title: CHECKED_EMAIL_ADDRESS
+  contact_status_id: CHECKED_EMAIL_ADDRESS
   token: ''
   token_digest: null
   token_expires_at: null

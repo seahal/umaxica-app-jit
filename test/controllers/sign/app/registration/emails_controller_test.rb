@@ -166,6 +166,148 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     assert_select "div[id^='cf-turnstile-']", count: 1
   end
 
+  # Transaction Tests for User Creation
+  # rubocop:disable Minitest/MultipleAssertions
+  test "successful OTP verification creates user, audit log, and saves email in transaction" do
+    email = "transaction_success@example.com"
+
+    # Create registration record
+    post sign_app_registration_emails_url,
+      params: {
+        user_identity_email: {
+          address: email,
+          confirm_policy: "1"
+        },
+        "cf-turnstile-response": "test"
+      },
+      headers: default_headers
+
+    user_email = UserIdentityEmail.find_by(address: email)
+    otp_data = user_email.get_otp
+    hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+    correct_code = hotp.at(otp_data[:otp_counter]).to_s
+
+    initial_user_count = User.count
+    initial_audit_count = UserIdentityAudit.count
+
+    # Submit correct OTP
+    patch sign_app_registration_email_url(user_email.id),
+      params: {
+        id: user_email.id,
+        user_identity_email: {
+          pass_code: correct_code
+        }
+      },
+      headers: default_headers
+
+    # Verify success response
+    assert_redirected_to "/"
+
+    # Verify User was created
+    assert_equal initial_user_count + 1, User.count
+
+    # Verify UserIdentityEmail was updated and linked to user
+    user_email.reload
+
+    assert_not_nil user_email.user_id
+    assert_equal "VERIFIED_WITH_SIGN_UP", user_email.user_identity_email_status_id
+
+    # Verify User has correct status
+    user = user_email.user
+
+    assert_equal "VERIFIED_WITH_SIGN_UP", user.user_identity_status_id
+
+    # Verify UserIdentityAudit was created
+    assert_equal initial_audit_count + 1, UserIdentityAudit.count
+    audit = UserIdentityAudit.last
+
+    assert_equal user.id, audit.user_id
+    assert_equal user.id, audit.actor_id
+    assert_equal "User", audit.actor_type
+    assert_equal "SIGNED_UP_WITH_EMAIL", audit.event_id
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "clears session data after successful registration" do
+    email = "session_clear@example.com"
+
+    # Create registration record
+    post sign_app_registration_emails_url,
+      params: {
+        user_identity_email: {
+          address: email,
+          confirm_policy: "1"
+        },
+        "cf-turnstile-response": "test"
+      },
+      headers: default_headers
+
+    user_email = UserIdentityEmail.find_by(address: email)
+    otp_data = user_email.get_otp
+    hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+    correct_code = hotp.at(otp_data[:otp_counter]).to_s
+
+    # Verify session was set during registration
+    assert_not_nil session[:user_email_registration]
+
+    # Submit correct OTP
+    patch sign_app_registration_email_url(user_email.id),
+      params: {
+        id: user_email.id,
+        user_identity_email: {
+          pass_code: correct_code
+        }
+      },
+      headers: default_headers
+
+    # Verify registration session was cleared
+    assert_nil session[:user_email_registration]
+
+    # Verify user session was set
+    assert_not_nil session[:user]
+    assert_equal user_email.reload.user_id, session[:user][:id]
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "OTP data is cleared after successful verification" do
+    email = "otp_clear@example.com"
+
+    # Create registration record
+    post sign_app_registration_emails_url,
+      params: {
+        user_identity_email: {
+          address: email,
+          confirm_policy: "1"
+        },
+        "cf-turnstile-response": "test"
+      },
+      headers: default_headers
+
+    user_email = UserIdentityEmail.find_by(address: email)
+    otp_data = user_email.get_otp
+    hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+    correct_code = hotp.at(otp_data[:otp_counter]).to_s
+
+    # Verify OTP data exists before verification
+    assert_not_nil user_email.get_otp
+
+    # Submit correct OTP
+    patch sign_app_registration_email_url(user_email.id),
+      params: {
+        id: user_email.id,
+        user_identity_email: {
+          pass_code: correct_code
+        }
+      },
+      headers: default_headers
+
+    # Verify OTP data was cleared
+    user_email.reload
+
+    assert_nil user_email.get_otp
+  end
+
   private
 
   def default_headers

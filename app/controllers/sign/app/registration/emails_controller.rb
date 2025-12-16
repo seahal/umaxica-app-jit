@@ -110,13 +110,14 @@ module Sign
           begin
             ActiveRecord::Base.transaction do
               # Use create! to raise exception on validation failure
-              @user = User.create!
+              @user = User.create!(user_identity_status_id: "VERIFIED_WITH_SIGN_UP")
               # Use association to set the user
               @user_email.user = @user
+              UserIdentityAudit.create!(user: @user, actor: @user, event_id: "SIGNED_UP_WITH_EMAIL")
               @user_email.save!
             end
-          rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved
-            @user_email.errors.add(:base, "登録処理に失敗しました。もう一度やり直してください。")
+          rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved => e
+            @user_email.errors.add(:base, t("sign.app.registration.email.update.failed"))
             render :edit, status: :unprocessable_content and return
           end
 

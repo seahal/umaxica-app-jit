@@ -69,10 +69,10 @@ Controllers are organized by endpoint module and domain:
 
 ### Key Technologies
 - **Authentication**: WebAuthn, TOTP, Apple/Google OAuth, recovery codes
-- **Authorization**: Pundit + Rolify
-- **Background Jobs**: Karafka (Kafka-based)
+- **Authorization**: Pundit
+- **Background Jobs**: Karafka (Kafka-based, currently disabled)
 - **Frontend**: Rails with Bun.js for asset bundling
-- **File Uploads**: CarrierWave + Active Storage with Google Cloud Storage
+- **File Uploads**: Shrine + Active Storage with Google Cloud Storage
 - **Security**: Rack::Attack for rate limiting, argon2 for password hashing
 - **Monitoring**: OpenTelemetry instrumentation
 

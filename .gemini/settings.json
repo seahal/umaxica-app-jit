@@ -1,0 +1,6 @@
+{
+  "allowed_commands": [
+    "COVERAGE=true bundle exec rails test",
+    "bundle exec rails test"
+  ]
+}

@@ -8,7 +8,7 @@ class CreateComContacts < ActiveRecord::Migration[8.1]
       t.boolean     :token_viewed, default: false, null: false
       t.inet :ip_address
       t.string :contact_category_title, limit: 255
-      t.string :contact_status_title, limit: 255
+      t.string :contact_status_id, limit: 255
       t.references :com_contact_email, null: false, foreign_key: true, type: :string
       t.references :com_contact_telephone, null: false, foreign_key: true, type: :string
       t.timestamps
@@ -22,7 +22,7 @@ class CreateComContacts < ActiveRecord::Migration[8.1]
                     column: :contact_category_title,
                     primary_key: :title
     add_foreign_key :com_contacts, :com_contact_statuses,
-                    column: :contact_status_title,
-                    primary_key: :title
+                    column: :contact_status_id,
+                    primary_key: :id
   end
 end

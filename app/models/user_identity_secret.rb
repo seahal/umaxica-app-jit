@@ -8,7 +8,17 @@ class UserIdentitySecret < IdentitiesRecord
 
   has_secure_password algorithm: :argon2
 
+  validates :name, presence: true
   validate :enforce_user_secret_limit, on: :create
+
+  # Alias for password to match controller params
+  def value=(val)
+    self.password = val
+  end
+
+  def value
+    password
+  end
 
   private
 

@@ -111,6 +111,8 @@ module Authn
     rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
       @current_user = nil
     end
+
+    @current_user
   end
 
   # Get current staff from access token
@@ -137,6 +139,8 @@ module Authn
     rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
       @current_staff = nil
     end
+
+    @current_staff
   end
 
   # TODO: Implement!

@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 NONE:
-  title: "NONE"
+  id: "NONE"
   description: "root of service site status inquiries"
   parent_title: nil
   position: 0
@@ -10,7 +10,7 @@ NONE:
   updated_at: "2025-12-03 13:28:11.898338000 +0000"
 
 SET_UP:
-  title: "SET_UP"
+  id: "SET_UP"
   description: "first step completed"
   parent_title: "NONE"
   position: 0
@@ -19,7 +19,7 @@ SET_UP:
   updated_at: "2025-12-03 13:28:11.901861000 +0000"
 
 CHECKED_EMAIL_ADDRESS:
-  title: "CHECKED_EMAIL_ADDRESS"
+  id: "CHECKED_EMAIL_ADDRESS"
   description: "second step completed"
   parent_title: "SET_UP"
   position: 0
@@ -28,7 +28,7 @@ CHECKED_EMAIL_ADDRESS:
   updated_at: "2025-12-03 13:28:11.906957000 +0000"
 
 CHECKED_TELEPHONE_NUMBER:
-  title: "CHECKED_TELEPHONE_NUMBER"
+  id: "CHECKED_TELEPHONE_NUMBER"
   description: "second step completed"
   parent_title: "CHECKED_EMAIL_ADDRESS"
   position: 0
@@ -37,7 +37,7 @@ CHECKED_TELEPHONE_NUMBER:
   updated_at: "2025-12-03 13:28:11.910891000 +0000"
 
 COMPLETED_CONTACT_ACTION:
-  title: "COMPLETED_CONTACT_ACTION"
+  id: "COMPLETED_CONTACT_ACTION"
   description: "second step completed"
   parent_title: "CHECKED_TELEPHONE_NUMBER"
   position: 0
@@ -46,7 +46,7 @@ COMPLETED_CONTACT_ACTION:
   updated_at: "2025-12-03 13:28:11.914816000 +0000"
 
 NULL_COM_STATUS:
-  title: "NULL_COM_STATUS"
+  id: "NULL_COM_STATUS"
   description: "null status for com contact"
   parent_title: nil
   position: 0

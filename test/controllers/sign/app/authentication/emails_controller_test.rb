@@ -17,18 +17,20 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   end
   # rubocop:enable Minitest/MultipleAssertions
 
-  # FIXME: implement this test
   test "reject already logged in user" do
-    get new_sign_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+    user = users(:one)
+    get new_sign_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"], "X-TEST-CURRENT-USER" => user.id }
 
-    assert_response :success
+    assert_response :bad_request
+    assert_equal I18n.t("sign.app.authentication.email.new.you_have_already_logged_in"), response.body
   end
 
-  # FIXME: implement this test
   test "reject already logged in staff" do
-    get new_sign_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+    staff = staffs(:one)
+    get new_sign_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"], "X-TEST-CURRENT-STAFF" => staff.id }
 
-    assert_response :success
+    assert_response :bad_request
+    assert_equal I18n.t("sign.app.authentication.email.new.you_have_already_logged_in"), response.body
   end
   setup do
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"

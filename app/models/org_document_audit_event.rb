@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OrgDocumentAuditEvent < BusinessesRecord
   self.table_name = "org_document_audit_events"
 
@@ -7,4 +9,7 @@ class OrgDocumentAuditEvent < BusinessesRecord
            primary_key: "id",
            inverse_of: :org_document_audit_event,
            dependent: :restrict_with_exception
+
+  before_validation { self.id = id&.upcase }
+  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false }, format: { with: /\A[A-Z0-9_]+\z/ }
 end

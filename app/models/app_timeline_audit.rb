@@ -1,7 +1,11 @@
+# frozen_string_literal: true
+
 class AppTimelineAudit < BusinessesRecord
   self.table_name = "app_timeline_audits"
 
   belongs_to :app_timeline
+  belongs_to :actor, polymorphic: true, optional: true
+
   # event_id references AppTimelineAuditEvent.id (string)
   belongs_to :app_timeline_audit_event,
              class_name: "AppTimelineAuditEvent",

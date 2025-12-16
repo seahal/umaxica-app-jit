@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 class OrgTimelineAudit < BusinessesRecord
   self.table_name = "org_timeline_audits"
 
   belongs_to :org_timeline
+  belongs_to :actor, polymorphic: true, optional: true
 
   belongs_to :org_timeline_audit_event,
              class_name: "OrgTimelineAuditEvent",

@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 class OrgDocumentAudit < BusinessesRecord
   self.table_name = "org_document_audits"
 
   belongs_to :org_document
+  belongs_to :actor, polymorphic: true, optional: true
 
   belongs_to :org_document_audit_event,
              class_name: "OrgDocumentAuditEvent",

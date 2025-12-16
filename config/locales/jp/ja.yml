@@ -61,6 +61,7 @@ ja:
               session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             update:
               success: "メールアドレスが確認されました。"
+              failed: "登録処理に失敗しました。もう一度やり直してください。"
           telephone:
             label: "電話で登録"
             create:
@@ -71,6 +72,11 @@ ja:
               session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             update:
               success: "電話番号が確認されました。"
+        exits:
+          edit:
+            title: "ログアウトしますか？"
+          destroy:
+            success: "ログアウトしました"
         withdrawal:
           show:
             title: "退会ステータス"
@@ -440,6 +446,7 @@ ja:
             invalid_code: パスコードが正しくありません
             attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
             success: 登録が完了しました。
+            failed: 登録処理に失敗しました。もう一度やり直してください。
         telephone:
           new:
             page_title: "電話番号で登録"

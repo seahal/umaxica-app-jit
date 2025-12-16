@@ -103,6 +103,11 @@ node_modules
 # Ruby & JavsScript are not create /out folders.
 /out
 
+# Debug scripts (should not be committed)
+/check_email_otp.rb
+/generate_hotp_code.rb
+/test_telephone_email.rb
+/test_telephone_email_simple.rb
 
 /docker/core/preferences/*
 !/docker/core/preferences/.bashrc

@@ -1,7 +1,7 @@
 class CreateStaffIdentityTelephones < ActiveRecord::Migration[8.0]
   def change
     create_table :staff_identity_telephones, id: :uuid do |t|
-      t.references :staff
+      t.references :staff, type: :uuid, foreign_key: true
       t.string :number
 
       t.timestamps

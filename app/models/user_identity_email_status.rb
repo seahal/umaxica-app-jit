@@ -1,7 +1,9 @@
-class UserIdentityEmailStatus < IdentitiesRecord
-  has_many :user_identity_emails, dependent: :restrict_with_error
+# frozen_string_literal: true
 
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: true
+class UserIdentityEmailStatus < IdentitiesRecord
+  include UppercaseIdValidation
+
+  has_many :user_identity_emails, dependent: :restrict_with_error
 
   # Status constants
   UNVERIFIED = "UNVERIFIED"

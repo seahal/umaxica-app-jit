@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ComContact < GuestsRecord
   # Associations
   has_one :com_contact_email, dependent: :destroy
@@ -10,8 +12,7 @@ class ComContact < GuestsRecord
              inverse_of: :com_contacts
   belongs_to :com_contact_status,
              class_name: "ComContactStatus",
-             foreign_key: :contact_status_title,
-             primary_key: :title,
+             foreign_key: :contact_status_id,
              optional: true,
              inverse_of: :com_contacts
   has_many :com_contact_topics, dependent: :destroy
@@ -20,6 +21,8 @@ class ComContact < GuestsRecord
 
   after_initialize :set_default_category_and_status, if: :new_record?
   # Callbacks
+  before_validation { self.contact_category_title = contact_category_title&.upcase }
+  before_validation { self.contact_status_id = contact_status_id&.upcase }
   before_create :generate_public_id
   before_create :generate_token
 
@@ -29,19 +32,19 @@ class ComContact < GuestsRecord
 
   # State check methods
   def email_pending?
-    contact_status_title == "SET_UP" || contact_status_title == "NULL_COM_STATUS"
+    contact_status_id == "SET_UP" || contact_status_id == "NULL_COM_STATUS"
   end
 
   def email_verified?
-    contact_status_title == "CHECKED_EMAIL_ADDRESS"
+    contact_status_id == "CHECKED_EMAIL_ADDRESS"
   end
 
   def phone_verified?
-    contact_status_title == "CHECKED_TELEPHONE_NUMBER"
+    contact_status_id == "CHECKED_TELEPHONE_NUMBER"
   end
 
   def completed?
-    contact_status_title == "COMPLETED_CONTACT_ACTION"
+    contact_status_id == "COMPLETED_CONTACT_ACTION"
   end
 
   # State transition helpers
@@ -58,18 +61,18 @@ class ComContact < GuestsRecord
   end
 
   def verify_email!
-    return false unless can_verify_email?
-    update!(contact_status_title: "CHECKED_EMAIL_ADDRESS")
+    raise StandardError, "Cannot verify email at this time" unless can_verify_email?
+    update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
-    return false unless can_verify_phone?
-    update!(contact_status_title: "CHECKED_TELEPHONE_NUMBER")
+    raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
+    update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
-    return false unless can_complete?
-    update!(contact_status_title: "COMPLETED_CONTACT_ACTION")
+    raise StandardError, "Cannot complete contact at this time" unless can_complete?
+    update!(contact_status_id: "COMPLETED_CONTACT_ACTION")
   end
 
   # Token management
@@ -117,6 +120,6 @@ class ComContact < GuestsRecord
   def set_default_category_and_status
     # Only set defaults if values are not already set (nil or empty)
     self.contact_category_title = "NONE" if contact_category_title.nil?
-    self.contact_status_title = "NONE" if contact_status_title.nil?
+    self.contact_status_id = "NONE" if contact_status_id.nil?
   end
 end

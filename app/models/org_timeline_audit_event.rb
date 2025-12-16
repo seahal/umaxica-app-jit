@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 class OrgTimelineAuditEvent < BusinessesRecord
+  include UppercaseIdValidation
+
   self.table_name = "org_timeline_audit_events"
 
   has_many :org_timeline_audits,

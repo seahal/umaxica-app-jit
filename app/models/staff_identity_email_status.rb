@@ -1,7 +1,9 @@
-class StaffIdentityEmailStatus < IdentitiesRecord
-  has_many :staff_identity_emails, dependent: :restrict_with_error
+# frozen_string_literal: true
 
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: true
+class StaffIdentityEmailStatus < IdentitiesRecord
+  include UppercaseIdValidation
+
+  has_many :staff_identity_emails, dependent: :restrict_with_error
 
   # Status constants
   UNVERIFIED = "UNVERIFIED"
