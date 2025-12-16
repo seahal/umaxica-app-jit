@@ -6,7 +6,6 @@ class AppTimelineAudit < BusinessesRecord
   belongs_to :app_timeline
   belongs_to :actor, polymorphic: true, optional: true
 
-  # event_id references AppTimelineAuditEvent.id (string)
   belongs_to :app_timeline_audit_event,
              class_name: "AppTimelineAuditEvent",
              foreign_key: "event_id",

@@ -10,10 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_14_000011) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_16_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "app_contact_audit_events", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "app_contact_categories", primary_key: "title", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
@@ -42,6 +47,18 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_14_000011) do
     t.index ["app_contact_id"], name: "index_app_contact_emails_on_app_contact_id"
     t.index ["email_address"], name: "index_app_contact_emails_on_email_address"
     t.index ["verifier_expires_at"], name: "index_app_contact_emails_on_verifier_expires_at"
+  end
+
+  create_table "app_contact_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.string "actor_type"
+    t.uuid "app_contact_id", null: false
+    t.datetime "created_at", null: false
+    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.uuid "parent_id"
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["app_contact_id"], name: "index_app_contact_histories_on_app_contact_id"
   end
 
   create_table "app_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -101,6 +118,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_14_000011) do
     t.index ["token_expires_at"], name: "index_app_contacts_on_token_expires_at"
   end
 
+  create_table "com_contact_audit_events", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "com_contact_categories", primary_key: "title", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -137,6 +159,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_14_000011) do
     t.string "actor_type"
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
+    t.string "event_id", limit: 255, default: "NONE", null: false
     t.uuid "parent_id"
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
@@ -204,6 +227,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_14_000011) do
     t.index ["token_expires_at"], name: "index_com_contacts_on_token_expires_at"
   end
 
+  create_table "org_contact_audit_events", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "org_contact_categories", primary_key: "title", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -231,6 +259,18 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_14_000011) do
     t.index ["email_address"], name: "index_org_contact_emails_on_email_address"
     t.index ["org_contact_id"], name: "index_org_contact_emails_on_org_contact_id"
     t.index ["verifier_expires_at"], name: "index_org_contact_emails_on_verifier_expires_at"
+  end
+
+  create_table "org_contact_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.string "actor_type"
+    t.datetime "created_at", null: false
+    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.uuid "org_contact_id", null: false
+    t.uuid "parent_id"
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["org_contact_id"], name: "index_org_contact_histories_on_org_contact_id"
   end
 
   create_table "org_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -291,15 +331,20 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_14_000011) do
   end
 
   add_foreign_key "app_contact_emails", "app_contacts"
+  add_foreign_key "app_contact_histories", "app_contact_audit_events", column: "event_id"
+  add_foreign_key "app_contact_histories", "app_contacts"
   add_foreign_key "app_contact_telephones", "app_contacts"
   add_foreign_key "app_contact_topics", "app_contacts"
   add_foreign_key "app_contacts", "app_contact_categories", column: "contact_category_title", primary_key: "title"
   add_foreign_key "app_contacts", "app_contact_statuses", column: "contact_status_id"
+  add_foreign_key "com_contact_histories", "com_contact_audit_events", column: "event_id"
   add_foreign_key "com_contact_histories", "com_contacts"
   add_foreign_key "com_contact_topics", "com_contacts"
   add_foreign_key "com_contacts", "com_contact_categories", column: "contact_category_title", primary_key: "title"
   add_foreign_key "com_contacts", "com_contact_statuses", column: "contact_status_id"
   add_foreign_key "org_contact_emails", "org_contacts"
+  add_foreign_key "org_contact_histories", "org_contact_audit_events", column: "event_id"
+  add_foreign_key "org_contact_histories", "org_contacts"
   add_foreign_key "org_contact_telephones", "org_contacts"
   add_foreign_key "org_contact_topics", "org_contacts"
   add_foreign_key "org_contacts", "org_contact_categories", column: "contact_category_title", primary_key: "title"

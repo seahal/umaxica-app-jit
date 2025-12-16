@@ -99,3 +99,35 @@ OrgContactStatus.find_or_create_by!(id: 'SET_UP', description: 'first step compl
 OrgContactStatus.find_or_create_by!(id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_title: 'SET_UP')
 OrgContactStatus.find_or_create_by!(id: 'CHECKED_TELEPHONE_NUMBER', description: 'third step completed', parent_title: 'CHECKED_EMAIL_ADDRESS')
 OrgContactStatus.find_or_create_by!(id: 'COMPLETED_CONTACT_ACTION', description: 'contact action completed', parent_title: 'CHECKED_TELEPHONE_NUMBER')
+
+# Timeline Audit Events
+ComTimelineAuditEvent.find_or_create_by!(id: "NONE")
+ComTimelineAuditEvent.find_or_create_by!(id: "CREATED")
+ComTimelineAuditEvent.find_or_create_by!(id: "UPDATED")
+ComTimelineAuditEvent.find_or_create_by!(id: "DESTROYED")
+
+OrgTimelineAuditEvent.find_or_create_by!(id: "NONE")
+OrgTimelineAuditEvent.find_or_create_by!(id: "CREATED")
+OrgTimelineAuditEvent.find_or_create_by!(id: "UPDATED")
+OrgTimelineAuditEvent.find_or_create_by!(id: "DESTROYED")
+
+AppTimelineAuditEvent.find_or_create_by!(id: "NONE")
+AppTimelineAuditEvent.find_or_create_by!(id: "CREATED")
+AppTimelineAuditEvent.find_or_create_by!(id: "UPDATED")
+AppTimelineAuditEvent.find_or_create_by!(id: "DESTROYED")
+
+# Contact Audit Events
+ComContactAuditEvent.find_or_create_by!(id: "NONE")
+ComContactAuditEvent.find_or_create_by!(id: "CREATED")
+ComContactAuditEvent.find_or_create_by!(id: "UPDATED")
+ComContactAuditEvent.find_or_create_by!(id: "DESTROYED")
+
+AppContactAuditEvent.find_or_create_by!(id: "NONE")
+AppContactAuditEvent.find_or_create_by!(id: "CREATED")
+AppContactAuditEvent.find_or_create_by!(id: "UPDATED")
+AppContactAuditEvent.find_or_create_by!(id: "DESTROYED")
+
+OrgContactAuditEvent.find_or_create_by!(id: "NONE")
+OrgContactAuditEvent.find_or_create_by!(id: "CREATED")
+OrgContactAuditEvent.find_or_create_by!(id: "UPDATED")
+OrgContactAuditEvent.find_or_create_by!(id: "DESTROYED")
