@@ -53,6 +53,7 @@ module Authentication
         value: credentials,
         httponly: true,
         secure: Rails.env.production?,
+        samesite: :lax,
         expires: ACCESS_TOKEN_EXPIRY.from_now
       }
       # REFRESH_TOKEN: Long-lived (1 year)
@@ -60,11 +61,15 @@ module Authentication
         value: token.id,
         httponly: true,
         secure: Rails.env.production?,
+        samesite: :lax,
         expires: 1.year.from_now
       }
     end
 
     def log_out
+      if cookies.encrypted[:refresh_staff_token].present?
+        StaffToken.find_by(id: cookies.encrypted[:refresh_staff_token])&.destroy
+      end
       cookies.delete :access_staff_token
       cookies.delete :refresh_staff_token
       reset_session

@@ -150,7 +150,8 @@ module Sign
           if ActiveSupport::SecurityUtils.secure_compare(expected_code, user_email.pass_code)
             user_email.clear_otp
             session[:user_email_authentication_id] = nil
-            session[:user] = { id: user_email.user_id }
+            user = user_email.user || User.find_by(id: user_email.user_id)
+            log_in(user) if user
             { success: true }
           else
             user_email.increment_attempts!

@@ -350,9 +350,14 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       },
       headers: default_headers
 
-    # Verify user session was set
-    assert_not_nil session[:user]
-    assert_equal user_email.reload.user_id, session[:user][:id]
+    # Verify JWT access token cookie was set
+    assert_not_nil cookies[:access_user_token], "Access token cookie should be set after successful registration"
+
+    # Verify user and token were created
+    user = user_email.reload.user
+
+    assert_not_nil user, "User should be created"
+    assert UserToken.exists?(user_id: user.id), "User token should be created"
   end
   # rubocop:enable Minitest/MultipleAssertions
 
