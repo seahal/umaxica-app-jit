@@ -62,10 +62,10 @@ Rails.application.routes.draw do
           # TODO : Implement recovery code management
           resources :secrets
         end
-        # TODO: Implement token refresh functionality
-        # namespace :token do
-        #   resources :refreshs, only: [ :update ]
-        # end
+        # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
+        namespace :token do
+          resource :refresh, only: :create
+        end
         # Sign out
         resource :exit, only: [ :edit, :destroy ]
         # Withdrawal
@@ -95,6 +95,10 @@ Rails.application.routes.draw do
           # TODO: Implement email settings index
           # resources :emails, only: [ :index ]
           resources :secrets
+        end
+        # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
+        namespace :token do
+          resource :refresh, only: :create
         end
         # Sign out
         resource :exit, only: [ :edit, :destroy ]

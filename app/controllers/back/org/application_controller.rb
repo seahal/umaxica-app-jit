@@ -6,21 +6,14 @@ module Back
       include Pundit::Authorization
       include ::Authentication::Staff
       include ::Authorization::Staff
+      include ::AuthorizationAudit
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
 
-      rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
-      private
-
-      def user_not_authorized
-        respond_to do |format|
-          format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
-          format.any { head :forbidden }
-        end
-      end
+      # Note: AuthorizationAudit concern handles Pundit::NotAuthorizedError
+      # and provides audit logging functionality
     end
   end
 end

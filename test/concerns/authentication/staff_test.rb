@@ -1,6 +1,18 @@
 require "test_helper"
 
 class Authentication::StaffTest < ActiveSupport::TestCase
+  class FormatMock
+    attr_accessor :format_type
+
+    def initialize(format_type = :html)
+      @format_type = format_type
+    end
+
+    def json?
+      @format_type == :json
+    end
+  end
+
   class DummyClass
     include Authentication::Staff
 
@@ -9,7 +21,7 @@ class Authentication::StaffTest < ActiveSupport::TestCase
     def initialize
       @session = {}
       @cookies = CookieMock.new
-      @request = OpenStruct.new(host: "test.host", headers: {}, user_agent: "TestAgent")
+      @request = OpenStruct.new(host: "test.host", headers: {}, user_agent: "TestAgent", format: FormatMock.new)
     end
 
     def reset_session

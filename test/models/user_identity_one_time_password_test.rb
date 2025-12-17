@@ -89,4 +89,23 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     assert_not record.valid?
     assert_not_empty record.errors[:private_key]
   end
+
+  test "enforces maximum totp records per user" do
+    UserIdentityOneTimePassword::MAX_TOTPS_PER_USER.times do
+      UserIdentityOneTimePassword.create!(
+        user: @user,
+        private_key: ROTP::Base32.random_base32,
+        last_otp_at: Time.current
+      )
+    end
+
+    extra_totp = UserIdentityOneTimePassword.new(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      last_otp_at: Time.current
+    )
+
+    assert_not extra_totp.valid?
+    assert_includes extra_totp.errors[:base], "exceeds maximum totps per user (#{UserIdentityOneTimePassword::MAX_TOTPS_PER_USER})"
+  end
 end

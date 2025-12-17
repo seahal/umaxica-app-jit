@@ -101,4 +101,26 @@ class StaffIdentityTelephoneTest < ActiveSupport::TestCase
     # UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
     assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, staff_telephone.id)
   end
+
+  test "enforces maximum telephones per staff" do
+    staff = Staff.create!(staff_identity_status: staff_identity_statuses(:none))
+    StaffIdentityTelephone::MAX_TELEPHONES_PER_STAFF.times do |i|
+      StaffIdentityTelephone.create!(
+        number: "+1234567890#{i}",
+        confirm_policy: true,
+        confirm_using_mfa: true,
+        staff: staff
+      )
+    end
+
+    extra_telephone = StaffIdentityTelephone.new(
+      number: "+19876543210",
+      confirm_policy: true,
+      confirm_using_mfa: true,
+      staff: staff
+    )
+
+    assert_not extra_telephone.valid?
+    assert_includes extra_telephone.errors[:base], "exceeds maximum telephones per staff (#{StaffIdentityTelephone::MAX_TELEPHONES_PER_STAFF})"
+  end
 end

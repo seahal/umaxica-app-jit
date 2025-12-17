@@ -72,4 +72,16 @@ class StaffTokenTest < ActiveSupport::TestCase
 
     assert_operator @token.updated_at, :>, original_updated_at
   end
+
+  test "enforces maximum concurrent sessions per staff" do
+    staff = Staff.create!(staff_identity_status: staff_identity_statuses(:none))
+    StaffToken::MAX_SESSIONS_PER_STAFF.times do
+      StaffToken.create!(staff: staff)
+    end
+
+    extra_token = StaffToken.new(staff: staff)
+
+    assert_not extra_token.valid?
+    assert_includes extra_token.errors[:base], "exceeds maximum concurrent sessions per staff (#{StaffToken::MAX_SESSIONS_PER_STAFF})"
+  end
 end

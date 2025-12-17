@@ -17,4 +17,5 @@ class UserIdentityGoogleAuth < IdentitiesRecord
   belongs_to :user_identity_google_auth_status, optional: true
 
   validates :token, presence: true
+  validates :user_id, uniqueness: true, allow_nil: true
 end

@@ -18,8 +18,12 @@ module Authentication
       raise NotImplementedError, "log_out must be implemented in including module"
     end
 
-    def authenticate!
-      raise NotImplementedError, "authenticate! must be implemented in including module"
+    def authenticate_user!
+      raise NotImplementedError, "authenticate_user! must be implemented in including module"
+    end
+
+    def authenticate_staff!
+      raise NotImplementedError, "authenticate_staff! must be implemented in including module"
     end
 
     def generate_access_token(resource)
@@ -129,6 +133,18 @@ module Authentication
       return nil if value.blank?
 
       value.start_with?(".") ? value : ".#{value}"
+    end
+
+    # Extract access token from Authorization header (Bearer token) or Cookie
+    # Priority: Authorization header > Cookie
+    def extract_access_token(cookie_key)
+      # 1. Check Authorization header (Bearer token)
+      if request.headers["Authorization"]&.match(/^Bearer\s+(.+)$/i)
+        return Regexp.last_match(1)
+      end
+
+      # 2. Fallback to Cookie (traditional approach)
+      cookies[cookie_key]
     end
   end
 end

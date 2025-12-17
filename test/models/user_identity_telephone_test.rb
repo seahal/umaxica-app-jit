@@ -124,4 +124,26 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
     # UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
     assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, user_telephone.id)
   end
+
+  test "enforces maximum telephones per user" do
+    user = users(:one)
+    UserIdentityTelephone::MAX_TELEPHONES_PER_USER.times do |i|
+      UserIdentityTelephone.create!(
+        number: "+1234567890#{i}",
+        confirm_policy: true,
+        confirm_using_mfa: true,
+        user: user
+      )
+    end
+
+    extra_telephone = UserIdentityTelephone.new(
+      number: "+19876543210",
+      confirm_policy: true,
+      confirm_using_mfa: true,
+      user: user
+    )
+
+    assert_not extra_telephone.valid?
+    assert_includes extra_telephone.errors[:base], "exceeds maximum telephones per user (#{UserIdentityTelephone::MAX_TELEPHONES_PER_USER})"
+  end
 end

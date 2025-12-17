@@ -1,6 +1,18 @@
 require "test_helper"
 
 class Authentication::UserTest < ActiveSupport::TestCase
+  class FormatMock
+    attr_accessor :format_type
+
+    def initialize(format_type = :html)
+      @format_type = format_type
+    end
+
+    def json?
+      @format_type == :json
+    end
+  end
+
   class DummyClass
     include Authentication::User
 
@@ -9,7 +21,8 @@ class Authentication::UserTest < ActiveSupport::TestCase
     def initialize
       @session = {}
       @cookies = CookieMock.new
-      @request = OpenStruct.new(host: "test.host", headers: {}, user_agent: "TestAgent")
+      format = FormatMock.new
+      @request = OpenStruct.new(host: "test.host", headers: {}, user_agent: "TestAgent", format: format)
     end
 
     def reset_session
@@ -107,5 +120,68 @@ class Authentication::UserTest < ActiveSupport::TestCase
 
     assert_equal ".app.localhost", @obj.cookies.options_for(:access_user_token)[:domain]
     assert_equal ".app.localhost", @obj.cookies.options_for(:refresh_user_token)[:domain]
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "log_in returns tokens hash" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+
+    tokens = @obj.send(:log_in, @user)
+
+    assert_kind_of Hash, tokens
+    assert tokens[:access_token]
+    assert tokens[:refresh_token]
+    assert_equal "Bearer", tokens[:token_type]
+    assert_equal Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i, tokens[:expires_in]
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "log_in skips cookies for JSON format" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+    @obj.request.format.format_type = :json
+
+    @obj.send(:log_in, @user)
+
+    assert_nil @obj.cookies[:access_user_token]
+    assert_nil @obj.cookies.encrypted[:refresh_user_token]
+  end
+
+  test "extract_access_token from Authorization header" do
+    token = "sample_jwt_token"
+    @obj.request.headers["Authorization"] = "Bearer #{token}"
+
+    extracted = @obj.send(:extract_access_token, :access_user_token)
+
+    assert_equal token, extracted
+  end
+
+  test "extract_access_token from Cookie when no Authorization header" do
+    token = "cookie_jwt_token"
+    @obj.cookies[:access_user_token] = token
+
+    extracted = @obj.send(:extract_access_token, :access_user_token)
+
+    assert_equal token, extracted
+  end
+
+  test "extract_access_token prioritizes Authorization header over Cookie" do
+    header_token = "header_jwt_token"
+    cookie_token = "cookie_jwt_token"
+    @obj.request.headers["Authorization"] = "Bearer #{header_token}"
+    @obj.cookies[:access_user_token] = cookie_token
+
+    extracted = @obj.send(:extract_access_token, :access_user_token)
+
+    assert_equal header_token, extracted
+  end
+
+  test "current_user works with Bearer token" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+
+    # Generate access token
+    access_token = @obj.send(:generate_access_token, @user)
+    @obj.request.headers["Authorization"] = "Bearer #{access_token}"
+
+    assert_equal @user, @obj.current_user
   end
 end

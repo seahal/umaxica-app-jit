@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_16_132111) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -198,7 +198,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_16_132111) do
     t.datetime "updated_at", null: false
     t.uuid "user_id"
     t.string "user_identity_apple_auth_status_id", limit: 255, default: "ACTIVE", null: false
-    t.index ["user_id"], name: "index_user_apple_auths_on_user_id"
+    t.index ["user_id"], name: "index_user_apple_auths_on_user_id_unique", unique: true, where: "(user_id IS NOT NULL)"
     t.index ["user_identity_apple_auth_status_id"], name: "index_user_apple_auths_on_user_identity_apple_auth_status_id"
   end
 
@@ -208,7 +208,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_16_132111) do
     t.datetime "updated_at", null: false
     t.uuid "user_id"
     t.string "user_identity_google_auth_status_id", limit: 255, default: "ACTIVE", null: false
-    t.index ["user_id"], name: "index_user_google_auths_on_user_id"
+    t.index ["user_id"], name: "index_user_google_auths_on_user_id_unique", unique: true, where: "(user_id IS NOT NULL)"
     t.index ["user_identity_google_auth_status_id"], name: "index_user_google_auths_on_user_identity_google_auth_status_id"
   end
 

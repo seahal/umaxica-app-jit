@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 3759046adb67add828592069e900c1c42ef10693
+  revision: 7570743002134c8afc99afe107adb34dcda90494
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -117,7 +117,7 @@ GEM
     arrayfields (4.9.2)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1195.0)
+    aws-partitions (1.1196.0)
     aws-sdk-connect (1.229.0)
       aws-sdk-core (~> 3, >= 3.239.1)
       aws-sigv4 (~> 1.5)
@@ -356,7 +356,7 @@ GEM
     nanoid (2.0.0)
     net-http (0.9.1)
       uri (>= 0.11.1)
-    net-imap (0.6.1)
+    net-imap (0.6.2)
       date
       net-protocol
     net-pop (0.1.2)

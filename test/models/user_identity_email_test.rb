@@ -153,6 +153,26 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
     assert_predicate user_email, :valid?
   end
 
+  test "enforces maximum emails per user" do
+    user = users(:one)
+    UserIdentityEmail::MAX_EMAILS_PER_USER.times do |i|
+      UserIdentityEmail.create!(
+        address: "user#{i}@example.com",
+        confirm_policy: true,
+        user: user
+      )
+    end
+
+    extra_email = UserIdentityEmail.new(
+      address: "overflow@example.com",
+      confirm_policy: true,
+      user: user
+    )
+
+    assert_not extra_email.valid?
+    assert_includes extra_email.errors[:base], "exceeds maximum emails per user (#{UserIdentityEmail::MAX_EMAILS_PER_USER})"
+  end
+
   # test "should reject both nil address and nil pass_code" do
   #   user_email = UserIdentityEmail.new(address: nil, pass_code: nil)
   #   assert_not user_email.valid?

@@ -6,6 +6,7 @@ module Back
       include Pundit::Authorization
       include ::Authentication::User
       include ::Authorization::User
+      include ::AuthorizationAudit
       include ::RateLimit
       include ::DefaultUrlOptions
       include Back::Concerns::Regionalization
@@ -14,19 +15,11 @@ module Back
 
       allow_browser versions: :modern
 
-      rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
       before_action :set_locale
       before_action :set_timezone
 
-      protected
-
-      def user_not_authorized
-        respond_to do |format|
-          format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
-          format.any { head :forbidden }
-        end
-      end
+      # Note: AuthorizationAudit concern handles Pundit::NotAuthorizedError
+      # and provides audit logging functionality
     end
   end
 end

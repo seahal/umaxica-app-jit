@@ -28,10 +28,12 @@ module Authentication
         return @current_staff
       end
 
-      return nil if cookies[:access_staff_token].blank?
+      # Extract token from Authorization header (Bearer) or Cookie
+      access_token = extract_access_token(:access_staff_token)
+      return nil if access_token.blank?
 
       begin
-        payload = verify_access_token(cookies[:access_staff_token])
+        payload = verify_access_token(access_token)
         return nil unless payload["type"] == "staff"
 
         @current_staff = ::Staff.find_by(id: payload["sub"])
@@ -54,24 +56,39 @@ module Authentication
       token = StaffToken.create!(staff_id: staff.id)
       credentials = generate_access_token(staff)
 
-      # ACCESS_TOKEN: Short-lived JWT (15 minutes)
-      cookies[:access_staff_token] = cookie_options.merge(
-        value: credentials,
-        expires: ACCESS_TOKEN_EXPIRY.from_now
-      )
-      # REFRESH_TOKEN: Long-lived (1 year)
-      cookies.encrypted[:refresh_staff_token] = cookie_options.merge(
-        value: token.id,
-        expires: 1.year.from_now
-      )
+      # For non-JSON requests (browser), set cookies
+      unless request.format.json?
+        # ACCESS_TOKEN: Short-lived JWT (15 minutes)
+        cookies[:access_staff_token] = cookie_options.merge(
+          value: credentials,
+          expires: ACCESS_TOKEN_EXPIRY.from_now
+        )
+        # REFRESH_TOKEN: Long-lived (1 year)
+        cookies.encrypted[:refresh_staff_token] = cookie_options.merge(
+          value: token.id,
+          expires: 1.year.from_now
+        )
+      end
 
       record_staff_identity_audit(AUDIT_EVENTS[:logged_in], staff: staff)
+
+      # Return tokens for JSON API clients
+      {
+        access_token: credentials,
+        refresh_token: token.id,
+        token_type: "Bearer",
+        expires_in: Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i
+      }
     end
 
     def log_out
       staff = current_staff
-      if cookies.encrypted[:refresh_staff_token].present?
-        StaffToken.find_by(id: cookies.encrypted[:refresh_staff_token])&.destroy
+      if (token_id = cookies.encrypted[:refresh_staff_token])
+        begin
+          StaffToken.find_by(id: token_id)&.destroy
+        rescue ActiveRecord::RecordNotDestroyed => e
+          Rails.logger.warn("Failed to destroy refresh token #{token_id}: #{e.message}")
+        end
       end
       cookies.delete :access_staff_token, **cookie_deletion_options
       cookies.delete :refresh_staff_token, **cookie_deletion_options

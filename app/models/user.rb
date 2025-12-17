@@ -12,6 +12,8 @@
 class User < IdentitiesRecord
   include Stakeholder
   include Withdrawable
+  include HasRoles
+
   belongs_to :user_identity_status, optional: true
   has_one :user_identity_apple_auth, dependent: :destroy
   has_one :user_identity_google_auth, dependent: :destroy
@@ -20,12 +22,10 @@ class User < IdentitiesRecord
   has_many :user_identity_secrets, dependent: :destroy
   has_many :user_webauthn_credentials, dependent: :destroy
   has_many :user_identity_audits, dependent: :destroy
-  has_many :staff_identity_audits, as: :actor, dependent: :destroy
   has_many :user_tokens, dependent: :destroy # , disable_joins: true
   has_many :user_organizations, dependent: :destroy
   has_many :organizations, through: :user_organizations
-  has_many :role_assignments, dependent: :destroy
-  has_many :roles, through: :role_assignments
+  has_many :staff_identity_audits, as: :actor, dependent: :destroy
 
   before_validation :ensure_public_id
   before_create :set_default_status

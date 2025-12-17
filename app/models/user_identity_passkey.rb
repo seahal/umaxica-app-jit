@@ -19,6 +19,8 @@
 #  index_user_identity_passkeys_on_user_id  (user_id)
 #
 class UserIdentityPasskey < IdentityRecord
+  MAX_PASSKEYS_PER_USER = 4
+
   belongs_to :user
   belongs_to :user_identity_passkey_status, optional: true
 
@@ -26,10 +28,20 @@ class UserIdentityPasskey < IdentityRecord
   validates :public_key, presence: true
   validates :description, presence: true
   validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validate :enforce_user_passkey_limit, on: :create
 
   before_validation :set_defaults
 
   private
+
+  def enforce_user_passkey_limit
+    return unless user_id
+
+    count = self.class.where(user_id: user_id).count
+    return if count < MAX_PASSKEYS_PER_USER
+
+    errors.add(:base, :too_many, message: "exceeds maximum passkeys per user (#{MAX_PASSKEYS_PER_USER})")
+  end
 
   def set_defaults
     self.sign_count ||= 0

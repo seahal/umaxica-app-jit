@@ -49,26 +49,41 @@ module Sign
           @user_email.pass_code = update_pass_code_params[:pass_code]
 
           unless @user_email.valid?
-            return render :edit, status: :unprocessable_content
+            respond_to do |format|
+              format.html { render :edit, status: :unprocessable_content }
+              format.json { render json: { error: @user_email.errors.full_messages.join(", ") }, status: :unprocessable_content }
+            end
+            return
           end
 
           result = verify_otp_and_login(@user_email)
           ensure_min_elapsed(start_time)
 
           if result[:success]
-            # Redirect to rd parameter if provided, otherwise to root
-            rd_param = params[:rd].presence || session[:user_email_authentication_rd]
-            session[:user_email_authentication_rd] = nil
+            respond_to do |format|
+              format.html do
+                # Redirect to rd parameter if provided, otherwise to root
+                rd_param = params[:rd].presence || session[:user_email_authentication_rd]
+                session[:user_email_authentication_rd] = nil
 
-            if rd_param.present?
-              flash[:notice] = t("sign.app.authentication.email.update.success")
-              jump_to_generated_url(rd_param)
-            else
-              redirect_to "/", notice: t("sign.app.authentication.email.update.success")
+                if rd_param.present?
+                  flash[:notice] = t("sign.app.authentication.email.update.success")
+                  jump_to_generated_url(rd_param)
+                else
+                  redirect_to "/", notice: t("sign.app.authentication.email.update.success")
+                end
+              end
+              format.json do
+                # Return tokens for JSON API clients
+                render json: result[:tokens], status: :ok
+              end
             end
           else
             @user_email.errors.add(:pass_code, result[:error])
-            render :edit, status: :unprocessable_content
+            respond_to do |format|
+              format.html { render :edit, status: :unprocessable_content }
+              format.json { render json: { error: result[:error] }, status: :unprocessable_content }
+            end
           end
         end
 
@@ -154,8 +169,8 @@ module Sign
           if ActiveSupport::SecurityUtils.secure_compare(expected_code, user_email.pass_code)
             user_email.clear_otp
             session[:user_email_authentication_id] = nil
-            log_in(user) if user
-            { success: true }
+            tokens = log_in(user) if user
+            { success: true, tokens: tokens }
           else
             user_email.increment_attempts!
             handle_failed_otp_attempt(user_email, user)

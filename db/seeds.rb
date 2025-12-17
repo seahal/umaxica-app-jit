@@ -63,6 +63,9 @@ UserIdentityAuditEvent.find_or_create_by!(id: 'SIGNED_UP_WITH_EMAIL')
 UserIdentityAuditEvent.find_or_create_by!(id: 'SIGNED_UP_WITH_TELEPHONE')
 UserIdentityAuditEvent.find_or_create_by!(id: 'SIGNED_UP_WITH_APPLE')
 UserIdentityAuditEvent.find_or_create_by!(id: 'SIGNED_UP_WITH_GOOGLE')
+UserIdentityAuditEvent.find_or_create_by!(id: 'AUTHORIZATION_FAILED')
+
+StaffIdentityAuditEvent.find_or_create_by!(id: 'AUTHORIZATION_FAILED')
 
 # USER
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38')
@@ -131,3 +134,57 @@ OrgContactAuditEvent.find_or_create_by!(id: "NONE")
 OrgContactAuditEvent.find_or_create_by!(id: "CREATED")
 OrgContactAuditEvent.find_or_create_by!(id: "UPDATED")
 OrgContactAuditEvent.find_or_create_by!(id: "DESTROYED")
+
+# ========================================
+# ROLE-BASED ACCESS CONTROL (RBAC)
+# ========================================
+
+# Create default organization
+default_org = Organization.find_or_create_by!(name: "Default Organization") do |org|
+  org.domain = "localhost"
+end
+
+Rails.logger.debug { "  ✓ Organization: #{default_org.name}" }
+
+# Define roles with their keys, names, and descriptions
+roles_data = [
+  {
+    key: "admin",
+    name: "Administrator",
+    description: "Full system access. Can manage users, settings, and perform all operations including deletions."
+  },
+  {
+    key: "manager",
+    name: "Manager",
+    description: "Can manage content and edit other users' posts. Has delete permissions for managed resources."
+  },
+  {
+    key: "editor",
+    name: "Editor",
+    description: "Can create and edit all content. Can only delete own posts."
+  },
+  {
+    key: "contributor",
+    name: "Contributor",
+    description: "Can create content and edit own posts only."
+  },
+  {
+    key: "viewer",
+    name: "Viewer",
+    description: "Read-only access to content. Cannot create or modify anything."
+  }
+]
+
+# Create roles
+roles_data.each do |role_data|
+  role = Role.find_or_create_by!(
+    key: role_data[:key],
+    organization: default_org
+  ) do |r|
+    r.name = role_data[:name]
+    r.description = role_data[:description]
+  end
+  Rails.logger.debug { "  ✓ Role: #{role.name} (#{role.key})" }
+end
+
+Rails.logger.debug "\n✓ RBAC roles seeded successfully!"

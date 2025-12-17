@@ -1,14 +1,49 @@
+# frozen_string_literal: true
+
+# Authorization policy for ComContact resources (Corporate contact inquiries)
+# Staff members handle contacts, users can only see their own
 class ComContactPolicy < ApplicationPolicy
-  # NOTE: Up to Pundit v2.3.1, the inheritance was declared as
-  # `Scope < Scope` rather than `Scope < ApplicationPolicy::Scope`.
-  # In most cases the behavior will be identical, but if updating existing
-  # code, beware of possible changes to the ancestors:
-  # https://gist.github.com/Burgestrand/4b4bc22f31c8a95c425fc0e30d7ef1f5
+  def index?
+    # Only staff with viewing permissions can see contact list
+    actor.is_a?(Staff) && can_view?
+  end
+
+  def show?
+    # Staff with viewing permissions or the contact creator
+    (actor.is_a?(Staff) && can_view?) || owner?
+  end
+
+  def create?
+    # Anyone can create a contact inquiry (public form)
+    # But if authenticated, must be a User (not Staff)
+    actor.nil? || actor.is_a?(User)
+  end
+
+  def update?
+    # Only managers and above can update contact status/response
+    actor.is_a?(Staff) && admin_or_manager?
+  end
+
+  def destroy?
+    # Only admins can delete contacts
+    actor.is_a?(Staff) && admin?
+  end
 
   class Scope < ApplicationPolicy::Scope
-    # NOTE: Be explicit about which records you allow access to!
-    # def resolve
-    #   scope.all
-    # end
+    def resolve
+      if actor.is_a?(Staff) && admin_or_manager?
+        # Staff managers see all contacts
+        scope.all
+      elsif actor.is_a?(Staff)
+        # Other staff see assigned or unassigned contacts
+        scope.where(staff_id: [ actor.id, nil ])
+      elsif actor.is_a?(User)
+        # Users see only their own contact inquiries
+        scope.where(user_id: actor.id)
+      else
+        # Unauthenticated users see nothing
+        scope.none
+      end
+    end
   end
 end

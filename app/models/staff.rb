@@ -14,6 +14,7 @@ class Staff < IdentitiesRecord
   # It mirrors `User` for identity concerns but is used for staff-scoped access.
   include Stakeholder
   include Withdrawable
+  include HasRoles
 
   belongs_to :staff_identity_status, optional: true
   has_many :staff_identity_emails, dependent: :destroy
@@ -21,8 +22,6 @@ class Staff < IdentitiesRecord
   has_many :staff_identity_audits, dependent: :destroy
   has_many :user_identity_audits, as: :actor, dependent: :destroy
   has_many :emails, class_name: "StaffIdentityEmail", dependent: :destroy
-  has_many :role_assignments, dependent: :destroy
-  has_many :roles, through: :role_assignments
 
   def staff?
     true

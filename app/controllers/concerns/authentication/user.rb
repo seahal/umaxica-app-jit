@@ -14,8 +14,6 @@ module Authentication
     end
 
     def current_user
-      Rails.logger.debug { "DEBUG: current_user called. @current_user defined? #{defined?(@current_user)}" }
-      Rails.logger.debug caller[0..5]
       return @current_user if defined?(@current_user)
 
       # Test helpers can inject a current user via request header to support
@@ -26,10 +24,12 @@ module Authentication
         return @current_user
       end
 
-      return nil if cookies[:access_user_token].blank?
+      # Extract token from Authorization header (Bearer) or Cookie
+      access_token = extract_access_token(:access_user_token)
+      return nil if access_token.blank?
 
       begin
-        payload = verify_access_token(cookies[:access_user_token])
+        payload = verify_access_token(access_token)
         return nil unless payload["type"] == "user"
 
         @current_user = ::User.find_by(id: payload["sub"])
@@ -54,24 +54,39 @@ module Authentication
       token = UserToken.create!(user_id: user.id)
       credentials = generate_access_token(user)
 
-      # ACCESS_TOKEN: Short-lived JWT (15 minutes)
-      cookies[:access_user_token] = cookie_options.merge(
-        value: credentials,
-        expires: ACCESS_TOKEN_EXPIRY.from_now
-      )
-      # REFRESH_TOKEN: Long-lived (1 year)
-      cookies.encrypted[:refresh_user_token] = cookie_options.merge(
-        value: token.id,
-        expires: 1.year.from_now
-      )
+      # For non-JSON requests (browser), set cookies
+      unless request.format.json?
+        # ACCESS_TOKEN: Short-lived JWT (15 minutes)
+        cookies[:access_user_token] = cookie_options.merge(
+          value: credentials,
+          expires: ACCESS_TOKEN_EXPIRY.from_now
+        )
+        # REFRESH_TOKEN: Long-lived (1 year)
+        cookies.encrypted[:refresh_user_token] = cookie_options.merge(
+          value: token.id,
+          expires: 1.year.from_now
+        )
+      end
 
       record_user_identity_audit(AUDIT_EVENTS[:logged_in], user: user) if record_login_audit
+
+      # Return tokens for JSON API clients
+      {
+        access_token: credentials,
+        refresh_token: token.id,
+        token_type: "Bearer",
+        expires_in: ACCESS_TOKEN_EXPIRY.to_i
+      }
     end
 
     def log_out
       user = current_user
-      if cookies.encrypted[:refresh_user_token].present?
-        UserToken.find_by(id: cookies.encrypted[:refresh_user_token])&.destroy
+      if (token_id = cookies.encrypted[:refresh_user_token])
+        begin
+          UserToken.find_by(id: token_id)&.destroy
+        rescue ActiveRecord::RecordNotDestroyed => e
+          Rails.logger.warn("Failed to destroy refresh token #{token_id}: #{e.message}")
+        end
       end
       cookies.delete :access_user_token, **cookie_deletion_options
       cookies.delete :refresh_user_token, **cookie_deletion_options

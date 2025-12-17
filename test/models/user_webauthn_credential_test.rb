@@ -55,4 +55,28 @@ class UserWebauthnCredentialTest < ActiveSupport::TestCase
       credential.increment_sign_count!
     end
   end
+
+  test "enforces maximum passkeys per user" do
+    user = users(:one)
+    UserWebauthnCredential::MAX_PASSKEYS_PER_USER.times do |i|
+      UserWebauthnCredential.create!(
+        user: user,
+        external_id: "test-id-#{SecureRandom.hex(4)}-#{i}",
+        public_key: "key-#{i}",
+        nickname: "Key #{i}",
+        sign_count: 0
+      )
+    end
+
+    extra_credential = UserWebauthnCredential.new(
+      user: user,
+      external_id: "overflow-id-#{SecureRandom.hex(4)}",
+      public_key: "overflow-key",
+      nickname: "Overflow",
+      sign_count: 0
+    )
+
+    assert_not extra_credential.valid?
+    assert_includes extra_credential.errors[:base], "exceeds maximum passkeys per user (#{UserWebauthnCredential::MAX_PASSKEYS_PER_USER})"
+  end
 end
