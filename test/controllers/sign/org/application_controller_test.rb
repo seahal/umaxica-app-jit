@@ -24,8 +24,8 @@ module Sign::Org
     end
 
     test "authenticate_staff! allows access when staff is logged in" do
-      # Mock session to simulate logged in staff
-      @controller.request.session[:staff] = { id: @staff.id }
+      # Mock header to simulate logged in staff
+      @controller.request.headers["X-TEST-CURRENT-STAFF"] = @staff.id
       # Should not raise or redirect
       assert_nothing_raised do
         @controller.send(:authenticate_staff!)

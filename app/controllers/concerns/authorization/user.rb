@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+module Authorization
+  module User
+    include Authorization::Base
+    extend ActiveSupport::Concern
+
+    included do
+      helper_method :active_user?
+    end
+
+    def active_user?
+      current_user.present? && current_user.active?
+    end
+
+    def am_i_user?
+      true
+    end
+
+    def am_i_staff?
+      false
+    end
+
+    def am_i_owner?
+      # TODO: Implement owner check logic for user
+      false
+    end
+  end
+end

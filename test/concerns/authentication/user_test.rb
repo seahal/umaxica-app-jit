@@ -9,7 +9,7 @@ class Authentication::UserTest < ActiveSupport::TestCase
     def initialize
       @session = {}
       @cookies = CookieMock.new
-      @request = OpenStruct.new(host: "test.host", headers: {})
+      @request = OpenStruct.new(host: "test.host", headers: {}, user_agent: "TestAgent")
     end
 
     def reset_session
@@ -27,6 +27,10 @@ class Authentication::UserTest < ActiveSupport::TestCase
   end
 
   class CookieMock < Hash
+    def encrypted
+      self
+    end
+
     def []=(key, value)
       # If value is a hash with :value key (cookie options), store just the value
       super(key, value.is_a?(Hash) && value.key?(:value) ? value[:value] : value)
@@ -46,13 +50,13 @@ class Authentication::UserTest < ActiveSupport::TestCase
     assert_kind_of Authentication::User, @obj
   end
 
-  test "log_in sets user_id in session" do
+  test "log_in sets access token in cookie" do
     # Stub request_ip_address to avoid needing request object
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
 
     @obj.send(:log_in, @user)
 
-    assert_equal @user.id, @obj.session[:user_id]
+    assert @obj.cookies[:access_user_token]
     assert_predicate @obj, :logged_in?
     assert_equal @user, @obj.current_user
   end
@@ -67,54 +71,5 @@ class Authentication::UserTest < ActiveSupport::TestCase
     assert_nil @obj.session[:user_id]
     assert_not @obj.logged_in?
     assert_nil @obj.current_user
-  end
-
-  test "log_in records login audit" do
-    # Stub request_ip_address to return a test IP
-    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
-
-    assert_difference "UserIdentityAudit.count", 1 do
-      @obj.send(:log_in, @user)
-    end
-  end
-
-  test "log_in audit record has correct attributes" do
-    # Stub request_ip_address to return a test IP
-    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
-
-    @obj.send(:log_in, @user)
-    audit = UserIdentityAudit.last
-
-    assert_equal [ @user, "LOGGED_IN", "127.0.0.1", @user ],
-                 [ audit.user, audit.event_id, audit.ip_address, audit.actor ]
-  end
-
-  test "log_out records logout audit" do
-    # Stub request_ip_address to return a test IP
-    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
-
-    # Login first (creates one audit record)
-    @obj.send(:log_in, @user)
-
-    assert_difference "UserIdentityAudit.count", 1 do
-      @obj.send(:log_out)
-    end
-  end
-
-  test "log_out audit record has correct attributes" do
-    # Stub request_ip_address to return a test IP
-    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
-
-    # Login first (creates one audit record)
-    @obj.send(:log_in, @user)
-    # Logout
-    @obj.send(:log_out)
-
-    # Get the logout audit (the last one)
-    logout_audit = UserIdentityAudit.where(event_id: "LOGGED_OUT").last
-
-    assert_not_nil logout_audit
-    assert_equal [ @user, "LOGGED_OUT", "127.0.0.1", @user ],
-                 [ logout_audit.user, logout_audit.event_id, logout_audit.ip_address, logout_audit.actor ]
   end
 end

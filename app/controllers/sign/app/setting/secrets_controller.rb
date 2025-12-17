@@ -9,7 +9,7 @@ module Sign
         before_action :set_secret, only: %i[show edit update destroy]
 
         def index
-          @secrets = current_user.user_identity_secrets
+          @secrets = UserIdentitySecret.where(user: current_user).order(created_at: :desc)
         end
 
         def show

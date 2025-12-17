@@ -4,8 +4,8 @@ module Back
   module Org
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
-      include Authn
       include ::Authentication::Staff
+      include ::Authorization::Staff
 
       protect_from_forgery with: :exception
 

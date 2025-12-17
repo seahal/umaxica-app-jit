@@ -3,11 +3,11 @@
 module Sign
   module Org
     class ApplicationController < ActionController::Base
-      include ::Authn
       include Pundit::Authorization
       include ::DefaultUrlOptions
       include ::RateLimit
       include ::Authentication::Staff
+      include ::Authorization::Staff
 
       protect_from_forgery with: :exception
       allow_browser versions: :modern

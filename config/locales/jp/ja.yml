@@ -128,6 +128,9 @@ ja:
             failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
           authenticate_error: "認証が必要です。ログインしてください。"
         authentication:
+          email:
+            update:
+              success: "ログインしました。"
           destroy:
             jump_obj: sign in with email
         exits:
@@ -598,8 +601,12 @@ ja:
       month: 月
       year: 年
   errors:
+    unauthorized: "不正なアクセスです"
+    not_implemented: "機能はまだ実装されていません"
     format: '%{attribute}%{message}'
     messages:
+      login_required: "ログインが必要です"
+      already_authenticated: "すでにログインしています"
       accepted: を受諾してください
       blank: を入力してください
       confirmation: と%{attribute}の入力が一致しません

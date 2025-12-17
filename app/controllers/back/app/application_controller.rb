@@ -4,11 +4,11 @@ module Back
   module App
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
-      include Authn
       include ::Authentication::User
+      include ::Authorization::User
       include ::RateLimit
       include ::DefaultUrlOptions
-      include ::Back::Concerns::Regionalization
+      include Back::Concerns::Regionalization
 
       protect_from_forgery with: :exception
 

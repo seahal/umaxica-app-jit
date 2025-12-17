@@ -14,6 +14,12 @@ ja:
         invalid_input: Captcha を操作してください
       otp:
         invalid_input: Pass Code の値に問題があります
+  errors:
+    unauthorized: "不正なアクセスです"
+    not_implemented: "機能はまだ実装されていません"
+    messages:
+      login_required: "ログインが必要です"
+      already_authenticated: "すでにログインしています"
   controller:
     sign:
       app:
@@ -65,6 +71,9 @@ ja:
             update:
               success: "電話番号が確認されました。"
         authentication:
+          email:
+            update:
+              success: "ログインしました。"
           destroy:
             jump_obj: sign in with email
     apex:

@@ -38,11 +38,17 @@ module Redirect
 
   private
 
-  # TODO: rewrite!
   def generate_redirect_url(url)
     return nil if url.blank?
+    return nil if url.match?(/[[:cntrl:]]/)
 
-    parsed_uri = URI.parse(url)
+    begin
+      parsed_uri = URI.parse(url)
+    rescue URI::InvalidURIError
+      return nil
+    end
+
+    return nil if parsed_uri.user.present? || parsed_uri.password.present?
 
     # Only allow specific hosts and schemes
     if allowed_host?(parsed_uri.host) && %w[http https].include?(parsed_uri.scheme)
@@ -52,13 +58,15 @@ module Redirect
     end
   end
 
-  # TODO: rewrite!
   def jump_to_generated_url(encoded_url)
     return redirect_to "/" if encoded_url.blank?
 
     begin
       decoded_url = Base64.urlsafe_decode64(encoded_url)
+      return head :not_found if decoded_url.match?(/[[:cntrl:]]/)
+
       parsed_uri = URI.parse(decoded_url)
+      return head :not_found if parsed_uri.user.present? || parsed_uri.password.present?
 
       # Double-check the URL is still safe after decoding
       if allowed_host?(parsed_uri.host) && %w[http https].include?(parsed_uri.scheme)

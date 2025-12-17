@@ -1,10 +1,9 @@
 module Sign::App
   class AuthenticationsController < ApplicationController
     include ::Redirect
-    include ::Authn
 
     def new
-      raise StandardError, "User is already logged in" if logged_in?
+      raise AlreadyAuthenticatedError, "User is already logged in" if logged_in?
     end
 
     def edit

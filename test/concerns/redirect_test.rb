@@ -46,12 +46,10 @@ class RedirectTest < ActiveSupport::TestCase
     assert_nil encoded
   end
 
-  test "generate_redirect_url should raise on invalid URIs" do
+  test "generate_redirect_url should return nil on invalid URIs" do
     invalid_url = "not a valid uri"
 
-    assert_raises(URI::InvalidURIError) do
-      generate_redirect_url(invalid_url)
-    end
+    assert_nil generate_redirect_url(invalid_url)
   end
 
   test "generate_redirect_url should handle blank URLs" do

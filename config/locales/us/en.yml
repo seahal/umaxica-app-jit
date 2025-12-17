@@ -14,6 +14,9 @@ en:
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
+    messages:
+      login_required: "Login required"
+      already_authenticated: "Already authenticated"
   sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"
@@ -38,6 +41,8 @@ en:
             description: "Use one of your trusted devices to add a passkey for passwordless sign-in."
         email:
           locked: "Your account is locked. Please try again later."
+          update:
+            success: "You've logged in."
         telephone:
           new:
             page_title: "Sign in with your phone number"
