@@ -173,6 +173,8 @@ jobs:
       POSTGRESQL_NOTIFICATION_SUB: localhost
       POSTGRESQL_CACHE_PUB: localhost
       POSTGRESQL_CACHE_SUB: localhost
+      POSTGRESQL_QUEUE_PUB: localhost
+      POSTGRESQL_QUEUE_SUB: localhost
       POSTGRESQL_SPECIALITY_PUB: localhost
       POSTGRESQL_SPECIALITY_SUB: localhost
       POSTGRESQL_STORAGE_PUB: localhost
