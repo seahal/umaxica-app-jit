@@ -36,6 +36,26 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
     assert_includes UserIdentityTelephone.included_modules, SetId
   end
 
+  test "should include Turnstile concern" do
+    assert_includes UserIdentityTelephone.included_modules, Turnstile
+  end
+
+  test "turnstile validation runs when required and surfaces custom message" do
+    Turnstile.test_response = { "success" => false }
+
+    user_telephone = UserIdentityTelephone.new(@valid_attributes)
+    user_telephone.require_turnstile(
+      response: "test-token",
+      remote_ip: "127.0.0.1",
+      error_message: "Turnstile failed"
+    )
+
+    assert_not user_telephone.valid?
+    assert_includes user_telephone.errors[:base], "Turnstile failed"
+  ensure
+    Turnstile.test_response = nil
+  end
+
   # Telephone concern validation tests
   test "should be valid with valid phone number and policy confirmations" do
     user_telephone = UserIdentityTelephone.new(@valid_attributes)

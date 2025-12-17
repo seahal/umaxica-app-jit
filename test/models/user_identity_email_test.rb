@@ -35,6 +35,27 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
     assert_includes UserIdentityEmail.included_modules, SetId
   end
 
+  test "should include Turnstile concern" do
+    assert_includes UserIdentityEmail.included_modules, Turnstile
+  end
+
+  test "turnstile validation runs when required and surface custom message" do
+    Turnstile.test_response = { "success" => false }
+
+    user_email = UserIdentityEmail.new(@valid_attributes)
+    user_email.require_turnstile(
+      response: "test-token",
+      remote_ip: "127.0.0.1",
+      error_message: "Turnstile failed"
+    )
+
+    assert_not user_email.turnstile_valid?
+    assert_not user_email.valid?
+    assert_includes user_email.errors[:base], "Turnstile failed"
+  ensure
+    Turnstile.test_response = nil
+  end
+
   # Email concern validation tests
   test "should be valid with valid email and policy confirmation" do
     user_email = UserIdentityEmail.new(@valid_attributes)

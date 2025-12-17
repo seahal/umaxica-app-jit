@@ -126,6 +126,7 @@ module Sign
           end
 
           # Set user session after successful transaction
+          log_in(@user)
           session[:user] = { id: @user.id }
 
           # Redirect to rd parameter if provided, otherwise to root

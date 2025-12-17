@@ -19,6 +19,7 @@
 class UserIdentityEmail < IdentitiesRecord
   include SetId
   include Email
+  include Turnstile
 
   belongs_to :user_identity_email_status, optional: true
   belongs_to :user, optional: true

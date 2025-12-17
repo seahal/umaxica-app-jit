@@ -1,4 +1,5 @@
 ja:
+  turnstile_error: "セキュリティ検証に失敗しました。もう一度お試しください。"
   common:
     ok: OK
   languages:

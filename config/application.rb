@@ -84,8 +84,6 @@ module Jit
     # ActiveJob
     # Use Solid Queue for job processing
     config.active_job.queue_adapter = :solid_queue
-
-    # Solid Queue database connection
     config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue_replica } }
 
     # SMS Provider Configuration

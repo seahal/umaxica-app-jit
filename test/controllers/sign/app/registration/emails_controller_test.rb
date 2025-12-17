@@ -3,6 +3,15 @@ require "test_helper"
 class Sign::App::Registration::EmailsControllerTest < ActionDispatch::IntegrationTest
   include ActiveSupport::Testing::TimeHelpers
 
+  setup do
+    CloudflareTurnstile.test_mode = true
+  end
+
+  teardown do
+    CloudflareTurnstile.test_mode = false
+    CloudflareTurnstile.test_validation_response = nil
+  end
+
   test "should get new" do
     get new_sign_app_registration_email_url, headers: default_headers
 
@@ -61,12 +70,12 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     assert_response :redirect
 
-    # Verify first record created
-    first_email = UserIdentityEmail.find_by(address: email)
+    # Verify first record created - extract ID from redirect location
+    first_email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
+    first_email = UserIdentityEmail.find(first_email_id)
 
     assert_not_nil first_email
     assert_equal "UNVERIFIED_WITH_SIGN_UP", first_email.user_identity_email_status_id
-    first_email_id = first_email.id
 
     # Second registration attempt immediately after
     # This should delete the previous unverified record and create a new one
@@ -85,7 +94,8 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Verify old record was deleted and new record was created
     assert_nil UserIdentityEmail.find_by(id: first_email_id)
-    new_email = UserIdentityEmail.find_by(address: email)
+    new_email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
+    new_email = UserIdentityEmail.find(new_email_id)
 
     assert_not_nil new_email
     assert_equal "UNVERIFIED_WITH_SIGN_UP", new_email.user_identity_email_status_id
@@ -107,7 +117,9 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       },
       headers: default_headers
 
-    user_email = UserIdentityEmail.find_by(address: email)
+    # Extract email ID from redirect location
+    email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
+    user_email = UserIdentityEmail.find(email_id)
 
     # Attempt wrong code
     patch sign_app_registration_email_url(user_email.id),
@@ -137,7 +149,9 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       },
       headers: default_headers
 
-    user_email = UserIdentityEmail.find_by(address: email)
+    # Extract email ID from redirect location
+    email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
+    user_email = UserIdentityEmail.find(email_id)
 
     # Make 3 failed attempts
     3.times do
@@ -213,10 +227,12 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       headers: default_headers
 
     # Verify rd parameter is preserved in redirect
-    user_email = UserIdentityEmail.find_by(address: email)
-
     assert_response :redirect
     assert_includes response.location, "rd=#{CGI.escape(encoded_rd)}"
+
+    # Extract email ID from redirect location
+    email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
+    user_email = UserIdentityEmail.find(email_id)
 
     otp_data = user_email.get_otp
     hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
@@ -254,7 +270,9 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       },
       headers: default_headers
 
-    user_email = UserIdentityEmail.find_by(address: email)
+    # Extract email ID from redirect location
+    email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
+    user_email = UserIdentityEmail.find(email_id)
     otp_data = user_email.get_otp
     hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
     correct_code = hotp.at(otp_data[:otp_counter]).to_s
@@ -315,7 +333,9 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       },
       headers: default_headers
 
-    user_email = UserIdentityEmail.find_by(address: email)
+    # Extract email ID from redirect location
+    email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
+    user_email = UserIdentityEmail.find(email_id)
     otp_data = user_email.get_otp
     hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
     correct_code = hotp.at(otp_data[:otp_counter]).to_s
@@ -350,7 +370,9 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
       },
       headers: default_headers
 
-    user_email = UserIdentityEmail.find_by(address: email)
+    # Extract email ID from redirect location
+    email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
+    user_email = UserIdentityEmail.find(email_id)
     otp_data = user_email.get_otp
     hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
     correct_code = hotp.at(otp_data[:otp_counter]).to_s

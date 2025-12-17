@@ -35,6 +35,12 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   setup do
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
     ActionMailer::Base.deliveries.clear
+    CloudflareTurnstile.test_mode = true
+  end
+
+  teardown do
+    CloudflareTurnstile.test_mode = false
+    CloudflareTurnstile.test_validation_response = nil
   end
 
   test "GET new displays email form" do

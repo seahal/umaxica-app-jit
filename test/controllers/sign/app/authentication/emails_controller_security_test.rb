@@ -6,6 +6,15 @@ module Sign
   module App
     module Authentication
       class EmailsControllerSecurityTest < ActionDispatch::IntegrationTest
+        setup do
+          CloudflareTurnstile.test_mode = true
+        end
+
+        teardown do
+          CloudflareTurnstile.test_mode = false
+          CloudflareTurnstile.test_validation_response = nil
+        end
+
         test "rejects invalid email format" do
           post sign_app_authentication_email_url, params: {
             user_identity_email: { address: "invalid-email" }
@@ -18,7 +27,8 @@ module Sign
           # Test that user+tag@example.co.uk format is accepted
           # (This will redirect because email doesn't exist, preventing enumeration)
           post sign_app_authentication_email_url, params: {
-            user_identity_email: { address: "user+tag@example.co.uk" }
+            user_identity_email: { address: "user+tag@example.co.uk" },
+            "cf-turnstile-response" => "test_token"
           }
 
           # Should proceed past format validation
@@ -27,7 +37,8 @@ module Sign
 
         test "accepts valid emails with dots in local part" do
           post sign_app_authentication_email_url, params: {
-            user_identity_email: { address: "user.name@example.com" }
+            user_identity_email: { address: "user.name@example.com" },
+            "cf-turnstile-response" => "test_token"
           }
 
           # Should proceed past format validation
@@ -36,7 +47,8 @@ module Sign
 
         test "accepts valid emails with underscores" do
           post sign_app_authentication_email_url, params: {
-            user_identity_email: { address: "user_name@example.co.uk" }
+            user_identity_email: { address: "user_name@example.co.uk" },
+            "cf-turnstile-response" => "test_token"
           }
 
           # Should proceed past format validation
@@ -45,7 +57,8 @@ module Sign
 
         test "accepts Gmail-style addressing with plus" do
           post sign_app_authentication_email_url, params: {
-            user_identity_email: { address: "user+mailbox@gmail.com" }
+            user_identity_email: { address: "user+mailbox@gmail.com" },
+            "cf-turnstile-response" => "test_token"
           }
 
           # Should proceed past format validation
@@ -54,7 +67,8 @@ module Sign
 
         test "accepts emails with multiple domain levels" do
           post sign_app_authentication_email_url, params: {
-            user_identity_email: { address: "user@mail.example.co.uk" }
+            user_identity_email: { address: "user@mail.example.co.uk" },
+            "cf-turnstile-response" => "test_token"
           }
 
           # Should proceed past format validation
@@ -95,7 +109,8 @@ module Sign
 
         test "normalizes email to lowercase" do
           post sign_app_authentication_email_url, params: {
-            user_identity_email: { address: "TEST@EXAMPLE.COM" }
+            user_identity_email: { address: "TEST@EXAMPLE.COM" },
+            "cf-turnstile-response" => "test_token"
           }
 
           # Email should be normalized to lowercase in validation and proceed
@@ -104,7 +119,8 @@ module Sign
 
         test "rejects emails with excessive whitespace" do
           post sign_app_authentication_email_url, params: {
-            user_identity_email: { address: "  test@example.com  " }
+            user_identity_email: { address: "  test@example.com  " },
+            "cf-turnstile-response" => "test_token"
           }
 
           # Whitespace should be stripped and validated, then proceed

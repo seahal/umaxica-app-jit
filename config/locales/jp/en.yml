@@ -1,4 +1,5 @@
 en:
+  turnstile_error: "Security verification failed. Please try again."
   hello: "Hello world 2"
   messages:
     region_settings_updated_successfully: "Region settings updated successfully."

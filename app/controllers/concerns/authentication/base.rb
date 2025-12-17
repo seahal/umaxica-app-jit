@@ -41,8 +41,9 @@ module Authentication
 
       JWT.encode(payload, key, JWT_ALGORITHM)
     rescue StandardError => e
-      Rails.logger.error "Failed to generate access token: #{e.message}"
-      raise "Access token generation failed"
+      Rails.logger.error "Failed to generate access token: #{e.class}: #{e.message}"
+      Rails.logger.error e.backtrace.first(5).join("\n")
+      raise "Access token generation failed: #{e.message}"
     end
 
     def verify_access_token(token)
@@ -73,7 +74,7 @@ module Authentication
 
     def jwt_private_key
       @jwt_private_key ||= begin
-                             private_key_base64 = ENV[:JWT_PUBLIC_KEY] || Rails.application.credentials.dig(:JWT, :PRIVATE_KEY)
+                             private_key_base64 = ENV["JWT_PRIVATE_KEY"] || Rails.application.credentials.dig(:JWT, :PRIVATE_KEY)
                              raise "JWT private key not configured in credentials" if private_key_base64.blank?
 
                              private_key_der = Base64.decode64(private_key_base64)
@@ -83,7 +84,7 @@ module Authentication
 
     def jwt_public_key
       @jwt_public_key ||= begin
-                            public_key_base64 = ENV[:JWT_PRIVATE_KEY] || Rails.application.credentials.dig(:JWT, :PUBLIC_KEY)
+                            public_key_base64 = ENV["JWT_PUBLIC_KEY"] || Rails.application.credentials.dig(:JWT, :PUBLIC_KEY)
                             raise "JWT public key not configured in credentials" if public_key_base64.blank?
 
                             public_key_der = Base64.decode64(public_key_base64)

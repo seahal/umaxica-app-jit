@@ -2,7 +2,7 @@ module Sign
   module App
     module Registration
       class TelephonesController < ApplicationController
-        include ::CloudflareTurnstile
+        include ::Redirect
 
         # todo: verify not logged in
         def new

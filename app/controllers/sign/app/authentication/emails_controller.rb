@@ -43,6 +43,7 @@ module Sign
         end
 
         def update
+          # nanikore?
           start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
           @user_email.pass_code = update_pass_code_params[:pass_code]

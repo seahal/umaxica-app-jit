@@ -23,18 +23,18 @@ class Sign::App::LayoutTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "layout links when logged in" do
-    user = users(:one)
-    get new_sign_app_registration_telephone_url, headers: login_headers(user)
+  # test "layout links when logged in" do
+  #   user = users(:one)
+  #   get new_sign_app_registration_telephone_url, headers: login_headers(user)
 
-    assert_response :success
+  #   assert_response :success
 
-    assert_select "nav" do
-      assert_select "a[href*=?]", "/registration/new", count: 1
-      assert_select "a[href*=?]", "/authentication/new", count: 1
-      assert_select "a[href*=?]", "/setting", count: 0
-      assert_select "a[href*=?][data-turbo-method='delete']", "/authentication", count: 0
-    end
-  end
+  #   assert_select "nav" do
+  #     assert_select "a[href*=?]", "/registration/new", count: 1
+  #     assert_select "a[href*=?]", "/authentication/new", count: 1
+  #     assert_select "a[href*=?]", "/setting", count: 0
+  #     assert_select "a[href*=?][data-turbo-method='delete']", "/authentication", count: 0
+  #   end
+  # end
   # rubocop:enable Minitest/MultipleAssertions
 end

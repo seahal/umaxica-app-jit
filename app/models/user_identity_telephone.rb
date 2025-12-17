@@ -19,6 +19,7 @@
 class UserIdentityTelephone < IdentitiesRecord
   include Telephone
   include SetId
+  include Turnstile
 
   belongs_to :user_identity_telephone_status, optional: true
   belongs_to :user, optional: true
