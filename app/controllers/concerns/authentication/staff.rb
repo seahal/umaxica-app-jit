@@ -55,21 +55,15 @@ module Authentication
       credentials = generate_access_token(staff)
 
       # ACCESS_TOKEN: Short-lived JWT (15 minutes)
-      cookies[:access_staff_token] = {
+      cookies[:access_staff_token] = cookie_options.merge(
         value: credentials,
-        httponly: true,
-        secure: Rails.env.production?,
-        samesite: :lax,
         expires: ACCESS_TOKEN_EXPIRY.from_now
-      }
+      )
       # REFRESH_TOKEN: Long-lived (1 year)
-      cookies.encrypted[:refresh_staff_token] = {
+      cookies.encrypted[:refresh_staff_token] = cookie_options.merge(
         value: token.id,
-        httponly: true,
-        secure: Rails.env.production?,
-        samesite: :lax,
         expires: 1.year.from_now
-      }
+      )
 
       record_staff_identity_audit(AUDIT_EVENTS[:logged_in], staff: staff)
     end
@@ -79,10 +73,11 @@ module Authentication
       if cookies.encrypted[:refresh_staff_token].present?
         StaffToken.find_by(id: cookies.encrypted[:refresh_staff_token])&.destroy
       end
-      cookies.delete :access_staff_token
-      cookies.delete :refresh_staff_token
+      cookies.delete :access_staff_token, **cookie_deletion_options
+      cookies.delete :refresh_staff_token, **cookie_deletion_options
       record_staff_identity_audit(AUDIT_EVENTS[:logged_out], staff: staff) if staff
       reset_session
+      @current_staff = nil
     end
 
     def authenticate_staff!

@@ -91,5 +91,44 @@ module Authentication
                             OpenSSL::PKey::EC.new(public_key_der)
                           end
     end
+
+    def cookie_options
+      opts = {
+        httponly: true,
+        secure: Rails.env.production?,
+        samesite: :lax
+      }
+      opts[:domain] = shared_cookie_domain if shared_cookie_domain
+      opts
+    end
+
+    def cookie_deletion_options
+      shared_cookie_domain ? { domain: shared_cookie_domain } : {}
+    end
+
+    def shared_cookie_domain
+      @shared_cookie_domain ||= begin
+        configured = ENV["AUTH_COOKIE_DOMAIN"]&.strip
+        return formatted_domain(configured) if configured.present?
+
+        derived = derive_cookie_domain_from_host
+        formatted_domain(derived)
+      end
+    end
+
+    def derive_cookie_domain_from_host
+      return nil unless request&.host
+
+      host_parts = request.host.split(".")
+      return nil if host_parts.length < 2
+
+      host_parts.last(2).join(".")
+    end
+
+    def formatted_domain(value)
+      return nil if value.blank?
+
+      value.start_with?(".") ? value : ".#{value}"
+    end
   end
 end

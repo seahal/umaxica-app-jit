@@ -55,21 +55,15 @@ module Authentication
       credentials = generate_access_token(user)
 
       # ACCESS_TOKEN: Short-lived JWT (15 minutes)
-      cookies[:access_user_token] = {
+      cookies[:access_user_token] = cookie_options.merge(
         value: credentials,
-        httponly: true,
-        secure: Rails.env.production?,
-        samesite: :lax,
         expires: ACCESS_TOKEN_EXPIRY.from_now
-      }
+      )
       # REFRESH_TOKEN: Long-lived (1 year)
-      cookies.encrypted[:refresh_user_token] = {
+      cookies.encrypted[:refresh_user_token] = cookie_options.merge(
         value: token.id,
-        httponly: true,
-        secure: Rails.env.production?,
-        samesite: :lax,
         expires: 1.year.from_now
-      }
+      )
 
       record_user_identity_audit(AUDIT_EVENTS[:logged_in], user: user) if record_login_audit
     end
@@ -79,10 +73,11 @@ module Authentication
       if cookies.encrypted[:refresh_user_token].present?
         UserToken.find_by(id: cookies.encrypted[:refresh_user_token])&.destroy
       end
-      cookies.delete :access_user_token
-      cookies.delete :refresh_user_token
+      cookies.delete :access_user_token, **cookie_deletion_options
+      cookies.delete :refresh_user_token, **cookie_deletion_options
       record_user_identity_audit(AUDIT_EVENTS[:logged_out], user: user) if user
       reset_session
+      @current_user = nil
     end
 
     def logged_in?

@@ -27,17 +27,34 @@ class Authentication::StaffTest < ActiveSupport::TestCase
   end
 
   class CookieMock < Hash
+    attr_reader :options
+
+    def initialize
+      super
+      @options = {}
+    end
+
     def encrypted
       self
     end
 
     def []=(key, value)
-      # If value is a hash with :value key (cookie options), store just the value
-      super(key, value.is_a?(Hash) && value.key?(:value) ? value[:value] : value)
+      if value.is_a?(Hash) && value.key?(:value)
+        opts = value.dup
+        actual_value = opts.delete(:value)
+        super(key, actual_value)
+        @options[key] = opts
+      else
+        super(key, value)
+      end
     end
 
     def delete(key, options = {})
       super(key)
+    end
+
+    def options_for(key)
+      @options[key]
     end
   end
 
@@ -68,8 +85,8 @@ class Authentication::StaffTest < ActiveSupport::TestCase
     @obj.send(:log_in, @staff)
     @obj.send(:log_out)
 
-    assert_predicate @obj, :logged_in?
-    assert @obj.current_staff
+    refute_predicate @obj, :logged_in?
+    assert_nil @obj.current_staff
   end
 
   test "log_out removes refresh token and cookies" do
@@ -79,5 +96,15 @@ class Authentication::StaffTest < ActiveSupport::TestCase
     assert_difference("StaffToken.count", -1) { @obj.send(:log_out) }
     assert_nil @obj.cookies[:access_staff_token]
     assert_nil @obj.cookies.encrypted[:refresh_staff_token]
+  end
+
+  test "log_in derives shared cookie domain from host" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+    @obj.request.host = "sign.org.localhost"
+
+    @obj.send(:log_in, @staff)
+
+    assert_equal ".org.localhost", @obj.cookies.options_for(:access_staff_token)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(:refresh_staff_token)[:domain]
   end
 end
