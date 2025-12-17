@@ -1,0 +1,12 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# This model formerly used the table name "com_contact_histories"
+
+# one:
+#   id: <%= SecureRandom.uuid %>
+#   com_contact_id: <%= SecureRandom.uuid %>
+#   parent_id: <%= SecureRandom.uuid %>
+#   position: 1
+#   actor_id: <%= SecureRandom.uuid %>
+#   actor_type: "User"
+#   event_id: "CREATED"

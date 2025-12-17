@@ -18,9 +18,6 @@ gem "jbuilder"
 gem "pg"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "redis"
-# Kafka
-gem "karafka"
-gem "karafka-web"
 # For CORS
 gem "rack-cors"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
@@ -55,6 +52,8 @@ gem "rotp"
 gem "rqrcode"
 # Solid Cache
 gem "solid_cache"
+# Solid Queue
+gem "solid_queue"
 # pagination
 gem "kaminari"
 # Social Login

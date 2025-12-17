@@ -82,7 +82,11 @@ module Jit
     config.active_record.default_timezone = :utc
 
     # ActiveJob
-    config.active_job.queue_adapter = :karafka
+    # Use Solid Queue for job processing
+    config.active_job.queue_adapter = :solid_queue
+
+    # Solid Queue database connection
+    config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue_replica } }
 
     # SMS Provider Configuration
     config.sms_provider = ENV.fetch("SMS_PROVIDER", "aws_sns")

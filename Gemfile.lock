@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 2eb4481b2ca1ab9e67b3ea7e8efbe4dad25ba91c
+  revision: 0bbf296e1e74cf3c2042dbbd467b8219780a6a2d
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -117,11 +117,11 @@ GEM
     arrayfields (4.9.2)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1194.0)
+    aws-partitions (1.1195.0)
     aws-sdk-connect (1.229.0)
       aws-sdk-core (~> 3, >= 3.239.1)
       aws-sigv4 (~> 1.5)
-    aws-sdk-core (3.239.2)
+    aws-sdk-core (3.240.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -223,6 +223,8 @@ GEM
       rubocop (>= 1)
       smart_properties
     erubi (1.13.1)
+    et-orbi (1.4.0)
+      tzinfo
     ethon (0.15.0)
       ffi (>= 1.15.0)
     faraday (2.14.0)
@@ -246,6 +248,9 @@ GEM
       sexp_processor (~> 4.8)
     foreman (0.90.0)
       thor (~> 1.4)
+    fugit (1.12.1)
+      et-orbi (~> 1.4)
+      raabro (~> 1.4)
     globalid (1.3.0)
       activesupport (>= 6.1)
     google-protobuf (4.33.2)
@@ -269,7 +274,7 @@ GEM
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
     io-console (0.8.2)
-    irb (1.15.3)
+    irb (1.16.0)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
@@ -302,33 +307,6 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    karafka (2.5.3)
-      base64 (~> 0.2)
-      karafka-core (>= 2.5.6, < 2.6.0)
-      karafka-rdkafka (>= 0.23.1)
-      waterdrop (>= 2.8.14, < 3.0.0)
-      zeitwerk (~> 2.3)
-    karafka-core (2.5.8)
-      karafka-rdkafka (>= 0.20.0)
-      logger (>= 1.6.0)
-    karafka-rdkafka (0.23.1)
-      ffi (~> 1.17.1)
-      json (> 2.0)
-      logger
-      mini_portile2 (~> 2.6)
-      rake (> 12)
-    karafka-rdkafka (0.23.1-x86_64-linux-gnu)
-      ffi (~> 1.17.1)
-      json (> 2.0)
-      logger
-      mini_portile2 (~> 2.6)
-      rake (> 12)
-    karafka-web (0.11.5)
-      erubi (~> 1.4)
-      karafka (>= 2.5.2, < 2.6.0)
-      karafka-core (>= 2.5.0, < 2.6.0)
-      roda (~> 3.69, >= 3.69)
-      tilt (~> 2.0)
     language_server-protocol (3.17.0.5)
     launchy (3.1.1)
       addressable (~> 2.8)
@@ -376,7 +354,7 @@ GEM
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
     nanoid (2.0.0)
-    net-http (0.8.0)
+    net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.6.0)
       date
@@ -608,7 +586,7 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
-    psych (5.3.0)
+    psych (5.3.1)
       date
       stringio
     public_suffix (7.0.0)
@@ -616,6 +594,7 @@ GEM
       nio4r (~> 2.0)
     pundit (2.5.2)
       activesupport (>= 3.0.0)
+    raabro (1.4.0)
     racc (1.8.1)
     rack (3.2.4)
     rack-cors (3.0.0)
@@ -676,8 +655,6 @@ GEM
     reline (0.6.3)
       io-console (~> 0.5)
     rexml (3.4.4)
-    roda (3.99.0)
-      rack
     rotp (6.3.0)
     rqrcode (3.1.1)
       chunky_png (~> 1.0)
@@ -778,17 +755,23 @@ GEM
       activejob (>= 7.2)
       activerecord (>= 7.2)
       railties (>= 7.2)
+    solid_queue (1.2.4)
+      activejob (>= 7.1)
+      activerecord (>= 7.1)
+      concurrent-ruby (>= 1.3.1)
+      fugit (~> 1.11)
+      railties (>= 7.1)
+      thor (>= 1.3.1)
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
-    stringio (3.1.9)
+    stringio (3.2.0)
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
     tailwindcss-ruby (4.1.16)
     tailwindcss-ruby (4.1.16-x86_64-linux-gnu)
     thor (1.4.0)
-    tilt (2.6.1)
-    timeout (0.5.0)
+    timeout (0.6.0)
     tomlrb (2.0.3)
     tpm-key_attestation (0.14.1)
       bindata (~> 2.4)
@@ -808,10 +791,6 @@ GEM
     uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.9)
-    waterdrop (2.8.15)
-      karafka-core (>= 2.4.9, < 3.0.0)
-      karafka-rdkafka (>= 0.23.1)
-      zeitwerk (~> 2.3)
     web-console (4.2.1)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -861,8 +840,6 @@ DEPENDENCIES
   jbuilder
   jwt
   kaminari
-  karafka
-  karafka-web
   letter_opener
   license_finder
   meta-tags
@@ -905,6 +882,7 @@ DEPENDENCIES
   simplecov
   sitemap_generator
   solid_cache
+  solid_queue
   stimulus-rails
   tailwindcss-rails
   turbo-rails

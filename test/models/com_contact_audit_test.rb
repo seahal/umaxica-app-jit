@@ -2,7 +2,7 @@ require "test_helper"
 
 class ComContactAuditTest < ActiveSupport::TestCase
   test "loads model and table name" do
-    assert_equal "com_contact_histories", ComContactAudit.table_name
+    assert_equal "com_contact_audits", ComContactAudit.table_name
   end
 
   test "associations" do
