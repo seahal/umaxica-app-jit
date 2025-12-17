@@ -13,6 +13,12 @@ module Authentication
       # Add any class methods here
     end
 
+    AUDIT_EVENTS = {
+      logged_in: "LOGGED_IN",
+      logged_out: "LOGGED_OUT",
+      login_failed: "LOGIN_FAILED"
+    }.freeze
+
     def current_staff
       return @current_staff if defined?(@current_staff)
 
@@ -64,14 +70,18 @@ module Authentication
         samesite: :lax,
         expires: 1.year.from_now
       }
+
+      record_staff_identity_audit(AUDIT_EVENTS[:logged_in], staff: staff)
     end
 
     def log_out
+      staff = current_staff
       if cookies.encrypted[:refresh_staff_token].present?
         StaffToken.find_by(id: cookies.encrypted[:refresh_staff_token])&.destroy
       end
       cookies.delete :access_staff_token
       cookies.delete :refresh_staff_token
+      record_staff_identity_audit(AUDIT_EVENTS[:logged_out], staff: staff) if staff
       reset_session
     end
 
@@ -84,6 +94,24 @@ module Authentication
         rt = Base64.urlsafe_encode64(request.original_url)
         redirect_to new_sign_org_authentication_url(rt: rt, host: ENV["SIGN_STAFF_URL"]), allow_other_host: true, alert: I18n.t("errors.messages.login_required")
       end
+    end
+
+    private
+
+    def record_staff_identity_audit(event_id, staff:, actor: staff)
+      return unless staff && event_id
+
+      ::StaffIdentityAudit.create!(
+        staff: staff,
+        actor: actor,
+        event_id: event_id,
+        ip_address: request_ip_address,
+        timestamp: Time.current
+      )
+    end
+
+    def request_ip_address
+      respond_to?(:request, true) && request ? request.remote_ip : nil
     end
   end
 end

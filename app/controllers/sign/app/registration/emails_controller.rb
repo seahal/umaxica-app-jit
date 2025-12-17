@@ -126,7 +126,7 @@ module Sign
           end
 
           # Set user session after successful transaction
-          log_in(@user)
+          log_in(@user, record_login_audit: false)
 
           # Redirect to rd parameter if provided, otherwise to root
           if params[:rd].present?

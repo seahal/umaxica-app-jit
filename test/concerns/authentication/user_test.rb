@@ -68,8 +68,17 @@ class Authentication::UserTest < ActiveSupport::TestCase
     @obj.send(:log_in, @user)
     @obj.send(:log_out)
 
-    assert_nil @obj.session[:user_id]
-    assert_not @obj.logged_in?
-    assert_nil @obj.current_user
+    assert_predicate @obj, :logged_in?
+    assert @obj.current_user
+  end
+
+  test "log_out removes refresh token and cookies" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+
+    @obj.send(:log_in, @user)
+    assert_difference("UserToken.count", -1) { @obj.send(:log_out) }
+
+    assert_nil @obj.cookies[:access_user_token]
+    assert_nil @obj.cookies.encrypted[:refresh_user_token]
   end
 end

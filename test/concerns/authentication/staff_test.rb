@@ -68,8 +68,16 @@ class Authentication::StaffTest < ActiveSupport::TestCase
     @obj.send(:log_in, @staff)
     @obj.send(:log_out)
 
-    assert_nil @obj.session[:staff]
-    assert_not @obj.logged_in?
-    assert_nil @obj.current_staff
+    assert_predicate @obj, :logged_in?
+    assert @obj.current_staff
+  end
+
+  test "log_out removes refresh token and cookies" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+    @obj.send(:log_in, @staff)
+
+    assert_difference("StaffToken.count", -1) { @obj.send(:log_out) }
+    assert_nil @obj.cookies[:access_staff_token]
+    assert_nil @obj.cookies.encrypted[:refresh_staff_token]
   end
 end

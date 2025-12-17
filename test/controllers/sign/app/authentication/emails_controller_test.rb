@@ -1,6 +1,7 @@
 require "test_helper"
 
 class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::IntegrationTest
+  include ActiveSupport::Testing::TimeHelpers
   # rubocop:disable Minitest/MultipleAssertions
   test "should get new" do
     get new_sign_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
@@ -188,6 +189,78 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     assert_response :found
     assert_redirected_to "/"
   end
+
+  test "otp resend enforces cooldown" do
+    test_email = UserIdentityEmail.create!(
+      address: "cooldown_test_#{SecureRandom.hex(4)}@example.com"
+    )
+
+    assert_difference -> { ActionMailer::Base.deliveries.count }, 1 do
+      post sign_app_authentication_email_url,
+           params: {
+             user_identity_email: { address: test_email.address },
+             "cf-turnstile-response" => "test_token"
+           },
+           headers: { "Host" => @host }
+    end
+
+    initial_sent_at = test_email.reload.otp_last_sent_at
+
+    assert_not_nil initial_sent_at
+
+    assert_no_difference -> { ActionMailer::Base.deliveries.count } do
+      post sign_app_authentication_email_url,
+           params: {
+             user_identity_email: { address: test_email.address },
+             "cf-turnstile-response" => "test_token"
+           },
+           headers: { "Host" => @host }
+    end
+    assert_equal initial_sent_at, test_email.reload.otp_last_sent_at
+
+    travel Email::OTP_COOLDOWN_PERIOD + 1.second do
+      assert_difference -> { ActionMailer::Base.deliveries.count }, 1 do
+        post sign_app_authentication_email_url,
+             params: {
+               user_identity_email: { address: test_email.address },
+               "cf-turnstile-response" => "test_token"
+             },
+             headers: { "Host" => @host }
+      end
+      assert_operator test_email.reload.otp_last_sent_at, :>, initial_sent_at
+    end
+  end
+
+  test "successful OTP verification records login audit event" do
+    user = users(:one)
+    test_email = user.user_identity_emails.create!(address: "audit_login_#{SecureRandom.hex(4)}@example.com")
+
+    post sign_app_authentication_email_url,
+         params: {
+           user_identity_email: { address: test_email.address },
+           "cf-turnstile-response" => "test_token"
+         },
+         headers: { "Host" => @host }
+
+    assert_equal test_email.id.to_s, session[:user_email_authentication_id]
+
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 12345
+    hotp = ROTP::HOTP.new(otp_private_key)
+    valid_pass_code = hotp.at(otp_counter).to_s
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    assert_difference -> { UserIdentityAudit.where(event_id: "LOGGED_IN").count }, 1 do
+      patch sign_app_authentication_email_url,
+            params: { user_identity_email: { pass_code: valid_pass_code } },
+            headers: { "Host" => @host }
+    end
+
+    audit = UserIdentityAudit.order(created_at: :desc).first
+
+    assert_equal "LOGGED_IN", audit.event_id
+    assert_equal user, audit.user
+  end
   # rubocop:enable Minitest/MultipleAssertions
 
 
@@ -220,6 +293,39 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     assert_response :unprocessable_content
     assert_includes @response.body, "Invalid verification code"
   end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "invalid OTP attempt records login failed audit event" do
+    user = users(:one)
+    test_email = user.user_identity_emails.create!(
+      address: "audit_login_failed_#{SecureRandom.hex(4)}@example.com"
+    )
+
+    post sign_app_authentication_email_url,
+         params: {
+           user_identity_email: { address: test_email.address },
+           "cf-turnstile-response" => "test_token"
+         },
+         headers: { "Host" => @host }
+
+    assert_equal test_email.id.to_s, session[:user_email_authentication_id]
+
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 56789
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    assert_difference -> { UserIdentityAudit.where(event_id: "LOGIN_FAILED").count }, 1 do
+      patch sign_app_authentication_email_url,
+            params: { user_identity_email: { pass_code: "000000" } },
+            headers: { "Host" => @host }
+    end
+
+    audit = UserIdentityAudit.order(created_at: :desc).first
+
+    assert_equal "LOGIN_FAILED", audit.event_id
+    assert_equal user, audit.user
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 
   test "already logged in user cannot authenticate" do
     # Test that the ensure_not_logged_in before_action works

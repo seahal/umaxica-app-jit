@@ -33,4 +33,18 @@ class Sign::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
   end
+
+  test "destroy records logout audit event" do
+    user = users(:one)
+
+    assert_difference -> { UserIdentityAudit.where(event_id: "LOGGED_OUT").count }, 1 do
+      delete sign_app_authentication_url,
+             headers: { "Host" => ENV["SIGN_SERVICE_URL"], "X-TEST-CURRENT-USER" => user.id }
+    end
+
+    audit = UserIdentityAudit.order(created_at: :desc).first
+
+    assert_equal "LOGGED_OUT", audit.event_id
+    assert_equal user, audit.user
+  end
 end

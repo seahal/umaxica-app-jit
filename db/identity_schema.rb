@@ -109,10 +109,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_16_132111) do
     t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter"
     t.datetime "otp_expires_at"
+    t.datetime "otp_last_sent_at"
     t.string "otp_private_key"
     t.uuid "staff_id"
     t.string "staff_identity_email_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.datetime "updated_at", null: false
+    t.index ["otp_last_sent_at"], name: "index_staff_identity_emails_on_otp_last_sent_at"
     t.index ["staff_id"], name: "index_staff_identity_emails_on_staff_id"
     t.index ["staff_identity_email_status_id"], name: "index_staff_identity_emails_on_staff_identity_email_status_id"
   end
@@ -246,10 +248,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_16_132111) do
     t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter"
     t.datetime "otp_expires_at"
+    t.datetime "otp_last_sent_at"
     t.string "otp_private_key"
     t.datetime "updated_at", null: false
     t.uuid "user_id"
     t.string "user_identity_email_status_id", limit: 255, default: "UNVERIFIED", null: false
+    t.index ["otp_last_sent_at"], name: "index_user_identity_emails_on_otp_last_sent_at"
     t.index ["user_id"], name: "index_user_identity_emails_on_user_id"
     t.index ["user_identity_email_status_id"], name: "index_user_identity_emails_on_user_identity_email_status_id"
   end

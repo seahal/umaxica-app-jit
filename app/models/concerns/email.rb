@@ -4,6 +4,7 @@ module Email
   extend ActiveSupport::Concern
 
   MAX_OTP_ATTEMPTS = 3
+  OTP_COOLDOWN_PERIOD = 1.minute
 
   attr_accessor :confirm_policy, :pass_code
 
@@ -35,7 +36,8 @@ module Email
       otp_counter: otp_counter,
       otp_expires_at: Time.zone.at(expires_at),
       otp_attempts_count: 0,
-      locked_at: nil
+      locked_at: nil,
+      otp_last_sent_at: Time.current
     )
   end
 
@@ -73,6 +75,16 @@ module Email
 
   def locked?
     locked_at.present? || otp_attempts_count >= MAX_OTP_ATTEMPTS
+  end
+
+  def otp_cooldown_active?
+    otp_last_sent_at.present? && otp_last_sent_at > OTP_COOLDOWN_PERIOD.ago
+  end
+
+  def otp_cooldown_remaining
+    return 0 unless otp_cooldown_active?
+
+    (otp_last_sent_at + OTP_COOLDOWN_PERIOD) - Time.current
   end
 
   def increment_attempts!

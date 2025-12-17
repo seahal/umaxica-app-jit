@@ -103,9 +103,12 @@ module Sign
           existing_email = find_email_with_timing_protection(normalized_address)
 
           if existing_email
-            otp_code = generate_otp_for(existing_email)
             session[:user_email_authentication_id] = existing_email.id
             session[:user_email_authentication_address] = nil
+
+            return if otp_request_rate_limited?(existing_email)
+
+            otp_code = generate_otp_for(existing_email)
 
             Email::App::RegistrationMailer.with(
               hotp_token: otp_code,
@@ -144,18 +147,18 @@ module Sign
           otp_data = user_email.get_otp
           return { success: false, error: t("sign.app.authentication.email.edit.session_expired") } unless otp_data
 
+          user = user_from_user_email(user_email)
           hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
           expected_code = hotp.at(otp_data[:otp_counter]).to_s
 
           if ActiveSupport::SecurityUtils.secure_compare(expected_code, user_email.pass_code)
             user_email.clear_otp
             session[:user_email_authentication_id] = nil
-            user = user_email.user || User.find_by(id: user_email.user_id)
             log_in(user) if user
             { success: true }
           else
             user_email.increment_attempts!
-            handle_failed_otp_attempt(user_email)
+            handle_failed_otp_attempt(user_email, user)
           end
         end
 
@@ -165,7 +168,10 @@ module Sign
           { success: false, error: t("sign.app.authentication.email.update.invalid_code") }
         end
 
-        def handle_failed_otp_attempt(user_email)
+        def handle_failed_otp_attempt(user_email, user = nil)
+          user ||= user_from_user_email(user_email)
+          audit_user_login_failed(user) if user
+
           if user_email.locked?
             { success: false, error: t("sign.app.authentication.email.locked") }
           else
@@ -184,6 +190,16 @@ module Sign
           elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
           remaining = target_seconds - elapsed
           sleep(remaining) if remaining.positive?
+        end
+
+        def user_from_user_email(user_email)
+          user_email.user || User.find_by(id: user_email.user_id)
+        end
+
+        def otp_request_rate_limited?(user_email)
+          return false unless user_email.otp_cooldown_active?
+
+          true
         end
       end
     end
