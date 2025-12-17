@@ -38,7 +38,7 @@ module Help
           telephone_number: params.dig(:com_contact, :telephone_number)
         )
 
-        # TODO: ここを、@contact にエラーを注入して、エラーメッセージを出したい。
+        # TODO: Inject error into @contact here and display error message.
         unless turnstile_result["success"]
           @contact.errors.add(:base, "ロボットではないことの確認に失敗しました。もう一度お試しください。")
           @email_address = params.dig(:com_contact, :email_address) || ""

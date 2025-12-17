@@ -15,7 +15,7 @@ class CreateAppContacts < ActiveRecord::Migration[8.0]
     add_index :app_contacts, :token_digest
     add_index :app_contacts, :token_expires_at
 
-    # 外部キー制約を追加
+    # Add foreign key constraints
     add_foreign_key :app_contacts, :app_contact_categories,
                     column: :contact_category_title,
                     primary_key: :title

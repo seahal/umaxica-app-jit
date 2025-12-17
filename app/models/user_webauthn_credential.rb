@@ -18,13 +18,7 @@ class UserWebauthnCredential < IdentitiesRecord
     roaming: 1 # YubiKey, Security keys, etc.
   }
 
-  scope :active, -> { where(active: true) }
-
   def increment_sign_count!
     update!(sign_count: sign_count + 1)
-  end
-
-  def deactivate!
-    update!(active: false)
   end
 end

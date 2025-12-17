@@ -15,7 +15,7 @@ class CreateOrgContacts < ActiveRecord::Migration[8.1]
     add_index :org_contacts, :token_digest
     add_index :org_contacts, :token_expires_at
 
-    # 外部キー制約を追加
+    # Add foreign key constraints
     add_foreign_key :org_contacts, :org_contact_categories,
                     column: :contact_category_title,
                     primary_key: :title

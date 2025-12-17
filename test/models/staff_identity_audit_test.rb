@@ -72,15 +72,15 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       previous_value: plain_text
     )
 
-    # モデルの encrypted_attributes に previous_value が含まれていることを確認
+    # Confirm that previous_value is included in the model's encrypted_attributes
     assert_includes StaffIdentityAudit.encrypted_attributes, :previous_value
 
-    # データベースから直接取得（暗号化された値）
+    # Retrieve directly from the database (encrypted value)
     encrypted_value = StaffIdentityAudit.connection.execute(
       "SELECT previous_value FROM staff_identity_audits WHERE id = '#{audit.id}' LIMIT 1"
     ).first["previous_value"]
 
-    # 暗号化されているので、元の値と異なるはず
+    # Since it is encrypted, it should be different from the original value
     assert_not_equal plain_text, encrypted_value
   end
 
@@ -92,7 +92,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       previous_value: plain_text
     )
 
-    # モデルから取得すると復号化されている
+    # It is decrypted when retrieved from the model
     assert_equal plain_text, audit.reload.previous_value
   end
 
@@ -165,7 +165,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     actor_user = users(:one)
     actor_staff = staffs(:one)
 
-    # 同じ staff に対する複数の audit で、異なるアクターを持つ
+    # Multiple audits for the same staff can have different actors
     StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
@@ -178,7 +178,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       actor: actor_staff
     )
 
-    # 同じ Staff に関連する複数の audit を取得
+    # Retrieve multiple audits related to the same Staff
     user_actors = @staff.staff_identity_audits.where(actor_type: "User")
     staff_actors = @staff.staff_identity_audits.where(actor_type: "Staff")
 

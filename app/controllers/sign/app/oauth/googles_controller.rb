@@ -7,11 +7,11 @@ module Sign
 
         # POST /oauth/google
         def create
-          # RailsのCSRFトークン検証を通る
+          # Pass Rails CSRF token verification
           redirect_to "/auth/google", allow_other_host: false, status: :see_other
         end
 
-        # GET /auth/google/callback (OmniAuthからのコールバック)
+        # GET /auth/google/callback (Callback from OmniAuth)
         def callback
           auth_hash = request.env["omniauth.auth"]
 
@@ -37,7 +37,7 @@ module Sign
           end
         end
 
-        # GET /auth/failure (OmniAuth認証失敗時)
+        # GET /auth/failure (When OmniAuth authentication fails)
         def failure
           error_message = params[:message] || "unknown_error"
           Rails.logger.error "Google OAuth failure: #{error_message}"

@@ -1,4 +1,4 @@
-class AddLoginAuditEvents < ActiveRecord::Migration[8.0]
+class AddLoginAuditEvents < ActiveRecord::Migration[8.2]
   def up
     # Add login-related audit events
     UserIdentityAuditEvent.create!(id: "LOGGED_IN") unless UserIdentityAuditEvent.exists?(id: "LOGGED_IN")

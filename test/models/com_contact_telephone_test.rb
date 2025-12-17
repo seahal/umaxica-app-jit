@@ -385,4 +385,73 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
 
     assert_not telephone.can_resend_otp?
   end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should generate and verify HOTP" do
+    contact = com_contacts(:one)
+    telephone = ComContactTelephone.create!(
+      com_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
+    code = telephone.generate_hotp!
+
+    assert_not_nil telephone.hotp_secret
+    assert_not_nil telephone.hotp_counter
+    assert_equal 3, telephone.verifier_attempts_left
+    assert_not telephone.activated
+
+    # Verify with correct code
+    assert telephone.verify_hotp_code(code)
+    assert telephone.reload.activated
+    assert_equal 0, telephone.verifier_attempts_left
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "should reject invalid HOTP code" do
+    contact = com_contacts(:one)
+    telephone = ComContactTelephone.create!(
+      com_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
+    telephone.generate_hotp!
+    initial_attempts = telephone.verifier_attempts_left
+
+    assert_not telephone.verify_hotp_code("000000")
+    assert_not telephone.reload.activated
+    assert_equal initial_attempts - 1, telephone.verifier_attempts_left
+  end
+
+  test "should reject HOTP when attempts exhausted" do
+    contact = com_contacts(:one)
+    telephone = ComContactTelephone.create!(
+      com_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
+    code = telephone.generate_hotp!
+    telephone.update!(verifier_attempts_left: 0)
+
+    assert_not telephone.verify_hotp_code(code)
+    assert_not telephone.reload.activated
+  end
+
+  test "should reject expired HOTP" do
+    contact = com_contacts(:one)
+    telephone = ComContactTelephone.create!(
+      com_contact: contact,
+      telephone_number: "+1234567890",
+      expires_at: 1.day.from_now
+    )
+
+    code = telephone.generate_hotp!
+    telephone.update!(verifier_expires_at: 1.minute.ago)
+
+    assert_not telephone.verify_hotp_code(code)
+    assert_not telephone.reload.activated
+  end
 end

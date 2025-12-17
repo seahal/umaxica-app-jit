@@ -39,4 +39,20 @@ class StaffWebauthnCredentialTest < ActiveSupport::TestCase
     assert_predicate credential.errors[:external_id], :present?
     assert_predicate credential.errors[:public_key], :present?
   end
+
+  test "should increment sign count" do
+    staff = Staff.new
+    staff.save!(validate: false)
+    credential = StaffWebauthnCredential.create!(
+      staff: staff,
+      external_id: "test-id-#{SecureRandom.hex}",
+      public_key: "key",
+      nickname: "my key",
+      sign_count: 0
+    )
+
+    assert_difference -> { credential.reload.sign_count }, 1 do
+      credential.increment_sign_count!
+    end
+  end
 end

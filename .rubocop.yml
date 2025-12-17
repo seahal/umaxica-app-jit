@@ -11,21 +11,29 @@ plugins:
 AllCops:
   # Target Ruby version
   TargetRubyVersion: 3.5
-
   # Enable caching
   UseCache: true
-
   # Specify where to store cached results
   CacheRootDirectory: tmp/rubocop_cache
-
   # Enable new cops by default
   NewCops: enable
+  #
+  Exclude:
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'db/schema.rb'
+    - 'bin/**/*'
+    - 'tmp/**/*'
+  Include:
+    - '**/*.rb'
+    - '**/*.rake'
+    - '**/Gemfile'
+    - '**/Rakefile'
 
 Rails:
   Enabled: true
 Security:
   Enabled: true
-
 Security/CompoundHash: # new in 1.28
   Enabled: true
 Security/IoMethods: # new in 1.22
@@ -152,3 +160,9 @@ Rails/FindByOrAssignmentMemoization: # new in 2.33
   Enabled: true
 Rails/OrderArguments: # new in 2.33
   Enabled: true
+Style/AsciiComments:
+  Enabled: true
+Layout/IndentationWidth:
+  Width: 2
+Style/Documentation:
+  Enabled: false

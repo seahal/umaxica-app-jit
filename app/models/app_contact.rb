@@ -44,6 +44,18 @@ class AppContact < GuestsRecord
   validates :contact_category_title, presence: true
 
   # State transition helpers
+  def email_pending?
+    contact_status_id == "SET_UP"
+  end
+
+  def email_verified?
+    contact_status_id == "CHECKED_EMAIL_ADDRESS"
+  end
+
+  def phone_verified?
+    contact_status_id == "CHECKED_TELEPHONE_NUMBER"
+  end
+
   def can_verify_email?
     email_pending?
   end
@@ -58,17 +70,17 @@ class AppContact < GuestsRecord
 
   def verify_email!
     raise StandardError, "Cannot verify email at this time" unless can_verify_email?
-    update!(contact_status_id: "EMAIL_VERIFIED")
+    update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
     raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
-    update!(contact_status_id: "PHONE_VERIFIED")
+    update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
     raise StandardError, "Cannot complete contact at this time" unless can_complete?
-    update!(contact_status_id: "COMPLETED")
+    update!(contact_status_id: "COMPLETED_CONTACT_ACTION")
   end
 
   # Token management
