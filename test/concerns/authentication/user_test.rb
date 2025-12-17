@@ -85,7 +85,7 @@ class Authentication::UserTest < ActiveSupport::TestCase
     @obj.send(:log_in, @user)
     @obj.send(:log_out)
 
-    refute_predicate @obj, :logged_in?
+    assert_not_predicate @obj, :logged_in?
     assert_nil @obj.current_user
   end
 

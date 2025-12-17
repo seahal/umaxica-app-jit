@@ -85,7 +85,7 @@ class Authentication::StaffTest < ActiveSupport::TestCase
     @obj.send(:log_in, @staff)
     @obj.send(:log_out)
 
-    refute_predicate @obj, :logged_in?
+    assert_not_predicate @obj, :logged_in?
     assert_nil @obj.current_staff
   end
 
