@@ -3,7 +3,7 @@
 
 class CreateUniversalEmailIdentifiers < ActiveRecord::Migration[8.0]
   def change
-    create_table :universal_email_identifiers, id: :uuid do |t|
+    create_table :universal_email_identifiers, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.timestamps
     end
   end

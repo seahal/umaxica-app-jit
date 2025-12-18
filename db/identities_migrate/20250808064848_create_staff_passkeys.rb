@@ -1,6 +1,6 @@
 class CreateStaffPasskeys < ActiveRecord::Migration[8.0]
   def change
-    create_table :staff_passkeys, id: :uuid do |t|
+    create_table :staff_passkeys, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.references :staff, null: false, foreign_key: true, type: :uuid
       t.string :external_id
       t.text :public_key

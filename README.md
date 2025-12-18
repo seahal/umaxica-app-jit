@@ -18,6 +18,12 @@
 3. Prepare the database (creates, migrates, seeds as`
 4. ... run `bin/dev`
 
+## Database IDs
+
+- PostgreSQL 18 UUID primary keys default to `uuidv7()` so inserts remain time-ordered.
+- New tables created with `create_table :foos, id: :uuid do |t| ... end` automatically use the function via `config/initializers/postgresql_uuid_v7.rb`.
+- If you need a custom generator, pass an explicit `default:` when defining the primary key.
+
 ## Testing
 - Rails test suite (parallelized): `bundle exec rails test`
 - Coverage can be calculated (or measured) when you execute the test suite using the command `COVERAGE=true bin/rails test.`
@@ -27,6 +33,12 @@
 - Ruby style checks: `bundle exec rubocop`
 - ERB templates: `bundle exec erb_lint .`
 - Frontend formatting and linting: `bun run format`, `bun run lint`
+
+## Logging
+
+- Rails emits structured logs via `Rails.event` (ActiveSupport::Notifications) rather than `Rails.logger`.
+- Use `Rails.event.record("event.name", payload_hash)` or `Rails.event.error(...)` so logs stay machine-parseable.
+- Legacy `Rails.logger.*` calls should be migrated when touched to keep log output consistent.
 
 ## Key Services & Integrations
 

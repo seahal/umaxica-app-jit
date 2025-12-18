@@ -1,6 +1,6 @@
 class CreateOrganizations < ActiveRecord::Migration[8.2]
   def change
-    create_table :organizations, id: :uuid do |t|
+    create_table :organizations, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.string :name
       t.string :domain
       t.uuid :parent_organization

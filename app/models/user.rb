@@ -13,6 +13,7 @@ class User < IdentitiesRecord
   include Stakeholder
   include Withdrawable
   include HasRoles
+  include ::PublicId
 
   belongs_to :user_identity_status, optional: true
   has_one :user_identity_apple_auth, dependent: :destroy
@@ -27,10 +28,7 @@ class User < IdentitiesRecord
   has_many :organizations, through: :user_organizations
   has_many :staff_identity_audits, as: :actor, dependent: :destroy
 
-  before_validation :ensure_public_id
   before_create :set_default_status
-
-  validates :public_id, presence: true, uniqueness: true
 
   def staff?
     false
@@ -41,10 +39,6 @@ class User < IdentitiesRecord
   end
 
   private
-
-  def ensure_public_id
-    self.public_id ||= Nanoid.generate(size: 21)
-  end
 
   def set_default_status
     self.user_identity_status_id ||= UserIdentityStatus::NONE

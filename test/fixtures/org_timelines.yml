@@ -2,8 +2,10 @@ one:
   title: Org Timeline One
   description: First org timeline
   org_timeline_status_id: ACTIVE
+  public_id: "fwaWyhV2cuzxdcc-AoV6s"
 
 two:
   title: Org Timeline Two
   description: Second org timeline
   org_timeline_status_id: ACTIVE
+  public_id: "ZRe2gUG0LDfVJ_vx0sSdH"

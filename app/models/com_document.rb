@@ -16,6 +16,7 @@
 #  succ_id          :uuid
 #
 class ComDocument < BusinessesRecord
+  include ::PublicId
   belongs_to :com_document_status, optional: true
 
   include Document

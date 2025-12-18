@@ -1,6 +1,6 @@
 class CreateOrgDocumentAudits < ActiveRecord::Migration[8.2]
   def change
-    create_table :org_document_audits, id: :uuid do |t|
+    create_table :org_document_audits, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.references :org_document, null: false, foreign_key: true, type: :uuid
       t.string :event_id, null: false, limit: 255
       t.datetime :timestamp

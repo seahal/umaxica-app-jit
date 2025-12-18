@@ -14,9 +14,8 @@
 #  updated_at       :datetime         not null
 #
 class AppContact < GuestsRecord
+  include ::PublicId
   # Associations
-  has_many :app_contact_emails, dependent: :destroy
-  has_many :app_contact_telephones, dependent: :destroy
   belongs_to :app_contact_category,
              class_name: "AppContactCategory",
              foreign_key: :contact_category_title,
@@ -29,6 +28,8 @@ class AppContact < GuestsRecord
              optional: true,
              inverse_of: :app_contacts
   has_many :app_contact_topics, dependent: :destroy
+  has_many :app_contact_emails, dependent: :destroy
+  has_many :app_contact_telephones, dependent: :destroy
 
   attr_accessor :confirm_policy
 
@@ -36,7 +37,6 @@ class AppContact < GuestsRecord
   # Callbacks
   before_validation { self.contact_category_title = contact_category_title&.upcase }
   before_validation { self.contact_status_id = contact_status_id&.upcase }
-  before_create :generate_public_id
   before_create :generate_token
 
   # Validations
@@ -116,11 +116,6 @@ class AppContact < GuestsRecord
   end
 
   private
-
-  def generate_public_id
-    self.public_id ||= Nanoid.generate(size: 21)
-  end
-
   def generate_token
     self.token ||= SecureRandom.alphanumeric(32)
   end

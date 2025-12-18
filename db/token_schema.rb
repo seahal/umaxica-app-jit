@@ -20,7 +20,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_130520) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staff_tokens", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "staff_id", null: false
     t.string "staff_token_status_id", default: "NONE", null: false
@@ -32,7 +32,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_130520) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_tokens", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false

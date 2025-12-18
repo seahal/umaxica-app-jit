@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_18_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -49,7 +49,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
     t.index ["verifier_expires_at"], name: "index_app_contact_emails_on_verifier_expires_at"
   end
 
-  create_table "app_contact_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "app_contact_histories", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "actor_id"
     t.string "actor_type"
     t.uuid "app_contact_id", null: false
@@ -87,7 +87,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
     t.index ["verifier_expires_at"], name: "index_app_contact_telephones_on_verifier_expires_at"
   end
 
-  create_table "app_contact_topics", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "app_contact_topics", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
     t.uuid "app_contact_id", null: false
     t.datetime "created_at", null: false
@@ -96,12 +96,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
+    t.string "public_id", limit: 21, null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.datetime "updated_at", null: false
     t.index ["app_contact_id"], name: "index_app_contact_topics_on_app_contact_id"
+    t.index ["public_id"], name: "index_app_contact_topics_on_public_id"
   end
 
-  create_table "app_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "app_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.string "contact_category_title", limit: 255
     t.string "contact_status_id", limit: 255
     t.datetime "created_at", null: false
@@ -123,7 +125,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "com_contact_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "com_contact_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "actor_id"
     t.string "actor_type"
     t.uuid "com_contact_id", null: false
@@ -194,7 +196,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
     t.index ["verifier_expires_at"], name: "index_com_contact_telephones_on_verifier_expires_at"
   end
 
-  create_table "com_contact_topics", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "com_contact_topics", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
@@ -204,13 +206,15 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
+    t.string "public_id", limit: 21, null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["com_contact_id"], name: "index_com_contact_topics_on_com_contact_id"
+    t.index ["public_id"], name: "index_com_contact_topics_on_public_id"
   end
 
-  create_table "com_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "com_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.string "contact_category_title", limit: 255
     t.string "contact_status_id", limit: 255
     t.datetime "created_at", null: false
@@ -261,7 +265,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
     t.index ["verifier_expires_at"], name: "index_org_contact_emails_on_verifier_expires_at"
   end
 
-  create_table "org_contact_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "org_contact_histories", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "actor_id"
     t.string "actor_type"
     t.datetime "created_at", null: false
@@ -299,7 +303,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
     t.index ["verifier_expires_at"], name: "index_org_contact_telephones_on_verifier_expires_at"
   end
 
-  create_table "org_contact_topics", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "org_contact_topics", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.boolean "activated", default: false, null: false
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
@@ -308,12 +312,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_17_000000) do
     t.integer "otp_attempts_left", limit: 2, default: 3, null: false
     t.string "otp_digest", limit: 255
     t.timestamptz "otp_expires_at"
+    t.string "public_id", limit: 21, null: false
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.datetime "updated_at", null: false
     t.index ["org_contact_id"], name: "index_org_contact_topics_on_org_contact_id"
+    t.index ["public_id"], name: "index_org_contact_topics_on_public_id"
   end
 
-  create_table "org_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "org_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.string "contact_category_title", limit: 255
     t.string "contact_status_id", limit: 255
     t.datetime "created_at", null: false

@@ -48,7 +48,8 @@ The application uses 10 separate PostgreSQL databases with primary/replica confi
 
 **スキーマのみ管理されているDB** (schema files exist, no migration directory):
 - `notification` (notification_schema.rb) - Notification management
-- `cache` (cache_schema.rb) - Application caching
+- `cache` (cache_schema.rb) - Application caching (Solid Cache)
+- `queue` (queue_schema.rb) - Background job queue (Solid Queue)
 - `storage` (storage_schema.rb) - File storage metadata
 
 **注意**:
@@ -70,11 +71,12 @@ Controllers are organized by endpoint module and domain:
 ### Key Technologies
 - **Authentication**: WebAuthn, TOTP, Apple/Google OAuth, recovery codes
 - **Authorization**: Pundit
-- **Background Jobs**: Karafka (Kafka-based, currently disabled)
+- **Background Jobs**: Solid Queue (DB-based queue), Karafka (Kafka-based, currently disabled)
 - **Frontend**: Rails with Bun.js for asset bundling
 - **File Uploads**: Shrine + Active Storage with Google Cloud Storage
 - **Security**: Rack::Attack for rate limiting, argon2 for password hashing
 - **Monitoring**: OpenTelemetry instrumentation
+- **Logging**: Structured logging with Rails.event (ActiveSupport::Notifications)
 
 ## Development Commands
 
@@ -155,6 +157,132 @@ bundle exec rails db:drop db:create db:migrate
 # 例: identity, universal, guest, profile, token, business, speciality
 ```
 
+## Structured Logging
+
+このアプリケーションは構造化ログを使用しています。従来の`Rails.logger.info`ではなく、`Rails.event`（ActiveSupport::Notifications）を使用してログを出力します。
+
+### 構造化ログの利点
+- **解析可能**: ログがJSON形式で構造化され、ログ集約ツールで簡単に検索・分析可能
+- **コンテキスト情報**: リクエストID、ユーザーID、セッション情報などを自動的に含む
+- **一貫性**: すべてのログが同じフォーマットに従う
+- **OpenTelemetry統合**: トレーシングとログが自動的に関連付けられる
+
+### Rails.eventの使い方
+
+#### 基本的な使用方法
+```ruby
+# イベントの発行
+Rails.event.record("user.login", user_id: user.id, ip_address: request.remote_ip)
+
+# エラーログ
+Rails.event.error("authentication.failed",
+  error_class: error.class.name,
+  error_message: error.message,
+  user_id: user&.id
+)
+
+# デバッグログ
+Rails.event.debug("api.request",
+  endpoint: request.path,
+  method: request.method,
+  params: filtered_params
+)
+```
+
+#### イベント名の命名規則
+イベント名は `{domain}.{action}` の形式を使用:
+- `user.login`, `user.logout` - ユーザー認証関連
+- `staff.login`, `staff.logout` - スタッフ認証関連
+- `api.request`, `api.response` - APIリクエスト関連
+- `database.query` - データベースクエリ関連
+- `job.enqueue`, `job.perform` - バックグラウンドジョブ関連
+- `security.rate_limit`, `security.suspicious_activity` - セキュリティ関連
+
+#### コントローラーでの使用例
+```ruby
+class Sign::App::AuthenticationsController < Sign::App::BaseController
+  def create
+    user = authenticate_user(params)
+
+    if user
+      Rails.event.record("user.login.success",
+        user_id: user.id,
+        authentication_method: params[:method],
+        ip_address: request.remote_ip,
+        user_agent: request.user_agent
+      )
+      redirect_to root_path
+    else
+      Rails.event.record("user.login.failed",
+        email: params[:email],
+        reason: "invalid_credentials",
+        ip_address: request.remote_ip
+      )
+      render :new, status: :unauthorized
+    end
+  end
+end
+```
+
+#### モデルでの使用例
+```ruby
+class User < UniversalRecord
+  after_create do
+    Rails.event.record("user.created",
+      user_id: id,
+      email: email,
+      registration_method: registration_method
+    )
+  end
+
+  def perform_sensitive_action
+    Rails.event.record("user.sensitive_action",
+      user_id: id,
+      action: "data_export",
+      timestamp: Time.current
+    )
+
+    # アクション実行
+  rescue StandardError => e
+    Rails.event.error("user.action_failed",
+      user_id: id,
+      action: "data_export",
+      error_class: e.class.name,
+      error_message: e.message,
+      backtrace: e.backtrace.first(5)
+    )
+    raise
+  end
+end
+```
+
+#### バックグラウンドジョブでの使用例
+```ruby
+class UserNotificationJob < ApplicationJob
+  def perform(user_id, notification_type)
+    Rails.event.record("job.started",
+      job_class: self.class.name,
+      user_id: user_id,
+      notification_type: notification_type
+    )
+
+    # ジョブ実行
+
+    Rails.event.record("job.completed",
+      job_class: self.class.name,
+      user_id: user_id,
+      duration: duration
+    )
+  end
+end
+```
+
+### 重要な注意事項
+- **機密情報を含めない**: パスワード、トークン、クレジットカード番号などをログに出力しない
+- **適切なログレベル**: `record`（info）, `error`, `debug`, `warn`を適切に使い分ける
+- **従来のロガーは使わない**: `Rails.logger.info`の代わりに`Rails.event.record`を使用
+- **パフォーマンス**: 大量のデータをログに出力する場合は注意（必要な情報のみ）
+
 ## Key Patterns
 
 ### Model Concerns
@@ -180,7 +308,8 @@ Models inherit from database-specific base classes:
 - `BusinessRecord` - Business database (ビジネスロジック)
 - `SpecialityRecord` - Speciality database (特殊機能)
 - `NotificationRecord` - Notification database (通知管理)
-- `CacheRecord` - Cache database (キャッシュ)
+- `CacheRecord` - Cache database (Solid Cache用)
+- `QueueRecord` - Queue database (Solid Queue用)
 - `StorageRecord` - Storage database (ストレージメタデータ)
 
 ### View Components
@@ -296,3 +425,8 @@ Key environment variables required:
 - 承認なしでのPRマージ
 - test/test_helper.rb の操作は駄目です。
 - config/ の操作は許可を取ること。
+
+### コーディング規約
+- **ログ出力**: 従来の`Rails.logger.info`は使用せず、必ず`Rails.event.record`を使用する
+- **構造化ログ**: すべてのログは構造化されたイベントとして記録する
+- **機密情報**: ログに機密情報（パスワード、トークン、APIキーなど）を含めない

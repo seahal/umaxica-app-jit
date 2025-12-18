@@ -1,6 +1,6 @@
 class CreateComContactTopics < ActiveRecord::Migration[8.1]
   def change
-    create_table :com_contact_topics, id: :uuid do |t|
+    create_table :com_contact_topics, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.references :com_contact, null: false, foreign_key: true, type: :uuid
       t.boolean :activated, null: false, default: false
       t.boolean :deletable, null: false, default: false

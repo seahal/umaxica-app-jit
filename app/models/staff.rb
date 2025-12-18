@@ -15,6 +15,7 @@ class Staff < IdentitiesRecord
   include Stakeholder
   include Withdrawable
   include HasRoles
+  include ::PublicId
 
   belongs_to :staff_identity_status, optional: true
   has_many :staff_identity_emails, dependent: :destroy
@@ -31,16 +32,7 @@ class Staff < IdentitiesRecord
     false
   end
 
-  before_validation :ensure_public_id
-  before_create :set_default_status
-
-  validates :public_id, presence: true, uniqueness: true
-
   private
-
-  def ensure_public_id
-    self.public_id ||= Nanoid.generate(size: 21)
-  end
 
   def set_default_status
     self.staff_identity_status_id ||= StaffIdentityStatus::NONE

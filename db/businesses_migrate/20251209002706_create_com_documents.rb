@@ -1,6 +1,6 @@
 class CreateComDocuments < ActiveRecord::Migration[8.2]
   def change
-    create_table :com_documents, id: :uuid do |t|
+    create_table :com_documents, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.uuid :parent_id
       t.uuid :prev_id
       t.uuid :succ_id

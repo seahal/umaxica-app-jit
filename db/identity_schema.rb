@@ -15,7 +15,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "apple_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "apple_auths", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.text "access_token"
     t.datetime "created_at", null: false
     t.string "email"
@@ -29,7 +29,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["user_id"], name: "index_apple_auths_on_user_id"
   end
 
-  create_table "google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "google_auths", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.text "access_token"
     t.datetime "created_at", null: false
     t.string "email"
@@ -45,7 +45,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["user_id"], name: "index_google_auths_on_user_id"
   end
 
-  create_table "organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "organizations", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "domain"
     t.string "name"
@@ -55,7 +55,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["parent_organization"], name: "index_organizations_on_parent_organization"
   end
 
-  create_table "role_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "role_assignments", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "role_id", null: false
     t.uuid "staff_id"
@@ -68,7 +68,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["user_id"], name: "index_role_assignments_on_user_id"
   end
 
-  create_table "roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "roles", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.string "key"
@@ -83,7 +83,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_identity_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staff_identity_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "actor_id"
     t.string "actor_type"
     t.datetime "created_at", null: false
@@ -102,7 +102,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_identity_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staff_identity_emails", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
     t.datetime "locked_at"
@@ -119,7 +119,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["staff_identity_email_status_id"], name: "index_staff_identity_emails_on_staff_identity_email_status_id"
   end
 
-  create_table "staff_identity_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staff_identity_passkeys", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", null: false
     t.uuid "external_id", null: false
@@ -142,7 +142,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_identity_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staff_identity_telephones", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "locked_at"
     t.string "number"
@@ -157,7 +157,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["staff_identity_telephone_status_id"], name: "idx_on_staff_identity_telephone_status_id_f2b1a32f7a"
   end
 
-  create_table "staff_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staff_passkeys", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "external_id"
     t.string "name"
@@ -171,7 +171,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["staff_id"], name: "index_staff_passkeys_on_staff_id"
   end
 
-  create_table "staff_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staff_recovery_codes", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "expires_in"
     t.string "recovery_code_digest"
@@ -180,9 +180,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["staff_id"], name: "index_staff_recovery_codes_on_staff_id"
   end
 
-  create_table "staffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staffs", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "public_id", limit: 255
+    t.string "public_id", limit: 21, null: false
     t.string "staff_identity_status_id", limit: 255, default: "NONE"
     t.datetime "updated_at", null: false
     t.string "webauthn_id"
@@ -192,7 +192,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["withdrawn_at"], name: "index_staffs_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"
   end
 
-  create_table "user_apple_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_apple_auths", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "token"
     t.datetime "updated_at", null: false
@@ -202,7 +202,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["user_identity_apple_auth_status_id"], name: "index_user_apple_auths_on_user_identity_apple_auth_status_id"
   end
 
-  create_table "user_google_auths", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_google_auths", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "token"
     t.datetime "updated_at", null: false
@@ -222,7 +222,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_identity_audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_identity_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "actor_id"
     t.string "actor_type"
     t.datetime "created_at", null: false
@@ -241,7 +241,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_identity_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_identity_emails", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.string "address"
     t.datetime "created_at", null: false
     t.datetime "locked_at"
@@ -283,7 +283,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_identity_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_identity_passkeys", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", null: false
     t.uuid "external_id", null: false
@@ -303,7 +303,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_identity_secrets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_identity_secrets", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "last_used_at"
     t.string "name"
@@ -325,7 +325,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_identity_telephones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_identity_telephones", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "locked_at"
     t.string "number"
@@ -340,7 +340,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["user_identity_telephone_status_id"], name: "idx_on_user_identity_telephone_status_id_a15207191e"
   end
 
-  create_table "user_organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_organizations", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "organization_id", null: false
     t.datetime "updated_at", null: false
@@ -349,7 +349,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["user_id"], name: "index_user_organizations_on_user_id"
   end
 
-  create_table "user_passkeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_passkeys", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "external_id"
     t.string "name"
@@ -363,7 +363,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["user_id"], name: "index_user_passkeys_on_user_id"
   end
 
-  create_table "user_recovery_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "user_recovery_codes", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "expires_in"
     t.string "recovery_code_digest"
@@ -372,9 +372,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_141000) do
     t.index ["user_id"], name: "index_user_recovery_codes_on_user_id"
   end
 
-  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "users", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "public_id", limit: 255
+    t.string "public_id", limit: 21, null: false
     t.datetime "updated_at", null: false
     t.string "user_identity_status_id", limit: 255, default: "NONE"
     t.string "webauthn_id"

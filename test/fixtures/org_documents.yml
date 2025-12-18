@@ -2,8 +2,10 @@ one:
   title: Org Document One
   description: First org document
   org_document_status_id: ACTIVE
+  public_id: "5J463qD4KLqScsdUczJET"
 
 two:
   title: Org Document Two
   description: Second org document
   org_document_status_id: ACTIVE
+  public_id: "J8l4MCSJmh-rxPnKu-B3F"

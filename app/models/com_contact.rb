@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class ComContact < GuestsRecord
+  include ::PublicId
   # Associations
   has_one :com_contact_email, dependent: :destroy
   has_one :com_contact_telephone, dependent: :destroy
@@ -23,7 +24,6 @@ class ComContact < GuestsRecord
   # Callbacks
   before_validation { self.contact_category_title = contact_category_title&.upcase }
   before_validation { self.contact_status_id = contact_status_id&.upcase }
-  before_create :generate_public_id
   before_create :generate_token
 
   # Validations
@@ -108,10 +108,6 @@ class ComContact < GuestsRecord
   end
 
   private
-
-  def generate_public_id
-    self.public_id ||= Nanoid.generate(size: 21)
-  end
 
   def generate_token
     self.token ||= SecureRandom.alphanumeric(32)

@@ -1,6 +1,6 @@
 class CreateAppContacts < ActiveRecord::Migration[8.0]
   def change
-    create_table :app_contacts, id: :uuid do |t|
+    create_table :app_contacts, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.string :public_id, null: false, index: true, limit: 21
       t.string :token, null: false, index: true, default: '', limit: 32
       t.string      :token_digest, limit: 255

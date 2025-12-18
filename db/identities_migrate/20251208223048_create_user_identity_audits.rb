@@ -1,6 +1,6 @@
 class CreateUserIdentityAudits < ActiveRecord::Migration[8.2]
   def change
-    create_table :user_identity_audits, id: :uuid do |t|
+    create_table :user_identity_audits, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.references :user, null: false, foreign_key: true, type: :uuid
       t.string :event_id, null: false, limit: 255
       t.datetime :timestamp

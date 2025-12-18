@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class OrgContact < GuestsRecord
+  include ::PublicId
   # Associations
   has_many :org_contact_emails, dependent: :destroy
   has_many :org_contact_telephones, dependent: :destroy
@@ -23,7 +24,6 @@ class OrgContact < GuestsRecord
   # Callbacks
   before_validation { self.contact_category_title = contact_category_title&.upcase }
   before_validation { self.contact_status_id = contact_status_id&.upcase }
-  before_create :generate_public_id
   before_create :generate_token
 
   # Validations
@@ -103,10 +103,6 @@ class OrgContact < GuestsRecord
   end
 
   private
-
-  def generate_public_id
-    self.public_id ||= Nanoid.generate(size: 21)
-  end
 
   def generate_token
     self.token ||= SecureRandom.alphanumeric(32)

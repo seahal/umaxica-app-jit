@@ -22,6 +22,8 @@
 - Ruby: 2-space indent, Omakase Rails via RuboCop (`.rubocop.yml`). Files `snake_case.rb`, classes `CamelCase`. Prefer small, focused controllers/services; avoid N+1 (Bullet is enabled).
 - Views: ERB linted; keep partials in `app/views/**/_*.html.erb`.
 - JS/TS: Format/lint with Biome (`bun run format` / `bun run lint`). Typecheck with `bun run typecheck`. Place Stimulus-like controllers in `app/javascript/controllers/` (e.g., `passkey.js`).
+- Logging: emit structured events with `Rails.event` (`Rails.event.record`, `.error`, etc.); do not add new `Rails.logger.*` calls.
+- IDs: UUID primary keys default to `uuidv7()`; avoid reintroducing `gen_random_uuid()` defaults unless explicitly required.
 
 ## Testing Guidelines
 - Ruby: Minitest under `test/` with fixtures. Name as `*_test.rb` (e.g., `user_test.rb`). Aim to keep branch coverage green (SimpleCov setup in `test/test_helper.rb`).

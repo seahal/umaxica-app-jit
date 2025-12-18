@@ -16,6 +16,7 @@
 #  succ_id          :uuid
 #
 class OrgTimeline < BusinessesRecord
+  include ::PublicId
   belongs_to :org_timeline_status, optional: true
 
   include Timeline

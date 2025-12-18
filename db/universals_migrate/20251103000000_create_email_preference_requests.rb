@@ -1,6 +1,6 @@
 class CreateEmailPreferenceRequests < ActiveRecord::Migration[8.1]
   def change
-    create_table :email_preference_requests, id: :uuid, default: -> { "gen_random_uuid()" } do |t|
+    create_table :email_preference_requests, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.string :email_address, limit: 1000, null: false
       t.string :context, limit: 32, null: false
       t.string :token_digest, limit: 64, null: false
