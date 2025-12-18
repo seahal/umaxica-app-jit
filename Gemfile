@@ -90,6 +90,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
+  # minitest mock (extracted from minitest 6.0+)
+  gem "minitest-mock"
   # for IntelliJ IDEA
   # gem 'ruby-debug-ide'
 end

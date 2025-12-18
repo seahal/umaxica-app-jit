@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 7570743002134c8afc99afe107adb34dcda90494
+  revision: 61b5c7e2953fd0ccfab151b233ce69283c567a34
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -349,7 +349,9 @@ GEM
       logger
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
-    minitest (5.27.0)
+    minitest (6.0.0)
+      prism (~> 1.5)
+    minitest-mock (5.27.0.beta.1.beta.1)
     msgpack (1.8.0)
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
@@ -768,11 +770,11 @@ GEM
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
-    tailwindcss-ruby (4.1.16)
-    tailwindcss-ruby (4.1.16-x86_64-linux-gnu)
+    tailwindcss-ruby (4.1.18)
+    tailwindcss-ruby (4.1.18-x86_64-linux-gnu)
     thor (1.4.0)
     timeout (0.6.0)
-    tomlrb (2.0.3)
+    tomlrb (2.0.4)
     tpm-key_attestation (0.14.1)
       bindata (~> 2.4)
       openssl (> 2.0)
@@ -787,7 +789,7 @@ GEM
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
-    unicode-emoji (4.1.0)
+    unicode-emoji (4.2.0)
     uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.9)
@@ -843,6 +845,7 @@ DEPENDENCIES
   letter_opener
   license_finder
   meta-tags
+  minitest-mock
   nanoid
   omniauth
   omniauth-apple
