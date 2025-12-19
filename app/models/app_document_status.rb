@@ -4,12 +4,10 @@
 #
 # Table name: app_document_statuses
 #
-#  id         :string           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string           not null, primary key
 #
 class AppDocumentStatus < BusinessesRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   has_many :app_documents, dependent: :restrict_with_error, inverse_of: :app_document_status
 end

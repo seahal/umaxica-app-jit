@@ -82,7 +82,6 @@ gem "nanoid"
 # Authentication
 gem "pundit"
 
-
 group :development, :test do
   # to avoid n+1 queries
   # gem "bullet"

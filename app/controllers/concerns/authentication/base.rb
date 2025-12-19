@@ -41,21 +41,23 @@ module Authentication
         type: resource.class.name.downcase
       }
 
-      key = jwt_private_key
-
-      JWT.encode(payload, key, JWT_ALGORITHM)
+      JWT.encode(payload, JwtConfig.private_key, JWT_ALGORITHM)
     rescue StandardError => e
-      Rails.logger.error "Failed to generate access token: #{e.class}: #{e.message}"
-      Rails.logger.error e.backtrace.first(5).join("\n")
-      raise "Access token generation failed: #{e.message}"
+      Rails.event.notify("authentication.token.generation.failed",
+        error_class: e.class.name,
+        error_message: e.message,
+        backtrace: e.backtrace.first(5),
+        resource_type: resource.class.name,
+        resource_id: resource.id
+      )
+      raise "Access token generation failed"
     end
 
     def verify_access_token(token)
       raise ArgumentError, "Token cannot be blank" if token.blank?
 
-      key = jwt_public_key
-      JWT.decode(token, key, true, {
-        algorithm: JWT_ALGORITHM,
+      JWT.decode(token, JwtConfig.public_key, true, {
+        algorithms: [ JWT_ALGORITHM ],
         verify_iat: true,
         verify_exp: true,
         verify_iss: true,
@@ -64,43 +66,32 @@ module Authentication
         aud: "umaxica-api"
       }).first
     rescue JWT::ExpiredSignature
-      Rails.logger.info "Expired token verification attempt"
+      Rails.event.notify("authentication.token.verification.expired",
+        host: request.host
+      )
       raise JWT::ExpiredSignature, "Token has expired"
     rescue JWT::DecodeError, JWT::VerificationError => e
-      Rails.logger.warn "Token verification failed: #{e.class.name}"
+      Rails.event.notify("authentication.token.verification.failed",
+        error_class: e.class.name,
+        host: request.host
+      )
       raise JWT::VerificationError, "Invalid token"
     rescue StandardError => e
-      Rails.logger.error "Unexpected error during token verification: #{e.message}"
+      Rails.event.notify("authentication.token.verification.error",
+        error_class: e.class.name,
+        error_message: e.message,
+        host: request.host
+      )
       raise JWT::VerificationError, "Token verification failed"
     end
 
     private
 
-    def jwt_private_key
-      @jwt_private_key ||= begin
-                             private_key_base64 = ENV["JWT_PRIVATE_KEY"] || Rails.application.credentials.dig(:JWT, :PRIVATE_KEY)
-                             raise "JWT private key not configured in credentials" if private_key_base64.blank?
-
-                             private_key_der = Base64.decode64(private_key_base64)
-                             OpenSSL::PKey::EC.new(private_key_der)
-                           end
-    end
-
-    def jwt_public_key
-      @jwt_public_key ||= begin
-                            public_key_base64 = ENV["JWT_PUBLIC_KEY"] || Rails.application.credentials.dig(:JWT, :PUBLIC_KEY)
-                            raise "JWT public key not configured in credentials" if public_key_base64.blank?
-
-                            public_key_der = Base64.decode64(public_key_base64)
-                            OpenSSL::PKey::EC.new(public_key_der)
-                          end
-    end
-
     def cookie_options
       opts = {
         httponly: true,
         secure: Rails.env.production?,
-        samesite: :lax
+        samesite: :strict
       }
       opts[:domain] = shared_cookie_domain if shared_cookie_domain
       opts

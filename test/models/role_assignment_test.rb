@@ -4,7 +4,7 @@ require "test_helper"
 
 class RoleAssignmentTest < ActiveSupport::TestCase
   setup do
-    @organization = Organization.create!(
+    @organization = Workspace.create!(
       name: "Test Org",
       domain: "test-#{Time.current.to_i}-#{rand(10000)}.example.com"
     )

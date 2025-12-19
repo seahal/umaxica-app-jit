@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  public_id: "GGGGGGGGGGGGGGGGGGGGG"
+  body: "ip-body-one"
+  status_id: ACTIVE
+  memo: "IP occurrence one"
+
+two:
+  public_id: "HHHHHHHHHHHHHHHHHHHHH"
+  body: "ip-body-two"
+  status_id: INACTIVE
+  memo: "IP occurrence two"

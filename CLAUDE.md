@@ -172,16 +172,16 @@ bundle exec rails db:drop db:create db:migrate
 #### 基本的な使用方法
 ```ruby
 # イベントの発行
-Rails.event.record("user.login", user_id: user.id, ip_address: request.remote_ip)
+Rails.event.notify("user.login", user_id: user.id, ip_address: request.remote_ip)
 
-# エラーログ
-Rails.event.error("authentication.failed",
+# エラーイベント（errorメソッドは存在しないため、notifyを使用）
+Rails.event.notify("authentication.failed",
   error_class: error.class.name,
   error_message: error.message,
   user_id: user&.id
 )
 
-# デバッグログ
+# デバッグモードのみでログ出力
 Rails.event.debug("api.request",
   endpoint: request.path,
   method: request.method,
@@ -205,7 +205,7 @@ class Sign::App::AuthenticationsController < Sign::App::BaseController
     user = authenticate_user(params)
 
     if user
-      Rails.event.record("user.login.success",
+      Rails.event.notify("user.login.success",
         user_id: user.id,
         authentication_method: params[:method],
         ip_address: request.remote_ip,
@@ -213,7 +213,7 @@ class Sign::App::AuthenticationsController < Sign::App::BaseController
       )
       redirect_to root_path
     else
-      Rails.event.record("user.login.failed",
+      Rails.event.notify("user.login.failed",
         email: params[:email],
         reason: "invalid_credentials",
         ip_address: request.remote_ip
@@ -228,7 +228,7 @@ end
 ```ruby
 class User < UniversalRecord
   after_create do
-    Rails.event.record("user.created",
+    Rails.event.notify("user.created",
       user_id: id,
       email: email,
       registration_method: registration_method
@@ -236,7 +236,7 @@ class User < UniversalRecord
   end
 
   def perform_sensitive_action
-    Rails.event.record("user.sensitive_action",
+    Rails.event.notify("user.sensitive_action",
       user_id: id,
       action: "data_export",
       timestamp: Time.current
@@ -244,7 +244,7 @@ class User < UniversalRecord
 
     # アクション実行
   rescue StandardError => e
-    Rails.event.error("user.action_failed",
+    Rails.event.notify("user.action_failed",
       user_id: id,
       action: "data_export",
       error_class: e.class.name,
@@ -260,7 +260,7 @@ end
 ```ruby
 class UserNotificationJob < ApplicationJob
   def perform(user_id, notification_type)
-    Rails.event.record("job.started",
+    Rails.event.notify("job.started",
       job_class: self.class.name,
       user_id: user_id,
       notification_type: notification_type
@@ -268,7 +268,7 @@ class UserNotificationJob < ApplicationJob
 
     # ジョブ実行
 
-    Rails.event.record("job.completed",
+    Rails.event.notify("job.completed",
       job_class: self.class.name,
       user_id: user_id,
       duration: duration
@@ -279,8 +279,9 @@ end
 
 ### 重要な注意事項
 - **機密情報を含めない**: パスワード、トークン、クレジットカード番号などをログに出力しない
-- **適切なログレベル**: `record`（info）, `error`, `debug`, `warn`を適切に使い分ける
-- **従来のロガーは使わない**: `Rails.logger.info`の代わりに`Rails.event.record`を使用
+- **正しいメソッド**: `Rails.event.notify`を使用（`record`や`error`メソッドは存在しない）
+- **デバッグ用**: デバッグモードのみでログ出力する場合は`Rails.event.debug`を使用
+- **従来のロガーは使わない**: `Rails.logger.info`の代わりに`Rails.event.notify`を使用
 - **パフォーマンス**: 大量のデータをログに出力する場合は注意（必要な情報のみ）
 
 ## Key Patterns
@@ -427,6 +428,7 @@ Key environment variables required:
 - config/ の操作は許可を取ること。
 
 ### コーディング規約
-- **ログ出力**: 従来の`Rails.logger.info`は使用せず、必ず`Rails.event.record`を使用する
+- **ログ出力**: 従来の`Rails.logger.info`は使用せず、必ず`Rails.event.notify`を使用する
 - **構造化ログ**: すべてのログは構造化されたイベントとして記録する
 - **機密情報**: ログに機密情報（パスワード、トークン、APIキーなど）を含めない
+- **リフレッシュトークンローテーション**: リフレッシュトークンを使用する際は必ず新しいトークンを発行し、古いトークンを無効化する

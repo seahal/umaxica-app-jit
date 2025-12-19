@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  public_id: "AAAAAAAAAAAAAAAAAAAAA"
+  body: "area-body-one"
+  status_id: ACTIVE
+  memo: "Area occurrence one"
+
+two:
+  public_id: "BBBBBBBBBBBBBBBBBBBBB"
+  body: "area-body-two"
+  status_id: INACTIVE
+  memo: "Area occurrence two"

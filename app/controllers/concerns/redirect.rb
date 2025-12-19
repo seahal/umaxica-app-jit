@@ -75,7 +75,7 @@ module Redirect
         head :not_found
       end
     rescue ArgumentError, URI::InvalidURIError => e
-      Rails.logger.warn "Invalid redirect URL attempted: #{e.message}"
+      Rails.event.notify("redirect.invalid_url", error_message: e.message)
       head :not_found
     end
   end

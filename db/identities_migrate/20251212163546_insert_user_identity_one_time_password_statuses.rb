@@ -1,12 +1,12 @@
 class InsertUserIdentityOneTimePasswordStatuses < ActiveRecord::Migration[8.2]
   def up
     execute <<-SQL.squish
-      INSERT INTO user_identity_one_time_password_statuses (id, created_at, updated_at)
+      INSERT INTO user_identity_one_time_password_statuses (id)
       VALUES
-        ('ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('INACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('REVOKED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('DELETED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        ('ACTIVE'),
+        ('INACTIVE'),
+        ('REVOKED'),
+        ('DELETED')
       ON CONFLICT (id) DO NOTHING;
     SQL
   end

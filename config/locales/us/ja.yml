@@ -21,6 +21,14 @@ ja:
     messages:
       login_required: "ログインが必要です"
       already_authenticated: "すでにログインしています"
+  sign:
+    token_refresh:
+      errors:
+        missing_refresh_token: "リフレッシュトークンは必須です"
+        invalid_refresh_token: "リフレッシュトークンが無効または有効期限切れです"
+        user_not_found_or_withdrawn: "User not found or withdrawn"
+        staff_not_found_or_withdrawn: "Staff not found or withdrawn"
+
   controller:
     sign:
       app:

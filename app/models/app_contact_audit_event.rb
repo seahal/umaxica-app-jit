@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AppContactAuditEvent < GuestsRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   self.table_name = "app_contact_audit_events"
 

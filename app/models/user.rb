@@ -10,7 +10,7 @@
 #  webauthn_id :string
 #
 class User < IdentitiesRecord
-  include Stakeholder
+  include Account
   include Withdrawable
   include HasRoles
   include ::PublicId
@@ -24,8 +24,9 @@ class User < IdentitiesRecord
   has_many :user_webauthn_credentials, dependent: :destroy
   has_many :user_identity_audits, dependent: :destroy
   has_many :user_tokens, dependent: :destroy # , disable_joins: true
+  has_many :user_memberships, dependent: :destroy
+  has_many :workspaces, through: :user_memberships
   has_many :user_organizations, dependent: :destroy
-  has_many :organizations, through: :user_organizations
   has_many :staff_identity_audits, as: :actor, dependent: :destroy
 
   before_create :set_default_status

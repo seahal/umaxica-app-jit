@@ -4,7 +4,7 @@ require "test_helper"
 
 class HasRolesTest < ActiveSupport::TestCase
   setup do
-    @organization = Organization.create!(name: "Test Org", domain: "test.com")
+    @organization = Workspace.create!(name: "Test Org", domain: "test.com")
     @admin_role = Role.create!(key: "admin", name: "Admin", organization: @organization)
     @editor_role = Role.create!(key: "editor", name: "Editor", organization: @organization)
     @viewer_role = Role.create!(key: "viewer", name: "Viewer", organization: @organization)

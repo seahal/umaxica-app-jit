@@ -81,13 +81,77 @@ module Authentication
       }
     end
 
+    def refresh_access_token(refresh_token_id)
+      # Find and validate the old refresh token
+      old_token = StaffToken.find_by(id: refresh_token_id)
+
+      unless old_token
+        Rails.event.notify("staff.token.refresh.failed",
+          refresh_token_id: refresh_token_id,
+          reason: "token_not_found",
+          ip_address: request_ip_address
+        )
+        return nil
+      end
+
+      staff = old_token.staff
+
+      unless staff&.active?
+        Rails.event.notify("staff.token.refresh.failed",
+          staff_id: staff&.id,
+          refresh_token_id: refresh_token_id,
+          reason: "staff_inactive",
+          ip_address: request_ip_address
+        )
+        old_token.destroy
+        return nil
+      end
+
+      # Create new refresh token (rotation)
+      new_refresh_token = StaffToken.create!(staff_id: staff.id)
+
+      # Generate new access token
+      new_access_token = generate_access_token(staff)
+
+      # Revoke old refresh token
+      old_token.destroy
+
+      Rails.event.notify("staff.token.refreshed",
+        staff_id: staff.id,
+        old_refresh_token_id: old_token.id,
+        new_refresh_token_id: new_refresh_token.id,
+        ip_address: request_ip_address
+      )
+
+      # Return new tokens
+      {
+        access_token: new_access_token,
+        refresh_token: new_refresh_token.id,
+        token_type: "Bearer",
+        expires_in: Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i
+      }
+    rescue StandardError => e
+      Rails.event.notify("staff.token.refresh.error",
+        staff_id: staff&.id,
+        refresh_token_id: refresh_token_id,
+        error_class: e.class.name,
+        error_message: e.message,
+        ip_address: request_ip_address
+      )
+      nil
+    end
+
     def log_out
       staff = current_staff
       if (token_id = cookies.encrypted[:refresh_staff_token])
         begin
           StaffToken.find_by(id: token_id)&.destroy
         rescue ActiveRecord::RecordNotDestroyed => e
-          Rails.logger.warn("Failed to destroy refresh token #{token_id}: #{e.message}")
+          Rails.event.notify("staff.token.destroy.failed",
+            token_id: token_id,
+            error_message: e.message,
+            ip_address: request_ip_address
+          )
         end
       end
       cookies.delete :access_staff_token, **cookie_deletion_options

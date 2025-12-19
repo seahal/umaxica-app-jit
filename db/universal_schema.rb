@@ -10,72 +10,107 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_12_163544) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_20_093000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "email_preference_requests", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "context", limit: 32, null: false
+  create_table "area_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  end
+
+  create_table "area_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "body", limit: 255, null: false
     t.datetime "created_at", null: false
-    t.string "email_address", limit: 1000, null: false
-    t.jsonb "preferences", default: {}, null: false
-    t.datetime "sent_at"
-    t.string "token_digest", limit: 64, null: false
-    t.datetime "token_expires_at", null: false
-    t.datetime "token_used_at"
+    t.string "memo", limit: 1024
+    t.string "public_id", limit: 21, null: false
+    t.string "status_id", limit: 255, null: false
     t.datetime "updated_at", null: false
-    t.index ["context"], name: "index_email_preference_requests_on_context"
-    t.index ["token_digest"], name: "index_email_preference_requests_on_token_digest", unique: true
+    t.index ["body"], name: "index_area_occurrences_on_body", unique: true
+    t.index ["public_id"], name: "index_area_occurrences_on_public_id", unique: true
+    t.check_constraint "char_length(public_id::text) = 21", name: "chk_area_occurrences_public_id_length"
+    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_area_occurrences_public_id_format"
   end
 
-  create_table "identifier_region_codes", id: :string, force: :cascade do |t|
+  create_table "domain_occurence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  end
+
+  create_table "domain_occurences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "body", limit: 253, null: false
     t.datetime "created_at", null: false
+    t.string "memo", limit: 1024
+    t.string "public_id", limit: 21, null: false
+    t.string "status_id", limit: 255, null: false
     t.datetime "updated_at", null: false
+    t.index ["body"], name: "index_domain_occurences_on_body", unique: true
+    t.index ["public_id"], name: "index_domain_occurences_on_public_id", unique: true
+    t.check_constraint "char_length(public_id::text) = 21", name: "chk_domain_occurences_public_id_length"
+    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_domain_occurences_public_id_format"
   end
 
-  create_table "identifier_region_codes_universal_staff_identifiers", id: false, force: :cascade do |t|
-    t.bigint "identifier_region_code_id", null: false
-    t.bigint "universal_staff_identifier_id", null: false
-    t.index ["identifier_region_code_id", "universal_staff_identifier_id"], name: "idx_on_identifier_region_code_id_universal_staff_id_cb9119c8ef"
-    t.index ["universal_staff_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_staff_identifier_id_identifier_reg_936e7af644"
+  create_table "email_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
   end
 
-  create_table "identifier_region_codes_universal_user_identifiers", id: false, force: :cascade do |t|
-    t.bigint "identifier_region_code_id", null: false
-    t.bigint "universal_user_identifier_id", null: false
-    t.index ["identifier_region_code_id", "universal_user_identifier_id"], name: "idx_on_identifier_region_code_id_universal_user_ide_59f36db5f2"
-    t.index ["universal_user_identifier_id", "identifier_region_code_id"], name: "idx_on_universal_user_identifier_id_identifier_regi_1475aa39aa"
-  end
-
-  create_table "time_based_one_time_passwords", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "email_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "body", limit: 255, null: false
     t.datetime "created_at", null: false
-    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "private_key", limit: 1024, null: false
+    t.string "memo", limit: 1024
+    t.string "public_id", limit: 21, null: false
+    t.string "status_id", limit: 255, null: false
     t.datetime "updated_at", null: false
+    t.index ["body"], name: "index_email_occurrences_on_body", unique: true
+    t.index ["public_id"], name: "index_email_occurrences_on_public_id", unique: true
+    t.check_constraint "char_length(public_id::text) = 21", name: "chk_email_occurrences_public_id_length"
+    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_email_occurrences_public_id_format"
   end
 
-  create_table "universal_email_identifiers", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "ip_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
   end
 
-  create_table "universal_staff_identifiers", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "ip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "body", limit: 64, null: false
     t.datetime "created_at", null: false
-    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "otp_private_key"
+    t.string "memo", limit: 1024
+    t.string "public_id", limit: 21, null: false
+    t.string "status_id", limit: 255, null: false
     t.datetime "updated_at", null: false
+    t.index ["body"], name: "index_ip_occurrences_on_body", unique: true
+    t.index ["public_id"], name: "index_ip_occurrences_on_public_id", unique: true
+    t.check_constraint "char_length(public_id::text) = 21", name: "chk_ip_occurrences_public_id_length"
+    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_ip_occurrences_public_id_format"
   end
 
-  create_table "universal_telephone_identifiers", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
   end
 
-  create_table "universal_user_identifiers", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "telephone_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  end
+
+  create_table "telephone_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "body", limit: 32, null: false
     t.datetime "created_at", null: false
-    t.datetime "last_otp_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "otp_private_key"
+    t.string "memo", limit: 1024
+    t.string "public_id", limit: 21, null: false
+    t.string "status_id", limit: 255, null: false
     t.datetime "updated_at", null: false
+    t.index ["body"], name: "index_telephone_occurrences_on_body", unique: true
+    t.index ["public_id"], name: "index_telephone_occurrences_on_public_id", unique: true
+    t.check_constraint "char_length(public_id::text) = 21", name: "chk_telephone_occurrences_public_id_length"
+    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_telephone_occurrences_public_id_format"
+  end
+
+  create_table "zip_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  end
+
+  create_table "zip_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "body", limit: 16, null: false
+    t.datetime "created_at", null: false
+    t.string "memo", limit: 1024
+    t.string "public_id", limit: 21, null: false
+    t.string "status_id", limit: 255, null: false
+    t.datetime "updated_at", null: false
+    t.index ["body"], name: "index_zip_occurrences_on_body", unique: true
+    t.index ["public_id"], name: "index_zip_occurrences_on_public_id", unique: true
+    t.check_constraint "char_length(public_id::text) = 21", name: "chk_zip_occurrences_public_id_length"
+    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_zip_occurrences_public_id_format"
   end
 end

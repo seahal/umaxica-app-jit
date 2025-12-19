@@ -77,7 +77,7 @@ module Turnstile
       })
       JSON.parse(response.body)
     rescue StandardError => e
-      Rails.logger.error("[Turnstile] Failed to verify: #{e.class}: #{e.message}")
+      Rails.event.notify("turnstile.verify.failed", error_class: e.class.name, error_message: e.message)
       { "success" => false, "error" => e.message }
     end
   end

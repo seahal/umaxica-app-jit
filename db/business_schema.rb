@@ -16,8 +16,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
 
   create_table "app_document_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.uuid "app_document_audit_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.index ["app_document_audit_id"], name: "index_app_document_audit_events_on_app_document_audit_id"
   end
 
@@ -36,8 +34,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "app_document_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "app_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -55,8 +51,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "app_timeline_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "app_timeline_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -74,8 +68,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "app_timeline_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "app_timelines", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -93,8 +85,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "com_document_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_document_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -112,8 +102,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "com_document_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -131,8 +119,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "com_timeline_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_timeline_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -150,8 +136,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "com_timeline_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_timelines", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -169,13 +153,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "entity_statuses", id: :string, force: :cascade do |t|
-    t.timestamptz "created_at", null: false
-    t.timestamptz "updated_at", null: false
   end
 
   create_table "org_document_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_document_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -193,8 +173,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "org_document_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -212,8 +190,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "org_timeline_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_timeline_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -231,8 +207,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_13_000007) do
   end
 
   create_table "org_timeline_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_timelines", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|

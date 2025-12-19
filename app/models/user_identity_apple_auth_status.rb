@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserIdentityAppleAuthStatus < IdentitiesRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   has_many :user_identity_apple_auths, dependent: :restrict_with_error
 

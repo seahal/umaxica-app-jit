@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserTokenStatus < TokensRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   has_many :user_tokens, dependent: :restrict_with_error
 

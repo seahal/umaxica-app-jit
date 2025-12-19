@@ -10,6 +10,9 @@ class StaffToken < TokensRecord
 
   private
 
+  # This is a model-level validation to provide a friendly error message to the user.
+  # The primary enforcement of the session limit is done by a database trigger,
+  # which is more reliable and avoids race conditions.
   def enforce_concurrent_session_limit
     return unless staff_id
 

@@ -48,7 +48,7 @@ module Sign
             redirect_to sign_app_root_path, notice: t("sign.app.withdrawal.destroy.success")
           end
         rescue StandardError => e
-          Rails.logger.error("User deletion failed: #{e.message}")
+          Rails.event.notify("user.deletion.failed", error_message: e.message)
           redirect_to sign_app_root_path, alert: t("sign.app.withdrawal.destroy.failed")
         end
       end

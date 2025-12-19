@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  public_id: "EEEEEEEEEEEEEEEEEEEEE"
+  body: "email-body-one"
+  status_id: ACTIVE
+  memo: "Email occurrence one"
+
+two:
+  public_id: "FFFFFFFFFFFFFFFFFFFFF"
+  body: "email-body-two"
+  status_id: INACTIVE
+  memo: "Email occurrence two"

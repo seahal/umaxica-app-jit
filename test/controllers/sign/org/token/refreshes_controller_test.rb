@@ -32,7 +32,7 @@ module Sign
           assert_response :unauthorized
           json_response = response.parsed_body
 
-          assert_equal "Invalid refresh token", json_response["error"]
+          assert_equal I18n.t("sign.token_refresh.errors.invalid_refresh_token"), json_response["error"]
         end
 
         test "POST create without refresh token returns bad request" do
@@ -43,7 +43,7 @@ module Sign
           assert_response :bad_request
           json_response = response.parsed_body
 
-          assert_equal "refresh_token is required", json_response["error"]
+          assert_equal I18n.t("sign.token_refresh.errors.missing_refresh_token"), json_response["error"]
         end
 
         test "POST create with withdrawn staff returns unauthorized and destroys token" do
@@ -58,7 +58,7 @@ module Sign
           assert_response :unauthorized
           json_response = response.parsed_body
 
-          assert_equal "Staff not found or withdrawn", json_response["error"]
+          assert_equal I18n.t("sign.token_refresh.errors.invalid_refresh_token"), json_response["error"]
         end
 
         test "POST create with non-existent staff destroys token" do

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class StaffIdentityEmailStatus < IdentitiesRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   has_many :staff_identity_emails, dependent: :restrict_with_error
 

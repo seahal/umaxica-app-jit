@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 class ComDocumentStatus < BusinessesRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   has_many :com_documents, dependent: :restrict_with_error, inverse_of: :com_document_status
 end

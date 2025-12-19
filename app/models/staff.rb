@@ -12,7 +12,7 @@
 class Staff < IdentitiesRecord
   # Staff represents an operator account for the staff/admin console.
   # It mirrors `User` for identity concerns but is used for staff-scoped access.
-  include Stakeholder
+  include Account
   include Withdrawable
   include HasRoles
   include ::PublicId

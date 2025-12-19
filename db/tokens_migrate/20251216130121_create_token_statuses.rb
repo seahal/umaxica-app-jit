@@ -1,17 +1,14 @@
+# rubocop:disable Rails/CreateTableWithTimestamps
 class CreateTokenStatuses < ActiveRecord::Migration[8.2]
   def change
-    create_table :user_token_statuses, id: { type: :string, limit: 255, default: "NONE" } do |t|
-      t.timestamps
-    end
+    create_table :user_token_statuses, id: { type: :string, limit: 255, default: "NONE" }
 
-    create_table :staff_token_statuses, id: { type: :string, limit: 255, default: "NONE" } do |t|
-      t.timestamps
-    end
+    create_table :staff_token_statuses, id: { type: :string, limit: 255, default: "NONE" }
 
     reversible do |dir|
       dir.up do
-        execute "INSERT INTO user_token_statuses (id, created_at, updated_at) VALUES ('NONE', NOW(), NOW())"
-        execute "INSERT INTO staff_token_statuses (id, created_at, updated_at) VALUES ('NONE', NOW(), NOW())"
+        execute "INSERT INTO user_token_statuses (id) VALUES ('NONE')"
+        execute "INSERT INTO staff_token_statuses (id) VALUES ('NONE')"
       end
     end
 
@@ -22,3 +19,5 @@ class CreateTokenStatuses < ActiveRecord::Migration[8.2]
     add_foreign_key :staff_tokens, :staff_token_statuses
   end
 end
+
+# rubocop:enable Rails/CreateTableWithTimestamps

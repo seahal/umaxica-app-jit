@@ -16,8 +16,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_130520) do
   enable_extension "pgcrypto"
 
   create_table "staff_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "staff_tokens", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -28,11 +26,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_130520) do
   end
 
   create_table "user_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
-  create_table "user_tokens", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "user_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false

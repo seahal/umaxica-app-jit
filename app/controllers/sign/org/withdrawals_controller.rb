@@ -41,7 +41,7 @@ module Sign
           redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.destroy.not_withdrawn") and return
         end
 
-        Rails.logger.info("Permanent staff deletion requested: #{current_staff.id}")
+        Rails.event.notify("staff.deletion.request", staff_id: current_staff.id)
 
         begin
           Staff.transaction do
@@ -59,7 +59,9 @@ module Sign
             end
           end
         rescue ActiveRecord::InvalidForeignKey => e
-          Rails.logger.warn("Failed to fully destroy staff #{current_staff.id}: #{e.message}")
+          Rails.event.notify("staff.deletion.failed",
+                             staff_id: current_staff.id,
+                             error_message: e.message)
         end
 
         redirect_to sign_org_root_path, alert: t("sign.org.withdrawal.destroy.failed")

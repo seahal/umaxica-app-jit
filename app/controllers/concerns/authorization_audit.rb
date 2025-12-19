@@ -46,8 +46,8 @@ module AuthorizationAudit
       timestamp: Time.current
     }
 
-    # Log to Rails logger
-    Rails.logger.warn("Authorization Failure: #{log_data.to_json}")
+    # Log the authorization failure event
+    Rails.event.notify("authorization.failure", log_data)
 
     # Create audit record if actor is User or Staff
     if actor.is_a?(User)
@@ -57,7 +57,7 @@ module AuthorizationAudit
     end
   rescue StandardError => e
     # Don't let audit logging break the application
-    Rails.logger.error("Failed to log authorization failure: #{e.message}")
+    Rails.event.notify("authorization.failure_log.failed", error_message: e.message)
   end
 
   def create_user_authorization_audit(user, log_data)
@@ -71,7 +71,7 @@ module AuthorizationAudit
     )
   rescue ActiveRecord::RecordInvalid => e
     # Event ID might not exist in the database yet
-    Rails.logger.error("Failed to create user authorization audit: #{e.message}")
+    Rails.event.notify("authorization.audit.user_creation_failed", error_message: e.message)
   end
 
   def create_staff_authorization_audit(staff, log_data)
@@ -85,7 +85,7 @@ module AuthorizationAudit
     )
   rescue ActiveRecord::RecordInvalid => e
     # Event ID might not exist in the database yet
-    Rails.logger.error("Failed to create staff authorization audit: #{e.message}")
+    Rails.event.notify("authorization.audit.staff_creation_failed", error_message: e.message)
   end
 
   def current_user_or_staff

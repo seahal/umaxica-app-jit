@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class OrgTimelineAuditEvent < BusinessesRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   self.table_name = "org_timeline_audit_events"
 

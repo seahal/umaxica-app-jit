@@ -3,7 +3,7 @@
 class ComContactCategory < GuestsRecord
   self.primary_key = :title
 
-  include UppercaseTitleValidation
+  include UppercaseTitle
 
   has_many :com_contacts,
            foreign_key: :contact_category_title,

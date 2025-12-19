@@ -225,7 +225,7 @@ end
 |---------|------|
 | `actor` | 現在のUser/Staff |
 | `record` | 認可対象のレコード |
-| `organization` | recordから自動取得された組織 |
+| `organization` | recordから自動取得されたWorkspace（互換名） |
 | `owner?` | アクターがレコードの所有者か |
 | `admin?` | adminロールを持つか |
 | `manager?` | managerロールを持つか |
@@ -243,7 +243,7 @@ end
 
 ```ruby
 # 組織とロールを取得
-organization = Organization.find_by(name: "My Organization")
+organization = Workspace.find_by(name: "My Organization")
 admin_role = Role.find_by(key: 'admin', organization: organization)
 
 # ユーザーにロールを割り当て
@@ -254,7 +254,7 @@ RoleAssignment.create!(user: user, role: admin_role)
 
 ```ruby
 user = User.find(params[:id])
-organization = Organization.first
+organization = Workspace.first
 
 # 特定のロールを持つか
 user.has_role?('admin', organization: organization)
@@ -300,7 +300,7 @@ require 'test_helper'
 
 class DocumentPolicyTest < ActiveSupport::TestCase
   setup do
-    @organization = Organization.create!(name: "Test Org")
+    @organization = Workspace.create!(name: "Test Org")
     @admin_role = Role.create!(key: "admin", organization: @organization)
     @viewer_role = Role.create!(key: "viewer", organization: @organization)
 

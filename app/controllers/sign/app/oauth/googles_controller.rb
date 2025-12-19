@@ -16,7 +16,7 @@ module Sign
           auth_hash = request.env["omniauth.auth"]
 
           unless valid_auth_hash?(auth_hash)
-            Rails.logger.warn "Invalid or missing auth_hash"
+            Rails.event.notify("oauth.google.invalid_auth_hash")
             flash[:alert] = t("sign.app.registration.oauth.google.failure.error")
             redirect_to new_sign_app_registration_path
             return
@@ -31,7 +31,7 @@ module Sign
             flash[:notice] = t("sign.app.registration.oauth.google.callback.success")
             redirect_to sign_app_root_path
           rescue ActiveRecord::RecordInvalid => e
-            Rails.logger.error "Google OAuth user creation error: #{e.message}"
+            Rails.event.notify("oauth.google.user_creation_error", error_message: e.message)
             flash[:alert] = t("sign.app.registration.oauth.google.failure.error")
             redirect_to new_sign_app_registration_path
           end
@@ -40,7 +40,7 @@ module Sign
         # GET /auth/failure (When OmniAuth authentication fails)
         def failure
           error_message = params[:message] || "unknown_error"
-          Rails.logger.error "Google OAuth failure: #{error_message}"
+          Rails.event.notify("oauth.google.failure", error_message: error_message)
           flash[:alert] = t("sign.app.registration.oauth.google.failure.error")
           redirect_to new_sign_app_authentication_path
         end
@@ -57,7 +57,7 @@ module Sign
           google_auth = UserIdentityGoogleAuth.find_by(token: auth_hash.uid)
 
           if google_auth
-            Rails.logger.info "Existing Google OAuth user: #{google_auth.user_id}"
+            Rails.event.notify("oauth.google.existing_user", user_id: google_auth.user_id)
             sync_user_identity_google_auth!(google_auth.user, auth_hash.uid)
             persist_email!(google_auth.user, auth_hash)
             google_auth.user
@@ -76,7 +76,7 @@ module Sign
             sync_user_identity_google_auth!(user, auth_hash.uid)
             persist_email!(user, auth_hash)
 
-            Rails.logger.info "New Google OAuth user created: #{user.id}"
+            Rails.event.notify("oauth.google.new_user", user_id: user.id)
             user
           end
         end
@@ -98,7 +98,7 @@ module Sign
           record = UserIdentityGoogleAuth.find_or_initialize_by(user: user)
           record.update!(token: uid)
         rescue ActiveRecord::StatementInvalid => e
-          Rails.logger.warn("UserIdentityGoogleAuth sync skipped: #{e.message}")
+          Rails.event.notify("oauth.google.sync_skipped", error_message: e.message)
         end
 
         def with_identity_writing(&block)

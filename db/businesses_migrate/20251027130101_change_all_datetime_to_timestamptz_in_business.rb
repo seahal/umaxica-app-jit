@@ -7,9 +7,11 @@ class ChangeAllDatetimeToTimestamptzInBusiness < ActiveRecord::Migration[8.1]
     end
 
     # entity_statuses
-    change_table :entity_statuses, bulk: true do |t|
-      t.change :created_at, :timestamptz, null: false
-      t.change :updated_at, :timestamptz, null: false
+    if column_exists?(:entity_statuses, :created_at) && column_exists?(:entity_statuses, :updated_at)
+      change_table :entity_statuses, bulk: true do |t|
+        t.change :created_at, :timestamptz, null: false
+        t.change :updated_at, :timestamptz, null: false
+      end
     end
 
     # timelines
@@ -27,9 +29,11 @@ class ChangeAllDatetimeToTimestamptzInBusiness < ActiveRecord::Migration[8.1]
     end
 
     # entity_statuses
-    change_table :entity_statuses, bulk: true do |t|
-      t.change :created_at, :datetime, null: false
-      t.change :updated_at, :datetime, null: false
+    if column_exists?(:entity_statuses, :created_at) && column_exists?(:entity_statuses, :updated_at)
+      change_table :entity_statuses, bulk: true do |t|
+        t.change :created_at, :datetime, null: false
+        t.change :updated_at, :datetime, null: false
+      end
     end
 
     # timelines

@@ -49,11 +49,6 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
     assert_equal 255, status.id.length
   end
 
-  test "has timestamps" do
-    assert_not_nil @status.created_at
-    assert_not_nil @status.updated_at
-  end
-
   test "can load draft status from fixtures" do
     draft = app_timeline_statuses(:DRAFT)
 

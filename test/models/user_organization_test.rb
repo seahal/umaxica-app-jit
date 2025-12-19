@@ -20,7 +20,7 @@ class UserOrganizationTest < ActiveSupport::TestCase
   end
 
   test "should have organization association through has_many" do
-    organization = Organization.new
+    organization = Workspace.new
 
     assert_respond_to organization, :user_organizations
   end

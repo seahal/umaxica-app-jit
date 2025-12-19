@@ -93,7 +93,9 @@ module Help
         contact_email = contact.com_contact_email
 
         unless contact_email
-          Rails.logger.warn("Skipping topic notification for contact #{contact.public_id}: no email address configured")
+          Rails.event.notify("contact.notification.skip",
+                             contact_id: contact.public_id,
+                             reason: "no email address configured")
           return
         end
 
@@ -103,7 +105,9 @@ module Help
           email_address: contact_email.email_address
         ).notice.deliver_now
       rescue StandardError => e
-        Rails.logger.error("Failed to deliver topic notification for contact #{contact.public_id}: #{e.message}")
+        Rails.event.notify("contact.notification.failed",
+                           contact_id: contact.public_id,
+                           error_message: e.message)
       end
 
       def topic_params

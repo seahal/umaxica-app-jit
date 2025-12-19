@@ -1,22 +1,17 @@
+# rubocop:disable Rails/CreateTableWithTimestamps
 class CreateContactAuditEvents < ActiveRecord::Migration[8.2]
   def change
     # Create Event Tables
-    create_table :com_contact_audit_events, id: :string, limit: 255 do |t|
-      t.timestamps
-    end
-    create_table :app_contact_audit_events, id: :string, limit: 255 do |t|
-      t.timestamps
-    end
-    create_table :org_contact_audit_events, id: :string, limit: 255 do |t|
-      t.timestamps
-    end
+    create_table :com_contact_audit_events, id: :string, limit: 255
+    create_table :app_contact_audit_events, id: :string, limit: 255
+    create_table :org_contact_audit_events, id: :string, limit: 255
 
     # Insert default records to satisfy FK constraints
     reversible do |dir|
       dir.up do
-        execute "INSERT INTO com_contact_audit_events (id, created_at, updated_at) VALUES ('NONE', NOW(), NOW())"
-        execute "INSERT INTO app_contact_audit_events (id, created_at, updated_at) VALUES ('NONE', NOW(), NOW())"
-        execute "INSERT INTO org_contact_audit_events (id, created_at, updated_at) VALUES ('NONE', NOW(), NOW())"
+        execute "INSERT INTO com_contact_audit_events (id) VALUES ('NONE')"
+        execute "INSERT INTO app_contact_audit_events (id) VALUES ('NONE')"
+        execute "INSERT INTO org_contact_audit_events (id) VALUES ('NONE')"
       end
     end
 
@@ -31,3 +26,5 @@ class CreateContactAuditEvents < ActiveRecord::Migration[8.2]
     add_foreign_key :org_contact_histories, :org_contact_audit_events, column: :event_id
   end
 end
+
+# rubocop:enable Rails/CreateTableWithTimestamps

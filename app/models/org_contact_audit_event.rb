@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class OrgContactAuditEvent < GuestsRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   self.table_name = "org_contact_audit_events"
 
