@@ -11,25 +11,25 @@ module Help
           # Ensure required statuses exist (parent first)
           ComContactStatus.find_or_create_by!(id: "NULL_COM_STATUS") do |status|
             status.description = "root status"
-            status.parent_title = nil
+            status.parent_id = nil
             status.position = 0
             status.active = true
           end
           ComContactStatus.find_or_create_by!(id: "SET_UP") do |status|
             status.description = "first step completed"
-            status.parent_title = "NULL_COM_STATUS"
+            status.parent_id = "NULL_COM_STATUS"
             status.position = 0
             status.active = true
           end
           ComContactStatus.find_or_create_by!(id: "CHECKED_EMAIL_ADDRESS") do |status|
             status.description = "email verified"
-            status.parent_title = "SET_UP"
+            status.parent_id = "SET_UP"
             status.position = 0
             status.active = true
           end
           ComContactStatus.find_or_create_by!(id: "NONE") do |status|
             status.description = "initial state"
-            status.parent_title = "NULL_COM_STATUS"
+            status.parent_id = "NULL_COM_STATUS"
             status.position = 0
             status.active = true
           end

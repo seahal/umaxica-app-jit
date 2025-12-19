@@ -1,4 +1,4 @@
-class StrengthenOccurrenceConstraints < ActiveRecord::Migration[8.2]
+class CreateOccurrenceConstraints < ActiveRecord::Migration[8.2]
   TABLES = %i[
     email_occurrences
     ip_occurrences

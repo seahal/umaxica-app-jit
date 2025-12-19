@@ -19,7 +19,7 @@ class AppContact < GuestsRecord
   belongs_to :app_contact_category,
              class_name: "AppContactCategory",
              foreign_key: :contact_category_title,
-             primary_key: :title,
+             primary_key: :id,
              optional: true,
              inverse_of: :app_contacts
   belongs_to :app_contact_status,

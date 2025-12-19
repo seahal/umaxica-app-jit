@@ -2,36 +2,46 @@ require "test_helper"
 
 class Sign::Org::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @host = ENV["SIGN_STAFF_URL"] || "sign.org.localhost"
-    @staff = staffs(:one)
+    @staff = Staff.create!(staff_identity_status_id: StaffIdentityStatus::NONE)
+    @headers = { "X-TEST-CURRENT-STAFF" => @staff.id }.freeze
   end
 
-  def request_headers
-    { "Host" => @host }
+  test "should create withdrawal (soft delete)" do
+    assert_nil @staff.withdrawn_at
+
+    post sign_org_withdrawal_url, headers: @headers
+
+    @staff.reload
+
+    assert_not_nil @staff.withdrawn_at
+    assert_redirected_to sign_org_root_url(regional_defaults)
   end
 
-  test "show action not available (route excluded)" do
-    # :show action is excluded from routes with 'except: :show'
-    get sign_org_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id)
+  test "should update withdrawal (recover)" do
+    @staff.update!(withdrawn_at: Time.current)
 
-    assert_response :not_found
+    # X-TEST-CURRENT-STAFF bypasses the withdrawn check in Authentication::Staff for testing purposes
+    patch sign_org_withdrawal_url, headers: @headers
+
+    @staff.reload
+
+    assert_nil @staff.withdrawn_at
+    assert_redirected_to sign_org_root_url(regional_defaults)
   end
 
-  test "create sets withdrawn_at for staff" do
-    skip("Org withdrawal routes not fully configured")
+  test "should destroy withdrawal (hard delete)" do
+    @staff.update!(withdrawn_at: Time.current)
+
+    assert_difference("Staff.count", -1) do
+      delete sign_org_withdrawal_url, headers: @headers
+    end
+
+    assert_redirected_to sign_org_root_url(regional_defaults)
   end
 
-  # Turnstile Widget Verification Tests
-  test "new withdrawal page renders Turnstile widget" do
-    skip("Org withdrawal :new route not available")
-  end
+  private
 
-  # Checkbox visibility tests
-  test "new withdrawal page renders confirm_create_recovery_code checkbox" do
-    skip("Org withdrawal :new route not available")
-  end
-
-  test "create accepts confirm_create_recovery_code parameter" do
-    skip("Org withdrawal routes not fully configured")
+  def regional_defaults
+    PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
   end
 end

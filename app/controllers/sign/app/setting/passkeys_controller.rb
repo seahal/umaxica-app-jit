@@ -3,6 +3,7 @@ module Sign
     module Setting
       class PasskeysController < ApplicationController
         before_action :authenticate_user! # Required in production
+        before_action :set_passkey, only: %i[ show edit update destroy ]
 
         # POST /v1/passkeys/challenge
         def challenge
@@ -60,6 +61,21 @@ module Sign
           render json: { status: "ok" }
         end
 
+        # GET /passkeys
+        def index
+          @passkeys = policy_scope(UserIdentityPasskey).order(created_at: :desc)
+        end
+
+        # GET /passkeys/1
+        def show
+          authorize @passkey
+        end
+
+        # GET /passkeys/new
+        def new
+          @passkey = current_user.user_identity_passkeys.new
+        end
+
         # GET /passkeys/1/edit
         def edit
           authorize @passkey
@@ -67,13 +83,13 @@ module Sign
 
         # POST /passkeys or /passkeys.json
         def create
-          @passkey = UserIdentityPasskey.new(passkey_params.merge(user: current_user))
+          @passkey = current_user.user_identity_passkeys.new(passkey_params)
           authorize @passkey
 
           respond_to do |format|
             if @passkey.save
-              format.html { redirect_to @passkey, notice: t("messages.passkey_successfully_created") }
-              format.json { render :show, status: :created, location: @passkey }
+              format.html { redirect_to sign_app_setting_passkey_path(@passkey), notice: t("messages.passkey_successfully_created") }
+              format.json { render :show, status: :created, location: sign_app_setting_passkey_path(@passkey) }
             else
               format.html { render :new, status: :unprocessable_content }
               format.json { render json: @passkey.errors, status: :unprocessable_content }
@@ -86,8 +102,8 @@ module Sign
           authorize @passkey
           respond_to do |format|
             if @passkey.update(passkey_params)
-              format.html { redirect_to @passkey, notice: t("messages.passkey_successfully_updated") }
-              format.json { render :show, status: :ok, location: @passkey }
+              format.html { redirect_to sign_app_setting_passkey_path(@passkey), notice: t("messages.passkey_successfully_updated") }
+              format.json { render :show, status: :ok, location: sign_app_setting_passkey_path(@passkey) }
             else
               format.html { render :edit, status: :unprocessable_content }
               format.json { render json: @passkey.errors, status: :unprocessable_content }
@@ -101,7 +117,7 @@ module Sign
           @passkey.destroy!
 
           respond_to do |format|
-            format.html { redirect_to passkeys_path, status: :see_other, notice: t("messages.passkey_successfully_destroyed") }
+            format.html { redirect_to sign_app_setting_passkeys_path, status: :see_other, notice: t("messages.passkey_successfully_destroyed") }
             format.json { head :no_content }
           end
         end
@@ -110,7 +126,7 @@ module Sign
 
         # Use callbacks to share common setup or constraints between actions.
         def set_passkey
-          @passkey = UserIdentityPasskey.find(params.expect(:id))
+          @passkey = current_user.user_identity_passkeys.find(params[:id])
         end
 
         # Only allow a list of trusted parameters through.

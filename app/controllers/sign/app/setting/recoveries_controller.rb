@@ -12,7 +12,7 @@ module Sign
 
         # GET /recoveries or /recoveries.json
         def index
-          @user_recover_code = UserRecoveryCode.all
+          @user_recovery_codes = current_user.user_recovery_codes.order(created_at: :desc)
         end
 
         # GET /recoveries/1 or /recoveries/1.json
@@ -21,7 +21,7 @@ module Sign
 
         # GET /recoveries/new
         def new
-          @user_recovery_code = UserRecoveryCode.new
+          @user_recovery_code = current_user.user_recovery_codes.new
           session[:user_recovery_code] = generate_base58_string
         end
 
@@ -31,7 +31,7 @@ module Sign
 
         # POST /recoveries or /recoveries.json
         def create
-          @user_recovery_code = UserRecoveryCode.new(user_recovery_code_params)
+          @user_recovery_code = current_user.user_recovery_codes.new(user_recovery_code_params)
           argon2 = Argon2::Password.new
           @user_recovery_code.recovery_code_digest = argon2.create(session[:user_recovery_code])
           @user_recovery_code.user_id = current_user.id
@@ -72,7 +72,7 @@ module Sign
 
         # Use callbacks to share common setup or constraints between actions.
         def set_user_recovery_code
-          @user_recovery_code = UserRecoveryCode.find(params.expect(:id))
+          @user_recovery_code = current_user.user_recovery_codes.find(params[:id])
         end
 
         # Only allow a list of trusted parameters through.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_20_093000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_19_093000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -77,9 +77,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_20_093000) do
     t.index ["public_id"], name: "index_ip_occurrences_on_public_id", unique: true
     t.check_constraint "char_length(public_id::text) = 21", name: "chk_ip_occurrences_public_id_length"
     t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_ip_occurrences_public_id_format"
-  end
-
-  create_table "occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
   end
 
   create_table "telephone_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|

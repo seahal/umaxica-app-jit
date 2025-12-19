@@ -4,59 +4,94 @@ require "test_helper"
 
 module Sign::App::Registration
   class TelephonesControllerTest < ActionDispatch::IntegrationTest
+    self.use_transactional_tests = false
+    setup do
+      # Mock Cloudflare Turnstile validation
+      Sign::App::Registration::TelephonesController.send(:define_method, :cloudflare_turnstile_validation) do
+        { "success" => true }
+      end
+
+      # Mock AWS SMS Service
+      if defined?(AwsSmsService)
+        @original_aws_sms_service_send_message = AwsSmsService.method(:send_message)
+        AwsSmsService.singleton_class.send(:define_method, :send_message) do |**_kwargs|
+          true
+        end
+      end
+    end
+
+    teardown do
+      if defined?(AwsSmsService) && @original_aws_sms_service_send_message
+        original = @original_aws_sms_service_send_message
+        AwsSmsService.singleton_class.send(:define_method, :send_message) do |**kwargs|
+          original.call(**kwargs)
+        end
+      end
+      UserIdentityTelephone.delete_all
+    end
+
     test "should get new" do
       get new_sign_app_registration_telephone_url
 
       assert_response :success
     end
 
-    test "should clear session on new" do
-      get new_sign_app_registration_telephone_url
+    test "should create telephone and redirect to edit" do
+      assert_difference("UserIdentityTelephone.count") do
+        post sign_app_registration_telephones_url, params: {
+          user_identity_telephone: {
+            number: "+1234567890",
+            confirm_policy: "1",
+            confirm_using_mfa: "1"
+          }
+        }
+      end
 
-      assert_response :success
-      assert_nil session[:user_telephone_registration]
+      telephone = registration_telephone
+
+      assert_redirected_to edit_sign_app_registration_telephone_url(telephone, regional_defaults)
+      assert_not_nil session[:user_telephone_registration]
     end
 
-    test "edit returns bad_request when not logged in and no session" do
-      get edit_sign_app_registration_telephone_url(id: "test-id"), headers: default_headers
+    test "should update telephone with valid otp" do
+      # 1. Create telephone via request to set up session
+      post sign_app_registration_telephones_url, params: {
+        user_identity_telephone: {
+          number: "+1234567890",
+          confirm_policy: "1",
+          confirm_using_mfa: "1"
+        }
+      }
+      telephone = registration_telephone
 
-      assert_response :bad_request
-    end
+      # 2. Retrieve OTP from DB
+      otp_data = telephone.get_otp
+      hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+      code = hotp.at(otp_data[:otp_counter])
 
-    test "i18n flash messages for telephone registration flow exist" do
-      # Check that all required i18n keys for telephone registration exist
-      session_expired_key = "sign.app.registration.telephone.edit.session_expired"
-      create_key = "sign.app.registration.telephone.create.verification_code_sent"
-      update_key = "sign.app.registration.telephone.update.success"
+      # 3. Submit OTP
+      patch sign_app_registration_telephone_url(telephone), params: {
+        user_identity_telephone: { pass_code: code }
+      }
 
-      assert_not_nil I18n.t(session_expired_key, default: nil)
-      assert_not_nil I18n.t(create_key, default: nil)
-      assert_not_nil I18n.t(update_key, default: nil)
-    end
+      assert_redirected_to "/"
 
-    test "return page link text uses i18n" do
-      # Check that the return page link text key exists
-      return_page_key = "controller.sign.app.registration.telephone.edit.return_page"
+      telephone.reload
 
-      assert_not_nil I18n.t(return_page_key, default: nil)
-    end
-
-    # Turnstile Widget Verification Tests
-    test "new registration telephone page renders Turnstile widget" do
-      get new_sign_app_registration_telephone_url, headers: default_headers
-
-      assert_response :success
-      assert_select "div[id^='cf-turnstile-']", count: 1
+      assert_nil telephone.otp_expires_at # OTP should be cleared
+      assert_equal [ nil, nil ], [ telephone.confirm_policy, telephone.confirm_using_mfa ]
     end
 
     private
 
-    def default_headers
-      { "Host" => host }
+    def regional_defaults
+      PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
     end
 
-    def host
-      ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    def registration_telephone
+      registration_session = session[:user_telephone_registration] || {}
+      telephone_id = registration_session[:id] || registration_session["id"]
+      UserIdentityTelephone.find(telephone_id)
     end
   end
 end

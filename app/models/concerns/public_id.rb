@@ -5,6 +5,7 @@ module PublicId
 
   included do
     before_create :generate_public_id
+    before_validation :generate_public_id, on: :create
   end
 
   private

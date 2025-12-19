@@ -44,7 +44,9 @@ Rails.application.routes.draw do
         # Settings with logined user
         resource :setting, only: %i[show]
         namespace :setting do
-          resources :passkeys, only: [ :index, :edit, :update, :new ] do
+          post "passkeys/challenge", to: "passkeys#challenge", as: :sign_app_setting_passkeys_challenge
+          post "passkeys/verify", to: "passkeys#verify", as: :sign_app_setting_passkeys_verify
+          resources :passkeys, only: %i[index show new create edit update destroy] do
             collection do
               post :challenge
               post :verify
@@ -52,6 +54,7 @@ Rails.application.routes.draw do
           end
           # TODO: Implement TOTP settings management
           resources :totps, only: [ :index, :new, :create, :edit ]
+          resources :recoveries, only: %i[index new create show edit update destroy]
           # TODO: Implement telephone settings management
           # resources :telephones
           # TODO: Implement email settings management

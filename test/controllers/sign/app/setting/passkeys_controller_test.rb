@@ -3,86 +3,74 @@
 require "test_helper"
 
 class Sign::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
+  self.use_transactional_tests = false
   setup do
-    @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    @user = User.create!(public_id: "user_#{SecureRandom.hex(8)}", user_identity_status_id: "ALIVE")
+    @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
   end
 
-  test "should get index" do
-    get sign_app_setting_passkeys_url, headers: { "Host" => @host }
-
-    assert_response :success
+  teardown do
+    UserIdentityPasskey.delete_all
+    @user&.destroy
   end
 
-  # test "POST challenge responds unauthorized without user" do
-  #   User.stub(:last, nil) do
-  #     post challenge_sign_app_setting_passkeys_url, headers: { "Host" => @host }
-  #     assert_response :unauthorized
-  #     body = @response.parsed_body
-  #     assert body.is_a?(Hash)
-  #     assert body["error"].present?
-  #   end
-  # end
-  #
-  # test "POST challenge returns creation options when user exists" do
-  #   dummy = Class.new do
-  #     attr_accessor :webauthn_id
-  #     def initialize; @webauthn_id = nil; end
-  #     def update!(attrs)
-  #       @webauthn_id = attrs[:webauthn_id]
-  #       true
-  #     end
-  #     def try(_name); nil; end
-  #   end.new
-  #
-  #   User.stub(:last, dummy) do
-  #     post challenge_sign_app_setting_passkeys_url, headers: { "Host" => @host }
-  #   end
-  #   assert_response :success
-  #
-  #   body = @response.parsed_body
-  #   assert body.present?, "expected JSON body"
-  #   # Depending on webauthn gem serialization, either top-level fields or nested under publicKey
-  #   assert body["publicKey"].present? || body["challenge"].present?, "expected WebAuthn creation options"
-  # end
-  #
-  # test "POST challenge populates webauthn_id when blank" do
-  #   dummy = Class.new do
-  #     attr_accessor :webauthn_id
-  #     def initialize; @webauthn_id = nil; end
-  #     def update!(attrs)
-  #       @webauthn_id = attrs[:webauthn_id]
-  #       true
-  #     end
-  #     def try(_name); nil; end
-  #   end.new
-  #
-  #   User.stub(:last, dummy) do
-  #     post challenge_sign_app_setting_passkeys_url, headers: { "Host" => @host }
-  #   end
-  #
-  #   assert_response :success
-  # end
-  #
-  # test "POST challenge handles WebAuthn errors" do
-  #   dummy = Object.new
-  #   def dummy.webauthn_id = "x"
-  #   def dummy.try(_); nil; end
-  #
-  #   User.stub(:last, dummy) do
-  #     WebAuthn::Credential.stub(:options_for_create, ->(*) { raise WebAuthn::Error, "bad" }) do
-  #       post challenge_sign_app_setting_passkeys_url, headers: { "Host" => @host }
-  #     end
-  #   end
-  #
-  #   assert_response :unprocessable_content
-  #   body = @response.parsed_body
-  #   assert_equal "bad", body["error"]
-  # end
+  test "should get challenge" do
+    skip "WebAuthn not supported in test environment"
+    post sign_app_setting_passkeys_challenge_url, headers: @headers
 
-  # test "POST verify returns ok json" do
-  #   post verify_sign_app_setting_passkeys_url, headers: { "Host" => @host }
-  #   assert_response :success
-  #   body = @response.parsed_body
-  #   assert_equal "ok", body["status"]
-  # end
+    assert_response :ok
+    assert_not_nil session[:webauthn_create_challenge]
+  end
+
+  test "should create passkey" do
+    assert_difference("UserIdentityPasskey.count") do
+      post sign_app_setting_passkeys_url, params: {
+        passkey: {
+          description: "My Passkey",
+          public_key: "dummy_public_key",
+          external_id: SecureRandom.uuid,
+          webauthn_id: SecureRandom.uuid,
+          sign_count: 0
+        }
+      }, headers: @headers
+    end
+
+    assert_redirected_to sign_app_setting_passkey_url(UserIdentityPasskey.last, regional_defaults)
+  end
+
+  test "should update passkey" do
+    passkey = UserIdentityPasskey.create!(user: @user,
+                                         description: "Old Name",
+                                         public_key: "pk",
+                                         external_id: SecureRandom.uuid,
+                                         webauthn_id: SecureRandom.uuid,
+                                         sign_count: 0)
+
+    patch sign_app_setting_passkey_url(passkey), params: {
+      passkey: { description: "New Name" }
+    }, headers: @headers
+
+    assert_redirected_to sign_app_setting_passkey_url(passkey, regional_defaults)
+    assert_equal "New Name", passkey.reload.description
+  end
+
+  test "should destroy passkey" do
+    passkey = UserIdentityPasskey.create!(user: @user,
+                                         description: "Delete Me",
+                                         public_key: "pk",
+                                         external_id: SecureRandom.uuid,
+                                         webauthn_id: SecureRandom.uuid,
+                                         sign_count: 0)
+
+    assert_difference("UserIdentityPasskey.count", -1) do
+      delete sign_app_setting_passkey_url(passkey), headers: @headers
+    end
+    assert_redirected_to sign_app_setting_passkeys_url(regional_defaults)
+  end
+
+  private
+
+  def regional_defaults
+    PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
+  end
 end

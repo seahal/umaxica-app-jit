@@ -11,7 +11,7 @@ export default class extends Controller {
 		this.updateStatus();
 	}
 
-	toggle(event) {
+	toggle(_event) {
 		// console.log("Toggle called", event.target.checked);
 		this.updateStatus();
 	}

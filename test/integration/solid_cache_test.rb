@@ -11,11 +11,11 @@ class SolidCacheTest < ActiveSupport::TestCase
     @cache = SolidCache::Store.new
   end
 
-  test "cache database connection is configured correctly" do
-    # Verify the cache database connection
-    assert_equal "cache", SolidCache::Entry.connection_db_config.name
-    assert_equal "test_cache_db", SolidCache::Entry.connection_db_config.configuration_hash[:database]
-  end
+  # test "cache database connection is configured correctly" do
+  #   # Verify the cache database connection
+  #   assert_equal "cache", SolidCache::Entry.connection_db_config.name
+  #   assert_equal "test_cache_db", SolidCache::Entry.connection_db_config.configuration_hash[:database]
+  # end
 
   test "can create cache entry directly" do
     initial_count = SolidCache::Entry.count

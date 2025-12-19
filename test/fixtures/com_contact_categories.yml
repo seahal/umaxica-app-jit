@@ -1,11 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 SECURITY_ISSUE:
-  title: 'SECURITY_ISSUE'
+  id: 'SECURITY_ISSUE'
   description: 'ROOT'
 OTHERS:
-  title: 'OTHERS'
+  id: 'OTHERS'
   description: 'Miscellaneous inquiries'
 NONE:
-  title: 'NONE'
+  id: 'NONE'
   description: 'NONE'

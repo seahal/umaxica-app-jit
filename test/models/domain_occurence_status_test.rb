@@ -1,67 +1,39 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class DomainOccurenceStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
+  include OccurrenceStatusTestHelper
 
-  fixtures :domain_occurence_statuses
-
-  def setup
-    @model_class = DomainOccurenceStatus
-    @status = domain_occurence_statuses(:ACTIVE)
+  test "upcases id before validation" do
+    assert_upcases_id(DomainOccurenceStatus)
   end
 
-  test "inherits from UniversalRecord" do
-    assert_operator DomainOccurenceStatus, :<, UniversalRecord
+  test "validates id presence" do
+    record = DomainOccurenceStatus.new(id: nil)
+
+    assert_invalid_attribute(record, :id)
   end
 
-  test "has many domain_occurences" do
-    association = DomainOccurenceStatus.reflect_on_association(:domain_occurences)
+  test "validates id length" do
+    record = DomainOccurenceStatus.new(id: "A" * 256)
 
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+    assert_invalid_attribute(record, :id)
   end
 
-  test "defines NONE constant" do
-    assert_equal "NONE", DomainOccurenceStatus::NONE
+  test "validates id format" do
+    record = DomainOccurenceStatus.new(id: "BAD-ID!")
+
+    assert_invalid_attribute(record, :id)
   end
 
-  test "defines ACTIVE constant" do
-    assert_equal "ACTIVE", DomainOccurenceStatus::ACTIVE
+  test "validates id uniqueness case insensitive" do
+    record = DomainOccurenceStatus.new(id: "active")
+
+    assert_invalid_attribute(record, :id)
   end
 
-  test "defines INACTIVE constant" do
-    assert_equal "INACTIVE", DomainOccurenceStatus::INACTIVE
-  end
-
-  test "defines BLOCKED constant" do
-    assert_equal "BLOCKED", DomainOccurenceStatus::BLOCKED
-  end
-
-  test "can load NONE status from fixtures" do
-    none = domain_occurence_statuses(:NONE)
-
-    assert_not_nil none
-    assert_equal "NONE", none.id
-  end
-
-  test "can load ACTIVE status from fixtures" do
-    active = domain_occurence_statuses(:ACTIVE)
-
-    assert_not_nil active
-    assert_equal "ACTIVE", active.id
-  end
-
-  test "can load INACTIVE status from fixtures" do
-    inactive = domain_occurence_statuses(:INACTIVE)
-
-    assert_not_nil inactive
-    assert_equal "INACTIVE", inactive.id
-  end
-
-  test "can load BLOCKED status from fixtures" do
-    blocked = domain_occurence_statuses(:BLOCKED)
-
-    assert_not_nil blocked
-    assert_equal "BLOCKED", blocked.id
+  test "has occurrences association" do
+    assert_status_association(DomainOccurenceStatus, :domain_occurences)
   end
 end

@@ -3,23 +3,6 @@
 raise '[SAFEGUARD] db:seed only use for dev env.' unless Rails.env.development?
 
 #
-# StaffIdentityEmailStaff.find_or_create_by(
-#   staff: Staff.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c47'),
-#   email: StaffIdentityEmail.find_or_create_by(address: 'first.staff@example.com'))
-
-# UserIdentityEmailUser.find_or_create_by(
-#   user: User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38'),
-#   email: UserIdentityEmail.find_or_create_by(address: 'first.user@example.com')
-# )
-
-# CREATE IDENTIFIER REGION CODES
-# RegionCode.find_or_create_by(id: 392)
-
-# CREATE TERM
-# ComDocument.find_or_create_by(id: '01000', parent_id: nil, prev_id: nil, succ_id: nil, title: 'TERM', description: '')
-# ComDocument.find_or_create_by(id: '01001', parent_id: nil, prev_id: nil, succ_id: nil, title: 'PRIVACY', description: '')
-
-#
 ## UserIdentityStatus
 UserIdentityStatus.find_or_create_by(id: "NONE")
 UserIdentityStatus.find_or_create_by(id: "ALIVE")
@@ -75,33 +58,33 @@ UserIdentitySecretStatus.find_or_create_by!(id: 'ACTIVE')
 UserIdentitySecretStatus.find_or_create_by!(id: 'SUSPENDED')
 
 # CREATE CONTACT CATEGORY
-ComContactCategory.find_or_create_by!(title: 'SECURITY_ISSUE', description: 'root of corporate site status inquiries', parent_title: 'NULL')
-ComContactCategory.find_or_create_by!(title: 'OTHERS', description: 'root of corporate site status inquiries', parent_title: 'NULL')
-AppContactCategory.find_or_create_by!(title: 'NULL', description: 'NULL')
-AppContactCategory.find_or_create_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
-AppContactCategory.find_or_create_by!(title: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
-OrgContactCategory.find_or_create_by!(title: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
-OrgContactCategory.find_or_create_by!(title: 'NULL_ORG_CATEGORY', description: 'NULL')
-OrgContactCategory.find_or_create_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
-AppContactCategory.find_or_create_by!(title: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')
-OrgContactCategory.find_or_create_by!(title: 'APEX_OF_ORG', description: 'root of org site status inquiries')
-OrgContactCategory.find_or_create_by!(title: 'NULL_CONTACT_STATUS', description: 'NULL')
-OrgContactCategory.find_or_create_by!(title: 'ORGANIZATION_SITE_CONTACT', description: 'root of org site status inquiries')
+ComContactCategory.find_or_create_by!(id: 'SECURITY_ISSUE', description: 'root of corporate site status inquiries', parent_id: 'NULL')
+ComContactCategory.find_or_create_by!(id: 'OTHERS', description: 'root of corporate site status inquiries', parent_id: 'NULL')
+AppContactCategory.find_or_create_by!(id: 'NULL', description: 'NULL')
+AppContactCategory.find_or_create_by!(id: 'NULL_CONTACT_STATUS', description: 'NULL')
+AppContactCategory.find_or_create_by!(id: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
+OrgContactCategory.find_or_create_by!(id: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
+OrgContactCategory.find_or_create_by!(id: 'NULL_ORG_CATEGORY', description: 'NULL')
+OrgContactCategory.find_or_create_by!(id: 'NULL_CONTACT_STATUS', description: 'NULL')
+AppContactCategory.find_or_create_by!(id: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')
+OrgContactCategory.find_or_create_by!(id: 'APEX_OF_ORG', description: 'root of org site status inquiries')
+OrgContactCategory.find_or_create_by!(id: 'NULL_CONTACT_STATUS', description: 'NULL')
+OrgContactCategory.find_or_create_by!(id: 'ORGANIZATION_SITE_CONTACT', description: 'root of org site status inquiries')
 
 # CREATE CONTACT STATUS
 ComContactStatus.find_or_create_by!(id: 'NONE', description: 'root of service site status inquiries')
 ComContactStatus.find_or_create_by!(id: 'SET_UP', description: 'first step completed')
-ComContactStatus.find_or_create_by!(id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_title: 'SET_UP')
-ComContactStatus.find_or_create_by!(id: 'CHECKED_TELEPHONE_NUMBER', description: 'second step completed', parent_title: 'CHECKED_EMAIL_ADDRESS')
-ComContactStatus.find_or_create_by!(id: 'COMPLETED_CONTACT_ACTION', description: 'second step completed', parent_title: 'CHECKED_TELEPHONE_NUMBER')
+ComContactStatus.find_or_create_by!(id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP')
+ComContactStatus.find_or_create_by!(id: 'CHECKED_TELEPHONE_NUMBER', description: 'second step completed', parent_id: 'CHECKED_EMAIL_ADDRESS')
+ComContactStatus.find_or_create_by!(id: 'COMPLETED_CONTACT_ACTION', description: 'second step completed', parent_id: 'CHECKED_TELEPHONE_NUMBER')
 AppContactStatus.find_or_create_by!(id: 'NONE', description: 'null status')
 AppContactStatus.find_or_create_by!(id: 'STAFF_SITE_STATUS', description: 'root of staff site status inquiries')
 OrgContactStatus.find_or_create_by!(id: 'NONE', description: 'null status')
 OrgContactStatus.find_or_create_by!(id: 'ORG_SITE_STATUS', description: 'root of org site status inquiries')
 OrgContactStatus.find_or_create_by!(id: 'SET_UP', description: 'first step completed')
-OrgContactStatus.find_or_create_by!(id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_title: 'SET_UP')
-OrgContactStatus.find_or_create_by!(id: 'CHECKED_TELEPHONE_NUMBER', description: 'third step completed', parent_title: 'CHECKED_EMAIL_ADDRESS')
-OrgContactStatus.find_or_create_by!(id: 'COMPLETED_CONTACT_ACTION', description: 'contact action completed', parent_title: 'CHECKED_TELEPHONE_NUMBER')
+OrgContactStatus.find_or_create_by!(id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP')
+OrgContactStatus.find_or_create_by!(id: 'CHECKED_TELEPHONE_NUMBER', description: 'third step completed', parent_id: 'CHECKED_EMAIL_ADDRESS')
+OrgContactStatus.find_or_create_by!(id: 'COMPLETED_CONTACT_ACTION', description: 'contact action completed', parent_id: 'CHECKED_TELEPHONE_NUMBER')
 
 # Timeline Audit Events
 ComTimelineAuditEvent.find_or_create_by!(id: "NONE")
@@ -140,11 +123,9 @@ OrgContactAuditEvent.find_or_create_by!(id: "DESTROYED")
 # ========================================
 
 # Create default organization
-default_org = Organization.find_or_create_by!(name: "Default Organization") do |org|
+default_org = Workspace.find_or_create_by!(name: "Default Organization") do |org|
   org.domain = "localhost"
 end
-
-Rails.logger.debug { "  ✓ Organization: #{default_org.name}" }
 
 # Define roles with their keys, names, and descriptions
 roles_data = [
@@ -186,5 +167,3 @@ roles_data.each do |role_data|
   end
   Rails.logger.debug { "  ✓ Role: #{role.name} (#{role.key})" }
 end
-
-Rails.logger.debug "\n✓ RBAC roles seeded successfully!"

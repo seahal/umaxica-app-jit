@@ -2,7 +2,7 @@
 <p class="mt-2 text-sm text-slate-600"><%= t('sign.app.setting.recovery.index.description') %></p>
 
 <ul class="mt-4 space-y-2">
-  <% @user_recover_code.each do |urc| %>
+  <% @user_recovery_codes.each do |urc| %>
     <li>
       <span class="font-mono text-sm text-slate-600"><%= urc.created_at.present? ? l(urc.created_at, format: :short) : "-" %></span>
       <%= link_to t('sign.app.setting.recovery.index.edit_link'), sign_app_setting_recovery_path(urc.id), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>

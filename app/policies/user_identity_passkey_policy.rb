@@ -1,14 +1,37 @@
 class UserIdentityPasskeyPolicy < ApplicationPolicy
-  # NOTE: Up to Pundit v2.3.1, the inheritance was declared as
-  # `Scope < Scope` rather than `Scope < ApplicationPolicy::Scope`.
-  # In most cases the behavior will be identical, but if updating existing
-  # code, beware of possible changes to the ancestors:
-  # https://gist.github.com/Burgestrand/4b4bc22f31c8a95c425fc0e30d7ef1f5
+  def index?
+    actor.present?
+  end
+
+  def show?
+    owner?
+  end
+
+  def create?
+    actor.present?
+  end
+
+  def new?
+    create?
+  end
+
+  def update?
+    owner?
+  end
+
+  def edit?
+    update?
+  end
+
+  def destroy?
+    owner?
+  end
 
   class Scope < ApplicationPolicy::Scope
-    # NOTE: Be explicit about which records you allow access to!
-    # def resolve
-    #   scope.all
-    # end
+    def resolve
+      return scope.none unless actor
+
+      scope.where(user_id: actor.id)
+    end
   end
 end

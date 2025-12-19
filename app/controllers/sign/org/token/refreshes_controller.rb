@@ -4,8 +4,6 @@ module Sign
   module Org
     module Token
       class RefreshesController < Sign::Org::ApplicationController
-        skip_forgery_protection only: :create
-
         # POST /sign/org/token/refresh
         # Refresh access token using refresh token
         #

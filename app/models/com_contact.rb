@@ -8,7 +8,7 @@ class ComContact < GuestsRecord
   belongs_to :com_contact_category,
              class_name: "ComContactCategory",
              foreign_key: :contact_category_title,
-             primary_key: :title,
+             primary_key: :id,
              optional: true,
              inverse_of: :com_contacts
   belongs_to :com_contact_status,

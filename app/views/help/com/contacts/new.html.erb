@@ -26,8 +26,8 @@
     <%= form.label :contact_category_title, t('help.com.contacts.new.contact_category_title') %>
     <%= form.collection_select :contact_category_title,
                                @contact_categories,
-                               :title,
-                               :title,
+                               :id,
+                               :id,
                                { include_blank: true } %>
   </div>
 
