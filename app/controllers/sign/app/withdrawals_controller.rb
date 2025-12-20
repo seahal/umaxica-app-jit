@@ -17,15 +17,17 @@ module Sign
         current_user.user_identity_status_id = UserIdentityStatus::PRE_WITHDRAWAL_CONDITION
 
         if current_user.save
-          Rails.event.notify("user.withdrawal.initiated",
-                             user_id: current_user.id,
-                             withdrawn_at: current_user.withdrawn_at,
-                             status: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION,
-                             ip_address: request.remote_ip
-          )
-          # Reset session only after successful DB update
-          reset_session
-          redirect_to sign_app_root_path, notice: t("sign.app.withdrawal.create.success")
+          User.transaction do
+            Rails.event.notify("user.withdrawal.initiated",
+                               user_id: current_user.id,
+                               withdrawn_at: current_user.withdrawn_at,
+                               status: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION,
+                               ip_address: request.remote_ip
+            )
+            # Log out and clear session data
+            log_out
+            redirect_to sign_app_root_path, notice: t("sign.app.withdrawal.create.success")
+          end
         else
           Rails.event.notify("user.withdrawal.initiation_failed",
                              user_id: current_user.id,
@@ -74,7 +76,7 @@ module Sign
                                user_id: user_id,
                                ip_address: request.remote_ip
             )
-            reset_session
+            log_out
             redirect_to sign_app_root_path, notice: t("sign.app.withdrawal.destroy.success")
           end
         rescue StandardError => e

@@ -24,15 +24,27 @@ module Sign
         end
         # rubocop:enable Minitest/MultipleAssertions
 
-        test "POST create with invalid refresh token returns unauthorized" do
+        test "POST create with invalid (non-existent) refresh token returns unauthorized" do
           post sign_app_token_refresh_url(host: ENV["SIGN_SERVICE_URL"]),
-               params: { refresh_token: "invalid-token-id" },
+               params: { refresh_token: SecureRandom.uuid },
                as: :json
 
           assert_response :unauthorized
           json_response = response.parsed_body
 
           assert_equal I18n.t("sign.token_refresh.errors.invalid_refresh_token"), json_response["error"]
+        end
+
+        test "POST create with malformed refresh token returns bad request" do
+          post sign_app_token_refresh_url(host: ENV["SIGN_SERVICE_URL"]),
+               params: { refresh_token: "invalid-token-format" },
+               as: :json
+
+          assert_response :bad_request
+          json_response = response.parsed_body
+
+          assert_equal I18n.t("sign.token_refresh.errors.invalid_refresh_token"), json_response["error"]
+          assert_equal "invalid_refresh_token_format", json_response["error_code"]
         end
 
         test "POST create without refresh token returns bad request" do

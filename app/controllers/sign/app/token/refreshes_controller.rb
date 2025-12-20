@@ -20,6 +20,21 @@ module Sign
             return
           end
 
+          # UUID format validation
+          unless refresh_token_id.match?(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i)
+            Rails.event.notify("user.token.refresh.validation_failed",
+                               reason: "invalid_format",
+                               refresh_token_id: refresh_token_id,
+                               ip_address: request.remote_ip
+            )
+
+            render json: {
+              error: I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
+              error_code: "invalid_refresh_token_format"
+            }, status: :bad_request
+            return
+          end
+
           result = refresh_access_token(refresh_token_id)
 
           if result

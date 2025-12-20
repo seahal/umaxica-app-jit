@@ -55,7 +55,9 @@ module Authentication
     def log_in(staff)
       reset_session
 
-      token = StaffToken.create!(staff_id: staff.id)
+      token = TokensRecord.connected_to(role: :writing) do
+        StaffToken.create!(staff_id: staff.id)
+      end
       credentials = generate_access_token(staff)
 
       # For non-JSON requests (browser), set cookies
@@ -105,18 +107,20 @@ module Authentication
                            reason: "staff_inactive",
                            ip_address: request_ip_address
         )
-        old_token.destroy
+        TokensRecord.connected_to(role: :writing) { old_token.destroy }
         return nil
       end
 
       # Create new refresh token (rotation)
-      new_refresh_token = StaffToken.create!(staff_id: staff.id)
+      new_refresh_token = TokensRecord.connected_to(role: :writing) do
+        StaffToken.create!(staff_id: staff.id)
+      end
 
       # Generate new access token
       new_access_token = generate_access_token(staff)
 
       # Revoke old refresh token
-      old_token.destroy
+      TokensRecord.connected_to(role: :writing) { old_token.destroy }
 
       Rails.event.notify("staff.token.refreshed",
                          staff_id: staff.id,

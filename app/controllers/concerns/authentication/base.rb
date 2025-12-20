@@ -2,7 +2,7 @@
 
 module Authentication
   module Base
-    JWT_ALGORITHM = "ES256"
+    JWT_ALGORITHM = ENV.fetch("JWT_ALGORITHM", "ES256")
     ACCESS_TOKEN_EXPIRY = 15.minutes
 
     def logged_in?

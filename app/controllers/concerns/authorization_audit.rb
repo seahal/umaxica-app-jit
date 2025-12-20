@@ -57,6 +57,7 @@ module AuthorizationAudit
     end
   rescue StandardError => e
     # Don't let audit logging break the application
+    Rails.logger.error("Authorization audit logging failed: #{e.message}")
     Rails.event.notify("authorization.failure_log.failed", error_message: e.message)
   end
 
