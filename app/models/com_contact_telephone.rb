@@ -53,7 +53,7 @@ class ComContactTelephone < GuestsRecord
     secret = ROTP::Base32.random
     hotp = ROTP::HOTP.new(secret)
     # Generate odd counter (multiply by 2 and add 1 to ensure odd number)
-    counter = rand(1...1_000_000) * 2 + 1
+    counter = (rand(1...1_000_000) * 2) + 1
     code = hotp.at(counter)
 
     self.hotp_secret = secret

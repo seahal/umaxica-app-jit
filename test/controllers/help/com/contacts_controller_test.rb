@@ -95,7 +95,7 @@ module Help
           patch help_com_contact_url(contact), params: {
             com_contact_topic: {
               title: "New Topic",
-              description: "Details about the topic."
+              description: I18n.t("test_data.contact_topic_description")
             }
           }, headers: { "Host" => @host }
         end
@@ -110,7 +110,7 @@ module Help
         patch help_com_contact_url(contact), params: {
           com_contact_topic: {
             title: "New Topic",
-            description: "Details about the topic."
+            description: I18n.t("test_data.contact_topic_description")
           }
         }, headers: { "Host" => @host }
 
@@ -123,9 +123,9 @@ module Help
 
         assert_difference("ComContactTopic.count") do
           patch help_com_contact_url(contact), params: {
-            com_contact_topic: {
-              title: "", # Invalid: title is blank
-              description: "Details about the topic."
+          com_contact_topic: {
+            title: "", # Invalid: title is blank
+            description: I18n.t("test_data.contact_topic_description")
           }
         }, headers: { "Host" => @host }
       end

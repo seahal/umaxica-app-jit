@@ -37,9 +37,9 @@ class ComTimelinePolicy < ApplicationPolicy
         # Other staff see their own entries
         scope.where(staff_id: actor.id)
       elsif actor.is_a?(User)
-        # Users see public timeline entries (if public field exists)
-        # Or entries relevant to them
-        scope.all # Adjust based on actual requirements
+        # Users see published timeline entries only
+        # TODO: Add proper status filtering when publishing workflow is implemented
+        scope.where.not(com_timeline_status_id: "DRAFT")
       else
         # Unauthenticated users see nothing
         scope.none

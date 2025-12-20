@@ -104,10 +104,12 @@ module Authentication
     def shared_cookie_domain
       @shared_cookie_domain ||= begin
                                   configured = ENV["AUTH_COOKIE_DOMAIN"]&.strip
-                                  return formatted_domain(configured) if configured.present?
-
-                                  derived = derive_cookie_domain_from_host
-                                  formatted_domain(derived)
+                                  if configured.present?
+                                    formatted_domain(configured)
+                                  else
+                                    derived = derive_cookie_domain_from_host
+                                    formatted_domain(derived)
+                                  end
                                 end
     end
 

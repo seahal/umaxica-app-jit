@@ -44,7 +44,7 @@ module Sign
           Rails.event.notify("oauth.apple.failure",
                              error_message: error_message,
                              provider: provider)
-          flash[:alert] = t("sign.app.registration.oauth.#{provider}.failure.error")
+          flash[:alert] = t("failure.error", scope: [ "sign", "app", "registration", "oauth", provider ])
           redirect_to new_sign_app_authentication_path
         end
 
@@ -120,8 +120,8 @@ module Sign
           "google"
         end
 
-        def with_identity_writing(&block)
-          IdentitiesRecord.connected_to(role: :writing, &block)
+        def with_identity_writing(&)
+          IdentitiesRecord.connected_to(role: :writing, &)
         end
 
         def create_identity_secret!(user, password)

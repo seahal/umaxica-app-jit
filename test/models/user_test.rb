@@ -68,15 +68,14 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "has_role? should correctly identify assigned roles" do
-    skip "Role model or RoleAssignment model not defined"
-
-    editor_role = Role.create!(key: "editor", name: "Editor")
-    viewer_role = Role.create!(key: "viewer", name: "Viewer")
+    workspace = Workspace.create!(name: "Test Workspace")
+    editor_role = Role.create!(key: "editor", name: "Editor", organization: workspace)
+    viewer_role = Role.create!(key: "viewer", name: "Viewer", organization: workspace)
 
     # Assign editor role to the user
-    RoleAssignment.create!(user: user, role: editor_role)
+    RoleAssignment.create!(user: @user, role: editor_role)
 
-    assert user.has_role?("editor")
-    assert_not user.has_role?("viewer")
+    assert @user.has_role?("editor")
+    assert_not @user.has_role?("viewer")
   end
 end

@@ -33,7 +33,15 @@ class Sign::App::Oauth::ApplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle callback with missing auth_hash" do
-    skip "OmniAuth callback flow requires CSRF state setup; pending proper mock"
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:apple] = nil
+    Rails.application.env_config["omniauth.auth"] = nil
+
+    get callback_sign_app_oauth_apple_url, headers: { "Host" => @host }
+    assert_response :redirect
+    assert_match %r{/registration/new}, response.redirect_url
+    assert_equal "Apple authentication failed", flash[:alert]
+    OmniAuth.config.test_mode = false
   end
 
   test "should handle callback with invalid provider in auth_hash" do
@@ -75,7 +83,24 @@ class Sign::App::Oauth::ApplesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "successful callback creates user and apple auth record" do
-    skip "Full callback tests with database writes are skipped due to readonly mode in test environment"
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new({
+      provider: "apple",
+      uid: "000123.abc456def789.1234",
+      info: { email: "test@example.com" }
+    })
+    Rails.application.env_config["omniauth.auth"] = OmniAuth.config.mock_auth[:apple]
+
+    assert_difference [ "User.count", "UserIdentityAppleAuth.count" ] do
+      get callback_sign_app_oauth_apple_url, headers: { "Host" => @host }
+    end
+
+    assert_response :redirect
+    assert_match %r{/}, response.redirect_url # Match root or any success path
+
+    OmniAuth.config.test_mode = false
+    OmniAuth.config.mock_auth[:apple] = nil
+    Rails.application.env_config["omniauth.auth"] = nil
   end
 
   # Note: Full callback tests with database writes are skipped due to readonly mode in test environment

@@ -9,9 +9,9 @@ class ApplicationError < StandardError
 
     if i18n_key
       message = I18n.t(i18n_key, **context)
-      StandardError.instance_method(:initialize).bind(self).call(message)
+      StandardError.instance_method(:initialize).bind_call(self, message)
     else
-      StandardError.instance_method(:initialize).bind(self).call
+      StandardError.instance_method(:initialize).bind_call(self)
     end
   end
 

@@ -55,15 +55,13 @@ class StaffTest < ActiveSupport::TestCase
   end
 
   test "has_role? should correctly identify assigned roles" do
-    skip "Role model or RoleAssignment model not defined"
+    workspace = Workspace.create!(name: "Test Workspace")
+    admin_role = Role.create!(key: "admin", name: "Admin", organization: workspace)
+    viewer_role = Role.create!(key: "viewer", name: "Viewer", organization: workspace)
 
-    staff = Staff.create!
-    admin_role = Role.create!(key: "admin", name: "Admin")
-    viewer_role = Role.create!(key: "viewer", name: "Viewer")
+    RoleAssignment.create!(staff: @staff, role: admin_role)
 
-    RoleAssignment.create!(staff: staff, role: admin_role)
-
-    assert staff.has_role?("admin")
-    assert_not staff.has_role?("viewer")
+    assert @staff.has_role?("admin")
+    assert_not @staff.has_role?("viewer")
   end
 end

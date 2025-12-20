@@ -20,7 +20,7 @@ class ApexPreferenceRegionsFlowTest < ActionDispatch::IntegrationTest
       patch public_send(domain[:update]), params: { timezone: "Invalid/Zone" }
 
       assert_response :unprocessable_content
-      assert_equal I18n.t("#{domain[:scope]}.timezones.invalid"), flash[:alert]
+      assert_equal I18n.t("timezones.invalid", scope: domain[:scope].split(".")), flash[:alert]
     end
   end
 end

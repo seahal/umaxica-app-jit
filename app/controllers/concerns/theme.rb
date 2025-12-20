@@ -32,13 +32,17 @@ module Theme
     resolved_theme = normalize_theme(params[:theme])
 
     if resolved_theme.nil?
-      flash.now[:alert] = I18n.t("controller.apex.#{preference_scope}.preferences.themes.invalid")
+      flash.now[:alert] = I18n.t("preferences.themes.invalid", scope: [ :apex, preference_scope ])
       assign_current_theme
       @theme_query_params = theme_redirect_params
       render :edit, status: :unprocessable_content
     else
       persist_theme!(resolved_theme)
-      flash[:notice] = I18n.t("controller.apex.#{preference_scope}.preferences.themes.updated", theme: I18n.t("themes.#{resolved_theme}"))
+      flash[:notice] = I18n.t(
+        "preferences.themes.updated",
+        scope: [ :apex, preference_scope ],
+        theme: I18n.t(resolved_theme, scope: :themes)
+      )
       redirect_to theme_redirect_url
     end
   end

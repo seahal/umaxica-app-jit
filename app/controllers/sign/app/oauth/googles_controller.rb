@@ -100,8 +100,8 @@ module Sign
           Rails.event.notify("oauth.google.sync_skipped", error_message: e.message)
         end
 
-        def with_identity_writing(&block)
-          IdentitiesRecord.connected_to(role: :writing, &block)
+        def with_identity_writing(&)
+          IdentitiesRecord.connected_to(role: :writing, &)
         end
 
         def create_identity_secret!(user, password)

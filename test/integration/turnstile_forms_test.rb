@@ -8,15 +8,14 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
       { name: "Sign::App registration emails", env_key: "SIGN_SERVICE_URL", path: "/registration/emails/new" },
       { name: "Sign::App registration telephones", env_key: "SIGN_SERVICE_URL", path: "/registration/telephones/new" },
       { name: "Sign::App authentication email", env_key: "SIGN_SERVICE_URL", path: "/authentication/email/new" },
-      { name: "Sign::Org registration emails", env_key: "SIGN_STAFF_URL", path: "/registration/emails/new" },
-      { name: "Sign::Org registration telephones", env_key: "SIGN_STAFF_URL", path: "/registration/telephones/new" },
+      # { name: "Sign::Org registration emails", env_key: "SIGN_STAFF_URL", path: "/registration/emails/new" },
+      # { name: "Sign::Org registration telephones", env_key: "SIGN_STAFF_URL", path: "/registration/telephones/new" },
       { name: "Help::App contacts", env_key: "HELP_SERVICE_URL", path: "/contacts/new" },
       { name: "Help::Com contacts", env_key: "HELP_CORPORATE_URL", path: "/contacts/new" }
     ]
   end
 
   test "all Turnstile forms have turbo disabled" do
-    skip "Sign::Org registration endpoints not yet implemented"
     @turnstile_form_paths.each do |form_config|
       name = form_config[:name]
       env_key = form_config[:env_key]
@@ -45,7 +44,6 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
   end
 
   test "Turnstile widget is rendered" do
-    skip "Sign::Org registration endpoints not yet implemented"
     @turnstile_form_paths.each do |form_config|
       name = form_config[:name]
       env_key = form_config[:env_key]

@@ -28,8 +28,8 @@ class DeprecationFilter
     end
   end
 
-  def method_missing(method, *args, &block)
-    @original_stderr.send(method, *args, &block)
+  def method_missing(method, *, &)
+    @original_stderr.send(method, *, &)
   end
 
   def respond_to_missing?(method, include_private = false)

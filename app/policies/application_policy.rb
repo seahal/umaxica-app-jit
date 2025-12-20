@@ -13,7 +13,7 @@ class ApplicationPolicy
     @record = record
   end
 
-  # Default permissions - deny all by default (whitelist approach)
+  # Default permissions - deny all by default (allowlist approach)
   def index?
     false
   end

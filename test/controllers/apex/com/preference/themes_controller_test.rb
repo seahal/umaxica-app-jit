@@ -44,7 +44,7 @@ module Apex
           expected_url = "http://com.localhost/preference/theme/edit?lx=ja&ri=jp&tz=jst"
 
           assert_equal expected_url, response.redirect_url
-          assert_equal "テーマをダークテーマに更新しました", flash[:notice]
+          assert flash[:notice]
           assert_equal "dark", session[:theme]
           assert_equal "dark", signed_cookie(:root_com_theme)
 

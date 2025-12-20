@@ -326,10 +326,13 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   end
   # rubocop:enable Minitest/MultipleAssertions
 
-  test "already logged in user cannot authenticate" do
-    # Test that the ensure_not_logged_in before_action works
-    # This would require proper session handling which is complex in integration tests
-    skip "Rails integration test session handling needs clarification"
+  test "already logged in user cannot authenticate via post" do
+    user = users(:one)
+    post sign_app_authentication_email_url,
+         params: { user_identity_email: { address: "some@example.com" } },
+         headers: { "Host" => @host, "X-TEST-CURRENT-USER" => user.id }
+
+    assert_response :bad_request
   end
 
   # rubocop:disable Minitest/MultipleAssertions

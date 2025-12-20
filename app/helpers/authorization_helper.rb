@@ -90,8 +90,8 @@ module AuthorizationHelper
   #   <%= if_authorized @document, :edit? do %>
   #     <%= link_to "Edit", edit_document_path(@document) %>
   #   <% end %>
-  def if_authorized(record, action, &block)
-    block.call if authorized?(record, action)
+  def if_authorized(record, action, &)
+    yield if authorized?(record, action)
   end
 
   # Render content only if current actor has role
@@ -104,7 +104,7 @@ module AuthorizationHelper
   #     <%= render 'admin_panel' %>
   #   <% end %>
   def if_has_role(role_key, organization: nil, &block)
-    block.call if has_role?(role_key, organization: organization)
+    yield if has_role?(role_key, organization: organization)
   end
 
   private

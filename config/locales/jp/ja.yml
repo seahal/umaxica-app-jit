@@ -608,6 +608,23 @@ ja:
   errors:
     unauthorized: "不正なアクセスです"
     not_implemented: "機能はまだ実装されていません"
+    messages:
+      not_authorized: "この操作を行う権限がありません。"
+  seed:
+    roles:
+      admin:
+        description: "システム全体へのアクセス権。ユーザーと設定を管理し、削除を含む全ての操作が可能です。"
+      manager:
+        description: "コンテンツ管理と他ユーザーの投稿編集が可能。管理対象の削除権限があります。"
+      editor:
+        description: "全てのコンテンツを作成・編集可能。削除は自分の投稿のみです。"
+      contributor:
+        description: "コンテンツ作成と自分の投稿の編集のみ可能です。"
+      viewer:
+        description: "閲覧専用。作成や変更はできません。"
+  test_data:
+    contact_topic_description: "トピックの詳細です。"
+    inquiry_detail: "問い合わせの詳細です。"
     format: '%{attribute}%{message}'
     messages:
       login_required: "ログインが必要です"

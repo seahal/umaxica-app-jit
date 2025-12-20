@@ -46,7 +46,13 @@ class Sign::App::Oauth::GooglesControllerTest < ActionDispatch::IntegrationTest
     # Skip this test due to OmniAuth CSRF protection in test environment
     # The callback endpoint requires proper OmniAuth state management
     # which is difficult to mock in integration tests
-    skip "OmniAuth CSRF protection prevents direct callback testing without proper OAuth flow"
+    OmniAuth.config.mock_auth[:google] = nil
+    Rails.application.env_config["omniauth.auth"] = nil
+
+    get callback_sign_app_oauth_google_url, headers: { "Host" => @host }
+    assert_response :redirect
+    assert_match %r{/registration/new}, response.redirect_url
+    assert_equal "Google authentication failed", flash[:alert]
   end
 
   test "should handle callback with invalid provider in auth_hash" do

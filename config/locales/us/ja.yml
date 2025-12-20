@@ -21,6 +21,22 @@ ja:
     messages:
       login_required: "ログインが必要です"
       already_authenticated: "すでにログインしています"
+      not_authorized: "この操作を行う権限がありません。"
+  seed:
+    roles:
+      admin:
+        description: "システム全体へのアクセス権。ユーザーと設定を管理し、削除を含む全ての操作が可能です。"
+      manager:
+        description: "コンテンツ管理と他ユーザーの投稿編集が可能。管理対象の削除権限があります。"
+      editor:
+        description: "全てのコンテンツを作成・編集可能。削除は自分の投稿のみです。"
+      contributor:
+        description: "コンテンツ作成と自分の投稿の編集のみ可能です。"
+      viewer:
+        description: "閲覧専用。作成や変更はできません。"
+  test_data:
+    contact_topic_description: "トピックの詳細です。"
+    inquiry_detail: "問い合わせの詳細です。"
   sign:
     token_refresh:
       errors:
@@ -642,7 +658,7 @@ ja:
           updated: メール設定が正常に更新されました
           none_selected: 設定が選択されていません
         themes:
-          updated: 企業テーマを%{theme}に更新しました
+          updated: テーマを%{theme}に更新しました
           invalid: 無効なテーマが選択されました
         regions:
           title: 企業地域・言語設定
@@ -713,7 +729,7 @@ ja:
           updated: 言語設定を%{language}に更新しました
           unsupported: サポートされていない言語が選択されました
         themes:
-          updated: 企業テーマを%{theme}に更新しました
+          updated: テーマを%{theme}に更新しました
           invalid: 無効なテーマが選択されました
         timezones:
           updated: タイムゾーンを%{timezone}に更新しました
@@ -1020,6 +1036,16 @@ ja:
             JST: 日本標準時 (JST)
           update_settings: 設定を更新
           cancel: キャンセル
+        themes:
+          updated: "テーマを%{theme}に更新しました"
+          invalid: "無効なテーマが選択されました"
+        timezones:
+          invalid: "無効なタイムゾーンが選択されました"
+        themes:
+          updated: "テーマを%{theme}に更新しました"
+          invalid: "無効なテーマが選択されました"
+        timezones:
+          invalid: "無効なタイムゾーンが選択されました"
       preference:
         cookie:
           edit:
@@ -1048,6 +1074,13 @@ ja:
           button: 設定をリセットする
           confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
           back: 設定一覧に戻る
+    com:
+      preferences:
+        themes:
+          updated: "テーマを%{theme}に更新しました"
+          invalid: "無効なテーマが選択されました"
+        timezones:
+          invalid: "無効なタイムゾーンが選択されました"
     org:
       preferences:
         title: 設定
@@ -1142,7 +1175,7 @@ ja:
           updated: 言語設定を%{language}に更新しました
           unsupported: サポートされていない言語が選択されました
         themes:
-          updated: 企業テーマを%{theme}に更新しました
+          updated: テーマを%{theme}に更新しました
           invalid: 無効なテーマが選択されました
         timezones:
           updated: タイムゾーンを%{timezone}に更新しました

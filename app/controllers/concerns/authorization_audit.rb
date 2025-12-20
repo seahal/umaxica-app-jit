@@ -19,7 +19,7 @@ module AuthorizationAudit
     # Respond based on request format
     respond_to do |format|
       format.html do
-        flash[:alert] = I18n.t("errors.messages.not_authorized", default: "You are not authorized to perform this action.")
+        flash[:alert] = I18n.t("errors.messages.not_authorized")
         redirect_back_or_to(root_path)
       end
       format.json do

@@ -18,6 +18,22 @@ en:
     messages:
       login_required: "Login required"
       already_authenticated: "Already authenticated"
+      not_authorized: "You are not authorized to perform this action."
+  seed:
+    roles:
+      admin:
+        description: "Full system access. Can manage users, settings, and perform all operations including deletions."
+      manager:
+        description: "Can manage content and edit other users' posts. Has delete permissions for managed resources."
+      editor:
+        description: "Can create and edit all content. Can only delete own posts."
+      contributor:
+        description: "Can create content and edit own posts only."
+      viewer:
+        description: "Read-only access to content. Cannot create or modify anything."
+  test_data:
+    contact_topic_description: "Details about the topic."
+    inquiry_detail: "Detail of inquiry."
   sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"
@@ -835,6 +851,11 @@ en:
             JST: "Japan Standard Time (JST)"
           update_settings: "Update Settings"
           cancel: "Cancel"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
       preference:
         cookie:
           edit:
@@ -863,6 +884,20 @@ en:
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
           back: "Back to Preferences"
+    com:
+      preferences:
+        themes:
+          updated: "Corporate theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
+    org:
+      preferences:
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
   sign:
     org:
       withdrawal:

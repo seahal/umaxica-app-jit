@@ -8,6 +8,23 @@ en:
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
+    messages:
+      not_authorized: "You are not authorized to perform this action."
+  seed:
+    roles:
+      admin:
+        description: "Full system access. Can manage users, settings, and perform all operations including deletions."
+      manager:
+        description: "Can manage content and edit other users' posts. Has delete permissions for managed resources."
+      editor:
+        description: "Can create and edit all content. Can only delete own posts."
+      contributor:
+        description: "Can create content and edit own posts only."
+      viewer:
+        description: "Read-only access to content. Cannot create or modify anything."
+  test_data:
+    contact_topic_description: "Details about the topic."
+    inquiry_detail: "Detail of inquiry."
   controller:
     help:
       com:
@@ -1024,6 +1041,11 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
     com:
       preferences:
         title: "Preferences"
@@ -1035,6 +1057,11 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+        themes:
+          updated: "Corporate theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
     org:
       preferences:
         title: "Preferences"
@@ -1046,4 +1073,9 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
   description: "Withdrawal"

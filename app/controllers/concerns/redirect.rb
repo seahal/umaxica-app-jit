@@ -33,7 +33,7 @@ module Redirect
      ENV["HELP_STAFF_URL"],
      ENV["EDGE_CORPORATE_URL"],
      ENV["EDGE_SERVICE_URL"],
-     ENV["EDGE_STAFF_URL"] ].compact.map { |v| Redirect.normalize_host(v) }.compact
+     ENV["EDGE_STAFF_URL"] ].compact.filter_map { |v| Redirect.normalize_host(v) }
   end
 
   private

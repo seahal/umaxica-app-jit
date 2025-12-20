@@ -132,27 +132,27 @@ roles_data = [
   {
     key: "admin",
     name: "Administrator",
-    description: "Full system access. Can manage users, settings, and perform all operations including deletions."
+    description: I18n.t("seed.roles.admin.description")
   },
   {
     key: "manager",
     name: "Manager",
-    description: "Can manage content and edit other users' posts. Has delete permissions for managed resources."
+    description: I18n.t("seed.roles.manager.description")
   },
   {
     key: "editor",
     name: "Editor",
-    description: "Can create and edit all content. Can only delete own posts."
+    description: I18n.t("seed.roles.editor.description")
   },
   {
     key: "contributor",
     name: "Contributor",
-    description: "Can create content and edit own posts only."
+    description: I18n.t("seed.roles.contributor.description")
   },
   {
     key: "viewer",
     name: "Viewer",
-    description: "Read-only access to content. Cannot create or modify anything."
+    description: I18n.t("seed.roles.viewer.description")
   }
 ]
 

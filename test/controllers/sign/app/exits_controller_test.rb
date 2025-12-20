@@ -7,10 +7,12 @@ class Sign::App::ExitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get edit raises error without session" do
-    skip "Integration test session management needs proper setup"
+    get edit_sign_app_exit_url, headers: { "Host" => @host }
+    assert_response :not_found
   end
 
   test "should destroy raises error without session" do
-    skip "Integration test session management needs proper setup"
+    delete sign_app_exit_url, headers: { "Host" => @host }
+    assert_response :not_found
   end
 end
