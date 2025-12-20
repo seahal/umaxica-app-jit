@@ -12,8 +12,7 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def login_user
-    # Create a token for the user
-    token = UserToken.create!(user_id: @user.id)
+    UserToken.create!(user_id: @user.id)
 
     # Generate a valid JWT token
     payload = {

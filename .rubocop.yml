@@ -5,6 +5,7 @@ inherit_gem:
 plugins:
   - rubocop-i18n
   - rubocop-rake
+  - rubocop-rubycw
   - rubocop-minitest
   - rubocop-performance
   - rubocop-thread_safety

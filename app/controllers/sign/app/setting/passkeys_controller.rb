@@ -40,9 +40,7 @@ module Sign
 
         # POST /passkeys/verify - Verify WebAuthn registration
         def verify
-          user = User.last
-
-          challenge = session.delete(:webauthn_create_challenge)
+          session.delete(:webauthn_create_challenge)
 
           # Assumes the frontend posts { credential: {...} }
           # cred = WebAuthn::Credential.from_create(params.require(:credential).permit!.to_h)

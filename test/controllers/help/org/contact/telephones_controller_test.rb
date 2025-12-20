@@ -15,14 +15,14 @@ module Help
           get new_help_org_contact_telephone_url(@contact), headers: { "Host" => @host }
 
           assert_response :success
-          assert_match /Org contact telephone new pending/, response.body
+          assert_match(/Org contact telephone new pending/, response.body)
         end
 
         test "should create contact telephone" do
           post help_org_contact_telephone_url(@contact), headers: { "Host" => @host }
 
           assert_response :created
-          assert_match /Org contact telephone create pending/, response.body
+          assert_match(/Org contact telephone create pending/, response.body)
         end
       end
     end

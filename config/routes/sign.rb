@@ -24,7 +24,7 @@ Rails.application.routes.draw do
         end
         # Social SignUp or LogIn
         namespace :social do
-          get "apple/callback", to: "sessions#create", defaults: { provider: "apple" }
+          match "apple/callback", to: "sessions#create", defaults: { provider: "apple" }, via: %i[get post]
           get "google/callback", to: "sessions#create", defaults: { provider: "google_oauth2" }
         end
         # Settings with logined user

@@ -10,8 +10,6 @@ class UserIdentityTelephoneStatusTest < ActiveSupport::TestCase
   end
 
   test "has many user_identity_telephones" do
-    status = user_identity_telephone_statuses(:verified)
-
     assert UserIdentityTelephoneStatus.reflect_on_association(:user_identity_telephones)
   end
 

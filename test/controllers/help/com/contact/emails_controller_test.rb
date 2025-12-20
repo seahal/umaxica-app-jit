@@ -90,7 +90,7 @@ module Help
           )
           # Recreate telephone fresh to avoid encryption issues in parallel tests
           ComContactTelephone.where(com_contact_id: @contact.id).delete_all
-          fresh_telephone = ComContactTelephone.create!(
+          ComContactTelephone.create!(
             com_contact: @contact,
             telephone_number: "+15551234567",
             verifier_attempts_left: 3

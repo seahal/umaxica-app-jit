@@ -123,6 +123,7 @@ group :development do
   gem "rubocop-minitest", require: false
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-i18n", require: false
+  gem "rubocop-rubycw", require: false
   # erb linter
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]

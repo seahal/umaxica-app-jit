@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: d1af5154e8d983227e97de335fc960fe75e3c3b9
+  revision: aeec2cdbae9c4e3eecace19b3d6f788c24d3ac9b
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -719,6 +719,9 @@ GEM
     rubocop-rake (0.7.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
+    rubocop-rubycw (0.2.2)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
     rubocop-thread_safety (0.7.3)
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
@@ -883,6 +886,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails-omakase
   rubocop-rake
+  rubocop-rubycw
   rubocop-thread_safety
   ruby-lsp
   sha3

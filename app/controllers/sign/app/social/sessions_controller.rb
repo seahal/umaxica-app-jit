@@ -56,12 +56,12 @@ module Sign
                    sign_in user
                    redirect_to sign_app_root_path, notice: I18n.t("sign.app.social.sessions.create.success", provider: provider.humanize)
                else
-                 redirect_to sign_app_authentication_path, alert: "Failed to authenticate with #{provider.humanize}: #{identity.errors.full_messages.to_sentence}"
+                 redirect_to new_sign_app_authentication_path, alert: "Failed to authenticate with #{provider.humanize}: #{identity.errors.full_messages.to_sentence}"
                end
             end
           end
         rescue StandardError => e
-          redirect_to sign_app_authentication_path, alert: "Authentication failed: #{e.message}"
+          redirect_to new_sign_app_authentication_path, alert: "Authentication failed: #{e.message}"
         end
 
         private

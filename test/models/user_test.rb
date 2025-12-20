@@ -65,7 +65,7 @@ class UserTest < ActiveSupport::TestCase
   test "has_role? should correctly identify assigned roles" do
     workspace = Workspace.create!(name: "Test Workspace")
     editor_role = Role.create!(key: "editor", name: "Editor", organization: workspace)
-    viewer_role = Role.create!(key: "viewer", name: "Viewer", organization: workspace)
+    Role.create!(key: "viewer", name: "Viewer", organization: workspace)
 
     # Assign editor role to the user
     RoleAssignment.create!(user: @user, role: editor_role)

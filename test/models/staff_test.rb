@@ -44,7 +44,7 @@ class StaffTest < ActiveSupport::TestCase
   test "has_role? should correctly identify assigned roles" do
     workspace = Workspace.create!(name: "Test Workspace")
     admin_role = Role.create!(key: "admin", name: "Admin", organization: workspace)
-    viewer_role = Role.create!(key: "viewer", name: "Viewer", organization: workspace)
+    Role.create!(key: "viewer", name: "Viewer", organization: workspace)
 
     RoleAssignment.create!(staff: @staff, role: admin_role)
 
