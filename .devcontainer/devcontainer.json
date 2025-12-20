@@ -29,15 +29,13 @@
 				"ms-vscode.remote-explorer",
 				"rubocop.vscode-rubocop",
 				"oven.bun-vscode",
-				"anthropic.claude-code",
 				"-sorbet.sorbet-vscode-extension",
 				"-dbaeumer.vscode-eslint",
 				"-esbenp.prettier-vscode",
 				"-eamodio.gitlens",
 				"KoichiSasada.vscode-rdbg",
-				"GitHub.copilot-chat",
 				"openai.chatgpt",
-				"google.geminicodeassist"
+				"anthropic.claude-code"
 			],
 			"settings": {
 				"extensions.verifySignature": false,

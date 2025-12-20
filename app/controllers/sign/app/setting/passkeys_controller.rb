@@ -13,7 +13,7 @@ module Sign
           return render(json: { error: I18n.t("errors.unauthorized") }, status: :unauthorized) unless user
 
           # Ensure webauthn_id exists (generate on first use)
-          user.update!(webauthn_id: SecureRandom.random_bytes(32)) if user.webauthn_id.blank?
+          user.update!(webauthn_id: SecureRandom.urlsafe_base64(32)) if user.webauthn_id.blank?
 
           exclude = if user.respond_to?(:user_passkeys)
                       user.user_passkeys.pluck(:webauthn_id) # = credentialId(base64url)

@@ -129,7 +129,7 @@ ENV TZ=UTC \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     BUNDLE_FORCE_RUBY_PLATFORM=1 \
-    NPM_CONFIG_CACHE=/tmp/npm-cache
+    BUNDLE_FORCE_RUBY_PLATFORM=1
 
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
@@ -142,8 +142,6 @@ RUN apt-get update -qq \
     libvips \
     libxml2-dev \
     libyaml-dev \
-    nodejs \
-    npm \
     postgresql-client \
     tzdata \
     unzip \
@@ -164,6 +162,7 @@ ARG BUN_VERSION
 ARG GITHUB_ACTIONS
 ENV COMMIT_HASH="${COMMIT_HASH}"
 ENV HOME=/home/jit
+ENV BUN_INSTALL=/usr/local
 WORKDIR /home/jit/workspace
 
 RUN apt-get update -qq \
@@ -211,10 +210,7 @@ RUN apt-get update -qq \
 
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
-RUN npm install -g bun@"${BUN_VERSION}" \
-    && npm cache clean --force
-
-RUN rm -rf /home/jit/.npm
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "minitest/mock"
 
 class Sign::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
   self.use_transactional_tests = false
@@ -15,11 +16,67 @@ class Sign::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
   end
 
   test "should get challenge" do
-    skip "WebAuthn not supported in test environment"
-    post sign_app_setting_passkeys_challenge_url, headers: @headers
+    # Mocking WebAuthn::Credential.options_for_create
+    stub_options = OpenStruct.new(challenge: "mock_challenge")
+
+    WebAuthn::Credential.stub :options_for_create, stub_options do
+      post challenge_sign_app_setting_passkeys_url, headers: @headers
+    end
 
     assert_response :ok
     assert_not_nil session[:webauthn_create_challenge]
+    assert_equal "mock_challenge", session[:webauthn_create_challenge]
+  end
+
+  test "should verify passkey" do
+    # First set the session challenge
+    stub_options = OpenStruct.new(challenge: "mock_challenge")
+    WebAuthn::Credential.stub :options_for_create, stub_options do
+      post challenge_sign_app_setting_passkeys_url, headers: @headers
+    end
+
+    # Now verify
+    post verify_sign_app_setting_passkeys_url, headers: @headers
+
+    assert_response :ok
+  end
+
+  test "should get index" do
+    get sign_app_setting_passkeys_url, headers: @headers
+
+    assert_response :ok
+  end
+
+  test "should get new" do
+    get new_sign_app_setting_passkey_url, headers: @headers
+
+    assert_response :ok
+  end
+
+  test "should show passkey" do
+    passkey = UserIdentityPasskey.create!(user: @user,
+                                          description: "Show Me",
+                                          public_key: "pk",
+                                          external_id: SecureRandom.uuid,
+                                          webauthn_id: SecureRandom.uuid,
+                                          sign_count: 0)
+
+    get sign_app_setting_passkey_url(passkey), headers: @headers
+
+    assert_response :ok
+  end
+
+  test "should get edit" do
+    passkey = UserIdentityPasskey.create!(user: @user,
+                                          description: "Edit Me",
+                                          public_key: "pk",
+                                          external_id: SecureRandom.uuid,
+                                          webauthn_id: SecureRandom.uuid,
+                                          sign_count: 0)
+
+    get edit_sign_app_setting_passkey_url(passkey), headers: @headers
+
+    assert_response :ok
   end
 
   test "should create passkey" do

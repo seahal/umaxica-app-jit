@@ -66,8 +66,7 @@ module AuthorizationAudit
       actor: user,
       event_id: "AUTHORIZATION_FAILED",
       ip_address: log_data[:ip_address],
-      timestamp: log_data[:timestamp],
-      metadata: log_data.to_json
+      timestamp: log_data[:timestamp]
     )
   rescue ActiveRecord::RecordInvalid => e
     # Event ID might not exist in the database yet
@@ -80,8 +79,7 @@ module AuthorizationAudit
       actor: staff,
       event_id: "AUTHORIZATION_FAILED",
       ip_address: log_data[:ip_address],
-      timestamp: log_data[:timestamp],
-      metadata: log_data.to_json
+      timestamp: log_data[:timestamp]
     )
   rescue ActiveRecord::RecordInvalid => e
     # Event ID might not exist in the database yet
