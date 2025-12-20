@@ -895,7 +895,7 @@ DEPENDENCIES
   yard
 
 RUBY VERSION
-  ruby 4.0.0.preview2
+  ruby 4.0.0.preview3
 
 BUNDLED WITH
-  4.0.0.dev
+  4.0.2

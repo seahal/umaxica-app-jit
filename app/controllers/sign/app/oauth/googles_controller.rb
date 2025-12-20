@@ -25,8 +25,7 @@ module Sign
           begin
             user = with_identity_writing { find_or_create_user_from(auth_hash) }
 
-            reset_session
-            session[:user_id] = user.id
+            log_in(user, record_login_audit: false)
 
             flash[:notice] = t("sign.app.registration.oauth.google.callback.success")
             redirect_to sign_app_root_path

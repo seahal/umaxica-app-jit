@@ -168,13 +168,14 @@ WORKDIR /home/jit/workspace
 
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
+    vim \
     bash \
-    zsh \
+    openssl \
     iproute2 \
-    dbus \
     fontconfig \
     lsb-release \
-    openssl \
+    dbus \
+    zsh \
     sudo \
     udev \
     unzip \
@@ -212,8 +213,6 @@ COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.l
 
 RUN npm install -g bun@"${BUN_VERSION}" \
     && npm cache clean --force
-
-RUN npm install -g pnpm@latest-10
 
 RUN rm -rf /home/jit/.npm
 

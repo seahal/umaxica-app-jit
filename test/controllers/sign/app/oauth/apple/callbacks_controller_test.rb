@@ -4,6 +4,8 @@ module Sign
   module App
     module OAuth
       class AppleControllerTest < ActionDispatch::IntegrationTest
+        self.use_transactional_tests = false
+
         setup do
           @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
           OmniAuth.config.test_mode = true
@@ -13,6 +15,17 @@ module Sign
           OmniAuth.config.mock_auth[:apple] = nil
           OmniAuth.config.test_mode = false
           Rails.application.env_config["omniauth.auth"] = nil
+
+          # Clean up test data since we're not using transactional tests
+          IdentitiesRecord.connected_to(role: :writing) do
+            UserIdentityAppleAuth.destroy_all
+            UserIdentityEmail.destroy_all
+            UserIdentitySecret.destroy_all
+          end
+          TokensRecord.connected_to(role: :writing) do
+            UserToken.destroy_all
+          end
+          User.destroy_all
         end
 
         test "should handle OAuth callback" do
@@ -40,10 +53,13 @@ module Sign
 
         def assert_oauth_success(i18n_key)
           assert_redirected_to sign_app_root_url(host: @host)
-          assert_equal(
-            [ I18n.t(i18n_key), true ],
-            [ flash[:notice], session[:user_id].present? ]
-          )
+          assert_equal I18n.t(i18n_key), flash[:notice]
+          assert_not_nil cookies[:access_user_token], "Access token cookie should be set for JWT authentication"
+
+          # Verify user was created
+          user = User.last
+
+          assert_not_nil user, "User should be created after OAuth callback"
         end
 
         def mock_apple_auth_hash(overrides = {})

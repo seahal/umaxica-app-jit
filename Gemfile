@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 # source "https://gem.coop"
 
-ruby "4.0.0-preview2"
+ruby "4.0.0-preview3"
 
 # rake
 gem "rake"
