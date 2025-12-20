@@ -4,7 +4,7 @@ module Sign
   module Org
     module Token
       class RefreshesController < ApplicationController
-        skip_forgery_protection
+        skip_forgery_protection if: -> { params[:refresh_token].present? }
 
         def create
           refresh_token_id = params[:refresh_token] || cookies.encrypted[:refresh_staff_token]

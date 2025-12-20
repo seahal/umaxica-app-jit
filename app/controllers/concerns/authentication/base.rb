@@ -132,8 +132,10 @@ module Authentication
     # Priority: Authorization header > Cookie
     def extract_access_token(cookie_key)
       # 1. Check Authorization header (Bearer token)
-      if request.headers["Authorization"]&.match(/^Bearer\s+(.+)$/i)
-        return Regexp.last_match(1)
+      auth_header = request.headers["Authorization"]
+      if auth_header.present?
+        prefix, token = auth_header.split(" ", 2)
+        return token if prefix.casecmp("Bearer").zero? && token.present?
       end
 
       # 2. Fallback to Cookie (traditional approach)
