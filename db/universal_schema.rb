@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_19_093000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_20_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -31,20 +31,20 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_19_093000) do
     t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_area_occurrences_public_id_format"
   end
 
-  create_table "domain_occurence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "domain_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
   end
 
-  create_table "domain_occurences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "domain_occurrences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.string "body", limit: 253, null: false
     t.datetime "created_at", null: false
     t.string "memo", limit: 1024
     t.string "public_id", limit: 21, null: false
     t.string "status_id", limit: 255, null: false
     t.datetime "updated_at", null: false
-    t.index ["body"], name: "index_domain_occurences_on_body", unique: true
-    t.index ["public_id"], name: "index_domain_occurences_on_public_id", unique: true
-    t.check_constraint "char_length(public_id::text) = 21", name: "chk_domain_occurences_public_id_length"
-    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_domain_occurences_public_id_format"
+    t.index ["body"], name: "index_domain_occurrences_on_body", unique: true
+    t.index ["public_id"], name: "index_domain_occurrences_on_public_id", unique: true
+    t.check_constraint "char_length(public_id::text) = 21", name: "chk_domain_occurrences_public_id_length"
+    t.check_constraint "public_id::text ~ '^[A-Za-z0-9_-]{21}$'::text", name: "chk_domain_occurrences_public_id_format"
   end
 
   create_table "email_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|

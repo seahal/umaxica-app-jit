@@ -23,11 +23,6 @@ class StaffTest < ActiveSupport::TestCase
     assert_not_nil @staff.updated_at
   end
 
-  test "should have many emails association" do
-    assert_respond_to @staff, :emails
-    assert_equal "staff_id", @staff.class.reflect_on_association(:staff_identity_emails).foreign_key
-  end
-
   test "should have many telephones association" do
     assert_equal "staff_id", @staff.class.reflect_on_association(:staff_identity_telephones).foreign_key
   end

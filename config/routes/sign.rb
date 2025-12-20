@@ -15,8 +15,6 @@ Rails.application.routes.draw do
         namespace :registration do
           resources :emails, only: %i[new create edit update]
           resources :telephones, only: %i[new create edit update]
-          # TODO: Implement Apple Sign-in registration
-          # resources :apples, only: %i[new]
         end
         # Sign In/Out pages
         resource :authentication, only: %i[new edit destroy]
@@ -38,9 +36,6 @@ Rails.application.routes.draw do
             get :failure
           end
         end
-        get "/auth/google/callback", to: "oauth/googles#callback"
-        get "/auth/apple/callback", to: "oauth/apples#callback"
-        get "/auth/failure", to: "oauth/apples#failure"
         # Settings with logined user
         resource :setting, only: %i[show]
         namespace :setting do

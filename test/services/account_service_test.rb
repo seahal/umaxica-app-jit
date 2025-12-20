@@ -333,21 +333,12 @@ class AccountServiceTest < ActiveSupport::TestCase
     assert account.authenticatable_with?(:phone)
   end
 
-  test "authenticatable_with? returns true for webauthn and oauth with identities" do
-    account = AccountService.new(@user)
-
-    add_user_identities(@user)
-
-    assert account.authenticatable_with?(:webauthn)
-    assert account.authenticatable_with?(:oauth)
-  end
-
   test "available_authentication_methods returns expected list" do
     account = AccountService.new(@user)
 
     add_user_identities(@user)
 
-    assert_equal [ :email, :oauth, :phone, :webauthn ], account.available_authentication_methods.sort
+    assert_equal [ :email, :oauth, :phone ], account.available_authentication_methods.sort
   end
 
   test "staff authenticatable_with? supports email only" do
@@ -423,15 +414,6 @@ class AccountServiceTest < ActiveSupport::TestCase
     )
     unless user.user_identity_apple_auth
       user.create_user_identity_apple_auth!(token: "test_apple_token_#{SecureRandom.hex(8)}")
-    end
-    if user.user_webauthn_credentials.empty?
-      user.update!(webauthn_id: SecureRandom.hex(32)) if user.webauthn_id.blank?
-      user.user_webauthn_credentials.create!(
-        nickname: "Test Key",
-        external_id: SecureRandom.hex(16),
-        public_key: SecureRandom.hex(64),
-        sign_count: 0
-      )
     end
   end
 

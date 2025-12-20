@@ -1,6 +1,6 @@
-class CreateDomainOccurences < ActiveRecord::Migration[8.2]
+class CreateDomainOccurrences < ActiveRecord::Migration[8.2]
   def change
-    create_table :domain_occurences, id: :uuid do |t|
+    create_table :domain_occurrences, id: :uuid do |t|
       t.string :public_id, limit: 21
       t.string :body, limit: 253
       t.string :status_id, limit: 255

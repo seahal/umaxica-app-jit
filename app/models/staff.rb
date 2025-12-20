@@ -22,7 +22,6 @@ class Staff < IdentitiesRecord
   has_many :staff_identity_telephones, dependent: :destroy
   has_many :staff_identity_audits, dependent: :destroy
   has_many :user_identity_audits, as: :actor, dependent: :destroy
-  has_many :emails, class_name: "StaffIdentityEmail", dependent: :destroy
   has_many :staff_tokens, dependent: :destroy
 
   def staff?

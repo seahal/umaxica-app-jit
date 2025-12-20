@@ -5,7 +5,7 @@ class CreateOccurrenceConstraints < ActiveRecord::Migration[8.2]
     telephone_occurrences
     zip_occurrences
     area_occurrences
-    domain_occurences
+    domain_occurrences
     occurrence_events
   ].freeze
 

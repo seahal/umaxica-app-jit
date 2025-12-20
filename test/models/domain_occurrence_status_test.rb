@@ -2,38 +2,38 @@
 
 require "test_helper"
 
-class DomainOccurenceStatusTest < ActiveSupport::TestCase
+class DomainOccurrenceStatusTest < ActiveSupport::TestCase
   include OccurrenceStatusTestHelper
 
   test "upcases id before validation" do
-    assert_upcases_id(DomainOccurenceStatus)
+    assert_upcases_id(DomainOccurrenceStatus)
   end
 
   test "validates id presence" do
-    record = DomainOccurenceStatus.new(id: nil)
+    record = DomainOccurrenceStatus.new(id: nil)
 
     assert_invalid_attribute(record, :id)
   end
 
   test "validates id length" do
-    record = DomainOccurenceStatus.new(id: "A" * 256)
+    record = DomainOccurrenceStatus.new(id: "A" * 256)
 
     assert_invalid_attribute(record, :id)
   end
 
   test "validates id format" do
-    record = DomainOccurenceStatus.new(id: "BAD-ID!")
+    record = DomainOccurrenceStatus.new(id: "BAD-ID!")
 
     assert_invalid_attribute(record, :id)
   end
 
   test "validates id uniqueness case insensitive" do
-    record = DomainOccurenceStatus.new(id: "active")
+    record = DomainOccurrenceStatus.new(id: "active")
 
     assert_invalid_attribute(record, :id)
   end
 
   test "has occurrences association" do
-    assert_status_association(DomainOccurenceStatus, :domain_occurences)
-  end
+    assert_status_association(DomainOccurrenceStatus, :domain_occurrences)
+end
 end
