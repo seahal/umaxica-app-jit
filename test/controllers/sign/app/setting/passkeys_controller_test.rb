@@ -40,11 +40,11 @@ class Sign::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
 
   test "should update passkey" do
     passkey = UserIdentityPasskey.create!(user: @user,
-                                         description: "Old Name",
-                                         public_key: "pk",
-                                         external_id: SecureRandom.uuid,
-                                         webauthn_id: SecureRandom.uuid,
-                                         sign_count: 0)
+                                          description: "Old Name",
+                                          public_key: "pk",
+                                          external_id: SecureRandom.uuid,
+                                          webauthn_id: SecureRandom.uuid,
+                                          sign_count: 0)
 
     patch sign_app_setting_passkey_url(passkey), params: {
       passkey: { description: "New Name" }
@@ -56,11 +56,11 @@ class Sign::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
 
   test "should destroy passkey" do
     passkey = UserIdentityPasskey.create!(user: @user,
-                                         description: "Delete Me",
-                                         public_key: "pk",
-                                         external_id: SecureRandom.uuid,
-                                         webauthn_id: SecureRandom.uuid,
-                                         sign_count: 0)
+                                          description: "Delete Me",
+                                          public_key: "pk",
+                                          external_id: SecureRandom.uuid,
+                                          webauthn_id: SecureRandom.uuid,
+                                          sign_count: 0)
 
     assert_difference("UserIdentityPasskey.count", -1) do
       delete sign_app_setting_passkey_url(passkey), headers: @headers

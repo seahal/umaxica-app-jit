@@ -40,7 +40,7 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
 
       # Check for turbo disabled on forms
       assert_select "form[data-turbo='false']", { minimum: 1 },
-        "Expected at least one form with data-turbo='false' in #{name} (#{host})"
+                    "Expected at least one form with data-turbo='false' in #{name} (#{host})"
     end
   end
 
@@ -65,7 +65,7 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
 
       # Check for Turnstile widget presence
       assert response.body.include?("cf-turnstile") || response.body.include?("cloudflare_turnstile"),
-        "Expected Turnstile widget in #{name} (#{host})"
+             "Expected Turnstile widget in #{name} (#{host})"
     end
   end
 end

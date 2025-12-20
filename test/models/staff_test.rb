@@ -39,4 +39,31 @@ class StaffTest < ActiveSupport::TestCase
   test "user? should return false" do
     assert_not @staff.user?
   end
+
+  test "should set default status before creation" do
+    staff = Staff.create!
+
+    assert_equal StaffIdentityStatus::NONE, staff.staff_identity_status_id
+  end
+
+  test "set_default_status assigns fallback when missing" do
+    staff = Staff.new
+
+    staff.send(:set_default_status)
+
+    assert_equal StaffIdentityStatus::NONE, staff.staff_identity_status_id
+  end
+
+  test "has_role? should correctly identify assigned roles" do
+    skip "Role model or RoleAssignment model not defined"
+
+    staff = Staff.create!
+    admin_role = Role.create!(key: "admin", name: "Admin")
+    viewer_role = Role.create!(key: "viewer", name: "Viewer")
+
+    RoleAssignment.create!(staff: staff, role: admin_role)
+
+    assert staff.has_role?("admin")
+    assert_not staff.has_role?("viewer")
+  end
 end

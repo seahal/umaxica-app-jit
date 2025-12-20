@@ -48,10 +48,10 @@ class UserIdentityPasskeyTest < ActiveSupport::TestCase
   end
 
   test "should validate uniqueness of webauthn_id" do
-      @passkey.save!
-      duplicate = @passkey.dup
+    @passkey.save!
+    duplicate = @passkey.dup
 
-      assert_not duplicate.valid?
+    assert_not duplicate.valid?
   end
 
   test "enforces maximum passkeys per user" do

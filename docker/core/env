@@ -19,7 +19,7 @@ SINGLETON_DEFAULT_SALT=hoge
 IDENTIFIER_REGION_CODE=392
 IDENTIFIER_INSTANCE_ID=0123456789
 # Region
-APEX_REGION=true # TODO: REMOVe
+APEX_REGION=true # TODO: RE MOVE
 GLOBAL_MODE=true
 REGION_CODE=jp
 # Database Configuration
@@ -71,9 +71,6 @@ SIGN_STAFF_URL=sign.org.localhost
 BACK_CORPORATE_URL=www.com.localhost
 BACK_SERVICE_URL=www.app.localhost
 BACK_STAFF_URL=www.org.localhost
-API_CORPORATE_URL=api.com.localhost
-API_SERVICE_URL=api.app.localhost
-API_STAFF_URL=api.org.localhost
 DOCS_CORPORATE_URL=docs.com.localhost
 DOCS_SERVICE_URL=docs.app.localhost
 DOCS_STAFF_URL=docs.org.localhost

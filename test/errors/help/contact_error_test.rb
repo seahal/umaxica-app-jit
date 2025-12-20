@@ -10,6 +10,7 @@ class Help::ContactErrorTest < ActiveSupport::TestCase
     Help::ContactIdRequiredError
     Help::InvalidContactStatusError
   end
+
   def test_contact_error_initializes_with_i18n_key
     error = Help::ContactError.new("help.contact.errors.not_found", :not_found)
 

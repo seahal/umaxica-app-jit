@@ -21,9 +21,12 @@ services:
         source: .
         target: /home/jit/workspace
     networks:
-      - backend
-      - frontend
-      - observability
+      backend: { }
+      frontend:
+        aliases:
+          - app.localhost
+          - sign.app.localhost
+      observability: { }
     depends_on:
       primary:
         condition: service_healthy
@@ -184,6 +187,8 @@ services:
     command: tunnel run --token ${CLOUDFLARED_TOKEN}
     environment:
       CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
+    networks:
+      - frontend
     restart: unless-stopped
 
 networks:

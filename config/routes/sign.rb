@@ -86,8 +86,6 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # SignUp
-        resource :registration, only: :new
         # Login
         resource :authentication, only: [ :new, :destroy ]
         resource :setting, only: [ :show ]
@@ -105,8 +103,6 @@ Rails.application.routes.draw do
         end
         # Sign out
         resource :exit, only: [ :edit, :destroy ]
-        #
-        resource :withdrawal, except: :show
         # TODO: Implement owner management
         # resources :owner
         # TODO: Implement customer management

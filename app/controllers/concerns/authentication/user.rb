@@ -85,9 +85,9 @@ module Authentication
 
       unless old_token
         Rails.event.notify("user.token.refresh.failed",
-          refresh_token_id: refresh_token_id,
-          reason: "token_not_found",
-          ip_address: request_ip_address
+                           refresh_token_id: refresh_token_id,
+                           reason: "token_not_found",
+                           ip_address: request_ip_address
         )
         return nil
       end
@@ -96,10 +96,10 @@ module Authentication
 
       unless user&.active?
         Rails.event.notify("user.token.refresh.failed",
-          user_id: user&.id,
-          refresh_token_id: refresh_token_id,
-          reason: "user_inactive",
-          ip_address: request_ip_address
+                           user_id: user&.id,
+                           refresh_token_id: refresh_token_id,
+                           reason: "user_inactive",
+                           ip_address: request_ip_address
         )
         old_token.destroy
         return nil
@@ -115,10 +115,10 @@ module Authentication
       old_token.destroy
 
       Rails.event.notify("user.token.refreshed",
-        user_id: user.id,
-        old_refresh_token_id: old_token.id,
-        new_refresh_token_id: new_refresh_token.id,
-        ip_address: request_ip_address
+                         user_id: user.id,
+                         old_refresh_token_id: old_token.id,
+                         new_refresh_token_id: new_refresh_token.id,
+                         ip_address: request_ip_address
       )
 
       # Return new tokens
@@ -130,11 +130,11 @@ module Authentication
       }
     rescue StandardError => e
       Rails.event.notify("user.token.refresh.error",
-        user_id: user&.id,
-        refresh_token_id: refresh_token_id,
-        error_class: e.class.name,
-        error_message: e.message,
-        ip_address: request_ip_address
+                         user_id: user&.id,
+                         refresh_token_id: refresh_token_id,
+                         error_class: e.class.name,
+                         error_message: e.message,
+                         ip_address: request_ip_address
       )
       nil
     end
@@ -146,9 +146,9 @@ module Authentication
           UserToken.find_by(id: token_id)&.destroy
         rescue ActiveRecord::RecordNotDestroyed => e
           Rails.event.notify("user.token.destroy.failed",
-            token_id: token_id,
-            error_message: e.message,
-            ip_address: request_ip_address
+                             token_id: token_id,
+                             error_message: e.message,
+                             ip_address: request_ip_address
           )
         end
       end

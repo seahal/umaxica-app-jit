@@ -3,7 +3,7 @@
 # Base policy class for authorization using Pundit
 # Provides common authorization patterns for both User and Staff actors
 class ApplicationPolicy
-  attr_reader :actor, :record  # Use 'actor' instead of 'user' to support both User and Staff
+  attr_reader :actor, :record # Use 'actor' instead of 'user' to support both User and Staff
 
   # Alias user to actor for compatibility with standard Pundit expectations and tests
   alias_method :user, :actor
@@ -48,9 +48,9 @@ class ApplicationPolicy
   # @return [Workspace, nil]
   def organization
     @organization ||= if record.respond_to?(:organization)
-      record.organization
+                        record.organization
     elsif record.respond_to?(:organization_id) && record.organization_id.present?
-      Workspace.find_by(id: record.organization_id)
+                        Workspace.find_by(id: record.organization_id)
     end
   end
 

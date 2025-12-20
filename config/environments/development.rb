@@ -92,9 +92,6 @@ Rails.application.configure do
   config.hosts << "www.app.localhost"
   config.hosts << "www.com.localhost"
   config.hosts << "www.org.localhost"
-  config.hosts << "api.app.localhost"
-  config.hosts << "api.com.localhost"
-  config.hosts << "api.org.localhost"
   config.hosts << "help.app.localhost"
   config.hosts << "help.com.localhost"
   config.hosts << "help.org.localhost"
@@ -104,6 +101,8 @@ Rails.application.configure do
   config.hosts << "news.app.localhost"
   config.hosts << "news.com.localhost"
   config.hosts << "news.org.localhost"
+  config.hosts << "sign.umaxica.app"
+  config.hosts << "sign.umaxica.org"
 
   # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
   # config.after_initialize do

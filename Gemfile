@@ -72,6 +72,7 @@ gem "jwt"
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "importmap-rails"
+# Tailwind CSS
 gem "tailwindcss-rails"
 # for fastly cache purge
 gem "fastly"

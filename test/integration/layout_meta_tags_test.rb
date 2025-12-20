@@ -38,7 +38,7 @@ class LayoutMetaTagsTest < ActionDispatch::IntegrationTest
 
       assert_response :success, "Failed to access #{path} for #{name} (#{host})"
       assert_select "meta[name='turbo-refresh-scroll'][content='preserve']", 1,
-        "Expected turbo-refresh-scroll meta tag in #{name} layout"
+                    "Expected turbo-refresh-scroll meta tag in #{name} layout"
     end
   end
 

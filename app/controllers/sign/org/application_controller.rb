@@ -37,18 +37,6 @@ module Sign
       def logged_in?
         logged_in_staff?
       end
-
-      def authenticate_staff!
-        return if logged_in_staff?
-
-        if request.format.json?
-          render json: { error: "Unauthorized" }, status: :unauthorized
-          nil
-        else
-          head :unauthorized
-          nil
-        end
-      end
     end
   end
 end

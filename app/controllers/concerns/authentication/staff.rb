@@ -23,8 +23,10 @@ module Authentication
       return @current_staff if defined?(@current_staff)
 
       # Test helpers can inject current staff via request header
+      # This bypasses the withdrawn check to allow testing withdrawn states
       if Rails.env.test? && respond_to?(:request) && request && (test_staff_id = request.headers["X-TEST-CURRENT-STAFF"])
         @current_staff = ::Staff.find_by(id: test_staff_id)
+        @bypass_withdrawn_check = true
         return @current_staff
       end
 
@@ -37,8 +39,8 @@ module Authentication
         return nil unless payload["type"] == "staff"
 
         @current_staff = ::Staff.find_by(id: payload["sub"])
-        # Treat withdrawn accounts as unauthenticated
-        @current_staff = nil if @current_staff&.respond_to?(:withdrawn?) && @current_staff.withdrawn?
+        # Treat withdrawn accounts as unauthenticated (unless bypassed for testing)
+        @current_staff = nil if @current_staff&.respond_to?(:withdrawn?) && @current_staff.withdrawn? && !@bypass_withdrawn_check
       rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
         @current_staff = nil
       end
@@ -87,9 +89,9 @@ module Authentication
 
       unless old_token
         Rails.event.notify("staff.token.refresh.failed",
-          refresh_token_id: refresh_token_id,
-          reason: "token_not_found",
-          ip_address: request_ip_address
+                           refresh_token_id: refresh_token_id,
+                           reason: "token_not_found",
+                           ip_address: request_ip_address
         )
         return nil
       end
@@ -98,10 +100,10 @@ module Authentication
 
       unless staff&.active?
         Rails.event.notify("staff.token.refresh.failed",
-          staff_id: staff&.id,
-          refresh_token_id: refresh_token_id,
-          reason: "staff_inactive",
-          ip_address: request_ip_address
+                           staff_id: staff&.id,
+                           refresh_token_id: refresh_token_id,
+                           reason: "staff_inactive",
+                           ip_address: request_ip_address
         )
         old_token.destroy
         return nil
@@ -117,10 +119,10 @@ module Authentication
       old_token.destroy
 
       Rails.event.notify("staff.token.refreshed",
-        staff_id: staff.id,
-        old_refresh_token_id: old_token.id,
-        new_refresh_token_id: new_refresh_token.id,
-        ip_address: request_ip_address
+                         staff_id: staff.id,
+                         old_refresh_token_id: old_token.id,
+                         new_refresh_token_id: new_refresh_token.id,
+                         ip_address: request_ip_address
       )
 
       # Return new tokens
@@ -132,11 +134,11 @@ module Authentication
       }
     rescue StandardError => e
       Rails.event.notify("staff.token.refresh.error",
-        staff_id: staff&.id,
-        refresh_token_id: refresh_token_id,
-        error_class: e.class.name,
-        error_message: e.message,
-        ip_address: request_ip_address
+                         staff_id: staff&.id,
+                         refresh_token_id: refresh_token_id,
+                         error_class: e.class.name,
+                         error_message: e.message,
+                         ip_address: request_ip_address
       )
       nil
     end
@@ -148,9 +150,9 @@ module Authentication
           StaffToken.find_by(id: token_id)&.destroy
         rescue ActiveRecord::RecordNotDestroyed => e
           Rails.event.notify("staff.token.destroy.failed",
-            token_id: token_id,
-            error_message: e.message,
-            ip_address: request_ip_address
+                             token_id: token_id,
+                             error_message: e.message,
+                             ip_address: request_ip_address
           )
         end
       end

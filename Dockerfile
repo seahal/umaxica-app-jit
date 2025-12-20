@@ -3,7 +3,7 @@
 # ============================================================================
 # Shared build arguments
 # ============================================================================
-ARG RUBY_VERSION=4.0.0-preview2
+ARG RUBY_VERSION=4.0.0-preview3
 ARG BUN_VERSION=1.3.5
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000

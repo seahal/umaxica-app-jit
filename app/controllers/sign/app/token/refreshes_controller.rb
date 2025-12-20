@@ -9,8 +9,8 @@ module Sign
 
           if refresh_token_id.blank?
             Rails.event.notify("user.token.refresh.validation_failed",
-              reason: "missing_refresh_token",
-              ip_address: request.remote_ip
+                               reason: "missing_refresh_token",
+                               ip_address: request.remote_ip
             )
 
             render json: {

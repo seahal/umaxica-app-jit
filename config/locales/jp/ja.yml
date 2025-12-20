@@ -353,6 +353,10 @@ ja:
     telephone_successfully_created: 電話番号の確認コードを送信しました。
     sample_successfully_updated: 登録が完了しました。
   sign:
+    token_refresh:
+      errors:
+        missing_refresh_token: "リフレッシュトークンが必要です"
+        invalid_refresh_token: "無効または期限切れのリフレッシュトークンです"
     app:
       layout:
         nav:

@@ -20,7 +20,6 @@
   </h1>
   <% unless logged_in? %>
     <ul>
-      <li><%= link_to t("sign.org.layout.nav.sign_up"), new_sign_org_registration_path %></li>
       <li><%= link_to t("sign.org.layout.nav.log_in"), new_sign_org_authentication_path %></li>
     </ul>
   <% else %>

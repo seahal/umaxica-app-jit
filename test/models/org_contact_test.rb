@@ -247,8 +247,6 @@ class OrgContactTest < ActiveSupport::TestCase
     assert_equal "ORGANIZATION_INQUIRY", contact.contact_category_title
   end
 
-
-
   test "should set default contact_category_title when nil" do
     contact = OrgContact.new(
       contact_category_title: nil,

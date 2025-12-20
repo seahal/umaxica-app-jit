@@ -90,7 +90,6 @@ class Sign::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("sign.app.withdrawal.update.cannot_recover"), flash[:alert]
   end
 
-
   test "withdrawn user cannot access withdrawal show page (route not available)" do
     @user.update!(withdrawn_at: 1.day.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
 

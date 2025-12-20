@@ -3,43 +3,39 @@
 module Sign
   module Org
     module Token
-      class RefreshesController < Sign::Org::ApplicationController
-        # POST /sign/org/token/refresh
-        # Refresh access token using refresh token
-        #
-        # Request (JSON):
-        #   { "refresh_token": "token_id" }
-        #
-        # Response (JSON):
-        #   {
-        #     "access_token": "jwt_token",
-        #     "refresh_token": "new_token_id",
-        #     "token_type": "Bearer",
-        #     "expires_in": 900
-        #   }
+      class RefreshesController < ApplicationController
+        skip_forgery_protection
+
         def create
-          refresh_token_id = params[:refresh_token]
+          refresh_token_id = params[:refresh_token] || cookies.encrypted[:refresh_staff_token]
 
           if refresh_token_id.blank?
-            Rails.event.notify("staff.token.refresh.validation_failed",
-              reason: "missing_refresh_token",
-              ip_address: request.remote_ip
-            )
-
             render json: {
-              error: I18n.t("sign.token_refresh.errors.missing_refresh_token"),
+              error: I18n.t("sign.token_refresh.errors.missing_refresh_token", default: "Refresh token is required"),
               error_code: "missing_refresh_token"
             }, status: :bad_request
             return
           end
 
-          result = refresh_access_token(refresh_token_id)
+          credentials = refresh_access_token(refresh_token_id)
 
-          if result
-            render json: result, status: :ok
+          if credentials
+            # Update cookies for browser clients
+            unless request.format.json?
+              cookies[:access_staff_token] = cookie_options.merge(
+                value: credentials[:access_token],
+                expires: Authentication::Base::ACCESS_TOKEN_EXPIRY.from_now
+              )
+              cookies.encrypted[:refresh_staff_token] = cookie_options.merge(
+                value: credentials[:refresh_token],
+                expires: 1.year.from_now
+              )
+            end
+
+            render json: credentials, status: :ok
           else
             render json: {
-              error: I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
+              error: I18n.t("sign.token_refresh.errors.invalid_refresh_token", default: "Invalid or expired refresh token"),
               error_code: "invalid_refresh_token"
             }, status: :unauthorized
           end

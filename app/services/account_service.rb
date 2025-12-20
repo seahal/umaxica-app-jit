@@ -158,9 +158,9 @@ class AccountService
   def sessions
     case type
     when :user
-      accountable.user_sessions
+      accountable.user_tokens
     when :staff
-      accountable.staff_sessions || StaffSession.none
+      accountable.staff_tokens
     end
   end
 
@@ -176,15 +176,25 @@ class AccountService
 
   # Get all email addresses associated with this account
   #
-  # @return [ActiveRecord::Relation] Collection of email records
-  delegate :emails, to: :accountable
+  # @return [ActiveRecord::Relation, Array] Collection of email records
+  def emails
+    return accountable.emails if accountable.respond_to?(:emails)
+    return accountable.user_identity_emails if accountable.respond_to?(:user_identity_emails)
+    return accountable.staff_identity_emails if accountable.respond_to?(:staff_identity_emails)
+
+    []
+  end
 
   # Get all telephone numbers associated with this account
   # Note: Staff accounts don't have telephone authentication
   #
   # @return [ActiveRecord::Relation, Array] Collection of telephone records or empty array
   def phones
-    user? ? accountable.phones : []
+    return [] unless user?
+    return accountable.phones if accountable.respond_to?(:phones)
+    return accountable.user_identity_telephones if accountable.respond_to?(:user_identity_telephones)
+
+    []
   end
 
   alias telephones phones
@@ -213,9 +223,9 @@ class AccountService
   def authenticatable_with?(method)
     case method.to_sym
     when :email
-      emails.exists?
+      collection_present?(emails)
     when :phone
-      user? && phones.exists?
+      user? && collection_present?(phones)
     when :webauthn
       webauthn_id.present?
     when :oauth
@@ -232,8 +242,8 @@ class AccountService
   # @return [Array<Symbol>] List of available authentication methods
   def available_authentication_methods
     methods = []
-    methods << :email if emails.exists?
-    methods << :phone if user? && phones.exists?
+    methods << :email if collection_present?(emails)
+    methods << :phone if user? && collection_present?(phones)
     methods << :webauthn if webauthn_id.present?
     methods << :oauth if user? && oauth_configured?
     methods << :totp if totp_configured?
@@ -262,10 +272,13 @@ class AccountService
   def totp_configured?
     case type
     when :user
-      accountable.user_time_based_one_time_password.exists?
+      return false unless accountable.respond_to?(:user_time_based_one_time_password)
+
+      accountable.user_time_based_one_time_password.present?
     when :staff
-      accountable.respond_to?(:staff_time_based_one_time_password) &&
-        accountable.staff_time_based_one_time_password.exists?
+      return false unless accountable.respond_to?(:staff_time_based_one_time_password)
+
+      accountable.staff_time_based_one_time_password.present?
     else
       false
     end
@@ -325,4 +338,8 @@ class AccountService
   end
 
   private_class_method :find_record
+
+  def collection_present?(collection)
+    collection.respond_to?(:exists?) ? collection.exists? : collection.any?
+  end
 end

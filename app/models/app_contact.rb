@@ -116,6 +116,7 @@ class AppContact < GuestsRecord
   end
 
   private
+
   def generate_token
     self.token ||= SecureRandom.alphanumeric(32)
   end

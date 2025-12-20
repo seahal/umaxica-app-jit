@@ -2,8 +2,6 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 
-
-
 Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 
 if ENV["RAILS_ENV"] == "test"
@@ -23,6 +21,14 @@ if ENV["RAILS_ENV"] == "test"
     add_filter ".bundle/"
     add_filter "vendor/"
     add_filter "app/views/"
+    add_filter "test/"
+    add_filter "config/"
+    add_filter "db/"
+    add_filter "tmp/"
+    add_filter "bin/"
+    add_filter "docs/"
+    add_filter "log/"
+    add_filter "docker/"
 
     # Exclude annotate configuration file as it is only for configuration
     add_filter "lib/tasks/auto_annotate_models.rake"

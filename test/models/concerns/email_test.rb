@@ -218,7 +218,7 @@ class EmailTest < ActiveSupport::TestCase
     email = UserIdentityEmail.create!(address: "otp3@example.com", confirm_policy: true)
     otp_key = "secret_key_789"
     otp_counter = 30
-    expires_at = 1.hour.ago.to_i  # Already expired
+    expires_at = 1.hour.ago.to_i # Already expired
 
     email.store_otp(otp_key, otp_counter, expires_at)
     otp_data = email.get_otp

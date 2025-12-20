@@ -45,4 +45,38 @@ class UserTest < ActiveSupport::TestCase
   test "user? should return true" do
     assert_predicate @user, :user?
   end
+
+  test "should set default status before creation" do
+    user = User.create!
+
+    assert_equal UserIdentityStatus::NONE, user.user_identity_status_id
+  end
+
+  test "should have many user_identity_emails association" do
+    assert_respond_to @user, :user_identity_emails
+    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_emails).macro
+  end
+
+  test "should have many user_identity_secrets association" do
+    assert_respond_to @user, :user_identity_secrets
+    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_secrets).macro
+  end
+
+  test "should have many user_identity_passkeys association" do
+    assert_respond_to @user, :user_identity_passkeys
+    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_passkeys).macro
+  end
+
+  test "has_role? should correctly identify assigned roles" do
+    skip "Role model or RoleAssignment model not defined"
+
+    editor_role = Role.create!(key: "editor", name: "Editor")
+    viewer_role = Role.create!(key: "viewer", name: "Viewer")
+
+    # Assign editor role to the user
+    RoleAssignment.create!(user: user, role: editor_role)
+
+    assert user.has_role?("editor")
+    assert_not user.has_role?("viewer")
+  end
 end

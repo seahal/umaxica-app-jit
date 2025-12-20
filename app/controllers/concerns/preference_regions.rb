@@ -95,10 +95,10 @@ module PreferenceRegions
 
     Rails.event.debug("preference_regions.params", preferences: preferences.to_h)
     Rails.event.debug("preference_regions.preferences",
-                        region: preferences[:region],
-                        country: preferences[:country],
-                        language: preferences[:language],
-                        timezone: preferences[:timezone])
+                      region: preferences[:region],
+                      country: preferences[:country],
+                      language: preferences[:language],
+                      timezone: preferences[:timezone])
     updated |= assign_if_present(:region, preferences[:region])
     updated |= assign_if_present(:country, preferences[:country])
 

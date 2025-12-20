@@ -6,6 +6,7 @@ class HasRolesTest < ActiveSupport::TestCase
   setup do
     @organization = Workspace.create!(name: "Test Org", domain: "test.com")
     @admin_role = Role.create!(key: "admin", name: "Admin", organization: @organization)
+    @manager_role = Role.create!(key: "manager", name: "Manager", organization: @organization)
     @editor_role = Role.create!(key: "editor", name: "Editor", organization: @organization)
     @viewer_role = Role.create!(key: "viewer", name: "Viewer", organization: @organization)
     # Use an existing user from fixtures or create with proper attributes
@@ -44,6 +45,12 @@ class HasRolesTest < ActiveSupport::TestCase
     RoleAssignment.create!(user: @user, role: @viewer_role)
 
     assert @user.can_view?(organization: @organization)
+  end
+
+  test "can_contribute? returns true for manager role" do
+    RoleAssignment.create!(user: @user, role: @manager_role)
+
+    assert @user.can_contribute?(organization: @organization)
   end
 
   test "roles_in returns roles for specific organization" do

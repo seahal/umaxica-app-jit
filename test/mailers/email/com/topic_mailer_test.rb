@@ -14,9 +14,9 @@ class Email::Com::TopicMailerTest < ActionMailer::TestCase
     ).notice
 
     assert_equal [
-      "#{ENV.fetch('BRAND_NAME', 'Umaxica')} - We received your inquiry",
-      [ recipient ]
-    ], [ mail.subject, mail.to ]
+                   "#{ENV.fetch('BRAND_NAME', 'Umaxica')} - We received your inquiry",
+                   [ recipient ]
+                 ], [ mail.subject, mail.to ]
     assert_match "Inq title", mail.body.encoded
     assert_match "Detail of inquiry.", mail.body.encoded
   end

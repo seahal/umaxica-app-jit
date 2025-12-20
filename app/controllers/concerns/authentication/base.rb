@@ -44,11 +44,11 @@ module Authentication
       JWT.encode(payload, JwtConfig.private_key, JWT_ALGORITHM)
     rescue StandardError => e
       Rails.event.notify("authentication.token.generation.failed",
-        error_class: e.class.name,
-        error_message: e.message,
-        backtrace: e.backtrace.first(5),
-        resource_type: resource.class.name,
-        resource_id: resource.id
+                         error_class: e.class.name,
+                         error_message: e.message,
+                         backtrace: e.backtrace.first(5),
+                         resource_type: resource.class.name,
+                         resource_id: resource.id
       )
       raise "Access token generation failed"
     end
@@ -67,20 +67,20 @@ module Authentication
       }).first
     rescue JWT::ExpiredSignature
       Rails.event.notify("authentication.token.verification.expired",
-        host: request.host
+                         host: request.host
       )
       raise JWT::ExpiredSignature, "Token has expired"
     rescue JWT::DecodeError, JWT::VerificationError => e
       Rails.event.notify("authentication.token.verification.failed",
-        error_class: e.class.name,
-        host: request.host
+                         error_class: e.class.name,
+                         host: request.host
       )
       raise JWT::VerificationError, "Invalid token"
     rescue StandardError => e
       Rails.event.notify("authentication.token.verification.error",
-        error_class: e.class.name,
-        error_message: e.message,
-        host: request.host
+                         error_class: e.class.name,
+                         error_message: e.message,
+                         host: request.host
       )
       raise JWT::VerificationError, "Token verification failed"
     end
@@ -103,12 +103,12 @@ module Authentication
 
     def shared_cookie_domain
       @shared_cookie_domain ||= begin
-        configured = ENV["AUTH_COOKIE_DOMAIN"]&.strip
-        return formatted_domain(configured) if configured.present?
+                                  configured = ENV["AUTH_COOKIE_DOMAIN"]&.strip
+                                  return formatted_domain(configured) if configured.present?
 
-        derived = derive_cookie_domain_from_host
-        formatted_domain(derived)
-      end
+                                  derived = derive_cookie_domain_from_host
+                                  formatted_domain(derived)
+                                end
     end
 
     def derive_cookie_domain_from_host

@@ -59,14 +59,14 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # First registration attempt
     post sign_app_registration_emails_url,
-      params: {
-        user_identity_email: {
-          address: email,
-          confirm_policy: "1"
-        },
-        "cf-turnstile-response": "test"
-      },
-      headers: default_headers
+         params: {
+           user_identity_email: {
+             address: email,
+             confirm_policy: "1"
+           },
+           "cf-turnstile-response": "test"
+         },
+         headers: default_headers
 
     assert_response :redirect
 
@@ -80,14 +80,14 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     # Second registration attempt immediately after
     # This should delete the previous unverified record and create a new one
     post sign_app_registration_emails_url,
-      params: {
-        user_identity_email: {
-          address: email,
-          confirm_policy: "1"
-        },
-        "cf-turnstile-response": "test"
-      },
-      headers: default_headers
+         params: {
+           user_identity_email: {
+             address: email,
+             confirm_policy: "1"
+           },
+           "cf-turnstile-response": "test"
+         },
+         headers: default_headers
 
     # Should succeed because old unverified record is deleted
     assert_response :redirect
@@ -108,14 +108,14 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Create registration record
     post sign_app_registration_emails_url,
-      params: {
-        user_identity_email: {
-          address: email,
-          confirm_policy: "1"
-        },
-        "cf-turnstile-response": "test"
-      },
-      headers: default_headers
+         params: {
+           user_identity_email: {
+             address: email,
+             confirm_policy: "1"
+           },
+           "cf-turnstile-response": "test"
+         },
+         headers: default_headers
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
@@ -123,13 +123,13 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Attempt wrong code
     patch sign_app_registration_email_url(user_email.id),
-      params: {
-        id: user_email.id,
-        user_identity_email: {
-          pass_code: "000000"
-        }
-      },
-      headers: default_headers
+          params: {
+            id: user_email.id,
+            user_identity_email: {
+              pass_code: "000000"
+            }
+          },
+          headers: default_headers
 
     assert_response :unprocessable_content
     assert_includes @response.body, "正しくありません"
@@ -140,14 +140,14 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Create registration record
     post sign_app_registration_emails_url,
-      params: {
-        user_identity_email: {
-          address: email,
-          confirm_policy: "1"
-        },
-        "cf-turnstile-response": "test"
-      },
-      headers: default_headers
+         params: {
+           user_identity_email: {
+             address: email,
+             confirm_policy: "1"
+           },
+           "cf-turnstile-response": "test"
+         },
+         headers: default_headers
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
@@ -156,13 +156,13 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     # Make 3 failed attempts
     3.times do
       patch sign_app_registration_email_url(user_email.id),
-        params: {
-          id: user_email.id,
-          user_identity_email: {
-            pass_code: "000000"
-          }
-        },
-        headers: default_headers
+            params: {
+              id: user_email.id,
+              user_identity_email: {
+                pass_code: "000000"
+              }
+            },
+            headers: default_headers
     end
 
     # Verify redirect and record deletion
@@ -216,15 +216,15 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Create registration record with rd parameter
     post sign_app_registration_emails_url,
-      params: {
-        user_identity_email: {
-          address: email,
-          confirm_policy: "1"
-        },
-        "cf-turnstile-response": "test",
-        rd: encoded_rd
-      },
-      headers: default_headers
+         params: {
+           user_identity_email: {
+             address: email,
+             confirm_policy: "1"
+           },
+           "cf-turnstile-response": "test",
+           rd: encoded_rd
+         },
+         headers: default_headers
 
     # Verify rd parameter is preserved in redirect
     assert_response :redirect
@@ -240,14 +240,14 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Submit correct OTP with rd parameter
     patch sign_app_registration_email_url(user_email.id),
-      params: {
-        id: user_email.id,
-        user_identity_email: {
-          pass_code: correct_code
-        },
-        rd: encoded_rd
-      },
-      headers: default_headers
+          params: {
+            id: user_email.id,
+            user_identity_email: {
+              pass_code: correct_code
+            },
+            rd: encoded_rd
+          },
+          headers: default_headers
 
     # Should redirect to the encoded URL
     assert_redirected_to redirect_url
@@ -261,14 +261,14 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Create registration record
     post sign_app_registration_emails_url,
-      params: {
-        user_identity_email: {
-          address: email,
-          confirm_policy: "1"
-        },
-        "cf-turnstile-response": "test"
-      },
-      headers: default_headers
+         params: {
+           user_identity_email: {
+             address: email,
+             confirm_policy: "1"
+           },
+           "cf-turnstile-response": "test"
+         },
+         headers: default_headers
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
@@ -282,13 +282,13 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Submit correct OTP
     patch sign_app_registration_email_url(user_email.id),
-      params: {
-        id: user_email.id,
-        user_identity_email: {
-          pass_code: correct_code
-        }
-      },
-      headers: default_headers
+          params: {
+            id: user_email.id,
+            user_identity_email: {
+              pass_code: correct_code
+            }
+          },
+          headers: default_headers
 
     # Verify success response
     assert_redirected_to "/"
@@ -324,14 +324,14 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Create registration record
     post sign_app_registration_emails_url,
-      params: {
-        user_identity_email: {
-          address: email,
-          confirm_policy: "1"
-        },
-        "cf-turnstile-response": "test"
-      },
-      headers: default_headers
+         params: {
+           user_identity_email: {
+             address: email,
+             confirm_policy: "1"
+           },
+           "cf-turnstile-response": "test"
+         },
+         headers: default_headers
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
@@ -342,13 +342,13 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Submit correct OTP
     patch sign_app_registration_email_url(user_email.id),
-      params: {
-        id: user_email.id,
-        user_identity_email: {
-          pass_code: correct_code
-        }
-      },
-      headers: default_headers
+          params: {
+            id: user_email.id,
+            user_identity_email: {
+              pass_code: correct_code
+            }
+          },
+          headers: default_headers
 
     # Verify JWT access token cookie was set
     assert_not_nil cookies[:access_user_token], "Access token cookie should be set after successful registration"
@@ -366,14 +366,14 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Create registration record
     post sign_app_registration_emails_url,
-      params: {
-        user_identity_email: {
-          address: email,
-          confirm_policy: "1"
-        },
-        "cf-turnstile-response": "test"
-      },
-      headers: default_headers
+         params: {
+           user_identity_email: {
+             address: email,
+             confirm_policy: "1"
+           },
+           "cf-turnstile-response": "test"
+         },
+         headers: default_headers
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
@@ -387,13 +387,13 @@ class Sign::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
     # Submit correct OTP
     patch sign_app_registration_email_url(user_email.id),
-      params: {
-        id: user_email.id,
-        user_identity_email: {
-          pass_code: correct_code
-        }
-      },
-      headers: default_headers
+          params: {
+            id: user_email.id,
+            user_identity_email: {
+              pass_code: correct_code
+            }
+          },
+          headers: default_headers
 
     # Verify OTP data was cleared
     user_email.reload

@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Help::Com
-  class ContactsControllerTest < ActionDispatch::IntegrationTest
+  class ContactsControllerViewTest < ActionDispatch::IntegrationTest
     setup do
       @category = com_contact_categories(:SECURITY_ISSUE)
     end

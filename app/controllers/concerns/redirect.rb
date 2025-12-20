@@ -18,22 +18,22 @@ module Redirect
 
   def allowed_hosts
     [ ENV["APEX_CORPORATE_URL"],
-      ENV["APEX_SERVICE_URL"],
-      ENV["APEX_STAFF_URL"],
-      ENV["SIGN_SERVICE_URL"],
-      ENV["SIGN_STAFF_URL"],
-      ENV["DOCS_CORPORATE_URL"],
-      ENV["DOCS_SERVICE_URL"],
-      ENV["DOCS_STAFF_URL"],
-      ENV["NEWS_CORPORATE_URL"],
-      ENV["NEWS_SERVICE_URL"],
-      ENV["NEWS_STAFF_URL"],
-      ENV["HELP_CORPORATE_URL"],
-      ENV["HELP_SERVICE_URL"],
-      ENV["HELP_STAFF_URL"],
-      ENV["EDGE_CORPORATE_URL"],
-      ENV["EDGE_SERVICE_URL"],
-      ENV["EDGE_STAFF_URL"] ].compact.map { |v| Redirect.normalize_host(v) }.compact
+     ENV["APEX_SERVICE_URL"],
+     ENV["APEX_STAFF_URL"],
+     ENV["SIGN_SERVICE_URL"],
+     ENV["SIGN_STAFF_URL"],
+     ENV["DOCS_CORPORATE_URL"],
+     ENV["DOCS_SERVICE_URL"],
+     ENV["DOCS_STAFF_URL"],
+     ENV["NEWS_CORPORATE_URL"],
+     ENV["NEWS_SERVICE_URL"],
+     ENV["NEWS_STAFF_URL"],
+     ENV["HELP_CORPORATE_URL"],
+     ENV["HELP_SERVICE_URL"],
+     ENV["HELP_STAFF_URL"],
+     ENV["EDGE_CORPORATE_URL"],
+     ENV["EDGE_SERVICE_URL"],
+     ENV["EDGE_STAFF_URL"] ].compact.map { |v| Redirect.normalize_host(v) }.compact
   end
 
   private

@@ -263,7 +263,6 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   end
   # rubocop:enable Minitest/MultipleAssertions
 
-
   test "invalid OTP code returns error message" do
     test_email = UserIdentityEmail.create!(
       address: "invalid_otp_test_#{SecureRandom.hex(4)}@example.com"

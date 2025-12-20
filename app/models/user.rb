@@ -21,7 +21,10 @@ class User < IdentitiesRecord
   has_many :user_identity_emails, dependent: :destroy
   has_many :user_identity_telephones, dependent: :destroy
   has_many :user_identity_secrets, dependent: :destroy
+  has_many :emails, class_name: "UserIdentityEmail", dependent: :destroy
+  has_many :phones, class_name: "UserIdentityTelephone", dependent: :destroy
   has_many :user_recovery_codes, dependent: :destroy
+  has_one :user_time_based_one_time_password, class_name: "UserIdentityOneTimePassword", dependent: :destroy
   has_many :user_identity_passkeys, dependent: :destroy
   has_many :user_webauthn_credentials, dependent: :destroy
   has_many :user_identity_audits, dependent: :destroy
