@@ -355,7 +355,7 @@ class AccountServiceTest < ActiveSupport::TestCase
     account = AccountService.new(@user)
 
     assert_not account.oauth_configured?
-    @user.create_user_identity_apple_auth!(token: "test_oauth_token")
+    @user.create_user_identity_social_apple!(uid: "testval", token: "test_oauth_token")
 
     assert_predicate account, :oauth_configured?
   end
@@ -412,8 +412,8 @@ class AccountServiceTest < ActiveSupport::TestCase
       confirm_policy: true,
       confirm_using_mfa: true
     )
-    unless user.user_identity_apple_auth
-      user.create_user_identity_apple_auth!(token: "test_apple_token_#{SecureRandom.hex(8)}")
+    unless user.user_identity_social_apple
+      user.create_user_identity_social_apple!(uid: "testval_#{SecureRandom.hex(8)}", token: "test_apple_token_#{SecureRandom.hex(8)}")
     end
   end
 

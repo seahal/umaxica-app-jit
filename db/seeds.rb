@@ -56,6 +56,10 @@ User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')
 #
 UserIdentitySecretStatus.find_or_create_by!(id: 'ACTIVE')
 UserIdentitySecretStatus.find_or_create_by!(id: 'SUSPENDED')
+StaffIdentitySecretStatus.find_or_create_by!(id: "ACTIVE")
+StaffIdentitySecretStatus.find_or_create_by!(id: "USED")
+StaffIdentitySecretStatus.find_or_create_by!(id: "REVOKED")
+StaffIdentitySecretStatus.find_or_create_by!(id: "DELETED")
 
 # CREATE CONTACT CATEGORY
 ComContactCategory.find_or_create_by!(id: 'SECURITY_ISSUE', description: 'root of corporate site status inquiries', parent_id: 'NULL')

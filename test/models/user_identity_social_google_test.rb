@@ -1,16 +1,17 @@
 require "test_helper"
 
-class UserIdentityGoogleAuthTest < ActiveSupport::TestCase
+class UserIdentitySocialGoogleTest < ActiveSupport::TestCase
   test "allows only one google auth per user" do
     user = users(:one)
 
-    UserIdentityGoogleAuth.create!(
+    UserIdentitySocialGoogle.create!(
       user: user,
+      uid: "uid-1",
       token: "token-1",
-      user_identity_google_auth_status: user_identity_google_auth_statuses(:active)
+      user_identity_social_google_status: user_identity_social_google_statuses(:active)
     )
 
-    duplicate = UserIdentityGoogleAuth.new(
+    duplicate = UserIdentitySocialGoogle.new(
       user: user,
       token: "token-2"
     )

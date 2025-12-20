@@ -58,6 +58,10 @@ en:
         description: "Choose an action to get started"
         registration: "Sign Up"
         authentication: "Sign In"
+      social:
+        sessions:
+          create:
+            success: "Account created and signed in with %{provider}."
       authentication:
         new:
           page_title: "Choose how to sign in"

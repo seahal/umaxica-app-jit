@@ -18,11 +18,19 @@ class Staff < IdentitiesRecord
   include ::PublicId
 
   belongs_to :staff_identity_status, optional: true
-  has_many :staff_identity_emails, dependent: :destroy
-  has_many :staff_identity_telephones, dependent: :destroy
-  has_many :staff_identity_audits, dependent: :destroy
-  has_many :user_identity_audits, as: :actor, dependent: :destroy
-  has_many :staff_tokens, dependent: :destroy
+  has_many :staff_identity_emails,
+           dependent: :destroy
+  has_many :staff_identity_telephones,
+           dependent: :destroy
+  has_many :staff_identity_audits,
+           dependent: :destroy
+  has_many :user_identity_audits,
+           as: :actor,
+           dependent: :destroy
+  has_many :staff_identity_secrets,
+           dependent: :destroy
+  has_many :staff_tokens,
+           dependent: :destroy
 
   def staff?
     true
@@ -30,11 +38,5 @@ class Staff < IdentitiesRecord
 
   def user?
     false
-  end
-
-  private
-
-  def set_default_status
-    self.staff_identity_status_id ||= StaffIdentityStatus::NONE
   end
 end

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-class UserIdentityAppleAuthStatus < IdentitiesRecord
+class UserIdentitySocialGoogleStatus < IdentitiesRecord
   include UppercaseId
 
-  has_many :user_identity_apple_auths, dependent: :restrict_with_error
+  has_many :user_identity_social_googles, dependent: :restrict_with_error
 
   # Status constants
   ACTIVE = "ACTIVE"

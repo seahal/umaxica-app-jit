@@ -259,8 +259,8 @@ class AccountService
   def oauth_configured?
     return false unless user?
 
-    accountable.user_identity_apple_auth.present? ||
-      accountable.user_identity_google_auth.present?
+    accountable.user_identity_social_apple.present? ||
+      accountable.user_identity_social_google.present?
   end
 
   # TOTP Support

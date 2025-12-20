@@ -23,18 +23,9 @@ Rails.application.routes.draw do
           resource :telephone, only: %i[new create]
         end
         # Social SignUp or LogIn
-        namespace :oauth do
-          get "apple/callback", to: "apples#callback", as: "apple_callback"
-          get "google/callback", to: "googles#callback", as: "google_callback"
-          get "google_oauth2/callback", to: "googles#callback", as: "google_oauth2_callback"
-          resource :apple, only: [ :create ] do
-            get :callback
-            get :failure
-          end
-          resource :google, only: [ :create ] do
-            get :callback
-            get :failure
-          end
+        namespace :social do
+          get "apple/callback", to: "sessions#create", defaults: { provider: "apple" }
+          get "google/callback", to: "sessions#create", defaults: { provider: "google_oauth2" }
         end
         # Settings with logined user
         resource :setting, only: %i[show]

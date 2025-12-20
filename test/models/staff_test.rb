@@ -41,14 +41,6 @@ class StaffTest < ActiveSupport::TestCase
     assert_equal StaffIdentityStatus::NONE, staff.staff_identity_status_id
   end
 
-  test "set_default_status assigns fallback when missing" do
-    staff = Staff.new
-
-    staff.send(:set_default_status)
-
-    assert_equal StaffIdentityStatus::NONE, staff.staff_identity_status_id
-  end
-
   test "has_role? should correctly identify assigned roles" do
     workspace = Workspace.create!(name: "Test Workspace")
     admin_role = Role.create!(key: "admin", name: "Admin", organization: workspace)

@@ -128,12 +128,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_130019) do
     t.string "webauthn_id"
   end
 
-  create_table "user_apple_auths", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "user_identity_social_apples", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.timestamptz "created_at", null: false
     t.string "token"
     t.timestamptz "updated_at", null: false
     t.bigint "user_id"
-    t.index ["user_id"], name: "index_user_apple_auths_on_user_id"
+    t.index ["user_id"], name: "index_user_identity_social_apples_on_user_id"
   end
 
   create_table "user_identity_emails", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -144,12 +144,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_130019) do
     t.index ["user_id"], name: "index_user_identity_emails_on_user_id"
   end
 
-  create_table "user_google_auths", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "user_identity_social_googles", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.timestamptz "created_at", null: false
     t.string "token"
     t.timestamptz "updated_at", null: false
     t.bigint "user_id"
-    t.index ["user_id"], name: "index_user_google_auths_on_user_id"
+    t.index ["user_id"], name: "index_user_identity_social_googles_on_user_id"
   end
 
   create_table "user_identity_one_time_passwords", id: false, force: :cascade do |t|

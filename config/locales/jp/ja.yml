@@ -382,6 +382,10 @@ ja:
             google: Googleでサインイン
             apple: Appleでサインイン
             registration: アカウント登録はこちら
+      social:
+        sessions:
+          create:
+            success: "%{provider} でアカウントを作成してサインインしました。"
         edit:
           title: ログアウトしますか？
         passkey:

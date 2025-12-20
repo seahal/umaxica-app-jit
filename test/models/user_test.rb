@@ -23,14 +23,14 @@ class UserTest < ActiveSupport::TestCase
     assert_not_nil @user.updated_at
   end
 
-  test "should have one user_identity_apple_auth association" do
-    assert_respond_to @user, :user_identity_apple_auth
-    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_apple_auth).macro
+  test "should have one user_identity_social_apple association" do
+    assert_respond_to @user, :user_identity_social_apple
+    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_social_apple).macro
   end
 
-  test "should have one user_identity_google_auth association" do
-    assert_respond_to @user, :user_identity_google_auth
-    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_google_auth).macro
+  test "should have one user_identity_social_google association" do
+    assert_respond_to @user, :user_identity_social_google
+    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_social_google).macro
   end
 
   test "staff? should return false" do

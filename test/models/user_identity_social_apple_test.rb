@@ -1,16 +1,17 @@
 require "test_helper"
 
-class UserIdentityAppleAuthTest < ActiveSupport::TestCase
+class UserIdentitySocialAppleTest < ActiveSupport::TestCase
   test "allows only one apple auth per user" do
     user = users(:one)
 
-    UserIdentityAppleAuth.create!(
+    UserIdentitySocialApple.create!(
       user: user,
+      uid: "uid-1",
       token: "token-1",
-      user_identity_apple_auth_status: user_identity_apple_auth_statuses(:active)
+      user_identity_social_apple_status: user_identity_social_apple_statuses(:active)
     )
 
-    duplicate = UserIdentityAppleAuth.new(
+    duplicate = UserIdentitySocialApple.new(
       user: user,
       token: "token-2"
     )

@@ -75,6 +75,10 @@ en:
             title: "Do you want to sign out?"
           destroy:
             success: "You have been signed out."
+      social:
+        sessions:
+          create:
+            success: "Account created and signed in with %{provider}."
       recovery:
         new:
           page_title: "Use a recovery code"
