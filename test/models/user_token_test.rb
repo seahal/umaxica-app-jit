@@ -72,4 +72,18 @@ class UserTokenTest < ActiveSupport::TestCase
 
     assert_operator @token.updated_at, :>, original_updated_at
   end
+
+  test "enforces maximum concurrent sessions per user" do
+    user = User.create!
+
+    UserToken::MAX_SESSIONS_PER_USER.times do
+      UserToken.create!(user: user)
+    end
+
+    extra_token = UserToken.new(user: user)
+
+    assert_not extra_token.valid?
+    assert_includes extra_token.errors[:base],
+                    "exceeds maximum concurrent sessions per user (#{UserToken::MAX_SESSIONS_PER_USER})"
+  end
 end

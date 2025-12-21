@@ -1,4 +1,5 @@
 en:
+  turnstile_error: "Security verification failed. Please try again."
   hello: "Hello world 2"
   messages:
     region_settings_updated_successfully: "Region settings updated successfully."
@@ -14,10 +15,35 @@ en:
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
-  sign:
+    messages:
+      login_required: "Login required"
+      already_authenticated: "Already authenticated"
+      not_authorized: "You are not authorized to perform this action."
+  seed:
+    roles:
+      admin:
+        description: "Full system access. Can manage users, settings, and perform all operations including deletions."
+      manager:
+        description: "Can manage content and edit other users' posts. Has delete permissions for managed resources."
+      editor:
+        description: "Can create and edit all content. Can only delete own posts."
+      contributor:
+        description: "Can create content and edit own posts only."
+      viewer:
+        description: "Read-only access to content. Cannot create or modify anything."
+  test_data:
+    contact_topic_description: "Details about the topic."
+    inquiry_detail: "Detail of inquiry."
+  auth:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
+    token_refresh:
+      errors:
+        missing_refresh_token: "Refresh token is required"
+        invalid_refresh_token: "Invalid or expired refresh token"
+        user_not_found_or_withdrawn: "User not found or withdrawn"
+        staff_not_found_or_withdrawn: "Staff not found or withdrawn"
     app:
       authentication:
         new:
@@ -38,6 +64,8 @@ en:
             description: "Use one of your trusted devices to add a passkey for passwordless sign-in."
         email:
           locked: "Your account is locked. Please try again later."
+          update:
+            success: "You've logged in."
         telephone:
           new:
             page_title: "Sign in with your phone number"
@@ -47,6 +75,10 @@ en:
             title: "Do you want to sign out?"
           destroy:
             success: "You have been signed out."
+      social:
+        sessions:
+          create:
+            success: "Account created and signed in with %{provider}."
       recovery:
         new:
           page_title: "Use a recovery code"
@@ -793,7 +825,7 @@ en:
     precision:
       format:
         delimiter: ''
-  apex:
+  peak:
     app:
       preferences:
         title: "Preferences"
@@ -823,6 +855,11 @@ en:
             JST: "Japan Standard Time (JST)"
           update_settings: "Update Settings"
           cancel: "Cancel"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
       preference:
         cookie:
           edit:
@@ -851,7 +888,21 @@ en:
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
           back: "Back to Preferences"
-  sign:
+    com:
+      preferences:
+        themes:
+          updated: "Corporate theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
+    org:
+      preferences:
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
+  auth:
     org:
       withdrawal:
         create:
@@ -1008,7 +1059,7 @@ en:
       long: "%B %d, %Y %H:%M"
       short: "%d %b %H:%M"
     pm: pm
-  back:
+  base:
     shared:
       preference_emails:
         token_invalid: "That link is no longer valid. Request a new one to continue."

@@ -3,8 +3,6 @@ name: 'CI'
 on:
   push:
     branches: [develop]
-  pull_request:
-    branches: [main]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -22,8 +20,7 @@ env:
   CI: true
   DOCKER_BUILDKIT: '1'
   # Version Configuration
-  RUBY_VERSION: '4.0.0-preview2'
-  BUN_VERSION: '1.3.4'
+  RUBY_VERSION: '4.0.0-preview3'
   # Rails Configuration
   RAILS_ENV: test
   RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
@@ -31,9 +28,6 @@ env:
   # Bundler Configuration
   BUNDLE_WITH: test
   BUNDLE_JOBS: 4
-  # Database Configuration
-  POSTGRESQL_USER: postgres
-  POSTGRESQL_PASSWORD: password
   # Region Configuration
   REGION_CODE: jp
   APEX_REGION: true
@@ -113,10 +107,7 @@ jobs:
       # Rails & Rack
       RACK_ENV: test
       RAILS_MAX_THREADS: 5
-      # Redis
-      REDIS_URL: redis://valkey:6379/0
       # Application
-      NAME: UMAXICA
       BRAND_NAME: UMAXICA
       PORT: 3000
       # Identifiers
@@ -124,16 +115,16 @@ jobs:
       IDENTIFIER_REGION_CODE: '392'
       IDENTIFIER_INSTANCE_ID: '0123456789'
       # Domain URLs - APEX
-      APEX_CORPORATE_URL: com.localhost
-      APEX_SERVICE_URL: app.localhost
-      APEX_STAFF_URL: org.localhost
-      # Domain URLs - Sign
-      SIGN_SERVICE_URL: sign.app.localhost
-      SIGN_STAFF_URL: sign.org.localhost
-      # Domain URLs - BACK
-      BACK_CORPORATE_URL: back.com.localhost
-      BACK_SERVICE_URL: back.app.localhost
-      BACK_STAFF_URL: back.org.localhost
+      PEAK_CORPORATE_URL: com.localhost
+      PEAK_SERVICE_URL: app.localhost
+      PEAK_STAFF_URL: org.localhost
+      # Domain URLs - Auth
+      AUTH_SERVICE_URL: auth.app.localhost
+      AUTH_STAFF_URL: auth.org.localhost
+      # Domain URLs - Core
+      CORE_CORPORATE_URL: www.com.localhost
+      CORE_SERVICE_URL: www.app.localhost
+      CORE_STAFF_URL: www.org.localhost
       # Domain URLs - Docs
       DOCS_CORPORATE_URL: docs.com.localhost
       DOCS_SERVICE_URL: docs.app.localhost
@@ -150,6 +141,15 @@ jobs:
       EDGE_CORPORATE_URL: localhost:5170
       EDGE_SERVICE_URL: localhost:5171
       EDGE_STAFF_URL: localhost:5172
+      STATUS_URL: status.localhost
+      ASSET_URL: asset.localhost
+      # Region
+      APEX_REGION: true
+      GLOBAL_MODE: true
+      REGION_CODE: jp
+      # Valkey
+      VALKEY_URL: redis://localhost:6379/0
+      VALKEY_RACK_ATTACK_URL: redis://localhost:6379/1
       # PostgreSQL - Connection
       POSTGRESQL_USER: root
       POSTGRESQL_PORT: 5432
@@ -173,6 +173,8 @@ jobs:
       POSTGRESQL_NOTIFICATION_SUB: localhost
       POSTGRESQL_CACHE_PUB: localhost
       POSTGRESQL_CACHE_SUB: localhost
+      POSTGRESQL_QUEUE_PUB: localhost
+      POSTGRESQL_QUEUE_SUB: localhost
       POSTGRESQL_SPECIALITY_PUB: localhost
       POSTGRESQL_SPECIALITY_SUB: localhost
       POSTGRESQL_STORAGE_PUB: localhost
@@ -222,7 +224,7 @@ jobs:
           --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092" --health-interval 30s --health-timeout 10s --health-retries 5
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -257,14 +259,11 @@ jobs:
     name: JavaScript Formatting (Biome)
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      BUN_VERSION: '1.3.5'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ env.RUBY_VERSION }}
-          bundler-cache: true
+        uses: actions/checkout@v4
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:

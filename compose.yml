@@ -21,16 +21,17 @@ services:
         source: .
         target: /home/jit/workspace
     networks:
-      - backend
-      - frontend
-      - observability
+      backend: { }
+      frontend:
+        aliases:
+          - app.localhost
+          - sign.app.localhost
+      observability: { }
     depends_on:
       primary:
         condition: service_healthy
       replica:
         condition: service_started
-      kafka:
-        condition: service_healthy
       valkey:
         condition: service_healthy
       minio:
@@ -133,51 +134,6 @@ services:
       - backend
     restart: unless-stopped
 
-  kafka:
-    image: confluentinc/cp-kafka:7.7.7
-    depends_on:
-      zookeeper:
-        condition: service_started
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:${KAFKA_BROKER_PORT:-19092},PLAINTEXT_INTERNAL://kafka:29092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
-      KAFKA_MIN_INSYNC_REPLICAS: 1
-    ports:
-      - "127.0.0.1:${KAFKA_BROKER_PORT:-19092}:9092"
-    networks:
-      - backend
-    restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "kafka-topics --bootstrap-server kafka:29092 --list >/dev/null 2>&1 || exit 1",
-        ]
-      interval: 5s
-      timeout: 3s
-      retries: 30
-      start_period: 20s
-
-  kafka-ui:
-    image: ghcr.io/kafbat/kafka-ui:v1.2.0
-    depends_on:
-      kafka:
-        condition: service_healthy
-    environment:
-      KAFKA_CLUSTERS_0_NAME: local-cluster
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-    ports:
-      - "127.0.0.1:${KAFKA_UI_PORT:-18080}:8080"
-    networks:
-      - backend
-    restart: always
-
   loki:
     image: grafana/loki:latest
     command: -config.file=/etc/loki/local-config.yaml
@@ -222,6 +178,19 @@ services:
     depends_on:
       - loki
       - tempo
+    restart: unless-stopped
+
+  cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    depends_on:
+      - core
+    command: tunnel run --token ${CLOUDFLARED_TOKEN}
+    environment:
+      CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
+    networks:
+      - frontend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
 
 networks:

@@ -1,6 +1,6 @@
 class CreateStaffRecoveryCodes < ActiveRecord::Migration[8.0]
   def change
-    create_table :staff_recovery_codes, id: :uuid do |t|
+    create_table :staff_recovery_codes, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.references :staff, type: :uuid, null: false, foreign_key: true
       t.string :recovery_code_digest
       t.date :expires_in

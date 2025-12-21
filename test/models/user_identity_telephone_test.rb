@@ -36,6 +36,26 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
     assert_includes UserIdentityTelephone.included_modules, SetId
   end
 
+  test "should include Turnstile concern" do
+    assert_includes UserIdentityTelephone.included_modules, Turnstile
+  end
+
+  test "turnstile validation runs when required and surfaces custom message" do
+    Turnstile.test_response = { "success" => false }
+
+    user_telephone = UserIdentityTelephone.new(@valid_attributes)
+    user_telephone.require_turnstile(
+      response: "test-token",
+      remote_ip: "127.0.0.1",
+      error_message: "Turnstile failed"
+    )
+
+    assert_not user_telephone.valid?
+    assert_includes user_telephone.errors[:base], "Turnstile failed"
+  ensure
+    Turnstile.test_response = nil
+  end
+
   # Telephone concern validation tests
   test "should be valid with valid phone number and policy confirmations" do
     user_telephone = UserIdentityTelephone.new(@valid_attributes)
@@ -103,5 +123,27 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
     assert_not_nil user_telephone.id
     # UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
     assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, user_telephone.id)
+  end
+
+  test "enforces maximum telephones per user" do
+    user = users(:one)
+    UserIdentityTelephone::MAX_TELEPHONES_PER_USER.times do |i|
+      UserIdentityTelephone.create!(
+        number: "+1234567890#{i}",
+        confirm_policy: true,
+        confirm_using_mfa: true,
+        user: user
+      )
+    end
+
+    extra_telephone = UserIdentityTelephone.new(
+      number: "+19876543210",
+      confirm_policy: true,
+      confirm_using_mfa: true,
+      user: user
+    )
+
+    assert_not extra_telephone.valid?
+    assert_includes extra_telephone.errors[:base], "exceeds maximum telephones per user (#{UserIdentityTelephone::MAX_TELEPHONES_PER_USER})"
   end
 end

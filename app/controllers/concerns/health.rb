@@ -25,7 +25,7 @@ module Health
       [ 422, "UNHEALTHY", errors ]
     end
   rescue StandardError => e
-    Rails.logger.error("[health-check] #{e.class}: #{e.message}") if defined?(Rails) && Rails.logger
+    Rails.event.notify("health_check.failed", error_class: e.class.name, error_message: e.message)
     [ 500, "ERROR" ]
   end
 

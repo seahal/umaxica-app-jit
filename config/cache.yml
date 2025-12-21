@@ -6,13 +6,11 @@ default: &default
     namespace: <%= Rails.env %>
 
 development:
-  encrypt: true
   <<: *default
 
 test:
   <<: *default
 
 production:
-  encrypt: true
   database: cache
   <<: *default

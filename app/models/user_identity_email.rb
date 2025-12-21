@@ -19,9 +19,25 @@
 class UserIdentityEmail < IdentitiesRecord
   include SetId
   include Email
+  include Turnstile
+
+  MAX_EMAILS_PER_USER = 4
 
   belongs_to :user_identity_email_status, optional: true
   belongs_to :user, optional: true
 
   encrypts :address, deterministic: true
+
+  validate :enforce_user_email_limit, on: :create
+
+  private
+
+  def enforce_user_email_limit
+    return unless user_id
+
+    count = self.class.where(user_id: user_id).count
+    return if count < MAX_EMAILS_PER_USER
+
+    errors.add(:base, :too_many, message: "exceeds maximum emails per user (#{MAX_EMAILS_PER_USER})")
+  end
 end

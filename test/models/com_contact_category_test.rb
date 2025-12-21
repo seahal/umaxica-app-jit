@@ -5,25 +5,25 @@ class ComContactCategoryTest < ActiveSupport::TestCase
     assert_operator ComContactCategory, :<, GuestsRecord
   end
 
-  test "should use title as primary key" do
-    assert_equal "title", ComContactCategory.primary_key
+  test "should use id as primary key" do
+    assert_equal "id", ComContactCategory.primary_key
   end
 
-  test "should create contact category with title" do
+  test "should create contact category with id" do
     category = ComContactCategory.new(id: "com_inquiry")
 
     assert category.save
     assert_equal "COM_INQUIRY", category.id
   end
 
-  test "should find contact category by title" do
+  test "should find contact category by id" do
     category = ComContactCategory.create!(id: "com_support")
     found = ComContactCategory.find("COM_SUPPORT")
 
     assert_equal category.id, found.id
   end
 
-  test "should have unique title" do
+  test "should have unique id" do
     ComContactCategory.create!(id: "unique_com_category_#{SecureRandom.hex(4)}")
     category_title = "duplicate_com_test_#{SecureRandom.hex(4)}"
     ComContactCategory.create!(id: category_title)

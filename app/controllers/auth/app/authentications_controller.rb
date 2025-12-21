@@ -1,0 +1,22 @@
+module Auth::App
+  class AuthenticationsController < ApplicationController
+    include ::Redirect
+
+    def new
+      raise AlreadyAuthenticatedError, "User is already logged in" if logged_in?
+    end
+
+    def edit
+      # raise unless logged_in?
+    end
+
+    def destroy
+      # raise unless logged_in?
+      log_out
+
+      # Redirect to login page
+      flash[:success] = t("auth.registration.email.edit.you_have_already_logged_in")
+      redirect_to new_auth_app_authentication_path, allow_other_host: true
+    end
+  end
+end

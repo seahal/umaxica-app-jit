@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 class AppTimelineAuditEvent < BusinessesRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   self.table_name = "app_timeline_audit_events"
 
-  # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')
   has_many :app_timeline_audits,
            class_name: "AppTimelineAudit",
            foreign_key: "event_id",

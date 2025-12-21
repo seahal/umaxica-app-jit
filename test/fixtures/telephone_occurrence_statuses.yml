@@ -1,0 +1,11 @@
+NONE:
+  id: NONE
+
+ACTIVE:
+  id: ACTIVE
+
+INACTIVE:
+  id: INACTIVE
+
+BLOCKED:
+  id: BLOCKED

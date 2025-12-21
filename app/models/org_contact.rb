@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class OrgContact < GuestsRecord
+  include ::PublicId
   # Associations
   has_many :org_contact_emails, dependent: :destroy
   has_many :org_contact_telephones, dependent: :destroy
@@ -23,7 +24,6 @@ class OrgContact < GuestsRecord
   # Callbacks
   before_validation { self.contact_category_title = contact_category_title&.upcase }
   before_validation { self.contact_status_id = contact_status_id&.upcase }
-  before_create :generate_public_id
   before_create :generate_token
 
   # Validations
@@ -31,6 +31,18 @@ class OrgContact < GuestsRecord
   validates :contact_category_title, presence: true
 
   # State transition helpers
+  def email_pending?
+    contact_status_id == "SET_UP"
+  end
+
+  def email_verified?
+    contact_status_id == "CHECKED_EMAIL_ADDRESS"
+  end
+
+  def phone_verified?
+    contact_status_id == "CHECKED_TELEPHONE_NUMBER"
+  end
+
   def can_verify_email?
     email_pending?
   end
@@ -45,17 +57,17 @@ class OrgContact < GuestsRecord
 
   def verify_email!
     raise StandardError, "Cannot verify email at this time" unless can_verify_email?
-    update!(status: :email_verified)
+    update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
     raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
-    update!(status: :phone_verified)
+    update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
     raise StandardError, "Cannot complete contact at this time" unless can_complete?
-    update!(status: :completed)
+    update!(contact_status_id: "COMPLETED_CONTACT_ACTION")
   end
 
   # Token management
@@ -91,10 +103,6 @@ class OrgContact < GuestsRecord
   end
 
   private
-
-  def generate_public_id
-    self.public_id ||= Nanoid.generate(size: 21)
-  end
 
   def generate_token
     self.token ||= SecureRandom.alphanumeric(32)

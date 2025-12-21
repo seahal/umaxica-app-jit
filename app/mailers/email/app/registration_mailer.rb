@@ -6,8 +6,8 @@ module Email::App
     #   en.email.app.email_registration_mailer.create.subject
     #
     def create
-      @greeting = params[:'hotp_token']
-      mail to: params[:'email_address']
+      @greeting = params[:hotp_token]
+      mail to: params[:email_address]
     end
   end
 end

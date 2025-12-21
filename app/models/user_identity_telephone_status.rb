@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserIdentityTelephoneStatus < IdentitiesRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   has_many :user_identity_telephones, dependent: :restrict_with_error
 

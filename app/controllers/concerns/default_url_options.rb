@@ -3,9 +3,9 @@ module DefaultUrlOptions
   include PreferenceConstants
 
   def default_url_options
-    # TODO: これは interface として、raise のみをせんげんし、読み込んだ先で
-    # dfault_url_options_regional と　default_url_options_global を private でおいておいて、
-    # それをインポート先で呼び出すようにする。
+    # TODO: Declare only raise as an interface here, and in the included destination
+    # keep default_url_options_regional and default_url_options_global as private,
+    # and call them at the import destination.
     options = read_cookie_preferences_for_url
 
     # Fallback to defaults if cookie values are not present
@@ -27,8 +27,8 @@ module DefaultUrlOptions
     # TODO: implement!
   end
 
-  # Todo: クエリパラメタに含まれる指定の値だけは、ここで含めるようにする。指定のパラメタが無い場合は、パラメタを含めないようにする。
-  # Todo: GLPBAL_MODE があり場合は、ri のみは必須とする。
+  # Todo: Include only specified values contained in query parameters here. If there are no specified parameters, do not include parameters.
+  # Todo: If GLOBAL_MODE exists, only ri is required.
   def read_cookie_preferences_for_url
     raw = cookies.signed[PREFERENCE_COOKIE_KEY]
     return {} if raw.blank?

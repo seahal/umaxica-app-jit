@@ -1,6 +1,6 @@
 class CreateTimelines < ActiveRecord::Migration[8.0]
   def change
-    create_table :timelines, id: :uuid do |t|
+    create_table :timelines, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.uuid :parent_id
       t.uuid :succ_id
       t.uuid :prev_id

@@ -93,8 +93,12 @@ module PreferenceRegions
   def apply_updates(preferences)
     updated = false
 
-    Rails.logger.debug { "[PreferenceRegions] params=#{preferences.inspect}" } if defined?(Rails)
-    Rails.logger.debug { "[PreferenceRegions] region=#{preferences[:region]} country=#{preferences[:country]} language=#{preferences[:language]} timezone=#{preferences[:timezone]}" } if defined?(Rails)
+    Rails.event.debug("preference_regions.params", preferences: preferences.to_h)
+    Rails.event.debug("preference_regions.preferences",
+                      region: preferences[:region],
+                      country: preferences[:country],
+                      language: preferences[:language],
+                      timezone: preferences[:timezone])
     updated |= assign_if_present(:region, preferences[:region])
     updated |= assign_if_present(:country, preferences[:country])
 
@@ -248,7 +252,7 @@ module PreferenceRegions
         parsed = JSON.parse(raw)
         parsed.is_a?(Hash) ? parsed : {}
       rescue JSON::ParserError, TypeError => error
-        Rails.logger.warn("[PreferenceRegions] Failed to parse preference cookie: #{error.message}")
+        Rails.event.notify("preference_regions.cookie_parse_failed", error_message: error.message)
         {}
       end
   end

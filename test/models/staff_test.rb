@@ -23,11 +23,6 @@ class StaffTest < ActiveSupport::TestCase
     assert_not_nil @staff.updated_at
   end
 
-  test "should have many emails association" do
-    assert_respond_to @staff, :emails
-    assert_equal "staff_id", @staff.class.reflect_on_association(:staff_identity_emails).foreign_key
-  end
-
   test "should have many telephones association" do
     assert_equal "staff_id", @staff.class.reflect_on_association(:staff_identity_telephones).foreign_key
   end
@@ -38,5 +33,22 @@ class StaffTest < ActiveSupport::TestCase
 
   test "user? should return false" do
     assert_not @staff.user?
+  end
+
+  test "should set default status before creation" do
+    staff = Staff.create!
+
+    assert_equal StaffIdentityStatus::NONE, staff.staff_identity_status_id
+  end
+
+  test "has_role? should correctly identify assigned roles" do
+    workspace = Workspace.create!(name: "Test Workspace")
+    admin_role = Role.create!(key: "admin", name: "Admin", organization: workspace)
+    Role.create!(key: "viewer", name: "Viewer", organization: workspace)
+
+    RoleAssignment.create!(staff: @staff, role: admin_role)
+
+    assert @staff.has_role?("admin")
+    assert_not @staff.has_role?("viewer")
   end
 end

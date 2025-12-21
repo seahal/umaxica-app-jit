@@ -10,8 +10,6 @@ class StaffIdentityEmailStatusTest < ActiveSupport::TestCase
   end
 
   test "has many staff_identity_emails" do
-    status = staff_identity_email_statuses(:verified)
-
     assert StaffIdentityEmailStatus.reflect_on_association(:staff_identity_emails)
   end
 

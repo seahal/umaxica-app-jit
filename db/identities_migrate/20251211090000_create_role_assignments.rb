@@ -1,6 +1,6 @@
 class CreateRoleAssignments < ActiveRecord::Migration[8.2]
   def change
-    create_table :role_assignments, id: :uuid do |t|
+    create_table :role_assignments, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.uuid :user_id
       t.uuid :staff_id
       t.uuid :role_id, null: false

@@ -15,7 +15,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_05_12_172856) do
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "active_storage_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "active_storage_attachments", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "blob_id", null: false
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -25,7 +25,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_05_12_172856) do
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table "active_storage_blobs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "active_storage_blobs", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.bigint "byte_size", null: false
     t.string "checksum"
     t.string "content_type"
@@ -37,13 +37,13 @@ ActiveRecord::Schema[8.2].define(version: 2025_05_12_172856) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "active_storage_variant_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "active_storage_variant_records", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "personas", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "personas", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.jsonb "avatar"
     t.datetime "created_at", null: false
     t.uuid "identifier_id"

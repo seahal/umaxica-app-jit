@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserIdentityStatus < IdentitiesRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   has_many :users, dependent: :restrict_with_error
 

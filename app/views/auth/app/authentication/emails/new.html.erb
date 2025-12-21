@@ -1,0 +1,34 @@
+<div>
+  <h1 class="font-bold text-4xl"><%= title t('auth.app.authentication.email.new.page_title') %></h1>
+
+  <%= form_with model: @user_email, url: auth_app_authentication_email_path, data: { turbo: false } do |form| %>
+    <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
+
+    <% if @user_email.errors.any? %>
+      <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+        <h2><%= pluralize(@user_email.errors.count, "error") %> prohibited this sample from being saved:</h2>
+
+        <ul class="list-disc ml-6">
+          <% @user_email.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :address %>
+      <%= form.email_field :address %>
+    </div>
+
+    <%= render "concern/cloudflare_turnstile" %>
+
+    <%= form.submit %>
+  <% end %>
+
+  <ul>
+    <li><%= link_to t('auth.app.authentication.new.back'), new_auth_app_authentication_path %></li>
+    <li><%= link_to t('auth.app.authentication.email.new.registration'), new_auth_app_registration_email_path %></li>
+  </ul>
+
+</div>

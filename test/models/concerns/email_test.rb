@@ -32,13 +32,14 @@ class EmailTest < ActiveSupport::TestCase
   test "encrypts address deterministically" do
     email1 = UserIdentityEmail.create!(address: "test1@example.com", confirm_policy: true)
     email2 = UserIdentityEmail.create!(address: "test2@example.com", confirm_policy: true)
+    sql = "SELECT address FROM user_identity_emails WHERE id = :id"
 
     # Different emails should have different encrypted values
     raw1 = UserIdentityEmail.connection.execute(
-      UserIdentityEmail.sanitize_sql_array([ "SELECT address FROM user_identity_emails WHERE id = ?", email1.id ])
+      UserIdentityEmail.sanitize_sql_array([ sql, { id: email1.id } ])
     ).first
     raw2 = UserIdentityEmail.connection.execute(
-      UserIdentityEmail.sanitize_sql_array([ "SELECT address FROM user_identity_emails WHERE id = ?", email2.id ])
+      UserIdentityEmail.sanitize_sql_array([ sql, { id: email2.id } ])
     ).first
 
     assert_not_equal raw1["address"], raw2["address"]
@@ -218,7 +219,7 @@ class EmailTest < ActiveSupport::TestCase
     email = UserIdentityEmail.create!(address: "otp3@example.com", confirm_policy: true)
     otp_key = "secret_key_789"
     otp_counter = 30
-    expires_at = 1.hour.ago.to_i  # Already expired
+    expires_at = 1.hour.ago.to_i # Already expired
 
     email.store_otp(otp_key, otp_counter, expires_at)
     otp_data = email.get_otp

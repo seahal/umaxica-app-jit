@@ -22,7 +22,7 @@ class Help::Com::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     initial_attempts = @contact_email.verifier_attempts_left
 
-    # セッションを設定
+    # Set session
     patch help_com_contact_email_url(contact_id: @contact.id), params: {
       com_contact_email: {
         verification_code: "000000"

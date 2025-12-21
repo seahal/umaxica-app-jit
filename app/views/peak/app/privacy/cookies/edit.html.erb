@@ -1,0 +1,39 @@
+<% content_for :page_title, t('peak.app.preferences.cookie_settings') %>
+
+<h1><%= t 'peak.app.preference.cookie.edit.h1' %></h1>
+
+<div data-controller="cookie-toggle">
+  <div data-cookie-toggle-target="status" class="mb-4 p-4 bg-blue-100 rounded text-center font-bold">
+    <!-- Stimulusがここにステータスを表示 -->
+  </div>
+
+  <%= form_with url: peak_app_privacy_cookie_url, method: :patch do |f| %>
+    <div class="interests-selection">
+      <%= check_box_tag :accept_necessary_cookies, "1", true, disabled: true %>
+      <%= label_tag :accept_necessary_cookies, t('peak.app.preference.cookie.edit.accept_necessary_cookies') %>
+    </div>
+
+    <div class="interests-selection">
+      <%= f.check_box :accept_functional_cookies, { checked: @accept_functional_cookies, data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" } } %>
+      <%= f.label :accept_functional_cookies, t('peak.app.preference.cookie.edit.accept_functional_cookies') %>
+    </div>
+
+    <div class="interests-selection">
+      <%= f.check_box :accept_performance_cookies, { checked: @accept_performance_cookies, data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" } } %>
+      <%= f.label :accept_performance_cookies, t('peak.app.preference.cookie.edit.accept_performance_cookies') %>
+    </div>
+
+    <div class="interests-selection">
+      <%= f.check_box :accept_targeting_cookies, { checked: @accept_targeting_cookies, data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" } } %>
+      <%= f.label :accept_targeting_cookies, t('peak.app.preference.cookie.edit.accept_targeting_cookies') %>
+    </div>
+
+    <div>
+      <%= f.submit %>
+    </div>
+
+    <div>
+      <%= link_to t('peak.app.preferences.back_to_settings'), peak_app_preference_path, class: 'inline-block px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-md transition-colors duration-200' %>
+    </div>
+  <% end %>
+</div>

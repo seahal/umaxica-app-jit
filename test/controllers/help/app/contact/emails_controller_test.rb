@@ -15,14 +15,14 @@ module Help
           get new_help_app_contact_email_url(@contact), headers: { "Host" => @host }
 
           assert_response :success
-          assert_match /Service contact email new pending/, response.body
+          assert_match(/Service contact email new pending/, response.body)
         end
 
         test "should create contact email" do
           post help_app_contact_email_url(@contact), headers: { "Host" => @host }
 
           assert_response :created
-          assert_match /Service contact email create pending/, response.body
+          assert_match(/Service contact email create pending/, response.body)
         end
       end
     end

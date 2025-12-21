@@ -1,4 +1,5 @@
 en:
+  turnstile_error: "Security verification failed. Please try again."
   hello: "Hello world 2"
   messages:
     region_settings_updated_successfully: "Region settings updated successfully."
@@ -7,6 +8,23 @@ en:
   errors:
     unauthorized: "Unauthorized access"
     not_implemented: "Feature not yet implemented"
+    messages:
+      not_authorized: "You are not authorized to perform this action."
+  seed:
+    roles:
+      admin:
+        description: "Full system access. Can manage users, settings, and perform all operations including deletions."
+      manager:
+        description: "Can manage content and edit other users' posts. Has delete permissions for managed resources."
+      editor:
+        description: "Can create and edit all content. Can only delete own posts."
+      contributor:
+        description: "Can create content and edit own posts only."
+      viewer:
+        description: "Read-only access to content. Cannot create or modify anything."
+  test_data:
+    contact_topic_description: "Details about the topic."
+    inquiry_detail: "Detail of inquiry."
   controller:
     help:
       com:
@@ -24,7 +42,7 @@ en:
             cancel: "Cancel"
           create:
             success: "Your inquiry has been received. Please check your email address."
-  sign:
+  auth:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
@@ -40,6 +58,10 @@ en:
         description: "Choose an action to get started"
         registration: "Sign Up"
         authentication: "Sign In"
+      social:
+        sessions:
+          create:
+            success: "Account created and signed in with %{provider}."
       authentication:
         new:
           page_title: "Choose how to sign in"
@@ -84,7 +106,7 @@ en:
           update:
             you_have_already_logged_in: "You have already logged in"
             invalid_code: "Invalid verification code"
-            success: "Email address has been verified."
+            success: "You've logged in."
             failed: "Registration failed. Please try again."
       recovery:
         new:
@@ -134,13 +156,19 @@ en:
         email:
           new:
             page_title: "UMAXICA (sign, app)"
+          already_logged_in: "You are already logged in."
           create:
             verification_code_sent: "Verification code has been sent to your email address."
+            turnstile_validation_failed: "Security verification failed. Please try again."
           edit:
             return_page: "Back"
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Email address has been verified."
+            failed: "Registration failed. Please try again."
+            invalid_code: "Invalid verification code."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
+            session_expired: "Your session has expired. Please start over."
         telephone:
           create:
             verification_code_sent: "Verification code has been sent via SMS."
@@ -805,7 +833,7 @@ en:
       short: "%d %b %H:%M"
     pm: pm
   controller:
-    sign:
+    auth:
       app:
         setting:
           show:
@@ -814,10 +842,12 @@ en:
             totp: "TOTP"
             passkey: "Passkey"
             secret: "Recovery Code"
+            google: "Google"
+            apple: "Apple"
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."
-  apex:
+  peak:
     app:
       preferences:
         footer:
@@ -833,7 +863,7 @@ en:
         footer:
           privacy: "Privacy"
         reset_settings: "Reset Settings"
-  back:
+  core:
     shared:
       preference_emails:
         token_invalid: "That link is no longer valid. Request a new one to continue."
@@ -994,7 +1024,7 @@ en:
         id_required: "Contact ID is required"
         not_found: "Contact not found"
         invalid_status: "Invalid contact status: expected SET_UP, got %{current_status}"
-  apex:
+  peak:
     app:
       preference:
         resets:
@@ -1003,7 +1033,7 @@ en:
           confirm: "RESET"
           button: "RESET"
           back: "Back???"
-  apex:
+  peak:
     app:
       preferences:
         title: "Preferences"
@@ -1015,6 +1045,11 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
     com:
       preferences:
         title: "Preferences"
@@ -1026,6 +1061,11 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+        themes:
+          updated: "Corporate theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
     org:
       preferences:
         title: "Preferences"
@@ -1037,4 +1077,9 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+        themes:
+          updated: "Theme updated to %{theme}"
+          invalid: "Invalid theme selected"
+        timezones:
+          invalid: "Invalid timezone selected"
   description: "Withdrawal"

@@ -3,7 +3,7 @@ require "minitest/mock"
 
 class AwsSmsServiceTest < ActiveSupport::TestCase
   test "validates required parameters (1)" do
-    # スタブを使って初期化時のAWS接続を回避
+    # Avoid AWS connection during initialization using stub
     Aws::SNS::Client.stub :new, Object.new do
       service = AwsSmsService.new
 
@@ -15,7 +15,7 @@ class AwsSmsServiceTest < ActiveSupport::TestCase
   end
 
   test "validates required parameters (2)" do
-    # スタブを使って初期化時のAWS接続を回避
+    # Avoid AWS connection during initialization using stub
     Aws::SNS::Client.stub :new, Object.new do
       service = AwsSmsService.new
 

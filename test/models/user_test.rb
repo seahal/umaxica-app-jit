@@ -23,19 +23,14 @@ class UserTest < ActiveSupport::TestCase
     assert_not_nil @user.updated_at
   end
 
-  test "should have one user_identity_apple_auth association" do
-    assert_respond_to @user, :user_identity_apple_auth
-    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_apple_auth).macro
+  test "should have one user_identity_social_apple association" do
+    assert_respond_to @user, :user_identity_social_apple
+    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_social_apple).macro
   end
 
-  test "should have one user_identity_google_auth association" do
-    assert_respond_to @user, :user_identity_google_auth
-    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_google_auth).macro
-  end
-
-  test "should have many user_webauthn_credentials association" do
-    assert_respond_to @user, :user_webauthn_credentials
-    assert_equal :has_many, @user.class.reflect_on_association(:user_webauthn_credentials).macro
+  test "should have one user_identity_social_google association" do
+    assert_respond_to @user, :user_identity_social_google
+    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_social_google).macro
   end
 
   test "staff? should return false" do
@@ -44,5 +39,38 @@ class UserTest < ActiveSupport::TestCase
 
   test "user? should return true" do
     assert_predicate @user, :user?
+  end
+
+  test "should set default status before creation" do
+    user = User.create!
+
+    assert_equal UserIdentityStatus::NONE, user.user_identity_status_id
+  end
+
+  test "should have many user_identity_emails association" do
+    assert_respond_to @user, :user_identity_emails
+    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_emails).macro
+  end
+
+  test "should have many user_identity_secrets association" do
+    assert_respond_to @user, :user_identity_secrets
+    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_secrets).macro
+  end
+
+  test "should have many user_identity_passkeys association" do
+    assert_respond_to @user, :user_identity_passkeys
+    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_passkeys).macro
+  end
+
+  test "has_role? should correctly identify assigned roles" do
+    workspace = Workspace.create!(name: "Test Workspace")
+    editor_role = Role.create!(key: "editor", name: "Editor", organization: workspace)
+    Role.create!(key: "viewer", name: "Viewer", organization: workspace)
+
+    # Assign editor role to the user
+    RoleAssignment.create!(user: @user, role: editor_role)
+
+    assert @user.has_role?("editor")
+    assert_not @user.has_role?("viewer")
   end
 end

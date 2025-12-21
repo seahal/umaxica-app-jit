@@ -4,19 +4,19 @@ Rails.application.routes.draw do
   # global
   # top level pages
   # TODO: RENAME => apex
-  draw :apex
+  draw :peak
   # sign in / up
-  draw :sign
+  draw :auth
   # regional
-  ## top endpoint
+  ## back end of edge endpoints
   # TODO: RENAME => back
-  draw :back
-  # endpoint for docs
-  draw :docs
-  # endpoint for news
-  draw :news
-  # endpoint for help
+  draw :core
+  # endpoints for help
   draw :help
+  # endpoints for docs
+  draw :docs
+  # endpoints for news
+  draw :news
 
   # mount Rswag::Ui::Engine => '/api-docs'
   # mount Rswag::Api::Engine => '/api-docs'

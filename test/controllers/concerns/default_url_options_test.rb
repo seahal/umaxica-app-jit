@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "test_helper"
-
 class DefaultUrlOptionsTest < ActiveSupport::TestCase
-  class TestController < Apex::App::ApplicationController
+  # rubocop:disable Rails/ApplicationController
+  class TestController < ActionController::Base
     include DefaultUrlOptions
 
     attr_accessor :request, :response
@@ -12,6 +12,7 @@ class DefaultUrlOptionsTest < ActiveSupport::TestCase
       request.cookie_jar
     end
   end
+  # rubocop:enable Rails/ApplicationController
 
   setup do
     @controller = TestController.new

@@ -98,4 +98,24 @@ class StaffIdentityEmailTest < ActiveSupport::TestCase
     raw_data = StaffIdentityEmail.connection.execute("SELECT address FROM staff_identity_emails WHERE id = '#{staff_email.id}'").first
     assert_not_equal @valid_attributes[:address], raw_data["address"] if raw_data
   end
+
+  test "enforces maximum emails per staff" do
+    staff = Staff.create!(staff_identity_status: staff_identity_statuses(:none))
+    StaffIdentityEmail::MAX_EMAILS_PER_STAFF.times do |i|
+      StaffIdentityEmail.create!(
+        address: "staff_limit#{i}@example.com",
+        confirm_policy: true,
+        staff: staff
+      )
+    end
+
+    extra_email = StaffIdentityEmail.new(
+      address: "overflow_staff@example.com",
+      confirm_policy: true,
+      staff: staff
+    )
+
+    assert_not extra_email.valid?
+    assert_includes extra_email.errors[:base], "exceeds maximum emails per staff (#{StaffIdentityEmail::MAX_EMAILS_PER_STAFF})"
+  end
 end

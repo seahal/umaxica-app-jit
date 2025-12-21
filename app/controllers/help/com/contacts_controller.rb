@@ -38,7 +38,7 @@ module Help
           telephone_number: params.dig(:com_contact, :telephone_number)
         )
 
-        # TODO: ここを、@contact にエラーを注入して、エラーメッセージを出したい。
+        # TODO: Inject error into @contact here and display error message.
         unless turnstile_result["success"]
           @contact.errors.add(:base, "ロボットではないことの確認に失敗しました。もう一度お試しください。")
           @email_address = params.dig(:com_contact, :email_address) || ""
@@ -59,7 +59,7 @@ module Help
           Email::Com::ContactMailer.with(
             email_address: @email.email_address,
             pass_code: token
-          ).create.deliver_now
+          ).create.deliver_later
 
           # Redirect with proper host options
           redirect_to new_help_com_contact_email_url(
@@ -93,7 +93,9 @@ module Help
         contact_email = contact.com_contact_email
 
         unless contact_email
-          Rails.logger.warn("Skipping topic notification for contact #{contact.public_id}: no email address configured")
+          Rails.event.notify("contact.notification.skip",
+                             contact_id: contact.public_id,
+                             reason: "no email address configured")
           return
         end
 
@@ -101,9 +103,11 @@ module Help
           contact: contact,
           topic: topic,
           email_address: contact_email.email_address
-        ).notice.deliver_now
+        ).notice.deliver_later
       rescue StandardError => e
-        Rails.logger.error("Failed to deliver topic notification for contact #{contact.public_id}: #{e.message}")
+        Rails.event.notify("contact.notification.failed",
+                           contact_id: contact.public_id,
+                           error_message: e.message)
       end
 
       def topic_params

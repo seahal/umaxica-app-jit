@@ -19,5 +19,20 @@
 #  index_staff_identity_passkeys_on_staff_id  (staff_id)
 #
 class StaffIdentityPasskey < IdentityRecord
+  MAX_PASSKEYS_PER_STAFF = 4
+
   belongs_to :staff
+
+  validate :enforce_staff_passkey_limit, on: :create
+
+  private
+
+  def enforce_staff_passkey_limit
+    return unless staff_id
+
+    count = self.class.where(staff_id: staff_id).count
+    return if count < MAX_PASSKEYS_PER_STAFF
+
+    errors.add(:base, :too_many, message: "exceeds maximum passkeys per staff (#{MAX_PASSKEYS_PER_STAFF})")
+  end
 end

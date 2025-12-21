@@ -1,2 +1,3 @@
-rails: rm -f tmp/pids/server.pid && bundle exec rails server
+web: rm -f tmp/pids/server.pid && bundle exec rails server
 css: BUNDLE_FORCE_RUBY_PLATFORM=false bin/rails tailwindcss:watch
+job: bin/jobs start

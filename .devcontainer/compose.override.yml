@@ -20,12 +20,6 @@ services:
   zookeeper:
     container_name: jit-devcontainer-zookeeper
     ports:  !reset []
-  kafka:
-    container_name: jit-devcontainer-kafka
-    ports:  !reset []
-  kafka-ui:
-    container_name: jit-devcontainer-kafka-ui
-    ports:  !reset []
   minio:
     container_name: jit-devcontainer-minio
     ports:  !reset []

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ComContactStatus < GuestsRecord
-  include UppercaseIdValidation
+  include UppercaseId
 
   has_many :com_contacts,
            foreign_key: :contact_status_id,

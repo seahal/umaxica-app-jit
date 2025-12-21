@@ -1,0 +1,37 @@
+require "test_helper"
+
+class EmailOccurrenceStatusTest < ActiveSupport::TestCase
+  include OccurrenceStatusTestHelper
+
+  test "upcases id before validation" do
+    assert_upcases_id(EmailOccurrenceStatus)
+  end
+
+  test "validates id presence" do
+    record = EmailOccurrenceStatus.new(id: nil)
+
+    assert_invalid_attribute(record, :id)
+  end
+
+  test "validates id length" do
+    record = EmailOccurrenceStatus.new(id: "A" * 256)
+
+    assert_invalid_attribute(record, :id)
+  end
+
+  test "validates id format" do
+    record = EmailOccurrenceStatus.new(id: "BAD-ID!")
+
+    assert_invalid_attribute(record, :id)
+  end
+
+  test "validates id uniqueness case insensitive" do
+    record = EmailOccurrenceStatus.new(id: "active")
+
+    assert_invalid_attribute(record, :id)
+  end
+
+  test "has occurrences association" do
+    assert_status_association(EmailOccurrenceStatus, :email_occurrences)
+  end
+end

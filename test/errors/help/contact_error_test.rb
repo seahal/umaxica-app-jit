@@ -4,12 +4,12 @@ require "test_helper"
 
 class Help::ContactErrorTest < ActiveSupport::TestCase
   setup do
-    # Ensure error classes are loaded
-    Help::ContactError
-    Help::ContactNotFoundError
-    Help::ContactIdRequiredError
-    Help::InvalidContactStatusError
+    assert Help.const_defined?(:ContactError)
+    assert Help.const_defined?(:ContactNotFoundError)
+    assert Help.const_defined?(:ContactIdRequiredError)
+    assert Help.const_defined?(:InvalidContactStatusError)
   end
+
   def test_contact_error_initializes_with_i18n_key
     error = Help::ContactError.new("help.contact.errors.not_found", :not_found)
 

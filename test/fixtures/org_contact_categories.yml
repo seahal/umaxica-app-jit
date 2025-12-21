@@ -1,14 +1,14 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 none:
-  title: 'NULL_ORG_CATEGORY'
+  id: 'NULL_ORG_CATEGORY'
   description: 'ROOT'
 organization_inquiry:
-  title: 'ORGANIZATION_INQUIRY'
+  id: 'ORGANIZATION_INQUIRY'
   description: 'Organization inquiry category'
 organization_partnership:
-  title: 'ORGANIZATION_PARTNERSHIP'
+  id: 'ORGANIZATION_PARTNERSHIP'
   description: 'Organization partnership category'
 organization_feedback:
-  title: 'ORGANIZATION_FEEDBACK'
+  id: 'ORGANIZATION_FEEDBACK'
   description: 'Organization feedback category'

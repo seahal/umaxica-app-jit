@@ -1,6 +1,6 @@
 class CreatePersonas < ActiveRecord::Migration[8.0]
   def change
-    create_table :personas, id: :uuid do |t|
+    create_table :personas, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.string :name
       t.uuid :identifier_id
       t.jsonb :avatar

@@ -5,14 +5,14 @@ class RedirectTest < ActiveSupport::TestCase
 
   setup do
     @original_env = ENV.to_h
-    ENV["APEX_SERVICE_URL"] = "app.sign.localdomain"
-    ENV["APEX_CORPORATE_URL"] = "com.sign.localdomain"
-    ENV["APEX_STAFF_URL"] = "org.sign.localdomain"
+    ENV["PEAK_SERVICE_URL"] = "app.peak.localdomain"
+    ENV["PEAK_CORPORATE_URL"] = "com.peak.localdomain"
+    ENV["PEAK_STAFF_URL"] = "org.peak.localdomain"
     ENV["API_SERVICE_URL"] = "app.api.localdomain"
     ENV["API_CORPORATE_URL"] = "com.api.localdomain"
     ENV["API_STAFF_URL"] = "org.api.localdomain"
-    ENV["SIGN_SERVICE_URL"] = "app.sign.localdomain"
-    ENV["SIGN_STAFF_URL"] = "org.sign.localdomain"
+    ENV["AUTH_SERVICE_URL"] = "app.auth.localdomain"
+    ENV["AUTH_STAFF_URL"] = "org.auth.localdomain"
     ENV["DOCS_CORPORATE_URL"] = "com.docs.localdomain"
     ENV["DOCS_SERVICE_URL"] = "app.docs.localdomain"
     ENV["DOCS_STAFF_URL"] = "org.docs.localdomain"
@@ -25,29 +25,6 @@ class RedirectTest < ActiveSupport::TestCase
     ENV["EDGE_CORPORATE_URL"] = "com.edge.localdomain"
     ENV["EDGE_SERVICE_URL"] = "app.edge.localdomain"
     ENV["EDGE_STAFF_URL"] = "org.edge.localdomain"
-
-    # Force reload of the constant
-    Redirect.send(:remove_const, :ALLOWED_HOSTS) if Redirect.const_defined?(:ALLOWED_HOSTS)
-    Redirect.const_set(:ALLOWED_HOSTS, [ ENV["APEX_CORPORATE_URL"],
-                                        ENV["APEX_SERVICE_URL"],
-                                        ENV["APEX_STAFF_URL"],
-                                        ENV["API_CORPORATE_URL"],
-                                        ENV["API_SERVICE_URL"],
-                                        ENV["API_STAFF_URL"],
-                                        ENV["SIGN_SERVICE_URL"],
-                                        ENV["SIGN_STAFF_URL"],
-                                        ENV["DOCS_CORPORATE_URL"],
-                                        ENV["DOCS_SERVICE_URL"],
-                                        ENV["DOCS_STAFF_URL"],
-                                        ENV["NEWS_CORPORATE_URL"],
-                                        ENV["NEWS_SERVICE_URL"],
-                                        ENV["NEWS_STAFF_URL"],
-                                        ENV["HELP_CORPORATE_URL"],
-                                        ENV["HELP_SERVICE_URL"],
-                                        ENV["HELP_STAFF_URL"],
-                                        ENV["EDGE_CORPORATE_URL"],
-                                        ENV["EDGE_SERVICE_URL"],
-                                        ENV["EDGE_STAFF_URL"] ].map(&:downcase).freeze)
   end
 
   teardown do
@@ -69,12 +46,10 @@ class RedirectTest < ActiveSupport::TestCase
     assert_nil encoded
   end
 
-  test "generate_redirect_url should raise on invalid URIs" do
+  test "generate_redirect_url should return nil on invalid URIs" do
     invalid_url = "not a valid uri"
 
-    assert_raises(URI::InvalidURIError) do
-      generate_redirect_url(invalid_url)
-    end
+    assert_nil generate_redirect_url(invalid_url)
   end
 
   test "generate_redirect_url should handle blank URLs" do
@@ -88,11 +63,11 @@ class RedirectTest < ActiveSupport::TestCase
   end
 
   test "allowed_host? should accept exact matches" do
-    assert allowed_host?("app.sign.localdomain")
+    assert allowed_host?("app.auth.localdomain")
   end
 
   test "allowed_host? should accept subdomains" do
-    assert allowed_host?("sub.app.sign.localdomain")
+    assert allowed_host?("sub.app.auth.localdomain")
   end
 
   test "allowed_host? should reject other domains" do

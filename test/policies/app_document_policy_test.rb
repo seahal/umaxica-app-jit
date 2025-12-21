@@ -14,7 +14,7 @@ class AppDocumentPolicyTest < ActiveSupport::TestCase
   def test_policy_initializes_with_user_and_record
     policy = AppDocumentPolicy.new(@user, @record)
 
-    assert_nil policy.user
+    assert_nil policy.actor
     assert_equal @record, policy.record
   end
 

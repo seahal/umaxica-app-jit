@@ -7,12 +7,12 @@ module Help
 
       def new
         @contact = OrgContact.new
-        @contact_categories = OrgContactCategory.order(:title)
+        @contact_categories = OrgContactCategory.order(:description)
         render plain: "org contact form placeholder"
       end
 
       def edit
-        @contact_categories = OrgContactCategory.order(:title)
+        @contact_categories = OrgContactCategory.order(:description)
       end
 
       def create

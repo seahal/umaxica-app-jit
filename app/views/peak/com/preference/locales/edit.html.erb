@@ -1,0 +1,47 @@
+<% scope = local_assigns.fetch(:scope, :com).to_s %>
+<% content_for :page_title, t("peak.#{scope}.preferences.locale_settings") %>
+
+<h1><%= t("peak.#{scope}.preference.locale.edit.title") %></h1>
+<p class="locale-description"><%= t("peak.#{scope}.preference.locale.edit.description") %></p>
+
+<% language_options = I18n.t("peak.#{scope}.preference.locale.edit.language_options", default: {}).map do |code, label|
+  [label, code]
+end %>
+<% timezone_options = I18n.t("peak.#{scope}.preference.locale.edit.timezone_options", default: {}).map do |identifier, label|
+  [label, identifier]
+end %>
+<% selected_language = @current_language.presence || PreferenceRegions::DEFAULT_LANGUAGE %>
+<% selected_timezone = @current_timezone_identifier.presence || PreferenceRegions::DEFAULT_TIMEZONE %>
+
+<%= form_with url: public_send("peak_#{scope}_preference_locale_path"), method: :patch do |f| %>
+  <div class="locale-section language-section">
+    <h2><%= t("peak.#{scope}.preference.locale.edit.language_section") %></h2>
+    <div class="locale-field language-selection">
+      <%= f.label :language, t("peak.#{scope}.preference.locale.edit.language_label") %>
+      <%= f.select :language,
+                   options_for_select(language_options, selected_language),
+                   { prompt: t("peak.#{scope}.preference.locale.edit.language_prompt") } %>
+    </div>
+  </div>
+
+  <div class="locale-section timezone-section">
+    <h2><%= t("peak.#{scope}.preference.locale.edit.timezone_section") %></h2>
+    <div class="locale-field timezone-selection">
+      <%= f.label :timezone, t("peak.#{scope}.preference.locale.edit.timezone_label") %>
+      <%= f.select :timezone,
+                   options_for_select(timezone_options, selected_timezone),
+                   { prompt: t("peak.#{scope}.preference.locale.edit.timezone_prompt") } %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit t("peak.#{scope}.preference.locale.edit.submit"),
+                 class: "px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 cursor-pointer" %>
+  </div>
+<% end %>
+
+<div class="mt-6">
+  <%= link_to t("peak.#{scope}.preferences.back_to_settings"),
+              public_send("peak_#{scope}_preference_path"),
+              class: "inline-block px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-md transition-colors duration-200" %>
+</div>

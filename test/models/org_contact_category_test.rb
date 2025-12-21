@@ -5,25 +5,25 @@ class OrgContactCategoryTest < ActiveSupport::TestCase
     assert_operator OrgContactCategory, :<, GuestsRecord
   end
 
-  test "should use title as primary key" do
-    assert_equal "title", OrgContactCategory.primary_key
+  test "should use id as primary key" do
+    assert_equal "id", OrgContactCategory.primary_key
   end
 
-  test "should create contact category with title" do
+  test "should create contact category with id" do
     category = OrgContactCategory.new(id: "org_inquiry")
 
     assert category.save
     assert_equal "ORG_INQUIRY", category.id
   end
 
-  test "should find contact category by title" do
+  test "should find contact category by id" do
     category = OrgContactCategory.create!(id: "org_support")
     found = OrgContactCategory.find("ORG_SUPPORT")
 
     assert_equal category.id, found.id
   end
 
-  test "should have unique title" do
+  test "should have unique id" do
     OrgContactCategory.create!(id: "unique_org_category_#{SecureRandom.hex(4)}")
     category_title = "duplicate_org_test_#{SecureRandom.hex(4)}"
     OrgContactCategory.create!(id: category_title)

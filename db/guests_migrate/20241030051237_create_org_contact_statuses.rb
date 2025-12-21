@@ -1,3 +1,4 @@
+# rubocop:disable Rails/CreateTableWithTimestamps
 class CreateOrgContactStatuses < ActiveRecord::Migration[8.1]
   def change
     create_table :org_contact_statuses, id: :string, limit: 255 do |t|
@@ -5,7 +6,8 @@ class CreateOrgContactStatuses < ActiveRecord::Migration[8.1]
       t.string :parent_title, limit: 255
       t.integer :position, null: false, default: 0
       t.boolean :active, null: false, default: true
-      t.timestamps
     end
   end
 end
+
+# rubocop:enable Rails/CreateTableWithTimestamps

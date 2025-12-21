@@ -35,6 +35,27 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
     assert_includes UserIdentityEmail.included_modules, SetId
   end
 
+  test "should include Turnstile concern" do
+    assert_includes UserIdentityEmail.included_modules, Turnstile
+  end
+
+  test "turnstile validation runs when required and surface custom message" do
+    Turnstile.test_response = { "success" => false }
+
+    user_email = UserIdentityEmail.new(@valid_attributes)
+    user_email.require_turnstile(
+      response: "test-token",
+      remote_ip: "127.0.0.1",
+      error_message: "Turnstile failed"
+    )
+
+    assert_not user_email.turnstile_valid?
+    assert_not user_email.valid?
+    assert_includes user_email.errors[:base], "Turnstile failed"
+  ensure
+    Turnstile.test_response = nil
+  end
+
   # Email concern validation tests
   test "should be valid with valid email and policy confirmation" do
     user_email = UserIdentityEmail.new(@valid_attributes)
@@ -130,6 +151,26 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
     user_email = UserIdentityEmail.new(address: nil, pass_code: "123456")
 
     assert_predicate user_email, :valid?
+  end
+
+  test "enforces maximum emails per user" do
+    user = users(:one)
+    UserIdentityEmail::MAX_EMAILS_PER_USER.times do |i|
+      UserIdentityEmail.create!(
+        address: "user#{i}@example.com",
+        confirm_policy: true,
+        user: user
+      )
+    end
+
+    extra_email = UserIdentityEmail.new(
+      address: "overflow@example.com",
+      confirm_policy: true,
+      user: user
+    )
+
+    assert_not extra_email.valid?
+    assert_includes extra_email.errors[:base], "exceeds maximum emails per user (#{UserIdentityEmail::MAX_EMAILS_PER_USER})"
   end
 
   # test "should reject both nil address and nil pass_code" do

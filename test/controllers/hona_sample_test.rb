@@ -1,6 +1,6 @@
 require "test_helper"
 
-module Apex::App
+module Peak::App
   class HonaSampleTest < ActionDispatch::IntegrationTest
     # test "should get show" do
     #   assert true

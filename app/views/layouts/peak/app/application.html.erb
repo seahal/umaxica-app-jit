@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (app) Apex" %>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="turbo-refresh-method" content="morph">
+  <meta name="turbo-refresh-scroll" content="preserve">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "core/app/main" %>
+  <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+</head>
+
+<body class="px-4">
+<header>
+  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Umaxica(www, app)</a></h1>
+</header>
+
+<hr>
+
+<main class="container mx-auto mt-28 px-5 block">
+  <%= yield %>
+</main>
+
+<nav>
+
+</nav>
+
+<hr>
+
+<footer>
+  <ul>
+    <li><a href="https://<%= ENV['EDGE_SERVICE_URL'] %>"><%= t('peak.app.preferences.footer.home') %></a></li>
+    <li><%= link_to t('peak.app.preferences.footer.preference'), peak_app_preference_path %></li>
+    <li><%= link_to t('peak.app.preferences.footer.privacy'), peak_app_privacy_path %></li>
+  </ul>
+  <%= render "concern/copyright" %>
+</footer>
+
+</body>
+</html>

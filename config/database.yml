@@ -7,17 +7,6 @@ default: &default
   username: <%= ENV["POSTGRESQL_USER"] %>
   password: <%= ENV["POSTGRESQL_PASSWORD"] %>
 development:
-  universal:
-    !!merge <<: *default
-    database: development_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
-    migrations_paths: db/universals_migrate
-  universal_replica:
-    !!merge <<: *default
-    replica: true
-    database: development_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
-    migrations_paths: db/universals_migrate
   guest:
     !!merge <<: *default
     database: development_guest_db
@@ -95,17 +84,17 @@ development:
     database: development_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
     migrations_paths: db/caches_migrate
-  speciality:
+  queue:
     !!merge <<: *default
-    database: development_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
-    migrations_paths: db/specialities_migrate
-  speciality_replica:
+    database: development_queue_db
+    host: <%= ENV["POSTGRESQL_QUEUE_PUB"] %>
+    migrations_paths: db/queues_migrate
+  queue_replica:
     !!merge <<: *default
     replica: true
-    database: development_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
-    migrations_paths: db/specialities_migrate
+    database: development_queue_db
+    host: <%= ENV["POSTGRESQL_QUEUE_SUB"] %>
+    migrations_paths: db/queues_migrate
   storage:
     !!merge <<: *default
     database: development_storage_db
@@ -117,6 +106,28 @@ development:
     database: development_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_SUB"] %>
     migrations_paths: db/storages_migrate
+  speciality:
+    !!merge <<: *default
+    database: development_speciality_db
+    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
+    migrations_paths: db/specialities_migrate
+  speciality_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_speciality_db
+    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
+    migrations_paths: db/specialities_migrate
+  universal:
+    !!merge <<: *default
+    database: development_universal_db
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
+    migrations_paths: db/universals_migrate
+  universal_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_universal_db
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
+    migrations_paths: db/universals_migrate
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
@@ -124,17 +135,6 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  universal:
-    !!merge <<: *default
-    database: test_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
-    migrations_paths: db/universals_migrate
-  universal_replica:
-    !!merge <<: *default
-    replica: true
-    database: test_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
-    migrations_paths: db/universals_migrate
   guest:
     !!merge <<: *default
     database: test_guest_db
@@ -212,6 +212,17 @@ test:
     database: test_cache_db
     host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
     migrations_paths: db/caches_migrate
+  queue:
+    !!merge <<: *default
+    database: test_queue_db
+    host: <%= ENV["POSTGRESQL_QUEUE_PUB"] %>
+    migrations_paths: db/queues_migrate
+  queue_replica:
+    !!merge <<: *default
+    replica: true
+    database: test_queue_db
+    host: <%= ENV["POSTGRESQL_QUEUE_SUB"] %>
+    migrations_paths: db/queues_migrate
   storage:
     !!merge <<: *default
     database: test_storage_db
@@ -234,25 +245,19 @@ test:
     database: test_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
-# FIXME: please implement below code
-production:
   universal:
     !!merge <<: *default
-    database: production_universal_db
-    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL&.HOST %>
-    username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL&.PASSWORD %>
+    database: test_universal_db
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
     migrations_paths: db/universals_migrate
   universal_replica:
     !!merge <<: *default
     replica: true
-    database: production_universal_db
-    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL_REPLICA&.HOST %>
-    username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL_REPLICA&.PASSWORD %>
+    database: test_universal_db
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
     migrations_paths: db/universals_migrate
+# FIXME: please implement below code
+production:
   guest:
     !!merge <<: *default
     database: production_guest_db
@@ -406,4 +411,38 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.STORAGE_REPLICA&.PASSWORD %>
     migrations_paths: db/storages_migrate
+  queue:
+    !!merge <<: *default
+    database: production_queue_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.QUEUE&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.QUEUE&.PASSWORD %>
+    migrations_paths: db/queues_migrate
+  queue_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_queue_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.QUEUE_REPLICA&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.QUEUE_REPLICA&.PASSWORD %>
+    migrations_paths: db/queues_migrate
+  universal:
+    !!merge <<: *default
+    database: production_universal_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL&.PASSWORD %>
+    migrations_paths: db/universals_migrate
+  universal_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_universal_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL_REPLICA&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL_REPLICA&.PASSWORD %>
+    migrations_paths: db/universals_migrate
   # note: I thought that username host should be stored at secret manager.

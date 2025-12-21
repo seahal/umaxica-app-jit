@@ -1,4 +1,5 @@
 ja:
+  turnstile_error: "セキュリティ検証に失敗しました。もう一度お試しください。"
   common:
     ok: OK
   languages:
@@ -16,13 +17,13 @@ ja:
         invalid_input: Pass Code の値に問題があります
     identity_audit_event_format_invalid: "イベントIDの形式が無効です。大文字とアンダースコアのみ使用可能です。"
   controller:
-    apex:
+    peak:
       org:
         preferences:
           themes:
             invalid: 無効な管理テーマが選択されました
             updated: 管理テーマを%{theme}に更新しました
-    sign:
+    auth:
       app:
         setting:
           show:
@@ -31,6 +32,8 @@ ja:
             totp: TOTP
             passkey: パスキー
             secret: リカバリーコード
+            google: Google
+            apple: Apple
           passkey:
             index:
               page_title: パスキーの一覧
@@ -54,14 +57,19 @@ ja:
               jump_obj: sign in with google
           email:
             label: "メールで登録"
+            already_logged_in: "既にログインしています。"
             create:
               verification_code_sent: "確認コードをメールアドレスに送信しました。"
+              turnstile_validation_failed: "認証に失敗しました。もう一度お試しください。"
             edit:
               return_page: 戻る
               session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             update:
               success: "メールアドレスが確認されました。"
               failed: "登録処理に失敗しました。もう一度やり直してください。"
+              invalid_code: "確認コードが正しくありません。"
+              attempts_exceeded: "確認コードの入力回数が上限に達しました。最初からやり直してください。"
+              session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
           telephone:
             label: "電話で登録"
             create:
@@ -76,7 +84,7 @@ ja:
           edit:
             title: "ログアウトしますか？"
           destroy:
-            success: "ログアウトしました"
+            success: "ログアウトします"
         withdrawal:
           show:
             title: "退会ステータス"
@@ -121,13 +129,16 @@ ja:
             failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
           authenticate_error: "認証が必要です。ログインしてください。"
         authentication:
+          email:
+            update:
+              success: "ログインしました。"
           destroy:
             jump_obj: sign in with email
         exits:
           edit:
             title: "ログアウトしますか？"
           destroy:
-            success: "ログアウトしました"
+            success: "ログアウトします"
       preferences:
         title: プリファレンス
         cookie_settings: クッキーの設定
@@ -187,6 +198,12 @@ ja:
               light: 共有スペースや明るいオフィスでの利用におすすめです。
               dark: 夜間の作業や目の疲れを軽減したいときに最適です。
               system: OS のテーマ変更に連動して切り替わります。
+  sign:
+    app:
+      social:
+        sessions:
+          create:
+            success: "%{provider} でアカウントを作成してサインインしました。"
           submit: テーマ設定を保存
   root:
     app:
@@ -341,7 +358,11 @@ ja:
     email_successfully_created: メールアドレスの確認コードを送信しました。
     telephone_successfully_created: 電話番号の確認コードを送信しました。
     sample_successfully_updated: 登録が完了しました。
-  sign:
+  auth:
+    token_refresh:
+      errors:
+        missing_refresh_token: "リフレッシュトークンが必要です"
+        invalid_refresh_token: "無効または期限切れのリフレッシュトークンです"
     app:
       layout:
         nav:
@@ -367,6 +388,10 @@ ja:
             google: Googleでサインイン
             apple: Appleでサインイン
             registration: アカウント登録はこちら
+      social:
+        sessions:
+          create:
+            success: "%{provider} でアカウントを作成してサインインしました。"
         edit:
           title: ログアウトしますか？
         passkey:
@@ -463,7 +488,7 @@ ja:
         edit:
           title: "ログアウトしますか？"
         destroy:
-          success: "ログアウトしました"
+          success: "ログアウトします"
       authentication:
         new:
           page_title: サインイン方法を選択
@@ -591,8 +616,29 @@ ja:
       month: 月
       year: 年
   errors:
+    unauthorized: "不正なアクセスです"
+    not_implemented: "機能はまだ実装されていません"
+    messages:
+      not_authorized: "この操作を行う権限がありません。"
+  seed:
+    roles:
+      admin:
+        description: "システム全体へのアクセス権。ユーザーと設定を管理し、削除を含む全ての操作が可能です。"
+      manager:
+        description: "コンテンツ管理と他ユーザーの投稿編集が可能。管理対象の削除権限があります。"
+      editor:
+        description: "全てのコンテンツを作成・編集可能。削除は自分の投稿のみです。"
+      contributor:
+        description: "コンテンツ作成と自分の投稿の編集のみ可能です。"
+      viewer:
+        description: "閲覧専用。作成や変更はできません。"
+  test_data:
+    contact_topic_description: "トピックの詳細です。"
+    inquiry_detail: "問い合わせの詳細です。"
     format: '%{attribute}%{message}'
     messages:
+      login_required: "ログインが必要です"
+      already_authenticated: "すでにログインしています"
       accepted: を受諾してください
       blank: を入力してください
       confirmation: と%{attribute}の入力が一致しません
@@ -691,7 +737,7 @@ ja:
       long: '%Y/%m/%d %H:%M'
       short: '%m/%d %H:%M'
     pm: 午後
-  apex:
+  peak:
     app:
       preferences: &apex_preferences_shared
         title: 設定
@@ -885,7 +931,7 @@ ja:
           back: 設定一覧に戻る
       privacy:
         up_link: "うえへ"
-  back:
+  core:
     shared:
       preference_emails:
         token_invalid: "リンクの有効期限が切れています。新しくリクエストしてください。"

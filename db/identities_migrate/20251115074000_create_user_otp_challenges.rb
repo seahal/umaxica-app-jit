@@ -2,7 +2,7 @@
 
 class CreateUserOtpChallenges < ActiveRecord::Migration[8.0]
   def change
-    create_table :user_otp_challenges, id: :uuid do |t|
+    create_table :user_otp_challenges, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.uuid :user_id, null: false
       t.string :address, null: false
       t.string :otp_private_key, null: false

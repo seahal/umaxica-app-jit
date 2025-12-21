@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 # source "https://gem.coop"
 
-ruby "4.0.0-preview2"
+ruby "4.0.0-preview3"
 
 # rake
 gem "rake"
@@ -18,11 +18,10 @@ gem "jbuilder"
 gem "pg"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "redis"
-# Kafka
-gem "karafka"
-gem "karafka-web"
 # For CORS
 gem "rack-cors"
+# For DOS attack
+gem "rack-attack"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt"
 gem "argon2"
@@ -55,6 +54,8 @@ gem "rotp"
 gem "rqrcode"
 # Solid Cache
 gem "solid_cache"
+# Solid Queue
+gem "solid_queue"
 # pagination
 gem "kaminari"
 # Social Login
@@ -73,6 +74,7 @@ gem "jwt"
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "importmap-rails"
+# Tailwind CSS
 gem "tailwindcss-rails"
 # for fastly cache purge
 gem "fastly"
@@ -83,7 +85,6 @@ gem "nanoid"
 # Authentication
 gem "pundit"
 
-
 group :development, :test do
   # to avoid n+1 queries
   # gem "bullet"
@@ -91,6 +92,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   # coverage
   gem "simplecov", require: false
+  # minitest mock (extracted from minitest 6.0+)
+  gem "minitest-mock"
   # for IntelliJ IDEA
   # gem 'ruby-debug-ide'
 end
@@ -121,6 +124,8 @@ group :development do
   gem "rubocop-rake", require: false
   gem "rubocop-minitest", require: false
   gem "rubocop-rails-omakase", require: false
+  gem "rubocop-i18n", require: false
+  gem "rubocop-rubycw", require: false
   # erb linter
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]

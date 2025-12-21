@@ -72,7 +72,7 @@ Downstream: Google Cloud (Run/Build/Storage), Cloudflare R2, Fastly CDN
 | Namespace | Host variables | Responsibilities |
 |-----------|----------------|------------------|
 | `Top::Com/App/Org` | `TOP_CORPORATE_URL`, `TOP_SERVICE_URL`, `TOP_STAFF_URL` | Redirect to `EDGE_*` hosts, render `/health` & `/v1/health`, expose preference UIs (`cookie`, `region`, `theme`, `reset`). |
-| `Sign::App/Org` | `SIGN_SERVICE_URL`, `SIGN_STAFF_URL` | Registration (email/phone), authentication, passkeys, OAuth, recovery, withdrawal. |
+| `Auth::App/Org` | `AUTH_SERVICE_URL`, `AUTH_STAFF_URL` | Registration (email/phone), authentication, passkeys, OAuth, recovery, withdrawal. |
 | `Help::Com/App/Org` | `HELP_*` | Contact forms with Turnstile, OTP validation, email/SMS confirmation, success receipts. |
 | `Docs::*`, `News::*` | `DOCS_*`, `NEWS_*` | Documentation and newsroom placeholders with branded health endpoints. |
 | `Bff::*` | `BFF_*` | Preference APIs for non-authenticated clients (email/locale endpoints). |
@@ -118,6 +118,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 - APIs provide JSON health plus inquiry validation. `ValidEmailAddressesController` decodes Base64 `id`, reuses `ServiceSiteContact` validations, and responds with `{valid: true|false}`. `ValidTelephoneNumbersController` takes JSON POST.
 - BFF controllers inherit `Bff::Concerns::Regionalization` to normalize query params and set locale/timezone before rendering preference views.
 - All API/BFF routes use `ActionController::API` base classes for lean responses.
+- 認証モデルは責務を分離する。BFF経由の通常WebはCSRF対策と運用容易性を優先してCookieセッションを採用し、iOSなどネイティブはBearer(JWT)を採用する。両方式の同居は可能だが、同一クライアントで二重管理しない。
 
 ### 4.6 Background services
 - `karafka.rb` configures Kafka brokers (Docker vs host), client/group IDs, instrumentation, and topics (currently `email`). Karafka Web UI is enabled for debugging.

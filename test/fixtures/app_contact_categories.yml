@@ -1,14 +1,14 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 none:
-  title: 'NULL_APP_CATEGORY'
+  id: 'NULL_APP_CATEGORY'
   description: 'ROOT'
 application_inquiry:
-  title: 'APPLICATION_INQUIRY'
+  id: 'APPLICATION_INQUIRY'
   description: 'Application inquiry category'
 application_support:
-  title: 'APPLICATION_SUPPORT'
+  id: 'APPLICATION_SUPPORT'
   description: 'Application support category'
 application_feedback:
-  title: 'APPLICATION_FEEDBACK'
+  id: 'APPLICATION_FEEDBACK'
   description: 'Application feedback category'

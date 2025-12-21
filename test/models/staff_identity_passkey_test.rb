@@ -21,11 +21,11 @@ require "test_helper"
 class StaffIdentityPasskeyTest < ActiveSupport::TestCase
   test "should create passkey with valid attributes" do
     passkey = StaffIdentityPasskey.new(
+      staff: staffs(:one),
       description: "Staff Passkey",
       public_key: "test_staff_public_key",
       sign_count: 1,
       external_id: SecureRandom.uuid,
-      staff_id: 999_999,
       webauthn_id: SecureRandom.random_bytes(32)
     )
 
@@ -60,5 +60,32 @@ class StaffIdentityPasskeyTest < ActiveSupport::TestCase
     required_columns.each do |column|
       assert_includes StaffIdentityPasskey.column_names, column
     end
+  end
+
+  test "enforces maximum passkeys per staff" do
+    staff = staffs(:one)
+    StaffIdentityPasskey.where(staff: staff).delete_all
+    StaffIdentityPasskey::MAX_PASSKEYS_PER_STAFF.times do |i|
+      StaffIdentityPasskey.create!(
+        staff: staff,
+        description: "Staff Key #{i}",
+        public_key: "staff-public-key-#{i}",
+        sign_count: 0,
+        external_id: SecureRandom.uuid,
+        webauthn_id: SecureRandom.random_bytes(32)
+      )
+    end
+
+    extra_passkey = StaffIdentityPasskey.new(
+      staff: staff,
+      description: "Overflow Staff Key",
+      public_key: "overflow-key",
+      sign_count: 0,
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.random_bytes(32)
+    )
+
+    assert_not extra_passkey.valid?
+    assert_includes extra_passkey.errors[:base], "exceeds maximum passkeys per staff (#{StaffIdentityPasskey::MAX_PASSKEYS_PER_STAFF})"
   end
 end

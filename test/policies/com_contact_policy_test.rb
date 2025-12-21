@@ -26,8 +26,8 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     assert_not @policy.send(:show?)
   end
 
-  def test_create_returns_false_by_default
-    assert_not @policy.send(:create?)
+  def test_create_returns_true_by_default
+    assert @policy.send(:create?)
   end
 
   def test_update_returns_false_by_default

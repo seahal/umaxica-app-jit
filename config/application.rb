@@ -28,8 +28,8 @@ class DeprecationFilter
     end
   end
 
-  def method_missing(method, *args, &block)
-    @original_stderr.send(method, *args, &block)
+  def method_missing(method, *, &)
+    @original_stderr.send(method, *, &)
   end
 
   def respond_to_missing?(method, include_private = false)
@@ -71,6 +71,9 @@ module Jit
     config.autoload_paths << Rails.root.join("app/errors")
 
     ### Added by user
+    # Rack Attack Middleware
+    config.middleware.use Rack::Attack
+    # Active Record Encryption Configuration
     if [ "test", "production", "development" ].include? Rails.env
       config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
       config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
@@ -82,7 +85,9 @@ module Jit
     config.active_record.default_timezone = :utc
 
     # ActiveJob
-    config.active_job.queue_adapter = :karafka
+    # Use Solid Queue for job processing
+    config.active_job.queue_adapter = :solid_queue
+    config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue_replica } }
 
     # SMS Provider Configuration
     config.sms_provider = ENV.fetch("SMS_PROVIDER", "aws_sns")

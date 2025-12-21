@@ -1,0 +1,29 @@
+<h1><%= t('auth.app.setting.totp.new.title') %></h1>
+
+<%= form_with model: @totp, url: auth_app_setting_totps_path do |form| %>
+  <div>
+    <%= image_tag "data:image/png;base64, #{Base64.strict_encode64(@png.to_s)}", alt: "QR Code" %>
+  </div>
+
+  <% if @totp.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(@totp.errors.count, "error") %> prohibited this totp from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% @totp.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :first_token, style: "display: block" %>
+    <%= form.text_field :first_token %>
+  </div>
+
+  <%= form.submit %>
+<% end %>
+
+<p><%= link_to t('controller.sign.app.setting.totp.index.return_page'), auth_app_setting_totps_path %></p>
+</div>

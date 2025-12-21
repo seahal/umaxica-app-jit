@@ -12,9 +12,9 @@
 #         [ { lx: "",   ri: "jp" }, { lx: nil,   ri: "jp" } ]
 #       ].freeze
 
-#       # ===== 動的に各テストを定義 =====
+# ===== Dynamically define each test =====
 #       CASES.each_with_index do |(input, expected), idx|
-#         test "case #{idx}: query normalize #{input.inspect} → #{expected.inspect}" do
+#         test "case #{idx}: query normalize #{input.inspect} -> #{expected.inspect}" do
 #           get_with_query(top_app_preference_url, input)
 
 #           assert_query_params_equal expected, "[case #{idx}]"

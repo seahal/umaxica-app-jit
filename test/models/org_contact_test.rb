@@ -247,8 +247,6 @@ class OrgContactTest < ActiveSupport::TestCase
     assert_equal "ORGANIZATION_INQUIRY", contact.contact_category_title
   end
 
-
-
   test "should set default contact_category_title when nil" do
     contact = OrgContact.new(
       contact_category_title: nil,
@@ -465,5 +463,60 @@ class OrgContactTest < ActiveSupport::TestCase
 
     assert_equal "NULL_ORG_CATEGORY", contact.contact_category_title
     assert_equal "NULL_ORG_STATUS", contact.contact_status_id
+  end
+
+  test "should verify email" do
+    contact = build_contact(contact_status_id: "SET_UP")
+
+    assert_predicate contact, :can_verify_email?
+
+    contact.verify_email!
+
+    assert_equal "CHECKED_EMAIL_ADDRESS", contact.contact_status_id
+  end
+
+  test "should verify phone" do
+    contact = build_contact(contact_status_id: "CHECKED_EMAIL_ADDRESS")
+
+    assert_predicate contact, :can_verify_phone?
+
+    contact.verify_phone!
+
+    assert_equal "CHECKED_TELEPHONE_NUMBER", contact.contact_status_id
+  end
+
+  test "should complete contact" do
+    contact = build_contact(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
+
+    assert_predicate contact, :can_complete?
+
+    contact.complete!
+
+    assert_equal "COMPLETED_CONTACT_ACTION", contact.contact_status_id
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "should generate and verify token" do
+    contact = build_contact
+    raw_token = contact.generate_final_token
+
+    assert_not_nil contact.token_digest
+    assert_not_nil contact.token_expires_at
+    assert_not contact.token_viewed?
+
+    assert contact.verify_token(raw_token)
+    assert_predicate contact, :token_viewed?
+    assert_not contact.verify_token(raw_token) # Cannot verify twice
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  test "should handle expired token" do
+    contact = build_contact
+    raw_token = contact.generate_final_token
+
+    contact.update!(token_expires_at: 1.minute.ago)
+
+    assert_predicate contact, :token_expired?
+    assert_not contact.verify_token(raw_token)
   end
 end

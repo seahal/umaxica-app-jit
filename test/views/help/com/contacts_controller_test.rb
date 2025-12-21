@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Help::Com
-  class ContactsControllerTest < ActionDispatch::IntegrationTest
+  class ContactsControllerViewTest < ActionDispatch::IntegrationTest
     setup do
       @category = com_contact_categories(:SECURITY_ISSUE)
     end
@@ -22,7 +22,7 @@ module Help::Com
     #   ) do
     #     post help_com_contacts_url, params: {
     #       com_contact: {
-    #         contact_category_title: @category.title,
+    #         contact_category_title: @category.id,
     #         confirm_policy: "1",
     #         email_address: "test@example.com",
     #         telephone_number: "+1234567890"
@@ -71,7 +71,7 @@ module Help::Com
       assert_no_difference([ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ]) do
         post help_com_contacts_url, params: {
           com_contact: {
-            contact_category_title: @category.title,
+            contact_category_title: @category.id,
             confirm_policy: "0", # Invalid: not accepted
             email_address: "test@example.com",
             telephone_number: "+1234567890"
@@ -87,7 +87,7 @@ module Help::Com
     test "should preserve input values on validation error" do
       post help_com_contacts_url, params: {
         com_contact: {
-          contact_category_title: @category.title,
+          contact_category_title: @category.id,
           confirm_policy: "0",
           email_address: "preserve@example.com",
           telephone_number: "+9876543210"
@@ -104,7 +104,7 @@ module Help::Com
     test "should preserve unchecked confirm_policy on validation error" do
       post help_com_contacts_url, params: {
         com_contact: {
-          contact_category_title: @category.title,
+          contact_category_title: @category.id,
           confirm_policy: "0", # Unchecked
           email_address: "test@example.com",
           telephone_number: "+1234567890"

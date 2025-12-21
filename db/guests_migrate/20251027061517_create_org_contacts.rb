@@ -1,6 +1,6 @@
 class CreateOrgContacts < ActiveRecord::Migration[8.1]
   def change
-    create_table :org_contacts, id: :uuid do |t|
+    create_table :org_contacts, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.string :public_id, null: false, index: true, limit: 21
       t.string :token, null: false, index: true, default: '', limit: 32
       t.string      :token_digest, limit: 255
@@ -15,7 +15,7 @@ class CreateOrgContacts < ActiveRecord::Migration[8.1]
     add_index :org_contacts, :token_digest
     add_index :org_contacts, :token_expires_at
 
-    # 外部キー制約を追加
+    # Add foreign key constraints
     add_foreign_key :org_contacts, :org_contact_categories,
                     column: :contact_category_title,
                     primary_key: :title

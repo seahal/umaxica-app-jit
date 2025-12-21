@@ -2,8 +2,10 @@ one:
   title: Com Timeline One
   description: First com timeline
   com_timeline_status_id: ACTIVE
+  public_id: "PHZ--7IwttndBgvN71NIv"
 
 two:
   title: Com Timeline Two
   description: Second com timeline
   com_timeline_status_id: ACTIVE
+  public_id: "2I1_WvMgLv5q9LXgKkiYN"

@@ -37,7 +37,7 @@ module Help
           telephone_number: params.dig(:app_contact, :telephone_number)
         )
 
-        # TODO: ここを、@contact にエラーを注入して、エラーメッセージを出したい。
+        # TODO: Inject error into @contact here and display error message.
         unless turnstile_result["success"]
           @contact.errors.add(:base, "ロボットではないことの確認に失敗しました。もう一度お試しください。")
           @email_address = params.dig(:app_contact, :email_address) || ""
@@ -58,7 +58,7 @@ module Help
           Email::App::ContactMailer.with(
             email_address: @email.email_address,
             pass_code: token
-          ).create.deliver_now
+          ).create.deliver_later
 
           # Redirect with proper host options
           redirect_to new_help_app_contact_email_url(

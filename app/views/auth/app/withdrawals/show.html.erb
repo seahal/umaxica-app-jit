@@ -1,0 +1,32 @@
+<%# Withdrawal status page used by Auth::App::WithdrawalsController#show %>
+<div class="withdrawal-status">
+  <h1><%= t("auth.app.withdrawal.show.title", default: "Withdrawal status") %></h1>
+
+  <div class="active-state">
+    <p><strong><%= t("auth.app.withdrawal.show.active", default: "Your account is active") %></strong></p>
+
+    <div class="actions">
+      <h2><%= t("auth.app.withdrawal.show.withdrawal_actions", default: "Withdrawal Options") %></h2>
+
+      <div class="action-group">
+        <h3><%= t("auth.app.withdrawal.show.temporary_withdrawal", default: "Temporary Withdrawal") %></h3>
+        <p><%= t("auth.app.withdrawal.show.temporary_notice", default: "Your account will be temporarily withdrawn and can be recovered within the grace period.") %></p>
+        <%= button_to t("auth.app.withdrawal.show.withdraw_button", default: "Withdraw Account"),
+                      auth_app_withdrawal_path,
+                      method: :patch,
+                      class: "btn btn-warning",
+                      data: { confirm: t("auth.app.withdrawal.show.confirm_withdrawal", default: "Are you sure?") } %>
+      </div>
+
+      <div class="action-group">
+        <h3><%= t("auth.app.withdrawal.show.permanent_deletion", default: "Permanent Deletion") %></h3>
+        <p><%= t("auth.app.withdrawal.show.permanent_notice", default: "Your account and all associated data will be permanently deleted. This action cannot be undone.") %></p>
+        <%= button_to t("auth.app.withdrawal.show.delete_button", default: "Permanently Delete Account"),
+                      auth_app_withdrawal_path,
+                      method: :delete,
+                      class: "btn btn-danger",
+                      data: { confirm: t("auth.app.withdrawal.show.confirm_deletion", default: "This cannot be undone. Are you sure?") } %>
+      </div>
+    </div>
+  </div>
+</div>

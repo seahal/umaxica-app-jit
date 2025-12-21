@@ -1,0 +1,13 @@
+<% content_for :page_title, t('peak.app.preference.resets.title') %>
+
+<h1><%= t('peak.app.preference.resets.title') %></h1>
+
+<p><%= t('peak.app.preference.resets.description') %></p>
+
+<%= button_to t('peak.app.preference.resets.button'),
+              peak_app_preference_reset_path,
+              method: :delete,
+              data: { confirm: t('peak.app.preference.resets.confirm') },
+              class: "btn btn-danger" %>
+
+<p><%= link_to t('peak.app.preference.resets.back'), peak_app_preference_path %></p>

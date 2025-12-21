@@ -19,9 +19,25 @@
 class UserIdentityTelephone < IdentitiesRecord
   include Telephone
   include SetId
+  include Turnstile
+
+  MAX_TELEPHONES_PER_USER = 4
 
   belongs_to :user_identity_telephone_status, optional: true
   belongs_to :user, optional: true
 
   encrypts :number, deterministic: true
+
+  validate :enforce_user_telephone_limit, on: :create
+
+  private
+
+  def enforce_user_telephone_limit
+    return unless user_id
+
+    count = self.class.where(user_id: user_id).count
+    return if count < MAX_TELEPHONES_PER_USER
+
+    errors.add(:base, :too_many, message: "exceeds maximum telephones per user (#{MAX_TELEPHONES_PER_USER})")
+  end
 end

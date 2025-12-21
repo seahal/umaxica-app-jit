@@ -10,20 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_08_235019) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_18_130520) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "staff_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "staff_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  end
+
+  create_table "staff_tokens", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "staff_id", null: false
+    t.string "staff_token_status_id", default: "NONE", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "user_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
   end
 
   create_table "user_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.string "user_token_status_id", default: "NONE", null: false
   end
+
+  add_foreign_key "staff_tokens", "staff_token_statuses"
+  add_foreign_key "user_tokens", "user_token_statuses"
 end

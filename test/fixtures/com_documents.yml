@@ -2,8 +2,10 @@ one:
   title: Com Document One
   description: First com document
   com_document_status_id: ACTIVE
+  public_id: "V95G4GR15hbQEx1oqmfdO"
 
 two:
   title: Com Document Two
   description: Second com document
   com_document_status_id: ACTIVE
+  public_id: "Ahivr6X2XELDuqr3CMExB"

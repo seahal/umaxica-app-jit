@@ -78,7 +78,7 @@
 ### 1. OmniAuth setup – Google/Apple OAuth integration
 - Configure Google OAuth and callbacks.
 - Configure Apple OAuth and callbacks.
-- Integrate with existing `UserIdentityGoogleAuth` and `UserIdentityAppleAuth` models.
+- Integrate with existing `UserIdentitySocialGoogle` and `UserIdentitySocialApple` models.
 - Complete the OAuth authentication flow.
 
 ### 2. Recovery page completion

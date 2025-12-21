@@ -48,9 +48,32 @@ class UserIdentityPasskeyTest < ActiveSupport::TestCase
   end
 
   test "should validate uniqueness of webauthn_id" do
-      @passkey.save!
-      duplicate = @passkey.dup
+    @passkey.save!
+    duplicate = @passkey.dup
 
-      assert_not duplicate.valid?
+    assert_not duplicate.valid?
+  end
+
+  test "enforces maximum passkeys per user" do
+    UserIdentityPasskey::MAX_PASSKEYS_PER_USER.times do |i|
+      UserIdentityPasskey.create!(
+        user: @user,
+        webauthn_id: SecureRandom.uuid,
+        external_id: SecureRandom.uuid,
+        public_key: "test-key-#{i}",
+        description: "Key #{i}"
+      )
+    end
+
+    extra_passkey = UserIdentityPasskey.new(
+      user: @user,
+      webauthn_id: SecureRandom.uuid,
+      external_id: SecureRandom.uuid,
+      public_key: "overflow-key",
+      description: "Overflow key"
+    )
+
+    assert_not extra_passkey.valid?
+    assert_includes extra_passkey.errors[:base], "exceeds maximum passkeys per user (#{UserIdentityPasskey::MAX_PASSKEYS_PER_USER})"
   end
 end
