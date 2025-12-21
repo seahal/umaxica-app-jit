@@ -2,6 +2,7 @@
 
 require "test_helper"
 class DefaultUrlOptionsTest < ActiveSupport::TestCase
+  # rubocop:disable Rails/ApplicationController
   class TestController < ActionController::Base
     include DefaultUrlOptions
 
@@ -11,6 +12,7 @@ class DefaultUrlOptionsTest < ActiveSupport::TestCase
       request.cookie_jar
     end
   end
+  # rubocop:enable Rails/ApplicationController
 
   setup do
     @controller = TestController.new
