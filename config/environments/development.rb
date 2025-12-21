@@ -134,4 +134,8 @@ Rails.application.configure do
 
   # SMS Provider Configuration - Use test provider in development
   config.sms_provider = ENV.fetch("SMS_PROVIDER", "test")
+
+  # Use Solid Queue in Development.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
 end
