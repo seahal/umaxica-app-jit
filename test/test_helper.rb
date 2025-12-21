@@ -42,5 +42,7 @@ module ActiveSupport
 
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
+
+    include ActiveJob::TestHelper
   end
 end

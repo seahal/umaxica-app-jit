@@ -10,8 +10,9 @@ class SolidQueueTest < ActiveSupport::TestCase
     SolidQueue::Job.delete_all
     TestJob.last_performed_value = nil
 
-    # Use the inline adapter for tests that need to perform jobs
+    # Use the solid_queue adapter for tests that need to persist jobs to the DB
     @previous_adapter = ActiveJob::Base.queue_adapter
+    ActiveJob::Base.queue_adapter = :solid_queue
   end
 
   teardown do

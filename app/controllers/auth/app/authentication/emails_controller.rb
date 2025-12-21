@@ -128,7 +128,7 @@ module Auth
             Email::App::RegistrationMailer.with(
               hotp_token: otp_code,
               email_address: existing_email.address
-            ).create.deliver_now
+            ).create.deliver_later
           else
             # Dummy work to simulate OTP generation for timing attack protection
             ROTP::Base32.random_base32

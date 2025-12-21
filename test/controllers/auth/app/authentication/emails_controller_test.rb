@@ -196,12 +196,14 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     )
 
     assert_difference -> { ActionMailer::Base.deliveries.count }, 1 do
-      post auth_app_authentication_email_url,
-           params: {
-             user_identity_email: { address: test_email.address },
-             "cf-turnstile-response" => "test_token"
-           },
-           headers: { "Host" => @host }
+      perform_enqueued_jobs do
+        post auth_app_authentication_email_url,
+             params: {
+               user_identity_email: { address: test_email.address },
+               "cf-turnstile-response" => "test_token"
+             },
+             headers: { "Host" => @host }
+      end
     end
 
     initial_sent_at = test_email.reload.otp_last_sent_at
@@ -220,12 +222,14 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     travel Email::OTP_COOLDOWN_PERIOD + 1.second do
       assert_difference -> { ActionMailer::Base.deliveries.count }, 1 do
-        post auth_app_authentication_email_url,
-             params: {
-               user_identity_email: { address: test_email.address },
-               "cf-turnstile-response" => "test_token"
-             },
-             headers: { "Host" => @host }
+        perform_enqueued_jobs do
+          post auth_app_authentication_email_url,
+               params: {
+                 user_identity_email: { address: test_email.address },
+                 "cf-turnstile-response" => "test_token"
+               },
+               headers: { "Host" => @host }
+        end
       end
       assert_operator test_email.reload.otp_last_sent_at, :>, initial_sent_at
     end

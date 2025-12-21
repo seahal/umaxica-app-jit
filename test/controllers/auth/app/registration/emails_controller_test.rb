@@ -107,15 +107,17 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     email = "test_wrong_otp@example.com"
 
     # Create registration record
-    post auth_app_registration_emails_url,
-         params: {
-           user_identity_email: {
-             address: email,
-             confirm_policy: "1"
+    perform_enqueued_jobs do
+      post auth_app_registration_emails_url,
+           params: {
+             user_identity_email: {
+               address: email,
+               confirm_policy: "1"
+             },
+             "cf-turnstile-response": "test"
            },
-           "cf-turnstile-response": "test"
-         },
-         headers: default_headers
+           headers: default_headers
+    end
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
@@ -139,15 +141,17 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     email = "test_max_attempts@example.com"
 
     # Create registration record
-    post auth_app_registration_emails_url,
-         params: {
-           user_identity_email: {
-             address: email,
-             confirm_policy: "1"
+    perform_enqueued_jobs do
+      post auth_app_registration_emails_url,
+           params: {
+             user_identity_email: {
+               address: email,
+               confirm_policy: "1"
+             },
+             "cf-turnstile-response": "test"
            },
-           "cf-turnstile-response": "test"
-         },
-         headers: default_headers
+           headers: default_headers
+    end
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
@@ -260,15 +264,17 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     email = "transaction_success@example.com"
 
     # Create registration record
-    post auth_app_registration_emails_url,
-         params: {
-           user_identity_email: {
-             address: email,
-             confirm_policy: "1"
+    perform_enqueued_jobs do
+      post auth_app_registration_emails_url,
+           params: {
+             user_identity_email: {
+               address: email,
+               confirm_policy: "1"
+             },
+             "cf-turnstile-response": "test"
            },
-           "cf-turnstile-response": "test"
-         },
-         headers: default_headers
+           headers: default_headers
+    end
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
@@ -323,15 +329,17 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     email = "session_set@example.com"
 
     # Create registration record
-    post auth_app_registration_emails_url,
-         params: {
-           user_identity_email: {
-             address: email,
-             confirm_policy: "1"
+    perform_enqueued_jobs do
+      post auth_app_registration_emails_url,
+           params: {
+             user_identity_email: {
+               address: email,
+               confirm_policy: "1"
+             },
+             "cf-turnstile-response": "test"
            },
-           "cf-turnstile-response": "test"
-         },
-         headers: default_headers
+           headers: default_headers
+    end
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
@@ -365,15 +373,17 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     email = "otp_clear@example.com"
 
     # Create registration record
-    post auth_app_registration_emails_url,
-         params: {
-           user_identity_email: {
-             address: email,
-             confirm_policy: "1"
+    perform_enqueued_jobs do
+      post auth_app_registration_emails_url,
+           params: {
+             user_identity_email: {
+               address: email,
+               confirm_policy: "1"
+             },
+             "cf-turnstile-response": "test"
            },
-           "cf-turnstile-response": "test"
-         },
-         headers: default_headers
+           headers: default_headers
+    end
 
     # Extract email ID from redirect location
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]

@@ -58,7 +58,7 @@ module Help
           Email::App::ContactMailer.with(
             email_address: @email.email_address,
             pass_code: token
-          ).create.deliver_now
+          ).create.deliver_later
 
           # Redirect with proper host options
           redirect_to new_help_app_contact_email_url(

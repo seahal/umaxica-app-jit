@@ -9,7 +9,7 @@ services:
         DOCKER_GID: ${GID:-1000}
     env_file: docker/core/env
     entrypoint: [ "/bin/bash", "/home/jit/workspace/docker/core/entrypoint.sh" ]
-    command: [ "bin/rails", "server", "-b", "0.0.0.0" ]
+    command: [ "sleep", "infinity" ]
     restart: always
     tty: true
     stdin_open: true

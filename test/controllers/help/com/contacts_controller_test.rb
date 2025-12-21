@@ -42,7 +42,9 @@ module Help
 
       test "should create contact and send email" do
         assert_difference("ComContact.count", 1) do
-          post_valid_contact
+          perform_enqueued_jobs do
+            post_valid_contact
+          end
         end
 
         assert_equal 1, ActionMailer::Base.deliveries.size
@@ -92,12 +94,14 @@ module Help
         contact.create_com_contact_email(email_address: "notify@example.com")
 
         assert_difference("ComContactTopic.count") do
-          patch help_com_contact_url(contact), params: {
-            com_contact_topic: {
-              title: "New Topic",
-              description: I18n.t("test_data.contact_topic_description")
-            }
-          }, headers: { "Host" => @host }
+          perform_enqueued_jobs do
+            patch help_com_contact_url(contact), params: {
+              com_contact_topic: {
+                title: "New Topic",
+                description: I18n.t("test_data.contact_topic_description")
+              }
+            }, headers: { "Host" => @host }
+          end
         end
 
         assert_equal 1, ActionMailer::Base.deliveries.size

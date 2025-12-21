@@ -4,8 +4,6 @@ module Auth
   module App
     module Social
       class SessionsController < Auth::App::ApplicationController
-        skip_forgery_protection only: :create
-
         def create
           ActiveRecord::Base.connected_to(role: :writing) do
             auth = request.env["omniauth.auth"] || mock_auth_from_test_mode

@@ -64,7 +64,7 @@ module Auth
           # Send email
           # FIXME: use kafka!
           Email::App::RegistrationMailer.with({ hotp_token: num,
-                                                email_address: @user_email.address }).create.deliver_now
+                                                email_address: @user_email.address }).create.deliver_later
 
           # Preserve rd parameter if provided
           redirect_params = { notice: t("auth.app.registration.email.create.verification_code_sent") }

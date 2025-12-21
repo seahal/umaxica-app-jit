@@ -59,7 +59,7 @@ module Help
           Email::Com::ContactMailer.with(
             email_address: @email.email_address,
             pass_code: token
-          ).create.deliver_now
+          ).create.deliver_later
 
           # Redirect with proper host options
           redirect_to new_help_com_contact_email_url(
@@ -103,7 +103,7 @@ module Help
           contact: contact,
           topic: topic,
           email_address: contact_email.email_address
-        ).notice.deliver_now
+        ).notice.deliver_later
       rescue StandardError => e
         Rails.event.notify("contact.notification.failed",
                            contact_id: contact.public_id,
