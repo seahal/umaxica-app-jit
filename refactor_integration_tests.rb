@@ -12,7 +12,7 @@ def process_file(path)
   content.gsub!(/class Sign\b/, 'class Auth')
   content.gsub!(/class Back\b/, 'class Base')
   content.gsub!(/class Apex\b/, 'class Peak')
-  
+
   # Constants/Inheritance
   content.gsub!(/Sign::/, 'Auth::')
   content.gsub!(/Back::/, 'Base::')
@@ -20,7 +20,7 @@ def process_file(path)
 
   # Routes and Helpers
   # sign_app_, sign_org_, sign_com_
-  ['app', 'org', 'com'].each do |scope|
+  [ 'app', 'org', 'com' ].each do |scope|
     content.gsub!("sign_#{scope}_", "auth_#{scope}_")
     content.gsub!("back_#{scope}_", "base_#{scope}_")
     content.gsub!("apex_#{scope}_", "peak_#{scope}_")
@@ -33,13 +33,13 @@ def process_file(path)
 
   # Strings (paths, translations)
   # Fix paths in require and renders
-  ['sign', 'back', 'apex'].each do |term|
+  [ 'sign', 'back', 'apex' ].each do |term|
     new_term = case term
-               when 'sign' then 'auth'
-               when 'back' then 'base'
-               when 'apex' then 'peak'
-               end
-    content.gsub!("/#{term}/", "/#{new_term}/") 
+    when 'sign' then 'auth'
+    when 'back' then 'base'
+    when 'apex' then 'peak'
+    end
+    content.gsub!("/#{term}/", "/#{new_term}/")
     content.gsub!("'#{term}/", "'#{new_term}/")
     content.gsub!("\"#{term}/", "\"#{new_term}/")
   end
@@ -51,7 +51,7 @@ def process_file(path)
   content.gsub!("t('sign.", "t('auth.")
   content.gsub!("t('back.", "t('base.")
   content.gsub!("t('apex.", "t('peak.")
-  
+
   # Loose translation keys
   content.gsub!(/t\s+'sign\./, 't \'auth.')
   content.gsub!(/t\s+"sign\./, 't "auth.')

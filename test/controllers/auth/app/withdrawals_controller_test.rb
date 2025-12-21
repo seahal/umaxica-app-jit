@@ -3,7 +3,7 @@ require_relative "../../../../app/errors/auth/withdrawal_error"
 
 class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    @host = ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
     @user = users(:one)
   end
 

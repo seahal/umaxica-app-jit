@@ -107,10 +107,7 @@ jobs:
       # Rails & Rack
       RACK_ENV: test
       RAILS_MAX_THREADS: 5
-      # Redis
-      REDIS_URL: redis://valkey:6379/0
       # Application
-      NAME: UMAXICA
       BRAND_NAME: UMAXICA
       PORT: 3000
       # Identifiers
@@ -118,16 +115,16 @@ jobs:
       IDENTIFIER_REGION_CODE: '392'
       IDENTIFIER_INSTANCE_ID: '0123456789'
       # Domain URLs - APEX
-      APEX_CORPORATE_URL: com.localhost
-      APEX_SERVICE_URL: app.localhost
-      APEX_STAFF_URL: org.localhost
-      # Domain URLs - Sign
-      SIGN_SERVICE_URL: sign.app.localhost
-      SIGN_STAFF_URL: sign.org.localhost
-      # Domain URLs - BACK
-      BACK_CORPORATE_URL: back.com.localhost
-      BACK_SERVICE_URL: back.app.localhost
-      BACK_STAFF_URL: back.org.localhost
+      PEAK_CORPORATE_URL: com.localhost
+      PEAK_SERVICE_URL: app.localhost
+      PEAK_STAFF_URL: org.localhost
+      # Domain URLs - Auth
+      AUTH_SERVICE_URL: auth.app.localhost
+      AUTH_STAFF_URL: auth.org.localhost
+      # Domain URLs - Core
+      CORE_CORPORATE_URL: www.com.localhost
+      CORE_SERVICE_URL: www.app.localhost
+      CORE_STAFF_URL: www.org.localhost
       # Domain URLs - Docs
       DOCS_CORPORATE_URL: docs.com.localhost
       DOCS_SERVICE_URL: docs.app.localhost
@@ -144,6 +141,15 @@ jobs:
       EDGE_CORPORATE_URL: localhost:5170
       EDGE_SERVICE_URL: localhost:5171
       EDGE_STAFF_URL: localhost:5172
+      STATUS_URL: status.localhost
+      ASSET_URL: asset.localhost
+      # Region
+      APEX_REGION: true
+      GLOBAL_MODE: true
+      REGION_CODE: jp
+      # Valkey
+      VALKEY_URL: redis://localhost:6379/0
+      VALKEY_RACK_ATTACK_URL: redis://localhost:6379/1
       # PostgreSQL - Connection
       POSTGRESQL_USER: root
       POSTGRESQL_PORT: 5432

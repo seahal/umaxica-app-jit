@@ -10,19 +10,19 @@ This is a Rails 8.0 application with a sophisticated multi-domain, multi-databas
 アプリケーションは複数のエンドポイントで構成され、各エンドポイントが3つのドメイン(com/app/org)を持ちます:
 
 - **APEX** (旧TOP): トップページとプリファレンス管理
-  - `APEX_CORPORATE_URL` (com): コーポレートサイトトップ
-  - `APEX_SERVICE_URL` (app): サービスアプリトップ
-  - `APEX_STAFF_URL` (org): スタッフ管理画面トップ
+  - `PEAK_CORPORATE_URL` (com): コーポレートサイトトップ
+  - `PEAK_SERVICE_URL` (app): サービスアプリトップ
+  - `PEAK_STAFF_URL` (org): スタッフ管理画面トップ
 
 - **SIGN**: 認証・登録・ログイン・退会
-  - `SIGN_SERVICE_URL` (app): ユーザー認証ページ（完全実装済み）
-  - `SIGN_STAFF_URL` (org): スタッフ認証ページ（基本機能のみ、認証フロー未実装）
+  - `AUTH_SERVICE_URL` (app): ユーザー認証ページ（完全実装済み）
+  - `AUTH_STAFF_URL` (org): スタッフ認証ページ（基本機能のみ、認証フロー未実装）
   - WebAuthn, TOTP, Apple/Google OAuth対応
 
 - **BACK** (旧BFF): Backend for Frontend
-  - `BACK_CORPORATE_URL` (com): クライアント向けBFF
-  - `BACK_SERVICE_URL` (app): サービス向けBFF
-  - `BACK_STAFF_URL` (org): スタッフ向けBFF
+  - `CORE_CORPORATE_URL` (com): クライアント向けBFF
+  - `CORE_SERVICE_URL` (app): サービス向けBFF
+  - `CORE_STAFF_URL` (org): スタッフ向けBFF
 
 - **HELP**: ヘルプ・問い合わせページ
   - `HELP_CORPORATE_URL`, `HELP_SERVICE_URL`, `HELP_STAFF_URL`
@@ -392,9 +392,9 @@ Routes are split by endpoint in `config/routes/`:
 Key environment variables required:
 
 ### Domain URLs (各エンドポイント × 3ドメイン)
-- `APEX_CORPORATE_URL`, `APEX_SERVICE_URL`, `APEX_STAFF_URL`
-- `SIGN_SERVICE_URL`, `SIGN_STAFF_URL` (SIGNはcomなし)
-- `BACK_CORPORATE_URL`, `BACK_SERVICE_URL`, `BACK_STAFF_URL`
+- `PEAK_CORPORATE_URL`, `PEAK_SERVICE_URL`, `PEAK_STAFF_URL`
+- `AUTH_SERVICE_URL`, `AUTH_STAFF_URL` (AUTHはcomなし)
+- `CORE_CORPORATE_URL`, `CORE_SERVICE_URL`, `CORE_STAFF_URL`
 - `HELP_CORPORATE_URL`, `HELP_SERVICE_URL`, `HELP_STAFF_URL`
 - `DOCS_CORPORATE_URL`, `DOCS_SERVICE_URL`, `DOCS_STAFF_URL`
 - `NEWS_CORPORATE_URL`, `NEWS_SERVICE_URL`, `NEWS_STAFF_URL`

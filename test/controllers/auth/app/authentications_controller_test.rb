@@ -2,7 +2,7 @@ require "test_helper"
 
 class Auth::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
   # test "should get new" do
-  #   get new_auth_app_authentication_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+  #   get new_auth_app_authentication_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
   #   assert_response :success
   #   assert_select "a[href=?]", new_auth_app_authentication_email_path(query)
   #   assert_select "a[href=?]", new_auth_app_authentication_telephone_path(query)
@@ -39,7 +39,7 @@ class Auth::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_difference -> { UserIdentityAudit.where(event_id: "LOGGED_OUT").count }, 1 do
       delete auth_app_authentication_url,
-             headers: { "Host" => ENV["SIGN_SERVICE_URL"], "X-TEST-CURRENT-USER" => user.id }
+             headers: { "Host" => ENV["AUTH_SERVICE_URL"], "X-TEST-CURRENT-USER" => user.id }
     end
 
     audit = UserIdentityAudit.order(created_at: :desc).first

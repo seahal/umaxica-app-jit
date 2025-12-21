@@ -11,7 +11,7 @@ module Auth
 
         # rubocop:disable Minitest/MultipleAssertions
         test "POST create with valid refresh token returns new access token" do
-          post auth_app_token_refresh_url(host: ENV["SIGN_SERVICE_URL"]),
+          post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
                params: { refresh_token: @user_token.id },
                as: :json
 
@@ -25,7 +25,7 @@ module Auth
         # rubocop:enable Minitest/MultipleAssertions
 
         test "POST create with invalid (non-existent) refresh token returns unauthorized" do
-          post auth_app_token_refresh_url(host: ENV["SIGN_SERVICE_URL"]),
+          post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
                params: { refresh_token: SecureRandom.uuid },
                as: :json
 
@@ -36,7 +36,7 @@ module Auth
         end
 
         test "POST create with malformed refresh token returns bad request" do
-          post auth_app_token_refresh_url(host: ENV["SIGN_SERVICE_URL"]),
+          post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
                params: { refresh_token: "invalid-token-format" },
                as: :json
 
@@ -48,7 +48,7 @@ module Auth
         end
 
         test "POST create without refresh token returns bad request" do
-          post auth_app_token_refresh_url(host: ENV["SIGN_SERVICE_URL"]),
+          post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
                params: {},
                as: :json
 
@@ -62,7 +62,7 @@ module Auth
           @user.update!(withdrawn_at: Time.current)
 
           assert_difference("UserToken.count", -1) do
-            post auth_app_token_refresh_url(host: ENV["SIGN_SERVICE_URL"]),
+            post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
                  params: { refresh_token: @user_token.id },
                  as: :json
           end
@@ -79,7 +79,7 @@ module Auth
           # rubocop:enable Rails/SkipsModelValidations
 
           assert_difference("UserToken.count", -1) do
-            post auth_app_token_refresh_url(host: ENV["SIGN_SERVICE_URL"]),
+            post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
                  params: { refresh_token: @user_token.id },
                  as: :json
           end

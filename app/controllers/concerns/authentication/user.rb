@@ -174,7 +174,7 @@ module Authentication
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
         rt = Base64.urlsafe_encode64(request.original_url)
-        redirect_to new_auth_app_authentication_url(rt: rt, host: ENV["SIGN_SERVICE_URL"]), allow_other_host: true, alert: I18n.t("errors.messages.login_required")
+        redirect_to new_auth_app_authentication_url(rt: rt, host: ENV["AUTH_SERVICE_URL"]), allow_other_host: true, alert: I18n.t("errors.messages.login_required")
       end
     end
 

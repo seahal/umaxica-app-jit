@@ -3,7 +3,8 @@ require "test_helper"
 class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
   setup do
     OmniAuth.config.test_mode = true
-    @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    @host = ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
+    @expected_redirect = %r{\Ahttps?://#{Regexp.escape(@host)}/.*}.freeze
   end
 
   teardown do
@@ -27,7 +28,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     })
 
     get auth_app_social_google_callback_url, headers: { "Host" => @host }
-    assert_redirected_to %r{\Ahttp://sign\.umaxica\.app/.*}
+    assert_redirected_to @expected_redirect
     follow_redirect!
 
     assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Google oauth2"), flash[:notice]
@@ -51,7 +52,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     })
 
     get auth_app_social_apple_callback_url, headers: { "Host" => @host }
-    assert_redirected_to %r{\Ahttp://sign\.umaxica\.app/.*}
+    assert_redirected_to @expected_redirect
     follow_redirect!
 
     assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Apple"), flash[:notice]
@@ -87,7 +88,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     })
 
     get auth_app_social_google_callback_url, headers: { "Host" => @host }
-    assert_redirected_to %r{\Ahttp://sign\.umaxica\.app/.*}
+    assert_redirected_to @expected_redirect
     follow_redirect!
 
     assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Google oauth2"), flash[:notice]

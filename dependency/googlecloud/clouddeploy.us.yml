@@ -64,17 +64,17 @@ spec:
               value: us
 
             # ===== apex / root 面で使っているホスト群 =====
-            - name: APEX_CORPORATE_URL
+            - name: PEAK_CORPORATE_URL
               value: top.umaxica.com
-            - name: APEX_SERVICE_URL
+            - name: PEAK_SERVICE_URL
               value: top.umaxica.app
-            - name: APEX_STAFF_URL
+            - name: PEAK_STAFF_URL
               value: top.umaxica.org
 
             # ===== Sign-in surfaces =====
-            - name: SIGN_SERVICE_URL
+            - name: AUTH_SERVICE_URL
               value: sign.umaxica.app
-            - name: SIGN_STAFF_URL
+            - name: AUTH_STAFF_URL
               value: sign.umaxica.org
 
             # ===== API =====

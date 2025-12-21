@@ -25,7 +25,7 @@ module Auth::App::Authentication
 
     # Turnstile Widget Verification Tests
     test "new authentication telephone page renders Turnstile widget" do
-      get new_auth_app_authentication_telephone_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+      get new_auth_app_authentication_telephone_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
 
       assert_response :success
       assert_select "div[id^='cf-turnstile-']", count: 1

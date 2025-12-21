@@ -11,7 +11,7 @@ module Auth
 
         # rubocop:disable Minitest/MultipleAssertions
         test "POST create with valid refresh token returns new access token" do
-          post auth_org_token_refresh_url(host: ENV["SIGN_STAFF_URL"]),
+          post auth_org_token_refresh_url(host: ENV["AUTH_STAFF_URL"]),
                params: { refresh_token: @staff_token.id },
                as: :json
 
@@ -25,7 +25,7 @@ module Auth
         # rubocop:enable Minitest/MultipleAssertions
 
         test "POST create with invalid refresh token returns unauthorized" do
-          post auth_org_token_refresh_url(host: ENV["SIGN_STAFF_URL"]),
+          post auth_org_token_refresh_url(host: ENV["AUTH_STAFF_URL"]),
                params: { refresh_token: "invalid-token-id" },
                as: :json
 
@@ -36,7 +36,7 @@ module Auth
         end
 
         test "POST create without refresh token returns bad request" do
-          post auth_org_token_refresh_url(host: ENV["SIGN_STAFF_URL"]),
+          post auth_org_token_refresh_url(host: ENV["AUTH_STAFF_URL"]),
                params: {},
                as: :json
 
@@ -50,7 +50,7 @@ module Auth
           @staff.update!(withdrawn_at: Time.current)
 
           assert_difference("StaffToken.count", -1) do
-            post auth_org_token_refresh_url(host: ENV["SIGN_STAFF_URL"]),
+            post auth_org_token_refresh_url(host: ENV["AUTH_STAFF_URL"]),
                  params: { refresh_token: @staff_token.id },
                  as: :json
           end
@@ -67,7 +67,7 @@ module Auth
           # rubocop:enable Rails/SkipsModelValidations
 
           assert_difference("StaffToken.count", -1) do
-            post auth_org_token_refresh_url(host: ENV["SIGN_STAFF_URL"]),
+            post auth_org_token_refresh_url(host: ENV["AUTH_STAFF_URL"]),
                  params: { refresh_token: @staff_token.id },
                  as: :json
           end

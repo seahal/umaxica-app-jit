@@ -3,7 +3,7 @@ require "test_helper"
 class Auth::App::ExitsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
-    @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    @host = ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
   end
 
   test "should get edit raises error without session" do

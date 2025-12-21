@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   scope module: :peak, as: :peak do
-    constraints host: ENV["APEX_CORPORATE_URL"] do
+    constraints host: ENV["PEAK_CORPORATE_URL"] do
       scope module: :com, as: :com do
         root to: "roots#index"
         # health check for html
@@ -29,7 +29,7 @@ Rails.application.routes.draw do
       end
     end
 
-    constraints host: ENV["APEX_SERVICE_URL"] do
+    constraints host: ENV["PEAK_SERVICE_URL"] do
       scope module: :app, as: :app do
         root to: "roots#index"
         # endpoint of health check
@@ -63,7 +63,7 @@ Rails.application.routes.draw do
       end
     end
 
-    constraints host: ENV["APEX_STAFF_URL"] do
+    constraints host: ENV["PEAK_STAFF_URL"] do
       scope module: :org, as: :org do
         root to: "roots#index"
         # health check for html

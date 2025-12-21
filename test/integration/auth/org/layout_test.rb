@@ -2,7 +2,7 @@ require "test_helper"
 
 class Auth::Org::LayoutTest < ActionDispatch::IntegrationTest
   def default_headers
-    { "Host" => ENV["SIGN_STAFF_URL"] || "sign.org.localhost" }
+    { "Host" => ENV["AUTH_STAFF_URL"] || "auth.org.localhost" }
   end
 
   def login_headers(staff)

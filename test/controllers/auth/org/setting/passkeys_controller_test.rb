@@ -3,7 +3,7 @@ require "test_helper"
 class Auth::Org::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
   setup do
     @staff = staffs(:one)
-    @host_headers = { "Host" => ENV["SIGN_STAFF_URL"] || "sign.org.localhost" }.freeze
+    @host_headers = { "Host" => ENV["AUTH_STAFF_URL"] || "auth.org.localhost" }.freeze
     @headers = @host_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id)
   end
 

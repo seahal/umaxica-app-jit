@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   scope module: :auth, as: :auth do
     # service page
-    constraints host: ENV["SIGN_SERVICE_URL"] do
+    constraints host: ENV["AUTH_SERVICE_URL"] do
       scope module: :app, as: :app do
         root to: "roots#index"
         # health check for html/json
@@ -63,7 +63,7 @@ Rails.application.routes.draw do
     end
 
     # For Staff's webpages sign.org.localhost
-    constraints host: ENV["SIGN_STAFF_URL"] do
+    constraints host: ENV["AUTH_STAFF_URL"] do
       scope module: :org, as: :org do
         root to: "roots#index"
         # health check for html/json

@@ -4,7 +4,7 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   include ActiveSupport::Testing::TimeHelpers
   # rubocop:disable Minitest/MultipleAssertions
   test "should get new" do
-    get new_auth_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"] }
+    get new_auth_app_authentication_email_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
 
     assert_select "h1", I18n.t("auth.app.authentication.email.new.page_title")
     assert_select "ul li" do
@@ -20,7 +20,7 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
   test "reject already logged in user" do
     user = users(:one)
-    get new_auth_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"], "X-TEST-CURRENT-USER" => user.id }
+    get new_auth_app_authentication_email_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"], "X-TEST-CURRENT-USER" => user.id }
 
     assert_response :bad_request
     assert_equal I18n.t("auth.app.authentication.email.new.you_have_already_logged_in"), response.body
@@ -28,13 +28,13 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
   test "reject already logged in staff" do
     staff = staffs(:one)
-    get new_auth_app_authentication_email_url, headers: { "Host" => ENV["SIGN_SERVICE_URL"], "X-TEST-CURRENT-STAFF" => staff.id }
+    get new_auth_app_authentication_email_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"], "X-TEST-CURRENT-STAFF" => staff.id }
 
     assert_response :success
     # assert_equal I18n.t("auth.app.authentication.email.new.you_have_already_logged_in"), response.body
   end
   setup do
-    @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    @host = ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
     ActionMailer::Base.deliveries.clear
     CloudflareTurnstile.test_mode = true
   end
@@ -342,7 +342,7 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
       address: "redirect_login_test_#{SecureRandom.hex(4)}@example.com"
     )
 
-    redirect_url = "https://#{ENV['APEX_SERVICE_URL']}/dashboard"
+    redirect_url = "https://#{ENV['PEAK_SERVICE_URL']}/dashboard"
     encoded_rd = Base64.urlsafe_encode64(redirect_url)
 
     # Start authentication with rd parameter

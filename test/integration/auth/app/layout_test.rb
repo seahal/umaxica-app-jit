@@ -2,7 +2,7 @@ require "test_helper"
 
 class Auth::App::LayoutTest < ActionDispatch::IntegrationTest
   def default_headers
-    { "Host" => ENV["SIGN_SERVICE_URL"] || "sign.app.localhost" }
+    { "Host" => ENV["AUTH_SERVICE_URL"] || "auth.app.localhost" }
   end
 
   def login_headers(user)

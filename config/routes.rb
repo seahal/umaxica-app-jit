@@ -8,15 +8,15 @@ Rails.application.routes.draw do
   # sign in / up
   draw :auth
   # regional
-  ## top endpoint
+  ## back end of edge endpoints
   # TODO: RENAME => back
-  draw :base
-  # endpoint for docs
-  draw :docs
-  # endpoint for news
-  draw :news
-  # endpoint for help
+  draw :core
+  # endpoints for help
   draw :help
+  # endpoints for docs
+  draw :docs
+  # endpoints for news
+  draw :news
 
   # mount Rswag::Ui::Engine => '/api-docs'
   # mount Rswag::Api::Engine => '/api-docs'

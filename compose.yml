@@ -189,6 +189,8 @@ services:
       CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
     networks:
       - frontend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
 
 networks:

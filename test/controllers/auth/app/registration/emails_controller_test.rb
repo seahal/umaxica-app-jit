@@ -211,7 +211,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
   # rubocop:disable Minitest/MultipleAssertions
   test "redirects to encoded URL after successful registration when rd parameter is provided" do
     email = "redirect_test@example.com"
-    redirect_url = "https://#{ENV['APEX_SERVICE_URL']}/dashboard"
+    redirect_url = "https://#{ENV['PEAK_SERVICE_URL']}/dashboard"
     encoded_rd = Base64.urlsafe_encode64(redirect_url)
 
     # Create registration record with rd parameter
@@ -408,6 +408,6 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
   end
 
   def host
-    ENV["SIGN_SERVICE_URL"] || "auth.app.localhost"
+    ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
   end
 end

@@ -72,7 +72,7 @@ class Auth::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   private
 
   def host
-    ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
   end
 
   def brand_name

@@ -48,7 +48,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 - **Security & identity**: JWT auth cookies (ES256) via the `Authn` concern, WebAuthn passkeys, HOTP/TOTP (ROTP), SMS dispatchers (AWS SNS/Infobip/Test), and Cloudflare Turnstile for bot defense.
 - **Observability**: OpenTelemetry instrumentation exports to Tempo via OTLP; logs/metrics land in Loki/Grafana (docker/observability stack).
 - **Storage & CDN**: Active Storage/Shrine configured for Google Cloud Storage or MinIO (dev). Fastly and Cloudflare R2 provide CDN and asset edge.
-- **Surface mapping** (driven by ENV such as `TOP_CORPORATE_URL`, `SIGN_SERVICE_URL`, etc.):
+- **Surface mapping** (driven by ENV such as `TOP_CORPORATE_URL`, `AUTH_SERVICE_URL`, etc.):
   | Surface | Host examples | Namespace | Responsibilites |
   |---------|---------------|-----------|-----------------|
   | Top (marketing / preferences) | `www.umaxica.com`, `www.umaxica.app`, `www.umaxica.org` | `Top::Com/App/Org` | Redirects to edge, exposes `/health`, `/v1/health`, preference UIs (cookie/region/theme). |
@@ -130,7 +130,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 - Dependencies include Karafka, ROTP, WebAuthn, OmniAuth (Google/Apple), Rswag, Pundit, Shrine, SolidCache, Fastly gem, AWS SDK.
 
 ### 6.2 Environmental & configuration constraints
-- Required ENV keys: host mappings (e.g., `TOP_CORPORATE_URL`, `SIGN_SERVICE_URL`, `API_STAFF_URL`), downstream edge hosts (`EDGE_*`), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Cloudflare Turnstile secret, JWT private/public keys, SMS provider selector, storage credentials (GCS/MinIO), OTLP endpoint.
+- Required ENV keys: host mappings (e.g., `TOP_CORPORATE_URL`, `AUTH_SERVICE_URL`, `API_STAFF_URL`), downstream edge hosts (`EDGE_*`), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Cloudflare Turnstile secret, JWT private/public keys, SMS provider selector, storage credentials (GCS/MinIO), OTLP endpoint.
 - Docker Compose assumes local ports: Rails 3000 (forwarded to 3001), PostgreSQL primaries on 5435/5436, Valkey on 56379, Kafka 19092, Kafka UI 18080, Grafana 8000, Loki 33100, Tempo 3200/4317, MinIO 9000/9001.
 - Foreman/Procfile required for multi-process dev; CI uses GitHub Actions runners with PostgreSQL/Valkey services.
 
