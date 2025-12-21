@@ -10,8 +10,7 @@ module Auth
           if refresh_token_id.blank?
             Rails.event.notify("user.token.refresh.validation_failed",
                                reason: "missing_refresh_token",
-                               ip_address: request.remote_ip
-            )
+                               ip_address: request.remote_ip)
 
             render json: {
               error: I18n.t("auth.token_refresh.errors.missing_refresh_token"),
@@ -25,8 +24,7 @@ module Auth
             Rails.event.notify("user.token.refresh.validation_failed",
                                reason: "invalid_format",
                                refresh_token_id: refresh_token_id,
-                               ip_address: request.remote_ip
-            )
+                               ip_address: request.remote_ip)
 
             render json: {
               error: I18n.t("auth.token_refresh.errors.invalid_refresh_token"),

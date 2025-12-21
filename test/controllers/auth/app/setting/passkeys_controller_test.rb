@@ -127,7 +127,7 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
 
   private
 
-  def regional_defaults
-    PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
-  end
+    def regional_defaults
+      PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
+    end
 end

@@ -45,7 +45,7 @@ class AppContactEmail < GuestsRecord
 
   private
 
-  def generate_id
-    self.id ||= Nanoid.generate(size: 21)
-  end
+    def generate_id
+      self.id ||= Nanoid.generate(size: 21)
+    end
 end

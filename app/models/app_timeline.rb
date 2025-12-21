@@ -17,6 +17,7 @@
 #
 class AppTimeline < BusinessesRecord
   include ::PublicId
+
   belongs_to :app_timeline_status, optional: true
 
   include Timeline

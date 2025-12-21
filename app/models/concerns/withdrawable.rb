@@ -21,6 +21,7 @@ module Withdrawable
 
   def recovery_deadline
     return nil unless withdrawn_at
+
     withdrawn_at + WITHDRAWAL_RECOVERY_PERIOD
   end
 

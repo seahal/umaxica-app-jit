@@ -139,11 +139,11 @@ module Auth
 
         private
 
-        def ensure_not_logged_in
-          if logged_in?
-            redirect_to "/", alert: t("auth.app.registration.email.already_logged_in")
+          def ensure_not_logged_in
+            if logged_in?
+              redirect_to "/", alert: t("auth.app.registration.email.already_logged_in")
+            end
           end
-        end
       end
     end
   end

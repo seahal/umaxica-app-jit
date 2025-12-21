@@ -84,14 +84,14 @@ module Auth::App::Registration
 
     private
 
-    def regional_defaults
-      PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
-    end
+      def regional_defaults
+        PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
+      end
 
-    def registration_telephone
-      registration_session = session[:user_telephone_registration] || {}
-      telephone_id = registration_session[:id] || registration_session["id"]
-      UserIdentityTelephone.find(telephone_id)
-    end
+      def registration_telephone
+        registration_session = session[:user_telephone_registration] || {}
+        telephone_id = registration_session[:id] || registration_session["id"]
+        UserIdentityTelephone.find(telephone_id)
+      end
   end
 end

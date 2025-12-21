@@ -12,7 +12,7 @@ class UserRecoveryCode < IdentitiesRecord
 
   private
 
-  def ensure_expiration
-    self.expires_in ||= 30.days.from_now.to_date
-  end
+    def ensure_expiration
+      self.expires_in ||= 30.days.from_now.to_date
+    end
 end

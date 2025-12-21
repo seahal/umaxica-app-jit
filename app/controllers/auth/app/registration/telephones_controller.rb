@@ -21,7 +21,7 @@ module Auth
 
           registration_session = session[:user_telephone_registration]
           if [ registration_session["id"] == params["id"],
-              registration_session["expires_at"].to_i > Time.now.to_i ].all?
+               registration_session["expires_at"].to_i > Time.now.to_i ].all?
             @user_telephone = UserIdentityTelephone.find_by(id: params["id"]) || UserIdentityTelephone.new
           else
             redirect_to new_auth_app_registration_telephone_path,
@@ -35,7 +35,7 @@ module Auth
                  status: :bad_request and return if logged_in?
 
           @user_telephone = UserIdentityTelephone.new(params.expect(user_identity_telephone: [ :number, :confirm_policy,
-                                                                                              :confirm_using_mfa ]))
+                                                                                               :confirm_using_mfa ]))
 
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32
@@ -64,7 +64,8 @@ module Auth
               subject: "PassCode => #{num}"
             )
 
-            redirect_to edit_auth_app_registration_telephone_path(@user_telephone.id), notice: t("auth.app.registration.telephone.create.verification_code_sent")
+            redirect_to edit_auth_app_registration_telephone_path(@user_telephone.id),
+                        notice: t("auth.app.registration.telephone.create.verification_code_sent")
           else
             render :new, status: :unprocessable_content
           end
@@ -116,9 +117,9 @@ module Auth
 
         private
 
-        def boolean_value(value)
-          ActiveModel::Type::Boolean.new.cast(value)
-        end
+          def boolean_value(value)
+            ActiveModel::Type::Boolean.new.cast(value)
+          end
       end
     end
   end

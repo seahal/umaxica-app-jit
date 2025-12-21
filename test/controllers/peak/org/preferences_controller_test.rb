@@ -3,9 +3,9 @@ require "test_helper"
 class Peak::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   private
 
-  def brand_name
-    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-  end
+    def brand_name
+      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+    end
 
   public
 
@@ -53,7 +53,8 @@ class Peak::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get peak_org_preference_url
 
     assert_select "p.mt-10" do
-      assert_select "a[href=?]", peak_org_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst"), text: /\A↑\s*#{Regexp.escape(I18n.t("peak.org.preferences.up_link"))}\z/
+      assert_select "a[href=?]", peak_org_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst"),
+                    text: /\A↑\s*#{Regexp.escape(I18n.t("peak.org.preferences.up_link"))}\z/
     end
   end
 end

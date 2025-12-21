@@ -19,31 +19,31 @@ module DefaultUrlOptions
 
   private
 
-  def default_url_options_regional
-    # TODO: implement!
-  end
+    def default_url_options_regional
+      # TODO: implement!
+    end
 
-  def default_url_options_global
-    # TODO: implement!
-  end
+    def default_url_options_global
+      # TODO: implement!
+    end
 
-  # Todo: Include only specified values contained in query parameters here. If there are no specified parameters, do not include parameters.
-  # Todo: If GLOBAL_MODE exists, only ri is required.
-  def read_cookie_preferences_for_url
-    raw = cookies.signed[PREFERENCE_COOKIE_KEY]
-    return {} if raw.blank?
+    # Todo: Include only specified values contained in query parameters here. If there are no specified parameters, do not include parameters.
+    # Todo: If GLOBAL_MODE exists, only ri is required.
+    def read_cookie_preferences_for_url
+      raw = cookies.signed[PREFERENCE_COOKIE_KEY]
+      return {} if raw.blank?
 
-    parsed = JSON.parse(raw)
-    return {} unless parsed.is_a?(Hash)
+      parsed = JSON.parse(raw)
+      return {} unless parsed.is_a?(Hash)
 
-    # Extract preference values from cookie
-    {
-      lx: parsed["lx"],
-      ri: parsed["ri"],
-      tz: parsed["tz"],
-      ct: parsed["ct"]
-    }.compact
-  rescue JSON::ParserError, TypeError
-    {}
-  end
+      # Extract preference values from cookie
+      {
+        lx: parsed["lx"],
+        ri: parsed["ri"],
+        tz: parsed["tz"],
+        ct: parsed["ct"]
+      }.compact
+    rescue JSON::ParserError, TypeError
+      {}
+    end
 end

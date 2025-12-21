@@ -39,7 +39,10 @@ module Auth
           respond_to do |format|
             if @user_recovery_code.valid?
               @user_recovery_code.save!
-              format.html { redirect_to auth_app_setting_recovery_path(@user_recovery_code), notice: t("messages.user_recovery_code_successfully_created") }
+              format.html {
+                redirect_to auth_app_setting_recovery_path(@user_recovery_code),
+                            notice: t("messages.user_recovery_code_successfully_created")
+              }
             else
               format.html { render :new, status: :unprocessable_content }
             end
@@ -50,7 +53,10 @@ module Auth
         def update
           respond_to do |format|
             @user_recovery_code.update!(user_recovery_code_params)
-            format.html { redirect_to auth_app_setting_recovery_path(@user_recovery_code), notice: t("messages.user_recovery_code_successfully_updated") }
+            format.html {
+              redirect_to auth_app_setting_recovery_path(@user_recovery_code),
+                          notice: t("messages.user_recovery_code_successfully_updated")
+            }
             format.json { render :show, status: :ok, location: auth_app_setting_recovery_path(@user_recovery_code) }
           rescue ActiveRecord::RecordInvalid
             format.html { render :edit, status: :unprocessable_content }
@@ -63,28 +69,31 @@ module Auth
           @user_recovery_code.destroy!
 
           respond_to do |format|
-            format.html { redirect_to auth_app_setting_recoveries_path, status: :see_other, notice: t("messages.user_recovery_code_successfully_destroyed") }
+            format.html {
+              redirect_to auth_app_setting_recoveries_path, status: :see_other,
+                                                            notice: t("messages.user_recovery_code_successfully_destroyed")
+            }
             format.json { head :no_content }
           end
         end
 
         private
 
-        # Use callbacks to share common setup or constraints between actions.
-        def set_user_recovery_code
-          @user_recovery_code = current_user.user_recovery_codes.find(params[:id])
-        end
+          # Use callbacks to share common setup or constraints between actions.
+          def set_user_recovery_code
+            @user_recovery_code = current_user.user_recovery_codes.find(params[:id])
+          end
 
-        # Only allow a list of trusted parameters through.
-        def user_recovery_code_params
-          params.expect(user_recovery_code: [ :confirm_create_recovery_code ])
-        end
+          # Only allow a list of trusted parameters through.
+          def user_recovery_code_params
+            params.expect(user_recovery_code: [ :confirm_create_recovery_code ])
+          end
 
-        def generate_base58_string
-          result = String.new(capacity: 24)
-          24.times { result << BASE58[SecureRandom.random_number(BASE58_SIZE)] }
-          result
-        end
+          def generate_base58_string
+            result = String.new(capacity: 24)
+            24.times { result << BASE58[SecureRandom.random_number(BASE58_SIZE)] }
+            result
+          end
       end
     end
   end

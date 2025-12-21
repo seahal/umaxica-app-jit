@@ -1,4 +1,3 @@
-
 require 'fileutils'
 
 def process_file(path)
@@ -59,7 +58,6 @@ def process_file(path)
   content.gsub!(/t\s+"back\./, 't "base.')
   content.gsub!(/t\s+'apex\./, 't \'peak.')
   content.gsub!(/t\s+"apex\./, 't "peak.')
-
 
   if content != original_content
     File.write(path, content)

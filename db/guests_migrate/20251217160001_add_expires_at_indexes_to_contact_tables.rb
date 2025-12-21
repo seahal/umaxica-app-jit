@@ -27,7 +27,7 @@ class AddExpiresAtIndexesToContactTables < ActiveRecord::Migration[8.2]
 
   private
 
-  def index_name_for(table)
-    "index_#{table}_on_expires_at"
-  end
+    def index_name_for(table)
+      "index_#{table}_on_expires_at"
+    end
 end

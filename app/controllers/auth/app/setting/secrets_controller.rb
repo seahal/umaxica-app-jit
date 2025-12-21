@@ -27,7 +27,9 @@ module Auth
 
           respond_to do |format|
             if @secret.save
-              format.html { redirect_to auth_app_setting_secret_path(@secret), notice: t("messages.secret_successfully_created") }
+              format.html {
+                redirect_to auth_app_setting_secret_path(@secret), notice: t("messages.secret_successfully_created")
+              }
 
             else
               format.html { render :new, status: :unprocessable_content }
@@ -38,7 +40,9 @@ module Auth
         def update
           respond_to do |format|
             if @secret.update(secret_params)
-              format.html { redirect_to auth_app_setting_secret_path(@secret), notice: t("messages.secret_successfully_updated") }
+              format.html {
+                redirect_to auth_app_setting_secret_path(@secret), notice: t("messages.secret_successfully_updated")
+              }
             else
               format.html { render :edit, status: :unprocessable_content }
             end
@@ -49,19 +53,22 @@ module Auth
           @secret.destroy!
 
           respond_to do |format|
-            format.html { redirect_to auth_app_setting_secrets_path, status: :see_other, notice: t("messages.secret_successfully_destroyed") }
+            format.html {
+              redirect_to auth_app_setting_secrets_path, status: :see_other,
+                                                         notice: t("messages.secret_successfully_destroyed")
+            }
           end
         end
 
         private
 
-        def set_secret
-          @secret = current_user.user_identity_secrets.find(params[:id])
-        end
+          def set_secret
+            @secret = current_user.user_identity_secrets.find(params[:id])
+          end
 
-        def secret_params
-          params.expect(user_identity_secret: [ :name, :value ])
-        end
+          def secret_params
+            params.expect(user_identity_secret: [ :name, :value ])
+          end
       end
     end
   end

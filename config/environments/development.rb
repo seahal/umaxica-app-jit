@@ -76,7 +76,6 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
-  #
   config.action_dispatch.verbose_redirect_logs = true
 
   # added by user

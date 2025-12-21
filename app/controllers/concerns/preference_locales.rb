@@ -10,7 +10,7 @@ module PreferenceLocales
 
   private
 
-  def preference_params
-    params.permit(:language, :timezone)
-  end
+    def preference_params
+      params.permit(:language, :timezone)
+    end
 end

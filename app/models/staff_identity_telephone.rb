@@ -31,12 +31,12 @@ class StaffIdentityTelephone < IdentitiesRecord
 
   private
 
-  def enforce_staff_telephone_limit
-    return unless staff_id
+    def enforce_staff_telephone_limit
+      return unless staff_id
 
-    count = self.class.where(staff_id: staff_id).count
-    return if count < MAX_TELEPHONES_PER_STAFF
+      count = self.class.where(staff_id: staff_id).count
+      return if count < MAX_TELEPHONES_PER_STAFF
 
-    errors.add(:base, :too_many, message: "exceeds maximum telephones per staff (#{MAX_TELEPHONES_PER_STAFF})")
-  end
+      errors.add(:base, :too_many, message: "exceeds maximum telephones per staff (#{MAX_TELEPHONES_PER_STAFF})")
+    end
 end

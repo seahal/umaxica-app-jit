@@ -99,11 +99,8 @@ group :development, :test do
 end
 
 group :development do
-  #
   gem "bundler-audit"
-  #
   gem "foreman"
-  #
   gem "yard"
   # Preview email in the default browser instead of sending it.
   gem "letter_opener"
@@ -130,14 +127,10 @@ group :development do
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
   gem "annotaterb"
-  #
   gem "license_finder", require: false
-  #
   gem "ruby-lsp"
-  #
   gem "reek"
   gem "churn"
   gem "flog"
-  #
   gem "rails-erd"
 end

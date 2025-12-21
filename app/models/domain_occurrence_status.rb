@@ -3,7 +3,8 @@
 class DomainOccurrenceStatus < UniversalRecord
   include UppercaseId
 
-  has_many :domain_occurrences, foreign_key: :status_id, dependent: :restrict_with_error, inverse_of: :domain_occurrence_status
+  has_many :domain_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
+                                inverse_of: :domain_occurrence_status
 
   # Status constants
   NONE = "NONE"

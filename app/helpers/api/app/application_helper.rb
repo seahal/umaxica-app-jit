@@ -6,9 +6,9 @@ module Api::App::ApplicationHelper
 
     zone = case tz.to_s.downcase
     when "jst"
-             "Asia/Tokyo"
+      "Asia/Tokyo"
     else
-             "UTC"
+      "UTC"
     end
 
     time.in_time_zone(zone)

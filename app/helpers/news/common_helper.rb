@@ -4,9 +4,9 @@ module News::CommonHelper
 
     zone = case tz.to_s.downcase
     when "jst"
-             "Asia/Tokyo"
+      "Asia/Tokyo"
     else
-             "UTC"
+      "UTC"
     end
 
     time.in_time_zone(zone)
@@ -16,7 +16,7 @@ module News::CommonHelper
     brand_name = (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
     return brand_name if title.blank?
 
-    "#{ title } | #{ brand_name }"
+    "#{title} | #{brand_name}"
   end
 
   def get_timezone

@@ -41,7 +41,6 @@ StaffIdentityTelephoneStatus.find_or_create_by(id: "VERIFIED_WITH_SIGN_UP")
 StaffIdentityTelephoneStatus.find_or_create_by(id: "ALIVE")
 StaffIdentityTelephoneStatus.find_or_create_by(id: "SUSPENDED")
 StaffIdentityTelephoneStatus.find_or_create_by(id: "DELETED")
-#
 UserIdentityAuditEvent.find_or_create_by!(id: 'SIGNED_UP_WITH_EMAIL')
 UserIdentityAuditEvent.find_or_create_by!(id: 'SIGNED_UP_WITH_TELEPHONE')
 UserIdentityAuditEvent.find_or_create_by!(id: 'SIGNED_UP_WITH_APPLE')
@@ -53,7 +52,6 @@ StaffIdentityAuditEvent.find_or_create_by!(id: 'AUTHORIZATION_FAILED')
 # USER
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38')
 User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')
-#
 UserIdentitySecretStatus.find_or_create_by!(id: 'ACTIVE')
 UserIdentitySecretStatus.find_or_create_by!(id: 'SUSPENDED')
 StaffIdentitySecretStatus.find_or_create_by!(id: "ACTIVE")
@@ -62,8 +60,10 @@ StaffIdentitySecretStatus.find_or_create_by!(id: "REVOKED")
 StaffIdentitySecretStatus.find_or_create_by!(id: "DELETED")
 
 # CREATE CONTACT CATEGORY
-ComContactCategory.find_or_create_by!(id: 'SECURITY_ISSUE', description: 'root of corporate site status inquiries', parent_id: 'NULL')
-ComContactCategory.find_or_create_by!(id: 'OTHERS', description: 'root of corporate site status inquiries', parent_id: 'NULL')
+ComContactCategory.find_or_create_by!(id: 'SECURITY_ISSUE', description: 'root of corporate site status inquiries',
+                                      parent_id: 'NULL')
+ComContactCategory.find_or_create_by!(id: 'OTHERS', description: 'root of corporate site status inquiries',
+                                      parent_id: 'NULL')
 AppContactCategory.find_or_create_by!(id: 'NULL', description: 'NULL')
 AppContactCategory.find_or_create_by!(id: 'NULL_CONTACT_STATUS', description: 'NULL')
 AppContactCategory.find_or_create_by!(id: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
@@ -78,17 +78,23 @@ OrgContactCategory.find_or_create_by!(id: 'ORGANIZATION_SITE_CONTACT', descripti
 # CREATE CONTACT STATUS
 ComContactStatus.find_or_create_by!(id: 'NONE', description: 'root of service site status inquiries')
 ComContactStatus.find_or_create_by!(id: 'SET_UP', description: 'first step completed')
-ComContactStatus.find_or_create_by!(id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP')
-ComContactStatus.find_or_create_by!(id: 'CHECKED_TELEPHONE_NUMBER', description: 'second step completed', parent_id: 'CHECKED_EMAIL_ADDRESS')
-ComContactStatus.find_or_create_by!(id: 'COMPLETED_CONTACT_ACTION', description: 'second step completed', parent_id: 'CHECKED_TELEPHONE_NUMBER')
+ComContactStatus.find_or_create_by!(id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed',
+                                    parent_id: 'SET_UP')
+ComContactStatus.find_or_create_by!(id: 'CHECKED_TELEPHONE_NUMBER', description: 'second step completed',
+                                    parent_id: 'CHECKED_EMAIL_ADDRESS')
+ComContactStatus.find_or_create_by!(id: 'COMPLETED_CONTACT_ACTION', description: 'second step completed',
+                                    parent_id: 'CHECKED_TELEPHONE_NUMBER')
 AppContactStatus.find_or_create_by!(id: 'NONE', description: 'null status')
 AppContactStatus.find_or_create_by!(id: 'STAFF_SITE_STATUS', description: 'root of staff site status inquiries')
 OrgContactStatus.find_or_create_by!(id: 'NONE', description: 'null status')
 OrgContactStatus.find_or_create_by!(id: 'ORG_SITE_STATUS', description: 'root of org site status inquiries')
 OrgContactStatus.find_or_create_by!(id: 'SET_UP', description: 'first step completed')
-OrgContactStatus.find_or_create_by!(id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP')
-OrgContactStatus.find_or_create_by!(id: 'CHECKED_TELEPHONE_NUMBER', description: 'third step completed', parent_id: 'CHECKED_EMAIL_ADDRESS')
-OrgContactStatus.find_or_create_by!(id: 'COMPLETED_CONTACT_ACTION', description: 'contact action completed', parent_id: 'CHECKED_TELEPHONE_NUMBER')
+OrgContactStatus.find_or_create_by!(id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed',
+                                    parent_id: 'SET_UP')
+OrgContactStatus.find_or_create_by!(id: 'CHECKED_TELEPHONE_NUMBER', description: 'third step completed',
+                                    parent_id: 'CHECKED_EMAIL_ADDRESS')
+OrgContactStatus.find_or_create_by!(id: 'COMPLETED_CONTACT_ACTION', description: 'contact action completed',
+                                    parent_id: 'CHECKED_TELEPHONE_NUMBER')
 
 # Timeline Audit Events
 ComTimelineAuditEvent.find_or_create_by!(id: "NONE")

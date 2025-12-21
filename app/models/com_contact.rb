@@ -2,6 +2,7 @@
 
 class ComContact < GuestsRecord
   include ::PublicId
+
   # Associations
   has_one :com_contact_email, dependent: :destroy
   has_one :com_contact_telephone, dependent: :destroy
@@ -62,16 +63,19 @@ class ComContact < GuestsRecord
 
   def verify_email!
     raise StandardError, "Cannot verify email at this time" unless can_verify_email?
+
     update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
     raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
+
     update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
     raise StandardError, "Cannot complete contact at this time" unless can_complete?
+
     update!(contact_status_id: "COMPLETED_CONTACT_ACTION")
   end
 
@@ -109,13 +113,13 @@ class ComContact < GuestsRecord
 
   private
 
-  def generate_token
-    self.token ||= SecureRandom.alphanumeric(32)
-  end
+    def generate_token
+      self.token ||= SecureRandom.alphanumeric(32)
+    end
 
-  def set_default_category_and_status
-    # Only set defaults if values are not already set (nil or empty)
-    self.contact_category_title = "NONE" if contact_category_title.nil?
-    self.contact_status_id = "NONE" if contact_status_id.nil?
-  end
+    def set_default_category_and_status
+      # Only set defaults if values are not already set (nil or empty)
+      self.contact_category_title = "NONE" if contact_category_title.nil?
+      self.contact_status_id = "NONE" if contact_status_id.nil?
+    end
 end

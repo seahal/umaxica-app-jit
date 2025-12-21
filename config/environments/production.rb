@@ -34,7 +34,6 @@ Rails.application.configure do
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
   config.ssl_options = { hsts: { subdomains: true } }
 
-
   # Log to STDOUT using a JSON formatter for Cloud Run visibility.
   STDOUT.sync = true
   STDERR.sync = true

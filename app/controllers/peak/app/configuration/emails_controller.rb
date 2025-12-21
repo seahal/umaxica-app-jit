@@ -26,13 +26,13 @@ module Peak
 
         private
 
-        def set_defaults
-          # View expects @current_region, @current_language and @current_timezone
-          # Prioritize URL parameters with i18n fallbacks
-          @current_region = params[:ct]&.upcase || "US"
-          @current_language = params[:lx]&.upcase || I18n.locale.to_s.upcase.first(2)
-          @current_timezone = params[:tz].presence || Time.zone&.name || "Etc/UTC"
-        end
+          def set_defaults
+            # View expects @current_region, @current_language and @current_timezone
+            # Prioritize URL parameters with i18n fallbacks
+            @current_region = params[:ct]&.upcase || "US"
+            @current_language = params[:lx]&.upcase || I18n.locale.to_s.upcase.first(2)
+            @current_timezone = params[:tz].presence || Time.zone&.name || "Etc/UTC"
+          end
       end
     end
   end

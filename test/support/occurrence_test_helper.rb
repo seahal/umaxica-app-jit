@@ -3,7 +3,8 @@
 module OccurrenceTestHelper
   PUBLIC_ID_REGEX = /\A[A-Za-z0-9_-]{21}\z/
 
-  def build_occurrence(model_class, body:, public_id: "A" * 21, status_id: "ACTIVE", memo: "memo", generate_public_id: true)
+  def build_occurrence(model_class, body:, public_id: "A" * 21, status_id: "ACTIVE", memo: "memo",
+                       generate_public_id: true)
     record = model_class.new(public_id: public_id, body: body, status_id: status_id, memo: memo)
     record.define_singleton_method(:generate_public_id) { } unless generate_public_id
     record

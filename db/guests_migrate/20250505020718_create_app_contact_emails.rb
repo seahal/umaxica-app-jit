@@ -6,7 +6,7 @@ class CreateAppContactEmails < ActiveRecord::Migration[8.0]
       t.boolean :activated, null: false, default: false
       t.boolean :deletable, null: false, default: false
       t.integer :remaining_views, null: false, default: 10, limit: 1
-      t.string       :verifier_digest,        limit: 255
+      t.string       :verifier_digest, limit: 255
       t.timestamptz  :verifier_expires_at
       t.integer      :verifier_attempts_left, limit: 2, default: 3, null: false
       t.string      :token_digest, limit: 255

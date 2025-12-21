@@ -17,6 +17,7 @@
 #
 class OrgDocument < BusinessesRecord
   include ::PublicId
+
   belongs_to :org_document_status, optional: true
 
   encrypts :title

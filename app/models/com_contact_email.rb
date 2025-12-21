@@ -84,9 +84,9 @@ class ComContactEmail < GuestsRecord
 
   private
 
-  # TODO: rewrite this code to be concerned ... how about public_id.rb ?
-  #     : rename to generate_public_id
-  def generate_id
-    self.id ||= Nanoid.generate(size: 21)
-  end
+    # TODO: rewrite this code to be concerned ... how about public_id.rb ?
+    #     : rename to generate_public_id
+    def generate_id
+      self.id ||= Nanoid.generate(size: 21)
+    end
 end

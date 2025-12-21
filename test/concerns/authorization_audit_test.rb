@@ -136,32 +136,32 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
 
   private
 
-  def build_exception(record:)
-    OpenStruct.new(policy: DummyPolicy.new, query: :show?, record: record)
-  end
-
-  def capture_log_data(audit, exception)
-    result = { events: [], user_called: false, staff_called: false, log_data: nil }
-
-    audit.define_singleton_method(:create_user_authorization_audit) do |_actor, log_data|
-      result[:user_called] = true
-      result[:log_data] = log_data
-    end
-    audit.define_singleton_method(:create_staff_authorization_audit) do |_actor, log_data|
-      result[:staff_called] = true
-      result[:log_data] = log_data
+    def build_exception(record:)
+      OpenStruct.new(policy: DummyPolicy.new, query: :show?, record: record)
     end
 
-    notifier = Struct.new(:events) do
-      def notify(name, payload)
-        events << [ name, payload ]
+    def capture_log_data(audit, exception)
+      result = { events: [], user_called: false, staff_called: false, log_data: nil }
+
+      audit.define_singleton_method(:create_user_authorization_audit) do |_actor, log_data|
+        result[:user_called] = true
+        result[:log_data] = log_data
       end
-    end
+      audit.define_singleton_method(:create_staff_authorization_audit) do |_actor, log_data|
+        result[:staff_called] = true
+        result[:log_data] = log_data
+      end
 
-    Rails.stub(:event, notifier.new(result[:events])) do
-      audit.send(:log_authorization_failure, exception)
-    end
+      notifier = Struct.new(:events) do
+        def notify(name, payload)
+          events << [ name, payload ]
+        end
+      end
 
-    result
-  end
+      Rails.stub(:event, notifier.new(result[:events])) do
+        audit.send(:log_authorization_failure, exception)
+      end
+
+      result
+    end
 end

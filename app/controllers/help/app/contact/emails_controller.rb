@@ -14,22 +14,22 @@ module Help
 
         private
 
-        def set_contact
-          contact_id = params[:contact_id]
+          def set_contact
+            contact_id = params[:contact_id]
 
-          if contact_id.blank?
-            raise StandardError, "Contact ID is required"
+            if contact_id.blank?
+              raise StandardError, "Contact ID is required"
+            end
+
+            @contact = AppContact.find_by(public_id: contact_id)
+            if @contact.nil?
+              raise StandardError, "Contact not found"
+            end
           end
 
-          @contact = AppContact.find_by(public_id: contact_id)
-          if @contact.nil?
-            raise StandardError, "Contact not found"
+          def placeholder_message(action)
+            "Service contact email #{action} pending for contact #{@contact.id}"
           end
-        end
-
-        def placeholder_message(action)
-          "Service contact email #{action} pending for contact #{@contact.id}"
-        end
       end
     end
   end

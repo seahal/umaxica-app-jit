@@ -22,8 +22,7 @@ module Auth
                                user_id: current_user.id,
                                withdrawn_at: current_user.withdrawn_at,
                                status: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION,
-                               ip_address: request.remote_ip
-            )
+                               ip_address: request.remote_ip)
             # Log out and clear session data
             log_out
             redirect_to auth_app_root_path, notice: t("auth.app.withdrawal.create.success")
@@ -32,8 +31,7 @@ module Auth
           Rails.event.notify("user.withdrawal.initiation_failed",
                              user_id: current_user.id,
                              errors: current_user.errors.full_messages,
-                             ip_address: request.remote_ip
-          )
+                             ip_address: request.remote_ip)
           render :new, status: :unprocessable_content
         end
       end
@@ -44,23 +42,20 @@ module Auth
           if current_user.update(withdrawn_at: nil)
             Rails.event.notify("user.withdrawal.recovered",
                                user_id: current_user.id,
-                               ip_address: request.remote_ip
-            )
+                               ip_address: request.remote_ip)
             redirect_to auth_app_root_path, notice: t("auth.app.withdrawal.update.recovered")
           else
             Rails.event.notify("user.withdrawal.recovery_failed",
                                user_id: current_user.id,
                                errors: current_user.errors.full_messages,
-                               ip_address: request.remote_ip
-            )
+                               ip_address: request.remote_ip)
             redirect_to auth_app_root_path, alert: t("auth.app.withdrawal.update.failed")
           end
         else
           Rails.event.notify("user.withdrawal.recovery_rejected",
                              user_id: current_user.id,
                              reason: "recovery_window_expired",
-                             ip_address: request.remote_ip
-          )
+                             ip_address: request.remote_ip)
           redirect_to auth_app_root_path, alert: t("auth.app.withdrawal.update.cannot_recover")
         end
       end
@@ -74,8 +69,7 @@ module Auth
             current_user.destroy!
             Rails.event.notify("user.deletion.completed",
                                user_id: user_id,
-                               ip_address: request.remote_ip
-            )
+                               ip_address: request.remote_ip)
             log_out
             redirect_to auth_app_root_path, notice: t("auth.app.withdrawal.destroy.success")
           end
@@ -84,8 +78,7 @@ module Auth
                              user_id: user_id,
                              error_class: e.class.name,
                              error_message: e.message,
-                             ip_address: request.remote_ip
-          )
+                             ip_address: request.remote_ip)
           redirect_to auth_app_root_path, alert: t("auth.app.withdrawal.destroy.failed")
         end
       end

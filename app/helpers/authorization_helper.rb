@@ -109,14 +109,14 @@ module AuthorizationHelper
 
   private
 
-  # Get current actor (User or Staff)
-  def current_actor
-    @current_actor ||= begin
-                         if respond_to?(:current_user) && current_user
-                           current_user
-                         elsif respond_to?(:current_staff) && current_staff
-                           current_staff
-                         end
-                       end
-  end
+    # Get current actor (User or Staff)
+    def current_actor
+      @current_actor ||= begin
+        if respond_to?(:current_user) && current_user
+          current_user
+        elsif respond_to?(:current_staff) && current_staff
+          current_staff
+        end
+      end
+    end
 end

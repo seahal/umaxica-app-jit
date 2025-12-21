@@ -33,7 +33,8 @@ module Auth
             render json: credentials, status: :ok
           else
             render json: {
-              error: I18n.t("auth.token_refresh.errors.invalid_refresh_token", default: "Invalid or expired refresh token"),
+              error: I18n.t("auth.token_refresh.errors.invalid_refresh_token",
+                            default: "Invalid or expired refresh token"),
               error_code: "invalid_refresh_token"
             }, status: :unauthorized
           end

@@ -23,8 +23,8 @@ class AwsSmsService
 
   private
 
-  def validate_params(to:, message:)
-    raise ArgumentError, "Phone number is required" if to.blank?
-    raise ArgumentError, "Message is required" if message.blank?
-  end
+    def validate_params(to:, message:)
+      raise ArgumentError, "Phone number is required" if to.blank?
+      raise ArgumentError, "Message is required" if message.blank?
+    end
 end

@@ -16,9 +16,9 @@ module Auth
           user.update!(webauthn_id: SecureRandom.urlsafe_base64(32)) if user.webauthn_id.blank?
 
           exclude = if user.respond_to?(:user_passkeys)
-                      user.user_passkeys.pluck(:webauthn_id) # = credentialId(base64url)
+            user.user_passkeys.pluck(:webauthn_id) # = credentialId(base64url)
           else
-                      []
+            []
           end
 
           creation_options = WebAuthn::Credential.options_for_create(
@@ -86,7 +86,9 @@ module Auth
 
           respond_to do |format|
             if @passkey.save
-              format.html { redirect_to auth_app_setting_passkey_path(@passkey), notice: t("messages.passkey_successfully_created") }
+              format.html {
+                redirect_to auth_app_setting_passkey_path(@passkey), notice: t("messages.passkey_successfully_created")
+              }
               format.json { render :show, status: :created, location: auth_app_setting_passkey_path(@passkey) }
             else
               format.html { render :new, status: :unprocessable_content }
@@ -100,7 +102,9 @@ module Auth
           authorize @passkey
           respond_to do |format|
             if @passkey.update(passkey_params)
-              format.html { redirect_to auth_app_setting_passkey_path(@passkey), notice: t("messages.passkey_successfully_updated") }
+              format.html {
+                redirect_to auth_app_setting_passkey_path(@passkey), notice: t("messages.passkey_successfully_updated")
+              }
               format.json { render :show, status: :ok, location: auth_app_setting_passkey_path(@passkey) }
             else
               format.html { render :edit, status: :unprocessable_content }
@@ -115,27 +119,30 @@ module Auth
           @passkey.destroy!
 
           respond_to do |format|
-            format.html { redirect_to auth_app_setting_passkeys_path, status: :see_other, notice: t("messages.passkey_successfully_destroyed") }
+            format.html {
+              redirect_to auth_app_setting_passkeys_path, status: :see_other,
+                                                          notice: t("messages.passkey_successfully_destroyed")
+            }
             format.json { head :no_content }
           end
         end
 
         private
 
-        # Use callbacks to share common setup or constraints between actions.
-        def set_passkey
-          @passkey = current_user.user_identity_passkeys.find(params[:id])
-        end
+          # Use callbacks to share common setup or constraints between actions.
+          def set_passkey
+            @passkey = current_user.user_identity_passkeys.find(params[:id])
+          end
 
-        # Only allow a list of trusted parameters through.
-        def passkey_params
-          params.expect(passkey: [ :description, :public_key, :external_id, :webauthn_id, :sign_count ])
-        end
+          # Only allow a list of trusted parameters through.
+          def passkey_params
+            params.expect(passkey: [ :description, :public_key, :external_id, :webauthn_id, :sign_count ])
+          end
 
-        def authenticate_user!
-          # This should be implemented in ApplicationController
-          # For now, assuming current_user method exists
-        end
+          def authenticate_user!
+            # This should be implemented in ApplicationController
+            # For now, assuming current_user method exists
+          end
       end
     end
   end

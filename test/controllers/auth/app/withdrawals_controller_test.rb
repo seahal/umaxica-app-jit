@@ -173,7 +173,8 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   test "create accepts confirm_create_recovery_code parameter" do
     @user.update!(user_identity_status_id: "NONE")
 
-    post auth_app_withdrawal_url, params: { confirm_create_recovery_code: "1" }, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    post auth_app_withdrawal_url, params: { confirm_create_recovery_code: "1" },
+                                  headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_match %r{\A#{Regexp.escape(auth_app_root_url)}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
@@ -182,7 +183,8 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   test "update accepts confirm_create_recovery_code parameter" do
     @user.update!(withdrawn_at: 15.days.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
 
-    patch auth_app_withdrawal_url, params: { confirm_create_recovery_code: "1" }, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    patch auth_app_withdrawal_url, params: { confirm_create_recovery_code: "1" },
+                                   headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_match %r{\A#{Regexp.escape(auth_app_root_url)}}, @response.location
     assert_nil @user.reload.withdrawn_at

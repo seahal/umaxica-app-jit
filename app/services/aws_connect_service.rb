@@ -5,5 +5,7 @@ class AwsConnectService
     @client = Aws::Connect::Client.new(region: region)
   end
 
-  def start_call(instance_id:, contact_flow_id:, destination_phone_number:, source_phone_number: nil, attributes: {}) end
+  def start_call(instance_id:, contact_flow_id:, destination_phone_number:, source_phone_number: nil,
+                 attributes: {})
+  end
 end

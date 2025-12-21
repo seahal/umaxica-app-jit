@@ -33,7 +33,8 @@ module Peak
             assert_select "input[type='submit'][value=?]", I18n.t("peak.com.preference.theme.edit.submit")
           end
 
-          assert_select "a[href^='#{peak_com_preference_path}']", text: I18n.t("peak.com.preferences.back_to_settings"), count: 1
+          assert_select "a[href^='#{peak_com_preference_path}']",
+                        text: I18n.t("peak.com.preferences.back_to_settings"), count: 1
         end
         # rubocop:enable Minitest/MultipleAssertions
 

@@ -4,7 +4,7 @@ require "i18n/backend/fallbacks"
 # translations are added.
 I18n::Backend::Simple.include I18n::Backend::Fallbacks
 
-region_code = ENV.fetch("REGION_CODE")  # REGION_CODE is required, no default value
+region_code = ENV.fetch("REGION_CODE") # REGION_CODE is required, no default value
 locale_root = Rails.root.join("config/locales")
 region_dir = locale_root.join(region_code)
 

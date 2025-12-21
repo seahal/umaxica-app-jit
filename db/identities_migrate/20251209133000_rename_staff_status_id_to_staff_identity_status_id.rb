@@ -28,7 +28,6 @@ class RenameStaffStatusIdToStaffIdentityStatusId < ActiveRecord::Migration[7.0]
   def down
     return unless column_exists?(:staffs, :staff_identity_status_id)
 
-
     remove_foreign_key :staffs, column: :staff_identity_status_id if foreign_key_exists?(:staffs, column: :staff_identity_status_id)
 
     remove_index :staffs, name: 'index_staffs_on_staff_identity_status_id' if index_exists?(:staffs, :staff_identity_status_id)

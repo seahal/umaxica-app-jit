@@ -35,5 +35,5 @@ class DomainOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "has occurrences association" do
     assert_status_association(DomainOccurrenceStatus, :domain_occurrences)
-end
+  end
 end

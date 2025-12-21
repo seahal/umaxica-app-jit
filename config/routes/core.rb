@@ -9,6 +9,7 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
+          resource :csrf, only: :show
         end
       end
     end
@@ -22,6 +23,7 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
+          resource :csrf, only: :show
         end
         # configuration
         # namespace :configuration do
@@ -39,6 +41,7 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
+          resource :csrf, only: :show
         end
         # configuration
         # namespace :configuration do

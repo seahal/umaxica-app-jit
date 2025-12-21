@@ -89,8 +89,7 @@ module Authentication
         Rails.event.notify("user.token.refresh.failed",
                            refresh_token_id: refresh_token_id,
                            reason: "token_not_found",
-                           ip_address: request_ip_address
-        )
+                           ip_address: request_ip_address)
         return nil
       end
 
@@ -101,8 +100,7 @@ module Authentication
                            user_id: user&.id,
                            refresh_token_id: refresh_token_id,
                            reason: "user_inactive",
-                           ip_address: request_ip_address
-        )
+                           ip_address: request_ip_address)
         TokensRecord.connected_to(role: :writing) { old_token.destroy }
         return nil
       end
@@ -122,8 +120,7 @@ module Authentication
                          user_id: user.id,
                          old_refresh_token_id: old_token.id,
                          new_refresh_token_id: new_refresh_token.id,
-                         ip_address: request_ip_address
-      )
+                         ip_address: request_ip_address)
 
       # Return new tokens
       {
@@ -138,8 +135,7 @@ module Authentication
                          refresh_token_id: refresh_token_id,
                          error_class: e.class.name,
                          error_message: e.message,
-                         ip_address: request_ip_address
-      )
+                         ip_address: request_ip_address)
       nil
     end
 
@@ -152,8 +148,7 @@ module Authentication
           Rails.event.notify("user.token.destroy.failed",
                              token_id: token_id,
                              error_message: e.message,
-                             ip_address: request_ip_address
-          )
+                             ip_address: request_ip_address)
         end
       end
       cookies.delete :access_user_token, **cookie_deletion_options
@@ -174,7 +169,8 @@ module Authentication
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
         rt = Base64.urlsafe_encode64(request.original_url)
-        redirect_to new_auth_app_authentication_url(rt: rt, host: ENV["AUTH_SERVICE_URL"]), allow_other_host: true, alert: I18n.t("errors.messages.login_required")
+        redirect_to new_auth_app_authentication_url(rt: rt, host: ENV["AUTH_SERVICE_URL"]), allow_other_host: true,
+                                                                                            alert: I18n.t("errors.messages.login_required")
       end
     end
 
@@ -185,20 +181,20 @@ module Authentication
 
     private
 
-    def record_user_identity_audit(event_id, user:, actor: user)
-      return unless user && event_id
+      def record_user_identity_audit(event_id, user:, actor: user)
+        return unless user && event_id
 
-      ::UserIdentityAudit.create!(
-        user: user,
-        actor: actor,
-        event_id: event_id,
-        ip_address: request_ip_address,
-        timestamp: Time.current
-      )
-    end
+        ::UserIdentityAudit.create!(
+          user: user,
+          actor: actor,
+          event_id: event_id,
+          ip_address: request_ip_address,
+          timestamp: Time.current
+        )
+      end
 
-    def request_ip_address
-      respond_to?(:request, true) && request ? request.remote_ip : nil
-    end
+      def request_ip_address
+        respond_to?(:request, true) && request ? request.remote_ip : nil
+      end
   end
 end

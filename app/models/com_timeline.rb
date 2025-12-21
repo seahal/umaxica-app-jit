@@ -17,6 +17,7 @@
 #
 class ComTimeline < BusinessesRecord
   include ::PublicId
+
   belongs_to :com_timeline_status, optional: true
 
   include Timeline

@@ -2,6 +2,7 @@ require "test_helper"
 
 class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::IntegrationTest
   include ActiveSupport::Testing::TimeHelpers
+
   # rubocop:disable Minitest/MultipleAssertions
   test "should get new" do
     get new_auth_app_authentication_email_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
@@ -20,7 +21,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
   test "reject already logged in user" do
     user = users(:one)
-    get new_auth_app_authentication_email_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"], "X-TEST-CURRENT-USER" => user.id }
+    get new_auth_app_authentication_email_url,
+        headers: { "Host" => ENV["AUTH_SERVICE_URL"], "X-TEST-CURRENT-USER" => user.id }
 
     assert_response :bad_request
     assert_equal I18n.t("auth.app.authentication.email.new.you_have_already_logged_in"), response.body
@@ -28,7 +30,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
   test "reject already logged in staff" do
     staff = staffs(:one)
-    get new_auth_app_authentication_email_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"], "X-TEST-CURRENT-STAFF" => staff.id }
+    get new_auth_app_authentication_email_url,
+        headers: { "Host" => ENV["AUTH_SERVICE_URL"], "X-TEST-CURRENT-STAFF" => staff.id }
 
     assert_response :success
     # assert_equal I18n.t("auth.app.authentication.email.new.you_have_already_logged_in"), response.body

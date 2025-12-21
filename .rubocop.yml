@@ -166,7 +166,27 @@ Rails/OrderArguments: # new in 2.33
 Style/AsciiComments:
   Enabled: true
 Layout/IndentationWidth:
+  Enabled: true
   Width: 2
+Layout/IndentationConsistency:
+  Enabled: true
+Layout/IndentationStyle:
+  Enabled: true
+Layout/EndAlignment:
+  Enabled: true
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: true
+Layout/EmptyLinesAroundClassBody:
+  Enabled: true
+Layout/TrailingWhitespace:
+  Enabled: true
+Layout/TrailingEmptyLines:
+  Enabled: true
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: true
+
+Layout:
+  Enabled: true
 Style/Documentation:
   Enabled: false
 
@@ -345,7 +365,7 @@ Style/SwapValues:
 # Layout（レイアウト・フォーマット）
 # ============================================================
 Layout/LineLength:
-  Max: 120
+  Max: 160
   Exclude:
     - 'config/**/*'
     - 'db/**/*_migrate/**/*'

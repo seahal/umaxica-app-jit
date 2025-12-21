@@ -17,6 +17,7 @@
 #
 class AppDocument < BusinessesRecord
   include ::PublicId
+
   belongs_to :app_document_status, optional: true
 
   has_many :app_document_audits,

@@ -9,6 +9,7 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
+          resource :csrf, only: :show
         end
         # Sign up pages
         resource :registration, only: :new
@@ -50,6 +51,8 @@ Rails.application.routes.draw do
           resource :google, only: [ :show ]
           # TODO : Implement recovery code management
           resources :secrets
+          # TODO: Implement connected apps management
+          resources :sessions
         end
         # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
         namespace :token do
@@ -71,6 +74,7 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
+          resource :csrf, only: :show
         end
         # Login
         resource :authentication, only: [ :new, :destroy ]
@@ -82,6 +86,8 @@ Rails.application.routes.draw do
           # TODO: Implement email settings index
           # resources :emails, only: [ :index ]
           resources :secrets
+          # TODO: Implement connected apps management
+          resources :sessions
         end
         # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
         namespace :token do

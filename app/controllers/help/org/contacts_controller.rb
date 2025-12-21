@@ -21,9 +21,9 @@ module Help
 
       private
 
-      def set_contact
-        @contact = OrgContact.find_by!(public_id: params[:id])
-      end
+        def set_contact
+          @contact = OrgContact.find_by!(public_id: params[:id])
+        end
     end
   end
 end

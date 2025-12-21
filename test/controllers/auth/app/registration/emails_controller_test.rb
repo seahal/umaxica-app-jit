@@ -413,11 +413,11 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
   private
 
-  def default_headers
-    { "Host" => host }
-  end
+    def default_headers
+      { "Host" => host }
+    end
 
-  def host
-    ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
-  end
+    def host
+      ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
+    end
 end
