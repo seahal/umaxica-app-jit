@@ -42,7 +42,7 @@ en:
             cancel: "Cancel"
           create:
             success: "Your inquiry has been received. Please check your email address."
-  sign:
+  auth:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
@@ -833,7 +833,7 @@ en:
       short: "%d %b %H:%M"
     pm: pm
   controller:
-    sign:
+    auth:
       app:
         setting:
           show:
@@ -847,7 +847,7 @@ en:
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."
-  apex:
+  peak:
     app:
       preferences:
         footer:
@@ -863,7 +863,7 @@ en:
         footer:
           privacy: "Privacy"
         reset_settings: "Reset Settings"
-  back:
+  base:
     shared:
       preference_emails:
         token_invalid: "That link is no longer valid. Request a new one to continue."
@@ -1024,7 +1024,7 @@ en:
         id_required: "Contact ID is required"
         not_found: "Contact not found"
         invalid_status: "Invalid contact status: expected SET_UP, got %{current_status}"
-  apex:
+  peak:
     app:
       preference:
         resets:
@@ -1033,7 +1033,7 @@ en:
           confirm: "RESET"
           button: "RESET"
           back: "Back???"
-  apex:
+  peak:
     app:
       preferences:
         title: "Preferences"

@@ -1,0 +1,10 @@
+<div>
+  <h1 class="font-bold text-4xl"><%= t('controller.sign.app.setting.show.page_title') %></h1>
+  <p class="mt-2 text-sm text-slate-600"><%= t('auth.app.setting.show.description') %></p>
+
+  <ul>
+    <li><%= link_to t('controller.sign.app.setting.index.totp'), auth_app_setting_totps_path %></li>
+    <li><%= link_to t('controller.sign.app.setting.index.passkey'), auth_app_setting_passkeys_path %></li>
+    <li><%= link_to t('controller.sign.app.setting.index.secret'), auth_app_setting_secrets_path %></li>
+  </ul>
+</div>

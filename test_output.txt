@@ -1,0 +1,29 @@
+DEBUGGER: Debugger can attach via UNIX domain socket (/tmp/rdbg-1000/rdbg-38531)
+/home/jit/workspace/test/controllers/auth/app/withdrawals_controller_test.rb:2:in 'Kernel#require_relative': cannot load such file -- /home/jit/workspace/app/errors/sign/withdrawal_error (LoadError)
+	from /home/jit/workspace/test/controllers/auth/app/withdrawals_controller_test.rb:2:in '<top (required)>'
+	from /usr/local/lib/ruby/4.0.0+1/bundled_gems.rb:60:in 'Kernel.require'
+	from /usr/local/lib/ruby/4.0.0+1/bundled_gems.rb:60:in 'block (2 levels) in Kernel#replace_require'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/gems/bootsnap-1.19.0/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:30:in 'Kernel#require'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/gems/zeitwerk-2.7.4/lib/zeitwerk/core_ext/kernel.rb:34:in 'Kernel#require'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/bundler/gems/rails-aeec2cdbae9c/railties/lib/rails/test_unit/runner.rb:71:in 'block in Rails::TestUnit::Runner.load_tests'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/bundler/gems/rails-aeec2cdbae9c/railties/lib/rails/test_unit/runner.rb:69:in 'Array#each'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/bundler/gems/rails-aeec2cdbae9c/railties/lib/rails/test_unit/runner.rb:69:in 'Rails::TestUnit::Runner.load_tests'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/bundler/gems/rails-aeec2cdbae9c/railties/lib/minitest/rails_plugin.rb:147:in 'block in Minitest.plugin_rails_options'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:1818:in 'block in OptionParser#parse_in_order'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:930:in 'OptionParser::List#search'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:1949:in 'block in OptionParser#visit'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:1948:in 'Array#reverse_each'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:1948:in 'OptionParser#visit'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:1818:in 'OptionParser#parse_in_order'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:1728:in 'OptionParser#order!'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:1853:in 'OptionParser#permute!'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:1878:in 'OptionParser#parse!'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/gems/minitest-6.0.0/lib/minitest.rb:248:in 'block in Minitest.process_args'
+	from /usr/local/lib/ruby/4.0.0+1/optparse.rb:1192:in 'OptionParser#initialize'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/gems/minitest-6.0.0/lib/minitest.rb:160:in 'Class#new'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/gems/minitest-6.0.0/lib/minitest.rb:160:in 'Minitest.process_args'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/gems/minitest-6.0.0/lib/minitest.rb:294:in 'Minitest.run'
+	from /home/jit/workspace/vendor/bundle/ruby/4.0.0+1/gems/minitest-6.0.0/lib/minitest.rb:84:in 'block in Minitest.autorun'
+Stopped processing SimpleCov as a previous error not related to SimpleCov has been detected
+Coverage report generated for minitest_128, minitest_236, minitest_38212, minitest_38531 to /home/jit/workspace/coverage.
+Line Coverage: 1.28% (84 / 6569)

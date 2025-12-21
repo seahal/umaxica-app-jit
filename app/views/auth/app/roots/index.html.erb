@@ -1,0 +1,10 @@
+<div class="container">
+  <h1><%= title t('auth.app.root.title', default: 'Welcome') %></h1>
+  <p><%= t('auth.app.root.description', default: 'Choose an action below') %></p>
+
+  <ul class="actions">
+    <li><%= link_to t('auth.app.root.registration', default: 'Sign Up'), new_auth_app_registration_path, class: "btn btn-primary" %>
+    </li>
+    <li><%= link_to t('auth.app.root.authentication', default: 'Sign In'), new_auth_app_authentication_path, class: "btn btn-secondary" %></li>
+  </ul>
+</div>

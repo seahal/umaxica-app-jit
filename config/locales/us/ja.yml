@@ -37,7 +37,7 @@ ja:
   test_data:
     contact_topic_description: "トピックの詳細です。"
     inquiry_detail: "問い合わせの詳細です。"
-  sign:
+  auth:
     token_refresh:
       errors:
         missing_refresh_token: "リフレッシュトークンは必須です"
@@ -46,7 +46,7 @@ ja:
         staff_not_found_or_withdrawn: "Staff not found or withdrawn"
 
   controller:
-    sign:
+    auth:
       app:
         setting:
           show:
@@ -101,7 +101,13 @@ ja:
               success: "ログインしました。"
           destroy:
             jump_obj: sign in with email
-    apex:
+  sign:
+    app:
+      social:
+        sessions:
+          create:
+            success: "%{provider} でアカウントを作成してサインインしました。"
+    peak:
       app:
         preferences:
           themes:
@@ -218,7 +224,7 @@ ja:
     region_settings_updated_successfully: 地域設定が正常に更新されました。
     user_registration_error: ユーザー登録中にエラーが発生しました。
     access_blocked_auth_error: 'アクセスをブロック: 認証エラーです'
-  sign:
+  auth:
     app:
       authentication:
         new:
@@ -1006,7 +1012,7 @@ ja:
     precision:
       format:
         delimiter: ''
-  apex:
+  peak:
     app:
       preferences:
         title: 設定
@@ -1238,7 +1244,7 @@ ja:
       long: '%Y/%m/%d %H:%M'
       short: '%m/%d %H:%M'
     pm: 午後
-  back:
+  base:
     shared:
       preference_emails:
         token_invalid: "リンクの有効期限が切れています。新しくリクエストしてください。"

@@ -25,6 +25,7 @@ REGION_CODE=jp
 # Database Configuration
 ## Redis (use local Redis service inside Compose)
 VALKEY_URL=redis://valkey:6379/0
+VALKEY_RACK_ATTACK_URL=redis://valkey:6379/1
 ## PostgreSQL (use local PostgreSQL services inside Compose)
 POSTGRESQL_USER=root
 POSTGRESQL_PORT=5432
@@ -63,14 +64,14 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
 RESEND_SMTP_ENDPOINT=smtp.resend.com
 RESEND_SMTP_USER_NAME=resend
 # Domain URLs
-APEX_CORPORATE_URL=com.localhost
-APEX_SERVICE_URL=app.localhost
-APEX_STAFF_URL=org.localhost
-SIGN_SERVICE_URL=sign.umaxica.app
-SIGN_STAFF_URL=sign.umaxica.org
-BACK_CORPORATE_URL=www.com.localhost
-BACK_SERVICE_URL=www.app.localhost
-BACK_STAFF_URL=www.org.localhost
+APEX_CORPORATE_URL=com.localhost # TODO: RE_NAME
+APEX_SERVICE_URL=app.localhost # TODO: RE_NAME
+APEX_STAFF_URL=org.localhost # TODO: RE_NAME
+SIGN_SERVICE_URL=auth.umaxica.app # TODO: RE_NAME
+SIGN_STAFF_URL=auth.umaxica.org # TODO: RE_NAME
+BACK_CORPORATE_URL=www.com.localhost # TODO: RE_NAME
+BACK_SERVICE_URL=www.app.localhost # TODO: RE_NAME
+BACK_STAFF_URL=www.org.localhost # TODO: RE_NAME
 DOCS_CORPORATE_URL=docs.com.localhost
 DOCS_SERVICE_URL=docs.app.localhost
 DOCS_STAFF_URL=docs.org.localhost
@@ -83,7 +84,7 @@ HELP_STAFF_URL=help.org.localhost
 EDGE_CORPORATE_URL=jp.umaxica.com
 EDGE_SERVICE_URL=jp.umaxica.app
 EDGE_STAFF_URL=jp.umaxica.org
-EDGE_STATUS_URL=status.umaxica.dev
+STATUS_URL=status.umaxica.dev
 ASSET_URL=asset.localhost
 # JWT Configuration
 JWT_CORPORATE_PRIVATE_KEY="-----BEGIN EC PRIVATE KEY-----\nMIGkAgEBBDD/EUvJBtMoDgkXKpEDM7ScEPlhYnxy6cggO9geUVd8DmxpzqYE5L/T\nVFzXKaloieOgBwYFK4EEACKhZANiAATpeKKqtOnn4uWa11Ovfy8tXgaE7NWL0t3b\nyddl35xWcheHbU7QDGfRSAr+0rR5HpmjDrbQgY3s0EbRX4bt3R0FjZRqi3QyRO24\n5R5s9vhX42LVcXMVY1aCJFdVW/XqrEg=\n-----END EC PRIVATE KEY-----\n"

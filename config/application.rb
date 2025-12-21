@@ -71,6 +71,9 @@ module Jit
     config.autoload_paths << Rails.root.join("app/errors")
 
     ### Added by user
+    # Rack Attack Middleware
+    config.middleware.use Rack::Attack
+    # Active Record Encryption Configuration
     if [ "test", "production", "development" ].include? Rails.env
       config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
       config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key

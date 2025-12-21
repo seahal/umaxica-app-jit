@@ -26,7 +26,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       }
     })
 
-    get sign_app_social_google_callback_url, headers: { "Host" => @host }
+    get auth_app_social_google_callback_url, headers: { "Host" => @host }
     assert_redirected_to %r{\Ahttp://sign\.umaxica\.app/.*}
     follow_redirect!
 
@@ -50,7 +50,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       }
     })
 
-    get sign_app_social_apple_callback_url, headers: { "Host" => @host }
+    get auth_app_social_apple_callback_url, headers: { "Host" => @host }
     assert_redirected_to %r{\Ahttp://sign\.umaxica\.app/.*}
     follow_redirect!
 
@@ -86,7 +86,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       }
     })
 
-    get sign_app_social_google_callback_url, headers: { "Host" => @host }
+    get auth_app_social_google_callback_url, headers: { "Host" => @host }
     assert_redirected_to %r{\Ahttp://sign\.umaxica\.app/.*}
     follow_redirect!
 

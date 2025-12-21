@@ -1,0 +1,44 @@
+<% title t("auth.app.registration.new.page_title") %>
+<% product_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME", "Umaxica") } %>
+
+<section class="space-y-12" data-testid="registration-page">
+  <header class="space-y-4">
+    <h1 class="text-3xl font-bold text-slate-900 md:text-4xl"><%= t("auth.app.registration.new.page_title") %></h1>
+    <p class="max-w-2xl text-base text-slate-600"><%= t("auth.app.registration.new.page_description", product: product_name) %></p>
+  </header>
+
+  <article class="flex h-full flex-col justify-between rounded-lg border border-slate-200 bg-white p-6 shadow-sm" data-testid="registration-method">
+    <div>
+      <h3 class="text-xl font-semibold text-slate-900"></h3>
+      <p class="mt-2 text-sm text-slate-600"></p>
+    </div>
+    <div class="mt-6">
+      <%= link_to 'email', new_auth_app_registration_email_path,
+                  class: "inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2" %>
+    </div>
+  </article>
+
+  <article class="flex h-full flex-col justify-between rounded-lg border border-slate-200 bg-white p-6 shadow-sm" data-testid="registration-method">
+    <div>
+      <h3 class="text-xl font-semibold text-slate-900"></h3>
+      <p class="mt-2 text-sm text-slate-600"></p>
+    </div>
+    <div class="mt-6">
+      <%= link_to 'telephone', new_auth_app_registration_telephone_path,
+                  class: "inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2" %>
+    </div>
+  </article>
+
+  <div><%= button_to t("auth.app.authentication.new.links.google"), "/auth/google_oauth2", method: :post, data: { turbo: false } %></div>
+  <div><%= button_to t("auth.app.authentication.new.links.apple"), "/auth/apple", method: :post, data: { turbo: false } %></div>
+  <section data-testid="registration-sign-in">
+    <p class="text-sm text-slate-700">
+      <%= t("auth.app.registration.new.links.sign_in_html",
+            link: link_to(
+              t("auth.app.registration.new.links.sign_in_text"),
+              new_auth_app_authentication_path,
+              class: "font-medium underline"
+            )).html_safe %>
+    </p>
+  </section>
+</section>

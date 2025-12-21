@@ -17,13 +17,13 @@ ja:
         invalid_input: Pass Code の値に問題があります
     identity_audit_event_format_invalid: "イベントIDの形式が無効です。大文字とアンダースコアのみ使用可能です。"
   controller:
-    apex:
+    peak:
       org:
         preferences:
           themes:
             invalid: 無効な管理テーマが選択されました
             updated: 管理テーマを%{theme}に更新しました
-    sign:
+    auth:
       app:
         setting:
           show:
@@ -198,6 +198,12 @@ ja:
               light: 共有スペースや明るいオフィスでの利用におすすめです。
               dark: 夜間の作業や目の疲れを軽減したいときに最適です。
               system: OS のテーマ変更に連動して切り替わります。
+  sign:
+    app:
+      social:
+        sessions:
+          create:
+            success: "%{provider} でアカウントを作成してサインインしました。"
           submit: テーマ設定を保存
   root:
     app:
@@ -352,7 +358,7 @@ ja:
     email_successfully_created: メールアドレスの確認コードを送信しました。
     telephone_successfully_created: 電話番号の確認コードを送信しました。
     sample_successfully_updated: 登録が完了しました。
-  sign:
+  auth:
     token_refresh:
       errors:
         missing_refresh_token: "リフレッシュトークンが必要です"
@@ -731,7 +737,7 @@ ja:
       long: '%Y/%m/%d %H:%M'
       short: '%m/%d %H:%M'
     pm: 午後
-  apex:
+  peak:
     app:
       preferences: &apex_preferences_shared
         title: 設定
@@ -925,7 +931,7 @@ ja:
           back: 設定一覧に戻る
       privacy:
         up_link: "うえへ"
-  back:
+  base:
     shared:
       preference_emails:
         token_invalid: "リンクの有効期限が切れています。新しくリクエストしてください。"

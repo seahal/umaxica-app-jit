@@ -1,0 +1,13 @@
+<% content_for :page_title, "#{ENV['BRAND_NAME']} (com)" %>
+
+<section>
+  <h1>Welcome to <%= ENV['BRAND_NAME'] %> (com)</h2>
+
+    <nav>
+      <ul>
+        <li><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>"><%= t('peak.com.preferences.footer.home') %></a></li>
+        <li><%= link_to t('peak.com.preferences.footer.preference'), peak_com_preference_path %></li>
+        <li><%= link_to t('peak.com.preferences.footer.privacy'), peak_com_privacy_path %></li>
+      </ul>
+    </nav>
+</section>

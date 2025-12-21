@@ -20,6 +20,8 @@ gem "pg"
 gem "redis"
 # For CORS
 gem "rack-cors"
+# For DOS attack
+gem "rack-attack"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt"
 gem "argon2"

@@ -34,7 +34,7 @@ en:
   test_data:
     contact_topic_description: "Details about the topic."
     inquiry_detail: "Detail of inquiry."
-  sign:
+  auth:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
@@ -825,7 +825,7 @@ en:
     precision:
       format:
         delimiter: ''
-  apex:
+  peak:
     app:
       preferences:
         title: "Preferences"
@@ -902,7 +902,7 @@ en:
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
-  sign:
+  auth:
     org:
       withdrawal:
         create:
@@ -1059,7 +1059,7 @@ en:
       long: "%B %d, %Y %H:%M"
       short: "%d %b %H:%M"
     pm: pm
-  back:
+  base:
     shared:
       preference_emails:
         token_invalid: "That link is no longer valid. Request a new one to continue."

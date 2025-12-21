@@ -4,13 +4,13 @@ Rails.application.routes.draw do
   # global
   # top level pages
   # TODO: RENAME => apex
-  draw :apex
+  draw :peak
   # sign in / up
-  draw :sign
+  draw :auth
   # regional
   ## top endpoint
   # TODO: RENAME => back
-  draw :back
+  draw :base
   # endpoint for docs
   draw :docs
   # endpoint for news
