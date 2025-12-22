@@ -163,6 +163,7 @@ ARG DOCKER_USER
 ARG DOCKER_GROUP
 ARG BUN_VERSION
 ARG GITHUB_ACTIONS
+SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV COMMIT_HASH="${COMMIT_HASH}"
 ENV HOME=/home/jit
 ENV BUN_INSTALL=/usr/local
@@ -214,9 +215,8 @@ RUN apt-get update -qq \
 
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
-RUN set -euo pipefail; \
-    curl -fsSL https://bun.sh/install -o /tmp/bun.sh; \
-    bash /tmp/bun.sh "bun-v${BUN_VERSION}"
+RUN curl -fsSL https://bun.sh/install -o /tmp/bun.sh \
+    && bash /tmp/bun.sh "bun-v${BUN_VERSION}"
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
         groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
