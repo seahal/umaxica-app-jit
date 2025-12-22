@@ -148,7 +148,15 @@ module Auth
           end
 
           def passkey_credential_params
-            params.require(:credential).permit!
+            params.expect(
+              credential: [ :id,
+                            :rawId,
+                            :type,
+                            :authenticatorAttachment,
+                            { transports: [] },
+                            { response: [ :clientDataJSON, :attestationObject ] },
+                            { clientExtensionResults: {} } ]
+            )
           end
 
           def passkey_description

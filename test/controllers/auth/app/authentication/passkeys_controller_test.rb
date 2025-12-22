@@ -15,8 +15,20 @@ module Auth::App::Authentication
       # Verify the page loads without errors
     end
 
+    test "should get edit" do
+      get edit_auth_app_authentication_passkey_url
+
+      assert_response :success
+    end
+
     test "should return ok on create when not logged in" do
       post auth_app_authentication_passkey_url
+
+      assert_response :ok
+    end
+
+    test "should return ok on update when not logged in" do
+      patch auth_app_authentication_passkey_url
 
       assert_response :ok
     end
