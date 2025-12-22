@@ -33,12 +33,14 @@
   <div><%= button_to t("auth.app.authentication.new.links.apple"), "/auth/apple", method: :post, data: { turbo: false } %></div>
   <section data-testid="registration-sign-in">
     <p class="text-sm text-slate-700">
-      <%= t("auth.app.registration.new.links.sign_in_html",
-            link: link_to(
-              t("auth.app.registration.new.links.sign_in_text"),
-              new_auth_app_authentication_path,
-              class: "font-medium underline"
-            )).html_safe %>
+      <%= sanitize(
+            t("auth.app.registration.new.links.sign_in_html",
+              link: link_to(
+                t("auth.app.registration.new.links.sign_in_text"),
+                new_auth_app_authentication_path,
+                class: "font-medium underline"
+              ))
+          ) %>
     </p>
   </section>
 </section>

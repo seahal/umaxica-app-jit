@@ -4,7 +4,7 @@
 
 <script nonce="<%= content_security_policy_nonce %>">
     (function () {
-        const widgetId = '<%= widget_id %>';
+        const widgetId = <%= widget_id.to_json %>;
         const container = document.getElementById(widgetId);
 
         if (!container) {
@@ -23,7 +23,7 @@
 
             try {
                 turnstile.render('#' + widgetId, {
-                    sitekey: '<%= Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY) %>',
+                    sitekey: <%= Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY).to_json %>,
                     callback: function (token) {
                         console.debug('Turnstile verified:', token.substring(0, 20) + '...');
                     },
