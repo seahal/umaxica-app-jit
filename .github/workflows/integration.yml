@@ -46,7 +46,7 @@ jobs:
   # ====================
   lint-docker:
     name: Dockerfile Lint
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout code
@@ -74,8 +74,6 @@ jobs:
         run: bundle exec brakeman -z -q
       - name: Run bundle-audit
         run: bundle exec bundle audit check --update
-      - name: Check importmap integrity
-        run: bin/importmap audit
   # ====================
   # Secret Leaks Detection
   # ====================
@@ -107,7 +105,7 @@ jobs:
   # ====================
   lint-ruby:
     name: Ruby Linting (RuboCop, ERB Lint)
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout code
@@ -123,6 +121,8 @@ jobs:
         run: bundle exec erb_lint --lint-all
       - name: Check unused routing config
         run: bundle exec rails routes --unused
+      - name: Check importmap integrity
+        run: bin/importmap audit
   # ====================
   # Testing - Rails
   # ====================
