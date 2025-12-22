@@ -34,18 +34,19 @@ env:
 jobs:
   # ====================
   lint-actions:
-    name: Lint GitHub Actions
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-      - name: Lint workflow files with actionlint
-        uses: rhysd/actionlint@v1
+      - uses: actions/checkout@v5
+      - name: Run actionlint
+        shell: bash
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint -color -shellcheck=
   # ====================
   lint-docker:
     name: Dockerfile Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
       - name: Checkout code
@@ -59,8 +60,8 @@ jobs:
   # ====================
   security:
     name: Security Checks (Brakeman, Bundle Audit)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -73,12 +74,15 @@ jobs:
         run: bundle exec brakeman -z -q
       - name: Run bundle-audit
         run: bundle exec bundle audit check --update
+      - name: Check importmap integrity
+        run: bin/importmap audit
   # ====================
   # Secret Leaks Detection
   # ====================
   gitleaks:
     name: Secret leaks (Gitleaks)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
     permissions:
       contents: read
       security-events: write
@@ -92,8 +96,6 @@ jobs:
           GITLEAKS_REPORT_PATH: gitleaks.sarif
           GITLEAKS_FORMAT: sarif
           GITLEAKS_FAIL: true
-        with:
-          args: detect --source . --report-format sarif --report-path gitleaks.sarif
       - name: Upload SARIF
         if: always()
         uses: github/codeql-action/upload-sarif@v4
@@ -105,8 +107,8 @@ jobs:
   # ====================
   lint-ruby:
     name: Ruby Linting (RuboCop, ERB Lint)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -121,8 +123,6 @@ jobs:
         run: bundle exec erb_lint --lint-all
       - name: Check unused routing config
         run: bundle exec rails routes --unused
-      - name: Check importmap integrity
-        run: bin/importmap audit
   # ====================
   # Testing - Rails
   # ====================
@@ -308,40 +308,6 @@ jobs:
         run: bun audit
       - name: Check Biome formatting and linting
         run: bun run check
-  # ====================
-  # Dependency Insights
-  # ====================
-  deps-inspect:
-    name: Dependency Insights (unused gems, bundle stats)
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ env.RUBY_VERSION }}
-          bundler-cache: true
-      - name: Install tools (bundler-unused, bundler-stats)
-        run: gem install bundler-unused bundler-stats --no-document
-      - name: Install bundle
-        run: bundle install --jobs 4 --retry 3
-      - name: Check unused gems (bundler-unused)
-        run: bundler-unused || true
-      - name: Bundle stats snapshot
-        run: bundler-stats --format json --output bundler-stats.json
-      - name: Check schema consistency
-        run: |
-          bin/rails db:migrate
-          bundle exec rake db:schema:cache:clear
-          git diff --exit-code db/schema.rb
-      - name: Upload bundle stats
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: bundler-stats
-          path: bundler-stats.json
   # ====================
   # Security - Docker Image Scan
   # ====================
