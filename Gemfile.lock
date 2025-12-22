@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 069dd8d79783c647621e5943463d27104e92b92a
+  revision: bdc7c53912abdd1f5ad888aa2fb532c932f10c27
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -265,7 +265,7 @@ GEM
       actioncable (>= 7.0.0)
       listen (>= 3.0.0)
       railties (>= 7.0.0)
-    i18n (1.14.7)
+    i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     image_processing (1.14.0)
       mini_magick (>= 4.9.5, < 6)

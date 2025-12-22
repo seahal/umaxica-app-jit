@@ -49,12 +49,12 @@ module Auth
         private
 
           def load_sessions
-          session[:org_setting_sessions] ||= []
-          @sessions = session[:org_setting_sessions].map { |record| record.stringify_keys }
+            session[:org_setting_sessions] ||= []
+            @sessions = session[:org_setting_sessions].map { |record| record.stringify_keys }
           end
 
           def set_session
-          @session = @sessions.find { |record| record["id"] == params[:id] }
+            @session = @sessions.find { |record| record["id"] == params[:id] }
             return if @session
 
             head :not_found
@@ -70,7 +70,7 @@ module Auth
           end
 
           def default_session_payload
-          { "name" => "Connected app", "status" => "active" }
+            { "name" => "Connected app", "status" => "active" }
           end
       end
     end
