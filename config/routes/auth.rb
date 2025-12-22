@@ -22,6 +22,7 @@ Rails.application.routes.draw do
         namespace :authentication do
           resource :email, only: %i[new create edit update]
           resource :passkey, only: %i[new create edit update]
+          resource :recovery, only: %i[new create]
         end
         # Social SignUp or LogIn
         namespace :social do
@@ -65,7 +66,7 @@ Rails.application.routes.draw do
       end
     end
 
-    # For Staff's webpages sign.org.localhost
+    # For Staff's Auth Management
     constraints host: ENV["AUTH_STAFF_URL"] do
       scope module: :org, as: :org do
         root to: "roots#index"
@@ -77,7 +78,10 @@ Rails.application.routes.draw do
           resource :csrf, only: :show
         end
         # Login
-        resource :authentication, only: [ :new, :destroy ]
+        resource :authentication, only: [ :new, :destroy ] do
+          resource :passkey, only: %i[new create edit update]
+          resource :recovery, only: %i[new create]
+        end
         resource :setting, only: [ :show ]
         namespace :setting do
           # TODO: Implement TOTP settings (index, new, edit, update actions only)
@@ -97,24 +101,6 @@ Rails.application.routes.draw do
         resource :exit, only: [ :edit, :destroy ]
         # TODO: Implement owner management
         # resources :owner
-        # TODO: Implement customer management
-        # resources :customer
-        # TODO: Implement docs management
-        # resources :docs
-        # TODO: Implement news management
-        # resources :news
-        # TODO: Implement WWW docs creation
-        # namespace :top do
-        #   namespace :com do
-        #     resources :docs, only: %i[new]
-        #   end
-        #   namespace :app do
-        #     resources :docs, only: %i[new]
-        #   end
-        #   namespace :org do
-        #     resources :docs, only: %i[new]
-        #   end
-        # end
       end
     end
   end

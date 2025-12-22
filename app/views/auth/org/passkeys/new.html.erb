@@ -1,0 +1,29 @@
+<h1 class="font-bold text-4xl">Passkey authentication</h1>
+<p class="mt-2 text-sm text-slate-600">Sign in with your passkey.</p>
+
+<%= form_with model: @staff_telephone, url: auth_org_authentication_passkey_path, data: { turbo: false } do |form| %>
+  <% if @staff_telephone.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(@staff_telephone.errors.count, "error") %> prohibited this sample from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% @staff_telephone.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :address %>
+    <%= form.email_field :address %>
+  </div>
+
+  <%= render "concern/cloudflare_turnstile" %>
+
+  <%= form.submit %>
+<% end %>
+
+<ul>
+  <li><%= link_to "Back", new_auth_org_authentication_path %></li>
+</ul>

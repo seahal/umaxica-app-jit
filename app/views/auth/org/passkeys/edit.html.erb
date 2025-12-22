@@ -1,0 +1,13 @@
+<h1 class="font-bold text-4xl">Passkey authentication</h1>
+<p class="mt-2 text-sm text-slate-600">Update your passkey sign-in.</p>
+
+<%= form_with model: @staff_telephone, url: auth_org_authentication_passkey_path, method: :patch, data: { turbo: false } do |form| %>
+  <div>
+    <%= form.label :address %>
+    <%= form.email_field :address %>
+  </div>
+
+  <%= render "concern/cloudflare_turnstile" %>
+
+  <%= form.submit %>
+<% end %>

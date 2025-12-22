@@ -3,7 +3,7 @@ module Auth
     module Token
       class RefreshesController < ApplicationController
         def create
-          refresh_token_id = params[:refresh_token] || cookies.encrypted[Authentication::Staff::REFRESH_COOKIE_KEY]
+          refresh_token_id = params[:refresh_token] || cookies.encrypted[::Authentication::Staff::REFRESH_COOKIE_KEY]
 
           if refresh_token_id.blank?
             render json: {
@@ -18,11 +18,11 @@ module Auth
           if credentials
             # Update cookies for browser clients
             unless request.format.json?
-              cookies[Authentication::Staff::ACCESS_COOKIE_KEY] = cookie_options.merge(
+              cookies[::Authentication::Staff::ACCESS_COOKIE_KEY] = cookie_options.merge(
                 value: credentials[:access_token],
-                expires: Authentication::Base::ACCESS_TOKEN_EXPIRY.from_now
+                expires: ::Authentication::Base::ACCESS_TOKEN_EXPIRY.from_now
               )
-              cookies.encrypted[Authentication::Staff::REFRESH_COOKIE_KEY] = cookie_options.merge(
+              cookies.encrypted[::Authentication::Staff::REFRESH_COOKIE_KEY] = cookie_options.merge(
                 value: credentials[:refresh_token],
                 expires: 1.year.from_now
               )
