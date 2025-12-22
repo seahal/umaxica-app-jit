@@ -1088,6 +1088,25 @@ ja:
             invalid_code: "確認コードが正しくありません。残り%{attempts_left}回の試行が可能です。"
             max_attempts: "確認の試行回数が上限に達しました。新しいコードをリクエストしてください。"
             expired: "確認コードの有効期限が切れました。新しいコードをリクエストしてください。"
+    org:
+      contacts:
+        new:
+          page_title: "お問い合わせ"
+          heading: "お問い合わせフォーム"
+          description: "以下のフォームにご記入ください。"
+          email_address: "メールアドレス"
+          telephone_number: "電話番号"
+          contact_category_title: "お問い合わせ種別"
+          confirm_policy: "プライバシーポリシーに同意します"
+          submit: "次へ"
+          cancel: "キャンセル"
+        create:
+          success: "お問い合わせを受け付けました。メールアドレスを確認してください。"
+          failure: "お問い合わせを送信できませんでした。入力内容をご確認ください。"
+          turnstile_error: "セキュリティ検証に失敗しました。ページを更新して再度お試しください。"
+          confirm_policy_error: "続行するには、プライバシーポリシーに同意する必要があります。"
+        update:
+          success: "お問い合わせを受け付けました"
     contact:
       errors:
         id_required: "お問い合わせIDは必須です"

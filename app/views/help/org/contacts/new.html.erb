@@ -1,0 +1,50 @@
+<h1><%= title t('help.org.contacts.new.page_title') %></h1>
+
+<%= form_with model: @contact,
+              url: help_org_contacts_path,
+              scope: :org_contact,
+              data: { turbo: false },
+              html: { class: "border border-slate-200 rounded-xl p-6 shadow-sm bg-white" } do |form| %>
+  <% if @contact&.errors&.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(@contact.errors.count, "error") %> prohibited this contact from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% @contact.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.checkbox :confirm_policy, checked: @contact&.confirm_policy == "1" %>
+    <%= form.label :confirm_policy, t('help.org.contacts.new.confirm_policy') %>
+  </div>
+
+  <div>
+    <%= form.label :contact_category_title, t('help.org.contacts.new.contact_category_title') %>
+    <%= form.collection_select :contact_category_title,
+                               @contact_categories,
+                               :id,
+                               :id,
+                               { include_blank: true } %>
+  </div>
+
+  <div>
+    <%= form.label :email_address, t('help.org.contacts.new.email_address') %>
+    <%= form.email_field :email_address, value: @email_address %>
+  </div>
+
+  <div>
+    <%= form.label :telephone_number, t('help.org.contacts.new.telephone_number') %>
+    <%= form.text_field :telephone_number, value: @telephone_number %>
+  </div>
+
+  <div>
+    <%= link_to t('help.org.contacts.new.cancel'), help_org_root_path %>
+  </div>
+
+  <%= render "concern/cloudflare_turnstile" %>
+  <%= form.submit %>
+<% end %>

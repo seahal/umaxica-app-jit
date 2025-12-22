@@ -84,6 +84,7 @@ gem "meta-tags"
 gem "nanoid"
 # Authentication
 gem "pundit"
+gem "view_component"
 
 group :development, :test do
   # to avoid n+1 queries
