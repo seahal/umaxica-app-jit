@@ -94,12 +94,12 @@ jobs:
           GITLEAKS_REPORT_PATH: gitleaks.sarif
           GITLEAKS_FORMAT: sarif
           GITLEAKS_FAIL: true
-      - name: Upload SARIF
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: gitleaks.sarif
-        continue-on-error: true
+      # - name: Upload SARIF
+      #   if: always()
+      #   uses: github/codeql-action/upload-sarif@v4
+      #   with:
+      #     sarif_file: gitleaks.sarif
+      #   continue-on-error: true
   # ====================
   # Linting - Ruby
   # ====================

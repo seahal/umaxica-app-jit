@@ -8,6 +8,7 @@ class UserIdentitySocialGoogleTest < ActiveSupport::TestCase
       user: user,
       uid: "uid-1",
       token: "token-1",
+      expires_at: 1.week.from_now.to_i,
       user_identity_social_google_status: user_identity_social_google_statuses(:active)
     )
 

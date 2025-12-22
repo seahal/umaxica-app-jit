@@ -42,7 +42,7 @@ Rails.application.routes.draw do
           end
           # TODO: Implement TOTP settings management
           resources :totps, only: [ :index, :new, :create, :edit ]
-          resources :recoveries, only: %i[index new create show edit update destroy]
+
           # TODO: Implement telephone settings management
           # resources :passkeys
           # TODO: Implement email settings management

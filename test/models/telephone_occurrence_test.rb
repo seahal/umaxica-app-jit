@@ -65,4 +65,10 @@ class TelephoneOccurrenceTest < ActiveSupport::TestCase
 
     assert_public_id_preserved(record, custom_public_id)
   end
+
+  test "expires_at default" do
+    record = build_occurrence(TelephoneOccurrence, body: "+819012300000", public_id: "Y" * 21)
+
+    assert_expires_at_default(record)
+  end
 end

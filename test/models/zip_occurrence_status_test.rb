@@ -34,4 +34,10 @@ class ZipOccurrenceStatusTest < ActiveSupport::TestCase
   test "has occurrences association" do
     assert_status_association(ZipOccurrenceStatus, :zip_occurrences)
   end
+
+  test "expires_at default" do
+    record = ZipOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
+
+    assert_expires_at_default(record)
+  end
 end

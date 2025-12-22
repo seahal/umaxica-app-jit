@@ -24,8 +24,6 @@ class User < IdentitiesRecord
            dependent: :destroy
   has_many :user_identity_secrets,
            dependent: :destroy
-  has_many :user_recovery_codes,
-           dependent: :destroy
   has_many :user_identity_passkeys,
            dependent: :destroy
   has_many :user_identity_audits,

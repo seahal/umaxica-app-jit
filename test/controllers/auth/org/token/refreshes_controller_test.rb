@@ -7,12 +7,13 @@ module Auth
         setup do
           @staff = staffs(:one)
           @staff_token = StaffToken.create!(staff_id: @staff.id)
+          @refresh_token = @staff_token.rotate_refresh_token!
         end
 
         # rubocop:disable Minitest/MultipleAssertions
         test "POST create with valid refresh token returns new access token" do
           post auth_org_token_refresh_url(host: ENV["AUTH_STAFF_URL"]),
-               params: { refresh_token: @staff_token.id },
+               params: { refresh_token: @refresh_token },
                as: :json
 
           assert_response :ok
@@ -51,7 +52,7 @@ module Auth
 
           assert_difference("StaffToken.count", -1) do
             post auth_org_token_refresh_url(host: ENV["AUTH_STAFF_URL"]),
-                 params: { refresh_token: @staff_token.id },
+                 params: { refresh_token: @refresh_token },
                  as: :json
           end
 
@@ -68,7 +69,7 @@ module Auth
 
           assert_difference("StaffToken.count", -1) do
             post auth_org_token_refresh_url(host: ENV["AUTH_STAFF_URL"]),
-                 params: { refresh_token: @staff_token.id },
+                 params: { refresh_token: @refresh_token },
                  as: :json
           end
 

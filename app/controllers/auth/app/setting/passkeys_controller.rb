@@ -164,8 +164,7 @@ module Auth
           end
 
           def webauthn_id_from_credential(credential)
-            hex = Digest::SHA256.hexdigest(credential.id)
-            "#{hex[0, 8]}-#{hex[8, 4]}-#{hex[12, 4]}-#{hex[16, 4]}-#{hex[20, 12]}"
+            credential.id
           end
       end
     end

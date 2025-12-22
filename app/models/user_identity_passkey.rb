@@ -10,7 +10,7 @@
 #  updated_at  :datetime         not null
 #  external_id :uuid             not null
 #  user_id     :bigint           not null
-#  webauthn_id :uuid             not null
+#  webauthn_id :string           not null
 #
 # Indexes
 #
@@ -23,6 +23,7 @@ class UserIdentityPasskey < IdentityRecord
   belongs_to :user_identity_passkey_status, optional: true
 
   validates :webauthn_id, presence: true, uniqueness: true
+  validates :external_id, presence: true
   validates :public_key, presence: true
   validates :description, presence: true
   validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
@@ -42,6 +43,7 @@ class UserIdentityPasskey < IdentityRecord
     end
 
     def set_defaults
+      self.external_id ||= SecureRandom.uuid
       self.sign_count ||= 0
       self.description = I18n.t("sign.default_passkey_description") if description.blank?
     end

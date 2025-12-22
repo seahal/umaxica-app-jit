@@ -4,6 +4,7 @@ class ComDocumentAudit < BusinessesRecord
   belongs_to :com_document
   belongs_to :actor, polymorphic: true, optional: true
 
+  belongs_to :com_document_audit_level, foreign_key: :level_id, inverse_of: :com_document_audits
   belongs_to :com_document_audit_event,
              class_name: "ComDocumentAuditEvent",
              foreign_key: "event_id",

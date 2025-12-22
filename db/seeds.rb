@@ -56,6 +56,22 @@ StaffIdentitySecretStatus.find_or_create_by!(id: "ACTIVE")
 StaffIdentitySecretStatus.find_or_create_by!(id: "USED")
 StaffIdentitySecretStatus.find_or_create_by!(id: "REVOKED")
 StaffIdentitySecretStatus.find_or_create_by!(id: "DELETED")
+UserIdentityAuditLevel.find_or_create_by!(id: "NONE")
+UserIdentityAuditLevel.find_or_create_by!(id: "DEBUG")
+UserIdentityAuditLevel.find_or_create_by!(id: "INFO")
+UserIdentityAuditLevel.find_or_create_by!(id: "WARN")
+UserIdentityAuditLevel.find_or_create_by!(id: "ERROR")
+UserIdentityAuditLevel.find_or_create_by!(id: "FATAL")
+UserIdentityAuditLevel.find_or_create_by!(id: "UNKNOWN")
+## OccurrenceStatus
+UserOccurrenceStatus.find_or_create_by(id: "NONE")
+UserOccurrenceStatus.find_or_create_by(id: "ACTIVE")
+UserOccurrenceStatus.find_or_create_by(id: "INACTIVE")
+UserOccurrenceStatus.find_or_create_by(id: "BLOCKED")
+StaffOccurrenceStatus.find_or_create_by(id: "NONE")
+StaffOccurrenceStatus.find_or_create_by(id: "ACTIVE")
+StaffOccurrenceStatus.find_or_create_by(id: "INACTIVE")
+StaffOccurrenceStatus.find_or_create_by(id: "BLOCKED")
 
 # CREATE CONTACT CATEGORY
 ComContactCategory.find_or_create_by!(id: 'SECURITY_ISSUE', description: 'root of corporate site status inquiries',

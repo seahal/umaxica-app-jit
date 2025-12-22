@@ -8,5 +8,9 @@ class AppDocumentAuditTest < ActiveSupport::TestCase
 
     assert_not_nil refl, "expected belongs_to :app_document association"
     assert_equal :belongs_to, refl.macro
+
+    refl_level = AppDocumentAudit.reflect_on_association(:app_document_audit_level)
+    assert_not_nil refl_level, "expected belongs_to :app_document_audit_level association"
+    assert_equal :belongs_to, refl_level.macro
   end
 end

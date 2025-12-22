@@ -24,7 +24,7 @@ module Authentication
       raise NotImplementedError, "authenticate_staff! must be implemented in including module"
     end
 
-    def generate_access_token(resource)
+    def generate_access_token(resource, session_public_id: nil)
       raise ArgumentError, "resource cannot be nil" if resource.nil?
       raise ArgumentError, "resource must respond to :id" unless resource.respond_to?(:id)
       raise ArgumentError, "resource id cannot be blank" if resource.id.blank?
@@ -38,6 +38,7 @@ module Authentication
         sub: resource.id,
         type: resource.class.name.downcase
       }
+      payload[:sid] = session_public_id if session_public_id.present?
 
       JWT.encode(payload, JwtConfig.private_key, JWT_ALGORITHM)
     rescue StandardError => e

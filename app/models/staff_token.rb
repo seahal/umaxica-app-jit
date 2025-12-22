@@ -1,4 +1,9 @@
+# Refresh tokens are persisted as digests only.
+# The public_id is used as the session identifier (sid).
 class StaffToken < TokensRecord
+  include ::PublicId
+  include ::RefreshTokenable
+
   MAX_SESSIONS_PER_STAFF = 2
 
   belongs_to :staff

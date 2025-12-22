@@ -27,5 +27,6 @@ signed_up_with_telephone:
 signed_up_with_apple:
   id: "SIGNED_UP_WITH_APPLE"
 
-signed_up_with_google:
-  id: "SIGNED_UP_WITH_GOOGLE"
+
+authorization_failed:
+  id: "AUTHORIZATION_FAILED"

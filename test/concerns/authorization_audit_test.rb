@@ -17,7 +17,42 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
       @action_name = "show"
       @controller_name = "widgets"
       @request = OpenStruct.new(remote_ip: "127.0.0.1", user_agent: "TestAgent")
+      @flash = {}
     end
+
+    def flash
+      @flash
+    end
+
+    def redirect_back_or_to(path)
+      @redirected_to = path
+    end
+
+    def root_path
+      "/"
+    end
+
+    def render(options)
+      @rendered = options
+    end
+
+    def respond_to
+      format = OpenStruct.new
+
+      # Mock html format handler
+      def format.html
+        yield
+      end
+
+      # Mock json format handler
+      def format.json
+        yield
+      end
+
+      yield format
+    end
+
+    attr_reader :redirected_to, :rendered
   end
 
   test "current_user_or_staff prefers current_user" do
@@ -130,6 +165,72 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
 
     assert_empty result[:events]
     assert_not result[:user_called]
+  end
+
+  test "log_authorization_failure creates real user audit record" do
+    user = users(:one)
+    exception = build_exception(record: users(:two))
+    audit = DummyAudit.new(current_user: user)
+
+    assert_difference "UserIdentityAudit.count", 1 do
+      audit.send(:log_authorization_failure, exception)
+    end
+
+    record = UserIdentityAudit.last
+    assert_equal user, record.user
+    assert_equal "AUTHORIZATION_FAILED", record.event_id
+  end
+
+  test "log_authorization_failure creates real staff audit record" do
+    staff = staffs(:one)
+    exception = build_exception(record: staff)
+    audit = DummyAudit.new(current_staff: staff)
+
+    assert_difference "StaffIdentityAudit.count", 1 do
+      audit.send(:log_authorization_failure, exception)
+    end
+
+    record = StaffIdentityAudit.last
+    assert_equal staff, record.staff
+    assert_equal "AUTHORIZATION_FAILED", record.event_id
+  end
+
+  test "handle_authorization_error handles html format" do
+    user = users(:one)
+    exception = build_exception(record: users(:two))
+    audit = DummyAudit.new(current_user: user)
+
+    # We need to stub respond_to to only execute html block to simulate html request
+    audit.define_singleton_method(:respond_to) do |&block|
+      format = OpenStruct.new
+      def format.html; yield; end
+      def format.json; end # Do nothing for json
+      block.call(format)
+    end
+
+    audit.send(:handle_authorization_error, exception)
+
+    assert_equal I18n.t("errors.messages.not_authorized"), audit.flash[:alert]
+    assert_equal "/", audit.redirected_to
+  end
+
+  test "handle_authorization_error handles json format" do
+    user = users(:one)
+    exception = build_exception(record: users(:two))
+    audit = DummyAudit.new(current_user: user)
+
+    # We need to stub respond_to to only execute json block to simulate json request
+    audit.define_singleton_method(:respond_to) do |&block|
+      format = OpenStruct.new
+      def format.html; end # Do nothing for html
+      def format.json; yield; end
+      block.call(format)
+    end
+
+    audit.send(:handle_authorization_error, exception)
+
+    assert_equal({ error: "Unauthorized" }, audit.rendered[:json])
+    assert_equal :forbidden, audit.rendered[:status]
   end
 
   private

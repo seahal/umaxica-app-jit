@@ -4,9 +4,11 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
   def setup
     @staff = staffs(:one)
     @audit_event = staff_identity_audit_events(:one)
+    @audit_level = staff_identity_audit_levels(:none)
     @audit = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level,
       timestamp: Time.current,
       ip_address: "192.168.1.1"
     )
@@ -30,10 +32,18 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     assert_equal :belongs_to, association.macro
   end
 
+  test "belongs to staff_identity_audit_level" do
+    association = StaffIdentityAudit.reflect_on_association(:staff_identity_audit_level)
+
+    assert_not_nil association
+    assert_equal :belongs_to, association.macro
+  end
+
   test "can be created with staff and status" do
     assert_not_nil @audit
     assert_equal @staff.id, @audit.staff_id
     assert_equal @audit_event.id, @audit.event_id
+    assert_equal @audit_level.id, @audit.level_id
   end
 
   test "timestamp can be set" do
@@ -48,7 +58,8 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
   test "actor_id is optional" do
     audit_without_actor = StaffIdentityAudit.create!(
       staff: @staff,
-      staff_identity_audit_event: @audit_event
+      staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level
     )
 
     assert_nil audit_without_actor.actor_id
@@ -58,6 +69,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     audit = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level,
       previous_value: '{"name": "old"}'
     )
 
@@ -69,6 +81,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     audit = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level,
       previous_value: plain_text
     )
 
@@ -89,6 +102,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     audit = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level,
       previous_value: plain_text
     )
 
@@ -109,9 +123,14 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     assert_equal @audit_event, @audit.staff_identity_audit_event
   end
 
+  test "staff_identity_audit_level association loads level correctly" do
+    assert_equal @audit_level, @audit.staff_identity_audit_level
+  end
+
   test "requires staff" do
     audit = StaffIdentityAudit.new(
-      staff_identity_audit_event: @audit_event
+      staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level
     )
 
     assert_not audit.valid?
@@ -120,7 +139,8 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
 
   test "requires staff_identity_audit_event" do
     audit = StaffIdentityAudit.new(
-      staff: @staff
+      staff: @staff,
+      staff_identity_audit_level: @audit_level
     )
 
     assert_not audit.valid?
@@ -140,6 +160,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     audit = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level,
       actor: actor_user
     )
 
@@ -153,6 +174,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     audit = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level,
       actor: actor_staff
     )
 
@@ -169,12 +191,14 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level,
       actor: actor_user
     )
 
     StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
+      staff_identity_audit_level: @audit_level,
       actor: actor_staff
     )
 
@@ -184,5 +208,16 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
 
     assert_not_empty user_actors
     assert_not_empty staff_actors
+  end
+
+  test "defaults level_id to NONE if not provided" do
+    audit = StaffIdentityAudit.create!(
+      staff: @staff,
+      staff_identity_audit_event: @audit_event,
+      timestamp: Time.current
+    )
+
+    assert_equal "NONE", audit.level_id
+    assert_equal "NONE", audit.staff_identity_audit_level.id
   end
 end

@@ -65,7 +65,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_130019) do
     t.bigint "sign_count", default: 0, null: false
     t.timestamptz "updated_at", null: false
     t.bigint "user_id", null: false
-    t.uuid "webauthn_id", null: false
+    t.string "webauthn_id", null: false
     t.index ["user_id"], name: "index_user_identity_passkeys_on_user_id"
   end
 

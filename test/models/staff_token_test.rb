@@ -1,5 +1,6 @@
 require "test_helper"
 
+# Covers refresh token behavior and session constraints for staff.
 class StaffTokenTest < ActiveSupport::TestCase
   def setup
     @staff = staffs(:one)
@@ -83,5 +84,52 @@ class StaffTokenTest < ActiveSupport::TestCase
 
     assert_not extra_token.valid?
     assert_includes extra_token.errors[:base], "exceeds maximum concurrent sessions per staff (#{StaffToken::MAX_SESSIONS_PER_STAFF})"
+  end
+
+  test "refresh token digest updates and authenticates" do
+    token = StaffToken.create!(staff: @staff)
+
+    token.refresh_token = "verifier-value"
+    token.save!
+
+    assert_predicate token.refresh_token_digest, :present?
+    assert token.authenticate_refresh_token("verifier-value")
+    assert_not token.authenticate_refresh_token("wrong-value")
+  end
+
+  test "active state reflects revoked and expired refresh tokens" do
+    token = StaffToken.create!(staff: @staff)
+
+    assert_predicate token, :active?
+
+    token.update!(revoked_at: Time.current)
+    assert_predicate token, :revoked?
+    assert_not token.active?
+
+    token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
+    assert_predicate token, :expired_refresh?
+    assert_not token.active?
+  end
+
+  test "rotate_refresh_token! updates digest and timestamps" do
+    token = StaffToken.create!(staff: @staff)
+    old_digest = token.refresh_token_digest
+
+    new_token = token.rotate_refresh_token!
+
+    assert_match(/\A#{token.public_id}\./, new_token)
+    assert_not_equal old_digest, token.refresh_token_digest
+    assert_predicate token.rotated_at, :present?
+    assert_predicate token.last_used_at, :present?
+  end
+
+  test "parse_refresh_token splits public_id and verifier" do
+    token = StaffToken.create!(staff: @staff)
+    raw = token.rotate_refresh_token!
+
+    public_id, verifier = StaffToken.parse_refresh_token(raw)
+
+    assert_equal token.public_id, public_id
+    assert_predicate verifier, :present?
   end
 end

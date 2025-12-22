@@ -61,7 +61,8 @@ module Authentication
       token = TokensRecord.connected_to(role: :writing) do
         StaffToken.create!(staff_id: staff.id)
       end
-      credentials = generate_access_token(staff)
+      refresh_token = token.rotate_refresh_token!
+      credentials = generate_access_token(staff, session_public_id: token.public_id)
 
       # For non-JSON requests (browser), set cookies
       unless request.format.json?
@@ -72,7 +73,7 @@ module Authentication
         )
         # REFRESH_TOKEN: Long-lived (1 year)
         cookies.encrypted[REFRESH_COOKIE_KEY] = cookie_options.merge(
-          value: token.id,
+          value: refresh_token,
           expires: 1.year.from_now
         )
       end
@@ -82,19 +83,19 @@ module Authentication
       # Return tokens for JSON API clients
       {
         access_token: credentials,
-        refresh_token: token.id,
+        refresh_token: refresh_token,
         token_type: "Bearer",
         expires_in: Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i
       }
     end
 
-    def refresh_access_token(refresh_token_id)
-      # Find and validate the old refresh token
-      old_token = StaffToken.find_by(id: refresh_token_id)
+    def refresh_access_token(refresh_token)
+      result = Auth::RefreshTokenService.call(refresh_token: refresh_token)
+      old_token = result[:token]
 
-      unless old_token
+      unless old_token.is_a?(StaffToken)
         Rails.event.notify("staff.token.refresh.failed",
-                           refresh_token_id: refresh_token_id,
+                           refresh_token_id: refresh_token,
                            reason: "token_not_found",
                            ip_address: request_ip_address)
         return nil
@@ -105,41 +106,39 @@ module Authentication
       unless staff&.active?
         Rails.event.notify("staff.token.refresh.failed",
                            staff_id: staff&.id,
-                           refresh_token_id: refresh_token_id,
+                           refresh_token_id: refresh_token,
                            reason: "staff_inactive",
                            ip_address: request_ip_address)
-        TokensRecord.connected_to(role: :writing) { old_token.destroy }
+        TokensRecord.connected_to(role: :writing) { old_token.destroy! }
         return nil
       end
 
-      # Create new refresh token (rotation)
-      new_refresh_token = TokensRecord.connected_to(role: :writing) do
-        StaffToken.create!(staff_id: staff.id)
-      end
-
       # Generate new access token
-      new_access_token = generate_access_token(staff)
-
-      # Revoke old refresh token
-      TokensRecord.connected_to(role: :writing) { old_token.destroy }
+      new_access_token = generate_access_token(staff, session_public_id: old_token.public_id)
 
       Rails.event.notify("staff.token.refreshed",
                          staff_id: staff.id,
-                         old_refresh_token_id: old_token.id,
-                         new_refresh_token_id: new_refresh_token.id,
+                         old_refresh_token_id: old_token.public_id,
+                         new_refresh_token_id: result[:refresh_token],
                          ip_address: request_ip_address)
 
       # Return new tokens
       {
         access_token: new_access_token,
-        refresh_token: new_refresh_token.id,
+        refresh_token: result[:refresh_token],
         token_type: "Bearer",
         expires_in: Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i
       }
+    rescue Auth::InvalidRefreshToken => e
+      Rails.event.notify("staff.token.refresh.failed",
+                         refresh_token_id: refresh_token,
+                         reason: e.class.name,
+                         ip_address: request_ip_address)
+      nil
     rescue StandardError => e
       Rails.event.notify("staff.token.refresh.error",
                          staff_id: staff&.id,
-                         refresh_token_id: refresh_token_id,
+                         refresh_token_id: refresh_token,
                          error_class: e.class.name,
                          error_message: e.message,
                          ip_address: request_ip_address)
@@ -148,12 +147,13 @@ module Authentication
 
     def log_out
       staff = current_staff
-      if (token_id = cookies.encrypted[REFRESH_COOKIE_KEY])
+      if (token_value = cookies.encrypted[REFRESH_COOKIE_KEY])
         begin
-          StaffToken.find_by(id: token_id)&.destroy
+          public_id, = StaffToken.parse_refresh_token(token_value)
+          StaffToken.find_by(public_id: public_id)&.destroy if public_id
         rescue ActiveRecord::RecordNotDestroyed => e
           Rails.event.notify("staff.token.destroy.failed",
-                             token_id: token_id,
+                             token_id: token_value,
                              error_message: e.message,
                              ip_address: request_ip_address)
         end

@@ -4,6 +4,7 @@ class AppDocumentAudit < BusinessesRecord
   belongs_to :app_document
   belongs_to :actor, polymorphic: true, optional: true
 
+  belongs_to :app_document_audit_level, foreign_key: :level_id, inverse_of: :app_document_audits
   # event_id references AppDocumentAuditEvent.id (string)
   belongs_to :app_document_audit_event,
              class_name: "AppDocumentAuditEvent",

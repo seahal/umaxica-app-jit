@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_22_215659) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -71,17 +71,24 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
   create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
   end
 
+  create_table "staff_identity_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "staff_identity_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "actor_id"
     t.string "actor_type"
     t.datetime "created_at", null: false
     t.string "event_id", limit: 255, null: false
     t.string "ip_address"
+    t.string "level_id", default: "NONE", null: false
     t.text "previous_value"
     t.uuid "staff_id", null: false
     t.datetime "timestamp"
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_staff_identity_audits_on_event_id"
+    t.index ["level_id"], name: "index_staff_identity_audits_on_level_id"
     t.index ["staff_id"], name: "index_staff_identity_audits_on_staff_id"
   end
 
@@ -123,12 +130,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
 
   create_table "staff_identity_secrets", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "expires_at", default: ::Float::INFINITY, null: false
     t.datetime "last_used_at"
     t.string "name"
     t.string "password_digest"
     t.uuid "staff_id", null: false
     t.string "staff_identity_secret_status_id", limit: 255, default: "ACTIVE", null: false
     t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_staff_identity_secrets_on_expires_at"
     t.index ["staff_id"], name: "index_staff_identity_secrets_on_staff_id"
     t.index ["staff_identity_secret_status_id"], name: "idx_on_staff_identity_secret_status_id_0999b0c4ae"
   end
@@ -192,17 +201,24 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
   create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
   end
 
+  create_table "user_identity_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "user_identity_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "actor_id"
     t.string "actor_type"
     t.datetime "created_at", null: false
     t.string "event_id", limit: 255, null: false
     t.string "ip_address"
+    t.string "level_id", limit: 255, default: "NONE", null: false
     t.text "previous_value"
     t.datetime "timestamp"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["event_id"], name: "index_user_identity_audits_on_event_id"
+    t.index ["level_id"], name: "index_user_identity_audits_on_level_id"
     t.index ["user_id"], name: "index_user_identity_audits_on_user_id"
   end
 
@@ -251,7 +267,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_identity_passkey_status_id", limit: 255, default: "ACTIVE", null: false
-    t.uuid "webauthn_id", null: false
+    t.string "webauthn_id", null: false
     t.index ["user_id"], name: "index_user_identity_passkeys_on_user_id"
     t.index ["user_identity_passkey_status_id"], name: "idx_on_user_identity_passkey_status_id_f979a7d699"
     t.index ["webauthn_id"], name: "index_user_identity_passkeys_on_webauthn_id", unique: true
@@ -262,12 +278,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
 
   create_table "user_identity_secrets", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "expires_at", default: ::Float::INFINITY, null: false
     t.datetime "last_used_at"
     t.string "name"
     t.string "password_digest"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_identity_secret_status_id", limit: 255, default: "ACTIVE", null: false
+    t.index ["expires_at"], name: "index_user_identity_secrets_on_expires_at"
     t.index ["user_id"], name: "index_user_identity_secrets_on_user_id"
     t.index ["user_identity_secret_status_id"], name: "index_user_identity_secrets_on_user_identity_secret_status_id"
   end
@@ -278,7 +296,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
   create_table "user_identity_social_apples", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
-    t.integer "expires_at"
+    t.integer "expires_at", null: false
     t.string "image"
     t.string "provider", default: "apple"
     t.string "refresh_token"
@@ -287,6 +305,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
     t.datetime "updated_at", null: false
     t.uuid "user_id"
     t.string "user_identity_social_apple_status_id", limit: 255, default: "ACTIVE", null: false
+    t.index ["expires_at"], name: "index_user_identity_social_apples_on_expires_at"
     t.index ["uid", "provider"], name: "index_user_identity_social_apples_on_uid_and_provider", unique: true
     t.index ["user_id"], name: "index_user_identity_social_apples_on_user_id_unique", unique: true, where: "(user_id IS NOT NULL)"
     t.index ["user_identity_social_apple_status_id"], name: "idx_on_user_identity_social_apple_status_id_d1764af59f"
@@ -298,7 +317,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
   create_table "user_identity_social_googles", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
-    t.integer "expires_at"
+    t.integer "expires_at", null: false
     t.string "image"
     t.string "provider", default: "google_oauth2"
     t.string "refresh_token"
@@ -307,6 +326,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
     t.datetime "updated_at", null: false
     t.uuid "user_id"
     t.string "user_identity_social_google_status_id", limit: 255, default: "ACTIVE", null: false
+    t.index ["expires_at"], name: "index_user_identity_social_googles_on_expires_at"
     t.index ["uid", "provider"], name: "index_user_identity_social_googles_on_uid_and_provider", unique: true
     t.index ["user_id"], name: "index_user_identity_social_googles_on_user_id_unique", unique: true, where: "(user_id IS NOT NULL)"
     t.index ["user_identity_social_google_status_id"], name: "idx_on_user_identity_social_google_status_id_7bdb8753df"
@@ -406,6 +426,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
   add_foreign_key "role_assignments", "users", on_delete: :cascade
   add_foreign_key "roles", "workspaces", column: "organization_id"
   add_foreign_key "staff_identity_audits", "staff_identity_audit_events", column: "event_id"
+  add_foreign_key "staff_identity_audits", "staff_identity_audit_levels", column: "level_id"
   add_foreign_key "staff_identity_audits", "staffs"
   add_foreign_key "staff_identity_emails", "staff_identity_email_statuses"
   add_foreign_key "staff_identity_emails", "staffs"
@@ -418,6 +439,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_21_121101) do
   add_foreign_key "staff_recovery_codes", "staffs"
   add_foreign_key "staffs", "staff_identity_statuses"
   add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
+  add_foreign_key "user_identity_audits", "user_identity_audit_levels", column: "level_id"
   add_foreign_key "user_identity_audits", "users"
   add_foreign_key "user_identity_emails", "user_identity_email_statuses"
   add_foreign_key "user_identity_emails", "users"

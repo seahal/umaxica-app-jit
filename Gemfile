@@ -23,8 +23,8 @@ gem "rack-cors"
 # For DOS attack
 gem "rack-attack"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt"
 gem "argon2"
+gem "bcrypt"
 # SHA3
 gem "sha3"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

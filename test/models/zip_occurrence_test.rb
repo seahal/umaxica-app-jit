@@ -65,4 +65,10 @@ class ZipOccurrenceTest < ActiveSupport::TestCase
 
     assert_public_id_preserved(record, custom_public_id)
   end
+
+  test "expires_at default" do
+    record = build_occurrence(ZipOccurrence, body: "1700001", public_id: "Y" * 21)
+
+    assert_expires_at_default(record)
+  end
 end

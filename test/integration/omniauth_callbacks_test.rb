@@ -70,6 +70,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       provider: "google_oauth2",
       token: "existing_token",
       email: "existing@example.com",
+      expires_at: 1.week.from_now.to_i,
       user_identity_social_google_status: user_identity_social_google_statuses(:active)
     )
 

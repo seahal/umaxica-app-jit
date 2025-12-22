@@ -7,12 +7,13 @@ module Auth
         setup do
           @user = users(:one)
           @user_token = UserToken.create!(user_id: @user.id)
+          @refresh_token = @user_token.rotate_refresh_token!
         end
 
         # rubocop:disable Minitest/MultipleAssertions
         test "POST create with valid refresh token returns new access token" do
           post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
-               params: { refresh_token: @user_token.id },
+               params: { refresh_token: @refresh_token },
                as: :json
 
           assert_response :ok
@@ -26,7 +27,7 @@ module Auth
 
         test "POST create with invalid (non-existent) refresh token returns unauthorized" do
           post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
-               params: { refresh_token: SecureRandom.uuid },
+               params: { refresh_token: "missing.public_id" },
                as: :json
 
           assert_response :unauthorized
@@ -35,16 +36,15 @@ module Auth
           assert_equal I18n.t("auth.token_refresh.errors.invalid_refresh_token"), json_response["error"]
         end
 
-        test "POST create with malformed refresh token returns bad request" do
+        test "POST create with malformed refresh token returns unauthorized" do
           post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
                params: { refresh_token: "invalid-token-format" },
                as: :json
 
-          assert_response :bad_request
+          assert_response :unauthorized
           json_response = response.parsed_body
 
           assert_equal I18n.t("auth.token_refresh.errors.invalid_refresh_token"), json_response["error"]
-          assert_equal "invalid_refresh_token_format", json_response["error_code"]
         end
 
         test "POST create without refresh token returns bad request" do
@@ -63,7 +63,7 @@ module Auth
 
           assert_difference("UserToken.count", -1) do
             post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
-                 params: { refresh_token: @user_token.id },
+                 params: { refresh_token: @refresh_token },
                  as: :json
           end
 
@@ -80,7 +80,7 @@ module Auth
 
           assert_difference("UserToken.count", -1) do
             post auth_app_token_refresh_url(host: ENV["AUTH_SERVICE_URL"]),
-                 params: { refresh_token: @user_token.id },
+                 params: { refresh_token: @refresh_token },
                  as: :json
           end
 
