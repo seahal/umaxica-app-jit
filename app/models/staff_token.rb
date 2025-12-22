@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class StaffToken < TokensRecord
   MAX_SESSIONS_PER_STAFF = 2
 

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class IdentityRecord < ApplicationRecord
   self.abstract_class = true
 

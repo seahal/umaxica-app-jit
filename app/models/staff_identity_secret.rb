@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class StaffIdentitySecret < IdentitiesRecord
   MAX_SECRETS_PER_STAFF = 10
 

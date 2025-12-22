@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Helper methods for checking authorization in views
 module AuthorizationHelper
   # Check if current actor is authorized for a given action on a record

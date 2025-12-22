@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # rubocop:disable Rails/DangerousColumnNames
 class RenameContactCategoryTitlesToIds < ActiveRecord::Migration[8.1]
   def change

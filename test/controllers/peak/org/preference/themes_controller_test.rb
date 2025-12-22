@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 require "json"
@@ -47,8 +45,8 @@ module Peak
           assert_equal "dark", session[:theme]
           assert_equal "dark", signed_cookie(:root_org_theme)
 
-          # org doesn't use root_app_preferences cookie
-          # persisted_preferences = JSON.parse(signed_cookie(:root_app_preferences))
+          # org doesn't use __Secure-root_app_preferences cookie
+          # persisted_preferences = JSON.parse(signed_cookie(:__Secure-root_app_preferences))
           # assert_equal "dr", persisted_preferences["ct"]
 
           follow_redirect!

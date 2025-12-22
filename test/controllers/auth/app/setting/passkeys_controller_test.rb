@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 require "minitest/mock"
 
@@ -24,8 +22,8 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
     end
 
     assert_response :ok
-    assert_not_nil session[:webauthn_create_challenge]
-    assert_equal "mock_challenge", session[:webauthn_create_challenge]
+    assert_not_nil session[:webauthn_user_create_challenge]
+    assert_equal "mock_challenge", session[:webauthn_user_create_challenge]
   end
 
   test "should verify passkey" do
@@ -36,7 +34,16 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
     end
 
     # Now verify
-    post verify_auth_app_setting_passkeys_url, headers: @headers
+    credential = OpenStruct.new(id: "credential-id", public_key: "pk", sign_count: 0)
+    def credential.verify(_challenge)
+      true
+    end
+
+    WebAuthn::Credential.stub :from_create, credential do
+      post verify_auth_app_setting_passkeys_url,
+           params: { credential: { id: "credential-id", rawId: "credential-id" }, description: "Test" },
+           headers: @headers
+    end
 
     assert_response :ok
   end

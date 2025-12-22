@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Authorization policy for AppTimeline resources
 # Timeline entries represent chronological events/activities
 class AppTimelinePolicy < ApplicationPolicy

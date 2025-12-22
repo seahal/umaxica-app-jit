@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Shared behavior for locale preference controllers. This concern narrows the
 # accepted parameters to language and timezone while reusing the persistence
 # logic defined in PreferenceRegions.

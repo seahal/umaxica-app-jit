@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Authentication
   module Base
     JWT_ALGORITHM = ENV.fetch("JWT_ALGORITHM", "ES256")
@@ -86,7 +84,7 @@ module Authentication
       def cookie_options
         opts = {
           httponly: true,
-          secure: Rails.env.production?,
+          secure: true,
           samesite: :strict
         }
         opts[:domain] = shared_cookie_domain if shared_cookie_domain

@@ -1,10 +1,9 @@
-# frozen_string_literal: true
-
 require "json"
 
 module Theme
   extend ActiveSupport::Concern
   include PreferenceConstants
+  include PreferenceCookie
 
   ALLOWED_THEMES = %w[system dark light].freeze
   DEFAULT_THEME = "system"
@@ -154,40 +153,20 @@ module Theme
     def persist_preferences_cookie!(theme)
       keys = PREFERENCE_KEYS
       defaults = DEFAULT_PREFERENCES
-      cookie_key = preferences_cookie_key
 
       resolved = defaults.dup
 
-      raw_preferences = cookies.signed[cookie_key]
-      if raw_preferences.present?
-        begin
-          parsed = JSON.parse(raw_preferences)
-          if parsed.is_a?(Hash)
-            parsed.slice(*keys).each do |key, value|
-              normalized = value.to_s.downcase
-              resolved[key] = normalized.presence || defaults[key]
-            end
-          end
-        rescue JSON::ParserError, TypeError
-          # ignore malformed cookie
-        end
+      read_preference_cookie.slice(*keys).each do |key, value|
+        normalized = value.to_s.downcase
+        resolved[key] = normalized.presence || defaults[key]
       end
 
       resolved["ct"] = THEME_CODES.fetch(theme, theme)
 
-      cookies.permanent.signed[cookie_key] = {
-        value: resolved.to_json,
-        httponly: true,
-        secure: Rails.env.production?,
-        same_site: :lax
-      }
+      write_preference_cookie(resolved)
     end
 
     def preference_cookie_enabled?
       PREFERENCE_COOKIE_SCOPES.include?(preference_scope)
-    end
-
-    def preferences_cookie_key
-      :"root_#{preference_scope}_preferences"
     end
 end

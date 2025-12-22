@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Auth
   module Org
     class ApplicationController < ActionController::Base

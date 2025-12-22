@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "ipaddr"
 
 class Rack::Attack
@@ -91,12 +89,11 @@ class Rack::Attack
   ############################################################
   # 8) blocked response (simple)
   ############################################################
-  self.throttled_response = lambda do |env|
-    req = Rack::Request.new(env)
+  self.throttled_responder = lambda do |request|
     [
       429,
       { "Content-Type" => "application/json" },
-      [ { error: "rate_limited", host: req.host }.to_json ]
+      [ { error: "rate_limited", host: request.host }.to_json ]
     ]
   end
 end

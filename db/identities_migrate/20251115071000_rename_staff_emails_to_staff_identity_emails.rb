@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RenameStaffEmailsToStaffIdentityEmails < ActiveRecord::Migration[8.2]
   def up
     return unless table_exists?(:staff_emails)

@@ -1,6 +1,9 @@
 require "test_helper"
 
 class Peak::App::Preference::LocalesControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    https!
+  end
   # rubocop:disable Minitest/MultipleAssertions
   test "GET edit renders form with language and timezone selects" do
     get edit_peak_app_preference_locale_url
@@ -136,7 +139,7 @@ class Peak::App::Preference::LocalesControllerTest < ActionDispatch::Integration
     assert_redirected_to edit_peak_app_preference_locale_url(lx: "ja", tz: "asia/tokyo")
 
     # Verify cookie is set
-    assert_predicate response.cookies["root_app_preferences"], :present?
+    assert_predicate response.cookies["__Secure-root_app_preferences"], :present?
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -144,7 +147,7 @@ class Peak::App::Preference::LocalesControllerTest < ActionDispatch::Integration
     patch peak_app_preference_locale_url, params: { language: "EN" }
 
     # Verify cookie exists in response
-    assert_predicate response.cookies["root_app_preferences"], :present?
+    assert_predicate response.cookies["__Secure-root_app_preferences"], :present?
   end
 
   test "multiple preference updates should maintain cookie consistency" do

@@ -69,7 +69,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 - **FR-04**: Request throttling is enforced through the `RateLimit` concern (Valkey-backed `rate_limit to: 1000 within 1.hour`) for every ActionController except API health, with overrides for test environments.
 
 ### 4.2 Preference management & localization
-- **FR-05**: Region/language/timezone updates in `Top::*::Preference::RegionController` must validate against the mappings defined in `PreferenceRegions` and persist to signed cookies (`root_app_preferences`) plus Rails session.
+- **FR-05**: Region/language/timezone updates in `Top::*::Preference::RegionController` must validate against the mappings defined in `PreferenceRegions` and persist to signed cookies (`__Secure-root_app_preferences`) plus Rails session.
 - **FR-06**: Theme selection (`Theme` concern) must support `system/dark/light` with shorthand codes (sy/dr/li) and rewrite to the correct edit URL per scope (Top::App/Com/Org).
 - **FR-07**: Cookie consent toggles (`Preference::CookieController` using `Cookie` concern) must respect ePrivacy, storing permanent signed booleans for functional/performance/targeting cookies.
 
@@ -95,7 +95,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 ### 4.6 Data protection and compliance
 - **FR-21**: Personally identifiable records must reside in their designated database clusters (`IdentitiesRecord`, `GuestsRecord`, `UniversalRecord`, etc.) with `connects_to` wiring honoring read replicas for reporting workloads.
 - **FR-22**: Sensitive columns (emails, telephone numbers, OTP secrets) must use Active Record encryption with deterministic mode for lookups where required.
-- **FR-23**: Preference cookies (`root_app_preferences`) must be signed/HTTP-only/Lax by default, with same-site exceptions documented if a downstream domain (e.g., `help` forms) legitimately reads them.
+- **FR-23**: Preference cookies (`__Secure-root_app_preferences`) must be signed/HTTP-only/Lax by default, with same-site exceptions documented if a downstream domain (e.g., `help` forms) legitimately reads them.
 - **FR-24**: All database operations (create, update, delete) involving `User` and `Staff` entities must be recorded in the Audit log (`UserIdentityAudit`, `StaffIdentityAudit`) to ensure traceability and accountability.
 
 ### 4.7 Observability, CI/CD, and ops readiness

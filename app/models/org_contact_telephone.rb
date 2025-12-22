@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class OrgContactTelephone < GuestsRecord
   belongs_to :org_contact
 

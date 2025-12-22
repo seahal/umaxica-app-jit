@@ -1,7 +1,7 @@
 module Auth
   module App
     module Authentication
-      class TelephonesController < ApplicationController
+      class PasskeysController < ApplicationController
         def new
           @user_telephone = UserIdentityTelephone.new
         end

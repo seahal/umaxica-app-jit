@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class OrgContactAudit < GuestsRecord
   # Use existing table `org_contact_histories` for storage to avoid a migration
   # and keep backward compatibility with previously-named table.

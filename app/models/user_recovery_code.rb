@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class UserRecoveryCode < IdentitiesRecord
   attr_accessor :confirm_create_recovery_code
 

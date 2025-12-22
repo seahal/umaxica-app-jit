@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AreaOccurrence < UniversalRecord
   include PublicId
 

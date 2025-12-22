@@ -3,7 +3,7 @@
 <h1 class="font-bold text-4xl"><%= title t("auth.app.authentication.telephone.new.page_title") %></h1>
 <p class="mt-2 text-sm text-slate-600"><%= t("auth.app.authentication.telephone.new.description") %></p>
 
-<%= form_with model: @user_telephone, url: auth_app_authentication_telephone_path, data: { turbo: false } do |form| %>
+<%= form_with model: @user_telephone, url: auth_app_authentication_passkey_path, data: { turbo: false } do |form| %>
 
   <% if @user_telephone.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">

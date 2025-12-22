@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 # Note: This controller exists but has no route defined (no edit_peak_com_preference_email_url)

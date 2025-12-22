@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AppDocumentAudit < BusinessesRecord
   self.table_name = "app_document_audits"
 

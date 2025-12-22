@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class UserToken < TokensRecord
   MAX_SESSIONS_PER_USER = 2
 

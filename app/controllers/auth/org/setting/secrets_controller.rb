@@ -1,76 +1,29 @@
-# frozen_string_literal: true
-
 module Auth
   module Org
     module Setting
       class SecretsController < ApplicationController
-        before_action :authenticate_staff!
-        before_action :load_secrets
-        before_action :set_secret, only: %i[show edit update destroy]
-
-        def index
-          render json: { secrets: @secrets }
-        end
-
-        def show
-          render json: { secret: @secret }
-        end
-
-        def new
-          render json: { secret: default_secret_payload }
-        end
-
-        def edit
-          render json: { secret: @secret }
-        end
-
-        def create
-          secret_record = default_secret_payload.merge(secret_params).merge(id: SecureRandom.uuid)
-          @secrets << secret_record
-          persist_secrets!
-
-          render json: { secret: secret_record }, status: :created
-        end
-
-        def update
-          @secret.merge!(secret_params)
-          persist_secrets!
-
-          render json: { secret: @secret }
-        end
-
-        def destroy
-          @secrets.delete_if { |record| record[:id] == @secret[:id] }
-          persist_secrets!
-
-          head :see_other
-        end
+        include Auth::Setting::Secrets
 
         private
 
-          def load_secrets
-            session[:org_setting_secrets] ||= []
-            @secrets = session[:org_setting_secrets]
+          def authenticate_identity!
+            authenticate_staff!
           end
 
-          def set_secret
-            @secret = @secrets.find { |record| record[:id] == params[:id] }
-            return if @secret
-
-            head :not_found
-            nil
+          def secret_scope
+            current_staff.staff_identity_secrets
           end
 
-          def secret_params
-            params.fetch(:secret, {}).permit(:name, :value).to_h.symbolize_keys
+          def secret_param_key
+            :staff_identity_secret
           end
 
-          def persist_secrets!
-            session[:org_setting_secrets] = @secrets
+          def secrets_index_path
+            auth_org_setting_secrets_path
           end
 
-          def default_secret_payload
-            { name: "Secret", value: "[redacted]" }
+          def secret_path(secret)
+            auth_org_setting_secret_path(secret)
           end
       end
     end

@@ -91,7 +91,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 
 ### 4.1 Top (marketing & preferences)
 - `Top::*::RootsController` redirects to `EDGE_*` hostnames with `allow_other_host: true`.
-- `Preference::RegionController` uses `PreferenceRegions` to normalize `lx` (language), `ri` (region), `tz` (timezone) and persists values to signed cookies (`root_app_preferences`) plus session.
+- `Preference::RegionController` uses `PreferenceRegions` to normalize `lx` (language), `ri` (region), `tz` (timezone) and persists values to signed cookies (`__Secure-root_app_preferences`) plus session.
 - `Preference::ThemeController` leverages the `Theme` concern to restrict themes to `system/dark/light`, map shorthand codes, and update preference cookies.
 - `Preference::CookieController` (`Cookie` concern) captures ePrivacy choices, storing `accept_*_cookies` flags as signed, permanent cookies.
 - Views can hydrate React micro front-ends defined in `app/javascript/views/www/**`.
@@ -145,7 +145,7 @@ Migrations are split into `db/<context>_migrate`. UUID v7 IDs are generated (`Se
 ### 5.2 Caching & rate limiting
 - SolidCache + Valkey for Rails caching.
 - `RateLimit` concern configures `ActiveSupport::Cache::RedisCacheStore` (URL from credentials) to allow 1,000 req/hour per client by default.
-- `DefaultUrlOptions` reads signed preference cookies (`root_app_preferences`) to append `lx/ri/tz` query params automatically.
+- `DefaultUrlOptions` reads signed preference cookies (`__Secure-root_app_preferences`) to append `lx/ri/tz` query params automatically.
 - `Memorize` stores short-lived encrypted values keyed by host + session.
 
 ---

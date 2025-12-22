@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Base policy class for authorization using Pundit
 # Provides common authorization patterns for both User and Staff actors
 class ApplicationPolicy

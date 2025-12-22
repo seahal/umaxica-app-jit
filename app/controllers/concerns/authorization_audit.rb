@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Concern for auditing authorization failures
 # Records when users/staff attempt unauthorized actions
 module AuthorizationAudit

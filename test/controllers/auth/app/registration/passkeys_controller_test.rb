@@ -1,13 +1,11 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 module Auth::App::Registration
-  class TelephonesControllerTest < ActionDispatch::IntegrationTest
+  class PasskeysControllerTest < ActionDispatch::IntegrationTest
     self.use_transactional_tests = false
     setup do
       # Mock Cloudflare Turnstile validation
-      Auth::App::Registration::TelephonesController.send(:define_method, :cloudflare_turnstile_validation) do
+      Auth::App::Registration::PasskeysController.send(:define_method, :cloudflare_turnstile_validation) do
         { "success" => true }
       end
 
@@ -31,14 +29,14 @@ module Auth::App::Registration
     end
 
     test "should get new" do
-      get new_auth_app_registration_telephone_url
+      get new_auth_app_registration_passkey_url
 
       assert_response :success
     end
 
     test "should create telephone and redirect to edit" do
       assert_difference("UserIdentityTelephone.count") do
-        post auth_app_registration_telephones_url, params: {
+        post auth_app_registration_passkeys_url, params: {
           user_identity_telephone: {
             number: "+1234567890",
             confirm_policy: "1",
@@ -49,13 +47,13 @@ module Auth::App::Registration
 
       telephone = registration_telephone
 
-      assert_redirected_to edit_auth_app_registration_telephone_url(telephone, regional_defaults)
+      assert_redirected_to edit_auth_app_registration_passkey_url(telephone, regional_defaults)
       assert_not_nil session[:user_telephone_registration]
     end
 
     test "should update telephone with valid otp" do
       # 1. Create telephone via request to set up session
-      post auth_app_registration_telephones_url, params: {
+      post auth_app_registration_passkeys_url, params: {
         user_identity_telephone: {
           number: "+1234567890",
           confirm_policy: "1",
@@ -70,7 +68,7 @@ module Auth::App::Registration
       code = hotp.at(otp_data[:otp_counter])
 
       # 3. Submit OTP
-      patch auth_app_registration_telephone_url(telephone), params: {
+      patch auth_app_registration_passkey_url(telephone), params: {
         user_identity_telephone: { pass_code: code }
       }
 

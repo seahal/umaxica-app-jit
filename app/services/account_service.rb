@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # AccountService provides a polymorphic interface for User and Staff models
 # This allows treating both types uniformly while maintaining their distinct behaviors
 #

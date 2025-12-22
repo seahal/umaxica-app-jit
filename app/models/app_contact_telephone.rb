@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AppContactTelephone < GuestsRecord
   belongs_to :app_contact
 

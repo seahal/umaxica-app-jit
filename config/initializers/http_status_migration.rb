@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Migrate deprecated Rack/Rails status symbol :unprocessable_entity (422)
 # to the recommended :unprocessable_content to silence deprecation warnings
 # during tests and runtime.

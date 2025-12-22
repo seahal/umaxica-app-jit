@@ -1,7 +1,7 @@
 module Auth
   module App
     module Registration
-      class TelephonesController < ApplicationController
+      class PasskeysController < ApplicationController
         include ::Redirect
 
         # todo: verify not logged in
@@ -24,7 +24,7 @@ module Auth
                registration_session["expires_at"].to_i > Time.now.to_i ].all?
             @user_telephone = UserIdentityTelephone.find_by(id: params["id"]) || UserIdentityTelephone.new
           else
-            redirect_to new_auth_app_registration_telephone_path,
+            redirect_to new_auth_app_registration_passkey_path,
                         notice: t("auth.app.registration.telephone.edit.session_expired")
           end
         end
@@ -64,7 +64,7 @@ module Auth
               subject: "PassCode => #{num}"
             )
 
-            redirect_to edit_auth_app_registration_telephone_path(@user_telephone.id),
+            redirect_to edit_auth_app_registration_passkey_path(@user_telephone.id),
                         notice: t("auth.app.registration.telephone.create.verification_code_sent")
           else
             render :new, status: :unprocessable_content

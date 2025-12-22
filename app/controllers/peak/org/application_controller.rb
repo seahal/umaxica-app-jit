@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Peak
   module Org
     class ApplicationController < ActionController::Base

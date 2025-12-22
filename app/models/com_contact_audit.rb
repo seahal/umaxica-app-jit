@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ComContactAudit < GuestsRecord
   belongs_to :com_contact
   belongs_to :actor, polymorphic: true, optional: true

@@ -1,9 +1,12 @@
-# frozen_string_literal: true
+# NOTE: If this code is only included in User controllers, consider moving to app/controllers/concerns/authentication/user.rb
 
 module Authentication
   module User
     include Authentication::Base
     extend ActiveSupport::Concern
+
+    ACCESS_COOKIE_KEY = :"__Secure-access_user_token"
+    REFRESH_COOKIE_KEY = :"__Secure-refresh_user_token"
 
     included do
       helper_method :current_user, :logged_in? if respond_to?(:helper_method)
@@ -25,7 +28,7 @@ module Authentication
       end
 
       # Extract token from Authorization header (Bearer) or Cookie
-      access_token = extract_access_token(:access_user_token)
+      access_token = extract_access_token(ACCESS_COOKIE_KEY)
       return nil if access_token.blank?
 
       begin
@@ -59,12 +62,12 @@ module Authentication
       # For non-JSON requests (browser), set cookies
       unless request.format.json?
         # ACCESS_TOKEN: Short-lived JWT (15 minutes)
-        cookies[:access_user_token] = cookie_options.merge(
+        cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
           value: credentials,
           expires: ACCESS_TOKEN_EXPIRY.from_now
         )
         # REFRESH_TOKEN: Long-lived (1 year)
-        cookies.encrypted[:refresh_user_token] = cookie_options.merge(
+        cookies.encrypted[REFRESH_COOKIE_KEY] = cookie_options.merge(
           value: token.id,
           expires: 1.year.from_now
         )
@@ -141,7 +144,7 @@ module Authentication
 
     def log_out
       user = current_user
-      if (token_id = cookies.encrypted[:refresh_user_token])
+      if (token_id = cookies.encrypted[REFRESH_COOKIE_KEY])
         begin
           UserToken.find_by(id: token_id)&.destroy
         rescue ActiveRecord::RecordNotDestroyed => e
@@ -151,8 +154,8 @@ module Authentication
                              ip_address: request_ip_address)
         end
       end
-      cookies.delete :access_user_token, **cookie_deletion_options
-      cookies.delete :refresh_user_token, **cookie_deletion_options
+      cookies.delete ACCESS_COOKIE_KEY, **cookie_deletion_options
+      cookies.delete REFRESH_COOKIE_KEY, **cookie_deletion_options
       record_user_identity_audit(AUDIT_EVENTS[:logged_out], user: user) if user
       reset_session
       @current_user = nil

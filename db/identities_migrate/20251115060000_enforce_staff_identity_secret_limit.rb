@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class EnforceStaffIdentitySecretLimit < ActiveRecord::Migration[8.2]
   FUNCTION_NAME = "check_staff_identity_secrets_limit"
   TRIGGER_NAME = "enforce_staff_identity_secrets_limit"

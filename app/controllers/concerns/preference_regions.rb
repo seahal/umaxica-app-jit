@@ -1,7 +1,3 @@
-# frozen_string_literal: true
-
-require "json"
-
 # Shared behavior for the region preference controllers that live under the
 # Top namespace. This keeps the three domain-specific controllers focused on
 # routing concerns while centralizing preference parsing and persistence.
@@ -9,6 +5,7 @@ module PreferenceRegions
   extend ActiveSupport::Concern
 
   include PreferenceConstants
+  include PreferenceCookie
 
   Result = Struct.new(:updated, :error_key) do
     def updated?
@@ -200,12 +197,7 @@ module PreferenceRegions
     end
 
     def persist_preference_cookie!
-      cookies.permanent.signed[PREFERENCE_COOKIE_KEY] = {
-        value: cookie_preferences.to_json,
-        httponly: true,
-        secure: Rails.env.production?,
-        same_site: :lax
-      }
+      write_preference_cookie(cookie_preferences)
     end
 
     def cookie_preferences
@@ -248,15 +240,7 @@ module PreferenceRegions
     def existing_cookie_preferences
       return @existing_cookie_preferences if defined?(@existing_cookie_preferences)
 
-      raw = cookies.signed[PREFERENCE_COOKIE_KEY]
-      @existing_cookie_preferences =
-        begin
-          parsed = JSON.parse(raw)
-          parsed.is_a?(Hash) ? parsed : {}
-        rescue JSON::ParserError, TypeError => error
-          Rails.event.notify("preference_regions.cookie_parse_failed", error_message: error.message)
-          {}
-        end
+      @existing_cookie_preferences = read_preference_cookie
     end
 
     def normalize_region_from_param(value)

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TurnstileValidator < ActiveModel::Validator
   def validate(record)
     return unless record.turnstile_required?

@@ -15,13 +15,13 @@ Rails.application.routes.draw do
         resource :registration, only: :new
         namespace :registration do
           resources :emails, only: %i[new create edit update]
-          resources :telephones, only: %i[new create edit update]
+          resources :passkeys, only: %i[new create edit update]
         end
         # Sign In/Out pages
         resource :authentication, only: %i[new edit destroy]
         namespace :authentication do
           resource :email, only: %i[new create edit update]
-          resource :telephone, only: %i[new create]
+          resource :passkey, only: %i[new create edit update]
         end
         # Social SignUp or LogIn
         namespace :social do
@@ -43,7 +43,7 @@ Rails.application.routes.draw do
           resources :totps, only: [ :index, :new, :create, :edit ]
           resources :recoveries, only: %i[index new create show edit update destroy]
           # TODO: Implement telephone settings management
-          # resources :telephones
+          # resources :passkeys
           # TODO: Implement email settings management
           # resources :emails
           # sign in with ***

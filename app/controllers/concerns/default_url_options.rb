@@ -1,6 +1,7 @@
 module DefaultUrlOptions
   extend ActiveSupport::Concern
   include PreferenceConstants
+  include PreferenceCookie
 
   def default_url_options
     # TODO: Declare only raise as an interface here, and in the included destination
@@ -30,11 +31,8 @@ module DefaultUrlOptions
     # Todo: Include only specified values contained in query parameters here. If there are no specified parameters, do not include parameters.
     # Todo: If GLOBAL_MODE exists, only ri is required.
     def read_cookie_preferences_for_url
-      raw = cookies.signed[PREFERENCE_COOKIE_KEY]
-      return {} if raw.blank?
-
-      parsed = JSON.parse(raw)
-      return {} unless parsed.is_a?(Hash)
+      parsed = read_preference_cookie
+      return {} if parsed.blank?
 
       # Extract preference values from cookie
       {
@@ -43,7 +41,5 @@ module DefaultUrlOptions
         tz: parsed["tz"],
         ct: parsed["ct"]
       }.compact
-    rescue JSON::ParserError, TypeError
-      {}
     end
 end

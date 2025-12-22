@@ -25,7 +25,7 @@ class Auth::App::LayoutTest < ActionDispatch::IntegrationTest
 
   # test "layout links when logged in" do
   #   user = users(:one)
-  #   get new_auth_app_registration_telephone_url, headers: login_headers(user)
+  #   get new_auth_app_registration_passkey_url, headers: login_headers(user)
 
   #   assert_response :success
 

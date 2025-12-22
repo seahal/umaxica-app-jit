@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ComContactEmail < GuestsRecord
   belongs_to :com_contact
 

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
@@ -15,6 +13,13 @@ class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")
+  end
+
+  test "renders contact link" do
+    get help_org_root_url
+
+    assert_response :success
+    assert_select "a[href^=?]", new_help_org_contact_path
   end
 
   # rubocop:disable Minitest/MultipleAssertions

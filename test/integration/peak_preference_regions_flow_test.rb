@@ -1,6 +1,10 @@
 require "test_helper"
 
 class ApexPreferenceRegionsFlowTest < ActionDispatch::IntegrationTest
+  setup do
+    https!
+  end
+
   DOMAINS = [
     { name: "app", edit: :edit_peak_app_preference_region_url, update: :peak_app_preference_region_url,
       scope: "apex.app.preferences" },
@@ -16,7 +20,7 @@ class ApexPreferenceRegionsFlowTest < ActionDispatch::IntegrationTest
 
       assert_redirected_to public_send(domain[:edit], lx: "ja", ri: "jp", tz: "asia/tokyo")
       assert_equal I18n.t("messages.region_settings_updated_successfully"), flash[:notice]
-      assert_predicate response.cookies["root_app_preferences"], :present?
+      assert_predicate response.cookies["__Secure-root_#{domain[:name]}_preferences"], :present?
     end
 
     test "#{domain[:name]} domain surfaces localized timezone errors" do

@@ -1,11 +1,25 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class ApplicationJobTest < ActiveJob::TestCase
   class TestJob < ApplicationJob
     def perform(value)
       value
+    end
+  end
+
+  class DeadlockedJob < ApplicationJob
+    def perform
+      raise ActiveRecord::Deadlocked
+    end
+  end
+
+  class DeserializationJob < ApplicationJob
+    def perform
+      begin
+        raise ArgumentError, "missing global id"
+      rescue ArgumentError
+        raise ActiveJob::DeserializationError
+      end
     end
   end
 
@@ -32,5 +46,17 @@ class ApplicationJobTest < ActiveJob::TestCase
 
   test "job class has queue adapter configured" do
     assert_not_nil TestJob.queue_adapter
+  end
+
+  test "deadlocked jobs are retried" do
+    assert_enqueued_with(job: DeadlockedJob) do
+      DeadlockedJob.perform_now
+    end
+  end
+
+  test "deserialization errors are discarded" do
+    assert_no_enqueued_jobs do
+      DeserializationJob.perform_now
+    end
   end
 end

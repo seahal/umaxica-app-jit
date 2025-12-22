@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module OccurrenceStatusTestHelper
   def assert_invalid_attribute(record, attribute)
     assert_not record.valid?

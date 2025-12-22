@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Help
   # Base exception for help contact-related errors
   class ContactError < ApplicationError

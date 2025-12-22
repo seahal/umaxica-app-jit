@@ -5,7 +5,7 @@ class Auth::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
   #   get new_auth_app_authentication_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
   #   assert_response :success
   #   assert_select "a[href=?]", new_auth_app_authentication_email_path(query)
-  #   assert_select "a[href=?]", new_auth_app_authentication_telephone_path(query)
+  #   assert_select "a[href=?]", new_auth_app_authentication_passkey_path(query)
   #   assert_select "a[href=?]", new_auth_app_registration_path(query)
   # end
   #
