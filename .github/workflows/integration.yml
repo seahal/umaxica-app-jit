@@ -33,6 +33,30 @@ env:
   APEX_REGION: true
 jobs:
   # ====================
+  lint-actions:
+    name: Lint GitHub Actions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Lint workflow files with actionlint
+        uses: docker://ghcr.io/rhysd/actionlint:latest
+        with:
+          args: -color
+  # ====================
+  lint-docker:
+    name: Dockerfile Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+  # ====================
   # Security Checks
   # ====================
   security:
@@ -288,6 +312,40 @@ jobs:
         run: bun run typecheck
       - name: Run JS/TS tests
         run: bun test
+  # ====================
+  # Dependency Insights
+  # ====================
+  deps-inspect:
+    name: Dependency Insights (unused gems, bundle stats)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+      - name: Install tools (bundler-unused, bundler-stats)
+        run: gem install bundler-unused bundler-stats --no-document
+      - name: Install bundle
+        run: bundle install --jobs 4 --retry 3
+      - name: Check unused gems (bundler-unused)
+        run: bundler-unused
+      - name: Bundle stats snapshot
+        run: bundler-stats --format json --output bundler-stats.json
+      - name: Check schema consistency
+        run: |
+          bin/rails db:migrate
+          bundle exec rake db:schema:cache:clear
+          git diff --exit-code db/schema.rb
+      - name: Upload bundle stats
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundler-stats
+          path: bundler-stats.json
   # ====================
   # Security - Docker Image Scan
   # ====================
