@@ -1,14 +1,20 @@
 require "test_helper"
 
 class Auth::App::AuthenticationsControllerTest < ActionDispatch::IntegrationTest
-  # test "should get new" do
-  #   get new_auth_app_authentication_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
-  #   assert_response :success
-  #   assert_select "a[href=?]", new_auth_app_authentication_email_path(query)
-  #   assert_select "a[href=?]", new_auth_app_authentication_passkey_path(query)
-  #   assert_select "a[href=?]", new_auth_app_registration_path(query)
-  # end
-  #
+  test "should get new with authentication links" do
+    get new_auth_app_authentication_url, headers: { "Host" => ENV["AUTH_SERVICE_URL"] }
+
+    assert_response :success
+
+    query = { lx: "ja", ri: "jp", tz: "jst", ct: "sy" }
+    assert_select "a[href=?]", new_auth_app_authentication_email_path(query),
+                  I18n.t("auth.app.authentication.new.links.email")
+    assert_select "a[href=?]", new_auth_app_authentication_passkey_path(query),
+                  I18n.t("auth.app.authentication.new.links.passkey")
+    assert_select "a[href=?]", new_auth_app_authentication_recovery_path(query),
+                  I18n.t("auth.app.authentication.new.links.recovery")
+  end
+
   test "should get edit" do
     get edit_auth_app_authentication_url
     # assert_response :internal_server_error

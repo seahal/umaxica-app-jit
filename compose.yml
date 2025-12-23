@@ -27,8 +27,8 @@ services:
       backend: { }
       frontend:
         aliases:
-          - app.localhost
-          - sign.app.localhost
+          - auth.app.localhost
+          - auth.org.localhost
       observability: { }
     depends_on:
       primary:

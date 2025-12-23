@@ -1,8 +1,6 @@
 # Rotates refresh tokens using the public_id/verifier format.
 # Keeps verification centralized and raises a dedicated error on failure.
 module Auth
-  class InvalidRefreshToken < StandardError; end
-
   class RefreshTokenService
     def self.call(refresh_token:)
       new(refresh_token).call
