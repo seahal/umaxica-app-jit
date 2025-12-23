@@ -2,15 +2,9 @@ require "test_helper"
 require "minitest/mock"
 
 class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
-  self.use_transactional_tests = false
   setup do
-    @user = User.create!(public_id: "user_#{SecureRandom.hex(8)}", user_identity_status_id: "ALIVE")
+    @user = users(:one)
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
-  end
-
-  teardown do
-    UserIdentityPasskey.delete_all
-    @user&.destroy
   end
 
   test "should get challenge" do

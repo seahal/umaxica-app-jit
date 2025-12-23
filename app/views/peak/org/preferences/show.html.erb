@@ -1,18 +1,37 @@
 <% content_for :page_title, t('peak.org.preferences.title') %>
 
-<h1><%= t('peak.org.preferences.title') %></h1>
+<section class="mx-auto mb-10 max-w-2xl rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-sm">
+  <h1 class="text-2xl font-semibold text-slate-900">
+    <%= t("peak.org.preferences.title") %>
+  </h1>
+  <p class="mt-2 text-sm text-slate-600">
+    言語やテーマなどの設定をまとめて変更できます。
+  </p>
 
-<ul>
-  <li><%= link_to t('peak.org.preferences.region_settings'), edit_peak_org_preference_region_url %></li>
-  <li><%= link_to t('peak.org.preferences.locale_settings'), edit_peak_org_preference_locale_url %></li>
-  <li><%= link_to t('peak.org.preferences.theme_settings'), edit_peak_org_preference_theme_url %></li>
-  <li><%= link_to t("peak.org.preferences.reset_settings"), edit_peak_org_preference_reset_url %></li>
-</ul>
+  <ul class="mt-6 space-y-2 text-sm">
+    <li>
+      <%= link_to t("peak.org.preferences.region_settings"), edit_peak_org_preference_region_url,
+                  class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
+    </li>
+    <li>
+      <%= link_to t("peak.org.preferences.locale_settings"), edit_peak_org_preference_locale_url,
+                  class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
+    </li>
+    <li>
+      <%= link_to t("peak.org.preferences.theme_settings"), edit_peak_org_preference_theme_url,
+                  class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
+    </li>
+    <li>
+      <%= link_to t("peak.org.preferences.reset_settings"), edit_peak_org_preference_reset_url,
+                  class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
+    </li>
+  </ul>
 
-<p class="mt-10 text-right">
-  <%= link_to peak_org_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst"),
-              class: "inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" do %>
-    <span>↑</span>
-    <span><%= t("peak.org.preferences.up_link") %></span>
-  <% end %>
-</p>
+  <p class="mt-10 text-right">
+    <%= link_to peak_org_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst"),
+                class: "inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" do %>
+      <span>↑</span>
+      <span><%= t("peak.org.preferences.up_link") %></span>
+    <% end %>
+  </p>
+</section>

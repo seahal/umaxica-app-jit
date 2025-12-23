@@ -64,28 +64,21 @@ class StaffIdentityPasskeyTest < ActiveSupport::TestCase
 
   test "enforces maximum passkeys per staff" do
     staff = staffs(:one)
-    StaffIdentityPasskey.where(staff: staff).delete_all
-    StaffIdentityPasskey::MAX_PASSKEYS_PER_STAFF.times do |i|
-      StaffIdentityPasskey.create!(
+    relation_stub = Struct.new(:count).new(StaffIdentityPasskey::MAX_PASSKEYS_PER_STAFF)
+
+    StaffIdentityPasskey.stub(:where, relation_stub) do
+      extra_passkey = StaffIdentityPasskey.new(
         staff: staff,
-        description: "Staff Key #{i}",
-        public_key: "staff-public-key-#{i}",
+        description: "Overflow Staff Key",
+        public_key: "overflow-key",
         sign_count: 0,
         external_id: SecureRandom.uuid,
         webauthn_id: SecureRandom.random_bytes(32)
       )
+
+      assert_not extra_passkey.valid?
+      assert_includes extra_passkey.errors[:base],
+                      "exceeds maximum passkeys per staff (#{StaffIdentityPasskey::MAX_PASSKEYS_PER_STAFF})"
     end
-
-    extra_passkey = StaffIdentityPasskey.new(
-      staff: staff,
-      description: "Overflow Staff Key",
-      public_key: "overflow-key",
-      sign_count: 0,
-      external_id: SecureRandom.uuid,
-      webauthn_id: SecureRandom.random_bytes(32)
-    )
-
-    assert_not extra_passkey.valid?
-    assert_includes extra_passkey.errors[:base], "exceeds maximum passkeys per staff (#{StaffIdentityPasskey::MAX_PASSKEYS_PER_STAFF})"
   end
 end

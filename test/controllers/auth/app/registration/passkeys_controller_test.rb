@@ -2,7 +2,6 @@ require "test_helper"
 
 module Auth::App::Registration
   class PasskeysControllerTest < ActionDispatch::IntegrationTest
-    self.use_transactional_tests = false
     setup do
       # Mock Cloudflare Turnstile validation
       Auth::App::Registration::PasskeysController.send(:define_method, :cloudflare_turnstile_validation) do
@@ -25,7 +24,6 @@ module Auth::App::Registration
           original.call(**kwargs)
         end
       end
-      UserIdentityTelephone.delete_all
     end
 
     test "should get new" do
