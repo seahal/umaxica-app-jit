@@ -30,6 +30,8 @@ class ChangeUserIdToUuidInOtherTables < ActiveRecord::Migration[8.2]
   private
 
     def change_user_id_type(table_name)
+      return unless table_exists?(table_name)
+
       # Remove the index first
       remove_index table_name, :user_id if index_exists?(table_name, :user_id)
 
@@ -49,6 +51,8 @@ class ChangeUserIdToUuidInOtherTables < ActiveRecord::Migration[8.2]
     end
 
     def revert_user_id_type(table_name)
+      return unless table_exists?(table_name)
+
       # Remove the index first
       remove_index table_name, :user_id if index_exists?(table_name, :user_id)
 

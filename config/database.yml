@@ -6,6 +6,7 @@ default: &default
   timeout: 5000
   username: <%= ENV["POSTGRESQL_USER"] %>
   password: <%= ENV["POSTGRESQL_PASSWORD"] %>
+
 development:
   guest:
     !!merge <<: *default
@@ -62,6 +63,17 @@ development:
     database: development_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
+  message:
+    !!merge <<: *default
+    database: development_message_db
+    host: <%= ENV["POSTGRESQL_MESSAGE_PUB"] %>
+    migrations_paths: db/messages_migrate
+  message_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_message_db
+    host: <%= ENV["POSTGRESQL_MESSAGE_SUB"] %>
+    migrations_paths: db/messages_migrate
   notification:
     !!merge <<: *default
     database: development_notification_db
@@ -245,6 +257,17 @@ test:
     database: test_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
+  message:
+    !!merge <<: *default
+    database: test_message_db
+    host: <%= ENV["POSTGRESQL_MESSAGE_PUB"] %>
+    migrations_paths: db/messages_migrate
+  message_replica:
+    !!merge <<: *default
+    replica: true
+    database: test_message_db
+    host: <%= ENV["POSTGRESQL_MESSAGE_SUB"] %>
+    migrations_paths: db/messages_migrate
   universal:
     !!merge <<: *default
     database: test_universal_db
@@ -343,6 +366,23 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.BUSINESS_REPLICA&.PASSWORD %>
     migrations_paths: db/businesses_migrate
+  message:
+    !!merge <<: *default
+    database: production_message_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.MESSAGE&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.MESSAGE&.PASSWORD %>
+    migrations_paths: db/messages_migrate
+  message_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_message_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.MESSAGE_REPLICA&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.MESSAGE_REPLICA&.PASSWORD %>
+    migrations_paths: db/messages_migrate
   notification:
     !!merge <<: *default
     database: production_notification_db

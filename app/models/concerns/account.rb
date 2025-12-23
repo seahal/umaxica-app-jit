@@ -1,4 +1,7 @@
 module Account
+  extend ActiveSupport::Concern
+
+  # Shared account interface for User and Staff.
   def staff?
     raise NotImplementedError, "#{self.class} must implement staff? method"
   end

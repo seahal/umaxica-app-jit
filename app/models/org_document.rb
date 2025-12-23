@@ -25,5 +25,5 @@ class OrgDocument < BusinessesRecord
            class_name: "OrgDocumentAudit",
            primary_key: "id",
            inverse_of: :org_document,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 end

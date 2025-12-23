@@ -24,5 +24,5 @@ class AppTimeline < BusinessesRecord
            class_name: "AppTimelineAudit",
            primary_key: "id",
            inverse_of: :app_timeline,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 end

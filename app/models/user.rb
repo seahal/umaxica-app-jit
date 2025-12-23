@@ -8,10 +8,10 @@
 #  webauthn_id :string
 #
 class User < IdentitiesRecord
-  include Account
+  include ::Account
+  include ::PublicId
   include Withdrawable
   include HasRoles
-  include ::PublicId
 
   belongs_to :user_identity_status, optional: true
   has_one :user_identity_social_apple,
@@ -38,6 +38,10 @@ class User < IdentitiesRecord
            dependent: :destroy
   has_many :staff_identity_audits,
            as: :actor,
+           dependent: :destroy
+  has_many :user_messages,
+           dependent: :destroy
+  has_many :user_notifications,
            dependent: :destroy
 
   def staff?

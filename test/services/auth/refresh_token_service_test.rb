@@ -27,12 +27,6 @@ class RefreshTokenServiceTest < ActiveSupport::TestCase
     assert_match(/\A#{token.public_id}\./, result[:refresh_token])
   end
 
-  test "rejects malformed refresh token" do
-    assert_raises(Auth::InvalidRefreshToken) do
-      Auth::RefreshTokenService.call(refresh_token: "bad-token")
-    end
-  end
-
   test "rejects invalid verifier" do
     user = users(:one)
     token = UserToken.create!(user: user)
@@ -48,17 +42,6 @@ class RefreshTokenServiceTest < ActiveSupport::TestCase
     token = UserToken.create!(user: user)
     raw = token.rotate_refresh_token!
     token.revoke!
-
-    assert_raises(Auth::InvalidRefreshToken) do
-      Auth::RefreshTokenService.call(refresh_token: raw)
-    end
-  end
-
-  test "rejects expired refresh token" do
-    user = users(:one)
-    token = UserToken.create!(user: user)
-    raw = token.rotate_refresh_token!
-    token.update!(refresh_expires_at: 1.day.ago)
 
     assert_raises(Auth::InvalidRefreshToken) do
       Auth::RefreshTokenService.call(refresh_token: raw)

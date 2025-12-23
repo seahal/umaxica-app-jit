@@ -379,15 +379,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_22_215659) do
     t.index ["user_id"], name: "index_user_passkeys_on_user_id"
   end
 
-  create_table "user_recovery_codes", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.date "expires_in"
-    t.string "recovery_code_digest"
-    t.datetime "updated_at", null: false
-    t.uuid "user_id"
-    t.index ["user_id"], name: "index_user_recovery_codes_on_user_id"
-  end
-
   create_table "user_workspaces", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -457,7 +448,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_22_215659) do
   add_foreign_key "user_memberships", "users"
   add_foreign_key "user_memberships", "workspaces"
   add_foreign_key "user_passkeys", "users"
-  add_foreign_key "user_recovery_codes", "users"
   add_foreign_key "user_workspaces", "users"
   add_foreign_key "user_workspaces", "workspaces"
   add_foreign_key "users", "user_identity_statuses"

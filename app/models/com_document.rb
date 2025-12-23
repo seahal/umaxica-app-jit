@@ -27,5 +27,5 @@ class ComDocument < BusinessesRecord
            class_name: "ComDocumentAudit",
            primary_key: "id",
            inverse_of: :com_document,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 end

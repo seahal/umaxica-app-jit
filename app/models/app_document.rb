@@ -22,7 +22,7 @@ class AppDocument < BusinessesRecord
            class_name: "AppDocumentAudit",
            primary_key: "id",
            inverse_of: :app_document,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 
   encrypts :title
   encrypts :description

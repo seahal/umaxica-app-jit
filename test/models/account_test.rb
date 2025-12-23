@@ -1,5 +1,5 @@
 require "test_helper"
-require_relative "../../app/models/account"
+require_relative "../../app/models/concerns/account"
 require_relative "../../app/models/user"
 require_relative "../../app/models/staff"
 

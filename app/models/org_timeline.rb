@@ -24,5 +24,5 @@ class OrgTimeline < BusinessesRecord
            class_name: "OrgTimelineAudit",
            primary_key: "id",
            inverse_of: :org_timeline,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 end

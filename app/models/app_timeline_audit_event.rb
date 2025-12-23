@@ -8,5 +8,5 @@ class AppTimelineAuditEvent < BusinessesRecord
            foreign_key: "event_id",
            primary_key: "id",
            inverse_of: :app_timeline_audit_event,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 end
