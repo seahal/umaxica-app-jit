@@ -34,4 +34,10 @@ class EmailOccurrenceStatusTest < ActiveSupport::TestCase
   test "has occurrences association" do
     assert_status_association(EmailOccurrenceStatus, :email_occurrences)
   end
+
+  test "expires_at default" do
+    record = EmailOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
+
+    assert_expires_at_default(record)
+  end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Help
   # Raised when contact ID parameter is blank
   class ContactIdRequiredError < ContactError

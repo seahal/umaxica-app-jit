@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Shared withdraw/recovery logic for accounts (User, Staff)
 module Withdrawable
   extend ActiveSupport::Concern
@@ -21,6 +19,7 @@ module Withdrawable
 
   def recovery_deadline
     return nil unless withdrawn_at
+
     withdrawn_at + WITHDRAWAL_RECOVERY_PERIOD
   end
 

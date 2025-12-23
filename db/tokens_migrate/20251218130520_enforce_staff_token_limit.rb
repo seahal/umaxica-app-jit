@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class EnforceStaffTokenLimit < ActiveRecord::Migration[8.2]
   FUNCTION_NAME = "check_staff_tokens_limit"
   TRIGGER_NAME = "enforce_staff_tokens_limit"

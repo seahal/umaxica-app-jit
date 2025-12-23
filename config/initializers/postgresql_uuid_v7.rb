@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Ensure PostgreSQL UUID primary keys default to uuidv7() so records are ordered by time.
 ActiveSupport.on_load(:active_record) do
   module UUIDv7PrimaryKey

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: app_documents
@@ -17,13 +15,14 @@
 #
 class AppDocument < BusinessesRecord
   include ::PublicId
+
   belongs_to :app_document_status, optional: true
 
   has_many :app_document_audits,
            class_name: "AppDocumentAudit",
            primary_key: "id",
            inverse_of: :app_document,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 
   encrypts :title
   encrypts :description

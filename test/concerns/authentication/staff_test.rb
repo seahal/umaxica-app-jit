@@ -85,9 +85,23 @@ class Authentication::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    assert @obj.cookies[:access_staff_token]
+    assert @obj.cookies[Authentication::Staff::ACCESS_COOKIE_KEY]
     assert_predicate @obj, :logged_in?
     assert_equal @staff, @obj.current_staff
+  end
+
+  test "log_in sets cookie expirations" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+
+    @obj.send(:log_in, @staff)
+
+    access_opts = @obj.cookies.options_for(Authentication::Staff::ACCESS_COOKIE_KEY)
+    refresh_opts = @obj.cookies.options_for(Authentication::Staff::REFRESH_COOKIE_KEY)
+
+    assert_operator access_opts[:expires], :>, 10.minutes.from_now
+    assert_operator access_opts[:expires], :<, 20.minutes.from_now
+    assert_operator refresh_opts[:expires], :>, 11.months.from_now
+    assert_operator refresh_opts[:expires], :<, 13.months.from_now
   end
 
   test "log_out clears session and current_staff" do
@@ -106,8 +120,8 @@ class Authentication::StaffTest < ActiveSupport::TestCase
     @obj.send(:log_in, @staff)
 
     assert_difference("StaffToken.count", -1) { @obj.send(:log_out) }
-    assert_nil @obj.cookies[:access_staff_token]
-    assert_nil @obj.cookies.encrypted[:refresh_staff_token]
+    assert_nil @obj.cookies[Authentication::Staff::ACCESS_COOKIE_KEY]
+    assert_nil @obj.cookies.encrypted[Authentication::Staff::REFRESH_COOKIE_KEY]
   end
 
   test "log_in derives shared cookie domain from host" do
@@ -116,7 +130,7 @@ class Authentication::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    assert_equal ".org.localhost", @obj.cookies.options_for(:access_staff_token)[:domain]
-    assert_equal ".org.localhost", @obj.cookies.options_for(:refresh_staff_token)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(Authentication::Staff::ACCESS_COOKIE_KEY)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(Authentication::Staff::REFRESH_COOKIE_KEY)[:domain]
   end
 end

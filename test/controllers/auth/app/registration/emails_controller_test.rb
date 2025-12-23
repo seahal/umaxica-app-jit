@@ -359,7 +359,8 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
           headers: default_headers
 
     # Verify JWT access token cookie was set
-    assert_not_nil cookies[:access_user_token], "Access token cookie should be set after successful registration"
+    assert_not_nil cookies[Authentication::User::ACCESS_COOKIE_KEY],
+                   "Access token cookie should be set after successful registration"
 
     # Verify user and token were created
     user = user_email.reload.user
@@ -413,11 +414,11 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
   private
 
-  def default_headers
-    { "Host" => host }
-  end
+    def default_headers
+      { "Host" => host, "HTTPS" => "on" }
+    end
 
-  def host
-    ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
-  end
+    def host
+      ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
+    end
 end

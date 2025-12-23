@@ -23,13 +23,13 @@ class AddPublicIdToContactTopics < ActiveRecord::Migration[8.2]
 
   private
 
-  def backfill_public_ids(table)
-    say_with_time "Backfilling public_id for #{table}" do
-      execute <<~SQL.squish
-        UPDATE #{table}
-        SET public_id = SUBSTR(REPLACE(gen_random_uuid()::text, '-', ''), 1, 21)
-        WHERE public_id IS NULL
-      SQL
+    def backfill_public_ids(table)
+      say_with_time "Backfilling public_id for #{table}" do
+        execute <<~SQL.squish
+          UPDATE #{table}
+          SET public_id = SUBSTR(REPLACE(gen_random_uuid()::text, '-', ''), 1, 21)
+          WHERE public_id IS NULL
+        SQL
+      end
     end
-  end
 end

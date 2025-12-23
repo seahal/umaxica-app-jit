@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Auth
   module Org
     module Setting
@@ -24,9 +22,9 @@ module Auth
 
         private
 
-        def render_not_implemented
-          render plain: I18n.t("errors.not_implemented")
-        end
+          def render_not_implemented
+            render plain: I18n.t("errors.not_implemented")
+          end
       end
     end
   end

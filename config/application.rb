@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative "boot"
 
 require "rails/all"
@@ -16,6 +14,7 @@ class DeprecationFilter
     msg_str = message.to_s
     return if msg_str.include?("ActiveSupport::Configurable is deprecated") ||
               msg_str.include?("You can emulate the previous behavior with")
+
     @original_stderr.write(message)
   end
 
@@ -24,6 +23,7 @@ class DeprecationFilter
       msg_str = message.to_s
       next if msg_str.include?("ActiveSupport::Configurable is deprecated") ||
               msg_str.include?("You can emulate the previous behavior with")
+
       @original_stderr.puts(message)
     end
   end

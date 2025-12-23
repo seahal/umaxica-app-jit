@@ -17,12 +17,12 @@ class UpdatePublicIdConstraintsOnIdentities < ActiveRecord::Migration[8.2]
 
   private
 
-  def backfill_public_ids(model)
-    model.reset_column_information
-    say_with_time("Ensuring #{model.name} public_id values") do
-      model.where(public_id: nil).find_each(batch_size: 100) do |record|
-        record.update!(public_id: Nanoid.generate(size: 21))
+    def backfill_public_ids(model)
+      model.reset_column_information
+      say_with_time("Ensuring #{model.name} public_id values") do
+        model.where(public_id: nil).find_each(batch_size: 100) do |record|
+          record.update!(public_id: Nanoid.generate(size: 21))
+        end
       end
     end
-  end
 end

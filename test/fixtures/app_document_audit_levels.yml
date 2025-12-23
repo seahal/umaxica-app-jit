@@ -1,0 +1,11 @@
+none:
+  id: NONE
+
+info:
+  id: INFO
+
+warn:
+  id: WARN
+
+error:
+  id: ERROR

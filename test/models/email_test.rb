@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: emails
@@ -13,7 +11,7 @@
 #
 require "test_helper"
 
-class AccountTest < ActiveSupport::TestCase
+class IdentityEmailTest < ActiveSupport::TestCase
   [ StaffIdentityEmail, UserIdentityEmail ].each do |model|
     test "#{model} valid with address and confirm_policy" do
       record = model.new(address: "eg@example.com", confirm_policy: true)

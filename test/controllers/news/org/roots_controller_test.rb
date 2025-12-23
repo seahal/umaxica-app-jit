@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
@@ -91,7 +89,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
-        assert_select "h1", text: "#{ brand_name } (news, org)"
+        assert_select "h1", text: "#{brand_name} (news, org)"
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
@@ -106,7 +104,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def brand_name
-    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-  end
+    def brand_name
+      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+    end
 end

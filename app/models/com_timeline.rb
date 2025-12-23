@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: com_timelines
@@ -17,6 +15,7 @@
 #
 class ComTimeline < BusinessesRecord
   include ::PublicId
+
   belongs_to :com_timeline_status, optional: true
 
   include Timeline
@@ -25,5 +24,5 @@ class ComTimeline < BusinessesRecord
            class_name: "ComTimelineAudit",
            primary_key: "id",
            inverse_of: :com_timeline,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class ZipOccurrenceTest < ActiveSupport::TestCase
@@ -66,5 +64,11 @@ class ZipOccurrenceTest < ActiveSupport::TestCase
     record = build_occurrence(ZipOccurrence, body: "1500001", public_id: custom_public_id)
 
     assert_public_id_preserved(record, custom_public_id)
+  end
+
+  test "expires_at default" do
+    record = build_occurrence(ZipOccurrence, body: "1700001", public_id: "Y" * 21)
+
+    assert_expires_at_default(record)
   end
 end

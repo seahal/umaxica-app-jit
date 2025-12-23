@@ -1,13 +1,26 @@
 <% content_for :page_title, "#{ENV['BRAND_NAME']} (com)" %>
 
-<section>
-  <h1>Welcome to <%= ENV['BRAND_NAME'] %> (com)</h2>
+<section class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-sm">
+    <h1 class="text-2xl font-semibold text-slate-900">
+      Welcome to <%= ENV["BRAND_NAME"] %> (com)
+    </h1>
+    <p class="mt-2 text-sm text-slate-600">
+      <%= t("peak.com.preferences.footer.preference") %> / <%= t("peak.com.preferences.footer.privacy") %> へすぐ移動できます。
+    </p>
 
-    <nav>
-      <ul>
-        <li><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>"><%= t('peak.com.preferences.footer.home') %></a></li>
-        <li><%= link_to t('peak.com.preferences.footer.preference'), peak_com_preference_path %></li>
-        <li><%= link_to t('peak.com.preferences.footer.privacy'), peak_com_privacy_path %></li>
+    <nav class="mt-6">
+      <ul class="space-y-2 text-sm">
+        <li>
+          <a class="text-slate-700 hover:text-slate-900 underline-offset-4 hover:underline" href="http://<%= ENV['EDGE_CORPORATE_URL'] %>" data-turbo-frame="_top">
+            <%= t("peak.com.preferences.footer.home") %>
+          </a>
+        </li>
+        <li>
+          <%= link_to t("peak.com.preferences.footer.preference"), peak_com_preference_path, class: "text-slate-700 hover:text-slate-900 underline-offset-4 hover:underline", data: { turbo_frame: "_top" } %>
+        </li>
+        <li>
+          <%= link_to t("peak.com.preferences.footer.privacy"), peak_com_privacy_path, class: "text-slate-700 hover:text-slate-900 underline-offset-4 hover:underline", data: { turbo_frame: "_top" } %>
+        </li>
       </ul>
     </nav>
 </section>

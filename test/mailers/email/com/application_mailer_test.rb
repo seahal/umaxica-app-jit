@@ -15,7 +15,8 @@ class Email::Com::ApplicationMailerTest < ActionMailer::TestCase
       end
     end
 
-    I18n.backend.store_translations(:en, { test: { email: { com: { application_mailer: { subject: "Com Sample" } } } } })
+    I18n.backend.store_translations(:en,
+                                    { test: { email: { com: { application_mailer: { subject: "Com Sample" } } } } })
     email = mailer.new.sample
 
     assert_equal [ expected_from ], email.from

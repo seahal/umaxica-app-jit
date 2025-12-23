@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: user_identity_emails
@@ -32,12 +30,12 @@ class UserIdentityEmail < IdentitiesRecord
 
   private
 
-  def enforce_user_email_limit
-    return unless user_id
+    def enforce_user_email_limit
+      return unless user_id
 
-    count = self.class.where(user_id: user_id).count
-    return if count < MAX_EMAILS_PER_USER
+      count = self.class.where(user_id: user_id).count
+      return if count < MAX_EMAILS_PER_USER
 
-    errors.add(:base, :too_many, message: "exceeds maximum emails per user (#{MAX_EMAILS_PER_USER})")
-  end
+      errors.add(:base, :too_many, message: "exceeds maximum emails per user (#{MAX_EMAILS_PER_USER})")
+    end
 end

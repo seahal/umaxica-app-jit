@@ -2,6 +2,12 @@
 
 one:
   staff: one
+  public_id: "STAFFTOKENPUBLICID001"
+  refresh_token_digest: "staff_refresh_digest_one"
+  refresh_expires_at: 2030-01-01 00:00:00
 
 two:
   staff: two
+  public_id: "STAFFTOKENPUBLICID002"
+  refresh_token_digest: "staff_refresh_digest_two"
+  refresh_expires_at: 2030-01-01 00:00:00

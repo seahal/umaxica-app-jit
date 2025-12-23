@@ -1,15 +1,12 @@
-# frozen_string_literal: true
-
 Rails.application.routes.draw do
   # global
   # top level pages
-  # TODO: RENAME => apex
+  # TODO: RENAME to root
   draw :peak
   # sign in / up
   draw :auth
   # regional
   ## back end of edge endpoints
-  # TODO: RENAME => back
   draw :core
   # endpoints for help
   draw :help

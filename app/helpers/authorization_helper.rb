@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Helper methods for checking authorization in views
 module AuthorizationHelper
   # Check if current actor is authorized for a given action on a record
@@ -109,14 +107,14 @@ module AuthorizationHelper
 
   private
 
-  # Get current actor (User or Staff)
-  def current_actor
-    @current_actor ||= begin
-                         if respond_to?(:current_user) && current_user
-                           current_user
-                         elsif respond_to?(:current_staff) && current_staff
-                           current_staff
-                         end
-                       end
-  end
+    # Get current actor (User or Staff)
+    def current_actor
+      @current_actor ||= begin
+        if respond_to?(:current_user) && current_user
+          current_user
+        elsif respond_to?(:current_staff) && current_staff
+          current_staff
+        end
+      end
+    end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class StaffIdentitySecretTest < ActiveSupport::TestCase
@@ -24,12 +22,12 @@ class StaffIdentitySecretTest < ActiveSupport::TestCase
 
   private
 
-  def create_secret!
-    StaffIdentitySecret.create!(
-      staff: @staff,
-      name: "Secret-#{SecureRandom.hex(4)}",
-      password: "SecurePass123!",
-      password_confirmation: "SecurePass123!"
-    )
-  end
+    def create_secret!
+      StaffIdentitySecret.create!(
+        staff: @staff,
+        name: "Secret-#{SecureRandom.hex(4)}",
+        password: "SecurePass123!",
+        password_confirmation: "SecurePass123!"
+      )
+    end
 end

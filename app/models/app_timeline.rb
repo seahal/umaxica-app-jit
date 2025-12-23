@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: app_timelines
@@ -17,6 +15,7 @@
 #
 class AppTimeline < BusinessesRecord
   include ::PublicId
+
   belongs_to :app_timeline_status, optional: true
 
   include Timeline
@@ -25,5 +24,5 @@ class AppTimeline < BusinessesRecord
            class_name: "AppTimelineAudit",
            primary_key: "id",
            inverse_of: :app_timeline,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 end

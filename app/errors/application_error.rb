@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Base exception class for application-wide custom errors
 class ApplicationError < StandardError
   def initialize(i18n_key = nil, status_code = :internal_server_error, **context)

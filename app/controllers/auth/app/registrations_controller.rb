@@ -9,7 +9,7 @@ module Auth
           },
           {
             key: :telephone,
-            path: new_auth_app_registration_telephone_path
+            path: new_auth_app_registration_passkey_path
           }
         ]
 

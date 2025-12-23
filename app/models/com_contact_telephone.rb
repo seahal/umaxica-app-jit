@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ComContactTelephone < GuestsRecord
   belongs_to :com_contact
 
@@ -13,7 +11,7 @@ class ComContactTelephone < GuestsRecord
 
   # Validations
   validates :telephone_number, presence: true,
-            format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
 
   # Generate and store OTP
   def generate_otp!
@@ -83,7 +81,7 @@ class ComContactTelephone < GuestsRecord
 
   private
 
-  def generate_id
-    self.id ||= Nanoid.generate(size: 21)
-  end
+    def generate_id
+      self.id ||= Nanoid.generate(size: 21)
+    end
 end

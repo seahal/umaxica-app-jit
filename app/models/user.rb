@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: users
@@ -10,10 +8,10 @@
 #  webauthn_id :string
 #
 class User < IdentitiesRecord
-  include Account
+  include ::Account
+  include ::PublicId
   include Withdrawable
   include HasRoles
-  include ::PublicId
 
   belongs_to :user_identity_status, optional: true
   has_one :user_identity_social_apple,
@@ -25,8 +23,6 @@ class User < IdentitiesRecord
   has_many :user_identity_telephones,
            dependent: :destroy
   has_many :user_identity_secrets,
-           dependent: :destroy
-  has_many :user_recovery_codes,
            dependent: :destroy
   has_many :user_identity_passkeys,
            dependent: :destroy
@@ -42,6 +38,10 @@ class User < IdentitiesRecord
            dependent: :destroy
   has_many :staff_identity_audits,
            as: :actor,
+           dependent: :destroy
+  has_many :user_messages,
+           dependent: :destroy
+  has_many :user_notifications,
            dependent: :destroy
 
   def staff?

@@ -1,9 +1,11 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 module Peak::Org::Preference
   class LocalesControllerTest < ActionDispatch::IntegrationTest
+    setup do
+      https!
+    end
+
     test "should include PreferenceLocales concern" do
       assert_includes LocalesController.included_modules, PreferenceLocales
     end

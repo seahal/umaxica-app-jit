@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ComContactCategory < GuestsRecord
   include UppercaseId
 

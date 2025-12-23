@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ProfilesRecord < ApplicationRecord
   self.abstract_class = true
 

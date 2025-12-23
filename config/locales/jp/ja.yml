@@ -620,23 +620,6 @@ ja:
     not_implemented: "機能はまだ実装されていません"
     messages:
       not_authorized: "この操作を行う権限がありません。"
-  seed:
-    roles:
-      admin:
-        description: "システム全体へのアクセス権。ユーザーと設定を管理し、削除を含む全ての操作が可能です。"
-      manager:
-        description: "コンテンツ管理と他ユーザーの投稿編集が可能。管理対象の削除権限があります。"
-      editor:
-        description: "全てのコンテンツを作成・編集可能。削除は自分の投稿のみです。"
-      contributor:
-        description: "コンテンツ作成と自分の投稿の編集のみ可能です。"
-      viewer:
-        description: "閲覧専用。作成や変更はできません。"
-  test_data:
-    contact_topic_description: "トピックの詳細です。"
-    inquiry_detail: "問い合わせの詳細です。"
-    format: '%{attribute}%{message}'
-    messages:
       login_required: "ログインが必要です"
       already_authenticated: "すでにログインしています"
       accepted: を受諾してください
@@ -666,9 +649,25 @@ ja:
       too_short: は%{count}文字以上で入力してください
       wrong_length: は%{count}文字で入力してください
       extension_allowlist_error: 許可されていないファイル形式です
+    format: '%{attribute}%{message}'
     template:
       body: 次の項目を確認してください
       header: '%{model}に%{count}個のエラーが発生しました'
+  seed:
+    roles:
+      admin:
+        description: "システム全体へのアクセス権。ユーザーと設定を管理し、削除を含む全ての操作が可能です。"
+      manager:
+        description: "コンテンツ管理と他ユーザーの投稿編集が可能。管理対象の削除権限があります。"
+      editor:
+        description: "全てのコンテンツを作成・編集可能。削除は自分の投稿のみです。"
+      contributor:
+        description: "コンテンツ作成と自分の投稿の編集のみ可能です。"
+      viewer:
+        description: "閲覧専用。作成や変更はできません。"
+  test_data:
+    contact_topic_description: "トピックの詳細です。"
+    inquiry_detail: "問い合わせの詳細です。"
   helpers:
     select:
       prompt: 選択してください
@@ -748,6 +747,7 @@ ja:
         themes:
           updated: テーマを%{theme}に更新しました
           invalid: 無効なテーマが選択されました
+        update_settings: 設定を更新
         back_to_settings: 設定一覧に戻る
         up_link: "うえへ"
         footer:
@@ -1088,6 +1088,25 @@ ja:
             invalid_code: "確認コードが正しくありません。残り%{attempts_left}回の試行が可能です。"
             max_attempts: "確認の試行回数が上限に達しました。新しいコードをリクエストしてください。"
             expired: "確認コードの有効期限が切れました。新しいコードをリクエストしてください。"
+    org:
+      contacts:
+        new:
+          page_title: "お問い合わせ"
+          heading: "お問い合わせフォーム"
+          description: "以下のフォームにご記入ください。"
+          email_address: "メールアドレス"
+          telephone_number: "電話番号"
+          contact_category_title: "お問い合わせ種別"
+          confirm_policy: "プライバシーポリシーに同意します"
+          submit: "次へ"
+          cancel: "キャンセル"
+        create:
+          success: "お問い合わせを受け付けました。メールアドレスを確認してください。"
+          failure: "お問い合わせを送信できませんでした。入力内容をご確認ください。"
+          turnstile_error: "セキュリティ検証に失敗しました。ページを更新して再度お試しください。"
+          confirm_policy_error: "続行するには、プライバシーポリシーに同意する必要があります。"
+        update:
+          success: "お問い合わせを受け付けました"
     contact:
       errors:
         id_required: "お問い合わせIDは必須です"

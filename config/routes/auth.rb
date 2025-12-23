@@ -9,18 +9,20 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
+          resource :csrf, only: :show
         end
         # Sign up pages
         resource :registration, only: :new
         namespace :registration do
           resources :emails, only: %i[new create edit update]
-          resources :telephones, only: %i[new create edit update]
+          resources :passkeys, only: %i[new create edit update]
         end
         # Sign In/Out pages
         resource :authentication, only: %i[new edit destroy]
         namespace :authentication do
           resource :email, only: %i[new create edit update]
-          resource :telephone, only: %i[new create]
+          resource :passkey, only: %i[new create edit update]
+          resource :recovery, only: %i[new create]
         end
         # Social SignUp or LogIn
         namespace :social do
@@ -40,9 +42,9 @@ Rails.application.routes.draw do
           end
           # TODO: Implement TOTP settings management
           resources :totps, only: [ :index, :new, :create, :edit ]
-          resources :recoveries, only: %i[index new create show edit update destroy]
+
           # TODO: Implement telephone settings management
-          # resources :telephones
+          # resources :passkeys
           # TODO: Implement email settings management
           # resources :emails
           # sign in with ***
@@ -50,6 +52,8 @@ Rails.application.routes.draw do
           resource :google, only: [ :show ]
           # TODO : Implement recovery code management
           resources :secrets
+          # TODO: Implement connected apps management
+          resources :sessions
         end
         # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
         namespace :token do
@@ -62,7 +66,7 @@ Rails.application.routes.draw do
       end
     end
 
-    # For Staff's webpages sign.org.localhost
+    # For Staff's Auth Management
     constraints host: ENV["AUTH_STAFF_URL"] do
       scope module: :org, as: :org do
         root to: "roots#index"
@@ -71,9 +75,13 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
+          resource :csrf, only: :show
         end
         # Login
-        resource :authentication, only: [ :new, :destroy ]
+        resource :authentication, only: [ :new, :destroy ] do
+          resource :passkey, only: %i[new create edit update]
+          resource :recovery, only: %i[new create]
+        end
         resource :setting, only: [ :show ]
         namespace :setting do
           # TODO: Implement TOTP settings (index, new, edit, update actions only)
@@ -82,6 +90,8 @@ Rails.application.routes.draw do
           # TODO: Implement email settings index
           # resources :emails, only: [ :index ]
           resources :secrets
+          # TODO: Implement connected apps management
+          resources :sessions
         end
         # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
         namespace :token do
@@ -91,24 +101,6 @@ Rails.application.routes.draw do
         resource :exit, only: [ :edit, :destroy ]
         # TODO: Implement owner management
         # resources :owner
-        # TODO: Implement customer management
-        # resources :customer
-        # TODO: Implement docs management
-        # resources :docs
-        # TODO: Implement news management
-        # resources :news
-        # TODO: Implement WWW docs creation
-        # namespace :top do
-        #   namespace :com do
-        #     resources :docs, only: %i[new]
-        #   end
-        #   namespace :app do
-        #     resources :docs, only: %i[new]
-        #   end
-        #   namespace :org do
-        #     resources :docs, only: %i[new]
-        #   end
-        # end
       end
     end
   end

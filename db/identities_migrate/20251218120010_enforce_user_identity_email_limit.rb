@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class EnforceUserIdentityEmailLimit < ActiveRecord::Migration[8.2]
   FUNCTION_NAME = "check_user_identity_emails_limit"
   TRIGGER_NAME = "enforce_user_identity_emails_limit"

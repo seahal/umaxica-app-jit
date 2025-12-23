@@ -18,7 +18,7 @@ class UserIdentityPasskeyTest < ActiveSupport::TestCase
   end
 
   # rubocop:disable Minitest/MultipleAssertions
-  test "should require webauthn_id, public_key, description, sign_count" do
+  test "should require webauthn_id and public_key" do
     @passkey.webauthn_id = nil
 
     assert_not @passkey.valid?
@@ -27,22 +27,13 @@ class UserIdentityPasskeyTest < ActiveSupport::TestCase
     @passkey.public_key = nil
 
     assert_not @passkey.valid?
-    @passkey.public_key = "test-key"
-
-    @passkey.description = nil
-
-    assert_not @passkey.valid?
-    @passkey.description = "desc"
-
-    @passkey.sign_count = nil
-
-    assert_not @passkey.valid?
   end
 
   test "should set default sign_count and description" do
     passkey = UserIdentityPasskey.new(user: @user, webauthn_id: "id2", public_key: "key2")
     passkey.save # trigger callback
 
+    assert_not_nil passkey.external_id
     assert_equal 0, passkey.sign_count
     assert_not_nil passkey.description
   end

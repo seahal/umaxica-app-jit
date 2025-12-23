@@ -1,9 +1,12 @@
-# frozen_string_literal: true
+# NOTE: If this code is only included in Staff controllers, consider moving to app/controllers/concerns/authentication/staff.rb
 
 module Authentication
   module Staff
     include Authentication::Base
     extend ActiveSupport::Concern
+
+    ACCESS_COOKIE_KEY = :"__Secure-access_staff_token"
+    REFRESH_COOKIE_KEY = :"__Secure-refresh_staff_token"
 
     included do
       helper_method :current_staff, :logged_in? if respond_to?(:helper_method)
@@ -31,7 +34,7 @@ module Authentication
       end
 
       # Extract token from Authorization header (Bearer) or Cookie
-      access_token = extract_access_token(:access_staff_token)
+      access_token = extract_access_token(ACCESS_COOKIE_KEY)
       return nil if access_token.blank?
 
       begin
@@ -58,18 +61,19 @@ module Authentication
       token = TokensRecord.connected_to(role: :writing) do
         StaffToken.create!(staff_id: staff.id)
       end
-      credentials = generate_access_token(staff)
+      refresh_token = token.rotate_refresh_token!
+      credentials = generate_access_token(staff, session_public_id: token.public_id)
 
       # For non-JSON requests (browser), set cookies
       unless request.format.json?
         # ACCESS_TOKEN: Short-lived JWT (15 minutes)
-        cookies[:access_staff_token] = cookie_options.merge(
+        cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
           value: credentials,
           expires: ACCESS_TOKEN_EXPIRY.from_now
         )
         # REFRESH_TOKEN: Long-lived (1 year)
-        cookies.encrypted[:refresh_staff_token] = cookie_options.merge(
-          value: token.id,
+        cookies.encrypted[REFRESH_COOKIE_KEY] = cookie_options.merge(
+          value: refresh_token,
           expires: 1.year.from_now
         )
       end
@@ -79,22 +83,21 @@ module Authentication
       # Return tokens for JSON API clients
       {
         access_token: credentials,
-        refresh_token: token.id,
+        refresh_token: refresh_token,
         token_type: "Bearer",
         expires_in: Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i
       }
     end
 
-    def refresh_access_token(refresh_token_id)
-      # Find and validate the old refresh token
-      old_token = StaffToken.find_by(id: refresh_token_id)
+    def refresh_access_token(refresh_token)
+      result = Auth::RefreshTokenService.call(refresh_token: refresh_token)
+      old_token = result[:token]
 
-      unless old_token
+      unless old_token.is_a?(StaffToken)
         Rails.event.notify("staff.token.refresh.failed",
-                           refresh_token_id: refresh_token_id,
+                           refresh_token_id: refresh_token,
                            reason: "token_not_found",
-                           ip_address: request_ip_address
-        )
+                           ip_address: request_ip_address)
         return nil
       end
 
@@ -103,65 +106,60 @@ module Authentication
       unless staff&.active?
         Rails.event.notify("staff.token.refresh.failed",
                            staff_id: staff&.id,
-                           refresh_token_id: refresh_token_id,
+                           refresh_token_id: refresh_token,
                            reason: "staff_inactive",
-                           ip_address: request_ip_address
-        )
-        TokensRecord.connected_to(role: :writing) { old_token.destroy }
+                           ip_address: request_ip_address)
+        TokensRecord.connected_to(role: :writing) { old_token.destroy! }
         return nil
       end
 
-      # Create new refresh token (rotation)
-      new_refresh_token = TokensRecord.connected_to(role: :writing) do
-        StaffToken.create!(staff_id: staff.id)
-      end
-
       # Generate new access token
-      new_access_token = generate_access_token(staff)
-
-      # Revoke old refresh token
-      TokensRecord.connected_to(role: :writing) { old_token.destroy }
+      new_access_token = generate_access_token(staff, session_public_id: old_token.public_id)
 
       Rails.event.notify("staff.token.refreshed",
                          staff_id: staff.id,
-                         old_refresh_token_id: old_token.id,
-                         new_refresh_token_id: new_refresh_token.id,
-                         ip_address: request_ip_address
-      )
+                         old_refresh_token_id: old_token.public_id,
+                         new_refresh_token_id: result[:refresh_token],
+                         ip_address: request_ip_address)
 
       # Return new tokens
       {
         access_token: new_access_token,
-        refresh_token: new_refresh_token.id,
+        refresh_token: result[:refresh_token],
         token_type: "Bearer",
         expires_in: Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i
       }
+    rescue Auth::InvalidRefreshToken => e
+      Rails.event.notify("staff.token.refresh.failed",
+                         refresh_token_id: refresh_token,
+                         reason: e.class.name,
+                         ip_address: request_ip_address)
+      nil
     rescue StandardError => e
       Rails.event.notify("staff.token.refresh.error",
                          staff_id: staff&.id,
-                         refresh_token_id: refresh_token_id,
+                         refresh_token_id: refresh_token,
                          error_class: e.class.name,
                          error_message: e.message,
-                         ip_address: request_ip_address
-      )
+                         ip_address: request_ip_address)
       nil
     end
 
     def log_out
       staff = current_staff
-      if (token_id = cookies.encrypted[:refresh_staff_token])
+      if (token_value = cookies.encrypted[REFRESH_COOKIE_KEY])
         begin
-          StaffToken.find_by(id: token_id)&.destroy
+          public_id, = StaffToken.parse_refresh_token(token_value)
+          StaffToken.find_by(public_id: public_id)&.destroy if public_id
         rescue ActiveRecord::RecordNotDestroyed => e
           Rails.event.notify("staff.token.destroy.failed",
-                             token_id: token_id,
+                             token_id: token_value,
                              error_message: e.message,
-                             ip_address: request_ip_address
-          )
+                             ip_address: request_ip_address)
         end
       end
-      cookies.delete :access_staff_token, **cookie_deletion_options
-      cookies.delete :refresh_staff_token, **cookie_deletion_options
+      cookies.delete ACCESS_COOKIE_KEY, **cookie_deletion_options
+      cookies.delete REFRESH_COOKIE_KEY, **cookie_deletion_options
       record_staff_identity_audit(AUDIT_EVENTS[:logged_out], staff: staff) if staff
       reset_session
       @current_staff = nil
@@ -174,26 +172,27 @@ module Authentication
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
         rt = Base64.urlsafe_encode64(request.original_url)
-        redirect_to new_auth_org_authentication_url(rt: rt, host: ENV["AUTH_STAFF_URL"]), allow_other_host: true, alert: I18n.t("errors.messages.login_required")
+        redirect_to new_auth_org_authentication_url(rt: rt, host: ENV["AUTH_STAFF_URL"]), allow_other_host: true,
+                                                                                          alert: I18n.t("errors.messages.login_required")
       end
     end
 
     private
 
-    def record_staff_identity_audit(event_id, staff:, actor: staff)
-      return unless staff && event_id
+      def record_staff_identity_audit(event_id, staff:, actor: staff)
+        return unless staff && event_id
 
-      ::StaffIdentityAudit.create!(
-        staff: staff,
-        actor: actor,
-        event_id: event_id,
-        ip_address: request_ip_address,
-        timestamp: Time.current
-      )
-    end
+        ::StaffIdentityAudit.create!(
+          staff: staff,
+          actor: actor,
+          event_id: event_id,
+          ip_address: request_ip_address,
+          timestamp: Time.current
+        )
+      end
 
-    def request_ip_address
-      respond_to?(:request, true) && request ? request.remote_ip : nil
-    end
+      def request_ip_address
+        respond_to?(:request, true) && request ? request.remote_ip : nil
+      end
   end
 end

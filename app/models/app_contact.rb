@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: app_contacts
@@ -15,6 +13,7 @@
 #
 class AppContact < GuestsRecord
   include ::PublicId
+
   # Associations
   belongs_to :app_contact_category,
              class_name: "AppContactCategory",
@@ -70,16 +69,19 @@ class AppContact < GuestsRecord
 
   def verify_email!
     raise StandardError, "Cannot verify email at this time" unless can_verify_email?
+
     update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
     raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
+
     update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
     raise StandardError, "Cannot complete contact at this time" unless can_complete?
+
     update!(contact_status_id: "COMPLETED_CONTACT_ACTION")
   end
 
@@ -117,12 +119,12 @@ class AppContact < GuestsRecord
 
   private
 
-  def generate_token
-    self.token ||= SecureRandom.alphanumeric(32)
-  end
+    def generate_token
+      self.token ||= SecureRandom.alphanumeric(32)
+    end
 
-  def set_default_category_and_status
-    self.contact_category_title ||= "NULL_APP_CATEGORY"
-    self.contact_status_id ||= "NULL_APP_STATUS"
-  end
+    def set_default_category_and_status
+      self.contact_category_title ||= "NULL_APP_CATEGORY"
+      self.contact_status_id ||= "NULL_APP_STATUS"
+    end
 end

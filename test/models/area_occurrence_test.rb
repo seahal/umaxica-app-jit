@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class AreaOccurrenceTest < ActiveSupport::TestCase
@@ -66,5 +64,11 @@ class AreaOccurrenceTest < ActiveSupport::TestCase
     record = build_occurrence(AreaOccurrence, body: "JP/Tokyo/Shinjuku", public_id: custom_public_id)
 
     assert_public_id_preserved(record, custom_public_id)
+  end
+
+  test "expires_at default" do
+    record = build_occurrence(AreaOccurrence, body: "JP/Kyoto/Sakyo", public_id: "Y" * 21)
+
+    assert_expires_at_default(record)
   end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class OrgContactEmail < GuestsRecord
   belongs_to :org_contact
 
@@ -45,7 +43,7 @@ class OrgContactEmail < GuestsRecord
 
   private
 
-  def generate_id
-    self.id ||= Nanoid.generate(size: 21)
-  end
+    def generate_id
+      self.id ||= Nanoid.generate(size: 21)
+    end
 end

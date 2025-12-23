@@ -3,6 +3,7 @@ module Help
     class ContactsController < ApplicationController
       include CloudflareTurnstile
       include Rotp
+
       before_action :set_contact, only: %i[show edit]
 
       def show; end
@@ -62,9 +63,9 @@ module Help
 
           # Redirect with proper host options
           redirect_to new_help_app_contact_email_url(
-                        contact_id: @contact.public_id,
-                        **help_email_redirect_options
-                      ), notice: I18n.t("help.app.contacts.create.success")
+            contact_id: @contact.public_id,
+            **help_email_redirect_options
+          ), notice: I18n.t("help.app.contacts.create.success")
         else
           # Validation failed: re-render form with errors
           @email_address = params.dig(:app_contact, :email_address) || ""
@@ -76,31 +77,31 @@ module Help
 
       private
 
-      def help_email_redirect_options
-        {
-          host: help_service_host,
-          port: request.port,
-          protocol: request.protocol.delete_suffix("://")
-        }.compact
-      end
-
-      def help_service_host
-        host_value = ENV["HELP_SERVICE_URL"].presence || request.host
-        return request.host if host_value.blank?
-
-        # Extract hostname from URL or host string, removing port if present
-        begin
-          uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
-          uri.host || host_value.split(":").first
-        rescue URI::InvalidURIError
-          # If parsing fails, try to extract hostname by removing port
-          host_value.split(":").first
+        def help_email_redirect_options
+          {
+            host: help_service_host,
+            port: request.port,
+            protocol: request.protocol.delete_suffix("://")
+          }.compact
         end
-      end
 
-      def set_contact
-        @contact = AppContact.find_by!(public_id: params[:id])
-      end
+        def help_service_host
+          host_value = ENV["HELP_SERVICE_URL"].presence || request.host
+          return request.host if host_value.blank?
+
+          # Extract hostname from URL or host string, removing port if present
+          begin
+            uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
+            uri.host || host_value.split(":").first
+          rescue URI::InvalidURIError
+            # If parsing fails, try to extract hostname by removing port
+            host_value.split(":").first
+          end
+        end
+
+        def set_contact
+          @contact = AppContact.find_by!(public_id: params[:id])
+        end
     end
   end
 end

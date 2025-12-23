@@ -5,43 +5,36 @@
 
 ## Prerequisites
 
-- Ruby 3.4+ (see `Gemfile` for the exact version)
-  - Bundler 2.5+ (shipped with modern Ruby installations)
-- Bun 1.3.x (plus Node.js 20+ if a package requires Node APIs)
-- Docker (recommended for local infrastructure parity)
+- Ruby 4.0+ (see `Gemfile` for the exact version)
+  - Bundler 4.0+ (shipped with modern Ruby installations)
+- Bun 1.3.x
+- Docker (local infrastructure parity)
   - Access to PostgreSQL, Valkey (Redis-compatible), and Kafka instances
 
 ## Initial Setup
-
+0. Set up Docker compose and run it: `docker compoe up`
 1. Install Ruby dependencies: `bundle install`
 2. Install JavaScript/TypeScript dependencies: `bun install`
 3. Prepare the database (creates, migrates, seeds as`
 4. ... run `bin/dev`
 
 ## Database IDs
-
 - PostgreSQL 18 UUID primary keys default to `uuidv7()` so inserts remain time-ordered.
-- New tables created with `create_table :foos, id: :uuid do |t| ... end` automatically use the function via `config/initializers/postgresql_uuid_v7.rb`.
-- If you need a custom generator, pass an explicit `default:` when defining the primary key.
 
 ## Testing
 - Rails test suite (parallelized): `bundle exec rails test`
 - Coverage can be calculated (or measured) when you execute the test suite using the command `COVERAGE=true bin/rails test.`
 
 ## Linting & Formatting
-
 - Ruby style checks: `bundle exec rubocop`
 - ERB templates: `bundle exec erb_lint .`
-- Frontend formatting and linting: `bun run format`, `bun run lint`
+- Frontend formatting and linting: `bun run check`
 
 ## Logging
-
 - Rails emits structured logs via `Rails.event` (ActiveSupport::Notifications) rather than `Rails.logger`.
 - Use `Rails.event.record("event.name", payload_hash)` or `Rails.event.error(...)` so logs stay machine-parseable.
-- Legacy `Rails.logger.*` calls should be migrated when touched to keep log output consistent.
 
 ## Key Services & Integrations
-
 - Data and messaging: PostgreSQL, Valkey (Redis), Kafka
 - Default infrastructure ports: Valkey exposed on host port 56379 (override with `VALKEY_HOST_PORT`)
 - Email and Telecomunication:
@@ -51,6 +44,7 @@
 - Content delivery Network
   - Cloudflare (R2)
   - Fastly CDN
+  - Amazon Cloudflnt
 - Cloud platforms:
   - Google Cloud (Cloud Run, Cloud Build, Cloud Storage, Artifact Registry, OAuth)
   - Apple (Social login)
@@ -90,6 +84,7 @@
     - `[jp|us].news.umaxica.org`
   - Network endpoints:
     - `asset-[jp|us].umaxica.net`
+    - `css.umaxica.net`
       - NOTE: This endopoints are not run on Ruby on Rails
 
 ## Secrets & Credentials

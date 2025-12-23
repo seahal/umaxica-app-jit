@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class DomainOccurrenceStatusTest < ActiveSupport::TestCase
@@ -35,5 +33,11 @@ class DomainOccurrenceStatusTest < ActiveSupport::TestCase
 
   test "has occurrences association" do
     assert_status_association(DomainOccurrenceStatus, :domain_occurrences)
-end
+  end
+
+  test "expires_at default" do
+    record = DomainOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
+
+    assert_expires_at_default(record)
+  end
 end

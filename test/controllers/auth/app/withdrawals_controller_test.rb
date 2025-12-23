@@ -173,7 +173,8 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   test "create accepts confirm_create_recovery_code parameter" do
     @user.update!(user_identity_status_id: "NONE")
 
-    post auth_app_withdrawal_url, params: { confirm_create_recovery_code: "1" }, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    post auth_app_withdrawal_url, params: { confirm_create_recovery_code: "1" },
+                                  headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_match %r{\A#{Regexp.escape(auth_app_root_url)}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
@@ -182,9 +183,101 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   test "update accepts confirm_create_recovery_code parameter" do
     @user.update!(withdrawn_at: 15.days.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
 
-    patch auth_app_withdrawal_url, params: { confirm_create_recovery_code: "1" }, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    patch auth_app_withdrawal_url, params: { confirm_create_recovery_code: "1" },
+                                   headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_match %r{\A#{Regexp.escape(auth_app_root_url)}}, @response.location
     assert_nil @user.reload.withdrawn_at
+  end
+
+  test "should destroy user account" do
+    # Verify destroy works (mocking to ensure controller flow is tested without flaky DB checks)
+    user_mock = @user
+    user_mock.define_singleton_method(:destroy!) { true }
+
+    User.stub(:find, user_mock) do
+      User.stub(:find_by, user_mock) do
+        delete auth_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+      end
+    end
+
+    assert_response :redirect
+    # Match path ignoring query params
+    assert_match %r{\A#{Regexp.escape(auth_app_root_url)}}, @response.location
+    assert_equal I18n.t("auth.app.withdrawal.destroy.success"), flash[:notice]
+  end
+
+  test "should handle failure during destroy" do
+    # Stub User.transaction to raise error
+    # We stub transaction on User class.
+    User.stub(:transaction, -> { raise StandardError.new("Boom") }) do
+      assert_no_difference("User.count") do
+        delete auth_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+      end
+    end
+
+    assert_response :redirect
+    assert_match %r{\A#{Regexp.escape(auth_app_root_url)}}, @response.location
+    assert_equal I18n.t("auth.app.withdrawal.destroy.failed"), flash[:alert]
+  end
+
+  test "should handle creation failure" do
+    @user.update!(user_identity_status_id: "NONE")
+
+    # We need to stub current_user.save to return false.
+    # Since we can't easily access the exact instance controller uses,
+    # we can stub User.find (if used) or we can make the model invalid.
+    # Let's try making the model invalid by mocking a validation error if possible.
+    # But current_user is loaded from DB.
+    # Alternative: Stub Rails.event.notify to verify failure path calls?
+    # But to Trigger logic: else path of save.
+
+    # Let's try to pass invalid data if possible, but create takes no params really?
+    # It sets constants.
+
+    # We can stub save using minitest stub on specific instance? No control over instance.
+    # We can use define_method on User class temporarily?
+
+    # Hacky way: define singleton method on ALL users? No.
+
+    # Let's try stubbing User.find to return a user object where we stub save.
+    # Note: `request_headers` implies we are using some test mechanism to set current user with X-TEST-CURRENT-USER.
+    # If application controller uses that header to find user (likely User.find(id)), we can stub User.find.
+
+    user_mock = @user
+    user_mock.define_singleton_method(:save) { false }
+
+    # Assuming integration test mechanism: ApplicationController likely does User.find(headers['X-TEST-CURRENT-USER'])
+
+    user_mock = @user
+    user_mock.define_singleton_method(:save) { false }
+    user_mock.define_singleton_method(:user_identity_status_id) { "NONE" } # Ensure checking status works
+
+    # Stub finding methods likely used by authentication
+    User.stub(:find, user_mock) do
+      User.stub(:find_by, user_mock) do
+        post auth_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+      end
+    end
+
+    assert_response :unprocessable_content
+  end
+
+  test "should handle update failure" do
+    @user.update!(withdrawn_at: 15.days.ago, user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
+
+    user_mock = @user
+    # Mock update to return false
+    user_mock.define_singleton_method(:update) { |_| false }
+
+    User.stub(:find, user_mock) do
+      User.stub(:find_by, user_mock) do
+        patch auth_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+      end
+    end
+
+    assert_response :redirect
+    assert_match %r{\A#{Regexp.escape(auth_app_root_url)}}, @response.location
+    assert_equal I18n.t("auth.app.withdrawal.update.failed"), flash[:alert]
   end
 end

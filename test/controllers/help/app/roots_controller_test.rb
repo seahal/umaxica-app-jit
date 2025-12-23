@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
@@ -15,6 +13,13 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select("html[lang=?]", "ja")
     assert_not_select("html[lang=?]", "")
+  end
+
+  test "renders contact link" do
+    get help_app_root_url
+
+    assert_response :success
+    assert_select "a[href^=?]", new_help_app_contact_path
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -38,7 +43,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def brand_name
-    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-  end
+    def brand_name
+      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+    end
 end

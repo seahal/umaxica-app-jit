@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 module Help
@@ -127,12 +125,12 @@ module Help
 
         assert_difference("ComContactTopic.count") do
           patch help_com_contact_url(contact), params: {
-          com_contact_topic: {
-            title: "", # Invalid: title is blank
-            description: I18n.t("test_data.contact_topic_description")
-          }
-        }, headers: { "Host" => @host }
-      end
+            com_contact_topic: {
+              title: "", # Invalid: title is blank
+              description: I18n.t("test_data.contact_topic_description")
+            }
+          }, headers: { "Host" => @host }
+        end
 
         assert_response :redirect
         assert_match %r{/contacts/#{contact.public_id}}, response.location
@@ -140,16 +138,16 @@ module Help
 
       private
 
-      def post_valid_contact
-        post help_com_contacts_url, params: {
-          com_contact: {
-            contact_category_title: "SECURITY_ISSUE",
-            email_address: "test@example.com",
-            telephone_number: "123-456-7890",
-            confirm_policy: "1"
-          }
-        }, headers: { "Host" => @host }
-      end
+        def post_valid_contact
+          post help_com_contacts_url, params: {
+            com_contact: {
+              contact_category_title: "SECURITY_ISSUE",
+              email_address: "test@example.com",
+              telephone_number: "123-456-7890",
+              confirm_policy: "1"
+            }
+          }, headers: { "Host" => @host }
+        end
     end
   end
 end

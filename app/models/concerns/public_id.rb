@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module PublicId
   extend ActiveSupport::Concern
 
@@ -10,7 +8,7 @@ module PublicId
 
   private
 
-  def generate_public_id
-    self.public_id ||= Nanoid.generate(size: 21)
-  end
+    def generate_public_id
+      self.public_id ||= Nanoid.generate(size: 21)
+    end
 end

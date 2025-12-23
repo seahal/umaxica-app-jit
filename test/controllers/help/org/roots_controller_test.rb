@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
@@ -17,6 +15,13 @@ class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_not_select("html[lang=?]", "")
   end
 
+  test "renders contact link" do
+    get help_org_root_url
+
+    assert_response :success
+    assert_select "a[href^=?]", new_help_org_contact_path
+  end
+
   # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get help_org_root_url
@@ -27,7 +32,7 @@ class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
-        assert_select "h1", text: "#{ brand_name } (help, org)"
+        assert_select "h1", text: "#{brand_name} (help, org)"
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
@@ -39,7 +44,7 @@ class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def brand_name
-    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-  end
+    def brand_name
+      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+    end
 end

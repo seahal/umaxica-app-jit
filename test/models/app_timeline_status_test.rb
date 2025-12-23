@@ -2,6 +2,7 @@ require "test_helper"
 
 class AppTimelineStatusTest < ActiveSupport::TestCase
   include StatusModelTestHelper
+
   fixtures :app_timeline_statuses
 
   def setup

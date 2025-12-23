@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class EnforceUniqueUserOauths < ActiveRecord::Migration[8.2]
   def change
     if table_exists?(:user_google_auths)

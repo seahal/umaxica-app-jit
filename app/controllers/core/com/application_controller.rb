@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Core
   module Com
     class ApplicationController < ActionController::Base

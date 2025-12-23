@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # NOTE: Accounts Database would run on global unique database.
 
 # IdentityRecord is a base class for models that should only have a single record.

@@ -1,5 +1,5 @@
 <div id="help-com-react-root" class="min-h-[60vh]">
-  <noscript>
+
     <section class="prose max-w-none">
       <h2><%= ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %> Help Center</h2>
       <p>JavaScript を有効にすると、React Aria を使ったインタラクティブな体験をご覧いただけます。</p>
@@ -9,7 +9,7 @@
         <li><%= I18n.t "hello" %></li>
         <li><%= Time.now.in_time_zone("Tokyo") %></li>
         <li><%= to_localetime Time.now, 'jst' %></li>
+        <li><%= link_to "Contact", new_help_com_contact_path %></li>
       </ul>
-    </section>
   </noscript>
 </div>

@@ -10,15 +10,15 @@ class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
     end
 
     add_index :solid_queue_blocked_executions,
-      %i[concurrency_key priority job_id],
-      name: :index_solid_queue_blocked_executions_for_release
+              %i[concurrency_key priority job_id],
+              name: :index_solid_queue_blocked_executions_for_release
     add_index :solid_queue_blocked_executions,
-      %i[expires_at concurrency_key],
-      name: :index_solid_queue_blocked_executions_for_maintenance
+              %i[expires_at concurrency_key],
+              name: :index_solid_queue_blocked_executions_for_maintenance
     add_index :solid_queue_blocked_executions,
-      :job_id,
-      name: :index_solid_queue_blocked_executions_on_job_id,
-      unique: true
+              :job_id,
+              name: :index_solid_queue_blocked_executions_on_job_id,
+              unique: true
 
     create_table :solid_queue_claimed_executions do |t|
       t.bigint :job_id, null: false
@@ -27,12 +27,12 @@ class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
     end
 
     add_index :solid_queue_claimed_executions,
-      :job_id,
-      name: :index_solid_queue_claimed_executions_on_job_id,
-      unique: true
+              :job_id,
+              name: :index_solid_queue_claimed_executions_on_job_id,
+              unique: true
     add_index :solid_queue_claimed_executions,
-      %i[process_id job_id],
-      name: :index_solid_queue_claimed_executions_on_process_id_and_job_id
+              %i[process_id job_id],
+              name: :index_solid_queue_claimed_executions_on_process_id_and_job_id
 
     create_table :solid_queue_failed_executions do |t|
       t.bigint :job_id, null: false
@@ -41,9 +41,9 @@ class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
     end
 
     add_index :solid_queue_failed_executions,
-      :job_id,
-      name: :index_solid_queue_failed_executions_on_job_id,
-      unique: true
+              :job_id,
+              name: :index_solid_queue_failed_executions_on_job_id,
+              unique: true
 
     create_table :solid_queue_jobs do |t|
       t.string :queue_name, null: false
@@ -62,11 +62,11 @@ class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
     add_index :solid_queue_jobs, :class_name, name: :index_solid_queue_jobs_on_class_name
     add_index :solid_queue_jobs, :finished_at, name: :index_solid_queue_jobs_on_finished_at
     add_index :solid_queue_jobs,
-      %i[queue_name finished_at],
-      name: :index_solid_queue_jobs_for_filtering
+              %i[queue_name finished_at],
+              name: :index_solid_queue_jobs_for_filtering
     add_index :solid_queue_jobs,
-      %i[scheduled_at finished_at],
-      name: :index_solid_queue_jobs_for_alerting
+              %i[scheduled_at finished_at],
+              name: :index_solid_queue_jobs_for_alerting
 
     create_table :solid_queue_pauses do |t|
       t.string :queue_name, null: false
@@ -88,12 +88,12 @@ class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
 
     add_index :solid_queue_processes, :last_heartbeat_at, name: :index_solid_queue_processes_on_last_heartbeat_at
     add_index :solid_queue_processes,
-      %i[name supervisor_id],
-      name: :index_solid_queue_processes_on_name_and_supervisor_id,
-      unique: true
+              %i[name supervisor_id],
+              name: :index_solid_queue_processes_on_name_and_supervisor_id,
+              unique: true
     add_index :solid_queue_processes,
-      :supervisor_id,
-      name: :index_solid_queue_processes_on_supervisor_id
+              :supervisor_id,
+              name: :index_solid_queue_processes_on_supervisor_id
 
     create_table :solid_queue_ready_executions do |t|
       t.bigint :job_id, null: false
@@ -103,15 +103,15 @@ class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
     end
 
     add_index :solid_queue_ready_executions,
-      :job_id,
-      name: :index_solid_queue_ready_executions_on_job_id,
-      unique: true
+              :job_id,
+              name: :index_solid_queue_ready_executions_on_job_id,
+              unique: true
     add_index :solid_queue_ready_executions,
-      %i[priority job_id],
-      name: :index_solid_queue_poll_all
+              %i[priority job_id],
+              name: :index_solid_queue_poll_all
     add_index :solid_queue_ready_executions,
-      %i[queue_name priority job_id],
-      name: :index_solid_queue_poll_by_queue
+              %i[queue_name priority job_id],
+              name: :index_solid_queue_poll_by_queue
 
     create_table :solid_queue_recurring_executions do |t|
       t.bigint :job_id, null: false
@@ -121,13 +121,13 @@ class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
     end
 
     add_index :solid_queue_recurring_executions,
-      :job_id,
-      name: :index_solid_queue_recurring_executions_on_job_id,
-      unique: true
+              :job_id,
+              name: :index_solid_queue_recurring_executions_on_job_id,
+              unique: true
     add_index :solid_queue_recurring_executions,
-      %i[task_key run_at],
-      name: :index_solid_queue_recurring_executions_on_task_key_and_run_at,
-      unique: true
+              %i[task_key run_at],
+              name: :index_solid_queue_recurring_executions_on_task_key_and_run_at,
+              unique: true
 
     create_table :solid_queue_recurring_tasks do |t|
       t.string :key, null: false
@@ -155,12 +155,12 @@ class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
     end
 
     add_index :solid_queue_scheduled_executions,
-      :job_id,
-      name: :index_solid_queue_scheduled_executions_on_job_id,
-      unique: true
+              :job_id,
+              name: :index_solid_queue_scheduled_executions_on_job_id,
+              unique: true
     add_index :solid_queue_scheduled_executions,
-      %i[scheduled_at priority job_id],
-      name: :index_solid_queue_dispatch_all
+              %i[scheduled_at priority job_id],
+              name: :index_solid_queue_dispatch_all
 
     create_table :solid_queue_semaphores do |t|
       t.string :key, null: false
@@ -171,15 +171,15 @@ class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
     end
 
     add_index :solid_queue_semaphores,
-      :expires_at,
-      name: :index_solid_queue_semaphores_on_expires_at
+              :expires_at,
+              name: :index_solid_queue_semaphores_on_expires_at
     add_index :solid_queue_semaphores,
-      %i[key value],
-      name: :index_solid_queue_semaphores_on_key_and_value
+              %i[key value],
+              name: :index_solid_queue_semaphores_on_key_and_value
     add_index :solid_queue_semaphores,
-      :key,
-      name: :index_solid_queue_semaphores_on_key,
-      unique: true
+              :key,
+              name: :index_solid_queue_semaphores_on_key,
+              unique: true
 
     add_foreign_key :solid_queue_blocked_executions, :solid_queue_jobs, column: :job_id, on_delete: :cascade
     add_foreign_key :solid_queue_claimed_executions, :solid_queue_jobs, column: :job_id, on_delete: :cascade

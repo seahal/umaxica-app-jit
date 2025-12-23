@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Preference constants shared across the application
 # These constants define the structure and default values for user preferences
 # stored in cookies, particularly for language, region, timezone, and theme settings.
@@ -20,5 +18,5 @@ module PreferenceConstants
   }.freeze
 
   # Cookie key used to store user preferences
-  PREFERENCE_COOKIE_KEY = :root_app_preferences
+  PREFERENCE_COOKIE_KEY = :"__Secure-root_app_preferences"
 end

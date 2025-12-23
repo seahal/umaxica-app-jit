@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_18_130520) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_22_223000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -20,9 +20,18 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_130520) do
 
   create_table "staff_tokens", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "last_used_at"
+    t.string "public_id", limit: 21, null: false
+    t.datetime "refresh_expires_at", null: false
+    t.string "refresh_token_digest"
+    t.datetime "revoked_at"
+    t.datetime "rotated_at"
     t.uuid "staff_id", null: false
     t.string "staff_token_status_id", default: "NONE", null: false
     t.datetime "updated_at", null: false
+    t.index ["public_id"], name: "index_staff_tokens_on_public_id", unique: true
+    t.index ["refresh_expires_at"], name: "index_staff_tokens_on_refresh_expires_at"
+    t.index ["revoked_at"], name: "index_staff_tokens_on_revoked_at"
   end
 
   create_table "user_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
@@ -30,9 +39,18 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_18_130520) do
 
   create_table "user_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "last_used_at"
+    t.string "public_id", limit: 21, null: false
+    t.datetime "refresh_expires_at", null: false
+    t.string "refresh_token_digest"
+    t.datetime "revoked_at"
+    t.datetime "rotated_at"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_token_status_id", default: "NONE", null: false
+    t.index ["public_id"], name: "index_user_tokens_on_public_id", unique: true
+    t.index ["refresh_expires_at"], name: "index_user_tokens_on_refresh_expires_at"
+    t.index ["revoked_at"], name: "index_user_tokens_on_revoked_at"
   end
 
   add_foreign_key "staff_tokens", "staff_token_statuses"

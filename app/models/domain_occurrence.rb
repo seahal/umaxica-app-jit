@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DomainOccurrence < UniversalRecord
   include PublicId
   include Occurrence

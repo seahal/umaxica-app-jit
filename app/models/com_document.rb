@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: com_documents
@@ -17,6 +15,7 @@
 #
 class ComDocument < BusinessesRecord
   include ::PublicId
+
   belongs_to :com_document_status, optional: true
 
   include Document
@@ -28,5 +27,5 @@ class ComDocument < BusinessesRecord
            class_name: "ComDocumentAudit",
            primary_key: "id",
            inverse_of: :com_document,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 end

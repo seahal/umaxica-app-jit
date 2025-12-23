@@ -1019,6 +1019,25 @@ en:
             invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
             max_attempts: "Maximum verification attempts exceeded. Please request a new code."
             expired: "Verification code has expired. Please request a new code."
+    org:
+      contacts:
+        new:
+          page_title: "Contact Us"
+          heading: "Send us a message"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          contact_category_title: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          submit: "Continue"
+          cancel: "Cancel"
+        create:
+          success: "Thank you for contacting us. Please verify your email address."
+          failure: "Unable to process your request. Please check the form and try again."
+          turnstile_error: "Security verification failed. Please refresh the page and try again."
+          confirm_policy_error: "You must agree to the privacy policy to continue."
+        update:
+          success: "Your inquiry has been received."
     contact:
       errors:
         id_required: "Contact ID is required"

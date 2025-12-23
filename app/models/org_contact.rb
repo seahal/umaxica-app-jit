@@ -1,7 +1,6 @@
-# frozen_string_literal: true
-
 class OrgContact < GuestsRecord
   include ::PublicId
+
   # Associations
   has_many :org_contact_emails, dependent: :destroy
   has_many :org_contact_telephones, dependent: :destroy
@@ -57,16 +56,19 @@ class OrgContact < GuestsRecord
 
   def verify_email!
     raise StandardError, "Cannot verify email at this time" unless can_verify_email?
+
     update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
     raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
+
     update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
     raise StandardError, "Cannot complete contact at this time" unless can_complete?
+
     update!(contact_status_id: "COMPLETED_CONTACT_ACTION")
   end
 
@@ -104,12 +106,12 @@ class OrgContact < GuestsRecord
 
   private
 
-  def generate_token
-    self.token ||= SecureRandom.alphanumeric(32)
-  end
+    def generate_token
+      self.token ||= SecureRandom.alphanumeric(32)
+    end
 
-  def set_default_category_and_status
-    self.contact_category_title ||= "NULL_ORG_CATEGORY"
-    self.contact_status_id ||= "NULL_ORG_STATUS"
-  end
+    def set_default_category_and_status
+      self.contact_category_title ||= "NULL_ORG_CATEGORY"
+      self.contact_status_id ||= "NULL_ORG_STATUS"
+    end
 end

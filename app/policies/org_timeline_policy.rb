@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Authorization policy for OrgTimeline resources (Organization/Staff timeline)
 # Internal timeline for staff members only
 class OrgTimelinePolicy < ApplicationPolicy

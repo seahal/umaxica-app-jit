@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+# NOTE: If this code is only included in Staff controllers, consider moving to app/controllers/concerns/authentication/staff.rb
 
 module Authorization
   module Staff

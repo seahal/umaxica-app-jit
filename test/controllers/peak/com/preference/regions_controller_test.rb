@@ -1,6 +1,9 @@
 require "test_helper"
 
 class Peak::Com::Preference::RegionsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    https!
+  end
   # rubocop:disable Minitest/MultipleAssertions
   test "GET edit renders form with region select only" do
     get edit_peak_com_preference_region_url
@@ -98,7 +101,7 @@ class Peak::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
     assert_redirected_to edit_peak_com_preference_region_url(ri: "jp")
 
     # Verify cookie is set
-    assert_predicate response.cookies["root_app_preferences"], :present?
+    assert_predicate response.cookies["__Secure-root_com_preferences"], :present?
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -106,7 +109,7 @@ class Peak::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
     patch peak_com_preference_region_url, params: { region: "US" }
 
     # Verify cookie exists in response
-    assert_predicate response.cookies["root_app_preferences"], :present?
+    assert_predicate response.cookies["__Secure-root_com_preferences"], :present?
   end
 
   test "multiple preference updates should maintain cookie consistency" do
@@ -147,7 +150,7 @@ class Peak::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
     patch peak_com_preference_region_url, params: { region: "JP" }
 
     # Verify cookie exists and session is updated
-    assert_predicate response.cookies["root_app_preferences"], :present?
+    assert_predicate response.cookies["__Secure-root_com_preferences"], :present?
     assert_equal "JP", session[:region]
   end
 
@@ -155,14 +158,14 @@ class Peak::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
     get edit_peak_com_preference_region_url(ct: "light")
     patch peak_com_preference_region_url, params: { region: "JP" }
 
-    assert_predicate response.cookies["root_app_preferences"], :present?
+    assert_predicate response.cookies["__Secure-root_com_preferences"], :present?
     assert_equal "JP", session[:region]
   end
 
   test "preferences should update with cookie set" do
     patch peak_com_preference_region_url, params: { region: "JP" }
 
-    assert_predicate response.cookies["root_app_preferences"], :present?
+    assert_predicate response.cookies["__Secure-root_com_preferences"], :present?
     assert_equal "JP", session[:region]
   end
 
@@ -172,7 +175,7 @@ class Peak::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
     patch peak_com_preference_region_url, params: { region: "JP" }
 
     assert_equal "JP", session[:region]
-    assert_predicate response.cookies["root_app_preferences"], :present?
+    assert_predicate response.cookies["__Secure-root_com_preferences"], :present?
   end
 
   # Additional edge case tests

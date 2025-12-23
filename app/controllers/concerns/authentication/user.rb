@@ -1,9 +1,12 @@
-# frozen_string_literal: true
+# NOTE: If this code is only included in User controllers, consider moving to app/controllers/concerns/authentication/user.rb
 
 module Authentication
   module User
     include Authentication::Base
     extend ActiveSupport::Concern
+
+    ACCESS_COOKIE_KEY = :"__Secure-access_user_token"
+    REFRESH_COOKIE_KEY = :"__Secure-refresh_user_token"
 
     included do
       helper_method :current_user, :logged_in? if respond_to?(:helper_method)
@@ -25,7 +28,7 @@ module Authentication
       end
 
       # Extract token from Authorization header (Bearer) or Cookie
-      access_token = extract_access_token(:access_user_token)
+      access_token = extract_access_token(ACCESS_COOKIE_KEY)
       return nil if access_token.blank?
 
       begin
@@ -54,18 +57,19 @@ module Authentication
       token = TokensRecord.connected_to(role: :writing) do
         UserToken.create!(user_id: user.id)
       end
-      credentials = generate_access_token(user)
+      refresh_token = token.rotate_refresh_token!
+      credentials = generate_access_token(user, session_public_id: token.public_id)
 
       # For non-JSON requests (browser), set cookies
       unless request.format.json?
         # ACCESS_TOKEN: Short-lived JWT (15 minutes)
-        cookies[:access_user_token] = cookie_options.merge(
+        cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
           value: credentials,
           expires: ACCESS_TOKEN_EXPIRY.from_now
         )
         # REFRESH_TOKEN: Long-lived (1 year)
-        cookies.encrypted[:refresh_user_token] = cookie_options.merge(
-          value: token.id,
+        cookies.encrypted[REFRESH_COOKIE_KEY] = cookie_options.merge(
+          value: refresh_token,
           expires: 1.year.from_now
         )
       end
@@ -75,22 +79,21 @@ module Authentication
       # Return tokens for JSON API clients
       {
         access_token: credentials,
-        refresh_token: token.id,
+        refresh_token: refresh_token,
         token_type: "Bearer",
         expires_in: ACCESS_TOKEN_EXPIRY.to_i
       }
     end
 
-    def refresh_access_token(refresh_token_id)
-      # Find and validate the old refresh token
-      old_token = UserToken.find_by(id: refresh_token_id)
+    def refresh_access_token(refresh_token)
+      result = Auth::RefreshTokenService.call(refresh_token: refresh_token)
+      old_token = result[:token]
 
-      unless old_token
+      unless old_token.is_a?(UserToken)
         Rails.event.notify("user.token.refresh.failed",
-                           refresh_token_id: refresh_token_id,
+                           refresh_token_id: refresh_token,
                            reason: "token_not_found",
-                           ip_address: request_ip_address
-        )
+                           ip_address: request_ip_address)
         return nil
       end
 
@@ -99,65 +102,60 @@ module Authentication
       unless user&.active?
         Rails.event.notify("user.token.refresh.failed",
                            user_id: user&.id,
-                           refresh_token_id: refresh_token_id,
+                           refresh_token_id: refresh_token,
                            reason: "user_inactive",
-                           ip_address: request_ip_address
-        )
-        TokensRecord.connected_to(role: :writing) { old_token.destroy }
+                           ip_address: request_ip_address)
+        TokensRecord.connected_to(role: :writing) { old_token.destroy! }
         return nil
       end
 
-      # Create new refresh token (rotation)
-      new_refresh_token = TokensRecord.connected_to(role: :writing) do
-        UserToken.create!(user_id: user.id)
-      end
-
       # Generate new access token
-      new_access_token = generate_access_token(user)
-
-      # Revoke old refresh token
-      TokensRecord.connected_to(role: :writing) { old_token.destroy }
+      new_access_token = generate_access_token(user, session_public_id: old_token.public_id)
 
       Rails.event.notify("user.token.refreshed",
                          user_id: user.id,
-                         old_refresh_token_id: old_token.id,
-                         new_refresh_token_id: new_refresh_token.id,
-                         ip_address: request_ip_address
-      )
+                         old_refresh_token_id: old_token.public_id,
+                         new_refresh_token_id: result[:refresh_token],
+                         ip_address: request_ip_address)
 
       # Return new tokens
       {
         access_token: new_access_token,
-        refresh_token: new_refresh_token.id,
+        refresh_token: result[:refresh_token],
         token_type: "Bearer",
         expires_in: ACCESS_TOKEN_EXPIRY.to_i
       }
+    rescue Auth::InvalidRefreshToken => e
+      Rails.event.notify("user.token.refresh.failed",
+                         refresh_token_id: refresh_token,
+                         reason: e.class.name,
+                         ip_address: request_ip_address)
+      nil
     rescue StandardError => e
       Rails.event.notify("user.token.refresh.error",
                          user_id: user&.id,
-                         refresh_token_id: refresh_token_id,
+                         refresh_token_id: refresh_token,
                          error_class: e.class.name,
                          error_message: e.message,
-                         ip_address: request_ip_address
-      )
+                         ip_address: request_ip_address)
       nil
     end
 
     def log_out
       user = current_user
-      if (token_id = cookies.encrypted[:refresh_user_token])
+      if (token_value = cookies.encrypted[REFRESH_COOKIE_KEY])
         begin
-          UserToken.find_by(id: token_id)&.destroy
+          public_id, = UserToken.parse_refresh_token(token_value)
+          UserToken.find_by(public_id: public_id)&.destroy if public_id
         rescue ActiveRecord::RecordNotDestroyed => e
           Rails.event.notify("user.token.destroy.failed",
-                             token_id: token_id,
+                             token_id: token_value,
                              error_message: e.message,
-                             ip_address: request_ip_address
-          )
+                             ip_address: request_ip_address)
         end
       end
-      cookies.delete :access_user_token, **cookie_deletion_options
-      cookies.delete :refresh_user_token, **cookie_deletion_options
+      cookies.delete ACCESS_COOKIE_KEY, **cookie_deletion_options
+      cookies.delete REFRESH_COOKIE_KEY, **cookie_deletion_options
       record_user_identity_audit(AUDIT_EVENTS[:logged_out], user: user) if user
       reset_session
       @current_user = nil
@@ -174,7 +172,8 @@ module Authentication
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
         rt = Base64.urlsafe_encode64(request.original_url)
-        redirect_to new_auth_app_authentication_url(rt: rt, host: ENV["AUTH_SERVICE_URL"]), allow_other_host: true, alert: I18n.t("errors.messages.login_required")
+        redirect_to new_auth_app_authentication_url(rt: rt, host: ENV["AUTH_SERVICE_URL"]), allow_other_host: true,
+                                                                                            alert: I18n.t("errors.messages.login_required")
       end
     end
 
@@ -185,20 +184,20 @@ module Authentication
 
     private
 
-    def record_user_identity_audit(event_id, user:, actor: user)
-      return unless user && event_id
+      def record_user_identity_audit(event_id, user:, actor: user)
+        return unless user && event_id
 
-      ::UserIdentityAudit.create!(
-        user: user,
-        actor: actor,
-        event_id: event_id,
-        ip_address: request_ip_address,
-        timestamp: Time.current
-      )
-    end
+        ::UserIdentityAudit.create!(
+          user: user,
+          actor: actor,
+          event_id: event_id,
+          ip_address: request_ip_address,
+          timestamp: Time.current
+        )
+      end
 
-    def request_ip_address
-      respond_to?(:request, true) && request ? request.remote_ip : nil
-    end
+      def request_ip_address
+        respond_to?(:request, true) && request ? request.remote_ip : nil
+      end
   end
 end

@@ -2,9 +2,6 @@ require "test_helper"
 
 class EmailDeliveryTest < ActionDispatch::IntegrationTest
   setup do
-    # Clear any existing jobs
-    SolidQueue::Job.delete_all
-
     # Use the solid_queue adapter for this test to verify DB persistence
     @previous_adapter = ActiveJob::Base.queue_adapter
     ActiveJob::Base.queue_adapter = :solid_queue
@@ -25,7 +22,7 @@ class EmailDeliveryTest < ActionDispatch::IntegrationTest
     # Use a unique email to potentially avoid collisions (though db is cleaned)
     email = "delivery_test_#{SecureRandom.hex(4)}@example.com"
 
-    assert_difference -> { SolidQueue::Job.count }, 1 do
+    assert_difference -> { SolidQueue::Job.where(class_name: "ActionMailer::MailDeliveryJob").count }, 1 do
       post auth_app_registration_emails_url,
            params: {
              user_identity_email: {
@@ -40,7 +37,7 @@ class EmailDeliveryTest < ActionDispatch::IntegrationTest
     end
 
     # Find the job and verify it's a mail delivery job
-    job = SolidQueue::Job.last
+    job = SolidQueue::Job.where(class_name: "ActionMailer::MailDeliveryJob").order(:created_at).last
     assert_equal "ActionMailer::MailDeliveryJob", job.class_name
     assert_equal "default", job.queue_name
 

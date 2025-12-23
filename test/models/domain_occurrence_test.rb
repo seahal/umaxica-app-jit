@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 class DomainOccurrenceTest < ActiveSupport::TestCase
@@ -66,5 +64,11 @@ class DomainOccurrenceTest < ActiveSupport::TestCase
     record = build_occurrence(DomainOccurrence, body: "example.co.jp", public_id: custom_public_id)
 
     assert_public_id_preserved(record, custom_public_id)
+  end
+
+  test "expires_at default" do
+    record = build_occurrence(DomainOccurrence, body: "example-test.jp", public_id: "Y" * 21)
+
+    assert_expires_at_default(record)
   end
 end

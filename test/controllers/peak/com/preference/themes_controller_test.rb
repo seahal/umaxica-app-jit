@@ -1,14 +1,15 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
-require "json"
 require_relative "../../../../support/cookie_helper"
 
 module Peak
   module Com
     module Preference
       class ThemesControllerTest < ActionDispatch::IntegrationTest
+        setup do
+          https!
+        end
+
         # rubocop:disable Minitest/MultipleAssertions
         test "renders theme edit page with system selected by default 2" do
           get edit_peak_com_preference_theme_url
@@ -33,7 +34,8 @@ module Peak
             assert_select "input[type='submit'][value=?]", I18n.t("peak.com.preference.theme.edit.submit")
           end
 
-          assert_select "a[href^='#{peak_com_preference_path}']", text: I18n.t("peak.com.preferences.back_to_settings"), count: 1
+          assert_select "a[href^='#{peak_com_preference_path}']",
+                        text: I18n.t("peak.com.preferences.back_to_settings"), count: 1
         end
         # rubocop:enable Minitest/MultipleAssertions
 
@@ -48,7 +50,7 @@ module Peak
           assert_equal "dark", session[:theme]
           assert_equal "dark", signed_cookie(:root_com_theme)
 
-          persisted_preferences = JSON.parse(signed_cookie(:root_com_preferences))
+          persisted_preferences = preference_cookie_payload(:"__Secure-root_com_preferences")
 
           assert_equal "dr", persisted_preferences["ct"]
 

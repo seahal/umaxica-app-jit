@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: user_identity_one_time_passwords
@@ -27,16 +25,16 @@ class UserIdentityOneTimePassword < IdentitiesRecord
 
   private
 
-  def enforce_user_totp_limit
-    return unless user_id
+    def enforce_user_totp_limit
+      return unless user_id
 
-    count = self.class.where(user_id: user_id).count
-    return if count < MAX_TOTPS_PER_USER
+      count = self.class.where(user_id: user_id).count
+      return if count < MAX_TOTPS_PER_USER
 
-    errors.add(:base, :too_many, message: "exceeds maximum totps per user (#{MAX_TOTPS_PER_USER})")
-  end
+      errors.add(:base, :too_many, message: "exceeds maximum totps per user (#{MAX_TOTPS_PER_USER})")
+    end
 
-  def generate_private_key_if_blank
-    self.private_key ||= ROTP::Base32.random_base32
-  end
+    def generate_private_key_if_blank
+      self.private_key ||= ROTP::Base32.random_base32
+    end
 end

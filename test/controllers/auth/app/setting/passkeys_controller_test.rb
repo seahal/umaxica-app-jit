@@ -1,18 +1,10 @@
-# frozen_string_literal: true
-
 require "test_helper"
 require "minitest/mock"
 
 class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTest
-  self.use_transactional_tests = false
   setup do
-    @user = User.create!(public_id: "user_#{SecureRandom.hex(8)}", user_identity_status_id: "ALIVE")
+    @user = users(:one)
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
-  end
-
-  teardown do
-    UserIdentityPasskey.delete_all
-    @user&.destroy
   end
 
   test "should get challenge" do
@@ -24,8 +16,8 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
     end
 
     assert_response :ok
-    assert_not_nil session[:webauthn_create_challenge]
-    assert_equal "mock_challenge", session[:webauthn_create_challenge]
+    assert_not_nil session[:webauthn_user_create_challenge]
+    assert_equal "mock_challenge", session[:webauthn_user_create_challenge]
   end
 
   test "should verify passkey" do
@@ -36,7 +28,16 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
     end
 
     # Now verify
-    post verify_auth_app_setting_passkeys_url, headers: @headers
+    credential = OpenStruct.new(id: "credential-id", public_key: "pk", sign_count: 0)
+    def credential.verify(_challenge)
+      true
+    end
+
+    WebAuthn::Credential.stub :from_create, credential do
+      post verify_auth_app_setting_passkeys_url,
+           params: { credential: { id: "credential-id", rawId: "credential-id" }, description: "Test" },
+           headers: @headers
+    end
 
     assert_response :ok
   end
@@ -127,7 +128,7 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
 
   private
 
-  def regional_defaults
-    PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
-  end
+    def regional_defaults
+      PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
+    end
 end

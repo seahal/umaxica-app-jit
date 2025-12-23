@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module JwtConfig
   def self.private_key
     private_key_base64 = ENV["JWT_PRIVATE_KEY"] || Rails.application.credentials.dig(:JWT, :PRIVATE_KEY)

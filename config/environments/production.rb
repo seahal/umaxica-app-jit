@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -33,7 +31,6 @@ Rails.application.configure do
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
   config.ssl_options = { hsts: { subdomains: true } }
-
 
   # Log to STDOUT using a JSON formatter for Cloud Run visibility.
   STDOUT.sync = true

@@ -22,5 +22,6 @@
     <li><%= I18n.t "hello" %></li>
     <li><%= Time.current.in_time_zone("Tokyo") %></li>
     <li><%= to_localetime Time.current, 'jst' %></li>
+    <li><%= link_to "Contact", new_help_app_contact_path %></li>
   </ul>
 </section>

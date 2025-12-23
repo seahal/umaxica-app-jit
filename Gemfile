@@ -23,8 +23,8 @@ gem "rack-cors"
 # For DOS attack
 gem "rack-attack"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt"
 gem "argon2"
+gem "bcrypt"
 # SHA3
 gem "sha3"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -84,10 +84,9 @@ gem "meta-tags"
 gem "nanoid"
 # Authentication
 gem "pundit"
+gem "view_component"
 
 group :development, :test do
-  # to avoid n+1 queries
-  # gem "bullet"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
   # coverage
@@ -96,14 +95,20 @@ group :development, :test do
   gem "minitest-mock"
   # for IntelliJ IDEA
   # gem 'ruby-debug-ide'
+  # find out slow tests
+  gem "test-prof"
+  # pg performance viewer
+  gem "pghero"
+  # to avoid n+1 queries
+  # gem "bullet"
+  gem "prosopite"
+  gem "pg_query"
 end
 
 group :development do
-  #
+  # security
   gem "bundler-audit"
-  #
   gem "foreman"
-  #
   gem "yard"
   # Preview email in the default browser instead of sending it.
   gem "letter_opener"
@@ -130,14 +135,12 @@ group :development do
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
   gem "annotaterb"
-  #
   gem "license_finder", require: false
-  #
   gem "ruby-lsp"
-  #
   gem "reek"
   gem "churn"
   gem "flog"
-  #
+  # Easy ERD diagrams
   gem "rails-erd"
+  gem "railroady"
 end

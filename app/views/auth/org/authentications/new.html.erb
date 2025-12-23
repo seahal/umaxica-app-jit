@@ -1,4 +1,7 @@
 <h1 class="font-bold text-4xl"><%= t("auth.org.authentication.new.page_title") %></h1>
 <p class="mt-2 text-sm text-slate-600"><%= t("auth.org.authentication.new.description") %></p>
+<%= render "concern/cloudflare_turnstile" %>
 <ul class="mt-4 space-y-2">
+  <li><%= link_to t("auth.org.authentication.new.links.passkey"), new_auth_org_authentication_passkey_path %></li>
+  <li><%= link_to t("auth.org.authentication.new.links.recovery"), new_auth_org_authentication_recovery_path %></li>
 </ul>

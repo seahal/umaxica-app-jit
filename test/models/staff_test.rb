@@ -27,6 +27,25 @@ class StaffTest < ActiveSupport::TestCase
     assert_equal "staff_id", @staff.class.reflect_on_association(:staff_identity_telephones).foreign_key
   end
 
+  test "dependent behaviors for staff associations" do
+    assert_equal :restrict_with_error,
+                 Staff.reflect_on_association(:staff_identity_emails).options[:dependent]
+    assert_equal :restrict_with_error,
+                 Staff.reflect_on_association(:staff_identity_telephones).options[:dependent]
+    assert_equal :nullify,
+                 Staff.reflect_on_association(:staff_identity_audits).options[:dependent]
+    assert_equal :nullify,
+                 Staff.reflect_on_association(:user_identity_audits).options[:dependent]
+    assert_equal :destroy,
+                 Staff.reflect_on_association(:staff_identity_secrets).options[:dependent]
+    assert_equal :nullify,
+                 Staff.reflect_on_association(:staff_tokens).options[:dependent]
+    assert_equal :nullify,
+                 Staff.reflect_on_association(:staff_messages).options[:dependent]
+    assert_equal :nullify,
+                 Staff.reflect_on_association(:staff_notifications).options[:dependent]
+  end
+
   test "staff? should return true" do
     assert_predicate @staff, :staff?
   end

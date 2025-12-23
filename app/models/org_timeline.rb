@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: org_timelines
@@ -17,6 +15,7 @@
 #
 class OrgTimeline < BusinessesRecord
   include ::PublicId
+
   belongs_to :org_timeline_status, optional: true
 
   include Timeline
@@ -25,5 +24,5 @@ class OrgTimeline < BusinessesRecord
            class_name: "OrgTimelineAudit",
            primary_key: "id",
            inverse_of: :org_timeline,
-           dependent: :restrict_with_exception
+           dependent: :restrict_with_error
 end

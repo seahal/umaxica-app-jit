@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Role-based authorization helpers for User and Staff models
 module HasRoles
   extend ActiveSupport::Concern

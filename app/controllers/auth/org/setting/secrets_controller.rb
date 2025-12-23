@@ -2,26 +2,29 @@ module Auth
   module Org
     module Setting
       class SecretsController < ApplicationController
-        def index
-        end
+        include Auth::Setting::Secrets
 
-        def show
-        end
+        private
 
-        def new
-        end
+          def authenticate_identity!
+            authenticate_staff!
+          end
 
-        def edit
-        end
+          def secret_scope
+            current_staff.staff_identity_secrets
+          end
 
-        def create
-        end
+          def secret_param_key
+            :staff_identity_secret
+          end
 
-        def update
-        end
+          def secrets_index_path
+            auth_org_setting_secrets_path
+          end
 
-        def destroy
-        end
+          def secret_path(secret)
+            auth_org_setting_secret_path(secret)
+          end
       end
     end
   end

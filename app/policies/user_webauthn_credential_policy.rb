@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class UserWebauthnCredentialPolicy < ApplicationPolicy
   def index?
     user.present?
@@ -23,7 +21,7 @@ class UserWebauthnCredentialPolicy < ApplicationPolicy
 
   private
 
-  def record_owner?
-    record.user_id == user&.id
-  end
+    def record_owner?
+      record.user_id == user&.id
+    end
 end

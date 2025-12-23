@@ -148,7 +148,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 2. `PreferenceRegions#set_edit_variables` normalizes query params, populates `@current_*`.
 3. User submits new locale/timezone.
 4. `#update` calls `apply_updates` → `assign_if_present` / `update_language` / `update_timezone`.
-5. On success, `persist_preference_cookie!` writes signed JSON cookie (`root_app_preferences`).
+5. On success, `persist_preference_cookie!` writes signed JSON cookie (`__Secure-root_app_preferences`).
 6. Controller redirects to edit URL with normalized query params.
 
 ### 4.2 Email Registration Flow
@@ -186,7 +186,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | `IdentifierRegionCode` and join tables | `UniversalRecord` | Future mapping for personas/staff region codes |
 
 ### 5.2 Cookies & Sessions
-- Preference cookie: `root_app_preferences` (JSON: `lx`, `ri`, `tz`, `ct`).
+- Preference cookie: `__Secure-root_app_preferences` (JSON: `lx`, `ri`, `tz`, `ct`).
 - Theme cookie: `root_<scope>_theme`.
 - Consent cookies: `:accept_functional_cookies`, `:accept_performance_cookies`, `:accept_targeting_cookies`.
 - Auth cookies: `:access_token` (JWT), `:refresh_token` (encrypted).

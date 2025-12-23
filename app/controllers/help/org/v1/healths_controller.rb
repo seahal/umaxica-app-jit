@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Help
   module Org
     module V1

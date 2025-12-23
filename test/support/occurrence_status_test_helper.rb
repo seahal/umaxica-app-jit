@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module OccurrenceStatusTestHelper
   def assert_invalid_attribute(record, attribute)
     assert_not record.valid?
@@ -19,5 +17,16 @@ module OccurrenceStatusTestHelper
     assert_not_nil association
     assert_equal :has_many, association.macro
     assert_equal :restrict_with_error, association.options[:dependent]
+  end
+
+  def assert_expires_at_default(record, min_years: 6, max_years: 8)
+    now = Time.current
+
+    assert record.save
+    record.reload
+
+    assert_predicate record.expires_at, :present?
+    assert_operator record.expires_at, :>, now + min_years.years
+    assert_operator record.expires_at, :<, now + max_years.years
   end
 end

@@ -20,12 +20,15 @@ services:
       - type: bind
         source: .
         target: /home/jit/workspace
+    tmpfs:
+      - /app/tmp
+      - /app/log
     networks:
       backend: { }
       frontend:
         aliases:
-          - app.localhost
-          - sign.app.localhost
+          - auth.app.localhost
+          - auth.org.localhost
       observability: { }
     depends_on:
       primary:

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Authorization policy for AppDocument resources
 # Implements role-based and ownership-based access control
 class AppDocumentPolicy < ApplicationPolicy

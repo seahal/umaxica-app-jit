@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: role_assignments
@@ -22,11 +20,11 @@ class RoleAssignment < IdentityRecord
 
   private
 
-  def user_or_staff_present
-    errors.add(:base, "Either user_id or staff_id must be present") if user_id.blank? && staff_id.blank?
-  end
+    def user_or_staff_present
+      errors.add(:base, "Either user_id or staff_id must be present") if user_id.blank? && staff_id.blank?
+    end
 
-  def user_and_staff_exclusive
-    errors.add(:base, "Cannot assign to both user and staff") if user_id.present? && staff_id.present?
-  end
+    def user_and_staff_exclusive
+      errors.add(:base, "Cannot assign to both user and staff") if user_id.present? && staff_id.present?
+    end
 end

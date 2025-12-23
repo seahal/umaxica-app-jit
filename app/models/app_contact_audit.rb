@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AppContactAudit < GuestsRecord
   # Use existing table `app_contact_histories` for storage to avoid a migration
   # and keep backward compatibility with previously-named table.

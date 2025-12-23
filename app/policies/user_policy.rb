@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Authorization policy for User resource management
 # Controls who can view, create, update, and delete users
 class UserPolicy < ApplicationPolicy

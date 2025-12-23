@@ -40,7 +40,7 @@ class Auth::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
         assert_select "small", text: /^©/
-        assert_select "small", text: /#{ escaped_brand }$/
+        assert_select "small", text: /#{escaped_brand}$/
       end
     end
   end
@@ -71,11 +71,11 @@ class Auth::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def host
-    ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
-  end
+    def host
+      ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
+    end
 
-  def brand_name
-    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-  end
+    def brand_name
+      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+    end
 end

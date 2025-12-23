@@ -44,6 +44,7 @@ RUN if ! getent group "${DOCKER_GROUP}" >/dev/null; then \
     && mkdir -p "${APP_HOME}" "${HOME}" \
     && chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"
 
+# hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -66,6 +67,7 @@ ARG DOCKER_USER
 ARG DOCKER_GROUP
 
 # Install build tools required for gems
+# hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     build-essential \
@@ -81,7 +83,7 @@ RUN apt-get update \
 COPY Gemfile Gemfile.lock ./
 RUN --mount=type=cache,target=/usr/local/bundle \
     --mount=type=cache,target=/root/.cache/bundle \
-    bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} \
+    bundle install --jobs "${BUNDLE_JOBS}" --retry "${BUNDLE_RETRY}" \
     && bundle exec bootsnap precompile --gemfile \
     && bundle config set --local without 'development test' \
     && bundle clean --force \
@@ -131,6 +133,7 @@ ENV TZ=UTC \
     BUNDLE_FORCE_RUBY_PLATFORM=1 \
     BUNDLE_FORCE_RUBY_PLATFORM=1
 
+# hadolint ignore=DL3008
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     build-essential \
@@ -160,11 +163,13 @@ ARG DOCKER_USER
 ARG DOCKER_GROUP
 ARG BUN_VERSION
 ARG GITHUB_ACTIONS
+SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV COMMIT_HASH="${COMMIT_HASH}"
 ENV HOME=/home/jit
 ENV BUN_INSTALL=/usr/local
 WORKDIR /home/jit/workspace
 
+# hadolint ignore=DL3008
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     vim \
@@ -210,16 +215,17 @@ RUN apt-get update -qq \
 
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
+RUN curl -fsSL https://bun.sh/install -o /tmp/bun.sh \
+    && bash /tmp/bun.sh "bun-v${BUN_VERSION}"
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
-    groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
-    useradd -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
-    echo "${DOCKER_USER}:hogehoge" | chpasswd; \
-    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
-    chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
+        groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
+        useradd -l -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
+        echo "${DOCKER_USER}:hogehoge" | chpasswd; \
+        echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
+        chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
     else \
-    chown -R "${DOCKER_UID}:${DOCKER_GID}" ${HOME}; \
+        chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
     fi
 
 USER ${DOCKER_USER}

@@ -1,0 +1,21 @@
+<h1><%= ENV.fetch('BRAND_NAME', 'Umaxica') %> - Email Verification</h1>
+
+<p>Thank you for contacting us.</p>
+
+<p>Your verification code is:</p>
+
+<h2 style="font-size: 32px; letter-spacing: 8px; font-family: monospace; background-color: #f3f4f6; padding: 16px; text-align: center;">
+  <%= @pass_code %>
+</h2>
+
+<p>Please enter this code to verify your email address.</p>
+
+<p><strong>This code will expire in 15 minutes.</strong></p>
+
+<p>If you didn't request this code, please ignore this email.</p>
+
+<hr>
+
+<p style="color: #6b7280; font-size: 12px;">
+  This is an automated message from <%= ENV.fetch('BRAND_NAME', 'Umaxica') %>. Please do not reply to this email.
+</p>

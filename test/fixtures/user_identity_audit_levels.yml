@@ -1,0 +1,12 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+none:
+  id: "NONE"
+
+info:
+  id: "INFO"
+
+warn:
+  id: "WARN"
+
+error:
+  id: "ERROR"
