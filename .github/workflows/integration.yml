@@ -344,20 +344,7 @@ jobs:
         run: |
           syft "asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }}" \
             -o cyclonedx-json > sbom.cdx.json
-        # --- (Optional) Gate by SBOM with Trivy ---
-        # 既に上で trivy image をゲートしているので必須ではありません。
-        # 「SBOMに対する評価結果も残したい / SBOM経由で同じ基準で落としたい」場合だけ有効化してください。
-      - name: Trivy scan SBOM (Gate)
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          scan-type: sbom
-          sbom: sbom.cdx.json
-          format: table
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: os,library
-          severity: CRITICAL,HIGH
-      # --- Store SBOM as artifact (recommended) ---
+      # --- Store SBOM as artifact ---
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
         with:

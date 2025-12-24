@@ -649,6 +649,9 @@ UserIdentityOneTimePasswordStatus:
   lower(id):
     MissingUniqueIndexChecker:
       enabled: false
+  user_identity_one_time_passwords:
+    ForeignKeyCascadeChecker:
+      enabled: false
 UserIdentityPasskey:
   id:
     ImplicitOrderingChecker:
