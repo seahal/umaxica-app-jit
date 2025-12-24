@@ -3,12 +3,21 @@
 # Table name: role_assignments
 #
 #  id         :uuid             not null, primary key
-#  user_id    :uuid
-#  staff_id   :uuid
-#  role_id    :uuid             not null
 #  created_at :datetime         not null
+#  role_id    :uuid             not null
+#  staff_id   :uuid
 #  updated_at :datetime         not null
+#  user_id    :uuid
 #
+# Indexes
+#
+#  index_role_assignments_on_role_id     (role_id)
+#  index_role_assignments_on_staff_id    (staff_id)
+#  index_role_assignments_on_staff_role  (staff_id,role_id) UNIQUE
+#  index_role_assignments_on_user_id     (user_id)
+#  index_role_assignments_on_user_role   (user_id,role_id) UNIQUE
+#
+
 class RoleAssignment < IdentityRecord
   belongs_to :user, class_name: "User", optional: true, inverse_of: :role_assignments
   belongs_to :staff, class_name: "Staff", optional: true, inverse_of: :role_assignments

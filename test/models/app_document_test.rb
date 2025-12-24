@@ -1,3 +1,29 @@
+# == Schema Information
+#
+# Table name: app_documents
+#
+#  id                     :uuid             not null, primary key
+#  app_document_status_id :string(255)      default(""), not null
+#  created_at             :datetime         not null
+#  description            :string           default(""), not null
+#  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  public_id              :string(21)       default(""), not null
+#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  title                  :string           default(""), not null
+#  updated_at             :datetime         not null
+#
+# Indexes
+#
+#  index_app_documents_on_app_document_status_id  (app_document_status_id)
+#  index_app_documents_on_parent_id               (parent_id)
+#  index_app_documents_on_prev_id                 (prev_id)
+#  index_app_documents_on_public_id               (public_id)
+#  index_app_documents_on_staff_id                (staff_id)
+#  index_app_documents_on_succ_id                 (succ_id)
+#
+
 require "test_helper"
 
 class AppDocumentTest < ActiveSupport::TestCase
@@ -50,10 +76,10 @@ class AppDocumentTest < ActiveSupport::TestCase
     assert_equal "Secret Description", reloaded.description
   end
 
-  test "app_document_status_id can be nil" do
+  test "app_document_status_id defaults to empty string" do
     doc = AppDocument.create!(title: "No Status Document")
 
-    assert_nil doc.app_document_status_id
+    assert_equal "", doc.app_document_status_id
     assert_nil doc.app_document_status
   end
 end

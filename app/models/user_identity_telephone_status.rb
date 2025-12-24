@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: user_identity_telephone_statuses
+#
+#  id :string(255)      default("UNVERIFIED"), not null, primary key
+#
+
 class UserIdentityTelephoneStatus < IdentitiesRecord
   include UppercaseId
 

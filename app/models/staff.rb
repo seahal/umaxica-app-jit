@@ -2,11 +2,21 @@
 #
 # Table name: staffs
 #
-#  id          :uuid             not null, primary key
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  webauthn_id :string
+#  id                       :uuid             not null, primary key
+#  created_at               :datetime         not null
+#  public_id                :string(21)       default(""), not null
+#  staff_identity_status_id :string(255)      default("NONE"), not null
+#  updated_at               :datetime         not null
+#  webauthn_id              :string           default(""), not null
+#  withdrawn_at             :datetime         default("infinity")
 #
+# Indexes
+#
+#  index_staffs_on_public_id                 (public_id) UNIQUE
+#  index_staffs_on_staff_identity_status_id  (staff_identity_status_id)
+#  index_staffs_on_withdrawn_at              (withdrawn_at)
+#
+
 class Staff < IdentitiesRecord
   # Staff represents an operator account for the staff/admin console.
   # It mirrors `User` for identity concerns but is used for staff-scoped access.
@@ -16,7 +26,7 @@ class Staff < IdentitiesRecord
   include ::PublicId
   include ::Account
 
-  belongs_to :staff_identity_status, optional: true
+  belongs_to :staff_identity_status
   has_many :staff_identity_emails,
            dependent: :restrict_with_error
   has_many :staff_identity_telephones,

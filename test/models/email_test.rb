@@ -14,7 +14,10 @@ require "test_helper"
 class IdentityEmailTest < ActiveSupport::TestCase
   [ StaffIdentityEmail, UserIdentityEmail ].each do |model|
     test "#{model} valid with address and confirm_policy" do
-      record = model.new(address: "eg@example.com", confirm_policy: true)
+      record = model.new(
+        address: "eg@example.com",
+        confirm_policy: true
+      ).tap { |instance| assign_owner(instance) }
 
       assert_predicate record, :valid?
       assert_difference "#{model}.count", +1 do
@@ -23,19 +26,32 @@ class IdentityEmailTest < ActiveSupport::TestCase
     end
 
     test "#{model} rejects blank address" do
-      assert_not model.new(address: "", confirm_policy: true).valid?
+      record = model.new(address: "", confirm_policy: true)
+      assign_owner(record)
+
+      assert_not record.valid?
     end
 
     test "#{model} enforces case-insensitive uniqueness" do
-      model.create!(address: "eg@example.com", confirm_policy: true)
+      record = model.new(address: "eg@example.com", confirm_policy: true)
+      assign_owner(record)
+      record.save!
 
-      assert_not model.new(address: "eg@example.com", confirm_policy: true).valid?
-      assert_not model.new(address: "EG@EXAMPLE.COM", confirm_policy: true).valid?
+      same_case = model.new(address: "eg@example.com", confirm_policy: true)
+      assign_owner(same_case)
+
+      upper_case = model.new(address: "EG@EXAMPLE.COM", confirm_policy: true)
+      assign_owner(upper_case)
+
+      assert_not same_case.valid?
+      assert_not upper_case.valid?
     end
 
     test "#{model} downcases address on save" do
       mail_address = "A@B.C"
-      rec = model.create!(address: mail_address, confirm_policy: true)
+      rec = model.new(address: mail_address, confirm_policy: true)
+      assign_owner(rec)
+      rec.save!
 
       assert_equal mail_address.downcase, rec.reload.address
     end
@@ -43,6 +59,7 @@ class IdentityEmailTest < ActiveSupport::TestCase
     # rubocop:disable Minitest/MultipleAssertions
     test "#{model} pass_code validations when address nil" do
       m = model.new(address: nil)
+      assign_owner(m)
       m.pass_code = 123456
 
       assert_predicate m, :valid?
@@ -63,8 +80,20 @@ class IdentityEmailTest < ActiveSupport::TestCase
 
     test "#{model} invalid when both address and pass_code nil" do
       m = model.new(address: nil, pass_code: nil)
+      assign_owner(m)
 
       assert_not m.valid?
     end
   end
+
+  private
+
+    def assign_owner(record)
+      case record
+      when UserIdentityEmail
+        record.user = users(:none_user)
+      when StaffIdentityEmail
+        record.staff = staffs(:none_staff)
+      end
+    end
 end

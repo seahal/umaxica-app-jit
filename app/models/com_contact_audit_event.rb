@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: com_contact_audit_events
+#
+#  id :string(255)      not null, primary key
+#
+
 class ComContactAuditEvent < GuestsRecord
   include UppercaseId
 

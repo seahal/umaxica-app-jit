@@ -2,14 +2,26 @@
 #
 # Table name: users
 #
-#  id          :uuid             not null, primary key
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  webauthn_id :string
+#  id                      :uuid             not null, primary key
+#  created_at              :datetime         not null
+#  public_id               :string(21)       default(""), not null
+#  updated_at              :datetime         not null
+#  user_identity_status_id :string(255)      default("NONE"), not null
+#  webauthn_id             :string           default(""), not null
+#  withdrawn_at            :datetime         default("infinity")
 #
+# Indexes
+#
+#  index_users_on_public_id                (public_id) UNIQUE
+#  index_users_on_user_identity_status_id  (user_identity_status_id)
+#  index_users_on_withdrawn_at             (withdrawn_at)
+#
+
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
+  NIL_UUID = "00000000-0000-0000-0000-000000000000"
+
   def setup
     @user = users(:one)
   end
@@ -63,7 +75,11 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "has_role? should correctly identify assigned roles" do
-    workspace = Workspace.create!(name: "Test Workspace")
+    workspace = Workspace.create!(
+      name: "Test Workspace",
+      domain: "test-workspace.example.com",
+      parent_organization: root_workspace.id
+    )
     editor_role = Role.create!(key: "editor", name: "Editor", organization: workspace)
     Role.create!(key: "viewer", name: "Viewer", organization: workspace)
 
@@ -73,4 +89,14 @@ class UserTest < ActiveSupport::TestCase
     assert @user.has_role?("editor")
     assert_not @user.has_role?("viewer")
   end
+
+  private
+
+    def root_workspace
+      Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
+        workspace.name = "Root Workspace"
+        workspace.domain = "root.example.com"
+        workspace.parent_organization = NIL_UUID
+      end
+    end
 end

@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: user_identity_social_google_statuses
+#
+#  id :string(255)      not null, primary key
+#
+
 class UserIdentitySocialGoogleStatus < IdentitiesRecord
   include UppercaseId
 

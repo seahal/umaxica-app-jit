@@ -1,3 +1,27 @@
+# == Schema Information
+#
+# Table name: user_identity_audits
+#
+#  id             :uuid             not null, primary key
+#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_type     :string           default(""), not null
+#  created_at     :datetime         not null
+#  event_id       :string(255)      default("NONE"), not null
+#  ip_address     :string           default(""), not null
+#  level_id       :string(255)      default("NONE"), not null
+#  previous_value :text             default(""), not null
+#  timestamp      :datetime         default("-infinity"), not null
+#  updated_at     :datetime         not null
+#  user_id        :uuid             not null
+#
+# Indexes
+#
+#  index_user_identity_audits_on_actor_type_and_actor_id  (actor_type,actor_id)
+#  index_user_identity_audits_on_event_id                 (event_id)
+#  index_user_identity_audits_on_level_id                 (level_id)
+#  index_user_identity_audits_on_user_id                  (user_id)
+#
+
 require "test_helper"
 
 class UserIdentityAuditTest < ActiveSupport::TestCase
@@ -51,7 +75,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
       user_identity_audit_event: @audit_event
     )
 
-    assert_nil audit_without_actor.actor_id
+    assert_equal "00000000-0000-0000-0000-000000000000", audit_without_actor.actor_id
   end
 
   test "previous_value can be stored" do
@@ -123,8 +147,8 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
       user: @user
     )
 
-    assert_not audit.valid?
-    assert_not_empty audit.errors[:user_identity_audit_event]
+    # Defaults to NONE, so it should be valid
+    assert_predicate audit, :valid?
   end
 
   test "validates foreign key constraint on event_id" do

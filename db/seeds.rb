@@ -48,8 +48,19 @@ UserIdentityAuditEvent.find_or_create_by!(id: 'AUTHORIZATION_FAILED')
 StaffIdentityAuditEvent.find_or_create_by!(id: 'AUTHORIZATION_FAILED')
 
 # USER
-User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c38')
-User.find_or_create_by(id: '0191a0b6-1304-7c43-8248-0f13b4d29c40')
+NIL_ACCOUNT_ID = "00000000-0000-0000-0000-000000000000"
+User.find_or_create_by(id: NIL_ACCOUNT_ID) do |user|
+  user.user_identity_status_id = "NONE"
+  user.public_id = "nil_user"
+  user.withdrawn_at = Time.zone.at(0)
+end
+Staff.find_or_create_by(id: NIL_ACCOUNT_ID) do |staff|
+  staff.staff_identity_status_id = "NONE"
+  staff.public_id = "nil_staff"
+  staff.withdrawn_at = Time.zone.at(0)
+end
+User.find_or_create_by(id: "0191a0b6-1304-7c43-8248-0f13b4d29c38")
+User.find_or_create_by(id: "0191a0b6-1304-7c43-8248-0f13b4d29c40")
 UserIdentitySecretStatus.find_or_create_by!(id: 'ACTIVE')
 UserIdentitySecretStatus.find_or_create_by!(id: 'SUSPENDED')
 StaffIdentitySecretStatus.find_or_create_by!(id: "ACTIVE")
@@ -82,7 +93,6 @@ AppContactCategory.find_or_create_by!(id: 'NULL', description: 'NULL')
 AppContactCategory.find_or_create_by!(id: 'NULL_CONTACT_STATUS', description: 'NULL')
 AppContactCategory.find_or_create_by!(id: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
 OrgContactCategory.find_or_create_by!(id: 'COULD_NOT_SIGN_IN', description: 'user had a proble to sign/log in')
-OrgContactCategory.find_or_create_by!(id: 'NULL_ORG_CATEGORY', description: 'NULL')
 OrgContactCategory.find_or_create_by!(id: 'NULL_CONTACT_STATUS', description: 'NULL')
 AppContactCategory.find_or_create_by!(id: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries')
 OrgContactCategory.find_or_create_by!(id: 'APEX_OF_ORG', description: 'root of org site status inquiries')
@@ -146,9 +156,19 @@ OrgContactAuditEvent.find_or_create_by!(id: "DESTROYED")
 # ROLE-BASED ACCESS CONTROL (RBAC)
 # ========================================
 
+NIL_WORKSPACE_ID = "00000000-0000-0000-0000-000000000000"
+
+# Sentinel workspace so parent_organization can default to a valid FK target
+Workspace.find_or_create_by!(id: NIL_WORKSPACE_ID) do |workspace|
+  workspace.name = "Nil Organization"
+  workspace.domain = "nil.workspace"
+  workspace.parent_organization = NIL_WORKSPACE_ID
+end
+
 # Create default organization
 default_org = Workspace.find_or_create_by!(name: "Default Organization") do |org|
   org.domain = "localhost"
+  org.parent_organization = NIL_WORKSPACE_ID
 end
 
 # Define roles with their keys, names, and descriptions

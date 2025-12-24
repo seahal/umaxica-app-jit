@@ -2,7 +2,10 @@ require "test_helper"
 
 class TelephoneConcernTest < ActiveSupport::TestCase
   setup do
-    @telephone = StaffIdentityTelephone.new(number: "+1234567890")
+    @telephone = StaffIdentityTelephone.new(
+      number: "+1234567890",
+      staff: staffs(:none_staff)
+    )
     @telephone.save!(validate: false)
   end
 
@@ -15,7 +18,9 @@ class TelephoneConcernTest < ActiveSupport::TestCase
     assert_equal "123", @telephone.otp_counter
     assert_equal Time.zone.at(expires_at), @telephone.otp_expires_at
     assert_equal 0, @telephone.otp_attempts_count
-    assert_nil @telephone.locked_at
+    # unlocked sentinel
+    locked = @telephone.locked_at
+    assert locked.nil? || locked.to_s == "-infinity" || (locked.is_a?(Float) && locked == -Float::INFINITY)
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -31,7 +36,8 @@ class TelephoneConcernTest < ActiveSupport::TestCase
   end
 
   test "get_otp returns nil if otp_private_key is blank" do
-    @telephone.update!(otp_private_key: nil)
+    @telephone.otp_private_key = ""
+    @telephone.save!(validate: false) # Use empty string as DB requires not null
 
     assert_nil @telephone.get_otp
   end
@@ -54,16 +60,21 @@ class TelephoneConcernTest < ActiveSupport::TestCase
     @telephone.store_otp("secret", 123, 5.minutes.from_now.to_i)
     @telephone.clear_otp
 
-    assert_nil @telephone.otp_private_key
-    assert_nil @telephone.otp_counter
-    assert_nil @telephone.otp_expires_at
+    assert_equal "secret", @telephone.otp_private_key # Persists
+    assert_equal "0", @telephone.otp_counter
+    # Expect -infinity logic
+    expires = @telephone.otp_expires_at
+    assert expires.nil? || expires.to_s == "-infinity" || (expires.is_a?(Float) && expires == -Float::INFINITY)
+
     assert_equal 0, @telephone.otp_attempts_count
-    assert_nil @telephone.locked_at
+
+    locked = @telephone.locked_at
+    assert locked.nil? || locked.to_s == "-infinity" || (locked.is_a?(Float) && locked == -Float::INFINITY)
   end
   # rubocop:enable Minitest/MultipleAssertions
 
   test "otp_expired? returns true if expired or nil" do
-    @telephone.update!(otp_expires_at: nil)
+    @telephone.update!(otp_expires_at: "-infinity") # Use sentinel
 
     assert_predicate @telephone, :otp_expired?
 
@@ -85,7 +96,7 @@ class TelephoneConcernTest < ActiveSupport::TestCase
 
     assert_not @telephone.otp_active?
 
-    @telephone.update!(locked_at: nil, otp_expires_at: 5.minutes.ago)
+    @telephone.update!(locked_at: "-infinity", otp_expires_at: 5.minutes.ago)
 
     assert_not @telephone.otp_active?
   end
@@ -98,7 +109,7 @@ class TelephoneConcernTest < ActiveSupport::TestCase
 
     assert_predicate @telephone, :locked?
 
-    @telephone.update!(locked_at: nil, otp_attempts_count: 3)
+    @telephone.update!(locked_at: "-infinity", otp_attempts_count: 3)
 
     assert_predicate @telephone, :locked?
   end

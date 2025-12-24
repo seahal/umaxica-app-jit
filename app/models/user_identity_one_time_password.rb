@@ -2,13 +2,18 @@
 #
 # Table name: user_identity_one_time_passwords
 #
-#  user_id                              :binary           not null
-#  user_identity_one_time_password_status_id :string
-#  private_key                          :string(1024)
-#  last_otp_at                          :datetime
-#  created_at                           :datetime         not null
-#  updated_at                           :datetime         not null
+#  created_at                                :datetime         not null
+#  last_otp_at                               :datetime         default("-infinity"), not null
+#  private_key                               :string(1024)     default(""), not null
+#  updated_at                                :datetime         not null
+#  user_id                                   :binary           not null
+#  user_identity_one_time_password_status_id :string           default("NONE"), not null
 #
+# Indexes
+#
+#  idx_on_user_identity_one_time_password_status_id_01264db86c  (user_identity_one_time_password_status_id)
+#
+
 class UserIdentityOneTimePassword < IdentitiesRecord
   MAX_TOTPS_PER_USER = 2
 
@@ -35,6 +40,6 @@ class UserIdentityOneTimePassword < IdentitiesRecord
     end
 
     def generate_private_key_if_blank
-      self.private_key ||= ROTP::Base32.random_base32
+      self.private_key = ROTP::Base32.random_base32 if private_key.blank?
     end
 end

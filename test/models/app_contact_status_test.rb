@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: app_contact_statuses
+#
+#  id           :string(255)      not null, primary key
+#  active       :boolean          default(TRUE), not null
+#  description  :string(255)      default(""), not null
+#  parent_title :string(255)      default(""), not null
+#  position     :integer          default(0), not null
+#
+
 require "test_helper"
 
 class AppContactStatusTest < ActiveSupport::TestCase
@@ -19,9 +30,11 @@ class AppContactStatusTest < ActiveSupport::TestCase
     # The model says `dependent: :nullify`
     # Foreign key is `contact_status_id`
 
-    @status.destroy
+    assert_raises(ActiveRecord::NotNullViolation) do
+      @status.destroy
+    end
     @contact.reload
 
-    assert_nil @contact.contact_status_id
+    assert_equal "ACTIVE", @contact.contact_status_id
   end
 end

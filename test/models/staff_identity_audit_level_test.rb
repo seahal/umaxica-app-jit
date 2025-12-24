@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: staff_identity_audit_levels
+#
+#  id         :string           default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 require "test_helper"
 
 class StaffIdentityAuditLevelTest < ActiveSupport::TestCase

@@ -2,24 +2,34 @@
 #
 # Table name: staff_identity_telephones
 #
-#  id         :uuid             not null, primary key
-#  number     :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  staff_id   :bigint
+#  id                                 :uuid             not null, primary key
+#  created_at                         :datetime         not null
+#  locked_at                          :datetime         default("-infinity"), not null
+#  number                             :string           default(""), not null
+#  otp_attempts_count                 :integer          default(0), not null
+#  otp_counter                        :text             default(""), not null
+#  otp_expires_at                     :datetime         default("-infinity"), not null
+#  otp_private_key                    :string           default(""), not null
+#  staff_id                           :uuid             not null
+#  staff_identity_telephone_status_id :string(255)      default("UNVERIFIED"), not null
+#  updated_at                         :datetime         not null
 #
 # Indexes
 #
-#  index_staff_identity_telephones_on_staff_id  (staff_id)
+#  idx_on_staff_identity_telephone_status_id_f2b1a32f7a  (staff_identity_telephone_status_id)
+#  index_staff_identity_telephones_on_staff_id           (staff_id)
 #
+
 require "test_helper"
 
 class StaffIdentityTelephoneTest < ActiveSupport::TestCase
   setup do
+    @staff = staffs(:none_staff)
     @valid_attributes = {
       number: "+1234567890",
       confirm_policy: true,
-      confirm_using_mfa: true
+      confirm_using_mfa: true,
+      staff: @staff
     }.freeze
   end
 

@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: app_timeline_audit_levels
+#
+#  id         :string           default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 require "test_helper"
 
 class AppTimelineAuditLevelTest < ActiveSupport::TestCase

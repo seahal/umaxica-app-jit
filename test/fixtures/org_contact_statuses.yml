@@ -1,8 +1,19 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# == Schema Information
+#
+# Table name: org_contact_statuses
+#
+#  id          :string(255)      not null, primary key
+#  active      :boolean          default(TRUE), not null
+#  description :string(255)      default(""), not null
+#  parent_id   :string(255)      default("00000000-0000-0000-0000-000000000000"), not null
+#  position    :integer          default(0), not null
+#
+# Indexes
+#
+#  index_org_contact_statuses_on_parent_id  (parent_id)
+#
 
-none:
-  id: 'NULL_ORG_STATUS'
-  description: 'ROOT'
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 organization_root:
   id: 'ORGANIZATION_SITE_STATUS'
@@ -23,3 +34,7 @@ phone_verified:
 completed:
   id: 'COMPLETED_CONTACT_ACTION'
   description: 'contact completed'
+
+none:
+  id: 'NONE'
+  description: 'null status'

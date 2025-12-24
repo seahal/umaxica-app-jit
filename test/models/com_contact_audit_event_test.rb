@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: com_contact_audit_events
+#
+#  id :string(255)      not null, primary key
+#
+
 require "test_helper"
 
 class ComContactAuditEventTest < ActiveSupport::TestCase

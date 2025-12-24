@@ -1,3 +1,29 @@
+# == Schema Information
+#
+# Table name: com_contacts
+#
+#  id                     :uuid             not null, primary key
+#  contact_category_title :string(255)      default("SECURITY_ISSUE"), not null
+#  contact_status_id      :string(255)      default("NONE"), not null
+#  created_at             :datetime         not null
+#  ip_address             :inet             default("0.0.0.0"), not null
+#  public_id              :string(21)       default(""), not null
+#  token                  :string(32)       default(""), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default("-infinity"), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  updated_at             :datetime         not null
+#
+# Indexes
+#
+#  index_com_contacts_on_contact_category_title  (contact_category_title)
+#  index_com_contacts_on_contact_status_id       (contact_status_id)
+#  index_com_contacts_on_public_id               (public_id)
+#  index_com_contacts_on_token                   (token)
+#  index_com_contacts_on_token_digest            (token_digest)
+#  index_com_contacts_on_token_expires_at        (token_expires_at)
+#
+
 require "test_helper"
 
 class ComContactTest < ActiveSupport::TestCase
@@ -93,7 +119,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NONE", contact.contact_category_title
+    assert_equal "SECURITY_ISSUE", contact.contact_category_title
     assert_equal "NONE", contact.contact_status_id
   end
 
@@ -292,7 +318,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NONE", contact.contact_category_title
+    assert_equal "SECURITY_ISSUE", contact.contact_category_title
   end
 
   test "should set default contact_status_id when nil" do
@@ -535,9 +561,9 @@ class ComContactTest < ActiveSupport::TestCase
     assert_equal contact.public_id, contact.to_param
   end
 
-  test "verify_token should return false when token_digest is nil" do
+  test "verify_token should return false when token_digest is blank" do
     contact = build_contact
-    contact.update!(token_digest: nil)
+    contact.update!(token_digest: "")
 
     assert_not contact.verify_token("any_token")
   end

@@ -103,6 +103,8 @@ group :development, :test do
   # gem "bullet"
   gem "prosopite"
   gem "pg_query"
+  # ensure database consistency
+  gem "database_consistency", require: false
 end
 
 group :development do
@@ -134,7 +136,7 @@ group :development do
   # erb linter
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
-  gem "annotaterb"
+  gem "annotate"
   gem "license_finder", require: false
   gem "ruby-lsp"
   gem "reek"

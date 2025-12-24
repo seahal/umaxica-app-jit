@@ -2,19 +2,29 @@
 #
 # Table name: user_identity_one_time_passwords
 #
-#  user_id                              :binary           not null
-#  user_identity_one_time_password_status_id :string
-#  private_key                          :string(1024)
-#  last_otp_at                          :datetime
-#  created_at                           :datetime         not null
-#  updated_at                           :datetime         not null
+#  created_at                                :datetime         not null
+#  last_otp_at                               :datetime         default("-infinity"), not null
+#  private_key                               :string(1024)     default(""), not null
+#  updated_at                                :datetime         not null
+#  user_id                                   :binary           not null
+#  user_identity_one_time_password_status_id :string           default("NONE"), not null
 #
+# Indexes
+#
+#  idx_on_user_identity_one_time_password_status_id_01264db86c  (user_identity_one_time_password_status_id)
+#
+
 require "test_helper"
 
 class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
   def setup
     @user = users(:one)
     @status = user_identity_one_time_password_statuses(:active)
+    # Ensure NONE status exists for defaults
+    unless UserIdentityOneTimePasswordStatus.exists?("NONE")
+      UserIdentityOneTimePasswordStatus.create!(id: "NONE")
+    end
+
     @private_key = "test-secret-key-12345"
     @last_otp_at = Time.current
   end
@@ -72,7 +82,8 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
   test "validates presence of last_otp_at" do
     record = UserIdentityOneTimePassword.new(
       user: @user,
-      private_key: @private_key
+      private_key: @private_key,
+      last_otp_at: nil
     )
 
     assert_not record.valid?

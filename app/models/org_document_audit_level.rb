@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: org_document_audit_levels
+#
+#  id         :string           default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class OrgDocumentAuditLevel < BusinessesRecord
   include UppercaseId
 

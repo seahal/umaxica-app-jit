@@ -1,20 +1,30 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 # == Schema Information
 #
 # Table name: staffs
 #
-#  id          :uuid             not null, primary key
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  webauthn_id :string
+#  id                       :uuid             not null, primary key
+#  created_at               :datetime         not null
+#  public_id                :string(21)       default(""), not null
+#  staff_identity_status_id :string(255)      default("NONE"), not null
+#  updated_at               :datetime         not null
+#  webauthn_id              :string           default(""), not null
+#  withdrawn_at             :datetime         default("infinity")
 #
+# Indexes
+#
+#  index_staffs_on_public_id                 (public_id) UNIQUE
+#  index_staffs_on_staff_identity_status_id  (staff_identity_status_id)
+#  index_staffs_on_withdrawn_at              (withdrawn_at)
+#
+
 one:
   id: "550e8400-e29b-41d4-a716-446655440010"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
   staff_identity_status_id: 'NONE'
   public_id: "4-4zX8pRwV8iRFEAeQxs4"
+  withdrawn_at: 'infinity'
 
 two:
   id: "550e8400-e29b-41d4-a716-446655440011"
@@ -22,3 +32,12 @@ two:
   updated_at: <%= Time.current %>
   staff_identity_status_id: 'NONE'
   public_id: "054uO-PRGSe7EHHAxtN05"
+  withdrawn_at: 'infinity'
+
+none_staff:
+  id: "00000000-0000-0000-0000-000000000000"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+  staff_identity_status_id: 'NONE'
+  public_id: "nil_staff"
+  withdrawn_at: <%= Time.at(0) %>

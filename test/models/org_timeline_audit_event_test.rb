@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: org_timeline_audit_events
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+
 require "test_helper"
 
 class OrgTimelineAuditEventTest < ActiveSupport::TestCase

@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: staff_identity_email_statuses
+#
+#  id :string(255)      default("UNVERIFIED"), not null, primary key
+#
+
 class StaffIdentityEmailStatus < IdentitiesRecord
   include UppercaseId
 

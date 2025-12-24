@@ -4,6 +4,16 @@ module Auth
       class SecretsController < ApplicationController
         include Auth::Setting::Secrets
 
+        def index
+          super
+          normalize_last_used_at(@secrets)
+        end
+
+        def show
+          super
+          normalize_last_used_at(@secret)
+        end
+
         private
 
           def authenticate_identity!
@@ -24,6 +34,14 @@ module Auth
 
           def secret_path(secret)
             auth_app_setting_secret_path(secret)
+          end
+
+          def normalize_last_used_at(secrets)
+            Array(secrets).each do |secret|
+              next unless secret.last_used_at.is_a?(Float) && secret.last_used_at.infinite? == -1
+
+              secret.last_used_at = nil
+            end
           end
       end
     end

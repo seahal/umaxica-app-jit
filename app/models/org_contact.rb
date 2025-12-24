@@ -1,3 +1,29 @@
+# == Schema Information
+#
+# Table name: org_contacts
+#
+#  id                     :uuid             not null, primary key
+#  contact_category_title :string(255)      default("ORGANIZATION_INQUIRY"), not null
+#  contact_status_id      :string(255)      default("NONE"), not null
+#  created_at             :datetime         not null
+#  ip_address             :inet             default("0.0.0.0"), not null
+#  public_id              :string(21)       default(""), not null
+#  token                  :string(32)       default(""), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default("-infinity"), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  updated_at             :datetime         not null
+#
+# Indexes
+#
+#  index_org_contacts_on_contact_category_title  (contact_category_title)
+#  index_org_contacts_on_contact_status_id       (contact_status_id)
+#  index_org_contacts_on_public_id               (public_id)
+#  index_org_contacts_on_token                   (token)
+#  index_org_contacts_on_token_digest            (token_digest)
+#  index_org_contacts_on_token_expires_at        (token_expires_at)
+#
+
 class OrgContact < GuestsRecord
   include ::PublicId
 
@@ -7,19 +33,21 @@ class OrgContact < GuestsRecord
   belongs_to :org_contact_category,
              class_name: "OrgContactCategory",
              foreign_key: :contact_category_title,
-             primary_key: :title,
-             optional: true,
+             primary_key: :id,
              inverse_of: :org_contacts
   belongs_to :org_contact_status,
              class_name: "OrgContactStatus",
              foreign_key: :contact_status_id,
-             optional: true,
              inverse_of: :org_contacts
   has_many :org_contact_topics, dependent: :destroy
 
   attr_accessor :confirm_policy
 
-  after_initialize :set_default_category_and_status, if: :new_record?
+  after_initialize do
+    self.contact_category_title ||= "ORGANIZATION_INQUIRY"
+    self.contact_status_id ||= "NONE"
+  end
+
   # Callbacks
   before_validation { self.contact_category_title = contact_category_title&.upcase }
   before_validation { self.contact_status_id = contact_status_id&.upcase }
@@ -27,7 +55,6 @@ class OrgContact < GuestsRecord
 
   # Validations
   validates :confirm_policy, acceptance: true
-  validates :contact_category_title, presence: true
 
   # State transition helpers
   def email_pending?
@@ -96,6 +123,8 @@ class OrgContact < GuestsRecord
   end
 
   def token_expired?
+    return false if token_expires_at.to_s == "-Infinity"
+
     token_expires_at && Time.current >= token_expires_at
   end
 
@@ -108,10 +137,5 @@ class OrgContact < GuestsRecord
 
     def generate_token
       self.token ||= SecureRandom.alphanumeric(32)
-    end
-
-    def set_default_category_and_status
-      self.contact_category_title ||= "NULL_ORG_CATEGORY"
-      self.contact_status_id ||= "NULL_ORG_STATUS"
     end
 end

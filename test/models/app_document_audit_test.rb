@@ -1,3 +1,27 @@
+# == Schema Information
+#
+# Table name: app_document_audits
+#
+#  id              :uuid             not null, primary key
+#  actor_id        :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_type      :string           default(""), not null
+#  app_document_id :uuid             not null
+#  created_at      :datetime         not null
+#  current_value   :text             default(""), not null
+#  event_id        :string(255)      default(""), not null
+#  ip_address      :string           default(""), not null
+#  level_id        :string           default("NONE"), not null
+#  previous_value  :text             default(""), not null
+#  timestamp       :datetime         default("-infinity"), not null
+#  updated_at      :datetime         not null
+#
+# Indexes
+#
+#  index_app_document_audits_on_actor_type_and_actor_id  (actor_type,actor_id)
+#  index_app_document_audits_on_app_document_id          (app_document_id)
+#  index_app_document_audits_on_level_id                 (level_id)
+#
+
 require "test_helper"
 
 class AppDocumentAuditTest < ActiveSupport::TestCase

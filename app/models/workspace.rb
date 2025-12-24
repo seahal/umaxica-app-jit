@@ -3,12 +3,18 @@
 # Table name: workspaces
 #
 #  id                  :uuid             not null, primary key
-#  name                :string
-#  domain              :string
-#  parent_organization :uuid
 #  created_at          :datetime         not null
+#  domain              :string           default(""), not null
+#  name                :string           default(""), not null
+#  parent_organization :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  updated_at          :datetime         not null
 #
+# Indexes
+#
+#  index_workspaces_on_domain               (domain) UNIQUE
+#  index_workspaces_on_parent_organization  (parent_organization)
+#
+
 class Workspace < IdentityRecord
   self.table_name = "workspaces"
 

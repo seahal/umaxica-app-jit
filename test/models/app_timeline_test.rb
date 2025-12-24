@@ -1,3 +1,29 @@
+# == Schema Information
+#
+# Table name: app_timelines
+#
+#  id                     :uuid             not null, primary key
+#  app_timeline_status_id :string(255)      default(""), not null
+#  created_at             :datetime         not null
+#  description            :string           default(""), not null
+#  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  public_id              :string(21)       default(""), not null
+#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  title                  :string           default(""), not null
+#  updated_at             :datetime         not null
+#
+# Indexes
+#
+#  index_app_timelines_on_app_timeline_status_id  (app_timeline_status_id)
+#  index_app_timelines_on_parent_id               (parent_id)
+#  index_app_timelines_on_prev_id                 (prev_id)
+#  index_app_timelines_on_public_id               (public_id)
+#  index_app_timelines_on_staff_id                (staff_id)
+#  index_app_timelines_on_succ_id                 (succ_id)
+#
+
 require "test_helper"
 
 class AppTimelineTest < ActiveSupport::TestCase
@@ -41,10 +67,10 @@ class AppTimelineTest < ActiveSupport::TestCase
     assert_includes AppTimeline.included_modules, Timeline
   end
 
-  test "app_timeline_status_id can be nil" do
+  test "app_timeline_status_id defaults to empty string" do
     timeline = AppTimeline.create!(title: "No Status Timeline")
 
-    assert_nil timeline.app_timeline_status_id
+    assert_equal "", timeline.app_timeline_status_id
     assert_nil timeline.app_timeline_status
   end
 end

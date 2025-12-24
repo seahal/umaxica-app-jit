@@ -18,12 +18,14 @@ module Auth
               raise "Unknown provider: #{provider}"
             end
 
+            notice_message = I18n.t("sign.app.social.sessions.create.success", provider: provider.humanize)
+
             if identity.persisted?
               # Existing identity, sign in if linked to a user
               if identity.user
                 sign_in identity.user
                 redirect_to auth_app_root_path,
-                            notice: I18n.t("auth.app.social.sessions.create.success", provider: provider.humanize)
+                            notice: notice_message
               else
                 # Identity exists but no user? This is an edge case (maybe partial registration),
                 # but for now we'll treat it as a new sign up flow or error.
@@ -37,26 +39,33 @@ module Auth
 
                 sign_in user
                 redirect_to auth_app_root_path,
-                            notice: I18n.t("auth.app.social.sessions.create.success", provider: provider.humanize)
+                            notice: notice_message
               end
             else
               # New identity
-              if identity.save
-                # Link to new user
-                user = User.new
-                if provider == "google_oauth2"
-                  user.user_identity_social_google = identity
-                elsif provider == "apple"
-                  user.user_identity_social_apple = identity
-                end
-                user.save!
+              # New identity
+              # Create User first to satisfy null: false constraint on identity.user_id
+              user = User.new
+
+              # Associate identity with user
+              identity.user = user
+              if provider == "google_oauth2"
+                user.user_identity_social_google = identity
+              elsif provider == "apple"
+                user.user_identity_social_apple = identity
+              end
+
+              if user.save
+                # Confirm identity is saved (User save should save associated has_one if assigned)
+                # If not, save identity explicitly
+                identity.save! unless identity.persisted?
 
                 sign_in user
                 redirect_to auth_app_root_path,
-                            notice: I18n.t("auth.app.social.sessions.create.success", provider: provider.humanize)
+                            notice: notice_message
               else
                 redirect_to new_auth_app_authentication_path,
-                            alert: "Failed to authenticate with #{provider.humanize}: #{identity.errors.full_messages.to_sentence}"
+                            alert: "Failed to create user: #{user.errors.full_messages.to_sentence}"
               end
             end
           end

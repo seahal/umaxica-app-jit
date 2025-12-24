@@ -12,18 +12,24 @@ module Email
 
     before_save { self.address&.downcase! }
 
+    after_initialize do
+      self.otp_counter = "0" if otp_counter.blank?
+      self.otp_private_key = ROTP::Base32.random_base32 if otp_private_key.blank?
+      self.otp_attempts_count ||= 0
+    end
+
     encrypts :address, downcase: true, deterministic: true
 
     validates :address, format: { with: URI::MailTo::EMAIL_REGEXP },
                         presence: true,
                         uniqueness: { case_sensitive: false },
-                        unless: Proc.new { |a| a.address.nil? && !a.pass_code.nil? }
+                        unless: Proc.new { |a| a.address.blank? && a.pass_code.present? }
     validates :confirm_policy, acceptance: true,
-                               unless: Proc.new { |a| a.address.nil? && !a.pass_code.nil? }
+                               unless: Proc.new { |a| a.address.blank? && a.pass_code.present? }
     validates :pass_code, numericality: { only_integer: true },
                           length: { is: 6 },
                           presence: true,
-                          unless: Proc.new { |a| a.pass_code.nil? && !a.address.nil? }
+                          unless: Proc.new { |a| a.pass_code.blank? && a.address.present? }
   end
 
   # OTP-related methods for email authentication
@@ -34,7 +40,7 @@ module Email
       otp_counter: otp_counter,
       otp_expires_at: Time.zone.at(expires_at),
       otp_attempts_count: 0,
-      locked_at: nil,
+      locked_at: "-infinity", # Sentinel for unlocked
       otp_last_sent_at: Time.current
     )
   end
@@ -53,16 +59,18 @@ module Email
   # Clears OTP secret after verification
   def clear_otp
     update!(
-      otp_private_key: nil,
-      otp_counter: nil,
-      otp_expires_at: nil,
+      otp_counter: "0",
+      otp_expires_at: "-infinity",
       otp_attempts_count: 0,
-      locked_at: nil
+      locked_at: "-infinity",
+      otp_last_sent_at: "-infinity"
     )
   end
 
   # Checks if OTP has expired
   def otp_expired?
+    return true if otp_expires_at.is_a?(Float) && otp_expires_at == -Float::INFINITY
+
     otp_expires_at.nil? || otp_expires_at <= Time.current
   end
 
@@ -72,11 +80,15 @@ module Email
   end
 
   def locked?
-    locked_at.present? || otp_attempts_count >= MAX_OTP_ATTEMPTS
+    is_locked_by_time = locked_at.present? && locked_at != -Float::INFINITY
+    is_locked_by_attempts = otp_attempts_count >= MAX_OTP_ATTEMPTS
+    is_locked_by_time || is_locked_by_attempts
   end
 
   def otp_cooldown_active?
-    otp_last_sent_at.present? && otp_last_sent_at > OTP_COOLDOWN_PERIOD.ago
+    return false unless otp_last_sent_at.is_a?(Time)
+
+    otp_last_sent_at > OTP_COOLDOWN_PERIOD.ago
   end
 
   def otp_cooldown_remaining

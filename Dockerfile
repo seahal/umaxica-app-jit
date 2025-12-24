@@ -172,6 +172,7 @@ WORKDIR /home/jit/workspace
 # hadolint ignore=DL3008
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
+    jq \
     vim \
     bash \
     openssl \
@@ -209,6 +210,10 @@ RUN apt-get update -qq \
     libxrandr2 \
     libxrender1 \
     libxss1 \
+    tree \
+    wget \
+    fd-find \
+    ripgrep \
     libxtst6 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
@@ -219,13 +224,13 @@ RUN curl -fsSL https://bun.sh/install -o /tmp/bun.sh \
     && bash /tmp/bun.sh "bun-v${BUN_VERSION}"
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
-        groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
-        useradd -l -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
-        echo "${DOCKER_USER}:hogehoge" | chpasswd; \
-        echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
-        chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
+    groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
+    useradd -l -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
+    echo "${DOCKER_USER}:hogehoge" | chpasswd; \
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
     else \
-        chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
+    chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
     fi
 
 USER ${DOCKER_USER}

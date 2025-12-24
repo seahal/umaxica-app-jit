@@ -1,3 +1,33 @@
+# == Schema Information
+#
+# Table name: com_contact_emails
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  com_contact_id         :uuid             not null
+#  created_at             :datetime         not null
+#  deletable              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  expires_at             :timestamptz      not null
+#  hotp_counter           :integer          default(0), not null
+#  hotp_secret            :string           default(""), not null
+#  remaining_views        :integer          default(10), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default("-infinity"), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  updated_at             :datetime         not null
+#  verifier_attempts_left :integer          default(5), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#
+# Indexes
+#
+#  index_com_contact_emails_on_com_contact_id       (com_contact_id)
+#  index_com_contact_emails_on_email_address        (email_address)
+#  index_com_contact_emails_on_expires_at           (expires_at)
+#  index_com_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#
+
 require "test_helper"
 
 class ComContactEmailTest < ActiveSupport::TestCase

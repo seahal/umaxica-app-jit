@@ -2,18 +2,28 @@
 #
 # Table name: users
 #
-#  id          :uuid             not null, primary key
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  webauthn_id :string
+#  id                      :uuid             not null, primary key
+#  created_at              :datetime         not null
+#  public_id               :string(21)       default(""), not null
+#  updated_at              :datetime         not null
+#  user_identity_status_id :string(255)      default("NONE"), not null
+#  webauthn_id             :string           default(""), not null
+#  withdrawn_at            :datetime         default("infinity")
 #
+# Indexes
+#
+#  index_users_on_public_id                (public_id) UNIQUE
+#  index_users_on_user_identity_status_id  (user_identity_status_id)
+#  index_users_on_withdrawn_at             (withdrawn_at)
+#
+
 class User < IdentitiesRecord
   include ::Account
   include ::PublicId
   include Withdrawable
   include HasRoles
 
-  belongs_to :user_identity_status, optional: true
+  belongs_to :user_identity_status
   has_one :user_identity_social_apple,
           dependent: :destroy
   has_one :user_identity_social_google,

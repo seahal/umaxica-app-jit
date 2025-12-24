@@ -3,19 +3,21 @@
 # Table name: staff_identity_passkeys
 #
 #  id          :uuid             not null, primary key
-#  description :string           not null
-#  public_key  :text             not null
-#  sign_count  :bigint           default(0), not null
 #  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  description :string           default(""), not null
 #  external_id :uuid             not null
-#  staff_id    :bigint           not null
+#  public_key  :text             not null
+#  sign_count  :integer          default(0), not null
+#  staff_id    :uuid             not null
+#  updated_at  :datetime         not null
 #  webauthn_id :binary           not null
 #
 # Indexes
 #
-#  index_staff_identity_passkeys_on_staff_id  (staff_id)
+#  index_staff_identity_passkeys_on_staff_id     (staff_id)
+#  index_staff_identity_passkeys_on_webauthn_id  (webauthn_id) UNIQUE
 #
+
 require "test_helper"
 
 class StaffIdentityPasskeyTest < ActiveSupport::TestCase

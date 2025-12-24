@@ -1,8 +1,14 @@
 require "test_helper"
 
 class HasRolesTest < ActiveSupport::TestCase
+  NIL_UUID = "00000000-0000-0000-0000-000000000000"
+
   setup do
-    @organization = Workspace.create!(name: "Test Org", domain: "test.com")
+    @organization = Workspace.create!(
+      name: "Test Org",
+      domain: "test.com",
+      parent_organization: root_workspace.id
+    )
     @admin_role = Role.create!(key: "admin", name: "Admin", organization: @organization)
     @manager_role = Role.create!(key: "manager", name: "Manager", organization: @organization)
     @editor_role = Role.create!(key: "editor", name: "Editor", organization: @organization)
@@ -59,4 +65,14 @@ class HasRolesTest < ActiveSupport::TestCase
     assert_includes roles, @admin_role
     assert_equal 1, roles.count
   end
+
+  private
+
+    def root_workspace
+      Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
+        workspace.name = "Root Workspace"
+        workspace.domain = "root.example.com"
+        workspace.parent_organization = NIL_UUID
+      end
+    end
 end

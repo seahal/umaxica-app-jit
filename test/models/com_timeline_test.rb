@@ -1,3 +1,29 @@
+# == Schema Information
+#
+# Table name: com_timelines
+#
+#  id                     :uuid             not null, primary key
+#  com_timeline_status_id :string(255)      default(""), not null
+#  created_at             :datetime         not null
+#  description            :string           default(""), not null
+#  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  public_id              :string(21)       default(""), not null
+#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  title                  :string           default(""), not null
+#  updated_at             :datetime         not null
+#
+# Indexes
+#
+#  index_com_timelines_on_com_timeline_status_id  (com_timeline_status_id)
+#  index_com_timelines_on_parent_id               (parent_id)
+#  index_com_timelines_on_prev_id                 (prev_id)
+#  index_com_timelines_on_public_id               (public_id)
+#  index_com_timelines_on_staff_id                (staff_id)
+#  index_com_timelines_on_succ_id                 (succ_id)
+#
+
 require "test_helper"
 
 class ComTimelineTest < ActiveSupport::TestCase
@@ -41,10 +67,10 @@ class ComTimelineTest < ActiveSupport::TestCase
     assert_includes ComTimeline.included_modules, Timeline
   end
 
-  test "com_timeline_status_id can be nil" do
+  test "com_timeline_status_id defaults to empty string" do
     timeline = ComTimeline.create!(title: "No Status Timeline")
 
-    assert_nil timeline.com_timeline_status_id
+    assert_equal "", timeline.com_timeline_status_id
     assert_nil timeline.com_timeline_status
   end
 end

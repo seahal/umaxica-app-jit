@@ -74,7 +74,9 @@ module Auth::App::Registration
 
       telephone.reload
 
-      assert_nil telephone.otp_expires_at # OTP should be cleared
+      # OTP should be cleared (-infinity)
+      expires = telephone.otp_expires_at
+      assert expires.nil? || expires.to_s == "-infinity" || (expires.is_a?(Float) && expires == -Float::INFINITY)
       assert_equal [ nil, nil ], [ telephone.confirm_policy, telephone.confirm_using_mfa ]
     end
 

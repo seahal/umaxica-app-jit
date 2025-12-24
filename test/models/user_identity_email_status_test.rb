@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: user_identity_email_statuses
+#
+#  id :string(255)      default("UNVERIFIED"), not null, primary key
+#
+
 require "test_helper"
 
 class UserIdentityEmailStatusTest < ActiveSupport::TestCase

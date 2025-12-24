@@ -1,3 +1,29 @@
+# == Schema Information
+#
+# Table name: app_contacts
+#
+#  id                     :uuid             not null, primary key
+#  contact_category_title :string(255)      default("APPLICATION_INQUIRY"), not null
+#  contact_status_id      :string(255)      default("NONE"), not null
+#  created_at             :datetime         not null
+#  ip_address             :inet             default("0.0.0.0"), not null
+#  public_id              :string(21)       default(""), not null
+#  token                  :string(32)       default(""), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default("-infinity"), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  updated_at             :datetime         not null
+#
+# Indexes
+#
+#  index_app_contacts_on_contact_category_title  (contact_category_title)
+#  index_app_contacts_on_contact_status_id       (contact_status_id)
+#  index_app_contacts_on_public_id               (public_id)
+#  index_app_contacts_on_token                   (token)
+#  index_app_contacts_on_token_digest            (token_digest)
+#  index_app_contacts_on_token_expires_at        (token_expires_at)
+#
+
 require "test_helper"
 
 class AppContactTest < ActiveSupport::TestCase
@@ -28,11 +54,11 @@ class AppContactTest < ActiveSupport::TestCase
   end
 
   def sample_category
-    app_contact_categories(:none).id
+    app_contact_categories(:application_inquiry).id
   end
 
   def sample_status
-    app_contact_statuses(:none).id
+    app_contact_statuses(:set_up).id
   end
 
   test "should inherit from GuestsRecord" do
@@ -44,7 +70,7 @@ class AppContactTest < ActiveSupport::TestCase
 
     assert_predicate contact, :valid?
     assert_equal "APPLICATION_INQUIRY", contact.contact_category_title
-    assert_equal "NULL_APP_STATUS", contact.contact_status_id
+    assert_equal "NONE", contact.contact_status_id
   end
 
   test "should create contact with relationship titles" do
@@ -93,8 +119,8 @@ class AppContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NULL_APP_CATEGORY", contact.contact_category_title
-    assert_equal "NULL_APP_STATUS", contact.contact_status_id
+    assert_equal "APPLICATION_INQUIRY", contact.contact_category_title
+    assert_equal "NONE", contact.contact_status_id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -309,7 +335,7 @@ class AppContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NULL_APP_CATEGORY", contact.contact_category_title
+    assert_equal "APPLICATION_INQUIRY", contact.contact_category_title
   end
 
   test "should set default contact_status_id when nil" do
@@ -332,7 +358,7 @@ class AppContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now
     )
 
-    assert_equal "NULL_APP_STATUS", contact.contact_status_id
+    assert_equal "NONE", contact.contact_status_id
   end
 
   # Validation tests
@@ -466,9 +492,9 @@ class AppContactTest < ActiveSupport::TestCase
     assert_equal contact.public_id, contact.to_param
   end
 
-  test "verify_token should return false when token_digest is nil" do
+  test "verify_token should return false when token_digest is blank" do
     contact = build_contact
-    contact.update!(token_digest: nil)
+    contact.update!(token_digest: "")
 
     assert_not contact.verify_token("any_token")
   end
@@ -502,8 +528,8 @@ class AppContactTest < ActiveSupport::TestCase
     contact = AppContact.new(confirm_policy: "1")
     contact.save!
 
-    assert_equal "NULL_APP_CATEGORY", contact.contact_category_title
-    assert_equal "NULL_APP_STATUS", contact.contact_status_id
+    assert_equal "APPLICATION_INQUIRY", contact.contact_category_title
+    assert_equal "NONE", contact.contact_status_id
   end
 
   test "should verify email" do

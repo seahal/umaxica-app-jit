@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 9cb90e91dce51d6f152c9709b387d54d3ebad79c
+  revision: 92481359a7f74261059a292a7cea61e68144b57e
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -109,9 +109,9 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     aes_key_wrap (1.1.0)
     android_key_attestation (0.3.0)
-    annotaterb (4.20.0)
-      activerecord (>= 6.0.0)
-      activesupport (>= 6.0.0)
+    annotate (2.6.5)
+      activerecord (>= 2.3.0)
+      rake (>= 0.8.7)
     argon2 (2.3.2)
       ffi (~> 1.15)
       ffi-compiler (~> 1.0)
@@ -150,7 +150,7 @@ GEM
     bigdecimal (3.3.1)
     bindata (2.5.1)
     bindex (0.8.1)
-    bootsnap (1.19.0)
+    bootsnap (1.20.0)
       msgpack (~> 1.2)
     brakeman (7.1.1)
       racc
@@ -178,6 +178,8 @@ GEM
       openssl-signature_algorithm (~> 1.0)
     crass (1.0.6)
     csv (3.3.5)
+    database_consistency (2.1.1)
+      activerecord (>= 3.2)
     date (3.5.1)
     debug (1.11.1)
       irb (~> 1.10)
@@ -354,8 +356,8 @@ GEM
       prism (~> 1.5)
     minitest-mock (5.27.0)
     msgpack (1.8.0)
-    multi_xml (0.7.2)
-      bigdecimal (~> 3.1)
+    multi_xml (0.8.0)
+      bigdecimal (>= 3.1, < 5)
     nanoid (2.0.0)
     net-http (0.9.1)
       uri (>= 0.11.1)
@@ -530,7 +532,7 @@ GEM
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-que (0.12.0)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-racecar (0.6.0)
+    opentelemetry-instrumentation-racecar (0.6.1)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-rack (0.29.0)
       opentelemetry-instrumentation-base (~> 0.25)
@@ -646,7 +648,7 @@ GEM
     rb-fsevent (0.11.2)
     rb-inotify (0.11.1)
       ffi (~> 1.0)
-    rbs (3.9.5)
+    rbs (3.10.0)
       logger
     rdoc (7.0.2)
       erb
@@ -689,7 +691,7 @@ GEM
     rswag-ui (2.17.0)
       actionpack (>= 5.2, < 8.2)
       railties (>= 5.2, < 8.2)
-    rubocop (1.82.0)
+    rubocop (1.82.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -841,7 +843,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  annotaterb
+  annotate
   argon2
   aws-sdk-connect
   aws-sdk-polly
@@ -851,6 +853,7 @@ DEPENDENCIES
   brakeman
   bundler-audit
   churn
+  database_consistency
   debug
   erb_lint
   fastly

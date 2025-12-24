@@ -1,3 +1,24 @@
+# == Schema Information
+#
+# Table name: user_identity_secrets
+#
+#  id                             :uuid             not null, primary key
+#  created_at                     :datetime         not null
+#  expires_at                     :datetime         default("infinity"), not null
+#  last_used_at                   :datetime         default("-infinity"), not null
+#  name                           :string           default(""), not null
+#  password_digest                :string           default(""), not null
+#  updated_at                     :datetime         not null
+#  user_id                        :uuid             not null
+#  user_identity_secret_status_id :string(255)      default("ACTIVE"), not null
+#
+# Indexes
+#
+#  index_user_identity_secrets_on_expires_at                      (expires_at)
+#  index_user_identity_secrets_on_user_id                         (user_id)
+#  index_user_identity_secrets_on_user_identity_secret_status_id  (user_identity_secret_status_id)
+#
+
 require "test_helper"
 
 class UserIdentitySecretTest < ActiveSupport::TestCase

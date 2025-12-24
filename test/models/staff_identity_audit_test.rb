@@ -1,14 +1,40 @@
+# == Schema Information
+#
+# Table name: staff_identity_audits
+#
+#  id             :uuid             not null, primary key
+#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_type     :string           default(""), not null
+#  created_at     :datetime         not null
+#  event_id       :string(255)      default("NONE"), not null
+#  ip_address     :string           default(""), not null
+#  level_id       :string           default("NONE"), not null
+#  previous_value :text             default(""), not null
+#  staff_id       :uuid             not null
+#  timestamp      :datetime         default("-infinity"), not null
+#  updated_at     :datetime         not null
+#
+# Indexes
+#
+#  index_staff_identity_audits_on_actor_type_and_actor_id  (actor_type,actor_id)
+#  index_staff_identity_audits_on_event_id                 (event_id)
+#  index_staff_identity_audits_on_level_id                 (level_id)
+#  index_staff_identity_audits_on_staff_id                 (staff_id)
+#
+
 require "test_helper"
 
 class StaffIdentityAuditTest < ActiveSupport::TestCase
   def setup
     @staff = staffs(:one)
+    @actor = users(:none_user)
     @audit_event = staff_identity_audit_events(:one)
     @audit_level = staff_identity_audit_levels(:none)
     @audit = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
       staff_identity_audit_level: @audit_level,
+      actor: @actor,
       timestamp: Time.current,
       ip_address: "192.168.1.1"
     )
@@ -55,14 +81,15 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     assert_equal "192.168.1.1", @audit.ip_address
   end
 
-  test "actor_id is optional" do
+  test "actor_id is set on create" do
     audit_without_actor = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
-      staff_identity_audit_level: @audit_level
+      staff_identity_audit_level: @audit_level,
+      actor: @actor
     )
 
-    assert_nil audit_without_actor.actor_id
+    assert_equal @actor.id, audit_without_actor.actor_id
   end
 
   test "previous_value can be stored" do
@@ -70,6 +97,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       staff: @staff,
       staff_identity_audit_event: @audit_event,
       staff_identity_audit_level: @audit_level,
+      actor: @actor,
       previous_value: '{"name": "old"}'
     )
 
@@ -82,6 +110,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       staff: @staff,
       staff_identity_audit_event: @audit_event,
       staff_identity_audit_level: @audit_level,
+      actor: @actor,
       previous_value: plain_text
     )
 
@@ -103,6 +132,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       staff: @staff,
       staff_identity_audit_event: @audit_event,
       staff_identity_audit_level: @audit_level,
+      actor: @actor,
       previous_value: plain_text
     )
 
@@ -143,8 +173,8 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       staff_identity_audit_level: @audit_level
     )
 
-    assert_not audit.valid?
-    assert_not_empty audit.errors[:staff_identity_audit_event]
+    # Defaults to NONE, so it should be valid
+    assert_predicate audit, :valid?
   end
 
   test "belongs to polymorphic actor" do
@@ -214,6 +244,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
     audit = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
+      actor: @actor,
       timestamp: Time.current
     )
 

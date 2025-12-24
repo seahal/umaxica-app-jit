@@ -1,3 +1,31 @@
+# == Schema Information
+#
+# Table name: org_contact_emails
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  created_at             :datetime         not null
+#  deletable              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  expires_at             :timestamptz      not null
+#  org_contact_id         :uuid             not null
+#  remaining_views        :integer          default(10), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default("-infinity"), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  updated_at             :datetime         not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#
+# Indexes
+#
+#  index_org_contact_emails_on_email_address        (email_address)
+#  index_org_contact_emails_on_expires_at           (expires_at)
+#  index_org_contact_emails_on_org_contact_id       (org_contact_id)
+#  index_org_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#
+
 require "test_helper"
 
 class OrgContactEmailTest < ActiveSupport::TestCase
@@ -64,7 +92,7 @@ class OrgContactEmailTest < ActiveSupport::TestCase
   end
 
   test "can_resend_verifier? logic" do
-    assert_not @email.can_resend_verifier? # Fresh record
+    assert_predicate @email, :can_resend_verifier? # Fresh record (defaults to expired)
     @email.generate_verifier!
     # Still valid attempt window
     assert_not @email.can_resend_verifier?

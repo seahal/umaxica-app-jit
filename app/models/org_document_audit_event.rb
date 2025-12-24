@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: org_document_audit_events
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+
 class OrgDocumentAuditEvent < BusinessesRecord
   self.table_name = "org_document_audit_events"
 

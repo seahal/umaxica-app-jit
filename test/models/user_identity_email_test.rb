@@ -2,23 +2,35 @@
 #
 # Table name: user_identity_emails
 #
-#  id         :uuid             not null, primary key
-#  address    :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  user_id    :bigint
+#  id                            :uuid             not null, primary key
+#  address                       :string           default(""), not null
+#  created_at                    :datetime         not null
+#  locked_at                     :datetime         default("-infinity"), not null
+#  otp_attempts_count            :integer          default(0), not null
+#  otp_counter                   :text             default(""), not null
+#  otp_expires_at                :datetime         default("-infinity"), not null
+#  otp_last_sent_at              :datetime         default("-infinity"), not null
+#  otp_private_key               :string           default(""), not null
+#  updated_at                    :datetime         not null
+#  user_id                       :uuid             not null
+#  user_identity_email_status_id :string(255)      default("UNVERIFIED"), not null
 #
 # Indexes
 #
-#  index_user_identity_emails_on_user_id  (user_id)
+#  index_user_identity_emails_on_otp_last_sent_at               (otp_last_sent_at)
+#  index_user_identity_emails_on_user_id                        (user_id)
+#  index_user_identity_emails_on_user_identity_email_status_id  (user_identity_email_status_id)
 #
+
 require "test_helper"
 
 class UserIdentityEmailTest < ActiveSupport::TestCase
   setup do
+    @user = users(:none_user)
     @valid_attributes = {
       address: "test@example.com",
-      confirm_policy: true
+      confirm_policy: true,
+      user: @user
     }.freeze
   end
 
@@ -97,7 +109,7 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
 
   # Pass code validation tests
   test "should be valid with pass_code instead of email" do
-    user_email = UserIdentityEmail.new(pass_code: "123456")
+    user_email = UserIdentityEmail.new(pass_code: "123456", user: @user)
 
     assert_predicate user_email, :valid?
   end
@@ -115,7 +127,7 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
   # end
 
   test "should not require email when pass_code is present" do
-    user_email = UserIdentityEmail.new(pass_code: "123456")
+    user_email = UserIdentityEmail.new(pass_code: "123456", user: @user)
 
     assert_predicate user_email, :valid?
     assert_not user_email.errors[:address].any?
@@ -148,7 +160,8 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
 
   # Edge case tests
   test "should handle nil address gracefully when pass_code is set" do
-    user_email = UserIdentityEmail.new(address: nil, pass_code: "123456")
+    # Address is encrypted, so we use empty string to avoid encryption issues with nil
+    user_email = UserIdentityEmail.new(address: "", pass_code: "123456", user: @user)
 
     assert_predicate user_email, :valid?
   end

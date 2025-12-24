@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: com_document_audit_events
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+
 require "test_helper"
 
 class ComDocumentAuditEventTest < ActiveSupport::TestCase

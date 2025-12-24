@@ -1,3 +1,10 @@
+# == Schema Information
+#
+# Table name: user_identity_passkey_statuses
+#
+#  id :string(255)      not null, primary key
+#
+
 class UserIdentityPasskeyStatus < IdentitiesRecord
   include UppercaseId
 

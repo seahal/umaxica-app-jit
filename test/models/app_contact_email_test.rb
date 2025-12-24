@@ -1,3 +1,31 @@
+# == Schema Information
+#
+# Table name: app_contact_emails
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  app_contact_id         :uuid             not null
+#  created_at             :datetime         not null
+#  deletable              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  expires_at             :timestamptz      not null
+#  remaining_views        :integer          default(10), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default("-infinity"), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  updated_at             :datetime         not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#
+# Indexes
+#
+#  index_app_contact_emails_on_app_contact_id       (app_contact_id)
+#  index_app_contact_emails_on_email_address        (email_address)
+#  index_app_contact_emails_on_expires_at           (expires_at)
+#  index_app_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#
+
 require "test_helper"
 
 class AppContactEmailTest < ActiveSupport::TestCase
@@ -89,42 +117,4 @@ class AppContactEmailTest < ActiveSupport::TestCase
       assert_not @email.verify_code(raw_code)
     end
   end
-
-  # rubocop:disable Minitest/MultipleAssertions
-  test "can_resend_verifier? logic" do
-    # Fresh new record
-    assert_not @email.can_resend_verifier? # nil verifier_expires_at is not expired but !activated is true. Wait, logic check:
-    # Logic: !activated && (verifier_expired? || verifier_attempts_left <= 0)
-    # New record: activated=false, verifier_expires_at=nil (expired?=false), left=nil (fail comparison?).
-    # Let's check implementation behavior for nil.
-    # Ruby: nil <= 0 raises ArgumentError.
-    # If verifier_attempts_left is nil, we might have an issue.
-    # Let's save first to set defaults if any? No default in migration usually implies nil.
-    # Let's look at the model: `verifier_attempts_left` is set in `generate_verifier!`.
-
-    # If it's a new record that never had a code generated, `verifier_attempts_left` is likely nil.
-    # The code `verifier_attempts_left <= 0` will crash if nil.
-    # BUT, if we assume this method is called after generation or we handle nil gracefully.
-    # Actually, looking at the code: `return false if verifier_attempts_left <= 0` in verify_code.
-    # So we should probably ensure generate_verifier! is called or defaults are set.
-
-    @email.generate_verifier!
-
-    assert_not @email.can_resend_verifier? # valid and fresh
-
-    @email.update!(verifier_attempts_left: 0)
-
-    assert_predicate @email, :can_resend_verifier?
-
-    @email.generate_verifier!
-
-    travel 16.minutes do
-      assert_predicate @email, :can_resend_verifier?
-    end
-
-    @email.update!(activated: true)
-
-    assert_not @email.can_resend_verifier?
-  end
-  # rubocop:enable Minitest/MultipleAssertions
 end

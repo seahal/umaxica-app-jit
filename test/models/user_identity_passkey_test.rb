@@ -1,3 +1,25 @@
+# == Schema Information
+#
+# Table name: user_identity_passkeys
+#
+#  id                              :uuid             not null, primary key
+#  created_at                      :datetime         not null
+#  description                     :string           default(""), not null
+#  external_id                     :uuid             not null
+#  public_key                      :text             not null
+#  sign_count                      :integer          default(0), not null
+#  updated_at                      :datetime         not null
+#  user_id                         :uuid             not null
+#  user_identity_passkey_status_id :string(255)      default("ACTIVE"), not null
+#  webauthn_id                     :string           default(""), not null
+#
+# Indexes
+#
+#  idx_on_user_identity_passkey_status_id_f979a7d699  (user_identity_passkey_status_id)
+#  index_user_identity_passkeys_on_user_id            (user_id)
+#  index_user_identity_passkeys_on_webauthn_id        (webauthn_id) UNIQUE
+#
+
 require "test_helper"
 
 class UserIdentityPasskeyTest < ActiveSupport::TestCase

@@ -9,6 +9,6 @@ module PublicId
   private
 
     def generate_public_id
-      self.public_id ||= Nanoid.generate(size: 21)
+      self.public_id = Nanoid.generate(size: 21) if public_id.blank?
     end
 end
