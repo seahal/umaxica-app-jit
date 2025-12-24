@@ -4,6 +4,8 @@ module PublicId
   included do
     before_create :generate_public_id
     before_validation :generate_public_id, on: :create
+
+    validates :public_id, length: { maximum: 21 }
   end
 
   private

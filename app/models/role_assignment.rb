@@ -12,9 +12,7 @@
 # Indexes
 #
 #  index_role_assignments_on_role_id     (role_id)
-#  index_role_assignments_on_staff_id    (staff_id)
 #  index_role_assignments_on_staff_role  (staff_id,role_id) UNIQUE
-#  index_role_assignments_on_user_id     (user_id)
 #  index_role_assignments_on_user_role   (user_id,role_id) UNIQUE
 #
 
@@ -23,6 +21,8 @@ class RoleAssignment < IdentityRecord
   belongs_to :staff, class_name: "Staff", optional: true, inverse_of: :role_assignments
   belongs_to :role, inverse_of: :role_assignments
   has_one :organization, through: :role
+  validates :role_id, uniqueness: { scope: :staff_id }, if: -> { staff_id.present? }
+  validates :role_id, uniqueness: { scope: :user_id }, if: -> { user_id.present? }
 
   validate :user_or_staff_present
   validate :user_and_staff_exclusive

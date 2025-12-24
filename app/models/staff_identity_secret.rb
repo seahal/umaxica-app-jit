@@ -25,6 +25,8 @@ class StaffIdentitySecret < IdentitiesRecord
   belongs_to :staff
   belongs_to :staff_identity_secret_status, optional: true
 
+  validates :staff_identity_secret_status_id, length: { maximum: 255 }
+
   has_secure_password algorithm: :argon2
 
   validates :name, presence: true

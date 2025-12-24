@@ -15,11 +15,11 @@ ARG GITHUB_ACTIONS=""
 # Production image (multi-stage build)
 # ============================================================================
 FROM ruby:${RUBY_VERSION}-slim-trixie AS production-base
+SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
-SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV HOME=/home/${DOCKER_USER}
 ENV APP_HOME=${HOME}/main
 ENV LANG=C.UTF-8 \
@@ -60,13 +60,9 @@ RUN apt-get update \
 # ============================================================================
 
 FROM production-base AS production-build
-
+# Install build tools required for gems
 ARG DOCKER_UID
 ARG DOCKER_GID
-ARG DOCKER_USER
-ARG DOCKER_GROUP
-
-# Install build tools required for gems
 # hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -81,9 +77,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY Gemfile Gemfile.lock ./
-RUN --mount=type=cache,target=/usr/local/bundle \
-    --mount=type=cache,target=/root/.cache/bundle \
-    bundle install --jobs "${BUNDLE_JOBS}" --retry "${BUNDLE_RETRY}" \
+RUN --mount=type=cache,target=/usr/local/bundle,uid=${DOCKER_UID},gid=${DOCKER_GID} \
+    --mount=type=cache,target=/tmp/bundle-cache,uid=${DOCKER_UID},gid=${DOCKER_GID} \
+    bundle config set --local cache_path /tmp/bundle-cache \
+    && bundle install --jobs "${BUNDLE_JOBS}" --retry "${BUNDLE_RETRY}" \
     && bundle exec bootsnap precompile --gemfile \
     && bundle config set --local without 'development test' \
     && bundle clean --force \
@@ -103,8 +100,6 @@ FROM production-base AS production
 ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
-ARG DOCKER_GROUP
-
 ENV PORT=3000 \
     RUBY_YJIT_ENABLE=1 \
     RAILS_LOG_TO_STDOUT=1 \
@@ -130,7 +125,6 @@ SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV TZ=UTC \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
-    BUNDLE_FORCE_RUBY_PLATFORM=1 \
     BUNDLE_FORCE_RUBY_PLATFORM=1
 
 # hadolint ignore=DL3008
@@ -156,6 +150,7 @@ RUN apt-get update -qq \
 # ============================================================================
 # ============================================================================
 FROM development-base AS development
+SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ARG COMMIT_HASH
 ARG DOCKER_UID
 ARG DOCKER_GID
@@ -163,7 +158,6 @@ ARG DOCKER_USER
 ARG DOCKER_GROUP
 ARG BUN_VERSION
 ARG GITHUB_ACTIONS
-SHELL ["/bin/bash", "-eu", "-o", "pipefail", "-c"]
 ENV COMMIT_HASH="${COMMIT_HASH}"
 ENV HOME=/home/jit
 ENV BUN_INSTALL=/usr/local
@@ -172,56 +166,40 @@ WORKDIR /home/jit/workspace
 # hadolint ignore=DL3008
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
-    jq \
-    vim \
     bash \
-    openssl \
-    iproute2 \
-    fontconfig \
-    lsb-release \
-    dbus \
-    zsh \
-    sudo \
-    udev \
-    unzip \
-    xserver-xorg-core \
-    xvfb \
-    zip \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libdrm2 \
-    libgbm1 \
-    libglib2.0-0 \
-    libgtk-3-0 \
-    libnss3 \
-    libnspr4 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libsecret-1-0 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxkbcommon0 \
-    libxrandr2 \
-    libxrender1 \
-    libxss1 \
-    tree \
-    wget \
+    bat \
     fd-find \
+    fontconfig \
+    fzf \
+    htop \
+    iproute2 \
+    jq \
+    lsb-release \
+    openssl \
     ripgrep \
-    libxtst6 \
+    silversearcher-ag \
+    sudo \
+    tree \
+    unzip \
+    vim \
+    wget \
+    zip \
+    zsh \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
 COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
 
-RUN curl -fsSL https://bun.sh/install -o /tmp/bun.sh \
-    && bash /tmp/bun.sh "bun-v${BUN_VERSION}"
+RUN --mount=type=cache,target=/tmp/bun-cache,uid=${DOCKER_UID},gid=${DOCKER_GID} \
+    curl -fsSL --retry 5 --retry-delay 3 --retry-max-time 120 https://bun.sh/install -o /tmp/bun.sh \
+    && bash /tmp/bun.sh "bun-v${BUN_VERSION}" \
+    || (echo "Bun installation failed, trying direct download..." \
+        && curl -fsSL --retry 5 --retry-delay 3 --retry-max-time 120 \
+           "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64.zip" -o /tmp/bun.zip \
+        && unzip -q /tmp/bun.zip -d /tmp \
+        && mv /tmp/bun-linux-x64/bun /usr/local/bin/bun \
+        && chmod +x /usr/local/bin/bun \
+        && rm -rf /tmp/bun.zip /tmp/bun-linux-x64)
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \

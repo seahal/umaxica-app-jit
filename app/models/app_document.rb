@@ -29,6 +29,8 @@ class AppDocument < BusinessesRecord
 
   belongs_to :app_document_status, optional: true
 
+  validates :app_document_status_id, length: { maximum: 255 }
+
   has_many :app_document_audits,
            class_name: "AppDocumentAudit",
            primary_key: "id",

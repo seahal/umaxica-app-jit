@@ -24,12 +24,14 @@
 #
 
 class UserIdentitySocialGoogle < IdentitiesRecord
-  belongs_to :user, optional: true
+  belongs_to :user
   belongs_to :user_identity_social_google_status, optional: true
 
   validates :token, presence: true
-  validates :user_id, uniqueness: true, allow_nil: true
+  validates :user_id, uniqueness: true
   validates :uid, presence: true, uniqueness: { scope: :provider }
+  validates :expires_at, presence: true
+  validates :user_identity_social_google_status_id, length: { maximum: 255 }
 
   def self.find_or_create_from_auth_hash(auth)
     # Find existing identity

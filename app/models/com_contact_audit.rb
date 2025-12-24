@@ -28,5 +28,7 @@ class ComContactAudit < GuestsRecord
              primary_key: "id",
              inverse_of: :com_contact_audits
 
+  validates :event_id, length: { maximum: 255 }
+
   # This model tracks the audit/history of contact interactions
 end

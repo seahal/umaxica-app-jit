@@ -37,8 +37,9 @@ class ComContactTelephone < GuestsRecord
   alias_attribute :otp_attempts_left, :verifier_attempts_left
 
   # Validations
-  validates :telephone_number, presence: true,
+  validates :telephone_number, presence: true, length: { maximum: 1000 },
                                format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+  validates :verifier_digest, length: { maximum: 255 }
 
   # Generate and store OTP
   def generate_otp!

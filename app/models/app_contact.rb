@@ -55,6 +55,10 @@ class AppContact < GuestsRecord
 
   # Validations
   validates :confirm_policy, acceptance: true
+  validates :contact_category_title, length: { maximum: 255 }
+  validates :contact_status_id, length: { maximum: 255 }
+  validates :token, length: { maximum: 32 }
+  validates :token_digest, length: { maximum: 255 }
 
   # State transition helpers
   def email_pending?

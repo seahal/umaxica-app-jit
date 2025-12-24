@@ -16,6 +16,9 @@
 class OrgContactStatus < GuestsRecord
   include UppercaseId
 
+  validates :description, length: { maximum: 255 }
+  validates :parent_id, length: { maximum: 255 }
+
   has_many :org_contacts,
            foreign_key: :contact_status_id,
            inverse_of: :org_contact_status,

@@ -29,6 +29,8 @@ class ComTimeline < BusinessesRecord
 
   belongs_to :com_timeline_status, optional: true
 
+  validates :com_timeline_status_id, length: { maximum: 255 }
+
   include Timeline
 
   has_many :com_timeline_audits,

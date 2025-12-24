@@ -29,6 +29,8 @@ class AppTimeline < BusinessesRecord
 
   belongs_to :app_timeline_status, optional: true
 
+  validates :app_timeline_status_id, length: { maximum: 255 }
+
   include Timeline
 
   has_many :app_timeline_audits,

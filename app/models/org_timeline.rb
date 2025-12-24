@@ -29,6 +29,8 @@ class OrgTimeline < BusinessesRecord
 
   belongs_to :org_timeline_status, optional: true
 
+  validates :org_timeline_status_id, length: { maximum: 255 }
+
   include Timeline
 
   has_many :org_timeline_audits,

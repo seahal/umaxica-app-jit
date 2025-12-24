@@ -29,7 +29,7 @@ class AreaOccurrence < UniversalRecord
             length: { is: 21 },
             format: { with: /\A[A-Za-z0-9_-]{21}\z/ },
             uniqueness: true
-  validates :body, presence: true, uniqueness: true
-  validates :status_id, presence: true
+  validates :body, presence: true, uniqueness: true, length: { maximum: 255 }
+  validates :status_id, presence: true, length: { maximum: 255 }
   validates :memo, length: { maximum: 1024 }, allow_nil: true
 end

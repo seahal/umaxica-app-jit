@@ -7,3 +7,30 @@ ActiveStorage::Blob:
   enabled: false
 ActiveStorage::VariantRecord:
   enabled: false
+  enabled: false
+
+UserIdentityEmail:
+  ColumnPresenceChecker:
+    address:
+      enabled: false
+    MissingUniqueIndexChecker:
+      address:
+        enabled: false
+
+StaffIdentityEmail:
+  ColumnPresenceChecker:
+    address:
+      enabled: false
+  MissingUniqueIndexChecker:
+    address:
+      enabled: false
+
+UserIdentityTelephone:
+  MissingUniqueIndexChecker:
+    number:
+      enabled: false
+
+StaffIdentityTelephone:
+  MissingUniqueIndexChecker:
+    number:
+      enabled: false

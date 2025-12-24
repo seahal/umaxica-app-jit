@@ -35,4 +35,6 @@ class AppDocumentAudit < BusinessesRecord
              foreign_key: "event_id",
              primary_key: "id",
              inverse_of: :app_document_audits
+
+  validates :event_id, length: { maximum: 255 }
 end

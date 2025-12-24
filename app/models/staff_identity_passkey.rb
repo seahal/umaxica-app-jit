@@ -23,6 +23,12 @@ class StaffIdentityPasskey < IdentityRecord
 
   belongs_to :staff
 
+  validates :webauthn_id, presence: true, uniqueness: true
+  validates :external_id, presence: true
+  validates :public_key, presence: true
+  validates :description, presence: true
+  validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
+
   validate :enforce_staff_passkey_limit, on: :create
 
   private

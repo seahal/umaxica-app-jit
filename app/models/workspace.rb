@@ -35,4 +35,5 @@ class Workspace < IdentityRecord
            inverse_of: :workspace
 
   validates :name, presence: true
+  validates :domain, uniqueness: true
 end

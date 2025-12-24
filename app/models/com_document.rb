@@ -29,6 +29,8 @@ class ComDocument < BusinessesRecord
 
   belongs_to :com_document_status, optional: true
 
+  validates :com_document_status_id, length: { maximum: 255 }
+
   include Document
 
   encrypts :title

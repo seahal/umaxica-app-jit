@@ -37,26 +37,9 @@ services:
         condition: service_started
       valkey:
         condition: service_healthy
-      minio:
-        condition: service_started
-
-  minio:
-    image: minio/minio:latest
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    volumes:
-      - minio-volume:/data
-    ports:
-      - "127.0.0.1:${MINIO_API_PORT:-19000}:9000" # API
-      - "127.0.0.1:${MINIO_CONSOLE_PORT:-19001}:9001" # Console
-    networks:
-      - backend
-    restart: unless-stopped
 
   primary:
-    image: postgres:18.0-alpine
+    image: postgres:18-alpine
     command:
       - -c
       - config_file=/etc/postgresql/postgresql.conf
@@ -90,7 +73,7 @@ services:
       start_period: 5s
 
   replica:
-    image: postgres:18.0-alpine
+    image: postgres:18-alpine
     entrypoint: /entrypoint.sh
     environment:
       POSTGRES_USER: root
@@ -186,43 +169,55 @@ services:
   master:
     image: chrislusf/seaweedfs:4.03
     ports:
-      - 9333:9333
-      - 19333:19333
+      - "127.0.0.1:9333:9333"
+      - "127.0.0.1:19333:19333"
     command: 'master -ip=master -ip.bind=0.0.0.0'
     volumes:
       - master_data:/data
+    networks:
+      - backend
+    restart: unless-stopped
   volume:
     image: chrislusf/seaweedfs:4.03
     ports:
-      - 8080:8080
-      - 18080:18080
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:18080:18080"
     command: 'volume -ip=volume -master="master:9333" -ip.bind=0.0.0.0 -port=8080'
     volumes:
       - volume_data:/data
+    networks:
+      - backend
     depends_on:
       - master
+    restart: unless-stopped
   filer:
     image: chrislusf/seaweedfs:4.03
     ports:
-      - 8888:8888
-      - 18888:18888
+      - "127.0.0.1:8888:8888"
+      - "127.0.0.1:18888:18888"
     command: 'filer -ip=filer -master="master:9333" -ip.bind=0.0.0.0'
     volumes:
       - filer_data:/data
+    networks:
+      - backend
     tty: true
     stdin_open: true
     depends_on:
       - master
       - volume
+    restart: unless-stopped
   s3:
     image: chrislusf/seaweedfs:4.03
     ports:
-      - 8333:8333
+      - "127.0.0.1:8333:8333"
     command: 's3 -filer="filer:8888" -ip.bind=0.0.0.0'
+    networks:
+      - backend
     depends_on:
       - master
       - volume
       - filer
+    restart: unless-stopped
 
   # cloudflare-tunnel:
   #  image: cloudflare/cloudflared:latest
@@ -244,7 +239,6 @@ networks:
 
 volumes:
   valkey-volume: { }
-  minio-volume: { }
   loki-volume: { }
   tempo-volume: { }
   grafana-volume: { }

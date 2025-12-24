@@ -28,4 +28,6 @@ class ComContactTopic < GuestsRecord
   include ::PublicId
 
   belongs_to :com_contact
+
+  validates :otp_digest, length: { maximum: 255 }
 end

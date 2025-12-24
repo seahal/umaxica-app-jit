@@ -34,6 +34,9 @@ class UserToken < TokensRecord
   belongs_to :user
   belongs_to :user_token_status
 
+  validates :public_id, uniqueness: true, length: { maximum: 21 }
+  validates :refresh_expires_at, presence: true
+
   validate :enforce_concurrent_session_limit, on: :create
 
   private

@@ -12,9 +12,7 @@
 # Indexes
 #
 #  index_role_assignments_on_role_id     (role_id)
-#  index_role_assignments_on_staff_id    (staff_id)
 #  index_role_assignments_on_staff_role  (staff_id,role_id) UNIQUE
-#  index_role_assignments_on_user_id     (user_id)
 #  index_role_assignments_on_user_role   (user_id,role_id) UNIQUE
 #
 

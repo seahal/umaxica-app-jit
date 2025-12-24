@@ -24,4 +24,7 @@ class StaffOccurrence < UniversalRecord
   include Occurrence
 
   belongs_to :staff_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :staff_occurrences
+
+  validates :body, length: { maximum: 36 }
+  validates :status_id, length: { maximum: 255 }
 end

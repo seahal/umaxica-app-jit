@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_24_173428) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -53,9 +53,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.uuid "user_id"
     t.index ["role_id"], name: "index_role_assignments_on_role_id"
     t.index ["staff_id", "role_id"], name: "index_role_assignments_on_staff_role", unique: true
-    t.index ["staff_id"], name: "index_role_assignments_on_staff_id"
     t.index ["user_id", "role_id"], name: "index_role_assignments_on_user_role", unique: true
-    t.index ["user_id"], name: "index_role_assignments_on_user_id"
   end
 
   create_table "roles", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -394,7 +392,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.uuid "user_id", null: false
     t.uuid "workspace_id", null: false
     t.index ["user_id", "workspace_id"], name: "index_user_memberships_on_user_id_and_workspace_id", unique: true
-    t.index ["user_id"], name: "index_user_memberships_on_user_id"
     t.index ["workspace_id"], name: "index_user_memberships_on_workspace_id"
   end
 

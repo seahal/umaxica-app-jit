@@ -18,6 +18,9 @@
 class AppContactCategory < GuestsRecord
   include UppercaseId
 
+  validates :description, length: { maximum: 255 }
+  validates :parent_id, length: { maximum: 255 }
+
   has_many :app_contacts,
            foreign_key: :contact_category_title,
            primary_key: :id,

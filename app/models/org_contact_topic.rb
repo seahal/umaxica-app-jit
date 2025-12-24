@@ -27,6 +27,8 @@ class OrgContactTopic < GuestsRecord
 
   belongs_to :org_contact
 
+  validates :otp_digest, length: { maximum: 255 }
+
   # Allow assignment of optional metadata fields used in notifications without persisting them.
   attr_accessor :title, :description
 end

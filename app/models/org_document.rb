@@ -29,6 +29,8 @@ class OrgDocument < BusinessesRecord
 
   belongs_to :org_document_status, optional: true
 
+  validates :org_document_status_id, length: { maximum: 255 }
+
   encrypts :title
   encrypts :description
 

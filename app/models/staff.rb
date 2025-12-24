@@ -3,12 +3,12 @@
 # Table name: staffs
 #
 #  id                       :uuid             not null, primary key
+#  webauthn_id              :string
 #  created_at               :datetime         not null
-#  public_id                :string(21)       default(""), not null
-#  staff_identity_status_id :string(255)      default("NONE"), not null
 #  updated_at               :datetime         not null
-#  webauthn_id              :string           default(""), not null
-#  withdrawn_at             :datetime         default("infinity")
+#  public_id                :string(255)
+#  staff_identity_status_id :string(255)      default("NONE")
+#  withdrawn_at             :datetime
 #
 # Indexes
 #
@@ -25,6 +25,9 @@ class Staff < IdentitiesRecord
   include HasRoles
   include ::PublicId
   include ::Account
+
+  validates :public_id, uniqueness: true, length: { maximum: 21 }
+  validates :staff_identity_status_id, length: { maximum: 255 }
 
   belongs_to :staff_identity_status
   has_many :staff_identity_emails,

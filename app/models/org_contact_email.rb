@@ -34,7 +34,9 @@ class OrgContactEmail < GuestsRecord
   encrypts :email_address, downcase: true, deterministic: true
 
   # Validations
-  validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email_address, presence: true, length: { maximum: 1000 }, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :token_digest, length: { maximum: 255 }
+  validates :verifier_digest, length: { maximum: 255 }
 
   # Generate and store email verification code
   def generate_verifier!
