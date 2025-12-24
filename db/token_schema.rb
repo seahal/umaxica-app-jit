@@ -24,7 +24,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "last_used_at"
     t.string "public_id", limit: 21, default: "", null: false
     t.datetime "refresh_expires_at", null: false
-    t.string "refresh_token_digest"
+    t.binary "refresh_token_digest"
     t.datetime "revoked_at"
     t.datetime "rotated_at"
     t.uuid "staff_id", null: false
@@ -32,6 +32,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_staff_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_staff_tokens_on_refresh_expires_at"
+    t.index ["refresh_token_digest"], name: "index_staff_tokens_on_refresh_token_digest", unique: true
     t.index ["revoked_at"], name: "index_staff_tokens_on_revoked_at"
     t.index ["staff_id"], name: "index_staff_tokens_on_staff_id"
     t.index ["staff_token_status_id"], name: "index_staff_tokens_on_staff_token_status_id"
@@ -47,7 +48,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "last_used_at"
     t.string "public_id", limit: 21, default: "", null: false
     t.datetime "refresh_expires_at", null: false
-    t.string "refresh_token_digest"
+    t.binary "refresh_token_digest"
     t.datetime "revoked_at"
     t.datetime "rotated_at"
     t.datetime "updated_at", null: false
@@ -55,6 +56,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.string "user_token_status_id", default: "NONE", null: false
     t.index ["public_id"], name: "index_user_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_user_tokens_on_refresh_expires_at"
+    t.index ["refresh_token_digest"], name: "index_user_tokens_on_refresh_token_digest", unique: true
     t.index ["revoked_at"], name: "index_user_tokens_on_revoked_at"
     t.index ["user_id"], name: "index_user_tokens_on_user_id"
     t.index ["user_token_status_id"], name: "index_user_tokens_on_user_token_status_id"

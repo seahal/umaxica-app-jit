@@ -50,7 +50,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
   end
 
   create_table "app_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "app_document_status_id", limit: 255, default: "", null: false
+    t.string "app_document_status_id", limit: 255, default: "NONE", null: false
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
@@ -102,7 +102,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
   end
 
   create_table "app_timelines", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "app_timeline_status_id", limit: 255, default: "", null: false
+    t.string "app_timeline_status_id", limit: 255, default: "NONE", null: false
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
@@ -154,7 +154,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
   end
 
   create_table "com_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "com_document_status_id", limit: 255, default: "", null: false
+    t.string "com_document_status_id", limit: 255, default: "NONE", null: false
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
@@ -206,7 +206,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
   end
 
   create_table "com_timelines", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "com_timeline_status_id", limit: 255, default: "", null: false
+    t.string "com_timeline_status_id", limit: 255, default: "NONE", null: false
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
@@ -263,7 +263,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
   create_table "org_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
-    t.string "org_document_status_id", limit: 255, default: "", null: false
+    t.string "org_document_status_id", limit: 255, default: "NONE", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.uuid "prev_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.string "public_id", limit: 21, default: "", null: false
@@ -315,7 +315,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
   create_table "org_timelines", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
-    t.string "org_timeline_status_id", limit: 255, default: "", null: false
+    t.string "org_timeline_status_id", limit: 255, default: "NONE", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.uuid "prev_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.string "public_id", limit: 21, default: "", null: false

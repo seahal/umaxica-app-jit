@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_184759) do
     t.index ["role_id"], name: "index_role_assignments_on_role_id"
     t.index ["staff_id", "role_id"], name: "index_role_assignments_on_staff_role", unique: true
     t.index ["user_id", "role_id"], name: "index_role_assignments_on_user_role", unique: true
+    t.check_constraint "user_id IS NOT NULL AND staff_id IS NULL OR staff_id IS NOT NULL AND user_id IS NULL", name: "role_assignments_user_or_staff_check"
   end
 
   create_table "roles", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|

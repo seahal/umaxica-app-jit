@@ -3,16 +3,16 @@
 # Table name: com_timelines
 #
 #  id                     :uuid             not null, primary key
-#  com_timeline_status_id :string(255)      default(""), not null
-#  created_at             :datetime         not null
-#  description            :string           default(""), not null
 #  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  public_id              :string(21)       default(""), not null
-#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  title                  :string           default(""), not null
+#  description            :string           default(""), not null
+#  com_timeline_status_id :string(255)      default("NONE"), not null
+#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  public_id              :string(21)       default(""), not null
 #
 # Indexes
 #
@@ -67,10 +67,10 @@ class ComTimelineTest < ActiveSupport::TestCase
     assert_includes ComTimeline.included_modules, Timeline
   end
 
-  test "com_timeline_status_id defaults to empty string" do
+  test "com_timeline_status_id defaults to NONE" do
     timeline = ComTimeline.create!(title: "No Status Timeline")
 
-    assert_equal "", timeline.com_timeline_status_id
+    assert_equal "NONE", timeline.com_timeline_status_id
     assert_nil timeline.com_timeline_status
   end
 end

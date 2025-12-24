@@ -27,7 +27,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_area_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_area_occurrences_on_expires_at"
@@ -49,7 +49,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_domain_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_domain_occurrences_on_expires_at"
@@ -71,7 +71,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_email_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_email_occurrences_on_expires_at"
@@ -93,7 +93,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_ip_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_ip_occurrences_on_expires_at"
@@ -115,7 +115,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_staff_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_staff_occurrences_on_expires_at"
@@ -137,7 +137,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_telephone_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_telephone_occurrences_on_expires_at"
@@ -159,7 +159,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_user_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_user_occurrences_on_expires_at"
@@ -181,7 +181,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_zip_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_zip_occurrences_on_expires_at"

@@ -3,16 +3,16 @@
 # Table name: com_documents
 #
 #  id                     :uuid             not null, primary key
-#  com_document_status_id :string(255)      default(""), not null
-#  created_at             :datetime         not null
-#  description            :string           default(""), not null
 #  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  public_id              :string(21)       default(""), not null
-#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  title                  :string           default(""), not null
+#  description            :string           default(""), not null
+#  com_document_status_id :string(255)      default("NONE"), not null
+#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  public_id              :string(21)       default(""), not null
 #
 # Indexes
 #
@@ -80,10 +80,10 @@ class ComDocumentTest < ActiveSupport::TestCase
     assert_equal "Secret Description", reloaded.description
   end
 
-  test "com_document_status_id defaults to empty string" do
+  test "com_document_status_id defaults to NONE" do
     doc = ComDocument.create!(title: "No Status Document")
 
-    assert_equal "", doc.com_document_status_id
+    assert_equal "NONE", doc.com_document_status_id
     assert_nil doc.com_document_status
   end
 end

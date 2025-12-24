@@ -3,16 +3,16 @@
 # Table name: org_documents
 #
 #  id                     :uuid             not null, primary key
-#  created_at             :datetime         not null
-#  description            :string           default(""), not null
-#  org_document_status_id :string(255)      default(""), not null
 #  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  public_id              :string(21)       default(""), not null
-#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  title                  :string           default(""), not null
+#  description            :string           default(""), not null
+#  org_document_status_id :string(255)      default("NONE"), not null
+#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  public_id              :string(21)       default(""), not null
 #
 # Indexes
 #

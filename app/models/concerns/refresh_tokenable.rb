@@ -1,18 +1,20 @@
 # Shared refresh-token behavior for token models.
 # Keeps raw tokens out of the database by storing only digests.
+# Required gem: sha3
+
 module RefreshTokenable
   extend ActiveSupport::Concern
 
   REFRESH_TOKEN_SEPARATOR = "."
-  REFRESH_VERIFIER_BYTES = 32
+  REFRESH_VERIFIER_BYTES = 48
   REFRESH_TTL = 1.year
 
   included do
-    has_secure_password :refresh_token, validations: false
     before_validation :ensure_refresh_expires_at, on: :create
   end
 
   class_methods do
+    # Split token into public_id and verifier.
     def parse_refresh_token(token)
       return nil if token.blank?
 
@@ -23,35 +25,67 @@ module RefreshTokenable
     end
   end
 
+  # Whether the token is revoked.
   def revoked?
     revoked_at.present?
   end
 
+  # Whether the refresh token has expired.
   def expired_refresh?
     refresh_expires_at <= Time.current
   end
 
+  # Whether the token is active.
   def active?
     !revoked? && !expired_refresh?
   end
 
+  # Rotate (refresh) the token and return the raw token for the client.
   def rotate_refresh_token!(expires_at: nil)
-    verifier = SecureRandom.urlsafe_base64(REFRESH_VERIFIER_BYTES)
-    self.refresh_token = verifier
-    self.refresh_expires_at = expires_at || default_refresh_expires_at
-    self.rotated_at = Time.current
-    self.last_used_at = Time.current
-    save!
+    # Use a transaction to keep token state consistent.
+    transaction do
+      verifier = SecureRandom.urlsafe_base64(REFRESH_VERIFIER_BYTES)
 
-    build_refresh_token(verifier)
+      self.refresh_token_digest = digest_refresh_token(verifier)
+      self.refresh_expires_at = expires_at || default_refresh_expires_at
+      self.rotated_at = Time.current
+      self.last_used_at = Time.current
+      save!
+
+      # Return the combined token for the client.
+      build_refresh_token(verifier)
+    end
   end
 
+  # Revoke the token.
   def revoke!
     update!(revoked_at: Time.current)
   end
 
+  def refresh_token=(verifier)
+    self.refresh_token_digest = verifier.blank? ? nil : digest_refresh_token(verifier)
+  end
+
+  # Authenticate the refresh token.
+  def authenticate_refresh_token(verifier)
+    # Ensure the token is active before doing any hash work.
+    return false unless active?
+    return false if verifier.blank? || refresh_token_digest.blank?
+
+    candidate = digest_refresh_token(verifier)
+
+    # Use a constant-time comparison to avoid timing attacks.
+    ActiveSupport::SecurityUtils.secure_compare(refresh_token_digest, candidate)
+  end
+
   private
 
+    # Hash with SHA3-384.
+    def digest_refresh_token(verifier)
+      SHA3::Digest.new(:sha3_384, verifier).digest
+    end
+
+    # Build the token string returned to the client (public_id.verifier).
     def build_refresh_token(verifier)
       "#{public_id}#{REFRESH_TOKEN_SEPARATOR}#{verifier}"
     end
