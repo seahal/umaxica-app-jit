@@ -1,36 +1,775 @@
-# Ignore false positives from Rails' ActionText and ActiveStorage
-ActionText::RichText:
-  enabled: false
-ActiveStorage::Attachment:
-  enabled: false
-ActiveStorage::Blob:
-  enabled: false
-ActiveStorage::VariantRecord:
-  enabled: false
-  enabled: false
-
-UserIdentityEmail:
-  ColumnPresenceChecker:
-    address:
+---
+AppContact:
+  id:
+    ImplicitOrderingChecker:
       enabled: false
+AppContactAudit:
+  app_contact:
+    MissingDependentDestroyChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppContactAuditEvent:
+  app_contact_audits:
+    MissingIndexChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
     MissingUniqueIndexChecker:
-      address:
-        enabled: false
-
+      enabled: false
+AppContactCategory:
+  app_contacts:
+    ForeignKeyCascadeChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppContactEmail:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppContactStatus:
+  app_contacts:
+    ForeignKeyCascadeChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppContactTelephone:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppContactTopic:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppDocument:
+  app_document_status:
+    ForeignKeyChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppDocumentAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppDocumentAuditEvent:
+  app_document_audits:
+    MissingIndexChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppDocumentAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppDocumentStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppTimeline:
+  app_timeline_status:
+    ForeignKeyChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppTimelineAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppTimelineAuditEvent:
+  app_timeline_audits:
+    MissingIndexChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppTimelineAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppTimelineStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AreaOccurrence:
+  area_occurrence_status:
+    ForeignKeyChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AreaOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComContact:
+  com_contact_email:
+    MissingIndexChecker:
+      enabled: false
+  com_contact_telephone:
+    MissingIndexChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComContactAudit:
+  com_contact:
+    MissingDependentDestroyChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComContactAuditEvent:
+  com_contact_audits:
+    MissingIndexChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComContactCategory:
+  com_contacts:
+    ForeignKeyCascadeChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComContactEmail:
+  com_contact:
+    ForeignKeyChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComContactStatus:
+  com_contacts:
+    ForeignKeyCascadeChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComContactTelephone:
+  com_contact:
+    ForeignKeyChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComContactTopic:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComDocument:
+  com_document_status:
+    ForeignKeyChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComDocumentAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComDocumentAuditEvent:
+  com_document_audits:
+    MissingIndexChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComDocumentAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComDocumentStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComTimeline:
+  com_timeline_status:
+    ForeignKeyChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComTimelineAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComTimelineAuditEvent:
+  com_timeline_audits:
+    MissingIndexChecker:
+      enabled: false
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComTimelineAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComTimelineStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+DomainOccurrence:
+  domain_occurrence_status:
+    ForeignKeyChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+DomainOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+EmailOccurrence:
+  email_occurrence_status:
+    ForeignKeyChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+EmailOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+IpOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  ip_occurrence_status:
+    ForeignKeyChecker:
+      enabled: false
+IpOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgContact:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgContactAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  org_contact:
+    MissingDependentDestroyChecker:
+      enabled: false
+OrgContactAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+  org_contact_audits:
+    MissingIndexChecker:
+      enabled: false
+OrgContactCategory:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+  org_contacts:
+    ForeignKeyCascadeChecker:
+      enabled: false
+OrgContactEmail:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgContactStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+  org_contacts:
+    ForeignKeyCascadeChecker:
+      enabled: false
+OrgContactTelephone:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgContactTopic:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgDocument:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  org_document_status:
+    ForeignKeyChecker:
+      enabled: false
+OrgDocumentAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgDocumentAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+  org_document_audits:
+    MissingIndexChecker:
+      enabled: false
+OrgDocumentAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgDocumentStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgTimeline:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  org_timeline_status:
+    ForeignKeyChecker:
+      enabled: false
+OrgTimelineAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgTimelineAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+  org_timeline_audits:
+    MissingIndexChecker:
+      enabled: false
+OrgTimelineAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgTimelineStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+Role:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+RoleAssignment:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+Staff:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  staff_identity_audits:
+    ForeignKeyCascadeChecker:
+      enabled: false
+  staff_messages:
+    MissingIndexChecker:
+      enabled: false
+  staff_notifications:
+    MissingIndexChecker:
+      enabled: false
+StaffIdentityAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffIdentityAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffIdentityAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
 StaffIdentityEmail:
-  ColumnPresenceChecker:
-    address:
+  address:
+    ColumnPresenceChecker:
       enabled: false
-  MissingUniqueIndexChecker:
-    address:
+  id:
+    ImplicitOrderingChecker:
       enabled: false
-
-UserIdentityTelephone:
-  MissingUniqueIndexChecker:
-    number:
+  lower(address):
+    MissingUniqueIndexChecker:
       enabled: false
-
+  user:
+    ForeignKeyChecker:
+      enabled: false
+    ForeignKeyTypeChecker:
+      enabled: false
+StaffIdentityEmailStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffIdentityPasskey:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  staff:
+    MissingDependentDestroyChecker:
+      enabled: false
+StaffIdentitySecret:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffIdentitySecretStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffIdentityStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
 StaffIdentityTelephone:
-  MissingUniqueIndexChecker:
-    number:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  lower(number):
+    MissingUniqueIndexChecker:
+      enabled: false
+  user:
+    ForeignKeyChecker:
+      enabled: false
+    ForeignKeyTypeChecker:
+      enabled: false
+StaffIdentityTelephoneStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffMessage:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffNotification:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  staff_occurrence_status:
+    ForeignKeyChecker:
+      enabled: false
+StaffOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffToken:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffTokenStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+TelephoneOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  telephone_occurrence_status:
+    ForeignKeyChecker:
+      enabled: false
+TelephoneOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+User:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  user_messages:
+    MissingIndexChecker:
+      enabled: false
+  user_notifications:
+    MissingIndexChecker:
+      enabled: false
+UserIdentityAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentityAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityEmail:
+  address:
+    ColumnPresenceChecker:
+      enabled: false
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  lower(address):
+    MissingUniqueIndexChecker:
+      enabled: false
+  staff:
+    ForeignKeyChecker:
+      enabled: false
+    ForeignKeyTypeChecker:
+      enabled: false
+UserIdentityEmailStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityOneTimePassword:
+  user:
+    ForeignKeyChecker:
+      enabled: false
+UserIdentityOneTimePasswordStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityPasskey:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentityPasskeyStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentitySecret:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentitySecretStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentitySocialApple:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentitySocialAppleStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentitySocialGoogle:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentitySocialGoogleStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityTelephone:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  lower(number):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityTelephoneStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserMembership:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserMessage:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserNotification:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  user_occurrence_status:
+    ForeignKeyChecker:
+      enabled: false
+UserOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserToken:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserTokenStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserWorkspace:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+Workspace:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ZipOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  zip_occurrence_status:
+    ForeignKeyChecker:
+      enabled: false
+ZipOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
       enabled: false

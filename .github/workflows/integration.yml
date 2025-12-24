@@ -94,12 +94,12 @@ jobs:
           GITLEAKS_REPORT_PATH: gitleaks.sarif
           GITLEAKS_FORMAT: sarif
           GITLEAKS_FAIL: true
-      # - name: Upload SARIF
-      #   if: always()
-      #   uses: github/codeql-action/upload-sarif@v4
-      #   with:
-      #     sarif_file: gitleaks.sarif
-      #   continue-on-error: true
+          # - name: Upload SARIF
+          #   if: always()
+          #   uses: github/codeql-action/upload-sarif@v4
+          #   with:
+          #     sarif_file: gitleaks.sarif
+          #   continue-on-error: true
   # ====================
   # Linting - Ruby
   # ====================
@@ -314,7 +314,7 @@ jobs:
   # Security - Docker Image Scan
   # ====================
   image-check:
-    name: Docker Image Vulnerability Scan (Trivy)
+    name: Docker Image Vulnerability Scan (Trivy) + SBOM (Syft)
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -335,3 +335,32 @@ jobs:
           ignore-unfixed: true
           vuln-type: os,library
           severity: CRITICAL,HIGH
+          # --- SBOM: Syft (CycloneDX JSON) ---
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh \
+            | sh -s -- -b /usr/local/bin
+      - name: Generate SBOM (CycloneDX JSON)
+        run: |
+          syft "asia-northeast1-docker.pkg.dev/umaxica-454904/staging/sample:${{ github.sha }}" \
+            -o cyclonedx-json > sbom.cdx.json
+        # --- (Optional) Gate by SBOM with Trivy ---
+        # 既に上で trivy image をゲートしているので必須ではありません。
+        # 「SBOMに対する評価結果も残したい / SBOM経由で同じ基準で落としたい」場合だけ有効化してください。
+      - name: Trivy scan SBOM (Gate)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: sbom
+          sbom: sbom.cdx.json
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+      # --- Store SBOM as artifact (recommended) ---
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ github.sha }}
+          path: sbom.cdx.json
+          retention-days: 30
