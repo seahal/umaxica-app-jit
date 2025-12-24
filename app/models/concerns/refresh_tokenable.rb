@@ -11,6 +11,7 @@ module RefreshTokenable
 
   included do
     before_validation :ensure_refresh_expires_at, on: :create
+    validates :refresh_token_digest, uniqueness: true, allow_nil: true
   end
 
   class_methods do
