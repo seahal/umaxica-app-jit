@@ -44,7 +44,6 @@ ja:
         invalid_refresh_token: "リフレッシュトークンが無効または有効期限切れです"
         user_not_found_or_withdrawn: "User not found or withdrawn"
         staff_not_found_or_withdrawn: "Staff not found or withdrawn"
-
   controller:
     auth:
       app:

@@ -6,7 +6,6 @@ default: &default
   timeout: 5000
   username: <%= ENV["POSTGRESQL_USER"] %>
   password: <%= ENV["POSTGRESQL_PASSWORD"] %>
-
 development:
   guest:
     !!merge <<: *default

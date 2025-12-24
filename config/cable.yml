@@ -1,9 +1,7 @@
 development:
   adapter: async
-
 test:
   adapter: test
-
 production:
   encrypt: true
   adapter: redis
