@@ -86,7 +86,8 @@ module Email
   end
 
   def otp_cooldown_active?
-    return false unless otp_last_sent_at.is_a?(Time)
+    return false if otp_last_sent_at.blank?
+    return false if otp_last_sent_at == -Float::INFINITY
 
     otp_last_sent_at > OTP_COOLDOWN_PERIOD.ago
   end
@@ -101,8 +102,10 @@ module Email
     # Use atomic increment to prevent race condition with concurrent requests
     self.class.increment_counter(:otp_attempts_count, id, touch: true) # rubocop:disable Rails/SkipsModelValidations
     reload
-    # Atomically set locked_at only when attempts reached threshold and not already set.
-    affected = self.class.where(id: id, locked_at: nil)
+    # Atomically set locked_at only when attempts reached threshold and not already locked
+    # Check for both NULL and -infinity as sentinel values for "not locked"
+    affected = self.class.where(id: id)
+                   .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp")
                    .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
                    # Skip model validations intentionally: this is a guarded atomic DB update
                    # to avoid race conditions when multiple processes increment simultaneously.

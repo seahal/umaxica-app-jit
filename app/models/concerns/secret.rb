@@ -43,10 +43,15 @@ module Secret
   def verify_and_consume!(raw_secret, now: Time.current)
     with_lock do
       reload
+
+      # Perform authentication first to maintain constant-time comparison
+      auth_result = authenticate(raw_secret)
+
+      # Then check other conditions
       return false unless active?
       return false if expire_if_needed!(now: now)
       return false unless uses_remaining.to_i.positive?
-      return false unless authenticate(raw_secret)
+      return false unless auth_result
 
       self.uses_remaining -= 1
       self.last_used_at = now
@@ -99,10 +104,12 @@ module Secret
     def expired_by_time?(now)
       return false if expires_at.nil?
 
-      if expires_at.is_a?(Numeric) && expires_at.infinite?
-        return expires_at.infinite? == -1
-      end
+      # PostgreSQL infinity/-infinity are used as sentinels for "never expires"
+      # When read from DB, they may be converted to Float::INFINITY/-Float::INFINITY
+      return false if expires_at.is_a?(Float) && expires_at.infinite?
 
-      expires_at <= now
+      # Convert to comparable type if needed (unix timestamp to Time)
+      comparable_time = expires_at.is_a?(Float) ? Time.zone.at(expires_at) : expires_at
+      comparable_time <= now
     end
 end

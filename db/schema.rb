@@ -10,13 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_25_012748) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "app_contact_audit_events", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contact_audit_events_id_format"
+  end
+
+  create_table "app_contact_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_app_contact_audit_levels_on_lower_id", unique: true
   end
 
   create_table "app_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -57,11 +63,13 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.uuid "app_contact_id", null: false
     t.datetime "created_at", null: false
     t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", default: "NONE", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["actor_type", "actor_id"], name: "index_app_contact_histories_on_actor_type_and_actor_id"
     t.index ["app_contact_id"], name: "index_app_contact_histories_on_app_contact_id"
+    t.index ["level_id"], name: "index_app_contact_histories_on_level_id"
     t.index ["parent_id"], name: "index_app_contact_histories_on_parent_id"
     t.check_constraint "event_id IS NULL OR event_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contact_histories_event_id_format"
   end
@@ -134,17 +142,25 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contact_audit_events_id_format"
   end
 
+  create_table "com_contact_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_com_contact_audit_levels_on_lower_id", unique: true
+  end
+
   create_table "com_contact_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.string "actor_type", default: "", null: false
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
     t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", default: "NONE", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["actor_type", "actor_id"], name: "index_com_contact_audits_on_actor_type_and_actor_id"
     t.index ["com_contact_id"], name: "index_com_contact_audits_on_com_contact_id"
+    t.index ["level_id"], name: "index_com_contact_audits_on_level_id"
     t.check_constraint "event_id IS NULL OR event_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contact_audits_event_id_format"
   end
 
@@ -255,6 +271,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contact_audit_events_id_format"
   end
 
+  create_table "org_contact_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_org_contact_audit_levels_on_lower_id", unique: true
+  end
+
   create_table "org_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -292,11 +314,13 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
     t.string "actor_type", default: "", null: false
     t.datetime "created_at", null: false
     t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", default: "NONE", null: false
     t.uuid "org_contact_id", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["actor_type", "actor_id"], name: "index_org_contact_histories_on_actor_type_and_actor_id"
+    t.index ["level_id"], name: "index_org_contact_histories_on_level_id"
     t.index ["org_contact_id"], name: "index_org_contact_histories_on_org_contact_id"
     t.index ["parent_id"], name: "index_org_contact_histories_on_parent_id"
     t.check_constraint "event_id IS NULL OR event_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contact_histories_event_id_format"
@@ -369,18 +393,21 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
 
   add_foreign_key "app_contact_emails", "app_contacts"
   add_foreign_key "app_contact_histories", "app_contact_audit_events", column: "event_id"
+  add_foreign_key "app_contact_histories", "app_contact_audit_levels", column: "level_id"
   add_foreign_key "app_contact_histories", "app_contacts"
   add_foreign_key "app_contact_telephones", "app_contacts"
   add_foreign_key "app_contact_topics", "app_contacts"
   add_foreign_key "app_contacts", "app_contact_categories", column: "contact_category_title"
   add_foreign_key "app_contacts", "app_contact_statuses", column: "contact_status_id"
   add_foreign_key "com_contact_audits", "com_contact_audit_events", column: "event_id"
+  add_foreign_key "com_contact_audits", "com_contact_audit_levels", column: "level_id"
   add_foreign_key "com_contact_audits", "com_contacts"
   add_foreign_key "com_contact_topics", "com_contacts"
   add_foreign_key "com_contacts", "com_contact_categories", column: "contact_category_title"
   add_foreign_key "com_contacts", "com_contact_statuses", column: "contact_status_id"
   add_foreign_key "org_contact_emails", "org_contacts"
   add_foreign_key "org_contact_histories", "org_contact_audit_events", column: "event_id"
+  add_foreign_key "org_contact_histories", "org_contact_audit_levels", column: "level_id"
   add_foreign_key "org_contact_histories", "org_contacts"
   add_foreign_key "org_contact_telephones", "org_contacts"
   add_foreign_key "org_contact_topics", "org_contacts"

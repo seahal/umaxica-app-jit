@@ -62,6 +62,7 @@ module Telephone
 
   # Checks if OTP has expired
   def otp_expired?
+    # PostgreSQL -infinity is used as a sentinel for "never expires"
     return true if otp_expires_at.is_a?(Float) && otp_expires_at == -Float::INFINITY
 
     otp_expires_at.nil? || otp_expires_at <= Time.current
@@ -73,6 +74,7 @@ module Telephone
   end
 
   def locked?
+    # PostgreSQL -infinity is used as a sentinel for "not locked"
     is_locked_by_time = locked_at.present? && locked_at != -Float::INFINITY
     is_locked_by_attempts = otp_attempts_count >= 3
     is_locked_by_time || is_locked_by_attempts
@@ -82,8 +84,10 @@ module Telephone
     # Use atomic increment to prevent race condition with concurrent requests
     self.class.increment_counter(:otp_attempts_count, id, touch: true) # rubocop:disable Rails/SkipsModelValidations
     reload
-    # Atomically set locked_at only when attempts reached threshold and not already set.
-    affected = self.class.where(id: id, locked_at: nil)
+    # Atomically set locked_at only when attempts reached threshold and not already locked
+    # Check for both NULL and -infinity as sentinel values for "not locked"
+    affected = self.class.where(id: id)
+                   .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp")
                    .where(otp_attempts_count: 3..)
                    # Skip model validations intentionally: this is a guarded atomic DB update
                    # to avoid race conditions when multiple processes increment simultaneously.

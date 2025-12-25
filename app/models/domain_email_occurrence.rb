@@ -15,6 +15,8 @@
 #
 
 class DomainEmailOccurrence < UniversalRecord
+  self.implicit_order_column = :created_at
+
   belongs_to :domain_occurrence
   belongs_to :email_occurrence
 end

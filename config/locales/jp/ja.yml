@@ -204,6 +204,7 @@ ja:
         sessions:
           create:
             success: "%{provider} でアカウントを作成してサインインしました。"
+            failure: "認証に失敗しました。再度お試しください。"
           submit: テーマ設定を保存
   root:
     app:

@@ -15,6 +15,8 @@
 #
 
 class IpStaffOccurrence < UniversalRecord
+  self.implicit_order_column = :created_at
+
   belongs_to :ip_occurrence
   belongs_to :staff_occurrence
 end

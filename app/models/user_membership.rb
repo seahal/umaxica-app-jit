@@ -21,5 +21,5 @@ class UserMembership < IdentityRecord
   belongs_to :workspace, class_name: "Workspace", inverse_of: :user_memberships
   validates :user_id, uniqueness: { scope: :workspace_id }
 
-  scope :active, -> { where("left_at > ?", Time.current) }
+  scope :active, -> { where("left_at = '-infinity'::timestamp OR left_at > ?", Time.current) }
 end

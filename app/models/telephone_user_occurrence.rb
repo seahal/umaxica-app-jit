@@ -15,6 +15,8 @@
 #
 
 class TelephoneUserOccurrence < UniversalRecord
+  self.implicit_order_column = :created_at
+
   belongs_to :telephone_occurrence
   belongs_to :user_occurrence
 end

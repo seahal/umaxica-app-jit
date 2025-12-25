@@ -21,6 +21,7 @@
 
 class IpOccurrence < UniversalRecord
   include PublicId
+  include Occurrence
 
   belongs_to :ip_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :ip_occurrences
   has_many :area_ip_occurrences, dependent: :destroy
@@ -38,12 +39,6 @@ class IpOccurrence < UniversalRecord
   has_many :ip_zip_occurrences, dependent: :destroy
   has_many :zip_occurrences, through: :ip_zip_occurrences
 
-  validates :public_id,
-            presence: true,
-            length: { is: 21 },
-            format: { with: /\A[A-Za-z0-9_-]{21}\z/ },
-            uniqueness: true
-  validates :body, presence: true, uniqueness: true, length: { maximum: 64 }
-  validates :status_id, presence: true, length: { maximum: 255 }
-  validates :memo, length: { maximum: 1024 }, allow_nil: true
+  validates :body, length: { maximum: 64 }
+  validates :status_id, length: { maximum: 255 }
 end
