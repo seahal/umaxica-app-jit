@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_24_184759) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_24_190010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -144,10 +144,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_184759) do
     t.uuid "staff_id", null: false
     t.string "staff_identity_secret_status_id", limit: 255, default: "ACTIVE", null: false
     t.datetime "updated_at", null: false
+    t.integer "uses_remaining", default: 1, null: false
     t.index ["expires_at"], name: "index_staff_identity_secrets_on_expires_at"
     t.index ["staff_id"], name: "index_staff_identity_secrets_on_staff_id"
     t.index ["staff_identity_secret_status_id"], name: "idx_on_staff_identity_secret_status_id_0999b0c4ae"
     t.check_constraint "staff_identity_secret_status_id IS NULL OR staff_identity_secret_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_secrets_staff_identity_secret_status_id_94c4"
+    t.check_constraint "uses_remaining >= 0", name: "chk_staff_identity_secrets_uses_remaining_non_negative"
   end
 
   create_table "staff_identity_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
@@ -309,10 +311,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_184759) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_identity_secret_status_id", limit: 255, default: "ACTIVE", null: false
+    t.integer "uses_remaining", default: 1, null: false
     t.index ["expires_at"], name: "index_user_identity_secrets_on_expires_at"
     t.index ["user_id"], name: "index_user_identity_secrets_on_user_id"
     t.index ["user_identity_secret_status_id"], name: "index_user_identity_secrets_on_user_identity_secret_status_id"
     t.check_constraint "user_identity_secret_status_id IS NULL OR user_identity_secret_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_secrets_user_identity_secret_status_id_format"
+    t.check_constraint "uses_remaining >= 0", name: "chk_user_identity_secrets_uses_remaining_non_negative"
   end
 
   create_table "user_identity_social_apple_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|

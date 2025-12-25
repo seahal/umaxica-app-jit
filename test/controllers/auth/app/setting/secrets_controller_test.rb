@@ -37,7 +37,7 @@ class Auth::App::Setting::SecretsControllerTest < ActionDispatch::IntegrationTes
          params: { user_identity_secret: { name: "New Secret", value: "secret_value123" } },
          headers: authenticated_headers
 
-    assert_response :redirect
+    assert_response :unprocessable_content
   end
 
   test "should get edit" do

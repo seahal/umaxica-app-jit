@@ -23,6 +23,20 @@ class IpOccurrence < UniversalRecord
   include PublicId
 
   belongs_to :ip_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :ip_occurrences
+  has_many :area_ip_occurrences, dependent: :destroy
+  has_many :area_occurrences, through: :area_ip_occurrences
+  has_many :domain_ip_occurrences, dependent: :destroy
+  has_many :domain_occurrences, through: :domain_ip_occurrences
+  has_many :email_ip_occurrences, dependent: :destroy
+  has_many :email_occurrences, through: :email_ip_occurrences
+  has_many :ip_staff_occurrences, dependent: :destroy
+  has_many :staff_occurrences, through: :ip_staff_occurrences
+  has_many :ip_telephone_occurrences, dependent: :destroy
+  has_many :telephone_occurrences, through: :ip_telephone_occurrences
+  has_many :ip_user_occurrences, dependent: :destroy
+  has_many :user_occurrences, through: :ip_user_occurrences
+  has_many :ip_zip_occurrences, dependent: :destroy
+  has_many :zip_occurrences, through: :ip_zip_occurrences
 
   validates :public_id,
             presence: true,

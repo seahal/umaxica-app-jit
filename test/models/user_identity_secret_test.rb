@@ -3,14 +3,15 @@
 # Table name: user_identity_secrets
 #
 #  id                             :uuid             not null, primary key
-#  created_at                     :datetime         not null
-#  expires_at                     :datetime         default("infinity"), not null
-#  last_used_at                   :datetime         default("-infinity"), not null
-#  name                           :string           default(""), not null
-#  password_digest                :string           default(""), not null
-#  updated_at                     :datetime         not null
 #  user_id                        :uuid             not null
+#  password_digest                :string           default(""), not null
+#  last_used_at                   :datetime         default("-infinity"), not null
+#  created_at                     :datetime         not null
+#  updated_at                     :datetime         not null
 #  user_identity_secret_status_id :string(255)      default("ACTIVE"), not null
+#  name                           :string           default(""), not null
+#  expires_at                     :datetime         default("infinity"), not null
+#  uses_remaining                 :integer          default(1), not null
 #
 # Indexes
 #
@@ -20,6 +21,7 @@
 #
 
 require "test_helper"
+require "concurrent"
 
 class UserIdentitySecretTest < ActiveSupport::TestCase
   setup do
@@ -41,14 +43,83 @@ class UserIdentitySecretTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordInvalid) { create_secret! }
   end
 
+  test "issue! returns raw secret and persists a digest" do
+    record, raw_secret = UserIdentitySecret.issue!(name: "API Key", user: @user)
+
+    assert_predicate record, :persisted?
+    assert_predicate raw_secret, :present?
+    assert record.authenticate(raw_secret)
+    assert_not_includes record.attributes.values, raw_secret
+  end
+
+  test "verify_and_consume! decrements uses_remaining" do
+    record, raw_secret = UserIdentitySecret.issue!(name: "API Key", user: @user, uses: 2)
+
+    assert record.verify_and_consume!(raw_secret)
+    assert_equal 1, record.reload.uses_remaining
+  end
+
+  test "verify_and_consume! marks used when uses_remaining reaches zero" do
+    record, raw_secret = UserIdentitySecret.issue!(name: "API Key", user: @user, uses: 1)
+
+    assert record.verify_and_consume!(raw_secret)
+    assert_equal UserIdentitySecretStatus::USED, record.reload.user_identity_secret_status_id
+  end
+
+  test "verify_and_consume! expires secrets past their expiry" do
+    record, raw_secret = UserIdentitySecret.issue!(
+      name: "API Key",
+      user: @user,
+      expires_at: 1.minute.ago
+    )
+
+    assert_not record.verify_and_consume!(raw_secret)
+    assert_equal UserIdentitySecretStatus::EXPIRED, record.reload.user_identity_secret_status_id
+  end
+
+  test "verify_and_consume! only allows one consumer for a single use" do
+    record, raw_secret = UserIdentitySecret.issue!(name: "API Key", user: @user, uses: 1)
+    gate = Queue.new
+
+    futures = 2.times.map do
+      Concurrent::Future.execute do
+        ActiveRecord::Base.connection_pool.with_connection do
+          gate.pop
+          UserIdentitySecret.find(record.id).verify_and_consume!(raw_secret)
+        end
+      end
+    end
+
+    2.times { gate << true }
+    results = futures.map(&:value!)
+
+    assert_equal 1, results.count(true)
+    assert_equal 0, record.reload.uses_remaining
+  end
+
+  test "requires name to be present" do
+    record = UserIdentitySecret.new(
+      user: @user,
+      name: "",
+      password: "SecretPass123!"
+    )
+
+    assert_not record.valid?
+    assert record.errors[:name]
+  end
+
   private
 
     def create_secret!
       UserIdentitySecret.create!(
         user: @user,
         name: "Secret-#{SecureRandom.hex(4)}",
-        password: "SecurePass123!",
-        password_confirmation: "SecurePass123!"
+        password: secure_secret,
+        password_confirmation: secure_secret
       )
+    end
+
+    def secure_secret
+      SecureRandom.base58(Secret::SECRET_PASSWORD_LENGTH)
     end
 end

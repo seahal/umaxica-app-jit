@@ -24,6 +24,20 @@ class DomainOccurrence < UniversalRecord
   include Occurrence
 
   belongs_to :domain_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :domain_occurrences
+  has_many :area_domain_occurrences, dependent: :destroy
+  has_many :area_occurrences, through: :area_domain_occurrences
+  has_many :domain_email_occurrences, dependent: :destroy
+  has_many :email_occurrences, through: :domain_email_occurrences
+  has_many :domain_ip_occurrences, dependent: :destroy
+  has_many :ip_occurrences, through: :domain_ip_occurrences
+  has_many :domain_staff_occurrences, dependent: :destroy
+  has_many :staff_occurrences, through: :domain_staff_occurrences
+  has_many :domain_telephone_occurrences, dependent: :destroy
+  has_many :telephone_occurrences, through: :domain_telephone_occurrences
+  has_many :domain_user_occurrences, dependent: :destroy
+  has_many :user_occurrences, through: :domain_user_occurrences
+  has_many :domain_zip_occurrences, dependent: :destroy
+  has_many :zip_occurrences, through: :domain_zip_occurrences
 
   validates :body, length: { maximum: 253 }
   validates :status_id, length: { maximum: 255 }

@@ -23,6 +23,20 @@ class ZipOccurrence < UniversalRecord
   include PublicId
 
   belongs_to :zip_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :zip_occurrences
+  has_many :area_zip_occurrences, dependent: :destroy
+  has_many :area_occurrences, through: :area_zip_occurrences
+  has_many :domain_zip_occurrences, dependent: :destroy
+  has_many :domain_occurrences, through: :domain_zip_occurrences
+  has_many :email_zip_occurrences, dependent: :destroy
+  has_many :email_occurrences, through: :email_zip_occurrences
+  has_many :ip_zip_occurrences, dependent: :destroy
+  has_many :ip_occurrences, through: :ip_zip_occurrences
+  has_many :staff_zip_occurrences, dependent: :destroy
+  has_many :staff_occurrences, through: :staff_zip_occurrences
+  has_many :telephone_zip_occurrences, dependent: :destroy
+  has_many :telephone_occurrences, through: :telephone_zip_occurrences
+  has_many :user_zip_occurrences, dependent: :destroy
+  has_many :user_occurrences, through: :user_zip_occurrences
 
   validates :public_id,
             presence: true,

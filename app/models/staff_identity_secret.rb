@@ -3,14 +3,15 @@
 # Table name: staff_identity_secrets
 #
 #  id                              :uuid             not null, primary key
-#  created_at                      :datetime         not null
-#  expires_at                      :datetime         default("infinity"), not null
+#  staff_id                        :uuid             not null
+#  password_digest                 :string           default(""), not null
 #  last_used_at                    :datetime         default("-infinity"), not null
 #  name                            :string           default(""), not null
-#  password_digest                 :string           default(""), not null
-#  staff_id                        :uuid             not null
 #  staff_identity_secret_status_id :string(255)      default("ACTIVE"), not null
+#  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
+#  expires_at                      :datetime         default("infinity"), not null
+#  uses_remaining                  :integer          default(1), not null
 #
 # Indexes
 #
@@ -20,21 +21,27 @@
 #
 
 class StaffIdentitySecret < IdentitiesRecord
+  include ::Secret
+
   MAX_SECRETS_PER_STAFF = 10
 
   belongs_to :staff
   belongs_to :staff_identity_secret_status, optional: true
 
   validates :staff_identity_secret_status_id, length: { maximum: 255 }
+  validate :enforce_secret_limit, on: :create
 
-  has_secure_password algorithm: :argon2
+  def self.identity_secret_status_class
+    StaffIdentitySecretStatus
+  end
 
-  validates :name, presence: true
-  validate :enforce_staff_secret_limit, on: :create
+  def self.identity_secret_status_id_column
+    :staff_identity_secret_status_id
+  end
 
   private
 
-    def enforce_staff_secret_limit
+    def enforce_secret_limit
       return unless staff_id
 
       count = self.class.where(staff_id: staff_id).count

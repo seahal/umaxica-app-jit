@@ -13,6 +13,7 @@ class StaffIdentitySecretStatus < IdentitiesRecord
   # Status constants
   ACTIVE = "ACTIVE"
   USED = "USED"
+  EXPIRED = "EXPIRED"
   REVOKED = "REVOKED"
   DELETED = "DELETED"
 end

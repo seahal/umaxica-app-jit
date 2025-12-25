@@ -23,6 +23,20 @@ class AreaOccurrence < UniversalRecord
   include PublicId
 
   belongs_to :area_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :area_occurrences
+  has_many :area_domain_occurrences, dependent: :destroy
+  has_many :domain_occurrences, through: :area_domain_occurrences
+  has_many :area_email_occurrences, dependent: :destroy
+  has_many :email_occurrences, through: :area_email_occurrences
+  has_many :area_ip_occurrences, dependent: :destroy
+  has_many :ip_occurrences, through: :area_ip_occurrences
+  has_many :area_staff_occurrences, dependent: :destroy
+  has_many :staff_occurrences, through: :area_staff_occurrences
+  has_many :area_telephone_occurrences, dependent: :destroy
+  has_many :telephone_occurrences, through: :area_telephone_occurrences
+  has_many :area_user_occurrences, dependent: :destroy
+  has_many :user_occurrences, through: :area_user_occurrences
+  has_many :area_zip_occurrences, dependent: :destroy
+  has_many :zip_occurrences, through: :area_zip_occurrences
 
   validates :public_id,
             presence: true,
