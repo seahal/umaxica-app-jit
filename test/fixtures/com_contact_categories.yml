@@ -3,18 +3,18 @@
 # Table name: com_contact_categories
 #
 #  id          :string(255)      not null, primary key
-#  active      :boolean          default(TRUE), not null
-#  created_at  :datetime         not null
 #  description :string(255)      default(""), not null
 #  parent_id   :string(255)      default(""), not null
 #  position    :integer          default(0), not null
+#  active      :boolean          default(TRUE), not null
+#  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
 # Indexes
 #
 #  index_com_contact_categories_on_parent_id  (parent_id)
 #
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
 SECURITY_ISSUE:
   id: 'SECURITY_ISSUE'
   description: 'ROOT'

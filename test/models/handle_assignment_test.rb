@@ -62,7 +62,7 @@ class HandleAssignmentTest < ActiveSupport::TestCase
       image_data: {}
     )
 
-    assert_raises ActiveRecord::RecordNotUnique do
+    assert_raises ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique do
       HandleAssignment.create!(
         avatar: other_avatar,
         handle: @system_handle,

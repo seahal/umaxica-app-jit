@@ -2,9 +2,7 @@
 #
 # Table name: user_identity_audit_events
 #
-#  id         :string(255)      default("NONE"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NONE"), not null, primary key
 #
 
 require "test_helper"

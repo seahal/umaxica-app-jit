@@ -12,9 +12,13 @@
 #
 # Indexes
 #
-#  index_accounts_on_email  (email) UNIQUE
+#  index_accounts_on_accountable_type_and_accountable_id  (accountable_type,accountable_id) UNIQUE
+#  index_accounts_on_email                                (email) UNIQUE
 #
 
 class Account < IdentitiesRecord
   delegated_type :accountable, types: %w[ Staff User ], dependent: :destroy
+
+  validates :email, presence: true, uniqueness: true
+  validates :password_digest, presence: true
 end

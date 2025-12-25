@@ -35,6 +35,7 @@ class ComTimeline < BusinessesRecord
 
   has_many :com_timeline_audits,
            class_name: "ComTimelineAudit",
+           foreign_key: :subject_id,
            primary_key: "id",
            inverse_of: :com_timeline,
            dependent: :restrict_with_error

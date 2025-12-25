@@ -3,39 +3,41 @@
 # Table name: user_identity_audits
 #
 #  id             :uuid             not null, primary key
-#  subject_id     :string           not null
-#  subject_type   :text             not null
 #  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  actor_type     :text             default(""), not null
-#  event_id       :string(255)      default("NONE"), not null
-#  level_id       :string(255)      default("NONE"), not null
-#  occurred_at    :datetime         not null
-#  expires_at     :datetime         not null
-#  ip_address     :inet             default("0.0.0.0"), not null
-#  context        :jsonb            default("{}"), not null
-#  previous_value :text             default(""), not null
-#  current_value  :text             default(""), not null
+#  actor_type     :string           default(""), not null
 #  created_at     :datetime         not null
+#  event_id       :string(255)      default(""), not null
+#  ip_address     :string           default(""), not null
+#  level_id       :string           default("NONE"), not null
+#  subject_id     :string
+#  subject_type   :string           default(""), not null
+#  previous_value :text
+#  timestamp      :datetime         not null
 #  updated_at     :datetime         not null
+#  user_id        :uuid             not null
 #
 # Indexes
 #
-#  idx_on_subject_type_subject_id_occurred_at_a29eb711dd   (subject_type,subject_id,occurred_at)
-#  index_user_identity_audits_on_actor_id_and_occurred_at  (actor_id,occurred_at)
-#  index_user_identity_audits_on_event_id                  (event_id)
-#  index_user_identity_audits_on_expires_at                (expires_at)
-#  index_user_identity_audits_on_level_id                  (level_id)
-#  index_user_identity_audits_on_occurred_at               (occurred_at)
+#  index_user_identity_audits_on_event_id    (event_id)
+#  index_user_identity_audits_on_level_id    (level_id)
+#  index_user_identity_audits_on_subject_id  (subject_id)
+#  index_user_identity_audits_on_user_id     (user_id)
 #
 
 require "test_helper"
 
 class UserIdentityAuditTest < ActiveSupport::TestCase
+  fixtures :user_identity_audit_events, :users, :staffs
+
   def setup
+    puts "DEBUG: UserIdentityAuditEvent count: #{UserIdentityAuditEvent.count}"
+    puts "DEBUG: UserIdentityAuditEvent IDs: #{UserIdentityAuditEvent.pluck(:id)}"
     @user = users(:one)
     @audit_event = user_identity_audit_events(:login_success)
+    @level = UserIdentityAuditLevel.find_or_create_by!(id: "INFO")
     @audit = UserIdentityAudit.create!(
       user: @user,
+      user_identity_audit_level: @level,
       user_identity_audit_event: @audit_event,
       timestamp: Time.current,
       ip_address: "192.168.1.1"

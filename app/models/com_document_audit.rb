@@ -56,4 +56,5 @@ class ComDocumentAudit < UniversalRecord
              inverse_of: :com_document_audits
 
   validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
 end

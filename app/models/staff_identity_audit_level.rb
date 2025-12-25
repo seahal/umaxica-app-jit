@@ -10,5 +10,8 @@
 class StaffIdentityAuditLevel < UniversalRecord
   include UppercaseId
 
-  has_many :staff_identity_audits, dependent: :restrict_with_error, inverse_of: :staff_identity_audit_level
+  has_many :staff_identity_audits,
+           foreign_key: :level_id,
+           dependent: :restrict_with_error,
+           inverse_of: :staff_identity_audit_level
 end

@@ -3,62 +3,64 @@ source "https://rubygems.org"
 
 ruby "4.0.0-preview3"
 
-# rake
+# Rake
 gem "rake"
-# rack
+# Rack
 gem "rack"
 # Rails
 # gem "rails"
 gem "rails", github: "rails/rails", branch: "main"
-# Use Postgres as the database for Active Record
+# Web server
 gem "puma"
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+# JSON APIs
 gem "jbuilder"
-# Use Kredis to get higher-level data types sign_in Redis [https://github.com/rails/kredis]
+# Database
 gem "pg"
-# Use the Puma web server [https://github.com/puma/puma]
+# Redis
 gem "redis"
-# For CORS
+# CORS
 gem "rack-cors"
-# For DOS attack
+# DoS protection
 gem "rack-attack"
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+# Password hashing
 gem "argon2"
 gem "bcrypt"
 # SHA3
 gem "sha3"
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+# Time zone data for Windows
 gem "tzinfo-data", platforms: %i[windows jruby]
-# Reduces boot times through caching; required sign_in config/boot.rb
+# Boot caching
 gem "bootsnap", require: false
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+# File uploads and processing
 gem "shrine"
 gem "image_processing"
-# for Amazon SNS
+# AWS SDKs
 gem "aws-sdk-sns"
 gem "aws-sdk-connect"
 gem "aws-sdk-polly"
-# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
+# Asset pipeline
 gem "propshaft"
 # OpenTelemetry
 gem "opentelemetry-sdk"
 gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
-# sitemap
+# Sitemap
 gem "sitemap_generator"
-# Webauthn for fido2
+# WebAuthn (FIDO2)
 gem "webauthn"
-# TOTP and HTOP
+# TOTP
 gem "rotp"
-# QRCode Generator, QRCode is a deso wave's ...
+# QR code generation
 gem "rqrcode"
 # Solid Cache
 gem "solid_cache"
 # Solid Queue
 gem "solid_queue"
-# pagination
+gem "mission_control-jobs"
+# Pagination
 gem "kaminari"
-# Social Login
+gem "pagy" # trying to use pagy
+# Social login
 gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
@@ -76,55 +78,60 @@ gem "stimulus-rails"
 gem "importmap-rails"
 # Tailwind CSS
 gem "tailwindcss-rails"
-# for fastly cache purge
+# Fastly cache purge
 gem "fastly"
-# easty to write tags in head.
+# HTML head tags
 gem "meta-tags"
-# use surrogate key for pk of db.
+# ID generation
 gem "nanoid"
 # Authentication
 gem "pundit"
+# Component-based UI
 gem "view_component"
+# state management
+gem "aasm"
+# billing
+gem "stripe"
 
 group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  # Debugging
   gem "debug", platforms: %i[ mri windows ]
-  # coverage
+  # Test coverage
   gem "simplecov", require: false
-  # minitest mock (extracted from minitest 6.0+)
+  # Minitest mock (extracted from minitest 6.0+)
   gem "minitest-mock"
-  # for IntelliJ IDEA
+  # IntelliJ IDEA
   # gem 'ruby-debug-ide'
-  # find out slow tests
+  # Slow test profiling
   gem "test-prof"
-  # pg performance viewer
+  # Postgres performance viewer
   gem "pghero"
-  # to avoid n+1 queries
+  # N+1 query detector
   # gem "bullet"
   gem "prosopite"
   gem "pg_query"
-  # ensure database consistency
+  # Database consistency checks
   gem "database_consistency", require: false
+  # ckecker for open api
+  gem "committee-rails"
 end
 
 group :development do
-  # security
-  gem "bundler-audit"
   gem "foreman"
   gem "yard"
-  # Preview email in the default browser instead of sending it.
+  # Preview email in the browser instead of sending it
   gem "letter_opener"
-  # Live Reload
+  # Live reload
   gem "rails_live_reload"
   gem "hotwire-livereload"
-  # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
+  # Performance profiling
   gem "rack-mini-profiler"
-  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
+  # Speed up commands on slow machines / big apps
   # gem "spring"
   gem "brakeman", require: false
-  # Use console on exceptions pages [https://github.com/rails/web-console]
+  # Web console on exception pages
   gem "web-console"
-  # rubocop
+  # RuboCop
   gem "rubocop", require: false
   gem "rubocop-performance", require: false
   gem "rubocop-thread_safety", require: false
@@ -133,19 +140,21 @@ group :development do
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-i18n", require: false
   gem "rubocop-rubycw", require: false
-  # erb linter
+  # ERB lint
   gem "erb_lint", require: false
-  # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
+  # Annotate models, routes, fixtures, etc.
   gem "annotate"
-  # license finder
+  # License finder
   gem "license_finder", require: false
   # Ruby LSP
   gem "ruby-lsp"
-  # code quality tools
-  gem "flog"
-  gem "flay"
-  gem "reek"
+  # Code quality tools
+  gem "flog", require: false
+  gem "flay", require: false
+  gem "reek", require: false
   # ERD diagrams
-  gem "rails-erd"
-  gem "railroady"
+  gem "rails-erd", require: false
+  gem "railroady", require: false
+  # Security
+  gem "bundler-audit", require: false
 end

@@ -29,6 +29,9 @@ class Handle < IdentitiesRecord
   has_many :handle_assignments, dependent: :restrict_with_error
   has_many :avatars, through: :handle_assignments
 
-  validates :public_id, uniqueness: true
-  validates :handle, presence: true
+  validates :public_id, presence: true, uniqueness: true
+  validates :handle, presence: true,
+                     uniqueness: { conditions: -> { where(is_system: false) } },
+                     unless: :is_system?
+  validates :cooldown_until, presence: true
 end

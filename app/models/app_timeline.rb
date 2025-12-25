@@ -35,6 +35,7 @@ class AppTimeline < BusinessesRecord
 
   has_many :app_timeline_audits,
            class_name: "AppTimelineAudit",
+           foreign_key: :subject_id,
            primary_key: "id",
            inverse_of: :app_timeline,
            dependent: :restrict_with_error

@@ -3,12 +3,12 @@
 # Table name: staff_messages
 #
 #  id         :uuid             not null, primary key
-#  created_at :datetime         not null
-#  public_id  :uuid
 #  staff_id   :uuid
+#  public_id  :uuid
+#  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
 one:
   staff_id:
   public_id:

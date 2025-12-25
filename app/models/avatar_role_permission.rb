@@ -10,7 +10,8 @@
 #
 # Indexes
 #
-#  uniq_avatar_role_permissions  (avatar_role_id,avatar_permission_id) UNIQUE
+#  index_avatar_role_permissions_on_avatar_permission_id  (avatar_permission_id)
+#  uniq_avatar_role_permissions                           (avatar_role_id,avatar_permission_id) UNIQUE
 #
 
 class AvatarRolePermission < IdentitiesRecord
@@ -18,4 +19,6 @@ class AvatarRolePermission < IdentitiesRecord
 
   belongs_to :avatar_role
   belongs_to :avatar_permission
+
+  validates :avatar_role_id, uniqueness: { scope: :avatar_permission_id }
 end

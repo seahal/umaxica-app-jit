@@ -23,7 +23,7 @@
 #  index_staff_tokens_on_staff_id               (staff_id)
 #  index_staff_tokens_on_staff_token_status_id  (staff_token_status_id)
 #
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
 one:
   staff: one
   public_id: "STAFFTOKENPUBLICID001"

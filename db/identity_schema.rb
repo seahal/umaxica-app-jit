@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_26_013000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -22,6 +22,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
     t.string "email", null: false
     t.string "password_digest", null: false
     t.datetime "updated_at", null: false
+    t.index ["accountable_type", "accountable_id"], name: "index_accounts_on_accountable_type_and_accountable_id", unique: true
     t.index ["email"], name: "index_accounts_on_email", unique: true
   end
 
@@ -69,7 +70,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
     t.timestamptz "valid_to", default: ::Float::INFINITY, null: false
     t.index ["actor_id"], name: "index_avatar_memberships_on_actor_id", where: "(valid_to = 'infinity'::timestamp with time zone)"
     t.index ["avatar_id", "actor_id"], name: "index_avatar_memberships_on_avatar_id_and_actor_id", unique: true, where: "(valid_to = 'infinity'::timestamp with time zone)"
-    t.index ["avatar_id"], name: "index_avatar_memberships_on_avatar_id", where: "(valid_to = 'infinity'::timestamp with time zone)"
     t.index ["avatar_membership_status_id"], name: "index_avatar_memberships_on_avatar_membership_status_id"
   end
 
@@ -133,6 +133,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
     t.string "avatar_role_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["avatar_permission_id"], name: "index_avatar_role_permissions_on_avatar_permission_id"
     t.index ["avatar_role_id", "avatar_permission_id"], name: "uniq_avatar_role_permissions", unique: true
   end
 
@@ -296,6 +297,33 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
     t.index ["organization_id"], name: "index_roles_on_organization_id"
   end
 
+  create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  end
+
+  create_table "staff_identity_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_identity_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "actor_type", default: "", null: false
+    t.datetime "created_at", null: false
+    t.string "event_id", limit: 255, default: "", null: false
+    t.string "ip_address", default: "", null: false
+    t.string "level_id", default: "NONE", null: false
+    t.text "previous_value"
+    t.uuid "staff_id", null: false
+    t.string "subject_id"
+    t.string "subject_type", default: "", null: false
+    t.datetime "timestamp", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_staff_identity_audits_on_event_id"
+    t.index ["level_id"], name: "index_staff_identity_audits_on_level_id"
+    t.index ["staff_id"], name: "index_staff_identity_audits_on_staff_id"
+    t.index ["subject_id"], name: "index_staff_identity_audits_on_subject_id"
+  end
+
   create_table "staff_identity_email_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_email_statuses_id_format"
   end
@@ -412,6 +440,33 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
     t.check_constraint "staff_identity_status_id IS NULL OR staff_identity_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staffs_staff_identity_status_id_format"
   end
 
+  create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  end
+
+  create_table "user_identity_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_identity_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "actor_type", default: "", null: false
+    t.datetime "created_at", null: false
+    t.string "event_id", limit: 255, default: "", null: false
+    t.string "ip_address", default: "", null: false
+    t.string "level_id", default: "NONE", null: false
+    t.text "previous_value"
+    t.string "subject_id"
+    t.string "subject_type", default: "", null: false
+    t.datetime "timestamp", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["event_id"], name: "index_user_identity_audits_on_event_id"
+    t.index ["level_id"], name: "index_user_identity_audits_on_level_id"
+    t.index ["subject_id"], name: "index_user_identity_audits_on_subject_id"
+    t.index ["user_id"], name: "index_user_identity_audits_on_user_id"
+  end
+
   create_table "user_identity_email_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_email_statuses_id_format"
   end
@@ -428,6 +483,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_identity_email_status_id", limit: 255, default: "UNVERIFIED", null: false
+    t.index "lower((address)::text)", name: "index_user_identity_emails_on_lower_address", unique: true
     t.index ["otp_last_sent_at"], name: "index_user_identity_emails_on_otp_last_sent_at"
     t.index ["user_id"], name: "index_user_identity_emails_on_user_id"
     t.index ["user_identity_email_status_id"], name: "index_user_identity_emails_on_user_identity_email_status_id"
@@ -541,6 +597,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
   end
 
   create_table "user_identity_telephone_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_identity_telephone_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_telephone_statuses_id_format"
   end
 
@@ -641,6 +698,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
   add_foreign_key "role_assignments", "staffs", on_delete: :cascade
   add_foreign_key "role_assignments", "users", on_delete: :cascade
   add_foreign_key "roles", "workspaces", column: "organization_id"
+  add_foreign_key "staff_identity_audits", "staff_identity_audit_levels", column: "level_id", name: "fk_staff_audits_level", on_delete: :restrict
   add_foreign_key "staff_identity_emails", "staff_identity_email_statuses"
   add_foreign_key "staff_identity_emails", "staffs"
   add_foreign_key "staff_identity_passkeys", "staffs"
@@ -651,6 +709,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_200010) do
   add_foreign_key "staff_passkeys", "staffs"
   add_foreign_key "staff_recovery_codes", "staffs"
   add_foreign_key "staffs", "staff_identity_statuses"
+  add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_identity_emails", "user_identity_email_statuses"
   add_foreign_key "user_identity_emails", "users"
   add_foreign_key "user_identity_one_time_passwords", "user_identity_one_time_password_statuses"

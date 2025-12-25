@@ -62,6 +62,17 @@ development:
     database: development_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
+  billing:
+    !!merge <<: *default
+    database: development_billing_db
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_IDENTITY_PUB"] %>
+    migrations_paths: db/billing_migrate
+  billing_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_billing_db
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_IDENTITY_SUB"] %>
+    migrations_paths: db/billing_migrate
   message:
     !!merge <<: *default
     database: development_message_db
@@ -256,6 +267,17 @@ test:
     database: test_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
+  billing:
+    !!merge <<: *default
+    database: test_billing_db
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_IDENTITY_PUB"] %>
+    migrations_paths: db/billing_migrate
+  billing_replica:
+    !!merge <<: *default
+    replica: true
+    database: test_billing_db
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_IDENTITY_SUB"] %>
+    migrations_paths: db/billing_migrate
   message:
     !!merge <<: *default
     database: test_message_db
@@ -365,6 +387,23 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.BUSINESS_REPLICA&.PASSWORD %>
     migrations_paths: db/businesses_migrate
+  billing:
+    !!merge <<: *default
+    database: production_billing_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.BILLING&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.BILLING&.PASSWORD %>
+    migrations_paths: db/billing_migrate
+  billing_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_billing_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.BILLING_REPLICA&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.BILLING_REPLICA&.PASSWORD %>
+    migrations_paths: db/billing_migrate
   message:
     !!merge <<: *default
     database: production_message_db

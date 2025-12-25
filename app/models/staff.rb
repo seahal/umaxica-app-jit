@@ -3,12 +3,12 @@
 # Table name: staffs
 #
 #  id                       :uuid             not null, primary key
-#  webauthn_id              :string
+#  webauthn_id              :string           default(""), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
-#  public_id                :string(255)
-#  staff_identity_status_id :string(255)      default("NONE")
-#  withdrawn_at             :datetime
+#  public_id                :string(21)       default(""), not null
+#  staff_identity_status_id :string(255)      default("NONE"), not null
+#  withdrawn_at             :datetime         default("infinity")
 #
 # Indexes
 #

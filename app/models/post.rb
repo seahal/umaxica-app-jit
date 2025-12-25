@@ -29,6 +29,7 @@ class Post < IdentitiesRecord
 
   has_many :post_reviews, dependent: :restrict_with_error
 
-  validates :public_id, uniqueness: true
+  validates :public_id, presence: true, uniqueness: true
   validates :body, presence: true
+  validates :created_by_actor_id, presence: true
 end

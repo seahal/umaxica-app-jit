@@ -103,6 +103,8 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
+    aasm (5.5.2)
+      concurrent-ruby (~> 1.0)
     action_text-trix (2.1.15)
       railties
     addressable (2.8.8)
@@ -162,6 +164,15 @@ GEM
       logger (~> 1.5)
     choice (0.2.0)
     chunky_png (1.4.0)
+    committee (5.6.1)
+      json_schema (~> 0.14, >= 0.14.3)
+      openapi_parser (~> 2.0)
+      rack (>= 1.5)
+    committee-rails (0.9.0)
+      actionpack (>= 6.0)
+      activesupport (>= 6.0)
+      committee (>= 5.1.0)
+      railties (>= 6.0)
     concurrent-ruby (1.3.6)
     connection_pool (3.0.2)
     content_disposition (1.0.0)
@@ -292,6 +303,7 @@ GEM
     json-schema (6.1.0)
       addressable (~> 2.8)
       bigdecimal (>= 3.1, < 5)
+    json_schema (0.21.0)
     jwt (3.1.2)
       base64
     kaminari (1.2.2)
@@ -345,6 +357,16 @@ GEM
     minitest (6.0.0)
       prism (~> 1.5)
     minitest-mock (5.27.0)
+    mission_control-jobs (1.1.0)
+      actioncable (>= 7.1)
+      actionpack (>= 7.1)
+      activejob (>= 7.1)
+      activerecord (>= 7.1)
+      importmap-rails (>= 1.2.1)
+      irb (~> 1.13)
+      railties (>= 7.1)
+      stimulus-rails
+      turbo-rails
     msgpack (1.8.0)
     multi_xml (0.8.0)
       bigdecimal (>= 3.1, < 5)
@@ -391,6 +413,7 @@ GEM
     omniauth-rails_csrf_protection (2.0.1)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
+    openapi_parser (2.3.1)
     openssl (4.0.0)
     openssl-signature_algorithm (1.3.0)
       openssl (> 2.0)
@@ -567,6 +590,9 @@ GEM
     opentelemetry-semantic_conventions (1.36.0)
       opentelemetry-api (~> 1.0)
     ostruct (0.6.3)
+    pagy (43.2.2)
+      json
+      yaml
     parallel (1.27.0)
     parser (3.3.10.0)
       ast (~> 2.4.1)
@@ -771,6 +797,7 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.2.0)
+    stripe (18.1.0)
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
@@ -822,6 +849,7 @@ GEM
     with_env (1.1.0)
     xml-simple (1.1.9)
       rexml
+    yaml (0.4.0)
     yard (0.9.38)
     zeitwerk (2.7.4)
 
@@ -830,6 +858,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  aasm
   annotate
   argon2
   aws-sdk-connect
@@ -839,6 +868,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   bundler-audit
+  committee-rails
   database_consistency
   debug
   erb_lint
@@ -856,6 +886,7 @@ DEPENDENCIES
   license_finder
   meta-tags
   minitest-mock
+  mission_control-jobs
   nanoid
   omniauth
   omniauth-apple
@@ -865,6 +896,7 @@ DEPENDENCIES
   opentelemetry-instrumentation-all
   opentelemetry-sdk
   ostruct
+  pagy
   pg
   pg_query
   pghero
@@ -904,6 +936,7 @@ DEPENDENCIES
   solid_cache
   solid_queue
   stimulus-rails
+  stripe
   tailwindcss-rails
   test-prof
   turbo-rails

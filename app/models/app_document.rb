@@ -33,6 +33,7 @@ class AppDocument < BusinessesRecord
 
   has_many :app_document_audits,
            class_name: "AppDocumentAudit",
+           foreign_key: :subject_id,
            primary_key: "id",
            inverse_of: :app_document,
            dependent: :restrict_with_error

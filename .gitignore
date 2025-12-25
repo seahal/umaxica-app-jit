@@ -113,3 +113,4 @@ node_modules
 !/docker/core/preferences/.bashrc
 erd.pdf
 .pnpm-store/
+.claudeignore

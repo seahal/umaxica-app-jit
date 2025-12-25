@@ -4,7 +4,7 @@
 #
 #  id :string(255)      default("NONE"), not null, primary key
 #
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
 none:
   id: "NONE"
 alive:

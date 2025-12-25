@@ -12,7 +12,8 @@
 #
 # Indexes
 #
-#  index_accounts_on_email  (email) UNIQUE
+#  index_accounts_on_accountable_type_and_accountable_id  (accountable_type,accountable_id) UNIQUE
+#  index_accounts_on_email                                (email) UNIQUE
 #
 
 require "test_helper"

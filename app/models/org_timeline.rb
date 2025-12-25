@@ -35,6 +35,7 @@ class OrgTimeline < BusinessesRecord
 
   has_many :org_timeline_audits,
            class_name: "OrgTimelineAudit",
+           foreign_key: :subject_id,
            primary_key: "id",
            inverse_of: :org_timeline,
            dependent: :restrict_with_error

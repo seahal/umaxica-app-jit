@@ -56,4 +56,5 @@ class OrgDocumentAudit < UniversalRecord
              inverse_of: :org_document_audits
 
   validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
 end

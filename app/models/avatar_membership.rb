@@ -16,7 +16,6 @@
 # Indexes
 #
 #  index_avatar_memberships_on_actor_id                     (actor_id)
-#  index_avatar_memberships_on_avatar_id                    (avatar_id)
 #  index_avatar_memberships_on_avatar_id_and_actor_id       (avatar_id,actor_id) UNIQUE
 #  index_avatar_memberships_on_avatar_membership_status_id  (avatar_membership_status_id)
 #
@@ -26,4 +25,9 @@ class AvatarMembership < IdentitiesRecord
 
   belongs_to :avatar
   belongs_to :avatar_membership_status, optional: true
+
+  validates :avatar_id, uniqueness: { scope: :actor_id }
+  validates :actor_id, presence: true
+  validates :role_id, presence: true
+  validates :valid_from, presence: true
 end

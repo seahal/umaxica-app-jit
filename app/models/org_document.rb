@@ -36,6 +36,7 @@ class OrgDocument < BusinessesRecord
 
   has_many :org_document_audits,
            class_name: "OrgDocumentAudit",
+           foreign_key: :subject_id,
            primary_key: "id",
            inverse_of: :org_document,
            dependent: :restrict_with_error

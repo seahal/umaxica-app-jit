@@ -74,6 +74,8 @@ jobs:
         run: bundle exec brakeman -z -q
       - name: Run bundle-audit
         run: bundle exec bundle audit check --update
+      - name: Run license_finder
+        run: bundle exec license_finder
   # ====================
   # Secret Leaks Detection
   # ====================
@@ -194,6 +196,8 @@ jobs:
       POSTGRESQL_TOKEN_SUB: localhost
       POSTGRESQL_BUSINESS_PUB: localhost
       POSTGRESQL_BUSINESS_SUB: localhost
+      POSTGRESQL_BILLING_PUB: localhost
+      POSTGRESQL_BILLING_SUB: localhost
       POSTGRESQL_MESSAGE_PUB: localhost
       POSTGRESQL_MESSAGE_SUB: localhost
       POSTGRESQL_NOTIFICATION_PUB: localhost
@@ -258,9 +262,7 @@ jobs:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
       - name: Setup test databases
-        run: |
-          bin/rails db:create
-          bin/rails db:migrate
+        run: bin/rails db:prepare
       - name: Run database consistency checks
         run: bundle exec database_consistency
       - name: Run Rails tests

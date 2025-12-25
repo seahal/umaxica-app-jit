@@ -11,5 +11,8 @@ class StaffIdentityAuditEvent < UniversalRecord
   include UppercaseId
 
   # Association with staff_identity_audits
-  has_many :staff_identity_audits, dependent: :destroy, inverse_of: :staff_identity_audit_event
+  has_many :staff_identity_audits,
+           foreign_key: :event_id,
+           dependent: :destroy,
+           inverse_of: :staff_identity_audit_event
 end

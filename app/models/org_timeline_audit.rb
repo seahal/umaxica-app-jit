@@ -56,4 +56,5 @@ class OrgTimelineAudit < UniversalRecord
              inverse_of: :org_timeline_audits
 
   validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
 end

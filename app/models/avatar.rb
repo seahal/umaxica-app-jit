@@ -37,6 +37,6 @@ class Avatar < IdentitiesRecord
   has_many :avatar_ownership_periods, dependent: :restrict_with_error
   has_many :posts, foreign_key: :author_avatar_id, dependent: :restrict_with_error, inverse_of: :author_avatar
 
-  validates :public_id, uniqueness: true
+  validates :public_id, presence: true, uniqueness: true
   validates :moniker, presence: true
 end

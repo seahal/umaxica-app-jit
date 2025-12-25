@@ -18,7 +18,7 @@
 #  index_email_occurrences_on_public_id   (public_id) UNIQUE
 #  index_email_occurrences_on_status_id   (status_id)
 #
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
 one:
   public_id: "EEEEEEEEEEEEEEEEEEEEE"
   body: "email-body-one"

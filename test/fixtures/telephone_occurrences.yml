@@ -18,7 +18,7 @@
 #  index_telephone_occurrences_on_public_id   (public_id) UNIQUE
 #  index_telephone_occurrences_on_status_id   (status_id)
 #
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
 one:
   public_id: "IIIIIIIIIIIIIIIIIIIII"
   body: "telephone-body-one"

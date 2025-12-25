@@ -27,4 +27,8 @@ class HandleAssignment < IdentitiesRecord
   belongs_to :avatar
   belongs_to :handle
   belongs_to :handle_assignment_status, optional: true
+
+  validates :avatar_id, uniqueness: true
+  validates :handle_id, uniqueness: true
+  validates :valid_from, presence: true
 end

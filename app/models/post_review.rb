@@ -23,4 +23,7 @@ class PostReview < IdentitiesRecord
 
   belongs_to :post
   belongs_to :post_review_status
+
+  validates :post_id, uniqueness: { scope: :reviewer_actor_id }
+  validates :reviewer_actor_id, presence: true
 end

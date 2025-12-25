@@ -38,6 +38,7 @@ class ComDocument < BusinessesRecord
 
   has_many :com_document_audits,
            class_name: "ComDocumentAudit",
+           foreign_key: :subject_id,
            primary_key: "id",
            inverse_of: :com_document,
            dependent: :restrict_with_error
