@@ -23,15 +23,12 @@
 #  index_staff_tokens_on_staff_id               (staff_id)
 #  index_staff_tokens_on_staff_token_status_id  (staff_token_status_id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   staff: one
   public_id: "STAFFTOKENPUBLICID001"
   refresh_token_digest: "staff_refresh_digest_one"
   refresh_expires_at: 2030-01-01 00:00:00
-
 two:
   staff: two
   public_id: "STAFFTOKENPUBLICID002"

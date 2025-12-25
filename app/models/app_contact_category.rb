@@ -22,7 +22,7 @@ class AppContactCategory < GuestsRecord
   validates :parent_id, length: { maximum: 255 }
 
   has_many :app_contacts,
-           foreign_key: :contact_category_title,
+           foreign_key: :category_id,
            primary_key: :id,
            dependent: :nullify,
            inverse_of: :app_contact_category

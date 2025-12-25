@@ -60,26 +60,28 @@ module AuthorizationAudit
     end
 
     def create_user_authorization_audit(user, log_data)
-      UserIdentityAudit.create!(
-        user: user,
+      audit = UserIdentityAudit.new(
         actor: user,
         event_id: "AUTHORIZATION_FAILED",
         ip_address: log_data[:ip_address],
-        timestamp: log_data[:timestamp]
+        occurred_at: log_data[:timestamp]
       )
+      audit.user = user
+      audit.save!
     rescue ActiveRecord::RecordInvalid => e
       # Event ID might not exist in the database yet
       Rails.event.notify("authorization.audit.user_creation_failed", error_message: e.message)
     end
 
     def create_staff_authorization_audit(staff, log_data)
-      StaffIdentityAudit.create!(
-        staff: staff,
+      audit = StaffIdentityAudit.new(
         actor: staff,
         event_id: "AUTHORIZATION_FAILED",
         ip_address: log_data[:ip_address],
-        timestamp: log_data[:timestamp]
+        occurred_at: log_data[:timestamp]
       )
+      audit.staff = staff
+      audit.save!
     rescue ActiveRecord::RecordInvalid => e
       # Event ID might not exist in the database yet
       Rails.event.notify("authorization.audit.staff_creation_failed", error_message: e.message)

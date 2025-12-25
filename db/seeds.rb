@@ -153,6 +153,48 @@ OrgContactAuditEvent.find_or_create_by!(id: "UPDATED")
 OrgContactAuditEvent.find_or_create_by!(id: "DESTROYED")
 
 # ========================================
+# AVATAR / HANDLE / POSTS
+# ========================================
+
+AvatarCapability.find_or_create_by!(key: "normal") do |capability|
+  capability.name = "Normal"
+end
+AvatarCapability.find_or_create_by!(key: "cooldown") do |capability|
+  capability.name = "Cooldown"
+end
+AvatarCapability.find_or_create_by!(key: "restricted") do |capability|
+  capability.name = "Restricted"
+end
+AvatarCapability.find_or_create_by!(key: "suspended") do |capability|
+  capability.name = "Suspended"
+end
+AvatarCapability.find_or_create_by!(key: "banned") do |capability|
+  capability.name = "Banned"
+end
+
+HandleStatus.find_or_create_by!(key: "ACTIVE") do |status|
+  status.name = "Active"
+end
+HandleAssignmentStatus.find_or_create_by!(key: "ACTIVE") do |status|
+  status.name = "Active"
+end
+AvatarMonikerStatus.find_or_create_by!(key: "ACTIVE") do |status|
+  status.name = "Active"
+end
+AvatarMembershipStatus.find_or_create_by!(key: "ACTIVE") do |status|
+  status.name = "Active"
+end
+AvatarOwnershipStatus.find_or_create_by!(key: "ACTIVE") do |status|
+  status.name = "Active"
+end
+PostStatus.find_or_create_by!(key: "DRAFT") do |status|
+  status.name = "Draft"
+end
+PostReviewStatus.find_or_create_by!(key: "PENDING") do |status|
+  status.name = "Pending"
+end
+
+# ========================================
 # ROLE-BASED ACCESS CONTROL (RBAC)
 # ========================================
 

@@ -2,12 +2,13 @@
 #
 # Table name: user_identity_one_time_passwords
 #
-#  created_at                                :datetime         not null
-#  last_otp_at                               :datetime         default("-infinity"), not null
-#  private_key                               :string(1024)     default(""), not null
-#  updated_at                                :datetime         not null
 #  user_id                                   :binary           not null
+#  created_at                                :datetime         not null
+#  updated_at                                :datetime         not null
+#  private_key                               :string(1024)     default(""), not null
+#  last_otp_at                               :datetime         default("-infinity"), not null
 #  user_identity_one_time_password_status_id :string           default("NONE"), not null
+#  id                                        :uuid             not null, primary key
 #
 # Indexes
 #

@@ -12,44 +12,37 @@
 #
 #  index_com_contact_statuses_on_parent_id  (parent_id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 NONE:
   id: "NONE"
   description: "root of service site status inquiries"
   parent_id: nil
   position: 0
   active: true
-
 SET_UP:
   id: "SET_UP"
   description: "first step completed"
   parent_id: "NONE"
   position: 0
   active: true
-
 CHECKED_EMAIL_ADDRESS:
   id: "CHECKED_EMAIL_ADDRESS"
   description: "second step completed"
   parent_id: "SET_UP"
   position: 0
   active: true
-
 CHECKED_TELEPHONE_NUMBER:
   id: "CHECKED_TELEPHONE_NUMBER"
   description: "second step completed"
   parent_id: "CHECKED_EMAIL_ADDRESS"
   position: 0
   active: true
-
 COMPLETED_CONTACT_ACTION:
   id: "COMPLETED_CONTACT_ACTION"
   description: "second step completed"
   parent_id: "CHECKED_TELEPHONE_NUMBER"
   position: 0
   active: true
-
 NULL_COM_STATUS:
   id: "NULL_COM_STATUS"
   description: "null status for com contact"

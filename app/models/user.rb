@@ -3,12 +3,12 @@
 # Table name: users
 #
 #  id                      :uuid             not null, primary key
-#  webauthn_id             :string           default(""), not null
+#  webauthn_id             :string
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
-#  public_id               :string(21)       default(""), not null
-#  user_identity_status_id :string(255)      default("NONE"), not null
-#  withdrawn_at            :datetime         default("infinity")
+#  public_id               :string(255)
+#  user_identity_status_id :string(255)      default("NONE")
+#  withdrawn_at            :datetime
 #
 # Indexes
 #
@@ -18,10 +18,12 @@
 #
 
 class User < IdentitiesRecord
-  include ::Account
+  include ::Accountably
   include ::PublicId
+  include ::Accountable
   include Withdrawable
   include HasRoles
+  include Ax
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :user_identity_status_id, length: { maximum: 255 }
@@ -40,7 +42,9 @@ class User < IdentitiesRecord
   has_many :user_identity_passkeys,
            dependent: :destroy
   has_many :user_identity_audits,
-           dependent: :destroy
+           foreign_key: :subject_id,
+           dependent: :destroy,
+           inverse_of: false
   has_many :user_tokens,
            dependent: :destroy # , disable_joins: true
   has_many :user_memberships,

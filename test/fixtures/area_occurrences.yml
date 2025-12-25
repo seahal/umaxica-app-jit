@@ -18,15 +18,12 @@
 #  index_area_occurrences_on_public_id   (public_id) UNIQUE
 #  index_area_occurrences_on_status_id   (status_id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   public_id: "AAAAAAAAAAAAAAAAAAAAA"
   body: "area-body-one"
   status_id: ACTIVE
   memo: "Area occurrence one"
-
 two:
   public_id: "BBBBBBBBBBBBBBBBBBBBB"
   body: "area-body-two"

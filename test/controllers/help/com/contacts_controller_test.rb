@@ -62,7 +62,7 @@ module Help
         assert_no_difference("ComContact.count") do
           post help_com_contacts_url, params: {
             com_contact: {
-              contact_category_title: "SECURITY_ISSUE",
+              category_id: "SECURITY_ISSUE",
               email_address: "test@example.com",
               confirm_policy: "1"
             }
@@ -77,7 +77,7 @@ module Help
         assert_no_difference("ComContact.count") do
           post help_com_contacts_url, params: {
             com_contact: {
-              contact_category_title: "",
+              category_id: "",
               email_address: "test@example.com",
               confirm_policy: "1"
             }
@@ -141,7 +141,7 @@ module Help
         def post_valid_contact
           post help_com_contacts_url, params: {
             com_contact: {
-              contact_category_title: "SECURITY_ISSUE",
+              category_id: "SECURITY_ISSUE",
               email_address: "test@example.com",
               telephone_number: "123-456-7890",
               confirm_policy: "1"

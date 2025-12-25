@@ -187,13 +187,14 @@ module Authentication
       def record_user_identity_audit(event_id, user:, actor: user)
         return unless user && event_id
 
-        ::UserIdentityAudit.create!(
-          user: user,
+        audit = ::UserIdentityAudit.new(
           actor: actor,
           event_id: event_id,
           ip_address: request_ip_address,
-          timestamp: Time.current
+          occurred_at: Time.current
         )
+        audit.user = user
+        audit.save!
       end
 
       def request_ip_address

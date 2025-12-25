@@ -16,7 +16,7 @@ class AppContactStatus < GuestsRecord
   validates :parent_title, length: { maximum: 255 }
 
   has_many :app_contacts,
-           foreign_key: :contact_status_id,
+           foreign_key: :status_id,
            inverse_of: :app_contact_status,
            dependent: :nullify
 end

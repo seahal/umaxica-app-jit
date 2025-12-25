@@ -10,20 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_25_012748) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_25_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
-
-  create_table "app_contact_audit_events", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contact_audit_events_id_format"
-  end
-
-  create_table "app_contact_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index "lower((id)::text)", name: "index_app_contact_audit_levels_on_lower_id", unique: true
-  end
 
   create_table "app_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
@@ -55,23 +45,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_012748) do
     t.index ["email_address"], name: "index_app_contact_emails_on_email_address"
     t.index ["expires_at"], name: "index_app_contact_emails_on_expires_at"
     t.index ["verifier_expires_at"], name: "index_app_contact_emails_on_verifier_expires_at"
-  end
-
-  create_table "app_contact_histories", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
-    t.string "actor_type", default: "", null: false
-    t.uuid "app_contact_id", null: false
-    t.datetime "created_at", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
-    t.string "level_id", default: "NONE", null: false
-    t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
-    t.integer "position", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.index ["actor_type", "actor_id"], name: "index_app_contact_histories_on_actor_type_and_actor_id"
-    t.index ["app_contact_id"], name: "index_app_contact_histories_on_app_contact_id"
-    t.index ["level_id"], name: "index_app_contact_histories_on_level_id"
-    t.index ["parent_id"], name: "index_app_contact_histories_on_parent_id"
-    t.check_constraint "event_id IS NULL OR event_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contact_histories_event_id_format"
   end
 
   create_table "app_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -118,34 +91,23 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_012748) do
   end
 
   create_table "app_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "contact_category_title", limit: 255, default: "APPLICATION_INQUIRY", null: false
-    t.string "contact_status_id", limit: 255, default: "NONE", null: false
+    t.string "category_id", limit: 255, default: "NONE", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", null: false
-    t.index ["contact_category_title"], name: "index_app_contacts_on_contact_category_title"
-    t.index ["contact_status_id"], name: "index_app_contacts_on_contact_status_id"
+    t.index ["category_id"], name: "index_app_contacts_on_category_id"
     t.index ["public_id"], name: "index_app_contacts_on_public_id"
+    t.index ["status_id"], name: "index_app_contacts_on_status_id"
     t.index ["token"], name: "index_app_contacts_on_token"
     t.index ["token_digest"], name: "index_app_contacts_on_token_digest"
     t.index ["token_expires_at"], name: "index_app_contacts_on_token_expires_at"
-    t.check_constraint "contact_category_title IS NULL OR contact_category_title::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contacts_contact_category_title_format"
-    t.check_constraint "contact_status_id IS NULL OR contact_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contacts_contact_status_id_format"
-  end
-
-  create_table "com_contact_audit_events", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contact_audit_events_id_format"
-  end
-
-  create_table "com_contact_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index "lower((id)::text)", name: "index_com_contact_audit_levels_on_lower_id", unique: true
+    t.check_constraint "status_id IS NULL OR status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contacts_contact_status_id_format"
   end
 
   create_table "com_contact_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -247,34 +209,23 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_012748) do
   end
 
   create_table "com_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "contact_category_title", limit: 255, default: "SECURITY_ISSUE", null: false
-    t.string "contact_status_id", limit: 255, default: "NONE", null: false
+    t.string "category_id", limit: 255, default: "NONE", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", null: false
-    t.index ["contact_category_title"], name: "index_com_contacts_on_contact_category_title"
-    t.index ["contact_status_id"], name: "index_com_contacts_on_contact_status_id"
+    t.index ["category_id"], name: "index_com_contacts_on_category_id"
     t.index ["public_id"], name: "index_com_contacts_on_public_id"
+    t.index ["status_id"], name: "index_com_contacts_on_status_id"
     t.index ["token"], name: "index_com_contacts_on_token"
     t.index ["token_digest"], name: "index_com_contacts_on_token_digest"
     t.index ["token_expires_at"], name: "index_com_contacts_on_token_expires_at"
-    t.check_constraint "contact_category_title IS NULL OR contact_category_title::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contacts_contact_category_title_format"
-    t.check_constraint "contact_status_id IS NULL OR contact_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contacts_contact_status_id_format"
-  end
-
-  create_table "org_contact_audit_events", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contact_audit_events_id_format"
-  end
-
-  create_table "org_contact_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index "lower((id)::text)", name: "index_org_contact_audit_levels_on_lower_id", unique: true
+    t.check_constraint "status_id IS NULL OR status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contacts_contact_status_id_format"
   end
 
   create_table "org_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -307,23 +258,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_012748) do
     t.index ["expires_at"], name: "index_org_contact_emails_on_expires_at"
     t.index ["org_contact_id"], name: "index_org_contact_emails_on_org_contact_id"
     t.index ["verifier_expires_at"], name: "index_org_contact_emails_on_verifier_expires_at"
-  end
-
-  create_table "org_contact_histories", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
-    t.string "actor_type", default: "", null: false
-    t.datetime "created_at", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
-    t.string "level_id", default: "NONE", null: false
-    t.uuid "org_contact_id", null: false
-    t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
-    t.integer "position", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.index ["actor_type", "actor_id"], name: "index_org_contact_histories_on_actor_type_and_actor_id"
-    t.index ["level_id"], name: "index_org_contact_histories_on_level_id"
-    t.index ["org_contact_id"], name: "index_org_contact_histories_on_org_contact_id"
-    t.index ["parent_id"], name: "index_org_contact_histories_on_parent_id"
-    t.check_constraint "event_id IS NULL OR event_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contact_histories_event_id_format"
   end
 
   create_table "org_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -371,46 +305,37 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_012748) do
   end
 
   create_table "org_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "contact_category_title", limit: 255, default: "ORGANIZATION_INQUIRY", null: false
-    t.string "contact_status_id", limit: 255, default: "NONE", null: false
+    t.string "category_id", limit: 255, default: "NONE", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", null: false
-    t.index ["contact_category_title"], name: "index_org_contacts_on_contact_category_title"
-    t.index ["contact_status_id"], name: "index_org_contacts_on_contact_status_id"
+    t.index ["category_id"], name: "index_org_contacts_on_category_id"
     t.index ["public_id"], name: "index_org_contacts_on_public_id"
+    t.index ["status_id"], name: "index_org_contacts_on_status_id"
     t.index ["token"], name: "index_org_contacts_on_token"
     t.index ["token_digest"], name: "index_org_contacts_on_token_digest"
     t.index ["token_expires_at"], name: "index_org_contacts_on_token_expires_at"
-    t.check_constraint "contact_category_title IS NULL OR contact_category_title::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contacts_contact_category_title_format"
-    t.check_constraint "contact_status_id IS NULL OR contact_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contacts_contact_status_id_format"
+    t.check_constraint "status_id IS NULL OR status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contacts_contact_status_id_format"
   end
 
   add_foreign_key "app_contact_emails", "app_contacts"
-  add_foreign_key "app_contact_histories", "app_contact_audit_events", column: "event_id"
-  add_foreign_key "app_contact_histories", "app_contact_audit_levels", column: "level_id"
-  add_foreign_key "app_contact_histories", "app_contacts"
   add_foreign_key "app_contact_telephones", "app_contacts"
   add_foreign_key "app_contact_topics", "app_contacts"
-  add_foreign_key "app_contacts", "app_contact_categories", column: "contact_category_title"
-  add_foreign_key "app_contacts", "app_contact_statuses", column: "contact_status_id"
-  add_foreign_key "com_contact_audits", "com_contact_audit_events", column: "event_id"
-  add_foreign_key "com_contact_audits", "com_contact_audit_levels", column: "level_id"
+  add_foreign_key "app_contacts", "app_contact_categories", column: "category_id"
+  add_foreign_key "app_contacts", "app_contact_statuses", column: "status_id"
   add_foreign_key "com_contact_audits", "com_contacts"
   add_foreign_key "com_contact_topics", "com_contacts"
-  add_foreign_key "com_contacts", "com_contact_categories", column: "contact_category_title"
-  add_foreign_key "com_contacts", "com_contact_statuses", column: "contact_status_id"
+  add_foreign_key "com_contacts", "com_contact_categories", column: "category_id"
+  add_foreign_key "com_contacts", "com_contact_statuses", column: "status_id"
   add_foreign_key "org_contact_emails", "org_contacts"
-  add_foreign_key "org_contact_histories", "org_contact_audit_events", column: "event_id"
-  add_foreign_key "org_contact_histories", "org_contact_audit_levels", column: "level_id"
-  add_foreign_key "org_contact_histories", "org_contacts"
   add_foreign_key "org_contact_telephones", "org_contacts"
   add_foreign_key "org_contact_topics", "org_contacts"
-  add_foreign_key "org_contacts", "org_contact_categories", column: "contact_category_title"
-  add_foreign_key "org_contacts", "org_contact_statuses", column: "contact_status_id"
+  add_foreign_key "org_contacts", "org_contact_categories", column: "category_id"
+  add_foreign_key "org_contacts", "org_contact_statuses", column: "status_id"
 end

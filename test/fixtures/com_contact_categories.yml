@@ -14,9 +14,7 @@
 #
 #  index_com_contact_categories_on_parent_id  (parent_id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 SECURITY_ISSUE:
   id: 'SECURITY_ISSUE'
   description: 'ROOT'

@@ -2,26 +2,20 @@
 #
 # Table name: staff_identity_audit_events
 #
-#  id :string(255)      default("NONE"), not null, primary key
+#  id         :string(255)      default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   id: "LOGIN_SUCCESS"
-
 two:
   id: "LOGIN_FAILURE"
-
 logged_in:
   id: "LOGGED_IN"
-
 logged_out:
   id: "LOGGED_OUT"
-
 login_failed:
   id: "LOGIN_FAILED"
-
-
 authorization_failed:
   id: "AUTHORIZATION_FAILED"

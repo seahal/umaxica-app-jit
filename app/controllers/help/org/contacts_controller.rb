@@ -24,7 +24,7 @@ module Help
         turnstile_result = cloudflare_turnstile_validation
 
         @contact = OrgContact.new(
-          contact_category_title: params.dig(:org_contact, :contact_category_title),
+          category_id: params.dig(:org_contact, :category_id),
           confirm_policy: params.dig(:org_contact, :confirm_policy)
         )
         @contact_categories = OrgContactCategory.order(:description)
@@ -46,7 +46,7 @@ module Help
         end
 
         if @contact.save
-          @contact.update!(contact_status_id: "SET_UP")
+          @contact.update!(status_id: "SET_UP")
 
           verification_code = @contact_email.generate_verifier!
 

@@ -23,13 +23,11 @@
 #  index_app_timelines_on_staff_id                (staff_id)
 #  index_app_timelines_on_succ_id                 (succ_id)
 #
-
 one:
   title: App Timeline One
   description: First app timeline
   app_timeline_status_id: ACTIVE
   public_id: "KfMyouIgC15JMrt-ZRSVL"
-
 two:
   title: App Timeline Two
   description: Second app timeline

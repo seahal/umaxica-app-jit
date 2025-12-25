@@ -23,13 +23,11 @@
 #  index_org_timelines_on_staff_id                (staff_id)
 #  index_org_timelines_on_succ_id                 (succ_id)
 #
-
 one:
   title: Org Timeline One
   description: First org timeline
   org_timeline_status_id: ACTIVE
   public_id: "fwaWyhV2cuzxdcc-AoV6s"
-
 two:
   title: Org Timeline Two
   description: Second org timeline

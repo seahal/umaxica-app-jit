@@ -117,7 +117,9 @@ module Auth
               @user = User.create!(user_identity_status_id: "VERIFIED_WITH_SIGN_UP")
               # Use association to set the user
               @user_email.user = @user
-              UserIdentityAudit.create!(user: @user, actor: @user, event_id: "SIGNED_UP_WITH_EMAIL")
+              audit = UserIdentityAudit.new(actor: @user, event_id: "SIGNED_UP_WITH_EMAIL")
+              audit.user = @user
+              audit.save!
               @user_email.save!
             end
           rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved

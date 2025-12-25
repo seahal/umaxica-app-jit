@@ -25,9 +25,7 @@
 #  index_app_contact_emails_on_expires_at           (expires_at)
 #  index_app_contact_emails_on_verifier_expires_at  (verifier_expires_at)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   app_contact: one
   email_address: app_test1@example.com
@@ -37,7 +35,6 @@ one:
   expires_at: 2025-10-27 09:07:30
   created_at: 2025-10-27 09:07:30
   updated_at: 2025-10-27 09:07:30
-
 two:
   app_contact: two
   email_address: app_test2@example.com

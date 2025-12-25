@@ -33,8 +33,8 @@ module Help
           end
           # Create a fresh contact with correct status instead of using fixture
           @contact = ComContact.create!(
-            contact_category_title: "OTHERS",
-            contact_status_id: "CHECKED_EMAIL_ADDRESS",
+            category_id: "OTHERS",
+            status_id: "CHECKED_EMAIL_ADDRESS",
             confirm_policy: "1"
           )
           # Create telephone for verification
@@ -47,14 +47,14 @@ module Help
         end
 
         test "should get new with valid contact status" do
-          @contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
+          @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
           get new_help_com_contact_telephone_url(@contact), headers: { "Host" => @host }
 
           assert_response :success
         end
 
         test "should show error for invalid contact status" do
-          @contact.update!(contact_status_id: "SET_UP")
+          @contact.update!(status_id: "SET_UP")
 
           assert_raises(StandardError) do
             get new_help_com_contact_telephone_url(@contact), headers: { "Host" => @host }
@@ -62,7 +62,7 @@ module Help
         end
 
         test "should require hotp_code parameter" do
-          @contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
+          @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
           post help_com_contact_telephone_url(@contact),
                params: { com_contact_telephone: { hotp_code: "" } },
                headers: { "Host" => @host }
@@ -71,7 +71,7 @@ module Help
         end
 
         test "should verify valid hotp code" do
-          @contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
+          @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
           # Recreate telephone fresh to avoid encryption issues in parallel tests
           ComContactTelephone.where(com_contact_id: @contact.id).delete_all
           fresh_telephone = ComContactTelephone.create!(
@@ -90,11 +90,11 @@ module Help
           assert_response :redirect
           @contact.reload
 
-          assert_equal "CHECKED_TELEPHONE_NUMBER", @contact.contact_status_id
+          assert_equal "CHECKED_TELEPHONE_NUMBER", @contact.status_id
         end
 
         test "should reject invalid hotp code" do
-          @contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
+          @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
           @contact_telephone.generate_hotp!
 
           post help_com_contact_telephone_url(@contact),
@@ -105,7 +105,7 @@ module Help
         end
 
         test "should reject expired hotp code" do
-          @contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
+          @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
           code = @contact_telephone.generate_hotp!
           @contact_telephone.update!(verifier_expires_at: 1.minute.ago)
 
@@ -117,7 +117,7 @@ module Help
         end
 
         test "should enforce max attempts" do
-          @contact.update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
+          @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
           @contact_telephone.generate_hotp!
           @contact_telephone.update!(verifier_attempts_left: 0)
 

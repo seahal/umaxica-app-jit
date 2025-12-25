@@ -8,29 +8,22 @@
 #  parent_title :string(255)      default(""), not null
 #  position     :integer          default(0), not null
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 app_root:
   id: 'APP_SITE_STATUS'
   description: 'ROOT'
-
 set_up:
   id: 'SET_UP'
   description: 'first step completed'
-
 email_verified:
   id: 'CHECKED_EMAIL_ADDRESS'
   description: 'second step completed'
-
 phone_verified:
   id: 'CHECKED_TELEPHONE_NUMBER'
   description: 'third step completed'
-
 completed:
   id: 'COMPLETED_CONTACT_ACTION'
   description: 'contact completed'
-
 none:
   id: 'NONE'
   description: 'null status'

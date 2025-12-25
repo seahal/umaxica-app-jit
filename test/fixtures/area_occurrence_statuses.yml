@@ -9,15 +9,11 @@
 #
 #  index_area_occurrence_statuses_on_expires_at  (expires_at)
 #
-
 NONE:
   id: NONE
-
 ACTIVE:
   id: ACTIVE
-
 INACTIVE:
   id: INACTIVE
-
 BLOCKED:
   id: BLOCKED

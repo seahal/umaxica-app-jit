@@ -25,7 +25,7 @@ module Help
 
         # Create contact with nested associations
         @contact = ComContact.new(
-          contact_category_title: params.dig(:com_contact, :contact_category_title),
+          category_id: params.dig(:com_contact, :category_id),
           confirm_policy: params.dig(:com_contact, :confirm_policy)
         )
 
@@ -50,7 +50,7 @@ module Help
 
         if @contact.save
           # Update status to SET_UP
-          @contact.update!(contact_status_id: "SET_UP")
+          @contact.update!(status_id: "SET_UP")
 
           # Generate HOTP and save to email record
           token = @email.generate_hotp!

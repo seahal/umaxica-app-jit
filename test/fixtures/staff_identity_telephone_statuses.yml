@@ -4,20 +4,14 @@
 #
 #  id :string(255)      default("UNVERIFIED"), not null, primary key
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 none:
   id: "NONE"
-
 unverified:
   id: "UNVERIFIED"
-
 verified:
   id: "VERIFIED"
-
 suspended:
   id: "SUSPENDED"
-
 deleted:
   id: "DELETED"

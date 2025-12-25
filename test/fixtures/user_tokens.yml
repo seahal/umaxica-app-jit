@@ -23,15 +23,12 @@
 #  index_user_tokens_on_user_id               (user_id)
 #  index_user_tokens_on_user_token_status_id  (user_token_status_id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   user: one
   public_id: "USERTOKENPUBLICID0001"
   refresh_token_digest: "user_refresh_digest_one"
   refresh_expires_at: 2030-01-01 00:00:00
-
 two:
   user: two
   public_id: "USERTOKENPUBLICID0002"

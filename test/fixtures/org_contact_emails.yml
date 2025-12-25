@@ -25,9 +25,7 @@
 #  index_org_contact_emails_on_org_contact_id       (org_contact_id)
 #  index_org_contact_emails_on_verifier_expires_at  (verifier_expires_at)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   org_contact: one
   email_address: org_test1@example.com
@@ -37,7 +35,6 @@ one:
   expires_at: 2025-10-27 09:07:30
   created_at: 2025-10-27 09:07:30
   updated_at: 2025-10-27 09:07:30
-
 two:
   org_contact: two
   email_address: org_test2@example.com

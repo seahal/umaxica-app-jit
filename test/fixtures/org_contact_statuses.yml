@@ -12,29 +12,22 @@
 #
 #  index_org_contact_statuses_on_parent_id  (parent_id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 organization_root:
   id: 'ORGANIZATION_SITE_STATUS'
   description: 'ROOT'
-
 set_up:
   id: 'SET_UP'
   description: 'first step completed'
-
 email_verified:
   id: 'CHECKED_EMAIL_ADDRESS'
   description: 'second step completed'
-
 phone_verified:
   id: 'CHECKED_TELEPHONE_NUMBER'
   description: 'third step completed'
-
 completed:
   id: 'COMPLETED_CONTACT_ACTION'
   description: 'contact completed'
-
 none:
   id: 'NONE'
   description: 'null status'

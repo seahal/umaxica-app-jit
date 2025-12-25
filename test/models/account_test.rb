@@ -1,36 +1,29 @@
+# == Schema Information
+#
+# Table name: accounts
+#
+#  id               :uuid             not null, primary key
+#  accountable_type :string           not null
+#  accountable_id   :uuid             not null
+#  email            :string           not null
+#  password_digest  :string           not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#
+# Indexes
+#
+#  index_accounts_on_email  (email) UNIQUE
+#
+
 require "test_helper"
-require_relative "../../app/models/concerns/account"
-require_relative "../../app/models/user"
-require_relative "../../app/models/staff"
 
 class AccountTest < ActiveSupport::TestCase
-  %w[User Staff].each do |klass|
-    test "#{klass} is a ..." do
-      assert_includes klass.constantize.included_modules, ::Account
-    end
+  test "Account has delegated_type accountable" do
+    assert_respond_to Account.new, :accountable
   end
 
-  test "user and staff are different classes" do
-    assert_not_equal ::User, ::Staff
-  end
-
-  test "should raise NotImplementedError for staff?" do
-    dummy = Object.new
-    dummy.extend(::Account)
-
-    error = assert_raises(NotImplementedError) do
-      dummy.staff?
-    end
-    assert_match(/must implement staff\? method/, error.message)
-  end
-
-  test "should raise NotImplementedError for user?" do
-    dummy = Object.new
-    dummy.extend(::Account)
-
-    error = assert_raises(NotImplementedError) do
-      dummy.user?
-    end
-    assert_match(/must implement user\? method/, error.message)
+  test "Account supports User and Staff as accountable types" do
+    assert_includes Account.accountable_types, "User"
+    assert_includes Account.accountable_types, "Staff"
   end
 end

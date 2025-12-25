@@ -18,15 +18,12 @@
 #  index_domain_occurrences_on_public_id   (public_id) UNIQUE
 #  index_domain_occurrences_on_status_id   (status_id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   public_id: "CCCCCCCCCCCCCCCCCCCCC"
   body: "domain-body-one"
   status_id: ACTIVE
   memo: "Domain occurrence one"
-
 two:
   public_id: "DDDDDDDDDDDDDDDDDDDDD"
   body: "domain-body-two"

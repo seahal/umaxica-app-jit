@@ -14,9 +14,10 @@
 #
 #  index_org_contact_categories_on_parent_id  (parent_id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
+none:
+  id: 'NONE'
+  description: 'None/Default category'
 organization_inquiry:
   id: 'ORGANIZATION_INQUIRY'
   description: 'Organization inquiry category'

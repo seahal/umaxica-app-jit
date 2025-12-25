@@ -59,7 +59,7 @@ module Help
         assert_no_difference("OrgContact.count") do
           post help_org_contacts_url, params: {
             org_contact: {
-              contact_category_title: "ORGANIZATION_INQUIRY",
+              category_id: "ORGANIZATION_INQUIRY",
               email_address: "org_test@example.com",
               confirm_policy: "1"
             }
@@ -74,7 +74,7 @@ module Help
         assert_no_difference("OrgContact.count") do
           post help_org_contacts_url, params: {
             org_contact: {
-              contact_category_title: "",
+              category_id: "",
               email_address: "org_test@example.com",
               confirm_policy: "1"
             }
@@ -138,7 +138,7 @@ module Help
         def post_valid_contact
           post help_org_contacts_url, params: {
             org_contact: {
-              contact_category_title: "ORGANIZATION_INQUIRY",
+              category_id: "ORGANIZATION_INQUIRY",
               email_address: "org_test@example.com",
               telephone_number: "+1234567890",
               confirm_policy: "1"

@@ -2,15 +2,12 @@
 #
 # Table name: app_document_audit_events
 #
-#  id                    :string(255)      default("NONE"), not null, primary key
-#  app_document_audit_id :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#
-# Indexes
-#
-#  index_app_document_audit_events_on_app_document_audit_id  (app_document_audit_id)
+#  id         :string(255)      default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 
-class AppDocumentAuditEvent < BusinessesRecord
+class AppDocumentAuditEvent < UniversalRecord
   self.table_name = "app_document_audit_events"
 
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')

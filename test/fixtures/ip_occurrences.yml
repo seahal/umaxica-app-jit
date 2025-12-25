@@ -18,15 +18,12 @@
 #  index_ip_occurrences_on_public_id   (public_id) UNIQUE
 #  index_ip_occurrences_on_status_id   (status_id)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   public_id: "GGGGGGGGGGGGGGGGGGGGG"
   body: "ip-body-one"
   status_id: ACTIVE
   memo: "IP occurrence one"
-
 two:
   public_id: "HHHHHHHHHHHHHHHHHHHHH"
   body: "ip-body-two"

@@ -4,12 +4,9 @@
 #
 #  id :string(255)      not null, primary key
 #
-
 active:
   id: "ACTIVE"
-
 revoked:
   id: "REVOKED"
-
 deleted:
   id: "DELETED"

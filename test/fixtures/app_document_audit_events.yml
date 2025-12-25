@@ -2,19 +2,13 @@
 #
 # Table name: app_document_audit_events
 #
-#  id                    :string(255)      default("NONE"), not null, primary key
-#  app_document_audit_id :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  id         :string(255)      default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
-# Indexes
-#
-#  index_app_document_audit_events_on_app_document_audit_id  (app_document_audit_id)
-#
-
 CREATED:
   id: CREATED
-
 UPDATED:
   id: UPDATED
-
 DELETED:
   id: DELETED

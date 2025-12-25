@@ -4,12 +4,9 @@
 #
 #  id :string(255)      default("NONE"), not null, primary key
 #
-
 ACTIVE:
   id: ACTIVE
-
 DRAFT:
   id: DRAFT
-
 ARCHIVED:
   id: ARCHIVED

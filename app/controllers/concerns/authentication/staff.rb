@@ -182,13 +182,14 @@ module Authentication
       def record_staff_identity_audit(event_id, staff:, actor: staff)
         return unless staff && event_id
 
-        ::StaffIdentityAudit.create!(
-          staff: staff,
+        audit = ::StaffIdentityAudit.new(
           actor: actor,
           event_id: event_id,
           ip_address: request_ip_address,
-          timestamp: Time.current
+          occurred_at: Time.current
         )
+        audit.staff = staff
+        audit.save!
       end
 
       def request_ip_address

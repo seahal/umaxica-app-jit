@@ -3,27 +3,58 @@
 # Table name: user_identity_audits
 #
 #  id             :uuid             not null, primary key
+#  subject_id     :string           not null
+#  subject_type   :text             not null
 #  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  actor_type     :string           default(""), not null
-#  created_at     :datetime         not null
+#  actor_type     :text             default(""), not null
 #  event_id       :string(255)      default("NONE"), not null
-#  ip_address     :string           default(""), not null
 #  level_id       :string(255)      default("NONE"), not null
+#  occurred_at    :datetime         not null
+#  expires_at     :datetime         not null
+#  ip_address     :inet             default("0.0.0.0"), not null
+#  context        :jsonb            default("{}"), not null
 #  previous_value :text             default(""), not null
-#  timestamp      :datetime         default("-infinity"), not null
+#  current_value  :text             default(""), not null
+#  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  user_id        :uuid             not null
 #
 # Indexes
 #
-#  index_user_identity_audits_on_actor_type_and_actor_id  (actor_type,actor_id)
-#  index_user_identity_audits_on_event_id                 (event_id)
-#  index_user_identity_audits_on_level_id                 (level_id)
-#  index_user_identity_audits_on_user_id                  (user_id)
+#  idx_on_subject_type_subject_id_occurred_at_a29eb711dd   (subject_type,subject_id,occurred_at)
+#  index_user_identity_audits_on_actor_id_and_occurred_at  (actor_id,occurred_at)
+#  index_user_identity_audits_on_event_id                  (event_id)
+#  index_user_identity_audits_on_expires_at                (expires_at)
+#  index_user_identity_audits_on_level_id                  (level_id)
+#  index_user_identity_audits_on_occurred_at               (occurred_at)
 #
 
 class UserIdentityAudit < IdentitiesRecord
-  belongs_to :user, inverse_of: :user_identity_audits
+  # subject_id/subject_type for cross-DB compatibility (no FK)
+  validates :subject_id, presence: true
+  validates :subject_type, presence: true
+
+  # Helper methods for compatibility with existing code
+  def user
+    User.find(subject_id) if subject_type == "User"
+  end
+
+  def user=(user)
+    self.subject_id = user.id.to_s
+    self.subject_type = "User"
+  end
+
+  def user_id
+    subject_id if subject_type == "User"
+  end
+
+  def user_id=(id)
+    self.subject_id = id.to_s
+    self.subject_type = "User"
+  end
+
+  # Alias for backward compatibility
+  alias_attribute :timestamp, :occurred_at
+
   belongs_to :actor, polymorphic: true, optional: true
   belongs_to :user_identity_audit_event, foreign_key: :event_id, inverse_of: :user_identity_audits
   belongs_to :user_identity_audit_level, foreign_key: :level_id, inverse_of: :user_identity_audits

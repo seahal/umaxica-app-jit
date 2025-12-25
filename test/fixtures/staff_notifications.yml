@@ -8,13 +8,10 @@
 #  staff_id   :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  updated_at :datetime         not null
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   staff_id: 00000000-0000-0000-0000-000000000000
   public_id: 00000000-0000-0000-0000-000000000000
-
 two:
   staff_id: 00000000-0000-0000-0000-000000000000
-  public_id: 00000000-0000-0000-0000-000000000000 
+  public_id: 00000000-0000-0000-0000-000000000000

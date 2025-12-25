@@ -2,10 +2,12 @@
 #
 # Table name: app_timeline_audit_events
 #
-#  id :string(255)      default("NONE"), not null, primary key
+#  id         :string(255)      default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 
-class AppTimelineAuditEvent < BusinessesRecord
+class AppTimelineAuditEvent < UniversalRecord
   include UppercaseId
 
   self.table_name = "app_timeline_audit_events"

@@ -79,9 +79,9 @@ module Help
               raise StandardError, "Contact not found"
             end
 
-            unless @contact.contact_status_id == "CHECKED_EMAIL_ADDRESS"
+            unless @contact.status_id == "CHECKED_EMAIL_ADDRESS"
               raise StandardError,
-                    "Invalid contact status: expected CHECKED_EMAIL_ADDRESS, got #{@contact.contact_status_id}"
+                    "Invalid contact status: expected CHECKED_EMAIL_ADDRESS, got #{@contact.status_id}"
             end
           end
 

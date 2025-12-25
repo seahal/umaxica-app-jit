@@ -137,12 +137,15 @@ group :development do
   gem "erb_lint", require: false
   # annotate models, routes, fixtures, and others [https://github.com/ctran/annotate_models]
   gem "annotate"
+  # license finder
   gem "license_finder", require: false
+  # Ruby LSP
   gem "ruby-lsp"
-  gem "reek"
-  gem "churn"
+  # code quality tools
   gem "flog"
-  # Easy ERD diagrams
+  gem "flay"
+  gem "reek"
+  # ERD diagrams
   gem "rails-erd"
   gem "railroady"
 end

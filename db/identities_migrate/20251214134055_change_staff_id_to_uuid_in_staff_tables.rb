@@ -24,6 +24,8 @@ class ChangeStaffIdToUuidInStaffTables < ActiveRecord::Migration[8.2]
   private
 
     def change_staff_id_type(table_name)
+      return unless table_exists?(table_name)
+
       # Remove the index first
       remove_index table_name, :staff_id if index_exists?(table_name, :staff_id)
 
@@ -38,11 +40,15 @@ class ChangeStaffIdToUuidInStaffTables < ActiveRecord::Migration[8.2]
       # Add the index back
       add_index table_name, :staff_id
 
-      # Add foreign key constraint
-      add_foreign_key table_name, :staffs
+      # Add foreign key constraint when types match
+      if compatible_foreign_key_type?(table_name, :staff_id, :staffs)
+        add_foreign_key table_name, :staffs
+      end
     end
 
     def revert_staff_id_type(table_name)
+      return unless table_exists?(table_name)
+
       # Remove the index first
       remove_index table_name, :staff_id if index_exists?(table_name, :staff_id)
 
@@ -55,5 +61,22 @@ class ChangeStaffIdToUuidInStaffTables < ActiveRecord::Migration[8.2]
 
       # Add the index back
       add_index table_name, :staff_id
+
+      # Add foreign key constraint when types match
+      if compatible_foreign_key_type?(table_name, :staff_id, :staffs)
+        add_foreign_key table_name, :staffs
+      end
+    end
+
+    def compatible_foreign_key_type?(from_table, from_column, to_table)
+      return false unless table_exists?(from_table) && table_exists?(to_table)
+
+      from_type = column_type(from_table, from_column)
+      to_type = column_type(to_table, :id)
+      from_type && to_type && from_type == to_type
+    end
+
+    def column_type(table_name, column_name)
+      connection.columns(table_name).find { |column| column.name == column_name.to_s }&.type
     end
 end

@@ -2,26 +2,26 @@
 #
 # Table name: org_contacts
 #
-#  id                     :uuid             not null, primary key
-#  contact_category_title :string(255)      default("ORGANIZATION_INQUIRY"), not null
-#  contact_status_id      :string(255)      default("NONE"), not null
-#  created_at             :datetime         not null
-#  ip_address             :inet             default("0.0.0.0"), not null
-#  public_id              :string(21)       default(""), not null
-#  token                  :string(32)       default(""), not null
-#  token_digest           :string(255)      default(""), not null
-#  token_expires_at       :timestamptz      default("-infinity"), not null
-#  token_viewed           :boolean          default(FALSE), not null
-#  updated_at             :datetime         not null
+#  id               :uuid             not null, primary key
+#  public_id        :string(21)       default(""), not null
+#  token            :string(32)       default(""), not null
+#  token_digest     :string(255)      default(""), not null
+#  token_expires_at :timestamptz      default("-infinity"), not null
+#  token_viewed     :boolean          default(FALSE), not null
+#  ip_address       :inet             default("0.0.0.0"), not null
+#  status_id        :string(255)      default("NONE"), not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  category_id      :string(255)      default("NONE"), not null
 #
 # Indexes
 #
-#  index_org_contacts_on_contact_category_title  (contact_category_title)
-#  index_org_contacts_on_contact_status_id       (contact_status_id)
-#  index_org_contacts_on_public_id               (public_id)
-#  index_org_contacts_on_token                   (token)
-#  index_org_contacts_on_token_digest            (token_digest)
-#  index_org_contacts_on_token_expires_at        (token_expires_at)
+#  index_org_contacts_on_category_id       (category_id)
+#  index_org_contacts_on_public_id         (public_id)
+#  index_org_contacts_on_status_id         (status_id)
+#  index_org_contacts_on_token             (token)
+#  index_org_contacts_on_token_digest      (token_digest)
+#  index_org_contacts_on_token_expires_at  (token_expires_at)
 #
 
 class OrgContact < GuestsRecord
@@ -32,45 +32,47 @@ class OrgContact < GuestsRecord
   has_many :org_contact_telephones, dependent: :destroy
   belongs_to :org_contact_category,
              class_name: "OrgContactCategory",
-             foreign_key: :contact_category_title,
+             foreign_key: :category_id,
              primary_key: :id,
              inverse_of: :org_contacts
   belongs_to :org_contact_status,
              class_name: "OrgContactStatus",
-             foreign_key: :contact_status_id,
+             foreign_key: :status_id,
              inverse_of: :org_contacts
   has_many :org_contact_topics, dependent: :destroy
 
   attr_accessor :confirm_policy
 
   after_initialize do
-    self.contact_category_title ||= "ORGANIZATION_INQUIRY"
-    self.contact_status_id ||= "NONE"
+    if new_record?
+      self.category_id = "ORGANIZATION_INQUIRY" if category_id == "NONE" || category_id.nil?
+    end
+    self.status_id ||= "NONE"
   end
 
   # Callbacks
-  before_validation { self.contact_category_title = contact_category_title&.upcase }
-  before_validation { self.contact_status_id = contact_status_id&.upcase }
+  before_validation { self.category_id = category_id&.upcase }
+  before_validation { self.status_id = status_id&.upcase }
   before_create :generate_token
 
   # Validations
   validates :confirm_policy, acceptance: true
-  validates :contact_category_title, length: { maximum: 255 }
-  validates :contact_status_id, length: { maximum: 255 }
+  validates :category_id, length: { maximum: 255 }
+  validates :status_id, length: { maximum: 255 }
   validates :token, length: { maximum: 32 }
   validates :token_digest, length: { maximum: 255 }
 
   # State transition helpers
   def email_pending?
-    contact_status_id == "SET_UP"
+    status_id == "SET_UP"
   end
 
   def email_verified?
-    contact_status_id == "CHECKED_EMAIL_ADDRESS"
+    status_id == "CHECKED_EMAIL_ADDRESS"
   end
 
   def phone_verified?
-    contact_status_id == "CHECKED_TELEPHONE_NUMBER"
+    status_id == "CHECKED_TELEPHONE_NUMBER"
   end
 
   def can_verify_email?
@@ -88,19 +90,19 @@ class OrgContact < GuestsRecord
   def verify_email!
     raise StandardError, "Cannot verify email at this time" unless can_verify_email?
 
-    update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
+    update!(status_id: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
     raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
 
-    update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
+    update!(status_id: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
     raise StandardError, "Cannot complete contact at this time" unless can_complete?
 
-    update!(contact_status_id: "COMPLETED_CONTACT_ACTION")
+    update!(status_id: "COMPLETED_CONTACT_ACTION")
   end
 
   # Token management

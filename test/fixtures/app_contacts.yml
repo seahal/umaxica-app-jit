@@ -2,33 +2,31 @@
 #
 # Table name: app_contacts
 #
-#  id                     :uuid             not null, primary key
-#  contact_category_title :string(255)      default("APPLICATION_INQUIRY"), not null
-#  contact_status_id      :string(255)      default("NONE"), not null
-#  created_at             :datetime         not null
-#  ip_address             :inet             default("0.0.0.0"), not null
-#  public_id              :string(21)       default(""), not null
-#  token                  :string(32)       default(""), not null
-#  token_digest           :string(255)      default(""), not null
-#  token_expires_at       :timestamptz      default("-infinity"), not null
-#  token_viewed           :boolean          default(FALSE), not null
-#  updated_at             :datetime         not null
+#  id               :uuid             not null, primary key
+#  public_id        :string(21)       default(""), not null
+#  token            :string(32)       default(""), not null
+#  token_digest     :string(255)      default(""), not null
+#  token_expires_at :timestamptz      default("-infinity"), not null
+#  token_viewed     :boolean          default(FALSE), not null
+#  ip_address       :inet             default("0.0.0.0"), not null
+#  status_id        :string(255)      default("NONE"), not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  category_id      :string(255)      default("NONE"), not null
 #
 # Indexes
 #
-#  index_app_contacts_on_contact_category_title  (contact_category_title)
-#  index_app_contacts_on_contact_status_id       (contact_status_id)
-#  index_app_contacts_on_public_id               (public_id)
-#  index_app_contacts_on_token                   (token)
-#  index_app_contacts_on_token_digest            (token_digest)
-#  index_app_contacts_on_token_expires_at        (token_expires_at)
+#  index_app_contacts_on_category_id       (category_id)
+#  index_app_contacts_on_public_id         (public_id)
+#  index_app_contacts_on_status_id         (status_id)
+#  index_app_contacts_on_token             (token)
+#  index_app_contacts_on_token_digest      (token_digest)
+#  index_app_contacts_on_token_expires_at  (token_expires_at)
 #
-
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  contact_category_title: APPLICATION_INQUIRY
-  contact_status_id: NONE
+  category_id: APPLICATION_INQUIRY
+  status_id: NONE
   token: ''
   token_digest: ''
   token_expires_at: -infinity
@@ -37,10 +35,9 @@ one:
   updated_at: 2025-10-27 09:00:00
   public_id: "97463105827291840537"
   ip_address: 0.0.0.0
-
 two:
-  contact_category_title: APPLICATION_SUPPORT
-  contact_status_id: NONE
+  category_id: APPLICATION_SUPPORT
+  status_id: NONE
   token: ''
   token_digest: ''
   token_expires_at: -infinity

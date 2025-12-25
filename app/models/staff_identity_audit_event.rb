@@ -2,10 +2,12 @@
 #
 # Table name: staff_identity_audit_events
 #
-#  id :string(255)      default("NONE"), not null, primary key
+#  id         :string(255)      default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 
-class StaffIdentityAuditEvent < IdentitiesRecord
+class StaffIdentityAuditEvent < UniversalRecord
   include UppercaseId
 
   # Association with staff_identity_audits

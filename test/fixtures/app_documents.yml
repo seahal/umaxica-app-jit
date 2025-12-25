@@ -23,13 +23,11 @@
 #  index_app_documents_on_staff_id                (staff_id)
 #  index_app_documents_on_succ_id                 (succ_id)
 #
-
 one:
   title: App Document One
   description: First app document
   app_document_status_id: ACTIVE
   public_id: "xt8BLby-4tFstnGTyVeOq"
-
 two:
   title: App Document Two
   description: Second app document

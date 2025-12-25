@@ -46,6 +46,9 @@ Rails.application.routes.draw do
         # configuration
         # namespace :configuration do
         # end
+        resource :help, only: :show
+        resource :docs, only: :show
+        resource :news, only: :show
       end
     end
   end

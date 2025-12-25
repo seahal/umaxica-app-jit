@@ -23,13 +23,11 @@
 #  index_com_timelines_on_staff_id                (staff_id)
 #  index_com_timelines_on_succ_id                 (succ_id)
 #
-
 one:
   title: Com Timeline One
   description: First com timeline
   com_timeline_status_id: ACTIVE
   public_id: "PHZ--7IwttndBgvN71NIv"
-
 two:
   title: Com Timeline Two
   description: Second com timeline

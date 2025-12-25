@@ -3,12 +3,12 @@
 # Table name: staffs
 #
 #  id                       :uuid             not null, primary key
-#  webauthn_id              :string           default(""), not null
+#  webauthn_id              :string
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
-#  public_id                :string(21)       default(""), not null
-#  staff_identity_status_id :string(255)      default("NONE"), not null
-#  withdrawn_at             :datetime         default("infinity")
+#  public_id                :string(255)
+#  staff_identity_status_id :string(255)      default("NONE")
+#  withdrawn_at             :datetime
 #
 # Indexes
 #
@@ -18,13 +18,15 @@
 #
 
 class Staff < IdentitiesRecord
-  # Staff represents an operator account for the staff/admin console.
+  # Staff represents an operator accountably for the staff/admin console.
   # It mirrors `User` for identity concerns but is used for staff-scoped access.
 
   include Withdrawable
   include HasRoles
+  include Ax
   include ::PublicId
-  include ::Account
+  include ::Accountably
+  include ::Accountable
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :staff_identity_status_id, length: { maximum: 255 }
@@ -35,7 +37,9 @@ class Staff < IdentitiesRecord
   has_many :staff_identity_telephones,
            dependent: :restrict_with_error
   has_many :staff_identity_audits,
-           dependent: :nullify
+           foreign_key: :subject_id,
+           dependent: :nullify,
+           inverse_of: false
   has_many :user_identity_audits,
            as: :actor,
            dependent: :nullify

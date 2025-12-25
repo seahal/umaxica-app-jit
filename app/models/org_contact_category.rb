@@ -22,7 +22,7 @@ class OrgContactCategory < GuestsRecord
   validates :parent_id, length: { maximum: 255 }
 
   has_many :org_contacts,
-           foreign_key: :contact_category_title,
+           foreign_key: :category_id,
            primary_key: :id,
            inverse_of: :org_contact_category,
            dependent: :nullify
