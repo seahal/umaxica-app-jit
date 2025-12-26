@@ -25,7 +25,8 @@ class OrgDocument < DocumentBase
            -> { where(subject_type: "OrgDocument") },
            class_name: "OrgDocumentAudit",
            foreign_key: :subject_id,
-           inverse_of: :org_document
+           inverse_of: :org_document,
+           dependent: :delete_all
 
   def latest_version
     org_document_versions.order(created_at: :desc).first!

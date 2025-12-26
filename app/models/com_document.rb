@@ -25,7 +25,8 @@ class ComDocument < DocumentBase
            -> { where(subject_type: "ComDocument") },
            class_name: "ComDocumentAudit",
            foreign_key: :subject_id,
-           inverse_of: :com_document
+           inverse_of: :com_document,
+           dependent: :delete_all
 
   def latest_version
     com_document_versions.order(created_at: :desc).first!

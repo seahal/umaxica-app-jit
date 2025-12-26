@@ -28,7 +28,7 @@ class AvatarServiceTest < ActiveSupport::TestCase
     assert_equal handle.id, avatar.active_handle_id
 
     assert_equal "__unassigned__", handle.handle
-    assert handle.is_system?
+    assert_predicate handle, :is_system?
     assert_equal handle_status.id, handle.handle_status_id
 
     assert_equal avatar.id, assignment.avatar_id

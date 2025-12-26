@@ -25,7 +25,8 @@ class ComTimeline < TimelineBase
            -> { where(subject_type: "ComTimeline") },
            class_name: "ComTimelineAudit",
            foreign_key: :subject_id,
-           inverse_of: :com_timeline
+           inverse_of: :com_timeline,
+           dependent: :delete_all
 
   def latest_version
     com_timeline_versions.order(created_at: :desc).first!

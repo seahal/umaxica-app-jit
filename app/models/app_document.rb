@@ -25,7 +25,8 @@ class AppDocument < DocumentBase
            -> { where(subject_type: "AppDocument") },
            class_name: "AppDocumentAudit",
            foreign_key: :subject_id,
-           inverse_of: :app_document
+           inverse_of: :app_document,
+           dependent: :delete_all
 
   def latest_version
     app_document_versions.order(created_at: :desc).first!

@@ -25,7 +25,8 @@ class OrgTimeline < TimelineBase
            -> { where(subject_type: "OrgTimeline") },
            class_name: "OrgTimelineAudit",
            foreign_key: :subject_id,
-           inverse_of: :org_timeline
+           inverse_of: :org_timeline,
+           dependent: :delete_all
 
   def latest_version
     org_timeline_versions.order(created_at: :desc).first!
