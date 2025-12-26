@@ -7,6 +7,4 @@
 
 class AppTimelineStatus < BusinessesRecord
   include UppercaseId
-
-  has_many :app_timelines, dependent: :restrict_with_error, inverse_of: :app_timeline_status
 end

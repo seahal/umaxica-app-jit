@@ -28,12 +28,9 @@ class OrgTimelinePolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if actor.is_a?(Staff) && admin_or_manager?
-        # Staff managers see all entries
+      if actor.is_a?(Staff)
+        # Staff see all entries
         scope.all
-      elsif actor.is_a?(Staff)
-        # Other staff see their own entries
-        scope.where(staff_id: actor.id)
       else
         # Non-staff see nothing
         scope.none

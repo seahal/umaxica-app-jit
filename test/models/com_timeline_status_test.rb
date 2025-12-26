@@ -23,13 +23,6 @@ class ComTimelineStatusTest < ActiveSupport::TestCase
     assert_operator ComTimelineStatus, :<, BusinessesRecord
   end
 
-  test "has many com_timelines" do
-    association = ComTimelineStatus.reflect_on_association(:com_timelines)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
-  end
-
   test "id is required" do
     status = ComTimelineStatus.new(id: nil)
 

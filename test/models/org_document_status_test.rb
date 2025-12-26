@@ -23,13 +23,6 @@ class OrgDocumentStatusTest < ActiveSupport::TestCase
     assert_operator OrgDocumentStatus, :<, BusinessesRecord
   end
 
-  test "has many org_documents" do
-    association = OrgDocumentStatus.reflect_on_association(:org_documents)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
-  end
-
   test "id is required" do
     status = OrgDocumentStatus.new(id: nil)
 

@@ -2,75 +2,88 @@
 #
 # Table name: org_timelines
 #
-#  id                     :uuid             not null, primary key
-#  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  title                  :string           default(""), not null
-#  description            :string           default(""), not null
-#  org_timeline_status_id :string(255)      default("NONE"), not null
-#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  public_id              :string(21)       default(""), not null
+#  id            :uuid             not null, primary key
+#  permalink     :string(200)      not null
+#  response_mode :string           default("html"), not null
+#  redirect_url  :string
+#  revision_key  :string           not null
+#  published_at  :datetime         default("infinity"), not null
+#  expires_at    :datetime         default("infinity"), not null
+#  position      :integer          default(0), not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #
 # Indexes
 #
-#  index_org_timelines_on_org_timeline_status_id  (org_timeline_status_id)
-#  index_org_timelines_on_parent_id               (parent_id)
-#  index_org_timelines_on_prev_id                 (prev_id)
-#  index_org_timelines_on_public_id               (public_id)
-#  index_org_timelines_on_staff_id                (staff_id)
-#  index_org_timelines_on_succ_id                 (succ_id)
+#  index_org_timelines_on_permalink                    (permalink) UNIQUE
+#  index_org_timelines_on_published_at_and_expires_at  (published_at,expires_at)
 #
 
 require "test_helper"
 
 class OrgTimelineTest < ActiveSupport::TestCase
-  fixtures :org_timeline_statuses
+  def base_attrs
+    {
+      permalink: "Org_1",
+      response_mode: "html",
+      published_at: 1.hour.ago,
+      expires_at: 1.hour.from_now,
+      position: 0,
+      revision_key: "rev_key"
+    }
+  end
 
-  def setup
-    @status = org_timeline_statuses(:ACTIVE)
-    @org_timeline = OrgTimeline.create!(
-      title: "Test Timeline",
-      description: "A test timeline",
-      org_timeline_status: @status
+  test "permalink validation rejects slash, accepts underscore, rejects long length" do
+    timeline = OrgTimeline.new(base_attrs.merge(permalink: "bad/slug"))
+    assert_not timeline.valid?
+
+    timeline = OrgTimeline.new(base_attrs.merge(permalink: "good_slug"))
+    assert_predicate timeline, :valid?
+
+    timeline = OrgTimeline.new(base_attrs.merge(permalink: "a" * 201))
+    assert_not timeline.valid?
+  end
+
+  test "available scope returns published and unexpired timelines" do
+    now = Time.current
+    available = OrgTimeline.create!(base_attrs.merge(permalink: "available", published_at: now - 1.hour, expires_at: now + 1.hour))
+    OrgTimeline.create!(base_attrs.merge(permalink: "future", published_at: now + 1.hour, expires_at: now + 2.hours))
+    OrgTimeline.create!(base_attrs.merge(permalink: "expired", published_at: now - 2.hours, expires_at: now - 1.hour))
+
+    assert_equal [ available.id ], OrgTimeline.available.pluck(:id)
+  end
+
+  test "redirect_url is required when response_mode is redirect" do
+    timeline = OrgTimeline.new(base_attrs.merge(response_mode: "redirect", redirect_url: nil))
+    assert_not timeline.valid?
+
+    timeline = OrgTimeline.new(base_attrs.merge(response_mode: "redirect", redirect_url: "https://example.com"))
+    assert_predicate timeline, :valid?
+  end
+
+  test "latest_version returns the newest version by created_at" do
+    timeline = OrgTimeline.create!(base_attrs.merge(permalink: "versioned"))
+
+    OrgTimelineVersion.create!(
+      org_timeline: timeline,
+      permalink: timeline.permalink,
+      response_mode: timeline.response_mode,
+      published_at: timeline.published_at,
+      expires_at: timeline.expires_at,
+      created_at: 2.days.ago,
+      updated_at: 2.days.ago
     )
-  end
 
-  test "OrgTimeline class exists" do
-    assert_kind_of Class, OrgTimeline
-  end
+    newest = OrgTimelineVersion.create!(
+      org_timeline: timeline,
+      permalink: timeline.permalink,
+      response_mode: timeline.response_mode,
+      published_at: timeline.published_at,
+      expires_at: timeline.expires_at,
+      created_at: 1.day.ago,
+      updated_at: 1.day.ago
+    )
 
-  test "OrgTimeline inherits from BusinessesRecord" do
-    assert_operator OrgTimeline, :<, BusinessesRecord
-  end
-
-  test "belongs to org_timeline_status" do
-    association = OrgTimeline.reflect_on_association(:org_timeline_status)
-
-    assert_not_nil association
-    assert_equal :belongs_to, association.macro
-  end
-
-  test "can be created with status" do
-    assert_not_nil @org_timeline
-    assert_equal @status.id, @org_timeline.org_timeline_status_id
-  end
-
-  test "org_timeline_status association loads status correctly" do
-    assert_equal @status, @org_timeline.org_timeline_status
-    assert_equal "ACTIVE", @org_timeline.org_timeline_status.id
-  end
-
-  test "includes Timeline module" do
-    assert_includes OrgTimeline.included_modules, Timeline
-  end
-
-  test "org_timeline_status_id defaults to NONE" do
-    timeline = OrgTimeline.create!(title: "No Status Timeline")
-
-    assert_equal "NONE", timeline.org_timeline_status_id
-    assert_nil timeline.org_timeline_status
+    assert_equal newest, timeline.latest_version
   end
 end

@@ -62,6 +62,28 @@ development:
     database: development_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
+  document:
+    !!merge <<: *default
+    database: development_document_db
+    host: <%= ENV["POSTGRESQL_DOCUMENT_PUB"] %>
+    migrations_paths: db/documents_migrate
+  document_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_document_db
+    host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] %>
+    migrations_paths: db/documents_migrate
+  timeline:
+    !!merge <<: *default
+    database: development_timeline_db
+    host: <%= ENV["POSTGRESQL_TIMELINE_PUB"] %>
+    migrations_paths: db/timelines_migrate
+  timeline_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_timeline_db
+    host: <%= ENV["POSTGRESQL_TIMELINE_SUB"] %>
+    migrations_paths: db/timelines_migrate
   billing:
     !!merge <<: *default
     database: development_billing_db
@@ -267,6 +289,28 @@ test:
     database: test_business_db
     host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
     migrations_paths: db/businesses_migrate
+  document:
+    !!merge <<: *default
+    database: test_document_db
+    host: <%= ENV["POSTGRESQL_DOCUMENT_PUB"] %>
+    migrations_paths: db/documents_migrate
+  document_replica:
+    !!merge <<: *default
+    replica: true
+    database: test_document_db
+    host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] %>
+    migrations_paths: db/documents_migrate
+  timeline:
+    !!merge <<: *default
+    database: test_timeline_db
+    host: <%= ENV["POSTGRESQL_TIMELINE_PUB"] %>
+    migrations_paths: db/timelines_migrate
+  timeline_replica:
+    !!merge <<: *default
+    replica: true
+    database: test_timeline_db
+    host: <%= ENV["POSTGRESQL_TIMELINE_SUB"] %>
+    migrations_paths: db/timelines_migrate
   billing:
     !!merge <<: *default
     database: test_billing_db

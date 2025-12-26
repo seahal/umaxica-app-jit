@@ -196,6 +196,10 @@ jobs:
       POSTGRESQL_TOKEN_SUB: localhost
       POSTGRESQL_BUSINESS_PUB: localhost
       POSTGRESQL_BUSINESS_SUB: localhost
+      POSTGRESQL_DOCUMENT_PUB: primary
+      POSTGRESQL_DOCUMENT_SUB: replica
+      POSTGRESQL_TIMELINE_PUB: primary
+      POSTGRESQL_TIMELINE_SUB: replica
       POSTGRESQL_BILLING_PUB: localhost
       POSTGRESQL_BILLING_SUB: localhost
       POSTGRESQL_MESSAGE_PUB: localhost

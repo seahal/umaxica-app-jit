@@ -7,6 +7,4 @@
 
 class OrgDocumentStatus < BusinessesRecord
   include UppercaseId
-
-  has_many :org_documents, dependent: :restrict_with_error, inverse_of: :org_document_status
 end

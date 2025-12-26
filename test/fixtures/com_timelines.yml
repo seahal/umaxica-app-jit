@@ -2,34 +2,37 @@
 #
 # Table name: com_timelines
 #
-#  id                     :uuid             not null, primary key
-#  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  title                  :string           default(""), not null
-#  description            :string           default(""), not null
-#  com_timeline_status_id :string(255)      default("NONE"), not null
-#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  public_id              :string(21)       default(""), not null
+#  id            :uuid             not null, primary key
+#  permalink     :string(200)      not null
+#  response_mode :string           default("html"), not null
+#  redirect_url  :string
+#  revision_key  :string           not null
+#  published_at  :datetime         default("infinity"), not null
+#  expires_at    :datetime         default("infinity"), not null
+#  position      :integer          default(0), not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #
 # Indexes
 #
-#  index_com_timelines_on_com_timeline_status_id  (com_timeline_status_id)
-#  index_com_timelines_on_parent_id               (parent_id)
-#  index_com_timelines_on_prev_id                 (prev_id)
-#  index_com_timelines_on_public_id               (public_id)
-#  index_com_timelines_on_staff_id                (staff_id)
-#  index_com_timelines_on_succ_id                 (succ_id)
+#  index_com_timelines_on_permalink                    (permalink) UNIQUE
+#  index_com_timelines_on_published_at_and_expires_at  (published_at,expires_at)
 #
+
 one:
-  title: Com Timeline One
-  description: First com timeline
-  com_timeline_status_id: ACTIVE
-  public_id: "PHZ--7IwttndBgvN71NIv"
+  permalink: com_timeline_one
+  response_mode: html
+  redirect_url:
+  revision_key: rev_key_one
+  published_at: <%= Time.zone.parse("2999-01-01 00:00:00") %>
+  expires_at: <%= Time.zone.parse("2999-12-31 00:00:00") %>
+  position: 0
+
 two:
-  title: Com Timeline Two
-  description: Second com timeline
-  com_timeline_status_id: ACTIVE
-  public_id: "2I1_WvMgLv5q9LXgKkiYN"
+  permalink: com_timeline_two
+  response_mode: html
+  redirect_url:
+  revision_key: rev_key_two
+  published_at: <%= Time.zone.parse("2024-01-02 00:00:00") %>
+  expires_at: <%= Time.zone.parse("2024-12-31 00:00:00") %>
+  position: 1

@@ -23,13 +23,6 @@ class OrgTimelineStatusTest < ActiveSupport::TestCase
     assert_operator OrgTimelineStatus, :<, BusinessesRecord
   end
 
-  test "has many org_timelines" do
-    association = OrgTimelineStatus.reflect_on_association(:org_timelines)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
-  end
-
   test "id is required" do
     status = OrgTimelineStatus.new(id: nil)
 

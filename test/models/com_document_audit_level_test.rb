@@ -12,8 +12,14 @@ require "test_helper"
 class ComDocumentAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
     level = com_document_audit_levels(:none)
-    doc = ComDocument.new
-    doc.save!(validate: false)
+    doc = ComDocument.create!(
+      permalink: "audit_doc",
+      response_mode: "html",
+      published_at: 1.hour.ago,
+      expires_at: 1.hour.from_now,
+      position: 0,
+      revision_key: "rev_key"
+    )
 
     ComDocumentAudit.create!(
       com_document: doc,

@@ -2,84 +2,88 @@
 #
 # Table name: app_documents
 #
-#  id                     :uuid             not null, primary key
-#  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  title                  :string           default(""), not null
-#  description            :string           default(""), not null
-#  app_document_status_id :string(255)      default("NONE"), not null
-#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  public_id              :string(21)       default(""), not null
+#  id            :uuid             not null, primary key
+#  permalink     :string(200)      not null
+#  response_mode :string           default("html"), not null
+#  redirect_url  :string
+#  revision_key  :string           not null
+#  published_at  :datetime         default("infinity"), not null
+#  expires_at    :datetime         default("infinity"), not null
+#  position      :integer          default(0), not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #
 # Indexes
 #
-#  index_app_documents_on_app_document_status_id  (app_document_status_id)
-#  index_app_documents_on_parent_id               (parent_id)
-#  index_app_documents_on_prev_id                 (prev_id)
-#  index_app_documents_on_public_id               (public_id)
-#  index_app_documents_on_staff_id                (staff_id)
-#  index_app_documents_on_succ_id                 (succ_id)
+#  index_app_documents_on_permalink                    (permalink) UNIQUE
+#  index_app_documents_on_published_at_and_expires_at  (published_at,expires_at)
 #
 
 require "test_helper"
 
 class AppDocumentTest < ActiveSupport::TestCase
-  fixtures :app_document_statuses
+  def base_attrs
+    {
+      permalink: "App_1",
+      response_mode: "html",
+      published_at: 1.hour.ago,
+      expires_at: 1.hour.from_now,
+      position: 0,
+      revision_key: "rev_key"
+    }
+  end
 
-  def setup
-    @status = app_document_statuses(:ACTIVE)
-    @app_document = AppDocument.create!(
-      title: "Test Document",
-      description: "A test document",
-      app_document_status: @status
+  test "permalink validation rejects slash, accepts underscore, rejects long length" do
+    doc = AppDocument.new(base_attrs.merge(permalink: "bad/slug"))
+    assert_not doc.valid?
+
+    doc = AppDocument.new(base_attrs.merge(permalink: "good_slug"))
+    assert_predicate doc, :valid?
+
+    doc = AppDocument.new(base_attrs.merge(permalink: "a" * 201))
+    assert_not doc.valid?
+  end
+
+  test "available scope returns published and unexpired documents" do
+    now = Time.current
+    available = AppDocument.create!(base_attrs.merge(permalink: "available", published_at: now - 1.hour, expires_at: now + 1.hour))
+    AppDocument.create!(base_attrs.merge(permalink: "future", published_at: now + 1.hour, expires_at: now + 2.hours))
+    AppDocument.create!(base_attrs.merge(permalink: "expired", published_at: now - 2.hours, expires_at: now - 1.hour))
+
+    assert_equal [ available.id ], AppDocument.available.pluck(:id)
+  end
+
+  test "redirect_url is required when response_mode is redirect" do
+    doc = AppDocument.new(base_attrs.merge(response_mode: "redirect", redirect_url: nil))
+    assert_not doc.valid?
+
+    doc = AppDocument.new(base_attrs.merge(response_mode: "redirect", redirect_url: "https://example.com"))
+    assert_predicate doc, :valid?
+  end
+
+  test "latest_version returns the newest version by created_at" do
+    doc = AppDocument.create!(base_attrs.merge(permalink: "versioned"))
+
+    AppDocumentVersion.create!(
+      app_document: doc,
+      permalink: doc.permalink,
+      response_mode: doc.response_mode,
+      published_at: doc.published_at,
+      expires_at: doc.expires_at,
+      created_at: 2.days.ago,
+      updated_at: 2.days.ago
     )
-  end
 
-  test "AppDocument class exists" do
-    assert_kind_of Class, AppDocument
-  end
-
-  test "AppDocument inherits from BusinessesRecord" do
-    assert_operator AppDocument, :<, BusinessesRecord
-  end
-
-  test "belongs to app_document_status" do
-    association = AppDocument.reflect_on_association(:app_document_status)
-
-    assert_not_nil association
-    assert_equal :belongs_to, association.macro
-  end
-
-  test "can be created with status" do
-    assert_not_nil @app_document
-    assert_equal @status.id, @app_document.app_document_status_id
-  end
-
-  test "app_document_status association loads status correctly" do
-    assert_equal @status, @app_document.app_document_status
-    assert_equal "ACTIVE", @app_document.app_document_status.id
-  end
-
-  test "title and description are encrypted" do
-    doc = AppDocument.create!(
-      title: "Secret Title",
-      description: "Secret Description",
-      app_document_status: @status
+    newest = AppDocumentVersion.create!(
+      app_document: doc,
+      permalink: doc.permalink,
+      response_mode: doc.response_mode,
+      published_at: doc.published_at,
+      expires_at: doc.expires_at,
+      created_at: 1.day.ago,
+      updated_at: 1.day.ago
     )
 
-    reloaded = AppDocument.find(doc.id)
-
-    assert_equal "Secret Title", reloaded.title
-    assert_equal "Secret Description", reloaded.description
-  end
-
-  test "app_document_status_id defaults to NONE" do
-    doc = AppDocument.create!(title: "No Status Document")
-
-    assert_equal "NONE", doc.app_document_status_id
-    assert_nil doc.app_document_status
+    assert_equal newest, doc.latest_version
   end
 end

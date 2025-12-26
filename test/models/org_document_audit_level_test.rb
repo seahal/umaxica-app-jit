@@ -12,8 +12,14 @@ require "test_helper"
 class OrgDocumentAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
     level = org_document_audit_levels(:none)
-    doc = OrgDocument.new
-    doc.save!(validate: false)
+    doc = OrgDocument.create!(
+      permalink: "audit_doc",
+      response_mode: "html",
+      published_at: 1.hour.ago,
+      expires_at: 1.hour.from_now,
+      position: 0,
+      revision_key: "rev_key"
+    )
 
     OrgDocumentAudit.create!(
       org_document: doc,

@@ -32,8 +32,8 @@ class AppTimelinePolicy < ApplicationPolicy
         # Admins and Managers see all timeline entries
         scope.all
       elsif actor
-        # Other authenticated users see only their own entries
-        scope.where(user_id: actor.id)
+        # Other authenticated users see available timeline entries
+        scope.available
       else
         # Unauthenticated users see nothing
         scope.none

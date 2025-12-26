@@ -23,13 +23,6 @@ class ComDocumentStatusTest < ActiveSupport::TestCase
     assert_operator ComDocumentStatus, :<, BusinessesRecord
   end
 
-  test "has many com_documents" do
-    association = ComDocumentStatus.reflect_on_association(:com_documents)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
-  end
-
   test "id is required" do
     status = ComDocumentStatus.new(id: nil)
 

@@ -2,75 +2,88 @@
 #
 # Table name: com_timelines
 #
-#  id                     :uuid             not null, primary key
-#  parent_id              :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  prev_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  succ_id                :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  title                  :string           default(""), not null
-#  description            :string           default(""), not null
-#  com_timeline_status_id :string(255)      default("NONE"), not null
-#  staff_id               :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  public_id              :string(21)       default(""), not null
+#  id            :uuid             not null, primary key
+#  permalink     :string(200)      not null
+#  response_mode :string           default("html"), not null
+#  redirect_url  :string
+#  revision_key  :string           not null
+#  published_at  :datetime         default("infinity"), not null
+#  expires_at    :datetime         default("infinity"), not null
+#  position      :integer          default(0), not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #
 # Indexes
 #
-#  index_com_timelines_on_com_timeline_status_id  (com_timeline_status_id)
-#  index_com_timelines_on_parent_id               (parent_id)
-#  index_com_timelines_on_prev_id                 (prev_id)
-#  index_com_timelines_on_public_id               (public_id)
-#  index_com_timelines_on_staff_id                (staff_id)
-#  index_com_timelines_on_succ_id                 (succ_id)
+#  index_com_timelines_on_permalink                    (permalink) UNIQUE
+#  index_com_timelines_on_published_at_and_expires_at  (published_at,expires_at)
 #
 
 require "test_helper"
 
 class ComTimelineTest < ActiveSupport::TestCase
-  fixtures :com_timeline_statuses
+  def base_attrs
+    {
+      permalink: "Com_1",
+      response_mode: "html",
+      published_at: 1.hour.ago,
+      expires_at: 1.hour.from_now,
+      position: 0,
+      revision_key: "rev_key"
+    }
+  end
 
-  def setup
-    @status = com_timeline_statuses(:ACTIVE)
-    @com_timeline = ComTimeline.create!(
-      title: "Test Timeline",
-      description: "A test timeline",
-      com_timeline_status: @status
+  test "permalink validation rejects slash, accepts underscore, rejects long length" do
+    timeline = ComTimeline.new(base_attrs.merge(permalink: "bad/slug"))
+    assert_not timeline.valid?
+
+    timeline = ComTimeline.new(base_attrs.merge(permalink: "good_slug"))
+    assert_predicate timeline, :valid?
+
+    timeline = ComTimeline.new(base_attrs.merge(permalink: "a" * 201))
+    assert_not timeline.valid?
+  end
+
+  test "available scope returns published and unexpired timelines" do
+    now = Time.current
+    available = ComTimeline.create!(base_attrs.merge(permalink: "available", published_at: now - 1.hour, expires_at: now + 1.hour))
+    ComTimeline.create!(base_attrs.merge(permalink: "future", published_at: now + 1.hour, expires_at: now + 2.hours))
+    ComTimeline.create!(base_attrs.merge(permalink: "expired", published_at: now - 2.hours, expires_at: now - 1.hour))
+
+    assert_equal [ available.id ], ComTimeline.available.pluck(:id)
+  end
+
+  test "redirect_url is required when response_mode is redirect" do
+    timeline = ComTimeline.new(base_attrs.merge(response_mode: "redirect", redirect_url: nil))
+    assert_not timeline.valid?
+
+    timeline = ComTimeline.new(base_attrs.merge(response_mode: "redirect", redirect_url: "https://example.com"))
+    assert_predicate timeline, :valid?
+  end
+
+  test "latest_version returns the newest version by created_at" do
+    timeline = ComTimeline.create!(base_attrs.merge(permalink: "versioned"))
+
+    ComTimelineVersion.create!(
+      com_timeline: timeline,
+      permalink: timeline.permalink,
+      response_mode: timeline.response_mode,
+      published_at: timeline.published_at,
+      expires_at: timeline.expires_at,
+      created_at: 2.days.ago,
+      updated_at: 2.days.ago
     )
-  end
 
-  test "ComTimeline class exists" do
-    assert_kind_of Class, ComTimeline
-  end
+    newest = ComTimelineVersion.create!(
+      com_timeline: timeline,
+      permalink: timeline.permalink,
+      response_mode: timeline.response_mode,
+      published_at: timeline.published_at,
+      expires_at: timeline.expires_at,
+      created_at: 1.day.ago,
+      updated_at: 1.day.ago
+    )
 
-  test "ComTimeline inherits from BusinessesRecord" do
-    assert_operator ComTimeline, :<, BusinessesRecord
-  end
-
-  test "belongs to com_timeline_status" do
-    association = ComTimeline.reflect_on_association(:com_timeline_status)
-
-    assert_not_nil association
-    assert_equal :belongs_to, association.macro
-  end
-
-  test "can be created with status" do
-    assert_not_nil @com_timeline
-    assert_equal @status.id, @com_timeline.com_timeline_status_id
-  end
-
-  test "com_timeline_status association loads status correctly" do
-    assert_equal @status, @com_timeline.com_timeline_status
-    assert_equal "ACTIVE", @com_timeline.com_timeline_status.id
-  end
-
-  test "includes Timeline module" do
-    assert_includes ComTimeline.included_modules, Timeline
-  end
-
-  test "com_timeline_status_id defaults to NONE" do
-    timeline = ComTimeline.create!(title: "No Status Timeline")
-
-    assert_equal "NONE", timeline.com_timeline_status_id
-    assert_nil timeline.com_timeline_status
+    assert_equal newest, timeline.latest_version
   end
 end

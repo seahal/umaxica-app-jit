@@ -45,26 +45,7 @@ module ActiveSupport
 
     include ActiveJob::TestHelper
 
-    setup do
-      seed_identity_audit_reference_data
-    end
-
-    private
-
-      def seed_identity_audit_reference_data
-        seed_ids(StaffIdentityAuditLevel, %w[NONE INFO WARN ERROR])
-        seed_ids(StaffIdentityAuditEvent, %w[LOGIN_SUCCESS LOGIN_FAILURE LOGGED_IN LOGGED_OUT LOGIN_FAILED AUTHORIZATION_FAILED])
-        seed_ids(UserIdentityAuditLevel, %w[NONE INFO WARN ERROR])
-        seed_ids(UserIdentityAuditEvent, %w[LOGIN_SUCCESS LOGIN_FAILURE LOGGED_IN LOGGED_OUT LOGIN_FAILED TOKEN_REFRESHED SIGNED_UP_WITH_EMAIL SIGNED_UP_WITH_TELEPHONE SIGNED_UP_WITH_APPLE AUTHORIZATION_FAILED])
-      end
-
-      def seed_ids(model, ids)
-        return unless defined?(model) && model.respond_to?(:table_exists?)
-        return unless model.table_exists?
-
-        ids.each do |id|
-          model.find_or_create_by!(id: id)
-        end
-      end
+    # Fixtures handle seed data for audit reference tables
+    # No manual seeding needed in test setup
   end
 end

@@ -25,11 +25,16 @@ require "test_helper"
 
 class HandleAssignmentTest < ActiveSupport::TestCase
   setup do
-    @capability = AvatarCapability.create!(key: "normal", name: "Normal")
-    @system_handle = Handle.create!(handle: "__unassigned__", is_system: true, cooldown_until: 1.week.from_now)
+    unique_suffix = SecureRandom.hex(4)
+    @capability = AvatarCapability.create!(key: "normal-#{unique_suffix}", name: "Normal")
+    @system_handle = Handle.create!(
+      handle: "__unassigned__#{unique_suffix}",
+      is_system: true,
+      cooldown_until: 1.week.from_now
+    )
     @avatar = Avatar.create!(
       capability: @capability,
-      moniker: "avatar",
+      moniker: "avatar-#{unique_suffix}",
       active_handle: @system_handle,
       image_data: {}
     )
@@ -54,10 +59,10 @@ class HandleAssignmentTest < ActiveSupport::TestCase
       valid_from: Time.current
     )
 
-    other_handle = Handle.create!(handle: "other", cooldown_until: 1.week.from_now)
+    other_handle = Handle.create!(handle: "other-#{SecureRandom.hex(4)}", cooldown_until: 1.week.from_now)
     other_avatar = Avatar.create!(
       capability: @capability,
-      moniker: "another",
+      moniker: "another-#{SecureRandom.hex(4)}",
       active_handle: other_handle,
       image_data: {}
     )

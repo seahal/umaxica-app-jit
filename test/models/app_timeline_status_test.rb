@@ -21,13 +21,6 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
     assert_operator AppTimelineStatus, :<, BusinessesRecord
   end
 
-  test "has many app_timelines" do
-    association = AppTimelineStatus.reflect_on_association(:app_timelines)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
-  end
-
   test "id is required" do
     status = AppTimelineStatus.new(id: nil)
 
