@@ -14,7 +14,7 @@ class RebuildComTimelines < ActiveRecord::Migration[8.2]
     end
 
     add_index :com_timelines, :permalink, unique: true
-    add_index :com_timelines, [ :published_at, :expires_at ]
+    add_index :com_timelines, [:published_at, :expires_at]
   end
 
   def down

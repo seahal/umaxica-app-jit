@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module StringPrimaryKey
   extend ActiveSupport::Concern
 
@@ -7,7 +9,7 @@ module StringPrimaryKey
 
   private
 
-    def assign_string_primary_key
-      self.id ||= SecureRandom.uuid_v7
-    end
+  def assign_string_primary_key
+    self.id ||= SecureRandom.uuid_v7
+  end
 end

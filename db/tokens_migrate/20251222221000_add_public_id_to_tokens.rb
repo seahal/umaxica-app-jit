@@ -22,19 +22,19 @@ class AddPublicIdToTokens < ActiveRecord::Migration[8.2]
 
   private
 
-    def update_public_ids(table)
-      execute <<~SQL.squish
-        UPDATE #{table}
-        SET public_id = substring(
-          regexp_replace(
-            translate(encode(gen_random_bytes(32), 'base64'), '+/', '-_'),
-            '=', '',
-            'g'
-          ),
-          1,
-          21
-        )
-        WHERE public_id IS NULL
-      SQL
-    end
+  def update_public_ids(table)
+    execute <<~SQL.squish
+      UPDATE #{table}
+      SET public_id = substring(
+        regexp_replace(
+          translate(encode(gen_random_bytes(32), 'base64'), '+/', '-_'),
+          '=', '',
+          'g'
+        ),
+        1,
+        21
+      )
+      WHERE public_id IS NULL
+    SQL
+  end
 end

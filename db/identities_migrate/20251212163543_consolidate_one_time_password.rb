@@ -19,14 +19,14 @@ class ConsolidateOneTimePassword < ActiveRecord::Migration[8.2]
           universal_conn = ActiveRecord::Base.connection_handler.retrieve_connection("universal")
           hmac = universal_conn.execute(
             "SELECT private_key, last_otp_at FROM hmac_based_one_time_passwords WHERE id = $1",
-            [ record.hmac_based_one_time_password_id ]
+            [record.hmac_based_one_time_password_id],
           ).first
 
           if hmac
             # rubocop:disable Rails/SkipsModelValidations
             record.update_columns(
               private_key: hmac["private_key"],
-              last_otp_at: hmac["last_otp_at"]
+              last_otp_at: hmac["last_otp_at"],
             )
             # rubocop:enable Rails/SkipsModelValidations
           end

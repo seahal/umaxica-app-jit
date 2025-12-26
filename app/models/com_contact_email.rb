@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_contact_emails
@@ -46,7 +48,7 @@ class ComContactEmail < GuestsRecord
   # Generate and store email verification code
   # TODO: Rewrite this code to otp generator
   def generate_verifier!
-    raw_code = SecureRandom.random_number(100000..999999).to_s # 6-digit code
+    raw_code = SecureRandom.random_number(100_000..999_999).to_s # 6-digit code
     self.verifier_digest = Argon2::Password.create(raw_code)
     self.verifier_expires_at = 15.minutes.from_now
     self.verifier_attempts_left = 3
@@ -114,9 +116,9 @@ class ComContactEmail < GuestsRecord
 
   private
 
-    # TODO: rewrite this code to be concerned ... how about public_id.rb ?
-    #     : rename to generate_public_id
-    def generate_id
-      self.id ||= Nanoid.generate(size: 21)
-    end
+  # TODO: rewrite this code to be concerned ... how about public_id.rb ?
+  #     : rename to generate_public_id
+  def generate_id
+    self.id ||= Nanoid.generate(size: 21)
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_telephone_statuses
@@ -58,7 +60,7 @@ class UserIdentityTelephoneStatusTest < ActiveSupport::TestCase
       id: SecureRandom.uuid,
       number: "+81901234567",
       user_id: user.id,
-      user_identity_telephone_status_id: status.id
+      user_identity_telephone_status_id: status.id,
     )
 
     assert_raises(ActiveRecord::RecordNotDestroyed) do

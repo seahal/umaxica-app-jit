@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_secrets
@@ -70,7 +72,7 @@ class UserIdentitySecretTest < ActiveSupport::TestCase
     record, raw_secret = UserIdentitySecret.issue!(
       name: "API Key",
       user: @user,
-      expires_at: 1.minute.ago
+      expires_at: 1.minute.ago,
     )
 
     assert_not record.verify_and_consume!(raw_secret)
@@ -101,7 +103,7 @@ class UserIdentitySecretTest < ActiveSupport::TestCase
     record = UserIdentitySecret.new(
       user: @user,
       name: "",
-      password: "SecretPass123!"
+      password: "SecretPass123!",
     )
 
     assert_not record.valid?
@@ -110,16 +112,16 @@ class UserIdentitySecretTest < ActiveSupport::TestCase
 
   private
 
-    def create_secret!
-      UserIdentitySecret.create!(
-        user: @user,
-        name: "Secret-#{SecureRandom.hex(4)}",
-        password: secure_secret,
-        password_confirmation: secure_secret
-      )
-    end
+  def create_secret!
+    UserIdentitySecret.create!(
+      user: @user,
+      name: "Secret-#{SecureRandom.hex(4)}",
+      password: secure_secret,
+      password_confirmation: secure_secret,
+    )
+  end
 
-    def secure_secret
-      SecureRandom.base58(Secret::SECRET_PASSWORD_LENGTH)
-    end
+  def secure_secret
+    SecureRandom.base58(Secret::SECRET_PASSWORD_LENGTH)
+  end
 end

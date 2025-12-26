@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Help
@@ -35,14 +37,14 @@ module Help
           @contact = ComContact.create!(
             category_id: "OTHERS",
             status_id: "CHECKED_EMAIL_ADDRESS",
-            confirm_policy: "1"
+            confirm_policy: "1",
           )
           # Create telephone for verification
           @contact_telephone = ComContactTelephone.create!(
             com_contact: @contact,
             telephone_number: "+15555555555",
             verifier_attempts_left: 3,
-            verifier_expires_at: 15.minutes.from_now
+            verifier_expires_at: 15.minutes.from_now,
           )
         end
 
@@ -78,7 +80,7 @@ module Help
             com_contact: @contact,
             telephone_number: "+15555555555",
             verifier_attempts_left: 3,
-            verifier_expires_at: 15.minutes.from_now
+            verifier_expires_at: 15.minutes.from_now,
           )
           # Generate a valid HOTP code
           code = fresh_telephone.generate_hotp!

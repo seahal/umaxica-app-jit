@@ -23,9 +23,9 @@ class RestoreIdentityAuditTables < ActiveRecord::Migration[7.1]
       t.datetime "timestamp", null: false
       t.datetime "updated_at", null: false
       t.uuid "user_id", null: false
-      t.index [ "event_id" ], name: "index_user_identity_audits_on_event_id"
-      t.index [ "level_id" ], name: "index_user_identity_audits_on_level_id"
-      t.index [ "user_id" ], name: "index_user_identity_audits_on_user_id"
+      t.index ["event_id"], name: "index_user_identity_audits_on_event_id"
+      t.index ["level_id"], name: "index_user_identity_audits_on_level_id"
+      t.index ["user_id"], name: "index_user_identity_audits_on_user_id"
     end
 
     # Recreate Staff Identity Audit Tables
@@ -51,9 +51,9 @@ class RestoreIdentityAuditTables < ActiveRecord::Migration[7.1]
       t.uuid "staff_id", null: false
       t.datetime "timestamp", null: false
       t.datetime "updated_at", null: false
-      t.index [ "event_id" ], name: "index_staff_identity_audits_on_event_id"
-      t.index [ "level_id" ], name: "index_staff_identity_audits_on_level_id"
-      t.index [ "staff_id" ], name: "index_staff_identity_audits_on_staff_id"
+      t.index ["event_id"], name: "index_staff_identity_audits_on_event_id"
+      t.index ["level_id"], name: "index_staff_identity_audits_on_level_id"
+      t.index ["staff_id"], name: "index_staff_identity_audits_on_staff_id"
     end
 
     # Add foreign keys (if referenced tables exist)

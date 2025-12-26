@@ -1,5 +1,5 @@
 class SetDefaultNoneOnOccurrenceStatusIds < ActiveRecord::Migration[8.2]
-  TABLES = %i[
+  TABLES = %i(
     area_occurrences
     domain_occurrences
     email_occurrences
@@ -8,7 +8,7 @@ class SetDefaultNoneOnOccurrenceStatusIds < ActiveRecord::Migration[8.2]
     telephone_occurrences
     user_occurrences
     zip_occurrences
-  ].freeze
+  ).freeze
 
   def change
     TABLES.each do |table|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staff_identity_emails
@@ -51,12 +53,12 @@ class StaffIdentityEmail < IdentitiesRecord
 
   private
 
-    def enforce_staff_email_limit
-      return unless staff_id
+  def enforce_staff_email_limit
+    return unless staff_id
 
-      count = self.class.where(staff_id: staff_id).count
-      return if count < MAX_EMAILS_PER_STAFF
+    count = self.class.where(staff_id: staff_id).count
+    return if count < MAX_EMAILS_PER_STAFF
 
-      errors.add(:base, :too_many, message: "exceeds maximum emails per staff (#{MAX_EMAILS_PER_STAFF})")
-    end
+    errors.add(:base, :too_many, message: "exceeds maximum emails per staff (#{MAX_EMAILS_PER_STAFF})")
+  end
 end

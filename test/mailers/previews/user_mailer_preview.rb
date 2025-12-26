@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # delable
 
 class UserMailerPreview < ActionMailer::Preview

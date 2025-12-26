@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 raise '[SAFEGUARD] db:seed only use for dev env.' unless Rails.env.development?
 
 # ========================================
@@ -52,35 +54,35 @@ roles_data = [
   {
     key: "admin",
     name: "Administrator",
-    description: I18n.t("seed.roles.admin.description")
+    description: I18n.t("seed.roles.admin.description"),
   },
   {
     key: "manager",
     name: "Manager",
-    description: I18n.t("seed.roles.manager.description")
+    description: I18n.t("seed.roles.manager.description"),
   },
   {
     key: "editor",
     name: "Editor",
-    description: I18n.t("seed.roles.editor.description")
+    description: I18n.t("seed.roles.editor.description"),
   },
   {
     key: "contributor",
     name: "Contributor",
-    description: I18n.t("seed.roles.contributor.description")
+    description: I18n.t("seed.roles.contributor.description"),
   },
   {
     key: "viewer",
     name: "Viewer",
-    description: I18n.t("seed.roles.viewer.description")
-  }
+    description: I18n.t("seed.roles.viewer.description"),
+  },
 ]
 
 # Create roles
 roles_data.each do |role_data|
   role = Role.find_or_create_by!(
     key: role_data[:key],
-    organization: default_org
+    organization: default_org,
   ) do |r|
     r.name = role_data[:name]
     r.description = role_data[:description]

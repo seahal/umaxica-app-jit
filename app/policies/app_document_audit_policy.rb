@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AppDocumentAuditPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     # def resolve

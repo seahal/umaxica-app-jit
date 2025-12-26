@@ -18,19 +18,19 @@ class AddFormatChecksToGuestFkIds < ActiveRecord::Migration[8.2]
 
   private
 
-    def add_format_check(table, column)
-      add_check_constraint(
-        table,
-        "#{column} IS NULL OR #{column} ~ '#{FORMAT_REGEX}'",
-        name: constraint_name(table, column)
-      )
-    end
+  def add_format_check(table, column)
+    add_check_constraint(
+      table,
+      "#{column} IS NULL OR #{column} ~ '#{FORMAT_REGEX}'",
+      name: constraint_name(table, column),
+    )
+  end
 
-    def constraint_name(table, column)
-      base = "chk_#{table}_#{column}_format"
-      return base if base.length <= 63
+  def constraint_name(table, column)
+    base = "chk_#{table}_#{column}_format"
+    return base if base.length <= 63
 
-      digest = Digest::SHA256.hexdigest(base)[0, 10]
-      "chk_#{table}_#{column}_#{digest}"
-    end
+    digest = Digest::SHA256.hexdigest(base)[0, 10]
+    "chk_#{table}_#{column}_#{digest}"
+  end
 end

@@ -1,11 +1,11 @@
 class AddLockingFieldsToIdentities < ActiveRecord::Migration[8.2]
   def change
-    tables = [
-      :user_identity_emails,
-      :user_identity_telephones,
-      :staff_identity_emails,
-      :staff_identity_telephones
-    ]
+    tables = %i(
+      user_identity_emails
+      user_identity_telephones
+      staff_identity_emails
+      staff_identity_telephones
+    )
 
     tables.each do |table|
       change_table table, bulk: true do |t|

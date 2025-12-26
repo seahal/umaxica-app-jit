@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: org_contact_telephones
@@ -40,7 +42,7 @@ class OrgContactTelephone < GuestsRecord
 
   # Generate and store OTP
   def generate_otp!
-    raw_otp = SecureRandom.random_number(100000..999999).to_s # 6-digit OTP
+    raw_otp = SecureRandom.random_number(100_000..999_999).to_s # 6-digit OTP
     self.otp_digest = Argon2::Password.create(raw_otp)
     self.otp_expires_at = 10.minutes.from_now
     self.otp_attempts_left = 3
@@ -73,7 +75,7 @@ class OrgContactTelephone < GuestsRecord
 
   private
 
-    def generate_id
-      self.id ||= Nanoid.generate(size: 21)
-    end
+  def generate_id
+    self.id ||= Nanoid.generate(size: 21)
+  end
 end

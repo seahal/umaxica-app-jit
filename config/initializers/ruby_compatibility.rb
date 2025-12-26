@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Fix for old gems that still use Fixnum or Bignum in Ruby 3+
 unless defined?(Fixnum)
   Fixnum = Integer

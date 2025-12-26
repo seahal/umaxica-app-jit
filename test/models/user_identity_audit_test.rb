@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_audits
@@ -42,7 +44,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
       user_identity_audit_level: @level,
       user_identity_audit_event: @audit_event,
       timestamp: Time.current,
-      ip_address: "192.168.1.1"
+      ip_address: "192.168.1.1",
     )
   end
 
@@ -56,7 +58,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
 
   test "requires user" do
     audit = UserIdentityAudit.new(
-      user_identity_audit_event: @audit_event
+      user_identity_audit_event: @audit_event,
     )
 
     assert_not audit.valid?
@@ -65,7 +67,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
 
   test "requires user_identity_audit_event" do
     audit = UserIdentityAudit.new(
-      user: @user
+      user: @user,
     )
 
     # Defaults to NONE, so it should be valid
@@ -76,7 +78,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     audit = UserIdentityAudit.new(
       user: @user,
       event_id: "NON_EXISTENT_EVENT",
-      timestamp: Time.current
+      timestamp: Time.current,
     )
 
     assert_raises ActiveRecord::InvalidForeignKey do
@@ -97,7 +99,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     audit = UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
-      actor: actor_user
+      actor: actor_user,
     )
 
     assert_equal actor_user.id, audit.actor_id
@@ -110,7 +112,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     audit = UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
-      actor: actor_staff
+      actor: actor_staff,
     )
 
     assert_equal actor_staff.id, audit.actor_id
@@ -126,13 +128,13 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
-      actor: actor_user
+      actor: actor_user,
     )
 
     UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
-      actor: actor_staff
+      actor: actor_staff,
     )
 
     # Retrieve multiple audits related to the same User

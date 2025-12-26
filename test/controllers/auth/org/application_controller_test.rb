@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Auth::Org
@@ -6,7 +8,7 @@ module Auth::Org
       @controller = Auth::Org::ApplicationController.new
       @controller.request = ActionDispatch::TestRequest.create(
         "rack.session" => {},
-        "rack.session.options" => { id: SecureRandom.hex(16) }
+        "rack.session.options" => { id: SecureRandom.hex(16) },
       )
       @controller.response = ActionDispatch::TestResponse.new
       @staff = staffs(:one)

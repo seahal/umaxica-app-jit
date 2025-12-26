@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Authentication::UserTest < ActiveSupport::TestCase
@@ -62,7 +64,7 @@ class Authentication::UserTest < ActiveSupport::TestCase
       end
     end
 
-    def delete(key, options = {})
+    def delete(key, _options = {})
       super(key)
     end
 

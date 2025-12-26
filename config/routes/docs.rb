@@ -9,6 +9,8 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
+        resource :find, only: [:show], controller: "find"
+        resource :post, only: [:show], controller: "post"
       end
     end
 
@@ -21,6 +23,8 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
+        resource :find, only: [:show], controller: "find"
+        resource :post, only: [:show], controller: "post"
       end
     end
 
@@ -34,6 +38,8 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
+        resource :find, only: [:show], controller: "find"
+        resource :post, only: [:show], controller: "post"
       end
     end
   end

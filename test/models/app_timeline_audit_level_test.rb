@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_timeline_audit_levels
@@ -18,13 +20,13 @@ class AppTimelineAuditLevelTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key"
+      revision_key: "rev_key",
     )
 
     AppTimelineAudit.create!(
       app_timeline: timeline,
       app_timeline_audit_event: app_timeline_audit_events(:CREATED),
-      app_timeline_audit_level: level
+      app_timeline_audit_level: level,
     )
 
     assert_no_difference "AppTimelineAuditLevel.count" do

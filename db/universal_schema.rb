@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -146,6 +146,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
 
   create_table "area_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.index "lower((id)::text)", name: "index_area_occurrence_statuses_on_lower_id", unique: true
     t.index ["expires_at"], name: "index_area_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_area_occurrence_statuses_id_format"
   end
@@ -324,6 +325,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
 
   create_table "domain_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.index "lower((id)::text)", name: "index_domain_occurrence_statuses_on_lower_id", unique: true
     t.index ["expires_at"], name: "index_domain_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_domain_occurrence_statuses_id_format"
   end
@@ -391,6 +393,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
 
   create_table "email_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.index "lower((id)::text)", name: "index_email_occurrence_statuses_on_lower_id", unique: true
     t.index ["expires_at"], name: "index_email_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_email_occurrence_statuses_id_format"
   end
@@ -449,6 +452,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
 
   create_table "ip_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.index "lower((id)::text)", name: "index_ip_occurrence_statuses_on_lower_id", unique: true
     t.index ["expires_at"], name: "index_ip_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_ip_occurrence_statuses_id_format"
   end
@@ -642,6 +646,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
 
   create_table "staff_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.index "lower((id)::text)", name: "index_staff_occurrence_statuses_on_lower_id", unique: true
     t.index ["expires_at"], name: "index_staff_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_occurrence_statuses_id_format"
   end
@@ -691,6 +696,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
 
   create_table "telephone_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.index "lower((id)::text)", name: "index_telephone_occurrence_statuses_on_lower_id", unique: true
     t.index ["expires_at"], name: "index_telephone_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_telephone_occurrence_statuses_id_format"
   end
@@ -764,6 +770,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
 
   create_table "user_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.index "lower((id)::text)", name: "index_user_occurrence_statuses_on_lower_id", unique: true
     t.index ["expires_at"], name: "index_user_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_occurrence_statuses_id_format"
   end
@@ -795,6 +802,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
 
   create_table "zip_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+    t.index "lower((id)::text)", name: "index_zip_occurrence_statuses_on_lower_id", unique: true
     t.index ["expires_at"], name: "index_zip_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_zip_occurrence_statuses_id_format"
   end
@@ -827,6 +835,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
   add_foreign_key "area_email_occurrences", "email_occurrences"
   add_foreign_key "area_ip_occurrences", "area_occurrences"
   add_foreign_key "area_ip_occurrences", "ip_occurrences"
+  add_foreign_key "area_occurrences", "area_occurrence_statuses", column: "status_id"
   add_foreign_key "area_staff_occurrences", "area_occurrences"
   add_foreign_key "area_staff_occurrences", "staff_occurrences"
   add_foreign_key "area_telephone_occurrences", "area_occurrences"
@@ -845,6 +854,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
   add_foreign_key "domain_email_occurrences", "email_occurrences"
   add_foreign_key "domain_ip_occurrences", "domain_occurrences"
   add_foreign_key "domain_ip_occurrences", "ip_occurrences"
+  add_foreign_key "domain_occurrences", "domain_occurrence_statuses", column: "status_id"
   add_foreign_key "domain_staff_occurrences", "domain_occurrences"
   add_foreign_key "domain_staff_occurrences", "staff_occurrences"
   add_foreign_key "domain_telephone_occurrences", "domain_occurrences"
@@ -855,6 +865,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
   add_foreign_key "domain_zip_occurrences", "zip_occurrences"
   add_foreign_key "email_ip_occurrences", "email_occurrences"
   add_foreign_key "email_ip_occurrences", "ip_occurrences"
+  add_foreign_key "email_occurrences", "email_occurrence_statuses", column: "status_id"
   add_foreign_key "email_staff_occurrences", "email_occurrences"
   add_foreign_key "email_staff_occurrences", "staff_occurrences"
   add_foreign_key "email_telephone_occurrences", "email_occurrences"
@@ -863,6 +874,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
   add_foreign_key "email_user_occurrences", "user_occurrences"
   add_foreign_key "email_zip_occurrences", "email_occurrences"
   add_foreign_key "email_zip_occurrences", "zip_occurrences"
+  add_foreign_key "ip_occurrences", "ip_occurrence_statuses", column: "status_id"
   add_foreign_key "ip_staff_occurrences", "ip_occurrences"
   add_foreign_key "ip_staff_occurrences", "staff_occurrences"
   add_foreign_key "ip_telephone_occurrences", "ip_occurrences"
@@ -879,18 +891,22 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012656) do
   add_foreign_key "org_timeline_audits", "org_timeline_audit_levels", column: "level_id"
   add_foreign_key "staff_identity_audits", "staff_identity_audit_events", column: "event_id"
   add_foreign_key "staff_identity_audits", "staff_identity_audit_levels", column: "level_id"
+  add_foreign_key "staff_occurrences", "staff_occurrence_statuses", column: "status_id"
   add_foreign_key "staff_telephone_occurrences", "staff_occurrences"
   add_foreign_key "staff_telephone_occurrences", "telephone_occurrences"
   add_foreign_key "staff_user_occurrences", "staff_occurrences"
   add_foreign_key "staff_user_occurrences", "user_occurrences"
   add_foreign_key "staff_zip_occurrences", "staff_occurrences"
   add_foreign_key "staff_zip_occurrences", "zip_occurrences"
+  add_foreign_key "telephone_occurrences", "telephone_occurrence_statuses", column: "status_id"
   add_foreign_key "telephone_user_occurrences", "telephone_occurrences"
   add_foreign_key "telephone_user_occurrences", "user_occurrences"
   add_foreign_key "telephone_zip_occurrences", "telephone_occurrences"
   add_foreign_key "telephone_zip_occurrences", "zip_occurrences"
   add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_identity_audits", "user_identity_audit_levels", column: "level_id"
+  add_foreign_key "user_occurrences", "user_occurrence_statuses", column: "status_id"
   add_foreign_key "user_zip_occurrences", "user_occurrences"
   add_foreign_key "user_zip_occurrences", "zip_occurrences"
+  add_foreign_key "zip_occurrences", "zip_occurrence_statuses", column: "status_id"
 end

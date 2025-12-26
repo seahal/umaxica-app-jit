@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_contact_statuses
@@ -18,7 +20,7 @@ class AppContactStatusTest < ActiveSupport::TestCase
     @model_class = AppContactStatus
     @status = AppContactStatus.create!(id: "ACTIVE")
     @contact = AppContact.create!(
-      app_contact_status: @status
+      app_contact_status: @status,
     )
   end
 

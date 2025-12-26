@@ -47,21 +47,21 @@ class UpdateComContactRelations < ActiveRecord::Migration[8.2]
 
   private
 
-    def backfill_email_contact_ids
-      execute <<~SQL.squish
-        UPDATE com_contact_emails
-        SET com_contact_id = contacts.id
-        FROM com_contacts contacts
-        WHERE contacts.com_contact_email_id = com_contact_emails.id::text
-      SQL
-    end
+  def backfill_email_contact_ids
+    execute <<~SQL.squish
+      UPDATE com_contact_emails
+      SET com_contact_id = contacts.id
+      FROM com_contacts contacts
+      WHERE contacts.com_contact_email_id = com_contact_emails.id::text
+    SQL
+  end
 
-    def backfill_telephone_contact_ids
-      execute <<~SQL.squish
-        UPDATE com_contact_telephones
-        SET com_contact_id = contacts.id
-        FROM com_contacts contacts
-        WHERE contacts.com_contact_telephone_id = com_contact_telephones.id::text
-      SQL
-    end
+  def backfill_telephone_contact_ids
+    execute <<~SQL.squish
+      UPDATE com_contact_telephones
+      SET com_contact_id = contacts.id
+      FROM com_contacts contacts
+      WHERE contacts.com_contact_telephone_id = com_contact_telephones.id::text
+    SQL
+  end
 end

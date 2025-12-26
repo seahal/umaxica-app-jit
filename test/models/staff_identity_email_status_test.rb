@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staff_identity_email_statuses
@@ -58,7 +60,7 @@ class StaffIdentityEmailStatusTest < ActiveSupport::TestCase
       id: SecureRandom.uuid,
       address: "staff@example.com",
       staff_id: staff.id,
-      staff_identity_email_status_id: status.id
+      staff_identity_email_status_id: status.id,
     )
 
     assert_raises(ActiveRecord::RecordNotDestroyed) do

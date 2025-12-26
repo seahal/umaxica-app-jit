@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Auth::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
@@ -71,11 +73,11 @@ class Auth::App::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-    def host
-      ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
-    end
+  def host
+    ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
+  end
 
-    def brand_name
-      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    end
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

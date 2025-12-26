@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserIdentityPasskeyPolicy < ApplicationPolicy
   def index?
     actor.present?

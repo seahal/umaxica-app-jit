@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_document_statuses
@@ -20,7 +22,7 @@ class ComDocumentStatusTest < ActiveSupport::TestCase
   end
 
   test "inherits from BusinessesRecord" do
-    assert_operator ComDocumentStatus, :<, BusinessesRecord
+    assert_operator ComDocumentStatus, :<, DocumentRecord
   end
 
   test "id is required" do

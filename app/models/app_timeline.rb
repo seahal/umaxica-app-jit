@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_timelines
@@ -12,14 +14,22 @@
 #  position      :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  status_id     :string(255)      default("NONE"), not null
 #
 # Indexes
 #
 #  index_app_timelines_on_permalink                    (permalink) UNIQUE
 #  index_app_timelines_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_app_timelines_on_status_id                    (status_id)
 #
 
-class AppTimeline < TimelineBase
+class AppTimeline < TimelineRecord
+  include Timeline
+
+  belongs_to :app_timeline_status,
+             class_name: "AppTimelineStatus",
+             foreign_key: :status_id,
+             inverse_of: :app_timelines
   has_many :app_timeline_versions, dependent: :delete_all
   has_many :app_timeline_audits,
            -> { where(subject_type: "AppTimeline") },

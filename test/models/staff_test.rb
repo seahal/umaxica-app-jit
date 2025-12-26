@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staffs
@@ -6,7 +8,7 @@
 #  webauthn_id              :string           default(""), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
-#  public_id                :string(21)       default(""), not null
+#  public_id                :string(255)      default("")
 #  staff_identity_status_id :string(255)      default("NONE"), not null
 #  withdrawn_at             :datetime         default("infinity")
 #
@@ -76,7 +78,7 @@ class StaffTest < ActiveSupport::TestCase
     workspace = Workspace.create!(
       name: "Test Workspace",
       domain: "staff-workspace.example.com",
-      parent_organization: root_workspace.id
+      parent_organization: root_workspace.id,
     )
     admin_role = Role.create!(key: "admin", name: "Admin", organization: workspace)
     Role.create!(key: "viewer", name: "Viewer", organization: workspace)
@@ -89,11 +91,11 @@ class StaffTest < ActiveSupport::TestCase
 
   private
 
-    def root_workspace
-      Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
-        workspace.name = "Root Workspace"
-        workspace.domain = "root.example.com"
-        workspace.parent_organization = NIL_UUID
-      end
+  def root_workspace
+    Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
+      workspace.name = "Root Workspace"
+      workspace.domain = "root.example.com"
+      workspace.parent_organization = NIL_UUID
     end
+  end
 end

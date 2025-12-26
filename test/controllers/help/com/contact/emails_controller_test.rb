@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Help
@@ -35,7 +37,7 @@ module Help
           @contact = ComContact.create!(
             category_id: "NONE",
             status_id: "SET_UP",
-            confirm_policy: "1"
+            confirm_policy: "1",
           )
           # Reload to ensure status is persisted
           @contact.reload
@@ -44,13 +46,13 @@ module Help
             com_contact: @contact,
             email_address: "test@example.com",
             verifier_attempts_left: 3,
-            verifier_expires_at: 15.minutes.from_now
+            verifier_expires_at: 15.minutes.from_now,
           )
           # Create telephone for email verification flow
           @contact_telephone = ComContactTelephone.create!(
             com_contact: @contact,
             telephone_number: "+15551234567",
-            verifier_attempts_left: 3
+            verifier_attempts_left: 3,
           )
         end
 
@@ -84,14 +86,14 @@ module Help
           # Reset email state
           @contact_email.update!(
             verifier_attempts_left: 3,
-            verifier_expires_at: 15.minutes.from_now
+            verifier_expires_at: 15.minutes.from_now,
           )
           # Recreate telephone fresh to avoid encryption issues in parallel tests
           ComContactTelephone.where(com_contact_id: @contact.id).delete_all
           ComContactTelephone.create!(
             com_contact: @contact,
             telephone_number: "+15551234567",
-            verifier_attempts_left: 3
+            verifier_attempts_left: 3,
           )
           # Generate a valid HOTP code
           code = @contact_email.generate_hotp!

@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class ApplicationPolicyTest < ActiveSupport::TestCase
   class TestRecord
-    def initialize; end
+    def initialize
+    end
   end
 
   class TestPolicy < ApplicationPolicy; end

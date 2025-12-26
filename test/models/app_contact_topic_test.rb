@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_contact_topics
@@ -37,13 +39,13 @@ class AppContactTopicTest < ActiveSupport::TestCase
     AppContactEmail.create!(
       app_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     contact
@@ -69,7 +71,7 @@ class AppContactTopicTest < ActiveSupport::TestCase
 
     topic = AppContactTopic.new(
       app_contact: contact,
-      deletable: false
+      deletable: false,
     )
 
     assert topic.save

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_document_audit_levels
@@ -18,13 +20,13 @@ class AppDocumentAuditLevelTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key"
+      revision_key: "rev_key",
     )
 
     AppDocumentAudit.create!(
       app_document: doc,
       app_document_audit_event: app_document_audit_events(:CREATED),
-      app_document_audit_level: level
+      app_document_audit_level: level,
     )
 
     assert_no_difference "AppDocumentAuditLevel.count" do

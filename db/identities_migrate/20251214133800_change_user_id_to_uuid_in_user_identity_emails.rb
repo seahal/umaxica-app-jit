@@ -46,15 +46,15 @@ class ChangeUserIdToUuidInUserIdentityEmails < ActiveRecord::Migration[8.2]
 
   private
 
-    def compatible_foreign_key_type?(from_table, from_column, to_table)
-      return false unless table_exists?(from_table) && table_exists?(to_table)
+  def compatible_foreign_key_type?(from_table, from_column, to_table)
+    return false unless table_exists?(from_table) && table_exists?(to_table)
 
-      from_type = column_type(from_table, from_column)
-      to_type = column_type(to_table, :id)
-      from_type && to_type && from_type == to_type
-    end
+    from_type = column_type(from_table, from_column)
+    to_type = column_type(to_table, :id)
+    from_type && to_type && from_type == to_type
+  end
 
-    def column_type(table_name, column_name)
-      connection.columns(table_name).find { |column| column.name == column_name.to_s }&.type
-    end
+  def column_type(table_name, column_name)
+    connection.columns(table_name).find { |column| column.name == column_name.to_s }&.type
+  end
 end

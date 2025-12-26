@@ -97,7 +97,7 @@ class CreateAvatarIdentityMasterTables < ActiveRecord::Migration[8.2]
     end
 
     add_index :avatar_role_permissions,
-              [ :avatar_role_id, :avatar_permission_id ],
+              [:avatar_role_id, :avatar_permission_id],
               unique: true,
               name: "uniq_avatar_role_permissions"
 

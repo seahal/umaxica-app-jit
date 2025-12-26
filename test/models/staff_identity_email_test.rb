@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staff_identity_emails
@@ -30,7 +32,7 @@ class StaffIdentityEmailTest < ActiveSupport::TestCase
     @valid_attributes = {
       address: "staff@example.com",
       confirm_policy: true,
-      staff: @staff
+      staff: @staff,
     }.freeze
   end
 
@@ -115,14 +117,14 @@ class StaffIdentityEmailTest < ActiveSupport::TestCase
       StaffIdentityEmail.create!(
         address: "staff_limit#{i}@example.com",
         confirm_policy: true,
-        staff: staff
+        staff: staff,
       )
     end
 
     extra_email = StaffIdentityEmail.new(
       address: "overflow_staff@example.com",
       confirm_policy: true,
-      staff: staff
+      staff: staff,
     )
 
     assert_not extra_email.valid?

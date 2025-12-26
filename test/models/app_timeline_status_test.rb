@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_timeline_statuses
@@ -18,7 +20,7 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "inherits from BusinessesRecord" do
-    assert_operator AppTimelineStatus, :<, BusinessesRecord
+    assert_operator AppTimelineStatus, :<, TimelineRecord
   end
 
   test "id is required" do

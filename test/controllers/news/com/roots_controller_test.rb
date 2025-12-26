@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
@@ -37,7 +39,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-    def brand_name
-      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    end
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

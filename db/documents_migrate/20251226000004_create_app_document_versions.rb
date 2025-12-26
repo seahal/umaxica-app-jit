@@ -15,6 +15,6 @@ class CreateAppDocumentVersions < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :app_document_versions, [ :app_document_id, :created_at ]
+    add_index :app_document_versions, [:app_document_id, :created_at]
   end
 end

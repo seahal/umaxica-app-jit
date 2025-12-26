@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class QueryCanonicalizerTest < ActiveSupport::TestCase
@@ -37,7 +39,7 @@ class QueryCanonicalizerTest < ActiveSupport::TestCase
   test "canonicalize_query_params normalizes values and redirects" do
     request = RequestMock.new(
       query_parameters: { "ri" => "us", "lx" => "fr", "ct" => "dr", "tz" => "utc" },
-      path: "/help"
+      path: "/help",
     )
     controller = DummyController.new(request)
 
@@ -59,7 +61,7 @@ class QueryCanonicalizerTest < ActiveSupport::TestCase
   test "canonicalize_query_params skips when already canonical" do
     request = RequestMock.new(
       query_parameters: { "ct" => "sy", "lx" => "ja", "ri" => "jp", "tz" => "jst" },
-      path: "/help"
+      path: "/help",
     )
     controller = DummyController.new(request)
 

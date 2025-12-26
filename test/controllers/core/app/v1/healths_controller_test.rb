@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Core
@@ -46,7 +48,7 @@ module Core
         test "should accept both success and redirect responses" do
           get core_app_v1_health_url(format: :json)
 
-          assert_includes [ 200 ], response.status
+          assert_includes [200], response.status
         end
       end
     end

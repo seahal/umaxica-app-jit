@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_social_googles
@@ -34,12 +36,12 @@ class UserIdentitySocialGoogleTest < ActiveSupport::TestCase
       uid: "uid-1",
       token: "token-1",
       expires_at: 1.week.from_now.to_i,
-      user_identity_social_google_status: user_identity_social_google_statuses(:active)
+      user_identity_social_google_status: user_identity_social_google_statuses(:active),
     )
 
     duplicate = UserIdentitySocialGoogle.new(
       user: user,
-      token: "token-2"
+      token: "token-2",
     )
 
     assert_not duplicate.valid?

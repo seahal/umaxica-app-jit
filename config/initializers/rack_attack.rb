@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ipaddr"
 
 class Rack::Attack
@@ -11,7 +13,7 @@ class Rack::Attack
       url: ENV.fetch("VALKEY_RACK_ATTACK_URL"),
       namespace: "rack_attack",
       reconnect_attempts: 3,
-      timeout: 1.0
+      timeout: 1.0,
     )
   end
 
@@ -29,7 +31,7 @@ class Rack::Attack
     Rails.application.config.action_dispatch.trusted_proxies = [
       IPAddr.new("10.0.0.0/8"),
       IPAddr.new("172.16.0.0/12"),
-      IPAddr.new("192.168.0.0/16")
+      IPAddr.new("192.168.0.0/16"),
     ]
   end
 
@@ -67,7 +69,7 @@ class Rack::Attack
     %r{\A/api/search},
     %r{\A/api/reports},
     %r{\A/api/exports},
-    %r{\A/documents/export}
+    %r{\A/documents/export},
   ].freeze
 
   throttle("req/heavy/tenant/ip", limit: 60, period: 1.minute) do |req|
@@ -93,7 +95,7 @@ class Rack::Attack
     [
       429,
       { "Content-Type" => "application/json" },
-      [ { error: "rate_limited", host: request.host }.to_json ]
+      [{ error: "rate_limited", host: request.host }.to_json],
     ]
   end
 end
@@ -109,6 +111,6 @@ ActiveSupport::Notifications.subscribe("rack.attack") do |_name, _start, _finish
     match_type: payload[:match_type],
     host: req&.host,
     ip: req&.ip,
-    path: req&.path
+    path: req&.path,
   )
 end

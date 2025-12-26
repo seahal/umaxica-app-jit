@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: Rails Application API
+  description: API documentation for v1 endpoints across all domains
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: https://auth.app.localhost
+    description: Auth Service (User)
+  - url: https://auth.org.localhost
+    description: Auth Staff
+  - url: https://core.com.localhost
+    description: Core Corporate
+  - url: https://core.app.localhost
+    description: Core Service
+  - url: https://core.org.localhost
+    description: Core Staff
+  - url: https://peak.com.localhost
+    description: Peak Corporate
+  - url: https://peak.app.localhost
+    description: Peak Service
+  - url: https://peak.org.localhost
+    description: Peak Staff
+
+paths:
+  /v1/health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    enum: [OK, BOOTING, ERROR]
+                    description: Health status of the API
+              examples:
+                success:
+                  value:
+                    status: OK
+
+  /v1/csrf:
+    get:
+      summary: CSRF token endpoint
+      description: Returns a CSRF token for form submissions
+      operationId: getCsrfToken
+      tags:
+        - Security
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - csrf_token
+                properties:
+                  csrf_token:
+                    type: string
+                    description: CSRF token for form submissions
+                    minLength: 1
+              examples:
+                success:
+                  value:
+                    csrf_token: "abc123def456"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: _session_id
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Security
+    description: Security-related endpoints (CSRF, etc.)

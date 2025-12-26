@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_contacts
@@ -38,7 +40,7 @@ class AppContactTest < ActiveSupport::TestCase
       AppContactEmail.create!(
         app_contact: contact,
         email_address: "test@example.com",
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
     end
 
@@ -46,7 +48,7 @@ class AppContactTest < ActiveSupport::TestCase
       AppContactTelephone.create!(
         app_contact: contact,
         telephone_number: "+1234567890",
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
     end
 
@@ -77,7 +79,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = AppContact.new(
       category_id: sample_category,
       status_id: sample_status,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -85,13 +87,13 @@ class AppContactTest < ActiveSupport::TestCase
     AppContactEmail.create!(
       app_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal sample_category, contact.category_id
@@ -102,7 +104,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = AppContact.new(
       category_id: nil,
       status_id: nil,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -110,13 +112,13 @@ class AppContactTest < ActiveSupport::TestCase
     AppContactEmail.create!(
       app_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "APPLICATION_INQUIRY", contact.category_id
@@ -161,7 +163,7 @@ class AppContactTest < ActiveSupport::TestCase
     AppContactEmail.create!(
       app_contact: contact,
       email_address: "another@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal 2, contact.app_contact_emails.count
@@ -180,7 +182,7 @@ class AppContactTest < ActiveSupport::TestCase
     AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+9876543210",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal 2, contact.app_contact_telephones.count
@@ -270,7 +272,7 @@ class AppContactTest < ActiveSupport::TestCase
 
     contact = AppContact.new(
       category_id: "app_category",
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -278,13 +280,13 @@ class AppContactTest < ActiveSupport::TestCase
     AppContactEmail.create!(
       app_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "APP_CATEGORY", contact.category_id
@@ -295,7 +297,7 @@ class AppContactTest < ActiveSupport::TestCase
 
     contact = AppContact.new(
       status_id: "app_status",
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -303,13 +305,13 @@ class AppContactTest < ActiveSupport::TestCase
     AppContactEmail.create!(
       app_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "APP_STATUS", contact.status_id
@@ -318,7 +320,7 @@ class AppContactTest < ActiveSupport::TestCase
   test "should set default category_id when nil" do
     contact = AppContact.new(
       category_id: nil,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -326,13 +328,13 @@ class AppContactTest < ActiveSupport::TestCase
     AppContactEmail.create!(
       app_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "APPLICATION_INQUIRY", contact.category_id
@@ -341,7 +343,7 @@ class AppContactTest < ActiveSupport::TestCase
   test "should set default status_id when nil" do
     contact = AppContact.new(
       status_id: nil,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -349,13 +351,13 @@ class AppContactTest < ActiveSupport::TestCase
     AppContactEmail.create!(
       app_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "NONE", contact.status_id
@@ -384,25 +386,25 @@ class AppContactTest < ActiveSupport::TestCase
     email1 = AppContactEmail.create!(
       app_contact: contact,
       email_address: "first@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     email2 = AppContactEmail.create!(
       app_contact: contact,
       email_address: "second@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone1 = AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone2 = AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+9876543210",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal 2, contact.app_contact_emails.count
@@ -420,7 +422,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = AppContact.new(
       confirm_policy: "0",
       category_id: sample_category,
-      status_id: sample_status
+      status_id: sample_status,
     )
 
     assert_not contact.valid?
@@ -431,7 +433,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = AppContact.new(
       confirm_policy: "1",
       category_id: sample_category,
-      status_id: sample_status
+      status_id: sample_status,
     )
 
     assert_predicate contact, :valid?

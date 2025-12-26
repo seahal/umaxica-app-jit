@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/services/connect_outbound_service.rb
 
 class AwsConnectService

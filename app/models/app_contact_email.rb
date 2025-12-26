@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_contact_emails
@@ -40,7 +42,7 @@ class AppContactEmail < GuestsRecord
 
   # Generate and store email verification code
   def generate_verifier!
-    raw_code = SecureRandom.random_number(100000..999999).to_s # 6-digit code
+    raw_code = SecureRandom.random_number(100_000..999_999).to_s # 6-digit code
     self.verifier_digest = Argon2::Password.create(raw_code)
     self.verifier_expires_at = 15.minutes.from_now
     self.verifier_attempts_left = 3
@@ -73,7 +75,7 @@ class AppContactEmail < GuestsRecord
 
   private
 
-    def generate_id
-      self.id ||= Nanoid.generate(size: 21)
-    end
+  def generate_id
+    self.id ||= Nanoid.generate(size: 21)
+  end
 end

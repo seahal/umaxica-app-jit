@@ -1,12 +1,15 @@
+# frozen_string_literal: true
+
 module Help
   module App
     class ContactsController < ApplicationController
       include CloudflareTurnstile
       include Rotp
 
-      before_action :set_contact, only: %i[show edit]
+      before_action :set_contact, only: %i(show edit)
 
-      def show; end
+      def show
+      end
 
       def new
         @contact = AppContact.new
@@ -26,16 +29,16 @@ module Help
         # Create contact with nested associations
         @contact = AppContact.new(
           category_id: params.dig(:app_contact, :category_id),
-          confirm_policy: params.dig(:app_contact, :confirm_policy)
+          confirm_policy: params.dig(:app_contact, :confirm_policy),
         )
 
         # Build associated email and telephone
         @email = @contact.app_contact_emails.build(
-          email_address: params.dig(:app_contact, :email_address)
+          email_address: params.dig(:app_contact, :email_address),
         )
 
         @telephone = @contact.app_contact_telephones.build(
-          telephone_number: params.dig(:app_contact, :telephone_number)
+          telephone_number: params.dig(:app_contact, :telephone_number),
         )
 
         # TODO: Inject error into @contact here and display error message.
@@ -58,13 +61,13 @@ module Help
           # Send email with HOTP code
           Email::App::ContactMailer.with(
             email_address: @email.email_address,
-            pass_code: token
+            pass_code: token,
           ).create.deliver_later
 
           # Redirect with proper host options
           redirect_to new_help_app_contact_email_url(
             contact_id: @contact.public_id,
-            **help_email_redirect_options
+            **help_email_redirect_options,
           ), notice: I18n.t("help.app.contacts.create.success")
         else
           # Validation failed: re-render form with errors
@@ -77,31 +80,31 @@ module Help
 
       private
 
-        def help_email_redirect_options
-          {
-            host: help_service_host,
-            port: request.port,
-            protocol: request.protocol.delete_suffix("://")
-          }.compact
-        end
+      def help_email_redirect_options
+        {
+          host: help_service_host,
+          port: request.port,
+          protocol: request.protocol.delete_suffix("://"),
+        }.compact
+      end
 
-        def help_service_host
-          host_value = ENV["HELP_SERVICE_URL"].presence || request.host
-          return request.host if host_value.blank?
+      def help_service_host
+        host_value = ENV["HELP_SERVICE_URL"].presence || request.host
+        return request.host if host_value.blank?
 
-          # Extract hostname from URL or host string, removing port if present
-          begin
-            uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
-            uri.host || host_value.split(":").first
-          rescue URI::InvalidURIError
-            # If parsing fails, try to extract hostname by removing port
-            host_value.split(":").first
-          end
+        # Extract hostname from URL or host string, removing port if present
+        begin
+          uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
+          uri.host || host_value.split(":").first
+        rescue URI::InvalidURIError
+          # If parsing fails, try to extract hostname by removing port
+          host_value.split(":").first
         end
+      end
 
-        def set_contact
-          @contact = AppContact.find_by!(public_id: params[:id])
-        end
+      def set_contact
+        @contact = AppContact.find_by!(public_id: params[:id])
+      end
     end
   end
 end

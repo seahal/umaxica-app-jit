@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 # Note: Configurations have been moved to BFF::Org::PreferencesController

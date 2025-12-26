@@ -11,7 +11,7 @@ class AddOmniauthColumnsToUserIdentityAuths < ActiveRecord::Migration[8.2]
     end
     change_column_default :user_google_auths, :uid, from: "", to: nil
 
-    add_index :user_google_auths, [ :uid, :provider ], unique: true
+    add_index :user_google_auths, [:uid, :provider], unique: true
 
     # Apple
     change_table :user_apple_auths, bulk: true do |t|
@@ -24,6 +24,6 @@ class AddOmniauthColumnsToUserIdentityAuths < ActiveRecord::Migration[8.2]
     end
     change_column_default :user_apple_auths, :uid, from: "", to: nil
 
-    add_index :user_apple_auths, [ :uid, :provider ], unique: true
+    add_index :user_apple_auths, [:uid, :provider], unique: true
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Peak
   module Com
     module V1

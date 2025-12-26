@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Email::Org
@@ -19,7 +21,7 @@ module Email::Org
     test "update_request sends preference request email with expected subject and recipient" do
       mail = build_mail(address: "staff@example.com", edit_url: "https://example.com/preferences/edit")
 
-      assert_equal [ "staff@example.com" ], mail.to
+      assert_equal ["staff@example.com"], mail.to
       assert_equal I18n.t("email.org.preference_mailer.update_request.subject"), mail.subject
       assert_match "https://example.com/preferences/edit", mail.text_part.body.decoded
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staff_identity_passkeys
@@ -28,7 +30,7 @@ class StaffIdentityPasskeyTest < ActiveSupport::TestCase
       public_key: "test_staff_public_key",
       sign_count: 1,
       external_id: SecureRandom.uuid,
-      webauthn_id: SecureRandom.random_bytes(32)
+      webauthn_id: SecureRandom.random_bytes(32),
     )
 
     assert_equal "Staff Passkey", passkey.description
@@ -57,7 +59,7 @@ class StaffIdentityPasskeyTest < ActiveSupport::TestCase
   end
 
   test "should have required database columns" do
-    required_columns = %w[description public_key sign_count external_id staff_id webauthn_id]
+    required_columns = %w(description public_key sign_count external_id staff_id webauthn_id)
 
     required_columns.each do |column|
       assert_includes StaffIdentityPasskey.column_names, column
@@ -75,7 +77,7 @@ class StaffIdentityPasskeyTest < ActiveSupport::TestCase
         public_key: "overflow-key",
         sign_count: 0,
         external_id: SecureRandom.uuid,
-        webauthn_id: SecureRandom.random_bytes(32)
+        webauthn_id: SecureRandom.random_bytes(32),
       )
 
       assert_not extra_passkey.valid?

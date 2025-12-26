@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TimelineVersionBase < TimelineRecord
   self.abstract_class = true
 

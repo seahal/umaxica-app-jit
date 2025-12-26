@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: org_contact_telephones
@@ -30,7 +32,7 @@ class OrgContactTelephoneTest < ActiveSupport::TestCase
     @org_contact = org_contacts(:one)
     @telephone = OrgContactTelephone.new(
       org_contact: @org_contact,
-      telephone_number: "+819012345678"
+      telephone_number: "+819012345678",
     )
   end
 

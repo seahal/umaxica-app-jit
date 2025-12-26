@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Help
   module Com
     module Contact
@@ -44,7 +46,7 @@ module Help
             redirect_url = edit_help_com_contact_url(
               @contact,
               **preserved_locale_query_params,
-              **help_telephone_redirect_options
+              **help_telephone_redirect_options,
             )
 
             redirect_to redirect_url, notice: I18n.t("help.com.contact.telephones.update.success")
@@ -56,7 +58,7 @@ module Help
             if attempts_left > 0
               @contact_telephone.errors.add(:hotp_code,
                                             I18n.t("help.com.contact.telephones.update.invalid_code",
-                                                   attempts_left: attempts_left))
+                                                   attempts_left: attempts_left,),)
             else
               @contact_telephone.errors.add(:hotp_code, I18n.t("help.com.contact.telephones.update.max_attempts"))
             end
@@ -66,48 +68,48 @@ module Help
 
         private
 
-          def load_and_validate_contact
-            contact_id = params[:contact_id]
+        def load_and_validate_contact
+          contact_id = params[:contact_id]
 
-            if contact_id.blank?
-              raise StandardError, "Contact ID is required"
-            end
-
-            @contact = ComContact.find_by(public_id: contact_id)
-
-            if @contact.nil?
-              raise StandardError, "Contact not found"
-            end
-
-            unless @contact.status_id == "CHECKED_EMAIL_ADDRESS"
-              raise StandardError,
-                    "Invalid contact status: expected CHECKED_EMAIL_ADDRESS, got #{@contact.status_id}"
-            end
+          if contact_id.blank?
+            raise StandardError, "Contact ID is required"
           end
 
-          def help_telephone_redirect_options
-            {
-              host: help_corporate_host,
-              port: request.port,
-              protocol: request.protocol.delete_suffix("://")
-            }.compact
+          @contact = ComContact.find_by(public_id: contact_id)
+
+          if @contact.nil?
+            raise StandardError, "Contact not found"
           end
 
-          def help_corporate_host
-            host_value = ENV["HELP_CORPORATE_URL"].presence || request.host
-            return request.host if host_value.blank?
-
-            begin
-              uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
-              uri.host || host_value.split(":").first
-            rescue URI::InvalidURIError
-              host_value.split(":").first
-            end
+          unless @contact.status_id == "CHECKED_EMAIL_ADDRESS"
+            raise StandardError,
+                  "Invalid contact status: expected CHECKED_EMAIL_ADDRESS, got #{@contact.status_id}"
           end
+        end
 
-          def preserved_locale_query_params
-            request.query_parameters.slice("ct", "lx", "ri", "tz").compact
+        def help_telephone_redirect_options
+          {
+            host: help_corporate_host,
+            port: request.port,
+            protocol: request.protocol.delete_suffix("://"),
+          }.compact
+        end
+
+        def help_corporate_host
+          host_value = ENV["HELP_CORPORATE_URL"].presence || request.host
+          return request.host if host_value.blank?
+
+          begin
+            uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
+            uri.host || host_value.split(":").first
+          rescue URI::InvalidURIError
+            host_value.split(":").first
           end
+        end
+
+        def preserved_locale_query_params
+          request.query_parameters.slice("ct", "lx", "ri", "tz").compact
+        end
       end
     end
   end

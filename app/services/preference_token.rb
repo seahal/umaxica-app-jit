@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PreferenceToken
   include PreferenceConstants
 
@@ -12,7 +14,7 @@ class PreferenceToken
     Rails.event.notify("preference_token.encode_failed",
                        error_class: e.class.name,
                        error_message: e.message,
-                       host: host)
+                       host: host,)
     nil
   end
 
@@ -20,27 +22,27 @@ class PreferenceToken
     return nil if token.blank?
 
     JWT.decode(token, PreferenceJwtConfig.public_key, true, {
-                 algorithms: [ ALGORITHM ],
-                 verify_iat: true,
-                 verify_exp: true,
-                 verify_iss: true,
-                 iss: host,
-                 verify_aud: true,
-                 aud: AUDIENCE
-               }).first
+      algorithms: [ALGORITHM],
+      verify_iat: true,
+      verify_exp: true,
+      verify_iss: true,
+      iss: host,
+      verify_aud: true,
+      aud: AUDIENCE,
+    }).first
   rescue JWT::ExpiredSignature
     Rails.event.notify("preference_token.decode_expired", host: host)
     nil
   rescue JWT::DecodeError, JWT::VerificationError => e
     Rails.event.notify("preference_token.decode_failed",
                        error_class: e.class.name,
-                       host: host)
+                       host: host,)
     nil
   rescue StandardError => e
     Rails.event.notify("preference_token.decode_error",
                        error_class: e.class.name,
                        error_message: e.message,
-                       host: host)
+                       host: host,)
     nil
   end
 
@@ -53,7 +55,7 @@ class PreferenceToken
       iss: host,
       aud: AUDIENCE,
       iat: Time.current.to_i,
-      exp: EXPIRY.from_now.to_i
+      exp: EXPIRY.from_now.to_i,
     )
   end
 

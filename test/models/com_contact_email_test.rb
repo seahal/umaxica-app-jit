@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_contact_emails
@@ -43,7 +45,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 1,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_respond_to email, :com_contact
@@ -59,7 +61,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 5,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
     email.save
 
@@ -74,12 +76,12 @@ class ComContactEmailTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 5,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     # Read directly from database to check encryption
     raw_value = ComContactEmail.connection.execute(
-      "SELECT email_address FROM com_contact_emails WHERE id = '#{email.id}'"
+      "SELECT email_address FROM com_contact_emails WHERE id = '#{email.id}'",
     ).first["email_address"]
 
     # Encrypted value should be different from plaintext
@@ -98,7 +100,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 5,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     email2 = ComContactEmail.create!(
@@ -107,16 +109,16 @@ class ComContactEmailTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 5,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     # With deterministic encryption, encrypted values should be the same
     raw1 = ComContactEmail.connection.execute(
-      "SELECT email_address FROM com_contact_emails WHERE id = '#{email1.id}'"
+      "SELECT email_address FROM com_contact_emails WHERE id = '#{email1.id}'",
     ).first["email_address"]
 
     raw2 = ComContactEmail.connection.execute(
-      "SELECT email_address FROM com_contact_emails WHERE id = '#{email2.id}'"
+      "SELECT email_address FROM com_contact_emails WHERE id = '#{email2.id}'",
     ).first["email_address"]
 
     assert_equal raw1, raw2
@@ -132,7 +134,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 1,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_predicate email, :valid?
@@ -143,7 +145,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "uuid@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_kind_of String, email.id
@@ -156,7 +158,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "timestamp@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_respond_to email, :created_at
@@ -172,7 +174,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "attributes@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_respond_to email, :email_address
@@ -188,7 +190,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_not email.activated
@@ -201,7 +203,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     contact = com_contacts(:one)
     email = ComContactEmail.new(
       com_contact: contact,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_not email.valid?
@@ -212,12 +214,12 @@ class ComContactEmailTest < ActiveSupport::TestCase
     contact = com_contacts(:one)
 
     # Invalid email formats
-    invalid_emails = [ "invalid", "test@", "@example.com" ]
+    invalid_emails = ["invalid", "test@", "@example.com"]
     invalid_emails.each do |invalid_email|
       email = ComContactEmail.new(
         com_contact: contact,
         email_address: invalid_email,
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
 
       assert_not email.valid?, "#{invalid_email} should be invalid"
@@ -225,12 +227,12 @@ class ComContactEmailTest < ActiveSupport::TestCase
     end
 
     # Valid email formats
-    valid_emails = [ "test@example.com", "user+tag@example.co.jp", "test.user@example.com" ]
+    valid_emails = ["test@example.com", "user+tag@example.co.jp", "test.user@example.com"]
     valid_emails.each do |valid_email|
       email = ComContactEmail.new(
         com_contact: contact,
         email_address: valid_email,
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
 
       assert_predicate email, :valid?, "#{valid_email} should be valid"
@@ -244,7 +246,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "verifier@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     raw_code = email.generate_verifier!
@@ -263,7 +265,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "verify@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     raw_code = email.generate_verifier!
@@ -278,7 +280,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "wrong@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     email.generate_verifier!
@@ -294,7 +296,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "exhausted@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     raw_code = email.generate_verifier!
@@ -311,7 +313,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "expired@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     raw_code = email.generate_verifier!
@@ -328,7 +330,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "check_expired@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     email.generate_verifier!
@@ -345,7 +347,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "resend@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     email.generate_verifier!
@@ -359,7 +361,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "resend2@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     email.generate_verifier!
@@ -373,7 +375,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "activated@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     email.generate_verifier!

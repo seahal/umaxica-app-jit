@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module App
     module Registration
@@ -28,7 +30,7 @@ module Auth
           turnstile_result = cloudflare_turnstile_validation
 
           # Build new email record
-          @user_email = UserIdentityEmail.new(params.expect(user_identity_email: [ :address, :confirm_policy ]))
+          @user_email = UserIdentityEmail.new(params.expect(user_identity_email: [:address, :confirm_policy]))
           @user_email.user_identity_email_status_id = "UNVERIFIED_WITH_SIGN_UP"
 
           # Check turnstile validation
@@ -41,7 +43,7 @@ module Auth
           if @user_email.address.present?
             UserIdentityEmail.where(
               address: @user_email.address,
-              user_identity_email_status_id: "UNVERIFIED_WITH_SIGN_UP"
+              user_identity_email_status_id: "UNVERIFIED_WITH_SIGN_UP",
             ).destroy_all
           end
 
@@ -52,7 +54,7 @@ module Auth
 
           # Generate OTP
           otp_private_key = ROTP::Base32.random_base32
-          otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
+          otp_count_number = [Time.now.to_i, SecureRandom.random_number(1 << 64)].map(&:to_s).join.to_i
           hotp = ROTP::HOTP.new(otp_private_key)
           num = hotp.at(otp_count_number)
           expires_at = 12.minutes.from_now.to_i
@@ -64,7 +66,7 @@ module Auth
           # Send email
           # FIXME: use kafka!
           Email::App::RegistrationMailer.with({ hotp_token: num,
-                                                email_address: @user_email.address }).create.deliver_later
+                                                email_address: @user_email.address, }).create.deliver_later
 
           # Preserve rd parameter if provided
           redirect_params = { notice: t("auth.app.registration.email.create.verification_code_sent") }
@@ -141,11 +143,11 @@ module Auth
 
         private
 
-          def ensure_not_logged_in
-            if logged_in?
-              redirect_to "/", alert: t("auth.app.registration.email.already_logged_in")
-            end
+        def ensure_not_logged_in
+          if logged_in?
+            redirect_to "/", alert: t("auth.app.registration.email.already_logged_in")
           end
+        end
       end
     end
   end

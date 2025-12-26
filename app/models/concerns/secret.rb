@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Secret
   extend ActiveSupport::Concern
 
@@ -9,7 +11,7 @@ module Secret
     validates :password,
               length: {
                 is: SECRET_PASSWORD_LENGTH,
-                message: "must be #{SECRET_PASSWORD_LENGTH} characters"
+                message: "must be #{SECRET_PASSWORD_LENGTH} characters",
               },
               allow_nil: true
   end
@@ -23,7 +25,7 @@ module Secret
       record[identity_secret_status_id_column] = status_id_for(status)
       record.password = raw_secret
       record.save!
-      [ record, raw_secret ]
+      [record, raw_secret]
     end
 
     def identity_secret_status_class
@@ -97,19 +99,19 @@ module Secret
 
   private
 
-    def secret_status_id
-      self[self.class.identity_secret_status_id_column]
-    end
+  def secret_status_id
+    self[self.class.identity_secret_status_id_column]
+  end
 
-    def expired_by_time?(now)
-      return false if expires_at.nil?
+  def expired_by_time?(now)
+    return false if expires_at.nil?
 
-      # PostgreSQL infinity/-infinity are used as sentinels for "never expires"
-      # When read from DB, they may be converted to Float::INFINITY/-Float::INFINITY
-      return false if expires_at.is_a?(Float) && expires_at.infinite?
+    # PostgreSQL infinity/-infinity are used as sentinels for "never expires"
+    # When read from DB, they may be converted to Float::INFINITY/-Float::INFINITY
+    return false if expires_at.is_a?(Float) && expires_at.infinite?
 
-      # Convert to comparable type if needed (unix timestamp to Time)
-      comparable_time = expires_at.is_a?(Float) ? Time.zone.at(expires_at) : expires_at
-      comparable_time <= now
-    end
+    # Convert to comparable type if needed (unix timestamp to Time)
+    comparable_time = expires_at.is_a?(Float) ? Time.zone.at(expires_at) : expires_at
+    comparable_time <= now
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Auth::Org::RecoveriesControllerTest < ActionDispatch::IntegrationTest
@@ -19,8 +21,8 @@ class Auth::Org::RecoveriesControllerTest < ActionDispatch::IntegrationTest
          params: {
            recovery_form: {
              account_identifiable_information: "staff@example.com",
-             recovery_code: "123456"
-           }
+             recovery_code: "123456",
+           },
          },
          headers: { "Host" => ENV["AUTH_STAFF_URL"] }
 

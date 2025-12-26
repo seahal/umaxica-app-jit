@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class StylesheetTagsTest < ActiveSupport::TestCase
   test "auth layouts include auth main stylesheet" do
     paths = [
       "app/views/layouts/auth/app/application.html.erb",
-      "app/views/layouts/auth/org/application.html.erb"
+      "app/views/layouts/auth/org/application.html.erb",
     ]
 
     paths.each do |path|
@@ -17,7 +19,7 @@ class StylesheetTagsTest < ActiveSupport::TestCase
     paths = [
       "app/views/layouts/core/app/application.html.erb",
       "app/views/layouts/core/com/application.html.erb",
-      "app/views/layouts/core/org/application.html.erb"
+      "app/views/layouts/core/org/application.html.erb",
     ]
 
     paths.each do |path|
@@ -30,7 +32,7 @@ class StylesheetTagsTest < ActiveSupport::TestCase
     paths = [
       "app/views/layouts/help/app/application.html.erb",
       "app/views/layouts/help/com/application.html.erb",
-      "app/views/layouts/help/org/application.html.erb"
+      "app/views/layouts/help/org/application.html.erb",
     ]
 
     paths.each do |path|
@@ -43,7 +45,7 @@ class StylesheetTagsTest < ActiveSupport::TestCase
     paths = [
       "app/views/layouts/news/app/application.html.erb",
       "app/views/layouts/news/com/application.html.erb",
-      "app/views/layouts/news/org/application.html.erb"
+      "app/views/layouts/news/org/application.html.erb",
     ]
 
     paths.each do |path|
@@ -56,7 +58,7 @@ class StylesheetTagsTest < ActiveSupport::TestCase
     paths = [
       "app/views/layouts/peak/app/application.html.erb",
       "app/views/layouts/peak/com/application.html.erb",
-      "app/views/layouts/peak/org/application.html.erb"
+      "app/views/layouts/peak/org/application.html.erb",
     ]
 
     paths.each do |path|

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class OrgDocumentUpdater
   def self.call(document:, attrs:, editor: nil)
-    DocumentBase.transaction do
+    DocumentRecord.transaction do
       document.update!(document_attributes(attrs))
       DocumentVersionWriter.write!(document, attrs: attrs, editor: editor)
     end

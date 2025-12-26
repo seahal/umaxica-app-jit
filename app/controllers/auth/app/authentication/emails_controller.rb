@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module App
     module Authentication
@@ -7,7 +9,7 @@ module Auth
         include ::Redirect
 
         before_action :ensure_not_logged_in
-        before_action :load_user_email, only: %i[edit update]
+        before_action :load_user_email, only: %i(edit update)
 
         def new
           @user_email = UserIdentityEmail.new
@@ -17,7 +19,7 @@ module Auth
         end
 
         def create
-          address_params = params.expect(user_identity_email: [ :address ])
+          address_params = params.expect(user_identity_email: [:address])
           address = address_params[:address]
 
           unless cloudflare_turnstile_validation["success"] && address.present?
@@ -91,136 +93,136 @@ module Auth
 
         private
 
-          def ensure_not_logged_in
-            if logged_in?
-              render plain: t("auth.app.authentication.email.new.you_have_already_logged_in"),
-                     status: :bad_request
-              nil
-            end
+        def ensure_not_logged_in
+          if logged_in?
+            render plain: t("auth.app.authentication.email.new.you_have_already_logged_in"),
+                   status: :bad_request
+            nil
           end
+        end
 
-          def load_user_email
-            if session[:user_email_authentication_id].present?
-              @user_email = UserIdentityEmail.find_by(id: session[:user_email_authentication_id])
-              return if @user_email.present? && !@user_email.otp_expired?
+        def load_user_email
+          if session[:user_email_authentication_id].present?
+            @user_email = UserIdentityEmail.find_by(id: session[:user_email_authentication_id])
+            return if @user_email.present? && !@user_email.otp_expired?
 
-              redirect_params = { notice: t("auth.app.authentication.email.edit.session_expired") }
-              redirect_params[:rd] =
-                session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
-              redirect_to new_auth_app_authentication_email_path(redirect_params)
-            elsif session[:user_email_authentication_address].present?
-              @user_email = UserIdentityEmail.new(address: session[:user_email_authentication_address])
-            else
-              redirect_params = { notice: t("auth.app.authentication.email.edit.session_expired") }
-              redirect_params[:rd] =
-                session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
-              redirect_to new_auth_app_authentication_email_path(redirect_params)
-            end
+            redirect_params = { notice: t("auth.app.authentication.email.edit.session_expired") }
+            redirect_params[:rd] =
+              session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
+            redirect_to new_auth_app_authentication_email_path(redirect_params)
+          elsif session[:user_email_authentication_address].present?
+            @user_email = UserIdentityEmail.new(address: session[:user_email_authentication_address])
+          else
+            redirect_params = { notice: t("auth.app.authentication.email.edit.session_expired") }
+            redirect_params[:rd] =
+              session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
+            redirect_to new_auth_app_authentication_email_path(redirect_params)
           end
+        end
 
-          def process_email_authentication(normalized_address)
-            existing_email = find_email_with_timing_protection(normalized_address)
+        def process_email_authentication(normalized_address)
+          existing_email = find_email_with_timing_protection(normalized_address)
 
-            if existing_email
-              session[:user_email_authentication_id] = existing_email.id
-              session[:user_email_authentication_address] = nil
+          if existing_email
+            session[:user_email_authentication_id] = existing_email.id
+            session[:user_email_authentication_address] = nil
 
-              return if otp_request_rate_limited?(existing_email)
+            return if otp_request_rate_limited?(existing_email)
 
-              otp_code = generate_otp_for(existing_email)
+            otp_code = generate_otp_for(existing_email)
 
-              Email::App::RegistrationMailer.with(
-                hotp_token: otp_code,
-                email_address: existing_email.address
-              ).create.deliver_later
-            else
-              # Dummy work to simulate OTP generation for timing attack protection
-              ROTP::Base32.random_base32
-              ROTP::HOTP.new("dummy").at(0)
+            Email::App::RegistrationMailer.with(
+              hotp_token: otp_code,
+              email_address: existing_email.address,
+            ).create.deliver_later
+          else
+            # Dummy work to simulate OTP generation for timing attack protection
+            ROTP::Base32.random_base32
+            ROTP::HOTP.new("dummy").at(0)
 
-              session[:user_email_authentication_id] = nil
-              session[:user_email_authentication_address] = normalized_address
-            end
+            session[:user_email_authentication_id] = nil
+            session[:user_email_authentication_address] = normalized_address
           end
+        end
 
-          def generate_otp_for(user_email)
-            otp_private_key = ROTP::Base32.random_base32
-            otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
-            hotp = ROTP::HOTP.new(otp_private_key)
-            otp_code = hotp.at(otp_count_number)
-            expires_at = 12.minutes.from_now.to_i
+        def generate_otp_for(user_email)
+          otp_private_key = ROTP::Base32.random_base32
+          otp_count_number = [Time.now.to_i, SecureRandom.random_number(1 << 64)].map(&:to_s).join.to_i
+          hotp = ROTP::HOTP.new(otp_private_key)
+          otp_code = hotp.at(otp_count_number)
+          expires_at = 12.minutes.from_now.to_i
 
-            user_email.store_otp(otp_private_key, otp_count_number, expires_at)
-            otp_code
+          user_email.store_otp(otp_private_key, otp_count_number, expires_at)
+          otp_code
+        end
+
+        def verify_otp_and_login(user_email)
+          if session[:user_email_authentication_id].present?
+            verify_existing_email_otp(user_email)
+          else
+            verify_dummy_otp(user_email)
           end
+        end
 
-          def verify_otp_and_login(user_email)
-            if session[:user_email_authentication_id].present?
-              verify_existing_email_otp(user_email)
-            else
-              verify_dummy_otp(user_email)
-            end
+        def verify_existing_email_otp(user_email)
+          otp_data = user_email.get_otp
+          return { success: false, error: t("auth.app.authentication.email.edit.session_expired") } unless otp_data
+
+          user = user_from_user_email(user_email)
+          hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+          expected_code = hotp.at(otp_data[:otp_counter]).to_s
+
+          if ActiveSupport::SecurityUtils.secure_compare(expected_code, user_email.pass_code)
+            user_email.clear_otp
+            session[:user_email_authentication_id] = nil
+            tokens = log_in(user) if user
+            { success: true, tokens: tokens }
+          else
+            user_email.increment_attempts!
+            handle_failed_otp_attempt(user_email, user)
           end
+        end
 
-          def verify_existing_email_otp(user_email)
-            otp_data = user_email.get_otp
-            return { success: false, error: t("auth.app.authentication.email.edit.session_expired") } unless otp_data
+        def verify_dummy_otp(user_email)
+          # Perform timing attack protection
+          ActiveSupport::SecurityUtils.secure_compare("000000", user_email.pass_code)
+          { success: false, error: t("auth.app.authentication.email.update.invalid_code") }
+        end
 
-            user = user_from_user_email(user_email)
-            hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
-            expected_code = hotp.at(otp_data[:otp_counter]).to_s
+        def handle_failed_otp_attempt(user_email, user = nil)
+          user ||= user_from_user_email(user_email)
+          audit_user_login_failed(user) if user
 
-            if ActiveSupport::SecurityUtils.secure_compare(expected_code, user_email.pass_code)
-              user_email.clear_otp
-              session[:user_email_authentication_id] = nil
-              tokens = log_in(user) if user
-              { success: true, tokens: tokens }
-            else
-              user_email.increment_attempts!
-              handle_failed_otp_attempt(user_email, user)
-            end
+          if user_email.locked?
+            { success: false, error: t("auth.app.authentication.email.locked") }
+          else
+            remaining = [Email::MAX_OTP_ATTEMPTS - user_email.otp_attempts_count, 0].max
+            { success: false,
+              error: t("auth.app.authentication.email.update.invalid_code", attempts_left: remaining), }
           end
+        end
 
-          def verify_dummy_otp(user_email)
-            # Perform timing attack protection
-            ActiveSupport::SecurityUtils.secure_compare("000000", user_email.pass_code)
-            { success: false, error: t("auth.app.authentication.email.update.invalid_code") }
-          end
+        def update_pass_code_params
+          params.expect(user_identity_email: [:pass_code])
+        rescue ActionController::ParameterMissing
+          {}
+        end
 
-          def handle_failed_otp_attempt(user_email, user = nil)
-            user ||= user_from_user_email(user_email)
-            audit_user_login_failed(user) if user
+        def ensure_min_elapsed(start_time, target_seconds = 0.01)
+          elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
+          remaining = target_seconds - elapsed
+          sleep(remaining) if remaining.positive?
+        end
 
-            if user_email.locked?
-              { success: false, error: t("auth.app.authentication.email.locked") }
-            else
-              remaining = [ Email::MAX_OTP_ATTEMPTS - user_email.otp_attempts_count, 0 ].max
-              { success: false,
-                error: t("auth.app.authentication.email.update.invalid_code", attempts_left: remaining) }
-            end
-          end
+        def user_from_user_email(user_email)
+          user_email.user || User.find_by(id: user_email.user_id)
+        end
 
-          def update_pass_code_params
-            params.expect(user_identity_email: [ :pass_code ])
-          rescue ActionController::ParameterMissing
-            {}
-          end
+        def otp_request_rate_limited?(user_email)
+          return false unless user_email.otp_cooldown_active?
 
-          def ensure_min_elapsed(start_time, target_seconds = 0.01)
-            elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
-            remaining = target_seconds - elapsed
-            sleep(remaining) if remaining.positive?
-          end
-
-          def user_from_user_email(user_email)
-            user_email.user || User.find_by(id: user_email.user_id)
-          end
-
-          def otp_request_rate_limited?(user_email)
-            return false unless user_email.otp_cooldown_active?
-
-            true
-          end
+          true
+        end
       end
     end
   end

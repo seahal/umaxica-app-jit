@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: org_timeline_audit_levels
@@ -18,13 +20,13 @@ class OrgTimelineAuditLevelTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key"
+      revision_key: "rev_key",
     )
 
     OrgTimelineAudit.create!(
       org_timeline: timeline,
       org_timeline_audit_event: org_timeline_audit_events(:CREATED),
-      org_timeline_audit_level: level
+      org_timeline_audit_level: level,
     )
 
     assert_no_difference "OrgTimelineAuditLevel.count" do

@@ -14,7 +14,7 @@ class RebuildComDocuments < ActiveRecord::Migration[8.2]
     end
 
     add_index :com_documents, :permalink, unique: true
-    add_index :com_documents, [ :published_at, :expires_at ]
+    add_index :com_documents, [:published_at, :expires_at]
   end
 
   def down

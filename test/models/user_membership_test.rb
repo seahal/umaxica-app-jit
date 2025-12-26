@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_memberships
@@ -26,7 +28,7 @@ class UserMembershipTest < ActiveSupport::TestCase
     workspace = Workspace.create!(
       name: "Test Workspace",
       domain: "membership-workspace.example.com",
-      parent_organization: root_workspace.id
+      parent_organization: root_workspace.id,
     )
 
     membership = UserMembership.create!(user: user, workspace: workspace)
@@ -40,12 +42,12 @@ class UserMembershipTest < ActiveSupport::TestCase
     active_workspace = Workspace.create!(
       name: "Active Workspace",
       domain: "active-workspace.example.com",
-      parent_organization: root_workspace.id
+      parent_organization: root_workspace.id,
     )
     inactive_workspace = Workspace.create!(
       name: "Inactive Workspace",
       domain: "inactive-workspace.example.com",
-      parent_organization: root_workspace.id
+      parent_organization: root_workspace.id,
     )
 
     active_membership = UserMembership.create!(user: user, workspace: active_workspace, left_at: Float::INFINITY)
@@ -57,11 +59,11 @@ class UserMembershipTest < ActiveSupport::TestCase
 
   private
 
-    def root_workspace
-      Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
-        workspace.name = "Root Workspace"
-        workspace.domain = "root.example.com"
-        workspace.parent_organization = NIL_UUID
-      end
+  def root_workspace
+    Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
+      workspace.name = "Root Workspace"
+      workspace.domain = "root.example.com"
+      workspace.parent_organization = NIL_UUID
     end
+  end
 end

@@ -13,31 +13,46 @@
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
 </head>
 
-<body class="px-4">
-<header>
-  <h1><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica(www, com)</a></h1></header>
-<hr>
+<body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
+<% edge_host = ENV["EDGE_CORPORATE_URL"].presence %>
 
-<main class="container mx-auto mt-28 px-5 block">
-  <%= yield %>
-</main>
+<div class="min-h-screen">
+  <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
+      <div class="flex flex-col">
+        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">Core</span>
+        <h1 class="text-2xl font-semibold tracking-tight">
+          <% if edge_host.present? %>
+            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/"><%= code_name %></a>
+          <% else %>
+            <%= code_name %>
+          <% end %>
+          <span class="text-[hsl(var(--muted-foreground))]">(com)</span>
+        </h1>
+      </div>
+    </header>
 
-<nav>
-</nav>
+    <main class="flex-1 py-10">
+      <%= yield %>
+    </main>
 
-<hr>
-
-<footer>
-  <ul>
-    <li><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica</a></li>
-    <li>Support</li>
-    <li>Terms</li>
-    <li>Privacy</li>
-    <li>Security</li>
-    <li>Accessibility</li>
-  </ul>
-  <%= render "concern/copyright" %>
-</footer>
-
+    <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
+      <nav class="flex flex-wrap items-center gap-4">
+        <% if edge_host.present? %>
+          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>:4444/">Umaxica</a>
+        <% end %>
+        <span>Support</span>
+        <span>Terms</span>
+        <span>Privacy</span>
+        <span>Security</span>
+        <span>Accessibility</span>
+      </nav>
+      <div class="mt-4">
+        <%= render "concern/copyright" %>
+      </div>
+    </footer>
+  </div>
+</div>
 </body>
 </html>

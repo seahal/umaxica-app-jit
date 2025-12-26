@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_passkeys
@@ -38,18 +40,18 @@ class UserIdentityPasskey < IdentityRecord
 
   private
 
-    def enforce_user_passkey_limit
-      return unless user_id
+  def enforce_user_passkey_limit
+    return unless user_id
 
-      count = self.class.where(user_id: user_id).count
-      return if count < MAX_PASSKEYS_PER_USER
+    count = self.class.where(user_id: user_id).count
+    return if count < MAX_PASSKEYS_PER_USER
 
-      errors.add(:base, :too_many, message: "exceeds maximum passkeys per user (#{MAX_PASSKEYS_PER_USER})")
-    end
+    errors.add(:base, :too_many, message: "exceeds maximum passkeys per user (#{MAX_PASSKEYS_PER_USER})")
+  end
 
-    def set_defaults
-      self.external_id ||= SecureRandom.uuid
-      self.sign_count ||= 0
-      self.description = I18n.t("sign.default_passkey_description") if description.blank?
-    end
+  def set_defaults
+    self.external_id ||= SecureRandom.uuid
+    self.sign_count ||= 0
+    self.description = I18n.t("sign.default_passkey_description") if description.blank?
+  end
 end

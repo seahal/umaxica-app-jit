@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module App
     module Social
@@ -30,7 +32,7 @@ module Auth
                 # Identity exists but no user - create and link
                 Rails.event.notify("auth.social.orphaned_identity",
                                    provider: provider,
-                                   identity_id: identity.id)
+                                   identity_id: identity.id,)
 
                 user = User.new
                 identity.user = user
@@ -67,7 +69,7 @@ module Auth
           Rails.event.notify("auth.social.failed",
                              error_class: e.class.name,
                              error_message: e.message,
-                             provider: auth&.provider)
+                             provider: auth&.provider,)
 
           redirect_to new_auth_app_authentication_path,
                       alert: I18n.t("sign.app.social.sessions.create.failure")
@@ -75,18 +77,18 @@ module Auth
 
         private
 
-          def sign_in(user)
-            log_in(user)
-          end
+        def sign_in(user)
+          log_in(user)
+        end
 
-          def mock_auth_from_test_mode
-            return unless Rails.env.test?
+        def mock_auth_from_test_mode
+          return unless Rails.env.test?
 
-            provider = params[:provider]
-            return unless provider
+          provider = params[:provider]
+          return unless provider
 
-            OmniAuth.config.mock_auth[provider.to_sym] || OmniAuth.config.mock_auth[provider.to_s]
-          end
+          OmniAuth.config.mock_auth[provider.to_sym] || OmniAuth.config.mock_auth[provider.to_s]
+        end
       end
     end
   end

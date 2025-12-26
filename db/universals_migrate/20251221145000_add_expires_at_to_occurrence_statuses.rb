@@ -1,5 +1,5 @@
 class AddExpiresAtToOccurrenceStatuses < ActiveRecord::Migration[8.2]
-  TABLES = %i[
+  TABLES = %i(
     area_occurrence_statuses
     domain_occurrence_statuses
     email_occurrence_statuses
@@ -8,7 +8,7 @@ class AddExpiresAtToOccurrenceStatuses < ActiveRecord::Migration[8.2]
     telephone_occurrence_statuses
     user_occurrence_statuses
     zip_occurrence_statuses
-  ].freeze
+  ).freeze
 
   def change
     TABLES.each do |table|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: billing_stripe_events
@@ -27,7 +29,7 @@ module Billing
         event_type: "payment_intent.succeeded",
         livemode: false,
         payload_json: { id: event_id, object: "event" },
-        received_at: Time.current
+        received_at: Time.current,
       }
     end
 

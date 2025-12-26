@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AvatarService
   SYSTEM_HANDLE_VALUE = "__unassigned__"
 
@@ -18,7 +20,7 @@ class AvatarService
         handle: SYSTEM_HANDLE_VALUE,
         is_system: true,
         cooldown_until: cooldown_until || 1.week.from_now,
-        handle_status_id: handle_status_id
+        handle_status_id: handle_status_id,
       )
 
       avatar = Avatar.create!(
@@ -28,7 +30,7 @@ class AvatarService
         representing_organization_id: representing_organization_id,
         image_data: image_data,
         avatar_status_id: avatar_status_id,
-        active_handle_id: system_handle.id
+        active_handle_id: system_handle.id,
       )
 
       HandleAssignment.create!(
@@ -36,7 +38,7 @@ class AvatarService
         handle: system_handle,
         valid_from: Time.current,
         handle_assignment_status_id: handle_assignment_status_id,
-        assigned_by_actor_id: assigned_by_actor_id
+        assigned_by_actor_id: assigned_by_actor_id,
       )
 
       avatar

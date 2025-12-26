@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Help::Com::Contact::TelephonesControllerTest < ActionDispatch::IntegrationTest
@@ -8,7 +10,7 @@ class Help::Com::Contact::TelephonesControllerTest < ActionDispatch::Integration
     @contact_telephone = ComContactTelephone.create!(
       com_contact: @contact,
       telephone_number: "+81901234567",
-      expires_at: 24.hours.from_now
+      expires_at: 24.hours.from_now,
     )
   end
 

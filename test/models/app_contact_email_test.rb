@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_contact_emails
@@ -33,7 +35,7 @@ class AppContactEmailTest < ActiveSupport::TestCase
     @app_contact = app_contacts(:one) # Assuming fixtures exist, otherwise we'll create one
     @email = AppContactEmail.new(
       app_contact: @app_contact,
-      email_address: "test@example.com"
+      email_address: "test@example.com",
     )
   end
 
@@ -48,14 +50,14 @@ class AppContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should validate email format" do
-    valid_addresses = %w[user@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp alice+bob@baz.cn]
+    valid_addresses = %w(user@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp alice+bob@baz.cn)
     valid_addresses.each do |valid_address|
       @email.email_address = valid_address
 
       assert_predicate @email, :valid?, "#{valid_address.inspect} should be valid"
     end
 
-    invalid_addresses = %w[user@example,com user_at_foo.org user.name@example. foo@bar_baz.com foo@bar+baz.com]
+    invalid_addresses = %w(user@example,com user_at_foo.org user.name@example. foo@bar_baz.com foo@bar+baz.com)
     invalid_addresses.each do |invalid_address|
       @email.email_address = invalid_address
 

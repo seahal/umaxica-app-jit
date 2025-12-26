@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Helper methods for working with cookies in integration tests
 module CookieHelper
   # Read a signed cookie value by key

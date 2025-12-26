@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class TelephoneConcernTest < ActiveSupport::TestCase
   setup do
     @telephone = StaffIdentityTelephone.new(
       number: "+1234567890",
-      staff: staffs(:none_staff)
+      staff: staffs(:none_staff),
     )
     @telephone.save!(validate: false)
   end

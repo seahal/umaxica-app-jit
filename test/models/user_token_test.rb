@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_tokens
@@ -175,7 +177,7 @@ class UserTokenTest < ActiveSupport::TestCase
   test "sha3 digest matches hexdigest packed bytes" do
     raw1 = @token.send(:digest_refresh_token, "A")
     hex = SHA3::Digest::SHA3_384.hexdigest("A")
-    raw2 = [ hex ].pack("H*")
+    raw2 = [hex].pack("H*")
 
     assert ActiveSupport::SecurityUtils.secure_compare(raw1, raw2)
   end

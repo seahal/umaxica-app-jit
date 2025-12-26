@@ -4,7 +4,7 @@ class EnforceNotNullOnGuestContactColumns < ActiveRecord::Migration[8.2]
 
   def change
     # contact_categories: parent_id
-    %w[app_contact_categories com_contact_categories org_contact_categories].each do |table|
+    %w(app_contact_categories com_contact_categories org_contact_categories).each do |table|
       reversible do |dir|
         dir.up do
           execute "UPDATE #{table} SET parent_id = '' WHERE parent_id IS NULL"
@@ -29,7 +29,7 @@ class EnforceNotNullOnGuestContactColumns < ActiveRecord::Migration[8.2]
     end
 
     # com_contact_statuses, org_contact_statuses: parent_id
-    %w[com_contact_statuses org_contact_statuses].each do |table|
+    %w(com_contact_statuses org_contact_statuses).each do |table|
       reversible do |dir|
         dir.up do
           execute "UPDATE #{table} SET parent_id = '' WHERE parent_id IS NULL"
@@ -203,7 +203,7 @@ class EnforceNotNullOnGuestContactColumns < ActiveRecord::Migration[8.2]
     end
 
     # app/com/org_contacts: contact_category_title, contact_status_id, ip_address, token_digest, token_expires_at
-    %w[app_contacts com_contacts org_contacts].each do |table|
+    %w(app_contacts com_contacts org_contacts).each do |table|
       reversible do |dir|
         dir.up do
           execute "UPDATE #{table} SET contact_category_title = '' WHERE contact_category_title IS NULL"
@@ -233,7 +233,7 @@ class EnforceNotNullOnGuestContactColumns < ActiveRecord::Migration[8.2]
     end
 
     # app_contact_histories, com_contact_audits, org_contact_histories: actor_id, actor_type, parent_id
-    audit_tables = %w[app_contact_histories com_contact_audits org_contact_histories]
+    audit_tables = %w(app_contact_histories com_contact_audits org_contact_histories)
     audit_tables.each do |table|
       reversible do |dir|
         dir.up do

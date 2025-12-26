@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: org_documents
@@ -12,11 +14,13 @@
 #  position      :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  status_id     :string(255)      default("NONE"), not null
 #
 # Indexes
 #
 #  index_org_documents_on_permalink                    (permalink) UNIQUE
 #  index_org_documents_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_org_documents_on_status_id                    (status_id)
 #
 
 require "test_helper"
@@ -29,7 +33,7 @@ class OrgDocumentTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key"
+      revision_key: "rev_key",
     }
   end
 
@@ -50,7 +54,7 @@ class OrgDocumentTest < ActiveSupport::TestCase
     OrgDocument.create!(base_attrs.merge(permalink: "future", published_at: now + 1.hour, expires_at: now + 2.hours))
     OrgDocument.create!(base_attrs.merge(permalink: "expired", published_at: now - 2.hours, expires_at: now - 1.hour))
 
-    assert_equal [ available.id ], OrgDocument.available.pluck(:id)
+    assert_equal [available.id], OrgDocument.available.pluck(:id)
   end
 
   test "redirect_url is required when response_mode is redirect" do
@@ -71,7 +75,7 @@ class OrgDocumentTest < ActiveSupport::TestCase
       published_at: doc.published_at,
       expires_at: doc.expires_at,
       created_at: 2.days.ago,
-      updated_at: 2.days.ago
+      updated_at: 2.days.ago,
     )
 
     newest = OrgDocumentVersion.create!(
@@ -81,7 +85,7 @@ class OrgDocumentTest < ActiveSupport::TestCase
       published_at: doc.published_at,
       expires_at: doc.expires_at,
       created_at: 1.day.ago,
-      updated_at: 1.day.ago
+      updated_at: 1.day.ago,
     )
 
     assert_equal newest, doc.latest_version

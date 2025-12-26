@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module Org
     module Token
@@ -8,7 +10,7 @@ module Auth
           if refresh_token_id.blank?
             render json: {
               error: I18n.t("auth.token_refresh.errors.missing_refresh_token", default: "Refresh token is required"),
-              error_code: "missing_refresh_token"
+              error_code: "missing_refresh_token",
             }, status: :bad_request
             return
           end
@@ -20,11 +22,11 @@ module Auth
             unless request.format.json?
               cookies[::Authentication::Staff::ACCESS_COOKIE_KEY] = cookie_options.merge(
                 value: credentials[:access_token],
-                expires: ::Authentication::Base::ACCESS_TOKEN_EXPIRY.from_now
+                expires: ::Authentication::Base::ACCESS_TOKEN_EXPIRY.from_now,
               )
               cookies.encrypted[::Authentication::Staff::REFRESH_COOKIE_KEY] = cookie_options.merge(
                 value: credentials[:refresh_token],
-                expires: 1.year.from_now
+                expires: 1.year.from_now,
               )
             end
 
@@ -32,8 +34,8 @@ module Auth
           else
             render json: {
               error: I18n.t("auth.token_refresh.errors.invalid_refresh_token",
-                            default: "Invalid or expired refresh token"),
-              error_code: "invalid_refresh_token"
+                            default: "Invalid or expired refresh token",),
+              error_code: "invalid_refresh_token",
             }, status: :unauthorized
           end
         end

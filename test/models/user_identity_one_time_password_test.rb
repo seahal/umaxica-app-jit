@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_one_time_passwords
@@ -52,7 +54,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     record = UserIdentityOneTimePassword.new(
       user: @user,
       private_key: @private_key,
-      last_otp_at: @last_otp_at
+      last_otp_at: @last_otp_at,
     )
 
     assert_equal @private_key, record.private_key
@@ -62,7 +64,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     record = UserIdentityOneTimePassword.new(
       user: @user,
       private_key: @private_key,
-      last_otp_at: @last_otp_at
+      last_otp_at: @last_otp_at,
     )
 
     # Compare timestamps ignoring nanosecond precision
@@ -72,7 +74,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
   test "auto-generates private_key if blank" do
     record = UserIdentityOneTimePassword.new(
       user: @user,
-      last_otp_at: @last_otp_at
+      last_otp_at: @last_otp_at,
     )
 
     # Private key should be generated automatically
@@ -84,7 +86,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     record = UserIdentityOneTimePassword.new(
       user: @user,
       private_key: @private_key,
-      last_otp_at: nil
+      last_otp_at: nil,
     )
 
     assert_not record.valid?
@@ -95,7 +97,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     record = UserIdentityOneTimePassword.new(
       user: @user,
       private_key: "x" * 1025,
-      last_otp_at: @last_otp_at
+      last_otp_at: @last_otp_at,
     )
 
     assert_not record.valid?
@@ -107,14 +109,14 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
       UserIdentityOneTimePassword.create!(
         user: @user,
         private_key: ROTP::Base32.random_base32,
-        last_otp_at: Time.current
+        last_otp_at: Time.current,
       )
     end
 
     extra_totp = UserIdentityOneTimePassword.new(
       user: @user,
       private_key: ROTP::Base32.random_base32,
-      last_otp_at: Time.current
+      last_otp_at: Time.current,
     )
 
     assert_not extra_totp.valid?

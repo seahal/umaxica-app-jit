@@ -1,7 +1,27 @@
-# Omakase Ruby styling for Rails
+# ============================================================
+# RuboCop Configuration
+# ============================================================
+# このファイルはRubyコードの静的解析とフォーマットを設定します
+#
+# 設定カテゴリ:
+# 1. 基本設定（AllCops, Plugins, Inheritance）
+# 2. レイアウト・フォーマット（Layout, Style）
+# 3. コード品質（Metrics, Lint）
+# 4. セキュリティ（Security）
+# 5. フレームワーク固有（Rails）
+# 6. パフォーマンス（Performance）
+# 7. テスト（Minitest）
+# 8. その他（Rake, I18n, Naming）
+
+# ============================================================
+# 1. 基本設定
+# ============================================================
+
+# Omakase Ruby styling for Railsを継承
 inherit_gem:
   rubocop-rails-omakase: rubocop.yml
 
+# プラグイン
 plugins:
   - rubocop-i18n
   - rubocop-rake
@@ -10,21 +30,17 @@ plugins:
   - rubocop-performance
   - rubocop-thread_safety
 
-# .rubocop.yml
+# 全Copに適用される設定
 AllCops:
-  # Target Ruby version
   TargetRubyVersion: 4.0
-  # Enable caching
-  UseCache: true
-  # Specify where to store cached results
-  CacheRootDirectory: tmp/rubocop_cache
-  # Enable new cops by default
   NewCops: enable
-  #
+  UseCache: true
+  CacheRootDirectory: tmp/rubocop_cache
   Exclude:
     - 'vendor/**/*'
     - 'node_modules/**/*'
     - 'db/schema.rb'
+    - 'db/*_schema.rb'
     - 'bin/**/*'
     - 'tmp/**/*'
   Include:
@@ -33,353 +49,895 @@ AllCops:
     - '**/Gemfile'
     - '**/Rakefile'
 
-Rails:
-  Enabled: true
-Security:
-  Enabled: true
-Security/CompoundHash: # new in 1.28
-  Enabled: true
-Security/IoMethods: # new in 1.22
-  Enabled: true
-Rails/ActionControllerFlashBeforeRender: # new in 2.16
-  Enabled: true
-Rails/ActionControllerTestCase: # new in 2.14
-  Enabled: true
-Rails/ActionOrder: # new in 2.17
-  Enabled: true
-Rails/ActiveRecordCallbacksOrder: # new in 2.7
-  Enabled: true
-Rails/ActiveSupportOnLoad: # new in 2.16
-  Enabled: true
-Rails/AddColumnIndex: # new in 2.11
-  Enabled: true
-Rails/AfterCommitOverride: # new in 2.8
-  Enabled: true
-Rails/AttributeDefaultBlockValue: # new in 2.9
-  Enabled: true
-Rails/CompactBlank: # new in 2.13
-  Enabled: true
-Rails/DangerousColumnNames: # new in 2.21
-  Enabled: true
-Rails/DeprecatedActiveModelErrorsMethods: # new in 2.14
-  Enabled: true
-Rails/DotSeparatedKeys: # new in 2.15
-  Enabled: true
-Rails/DuplicateAssociation: # new in 2.14
-  Enabled: true
-Rails/DuplicateScope: # new in 2.14
-  Enabled: true
-Rails/DurationArithmetic: # new in 2.13
-  Enabled: true
-Rails/EagerEvaluationLogMessage: # new in 2.11
-  Enabled: true
-Rails/EnumSyntax: # new in 2.26
-  Enabled: true
-Rails/EnvLocal: # new in 2.22
-  Enabled: true
-Rails/ExpandedDateRange: # new in 2.11
-  Enabled: true
-Rails/FindById: # new in 2.7
-  Enabled: true
-Rails/FreezeTime: # new in 2.16
-  Enabled: true
-Rails/I18nLazyLookup: # new in 2.14
-  Enabled: true
-Rails/I18nLocaleAssignment: # new in 2.11
-  Enabled: true
-Rails/I18nLocaleTexts: # new in 2.14
-  Enabled: true
-Rails/IgnoredColumnsAssignment: # new in 2.17
-  Enabled: true
-Rails/Inquiry: # new in 2.7
-  Enabled: true
-Rails/MailerName: # new in 2.7
-  Enabled: true
-Rails/MatchRoute: # new in 2.7
-  Enabled: true
-Rails/MigrationClassName: # new in 2.14
-  Enabled: true
-Rails/MultipleRoutePaths: # new in 2.29
-  Enabled: true
-Rails/NegateInclude: # new in 2.7
-  Enabled: true
-Rails/Pluck: # new in 2.7
-  Enabled: true
-Rails/PluckInWhere: # new in 2.7
-  Enabled: true
-Rails/RedundantActiveRecordAllMethod: # new in 2.21
-  Enabled: true
-Rails/RedundantPresenceValidationOnBelongsTo: # new in 2.13
-  Enabled: true
-Rails/RedundantTravelBack: # new in 2.12
-  Enabled: true
-Rails/RenderInline: # new in 2.7
-  Enabled: true
-Rails/RenderPlainText: # new in 2.7
-  Enabled: true
-Rails/ResponseParsedBody: # new in 2.18
-  Enabled: true
-Rails/RootJoinChain: # new in 2.13
-  Enabled: true
-Rails/RootPathnameMethods: # new in 2.16
-  Enabled: true
-Rails/RootPublicPath: # new in 2.15
-  Enabled: true
-Rails/ShortI18n: # new in 2.7
-  Enabled: true
-Rails/SquishedSQLHeredocs: # new in 2.8
-  Enabled: true
-Rails/StripHeredoc: # new in 2.15
-  Enabled: true
-Rails/StrongParametersExpect: # new in 2.29
-  Enabled: true
-Rails/ThreeStateBooleanColumn: # new in 2.19
-  Enabled: true
-Rails/TimeZoneAssignment: # new in 2.10
-  Enabled: true
-Rails/ToFormattedS: # new in 2.15
-  Enabled: true
-Rails/ToSWithArgument: # new in 2.16
-  Enabled: true
-Rails/TopLevelHashWithIndifferentAccess: # new in 2.16
-  Enabled: true
-Rails/TransactionExitStatement: # new in 2.14
-  Enabled: true
-Rails/UnusedRenderContent: # new in 2.21
-  Enabled: true
-Rails/WhereEquals: # new in 2.9
-  Enabled: true
-Rails/WhereExists: # new in 2.7
-  Enabled: true
-Rails/WhereMissing: # new in 2.16
-  Enabled: true
-Rails/WhereNot: # new in 2.8
-  Enabled: true
-Rails/WhereNotWithMultipleConditions: # new in 2.17
-  Enabled: true
-Rails/WhereRange: # new in 2.25
-  Enabled: true
-Rails/FindByOrAssignmentMemoization: # new in 2.33
-  Enabled: true
-Rails/OrderArguments: # new in 2.33
-  Enabled: true
-Style/AsciiComments:
-  Enabled: true
-Layout/IndentationWidth:
-  Enabled: true
-  Width: 2
-Layout/IndentationConsistency:
-  Enabled: true
-Layout/IndentationStyle:
-  Enabled: true
-Layout/EndAlignment:
-  Enabled: true
-Layout/EmptyLinesAroundBlockBody:
-  Enabled: true
-Layout/EmptyLinesAroundClassBody:
-  Enabled: true
-Layout/TrailingWhitespace:
-  Enabled: true
-Layout/TrailingEmptyLines:
-  Enabled: true
-Layout/SpaceInsideHashLiteralBraces:
-  Enabled: true
+# ============================================================
+# 2. レイアウト・フォーマット
+# ============================================================
 
 Layout:
   Enabled: true
-Style/Documentation:
-  Enabled: false
 
-# ============================================================
-# Performance Cops（パフォーマンス最適化）
-# ============================================================
-Performance:
+# ---------- インデント ----------
+Layout/IndentationWidth:
   Enabled: true
+  Width: 2
 
-Performance/AncestorsInclude:
+Layout/IndentationConsistency:
   Enabled: true
-Performance/BigDecimalWithNumericArgument:
-  Enabled: true
-Performance/BlockGivenWithExplicitBlock:
-  Enabled: true
-Performance/CollectionLiteralInLoop:
-  Enabled: true
-Performance/ConcurrentMonotonicTime:
-  Enabled: true
-Performance/ConstantRegexp:
-  Enabled: true
-Performance/MapCompact:
-  Enabled: true
-Performance/MethodObjectAsBlock:
-  Enabled: true
-Performance/RedundantEqualityComparisonBlock:
-  Enabled: true
-Performance/RedundantSplitRegexpArgument:
-  Enabled: true
-Performance/StringIdentifierArgument:
-  Enabled: true
-Performance/Sum:
-  Enabled: true
+  EnforcedStyle: normal
 
-# ============================================================
-# Metrics（コード複雑度・サイズ制限）
-# ============================================================
-Metrics/AbcSize:
-  Max: 30  # デフォルト: 17
-  Exclude:
-    - 'db/**/*_migrate/**/*'
-    - 'test/**/*'
+Layout/IndentationStyle:
+  Enabled: true
+  EnforcedStyle: spaces
 
-Metrics/BlockLength:
-  Max: 50
-  Exclude:
-    - 'config/**/*'
-    - 'db/**/*_migrate/**/*'
-    - 'test/**/*'
+Layout/EndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: variable
 
-Metrics/ClassLength:
-  Max: 200
-  Exclude:
-    - 'test/**/*'
+# ---------- 空行 ----------
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: true
+  EnforcedStyle: no_empty_lines
 
-Metrics/CyclomaticComplexity:
-  Max: 10  # デフォルト: 7
+Layout/EmptyLinesAroundClassBody:
+  Enabled: true
+  EnforcedStyle: no_empty_lines
 
-Metrics/MethodLength:
-  Max: 25  # デフォルト: 10
-  Exclude:
-    - 'db/**/*_migrate/**/*'
-    - 'test/**/*'
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: true
+  EnforcedStyle: no_empty_lines
 
-Metrics/ModuleLength:
-  Max: 200
-
-Metrics/ParameterLists:
-  Max: 5
-  MaxOptionalParameters: 3
-
-Metrics/PerceivedComplexity:
-  Max: 10
-
-# ============================================================
-# Lint（潜在的なバグの検出）
-# ============================================================
-Lint/AmbiguousAssignment:
-  Enabled: true
-Lint/AmbiguousOperatorPrecedence:
-  Enabled: true
-Lint/AmbiguousRange:
-  Enabled: true
-Lint/DeprecatedConstants:
-  Enabled: true
-Lint/DuplicateBranch:
-  Enabled: true
-Lint/DuplicateRegexpCharacterClassElement:
-  Enabled: true
-Lint/EmptyBlock:
-  Enabled: false
-Lint/EmptyClass:
-  Enabled: false
-Lint/IncompatibleIoSelectWithFiberScheduler:
-  Enabled: true
-Lint/LambdaWithoutLiteralBlock:
-  Enabled: true
-Lint/NoReturnInBeginEndBlocks:
-  Enabled: true
-Lint/NumberedParameterAssignment:
-  Enabled: true
-Lint/OrAssignmentToConstant:
-  Enabled: true
-Lint/RedundantDirGlobSort:
-  Enabled: true
-Lint/RequireRelativeSelfPath:
-  Enabled: true
-Lint/SymbolConversion:
-  Enabled: true
-Lint/ToEnumArguments:
-  Enabled: true
-Lint/TripleQuotes:
-  Enabled: true
-Lint/UnexpectedBlockArity:
-  Enabled: true
-Lint/UnmodifiedReduceAccumulator:
-  Enabled: true
-Lint/UselessRuby2Keywords:
+Layout/EmptyLinesAroundMethodBody:
   Enabled: true
 
-# ============================================================
-# Security（セキュリティ強化）
-# ============================================================
-Security/Eval:
-  Enabled: true
-Security/JSONLoad:
-  Enabled: true
-Security/MarshalLoad:
-  Enabled: true
-Security/Open:
-  Enabled: true
-Security/YAMLLoad:
+Layout/EmptyLineAfterGuardClause:
   Enabled: true
 
-# ============================================================
-# Style（コーディングスタイル）
-# ============================================================
-Style/ArgumentsForwarding:
-  Enabled: true
-Style/CollectionCompact:
-  Enabled: true
-Style/DocumentDynamicEvalDefinition:
-  Enabled: true
-Style/EndlessMethod:
-  Enabled: true
-Style/HashConversion:
-  Enabled: true
-Style/HashExcept:
-  Enabled: true
-Style/IfWithBooleanLiteralBranches:
-  Enabled: true
-Style/InPatternThen:
-  Enabled: true
-Style/MultilineInPatternThen:
-  Enabled: true
-Style/NilLambda:
-  Enabled: true
-Style/NumberedParameters:
-  Enabled: true
-Style/NumberedParametersLimit:
-  Enabled: true
-Style/QuotedSymbols:
-  Enabled: true
-Style/RedundantArgument:
-  Enabled: true
-Style/RedundantSelfAssignmentBranch:
-  Enabled: true
-Style/SelectByRegexp:
-  Enabled: true
-Style/StringChars:
-  Enabled: true
-Style/SwapValues:
+Layout/EmptyLineAfterMagicComment:
   Enabled: true
 
-# ============================================================
-# Layout（レイアウト・フォーマット）
-# ============================================================
+# ---------- スペース ----------
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: true
+  EnforcedStyle: space
+
+Layout/SpaceAroundOperators:
+  Enabled: true
+
+Layout/SpaceBeforeBlockBraces:
+  Enabled: true
+  EnforcedStyle: space
+
+Layout/SpaceInsideBlockBraces:
+  Enabled: true
+  EnforcedStyle: space
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: true
+  EnforcedStyle: no_space
+
+Layout/SpaceInsideParens:
+  Enabled: true
+  EnforcedStyle: no_space
+
+Layout/SpaceInsideRangeLiteral:
+  Enabled: true
+
+Layout/SpaceAroundEqualsInParameterDefault:
+  Enabled: true
+  EnforcedStyle: space
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Layout/SpaceBeforeComma:
+  Enabled: true
+
+Layout/SpaceAfterComma:
+  Enabled: true
+
+Layout/SpaceAfterColon:
+  Enabled: true
+
+Layout/SpaceAfterSemicolon:
+  Enabled: true
+
+Layout/SpaceBeforeFirstArg:
+  Enabled: true
+
+Layout/SpaceBeforeBrackets:
+  Enabled: true
+
+# ---------- 末尾の空白・空行 ----------
+Layout/TrailingWhitespace:
+  Enabled: true
+  AllowInHeredoc: false
+
+Layout/TrailingEmptyLines:
+  Enabled: true
+  EnforcedStyle: final_newline
+
+# ---------- 行の長さ ----------
 Layout/LineLength:
   Max: 160
   Exclude:
     - 'config/**/*'
     - 'db/**/*_migrate/**/*'
 
-Layout/SpaceBeforeBrackets:
+# ---------- 複数行のフォーマット ----------
+Layout/MultilineMethodCallIndentation:
   Enabled: true
+  EnforcedStyle: indented
+
+Layout/MultilineOperationIndentation:
+  Enabled: true
+  EnforcedStyle: indented
+
+Layout/FirstArrayElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+
+Layout/FirstHashElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+
+Layout/HashAlignment:
+  Enabled: true
+  EnforcedHashRocketStyle: key
+  EnforcedColonStyle: key
+
+Layout/ArgumentAlignment:
+  Enabled: true
+  EnforcedStyle: with_first_argument
+
+Layout/ParameterAlignment:
+  Enabled: true
+  EnforcedStyle: with_first_parameter
+
 Layout/LineEndStringConcatenationIndentation:
   Enabled: true
 
+# ---------- コメント ----------
+Layout/CommentIndentation:
+  Enabled: true
+
+Layout/LeadingCommentSpace:
+  Enabled: true
+
 # ============================================================
-# Naming（命名規則）
+# Style（コーディングスタイル）
 # ============================================================
+
+# ---------- 文字列 ----------
+Style/AsciiComments:
+  Enabled: true
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  Enabled: true
+  EnforcedStyle: double_quotes
+
+Style/FrozenStringLiteralComment:
+  Enabled: false  # 大規模な変更が必要なため無効化
+
+# ---------- ハッシュ・配列 ----------
+Style/HashSyntax:
+  Enabled: true
+  EnforcedStyle: ruby19_no_mixed_keys
+  EnforcedShorthandSyntax: either
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInArguments:
+  Enabled: true
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/WordArray:
+  Enabled: true
+  EnforcedStyle: percent
+  MinSize: 3
+
+Style/SymbolArray:
+  Enabled: true
+  EnforcedStyle: percent
+  MinSize: 3
+
+# ---------- メソッド定義 ----------
+Style/DefWithParentheses:
+  Enabled: true
+
+Style/MethodDefParentheses:
+  Enabled: true
+  EnforcedStyle: require_parentheses
+
+Style/EmptyMethod:
+  Enabled: true
+  EnforcedStyle: expanded
+
+# ---------- 条件式 ----------
+Style/ConditionalAssignment:
+  Enabled: true
+  EnforcedStyle: assign_to_condition
+
+Style/TernaryParentheses:
+  Enabled: true
+  EnforcedStyle: require_parentheses_when_complex
+
+# ---------- 数値・リテラル ----------
+Style/NumericLiterals:
+  Enabled: true
+  MinDigits: 5
+  Strict: false
+
+Style/PercentLiteralDelimiters:
+  Enabled: true
+  PreferredDelimiters:
+    "%": "()"
+    "%i": "()"
+    "%I": "()"
+    "%q": "()"
+    "%Q": "()"
+    "%r": "{}"
+    "%s": "()"
+    "%w": "()"
+    "%W": "()"
+    "%x": "()"
+
+# ---------- その他のStyle ----------
+Style/Documentation:
+  Enabled: false
+
+Style/ArgumentsForwarding:
+  Enabled: true
+
+Style/CollectionCompact:
+  Enabled: true
+
+Style/DocumentDynamicEvalDefinition:
+  Enabled: true
+
+Style/EndlessMethod:
+  Enabled: true
+
+Style/HashConversion:
+  Enabled: true
+
+Style/HashExcept:
+  Enabled: true
+
+Style/IfWithBooleanLiteralBranches:
+  Enabled: true
+
+Style/InPatternThen:
+  Enabled: true
+
+Style/MultilineInPatternThen:
+  Enabled: true
+
+Style/NilLambda:
+  Enabled: true
+
+Style/NumberedParameters:
+  Enabled: true
+
+Style/NumberedParametersLimit:
+  Enabled: true
+
+Style/QuotedSymbols:
+  Enabled: true
+
+Style/RedundantArgument:
+  Enabled: true
+
+Style/RedundantSelfAssignmentBranch:
+  Enabled: true
+
+Style/SelectByRegexp:
+  Enabled: true
+
+Style/StringChars:
+  Enabled: true
+
+Style/SwapValues:
+  Enabled: true
+
+# ============================================================
+# 3. コード品質
+# ============================================================
+
+# ---------- Metrics（コード複雑度・サイズ制限） ----------
+Metrics/AbcSize:
+  Max: 20
+  Exclude:
+    - 'db/**/*_migrate/**/*'
+    - 'test/**/*'
+
+Metrics/BlockLength:
+  Max: 25
+  Exclude:
+    - 'config/**/*'
+    - 'db/**/*_migrate/**/*'
+    - 'test/**/*'
+
+Metrics/ClassLength:
+  Max: 150
+  Exclude:
+    - 'test/**/*'
+
+Metrics/CyclomaticComplexity:
+  Max: 8
+
+Metrics/MethodLength:
+  Max: 15
+  Exclude:
+    - 'db/**/*_migrate/**/*'
+    - 'test/**/*'
+
+Metrics/ModuleLength:
+  Max: 150
+
+Metrics/ParameterLists:
+  Max: 5
+  MaxOptionalParameters: 3
+
+Metrics/PerceivedComplexity:
+  Max: 8
+
+# ---------- Lint（潜在的なバグの検出） ----------
+Lint/AmbiguousAssignment:
+  Enabled: true
+
+Lint/AmbiguousOperatorPrecedence:
+  Enabled: true
+
+Lint/AmbiguousRange:
+  Enabled: true
+
+Lint/DeprecatedConstants:
+  Enabled: true
+
+Lint/DuplicateBranch:
+  Enabled: true
+
+Lint/DuplicateRegexpCharacterClassElement:
+  Enabled: true
+
+Lint/EmptyBlock:
+  Enabled: true
+  AllowComments: true
+  AllowEmptyLambdas: true
+  Exclude:
+    - 'test/**/*'
+
+Lint/EmptyClass:
+  Enabled: true
+  AllowComments: true
+  Exclude:
+    - 'app/services/**/*'
+    - 'test/**/*'
+
+Lint/IncompatibleIoSelectWithFiberScheduler:
+  Enabled: true
+
+Lint/LambdaWithoutLiteralBlock:
+  Enabled: true
+
+Lint/NoReturnInBeginEndBlocks:
+  Enabled: true
+
+Lint/NumberedParameterAssignment:
+  Enabled: true
+
+Lint/OrAssignmentToConstant:
+  Enabled: true
+
+Lint/RedundantDirGlobSort:
+  Enabled: true
+
+Lint/RequireRelativeSelfPath:
+  Enabled: true
+
+Lint/SymbolConversion:
+  Enabled: true
+
+Lint/ToEnumArguments:
+  Enabled: true
+
+Lint/TripleQuotes:
+  Enabled: true
+
+Lint/UnexpectedBlockArity:
+  Enabled: true
+
+Lint/UnmodifiedReduceAccumulator:
+  Enabled: true
+
+Lint/UselessRuby2Keywords:
+  Enabled: true
+
+Lint/ConstantDefinitionInBlock:
+  Enabled: true
+  Exclude:
+    - 'config/initializers/**/*'
+
+# ============================================================
+# 4. セキュリティ
+# ============================================================
+
+Security:
+  Enabled: true
+
+# ---------- 危険なコード実行 ----------
+Security/Eval:
+  Enabled: true
+
+Security/JSONLoad:
+  Enabled: true
+
+Security/MarshalLoad:
+  Enabled: true
+
+Security/YAMLLoad:
+  Enabled: true
+
+Security/Open:
+  Enabled: true
+
+Security/CompoundHash:
+  Enabled: true
+
+Security/IoMethods:
+  Enabled: true
+
+# ---------- デバッグコード検出 ----------
+Lint/Debugger:
+  Enabled: true
+
+# ---------- 未使用引数検出 ----------
+Lint/UnusedMethodArgument:
+  Enabled: true
+  AllowUnusedKeywordArguments: false
+  IgnoreEmptyMethods: true
+  Exclude:
+    - 'test/**/*'
+
+Lint/UnusedBlockArgument:
+  Enabled: true
+  AllowUnusedKeywordArguments: false
+  IgnoreEmptyBlocks: true
+  Exclude:
+    - 'test/**/*'
+
+# ---------- 非推奨API検出 ----------
+Lint/UriEscapeUnescape:
+  Enabled: true
+
+# ============================================================
+# 5. Rails固有の設定
+# ============================================================
+
+Rails:
+  Enabled: true
+
+# ---------- セキュリティ関連 ----------
+Rails/OutputSafety:
+  Enabled: true
+
+Rails/BulkChangeTable:
+  Enabled: true
+
+Rails/HttpPositionalArguments:
+  Enabled: true
+
+Rails/SkipsModelValidations:
+  Enabled: true
+  AllowedMethods:
+    - touch
+    - touch_all
+
+Rails/UnknownEnv:
+  Enabled: true
+
+Rails/FilePath:
+  Enabled: true
+
+# ---------- Rails Cops（自動有効化された新しいCop） ----------
+Rails/ActionControllerFlashBeforeRender:
+  Enabled: true
+
+Rails/ActionControllerTestCase:
+  Enabled: true
+
+Rails/ActionOrder:
+  Enabled: true
+
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: true
+
+Rails/ActiveSupportOnLoad:
+  Enabled: true
+
+Rails/AddColumnIndex:
+  Enabled: true
+
+Rails/AfterCommitOverride:
+  Enabled: true
+
+Rails/AttributeDefaultBlockValue:
+  Enabled: true
+
+Rails/CompactBlank:
+  Enabled: true
+
+Rails/DangerousColumnNames:
+  Enabled: true
+
+Rails/DeprecatedActiveModelErrorsMethods:
+  Enabled: true
+
+Rails/DotSeparatedKeys:
+  Enabled: true
+
+Rails/DuplicateAssociation:
+  Enabled: true
+
+Rails/DuplicateScope:
+  Enabled: true
+
+Rails/DurationArithmetic:
+  Enabled: true
+
+Rails/EagerEvaluationLogMessage:
+  Enabled: true
+
+Rails/EnumSyntax:
+  Enabled: true
+
+Rails/EnvLocal:
+  Enabled: true
+
+Rails/ExpandedDateRange:
+  Enabled: true
+
+Rails/FindById:
+  Enabled: true
+
+Rails/FreezeTime:
+  Enabled: true
+
+Rails/I18nLazyLookup:
+  Enabled: true
+
+Rails/I18nLocaleAssignment:
+  Enabled: true
+
+Rails/I18nLocaleTexts:
+  Enabled: true
+
+Rails/IgnoredColumnsAssignment:
+  Enabled: true
+
+Rails/Inquiry:
+  Enabled: true
+
+Rails/MailerName:
+  Enabled: true
+
+Rails/MatchRoute:
+  Enabled: true
+
+Rails/MigrationClassName:
+  Enabled: true
+
+Rails/MultipleRoutePaths:
+  Enabled: true
+
+Rails/NegateInclude:
+  Enabled: true
+
+Rails/Pluck:
+  Enabled: true
+
+Rails/PluckInWhere:
+  Enabled: true
+
+Rails/RedundantActiveRecordAllMethod:
+  Enabled: true
+
+Rails/RedundantPresenceValidationOnBelongsTo:
+  Enabled: true
+
+Rails/RedundantTravelBack:
+  Enabled: true
+
+Rails/RenderInline:
+  Enabled: true
+
+Rails/RenderPlainText:
+  Enabled: true
+
+Rails/ResponseParsedBody:
+  Enabled: true
+
+Rails/RootJoinChain:
+  Enabled: true
+
+Rails/RootPathnameMethods:
+  Enabled: true
+
+Rails/RootPublicPath:
+  Enabled: true
+
+Rails/ShortI18n:
+  Enabled: true
+
+Rails/SquishedSQLHeredocs:
+  Enabled: true
+
+Rails/StripHeredoc:
+  Enabled: true
+
+Rails/StrongParametersExpect:
+  Enabled: true
+
+Rails/ThreeStateBooleanColumn:
+  Enabled: true
+
+Rails/TimeZoneAssignment:
+  Enabled: true
+
+Rails/ToFormattedS:
+  Enabled: true
+
+Rails/ToSWithArgument:
+  Enabled: true
+
+Rails/TopLevelHashWithIndifferentAccess:
+  Enabled: true
+
+Rails/TransactionExitStatement:
+  Enabled: true
+
+Rails/UnusedRenderContent:
+  Enabled: true
+
+Rails/WhereEquals:
+  Enabled: true
+
+Rails/WhereExists:
+  Enabled: true
+
+Rails/WhereMissing:
+  Enabled: true
+
+Rails/WhereNot:
+  Enabled: true
+
+Rails/WhereNotWithMultipleConditions:
+  Enabled: true
+
+Rails/WhereRange:
+  Enabled: true
+
+Rails/FindByOrAssignmentMemoization:
+  Enabled: true
+
+Rails/OrderArguments:
+  Enabled: true
+
+# ============================================================
+# 6. パフォーマンス
+# ============================================================
+
+Performance:
+  Enabled: true
+
+Performance/AncestorsInclude:
+  Enabled: true
+
+Performance/BigDecimalWithNumericArgument:
+  Enabled: true
+
+Performance/BlockGivenWithExplicitBlock:
+  Enabled: true
+
+Performance/CollectionLiteralInLoop:
+  Enabled: true
+
+Performance/ConcurrentMonotonicTime:
+  Enabled: true
+
+Performance/ConstantRegexp:
+  Enabled: true
+
+Performance/MapCompact:
+  Enabled: true
+
+Performance/MethodObjectAsBlock:
+  Enabled: true
+
+Performance/RedundantEqualityComparisonBlock:
+  Enabled: true
+
+Performance/RedundantSplitRegexpArgument:
+  Enabled: true
+
+Performance/StringIdentifierArgument:
+  Enabled: true
+
+Performance/Sum:
+  Enabled: true
+
+# ============================================================
+# 7. テスト（Minitest）
+# ============================================================
+
+Minitest:
+  Enabled: true
+
+# ---------- アサーション ----------
+Minitest/AssertEmpty:
+  Enabled: true
+
+Minitest/AssertEqual:
+  Enabled: true
+
+Minitest/AssertIncludes:
+  Enabled: true
+
+Minitest/AssertInstanceOf:
+  Enabled: true
+
+Minitest/AssertKindOf:
+  Enabled: true
+
+Minitest/AssertMatch:
+  Enabled: true
+
+Minitest/AssertNil:
+  Enabled: true
+
+Minitest/AssertOperator:
+  Enabled: true
+
+Minitest/AssertPathExists:
+  Enabled: true
+
+Minitest/AssertPredicate:
+  Enabled: true
+
+Minitest/AssertRespondTo:
+  Enabled: true
+
+Minitest/AssertSame:
+  Enabled: true
+
+Minitest/AssertTruthy:
+  Enabled: true
+
+Minitest/AssertWithExpectedArgument:
+  Enabled: true
+
+# ---------- Refuteアサーション ----------
+Minitest/RefuteEmpty:
+  Enabled: true
+
+Minitest/RefuteEqual:
+  Enabled: true
+
+Minitest/RefuteFalse:
+  Enabled: true
+
+Minitest/RefuteIncludes:
+  Enabled: true
+
+Minitest/RefuteInstanceOf:
+  Enabled: true
+
+Minitest/RefuteKindOf:
+  Enabled: true
+
+Minitest/RefuteMatch:
+  Enabled: true
+
+Minitest/RefuteNil:
+  Enabled: true
+
+Minitest/RefuteOperator:
+  Enabled: true
+
+Minitest/RefutePathExists:
+  Enabled: true
+
+Minitest/RefutePredicate:
+  Enabled: true
+
+Minitest/RefuteRespondTo:
+  Enabled: true
+
+Minitest/RefuteSame:
+  Enabled: true
+
+# ---------- テスト品質 ----------
+Minitest/AssertionInLifecycleHook:
+  Enabled: true
+
+Minitest/DuplicateTestRun:
+  Enabled: true
+
+Minitest/EmptyLineBeforeAssertionMethods:
+  Enabled: false
+
+Minitest/Focus:
+  Enabled: true
+
+Minitest/GlobalExpectations:
+  Enabled: false
+
+Minitest/LifecycleHooksOrder:
+  Enabled: true
+
+Minitest/LiteralAsActualArgument:
+  Enabled: true
+
+Minitest/MultipleAssertions:
+  Enabled: false
+
+Minitest/NoAssertions:
+  Enabled: false
+
+Minitest/NoTestCases:
+  Enabled: false
+
+Minitest/NonExecutableTestMethod:
+  Enabled: true
+
+Minitest/NonPublicTestMethod:
+  Enabled: true
+
+Minitest/RedundantMessageArgument:
+  Enabled: true
+
+Minitest/ReturnInTestMethod:
+  Enabled: true
+
+Minitest/SkipEnsure:
+  Enabled: true
+
+Minitest/SkipWithoutReason:
+  Enabled: false
+
+Minitest/TestFileName:
+  Enabled: true
+
+Minitest/TestMethodName:
+  Enabled: true
+
+Minitest/UnreachableAssertion:
+  Enabled: true
+
+Minitest/UnspecifiedException:
+  Enabled: true
+
+Minitest/UselessAssertion:
+  Enabled: true
+
+# ============================================================
+# 8. その他
+# ============================================================
+
+# ---------- Naming（命名規則） ----------
 Naming/BlockForwarding:
   Enabled: true
+
 Naming/InclusiveLanguage:
   Enabled: true
   FlaggedTerms:
@@ -392,135 +950,28 @@ Naming/InclusiveLanguage:
         - denylist
         - blocked
 
-# ============================================================
-# Minitest（テストコード品質）
-# ============================================================
-Minitest:
-  Enabled: true
-
-# アサーションの適切な使用
-Minitest/AssertEmpty:
-  Enabled: true
-Minitest/AssertEqual:
-  Enabled: true
-Minitest/AssertIncludes:
-  Enabled: true
-Minitest/AssertInstanceOf:
-  Enabled: true
-Minitest/AssertKindOf:
-  Enabled: true
-Minitest/AssertMatch:
-  Enabled: true
-Minitest/AssertNil:
-  Enabled: true
-Minitest/AssertOperator:
-  Enabled: true
-Minitest/AssertPathExists:
-  Enabled: true
-Minitest/AssertPredicate:
-  Enabled: true
-Minitest/AssertRespondTo:
-  Enabled: true
-Minitest/AssertSame:
-  Enabled: true
-Minitest/AssertTruthy:
-  Enabled: true
-Minitest/AssertWithExpectedArgument:
-  Enabled: true
-
-# Refuteアサーションの適切な使用
-Minitest/RefuteEmpty:
-  Enabled: true
-Minitest/RefuteEqual:
-  Enabled: true
-Minitest/RefuteFalse:
-  Enabled: true
-Minitest/RefuteIncludes:
-  Enabled: true
-Minitest/RefuteInstanceOf:
-  Enabled: true
-Minitest/RefuteKindOf:
-  Enabled: true
-Minitest/RefuteMatch:
-  Enabled: true
-Minitest/RefuteNil:
-  Enabled: true
-Minitest/RefuteOperator:
-  Enabled: true
-Minitest/RefutePathExists:
-  Enabled: true
-Minitest/RefutePredicate:
-  Enabled: true
-Minitest/RefuteRespondTo:
-  Enabled: true
-Minitest/RefuteSame:
-  Enabled: true
-
-# テストの品質向上
-Minitest/AssertionInLifecycleHook:
-  Enabled: true
-Minitest/DuplicateTestRun:
-  Enabled: true
-Minitest/EmptyLineBeforeAssertionMethods:
-  Enabled: false  # スタイルの好みによる
-Minitest/Focus:
-  Enabled: true  # focus: true を検出（本番環境でのフォーカステスト防止）
-Minitest/GlobalExpectations:
-  Enabled: false  # グローバルな期待値は許可（Rails標準）
-Minitest/LifecycleHooksOrder:
-  Enabled: true
-Minitest/LiteralAsActualArgument:
-  Enabled: true
-Minitest/MultipleAssertions:
-  Enabled: false  # 複数のアサーションは許可
-Minitest/NoAssertions:
-  Enabled: false  # アサーションのないテストを検出（開発中は無効化）
-Minitest/NoTestCases:
-  Enabled: false  # テストケースのないクラスを検出（プレースホルダーを許可）
-Minitest/NonExecutableTestMethod:
-  Enabled: true
-Minitest/NonPublicTestMethod:
-  Enabled: true
-Minitest/RedundantMessageArgument:
-  Enabled: true
-Minitest/ReturnInTestMethod:
-  Enabled: true
-Minitest/SkipEnsure:
-  Enabled: true
-Minitest/SkipWithoutReason:
-  Enabled: false  # スキップ理由は推奨だが必須ではない
-Minitest/TestFileName:
-  Enabled: true
-Minitest/TestMethodName:
-  Enabled: true
-Minitest/UnreachableAssertion:
-  Enabled: true
-Minitest/UnspecifiedException:
-  Enabled: true
-Minitest/UselessAssertion:
-  Enabled: true
-
-# ============================================================
-# Rake（Rakeタスク品質）
-# ============================================================
+# ---------- Rake ----------
 Rake:
   Enabled: true
 
 Rake/ClassDefinitionInTask:
-  Enabled: true  # タスク内でのクラス定義を検出
+  Enabled: true
+
 Rake/Desc:
-  Enabled: true  # 公開タスクには説明（desc）が必要
+  Enabled: true
+
 Rake/DuplicateNamespace:
-  Enabled: true  # 重複した名前空間を検出
+  Enabled: true
+
 Rake/DuplicateTask:
-  Enabled: true  # 重複したタスクを検出
+  Enabled: true
+
 Rake/MethodDefinitionInTask:
-  Enabled: true  # タスク内でのメソッド定義を検出
+  Enabled: true
 
-
-# You *must* choose GetText or Rails-i18n style checking
-# If you want rails-i18n-style checking
+# ---------- I18n ----------
 I18n/RailsI18n:
   Enabled: true
+
 I18n/GetText:
   Enabled: false

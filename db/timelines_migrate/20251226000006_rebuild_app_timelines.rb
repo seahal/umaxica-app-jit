@@ -14,7 +14,7 @@ class RebuildAppTimelines < ActiveRecord::Migration[8.2]
     end
 
     add_index :app_timelines, :permalink, unique: true
-    add_index :app_timelines, [ :published_at, :expires_at ]
+    add_index :app_timelines, [:published_at, :expires_at]
   end
 
   def down

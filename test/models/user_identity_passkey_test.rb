@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_passkeys
@@ -31,7 +33,7 @@ class UserIdentityPasskeyTest < ActiveSupport::TestCase
       external_id: SecureRandom.uuid,
       public_key: "test-key",
       description: "My Passkey",
-      sign_count: 0
+      sign_count: 0,
     )
   end
 
@@ -74,7 +76,7 @@ class UserIdentityPasskeyTest < ActiveSupport::TestCase
         webauthn_id: SecureRandom.uuid,
         external_id: SecureRandom.uuid,
         public_key: "test-key-#{i}",
-        description: "Key #{i}"
+        description: "Key #{i}",
       )
     end
 
@@ -83,7 +85,7 @@ class UserIdentityPasskeyTest < ActiveSupport::TestCase
       webauthn_id: SecureRandom.uuid,
       external_id: SecureRandom.uuid,
       public_key: "overflow-key",
-      description: "Overflow key"
+      description: "Overflow key",
     )
 
     assert_not extra_passkey.valid?

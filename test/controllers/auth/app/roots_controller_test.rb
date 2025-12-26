@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Auth::App::RootsControllerTest < ActionDispatch::IntegrationTest

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_telephones
@@ -29,7 +31,7 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
       number: "+1234567890",
       confirm_policy: true,
       confirm_using_mfa: true,
-      user: @user
+      user: @user,
     }.freeze
   end
 
@@ -57,7 +59,7 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
     user_telephone.require_turnstile(
       response: "test-token",
       remote_ip: "127.0.0.1",
-      error_message: "Turnstile failed"
+      error_message: "Turnstile failed",
     )
 
     assert_not user_telephone.valid?
@@ -142,7 +144,7 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
         number: "+1234567890#{i}",
         confirm_policy: true,
         confirm_using_mfa: true,
-        user: user
+        user: user,
       )
     end
 
@@ -150,7 +152,7 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
       number: "+19876543210",
       confirm_policy: true,
       confirm_using_mfa: true,
-      user: user
+      user: user,
     )
 
     assert_not extra_telephone.valid?

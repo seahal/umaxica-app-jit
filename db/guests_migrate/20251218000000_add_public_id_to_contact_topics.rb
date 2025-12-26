@@ -1,5 +1,5 @@
 class AddPublicIdToContactTopics < ActiveRecord::Migration[8.2]
-  TABLES = %i[app_contact_topics com_contact_topics org_contact_topics].freeze
+  TABLES = %i(app_contact_topics com_contact_topics org_contact_topics).freeze
 
   def up
     TABLES.each do |table|
@@ -23,13 +23,13 @@ class AddPublicIdToContactTopics < ActiveRecord::Migration[8.2]
 
   private
 
-    def backfill_public_ids(table)
-      say_with_time "Backfilling public_id for #{table}" do
-        execute <<~SQL.squish
-          UPDATE #{table}
-          SET public_id = SUBSTR(REPLACE(gen_random_uuid()::text, '-', ''), 1, 21)
-          WHERE public_id IS NULL
-        SQL
-      end
+  def backfill_public_ids(table)
+    say_with_time "Backfilling public_id for #{table}" do
+      execute <<~SQL.squish
+        UPDATE #{table}
+        SET public_id = SUBSTR(REPLACE(gen_random_uuid()::text, '-', ''), 1, 21)
+        WHERE public_id IS NULL
+      SQL
     end
+  end
 end

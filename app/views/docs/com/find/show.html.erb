@@ -1,0 +1,110 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Panel: Document List -->
+    <div class="lg:col-span-1">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-4">Documents</h1>
+
+        <%= form_with url: docs_com_find_path("search"), method: :get, local: true, class: "mb-4" do |f| %>
+          <div class="flex gap-2">
+            <%= text_field_tag :q, params[:q],
+                placeholder: "Search...",
+                class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" %>
+            <%= submit_tag "Search", class: "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm" %>
+          </div>
+        <% end %>
+
+        <div class="text-xs text-gray-600 mb-4">
+          <% if @query.present? && @query != "all" %>
+            <%= @total_count %> found
+            | <%= link_to "All", docs_com_find_path("all"), class: "text-blue-600 hover:underline" %>
+          <% else %>
+            <%= @total_count %> documents
+          <% end %>
+        </div>
+      </div>
+
+      <% if @documents.any? %>
+        <div class="space-y-2">
+          <% @documents.each do |document| %>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <%= link_to docs_com_post_path(id: document.permalink),
+                          data: { turbo_frame: "document_detail" },
+                          class: "block" do %>
+                <h3 class="font-semibold text-sm mb-1 text-gray-900">
+                  <% begin %>
+                    <%= document.latest_version.title %>
+                  <% rescue ActiveRecord::RecordNotFound, ActiveRecord::Encryption::Errors::Decryption %>
+                    <%= document.permalink %>
+                  <% end %>
+                </h3>
+                <div class="flex items-center gap-2 text-xs text-gray-500">
+                  <code class="bg-gray-100 px-2 py-0.5 rounded"><%= document.permalink %></code>
+                  <% if document.status_id == "ACTIVE" %>
+                    <span class="text-green-600">●</span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Pagination -->
+        <% if @total_pages > 1 %>
+          <div class="mt-4">
+            <nav class="flex justify-center">
+              <ul class="inline-flex -space-x-px text-sm">
+                <% if @page > 1 %>
+                  <li>
+                    <%= link_to "‹",
+                        docs_com_find_path(@query.presence || "all", page: @page - 1),
+                        class: "px-3 py-2 border border-gray-300 rounded-l-lg hover:bg-gray-100" %>
+                  </li>
+                <% end %>
+
+                <% (1..@total_pages).each do |page_num| %>
+                  <li>
+                    <% if page_num == @page %>
+                      <span class="px-3 py-2 border border-gray-300 bg-blue-50 text-blue-600"><%= page_num %></span>
+                    <% else %>
+                      <%= link_to page_num,
+                          docs_com_find_path(@query.presence || "all", page: page_num),
+                          class: "px-3 py-2 border border-gray-300 hover:bg-gray-100" %>
+                    <% end %>
+                  </li>
+                <% end %>
+
+                <% if @page < @total_pages %>
+                  <li>
+                    <%= link_to "›",
+                        docs_com_find_path(@query.presence || "all", page: @page + 1),
+                        class: "px-3 py-2 border border-gray-300 rounded-r-lg hover:bg-gray-100" %>
+                  </li>
+                <% end %>
+              </ul>
+            </nav>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="bg-gray-50 rounded-lg p-8 text-center">
+          <p class="text-gray-600 text-sm">No documents found</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Right Panel: Document Detail (Turbo Frame) -->
+    <div class="lg:col-span-2">
+      <%= turbo_frame_tag "document_detail" do %>
+        <div class="bg-gray-50 rounded-lg p-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Select a document</h3>
+          <p class="text-gray-600">
+            Click on a document from the list to view its details
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

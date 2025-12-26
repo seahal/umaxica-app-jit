@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_document_statuses
@@ -20,7 +22,7 @@ class AppDocumentStatusTest < ActiveSupport::TestCase
   end
 
   test "inherits from BusinessesRecord" do
-    assert_operator AppDocumentStatus, :<, BusinessesRecord
+    assert_operator AppDocumentStatus, :<, DocumentRecord
   end
 
   test "id is required" do

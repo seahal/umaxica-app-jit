@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_contacts
@@ -38,7 +40,7 @@ class ComContactTest < ActiveSupport::TestCase
       ComContactEmail.create!(
         com_contact: contact,
         email_address: "test@example.com",
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
     end
 
@@ -46,7 +48,7 @@ class ComContactTest < ActiveSupport::TestCase
       ComContactTelephone.create!(
         com_contact: contact,
         telephone_number: "+1234567890",
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
     end
 
@@ -77,7 +79,7 @@ class ComContactTest < ActiveSupport::TestCase
     contact = ComContact.new(
       category_id: sample_category,
       status_id: sample_status,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -85,13 +87,13 @@ class ComContactTest < ActiveSupport::TestCase
     ComContactEmail.create!(
       com_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal sample_category, contact.category_id
@@ -102,7 +104,7 @@ class ComContactTest < ActiveSupport::TestCase
     contact = ComContact.new(
       category_id: nil,
       status_id: nil,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -110,13 +112,13 @@ class ComContactTest < ActiveSupport::TestCase
     ComContactEmail.create!(
       com_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "SECURITY_ISSUE", contact.category_id
@@ -253,7 +255,7 @@ class ComContactTest < ActiveSupport::TestCase
   test "should reference contact_category by title" do
     contact = ComContact.new(
       category_id: "OTHERS",
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -261,13 +263,13 @@ class ComContactTest < ActiveSupport::TestCase
     ComContactEmail.create!(
       com_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "OTHERS", contact.category_id
@@ -278,7 +280,7 @@ class ComContactTest < ActiveSupport::TestCase
 
     contact = ComContact.new(
       status_id: "SECURITY_ISSUE",
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -286,13 +288,13 @@ class ComContactTest < ActiveSupport::TestCase
     ComContactEmail.create!(
       com_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "SECURITY_ISSUE", contact.status_id
@@ -301,7 +303,7 @@ class ComContactTest < ActiveSupport::TestCase
   test "should set default category_id when nil" do
     contact = ComContact.new(
       category_id: nil,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -309,13 +311,13 @@ class ComContactTest < ActiveSupport::TestCase
     ComContactEmail.create!(
       com_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "SECURITY_ISSUE", contact.category_id
@@ -324,7 +326,7 @@ class ComContactTest < ActiveSupport::TestCase
   test "should set default status_id when nil" do
     contact = ComContact.new(
       status_id: nil,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -332,13 +334,13 @@ class ComContactTest < ActiveSupport::TestCase
     ComContactEmail.create!(
       com_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "NONE", contact.status_id
@@ -367,13 +369,13 @@ class ComContactTest < ActiveSupport::TestCase
     email = ComContactEmail.create!(
       com_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_not_nil contact.com_contact_email
@@ -390,7 +392,7 @@ class ComContactTest < ActiveSupport::TestCase
     contact = ComContact.new(
       confirm_policy: "0",
       category_id: sample_category,
-      status_id: sample_status
+      status_id: sample_status,
     )
 
     assert_not contact.valid?
@@ -401,7 +403,7 @@ class ComContactTest < ActiveSupport::TestCase
     contact = ComContact.new(
       confirm_policy: "1",
       category_id: sample_category,
-      status_id: sample_status
+      status_id: sample_status,
     )
 
     assert_predicate contact, :valid?

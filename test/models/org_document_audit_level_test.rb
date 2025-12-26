@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: org_document_audit_levels
@@ -18,13 +20,13 @@ class OrgDocumentAuditLevelTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key"
+      revision_key: "rev_key",
     )
 
     OrgDocumentAudit.create!(
       org_document: doc,
       org_document_audit_event: org_document_audit_events(:CREATED),
-      org_document_audit_level: level
+      org_document_audit_level: level,
     )
 
     assert_no_difference "OrgDocumentAuditLevel.count" do

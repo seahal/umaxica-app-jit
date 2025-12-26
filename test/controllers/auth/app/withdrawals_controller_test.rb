@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require_relative "../../../../app/errors/auth/withdrawal_error"
 
@@ -22,7 +24,7 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
       iss: @host,
       aud: "umaxica-api",
       sub: @user.id,
-      type: "user"
+      type: "user",
     }
 
     key = jwt_private_key

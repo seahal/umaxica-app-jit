@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Rotates refresh tokens using the public_id/verifier format.
 # Keeps verification centralized and raises a dedicated error on failure.
 module Auth
@@ -22,15 +24,15 @@ module Auth
 
     private
 
-      def parse_refresh_token!
-        parsed = UserToken.parse_refresh_token(@refresh_token)
-        raise InvalidRefreshToken, "invalid_format" unless parsed
+    def parse_refresh_token!
+      parsed = UserToken.parse_refresh_token(@refresh_token)
+      raise InvalidRefreshToken, "invalid_format" unless parsed
 
-        parsed
-      end
+      parsed
+    end
 
-      def find_token(public_id)
-        UserToken.find_by(public_id: public_id) || StaffToken.find_by(public_id: public_id)
-      end
+    def find_token(public_id)
+      UserToken.find_by(public_id: public_id) || StaffToken.find_by(public_id: public_id)
+    end
   end
 end

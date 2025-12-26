@@ -15,6 +15,6 @@ class CreateOrgTimelineVersions < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :org_timeline_versions, [ :org_timeline_id, :created_at ]
+    add_index :org_timeline_versions, [:org_timeline_id, :created_at]
   end
 end

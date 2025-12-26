@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 # Ensures refresh token parsing/verification/rotation behavior stays consistent.

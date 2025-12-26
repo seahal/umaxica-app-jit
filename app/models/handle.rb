@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: handles
@@ -28,6 +30,11 @@ class Handle < IdentitiesRecord
 
   has_many :handle_assignments, dependent: :restrict_with_error
   has_many :avatars, through: :handle_assignments
+  has_many :active_avatars,
+           class_name: "Avatar",
+           foreign_key: "active_handle_id",
+           inverse_of: :active_handle,
+           dependent: :restrict_with_error
 
   validates :public_id, presence: true, uniqueness: true
   validates :handle, presence: true,

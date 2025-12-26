@@ -15,6 +15,6 @@ class CreateComTimelineVersions < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :com_timeline_versions, [ :com_timeline_id, :created_at ]
+    add_index :com_timeline_versions, [:com_timeline_id, :created_at]
   end
 end

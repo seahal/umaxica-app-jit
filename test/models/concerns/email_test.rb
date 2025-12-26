@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 # Test with UserIdentityEmail which includes Email
@@ -46,10 +48,10 @@ class EmailTest < ActiveSupport::TestCase
 
     # Different emails should have different encrypted values
     raw1 = UserIdentityEmail.connection.execute(
-      UserIdentityEmail.sanitize_sql_array([ sql, { id: email1.id } ])
+      UserIdentityEmail.sanitize_sql_array([sql, { id: email1.id }]),
     ).first
     raw2 = UserIdentityEmail.connection.execute(
-      UserIdentityEmail.sanitize_sql_array([ sql, { id: email2.id } ])
+      UserIdentityEmail.sanitize_sql_array([sql, { id: email2.id }]),
     ).first
 
     assert_not_equal raw1["address"], raw2["address"]

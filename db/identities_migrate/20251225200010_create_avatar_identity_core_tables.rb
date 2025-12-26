@@ -44,8 +44,8 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
 
     add_index :handle_assignments, :handle_id, unique: true, where: "valid_to = 'infinity'"
     add_index :handle_assignments, :avatar_id, unique: true, where: "valid_to = 'infinity'"
-    add_index :handle_assignments, [ :avatar_id, :valid_from ], order: { valid_from: :desc }
-    add_index :handle_assignments, [ :handle_id, :valid_from ], order: { valid_from: :desc }
+    add_index :handle_assignments, [:avatar_id, :valid_from], order: { valid_from: :desc }
+    add_index :handle_assignments, [:handle_id, :valid_from], order: { valid_from: :desc }
     add_foreign_key :handle_assignments, :avatars
     add_foreign_key :handle_assignments, :handles
 
@@ -60,7 +60,7 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
     end
 
     add_index :avatar_monikers, :avatar_id, unique: true, where: "valid_to = 'infinity'"
-    add_index :avatar_monikers, [ :avatar_id, :valid_from ], order: { valid_from: :desc }
+    add_index :avatar_monikers, [:avatar_id, :valid_from], order: { valid_from: :desc }
     add_foreign_key :avatar_monikers, :avatars
 
     create_table :avatar_memberships, id: :string do |t|
@@ -74,7 +74,7 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :avatar_memberships, [ :avatar_id, :actor_id ], unique: true, where: "valid_to = 'infinity'"
+    add_index :avatar_memberships, [:avatar_id, :actor_id], unique: true, where: "valid_to = 'infinity'"
     add_index :avatar_memberships, :actor_id, where: "valid_to = 'infinity'"
     add_index :avatar_memberships, :avatar_id, where: "valid_to = 'infinity'"
     add_foreign_key :avatar_memberships, :avatars
@@ -105,7 +105,7 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
     end
 
     add_index :posts, :public_id, unique: true
-    add_index :posts, [ :author_avatar_id, :created_at ], order: { created_at: :desc }
+    add_index :posts, [:author_avatar_id, :created_at], order: { created_at: :desc }
     add_foreign_key :posts, :avatars, column: :author_avatar_id
 
     create_table :post_reviews, id: :string do |t|
@@ -117,7 +117,7 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :post_reviews, [ :post_id, :reviewer_actor_id ], unique: true
+    add_index :post_reviews, [:post_id, :reviewer_actor_id], unique: true
     add_index :post_reviews, :reviewer_actor_id, where: "decided_at IS NULL"
     add_foreign_key :post_reviews, :posts
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Email
   extend ActiveSupport::Concern
 
@@ -7,9 +9,6 @@ module Email
   attr_accessor :confirm_policy, :pass_code
 
   included do
-    belongs_to :user, optional: true
-    belongs_to :staff, optional: true
-
     before_save { self.address&.downcase! }
 
     after_initialize do
@@ -41,7 +40,7 @@ module Email
       otp_expires_at: Time.zone.at(expires_at),
       otp_attempts_count: 0,
       locked_at: "-infinity", # Sentinel for unlocked
-      otp_last_sent_at: Time.current
+      otp_last_sent_at: Time.current,
     )
   end
 
@@ -52,7 +51,7 @@ module Email
     {
       otp_private_key: otp_private_key,
       otp_counter: otp_counter.to_i,
-      otp_expires_at: otp_expires_at.to_i
+      otp_expires_at: otp_expires_at.to_i,
     }
   end
 
@@ -63,7 +62,7 @@ module Email
       otp_expires_at: "-infinity",
       otp_attempts_count: 0,
       locked_at: "-infinity",
-      otp_last_sent_at: "-infinity"
+      otp_last_sent_at: "-infinity",
     )
   end
 
@@ -105,12 +104,12 @@ module Email
     # Atomically set locked_at only when attempts reached threshold and not already locked
     # Check for both NULL and -infinity as sentinel values for "not locked"
     affected = self.class.where(id: id)
-                   .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp")
-                   .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
-                   # Skip model validations intentionally: this is a guarded atomic DB update
-                   # to avoid race conditions when multiple processes increment simultaneously.
-                   # rubocop:disable Rails/SkipsModelValidations
-                   .update_all(locked_at: Time.current)
+      .where("locked_at IS NULL OR locked_at = '-infinity'::timestamp")
+      .where(otp_attempts_count: MAX_OTP_ATTEMPTS..)
+      # Skip model validations intentionally: this is a guarded atomic DB update
+      # to avoid race conditions when multiple processes increment simultaneously.
+      # rubocop:disable Rails/SkipsModelValidations
+      .update_all(locked_at: Time.current)
     # rubocop:enable Rails/SkipsModelValidations
     reload if affected.positive?
   end

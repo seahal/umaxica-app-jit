@@ -119,7 +119,7 @@ GEM
       ffi-compiler (~> 1.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1198.0)
+    aws-partitions (1.1199.0)
     aws-sdk-connect (1.230.0)
       aws-sdk-core (~> 3, >= 3.239.1)
       aws-sigv4 (~> 1.5)
@@ -184,6 +184,10 @@ GEM
     database_consistency (2.1.1)
       activerecord (>= 3.2)
     date (3.5.1)
+    debride (1.14.0)
+      path_expander (~> 2.0)
+      prism (~> 1.5)
+      sexp_processor (~> 4.17)
     debug (1.11.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
@@ -237,8 +241,6 @@ GEM
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-follow_redirects (0.4.0)
-      faraday (>= 1, < 3)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
     fastly (15.1.0)
@@ -270,10 +272,12 @@ GEM
       google-protobuf (~> 4.26)
     hashie (5.1.0)
       logger
-    hotwire-livereload (2.1.1)
-      actioncable (>= 7.0.0)
-      listen (>= 3.0.0)
-      railties (>= 7.0.0)
+    hotwire-spark (0.1.13)
+      listen
+      rails (>= 7.0.0)
+      zeitwerk
+    httpclient (2.9.0)
+      mutex_m
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     image_processing (1.14.0)
@@ -293,31 +297,14 @@ GEM
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
     json (2.18.0)
-    json-jwt (1.17.0)
+    json-jwt (1.15.3.1)
       activesupport (>= 4.2)
       aes_key_wrap
-      base64
       bindata
-      faraday (~> 2.0)
-      faraday-follow_redirects
-    json-schema (6.1.0)
-      addressable (~> 2.8)
-      bigdecimal (>= 3.1, < 5)
+      httpclient
     json_schema (0.21.0)
     jwt (3.1.2)
       base64
-    kaminari (1.2.2)
-      activesupport (>= 4.1.0)
-      kaminari-actionview (= 1.2.2)
-      kaminari-activerecord (= 1.2.2)
-      kaminari-core (= 1.2.2)
-    kaminari-actionview (1.2.2)
-      actionview
-      kaminari-core (= 1.2.2)
-    kaminari-activerecord (1.2.2)
-      activerecord
-      kaminari-core (= 1.2.2)
-    kaminari-core (1.2.2)
     language_server-protocol (3.17.0.5)
     launchy (3.1.1)
       addressable (~> 2.8)
@@ -354,7 +341,7 @@ GEM
       logger
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
-    minitest (6.0.0)
+    minitest (6.0.1)
       prism (~> 1.5)
     minitest-mock (5.27.0)
     mission_control-jobs (1.1.0)
@@ -370,7 +357,10 @@ GEM
     msgpack (1.8.0)
     multi_xml (0.8.0)
       bigdecimal (>= 3.1, < 5)
+    mutex_m (0.3.0)
     nanoid (2.0.0)
+    neighbor (0.6.0)
+      activerecord (>= 7.1)
     net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.6.2)
@@ -689,24 +679,6 @@ GEM
       chunky_png (~> 1.0)
       rqrcode_core (~> 2.0)
     rqrcode_core (2.0.1)
-    rspec-core (3.13.6)
-      rspec-support (~> 3.13.0)
-    rspec-support (3.13.6)
-    rswag (2.17.0)
-      rswag-api (= 2.17.0)
-      rswag-specs (= 2.17.0)
-      rswag-ui (= 2.17.0)
-    rswag-api (2.17.0)
-      activesupport (>= 5.2, < 8.2)
-      railties (>= 5.2, < 8.2)
-    rswag-specs (2.17.0)
-      activesupport (>= 5.2, < 8.2)
-      json-schema (>= 2.2, < 7.0)
-      railties (>= 5.2, < 8.2)
-      rspec-core (>= 2.14)
-    rswag-ui (2.17.0)
-      actionpack (>= 5.2, < 8.2)
-      railties (>= 5.2, < 8.2)
     rubocop (1.82.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -870,24 +842,25 @@ DEPENDENCIES
   bundler-audit
   committee-rails
   database_consistency
+  debride
   debug
   erb_lint
   fastly
   flay
   flog
   foreman
-  hotwire-livereload
+  hotwire-spark
   image_processing
   importmap-rails
   jbuilder
   jwt
-  kaminari
   letter_opener
   license_finder
   meta-tags
   minitest-mock
   mission_control-jobs
   nanoid
+  neighbor
   omniauth
   omniauth-apple
   omniauth-google-oauth2
@@ -917,9 +890,6 @@ DEPENDENCIES
   reek
   rotp
   rqrcode
-  rswag
-  rswag-api
-  rswag-ui
   rubocop
   rubocop-i18n
   rubocop-minitest
@@ -947,7 +917,7 @@ DEPENDENCIES
   yard
 
 RUBY VERSION
-  ruby 4.0.0.preview3
+  ruby 4.0.0
 
 BUNDLED WITH
-  4.0.2
+  4.0.3

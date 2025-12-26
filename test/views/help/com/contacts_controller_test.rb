@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Help::Com
@@ -51,15 +53,15 @@ module Help::Com
 
     test "should require valid category" do
       # Test with invalid/nil category
-      assert_no_difference([ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ]) do
+      assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
         post help_com_contacts_url, params: {
           com_contact: {
             category_id: "", # Invalid: empty category
             confirm_policy: "1",
             email_address: "test@example.com",
-            telephone_number: "+1234567890"
+            telephone_number: "+1234567890",
           },
-          "cf-turnstile-response": "test_token"
+          "cf-turnstile-response": "test_token",
         }
       end
 
@@ -68,15 +70,15 @@ module Help::Com
     end
 
     test "should render new when validation fails" do
-      assert_no_difference([ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ]) do
+      assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
         post help_com_contacts_url, params: {
           com_contact: {
             category_id: @category.id,
             confirm_policy: "0", # Invalid: not accepted
             email_address: "test@example.com",
-            telephone_number: "+1234567890"
+            telephone_number: "+1234567890",
           },
-          "cf-turnstile-response": "test_token"
+          "cf-turnstile-response": "test_token",
         }
       end
 
@@ -90,9 +92,9 @@ module Help::Com
           category_id: @category.id,
           confirm_policy: "0",
           email_address: "preserve@example.com",
-          telephone_number: "+9876543210"
+          telephone_number: "+9876543210",
         },
-        "cf-turnstile-response": "test_token"
+        "cf-turnstile-response": "test_token",
       }
 
       assert_response :unprocessable_entity
@@ -107,9 +109,9 @@ module Help::Com
           category_id: @category.id,
           confirm_policy: "0", # Unchecked
           email_address: "test@example.com",
-          telephone_number: "+1234567890"
+          telephone_number: "+1234567890",
         },
-        "cf-turnstile-response": "test_token"
+        "cf-turnstile-response": "test_token",
       }
 
       assert_response :unprocessable_entity
@@ -123,9 +125,9 @@ module Help::Com
           category_id: "", # Invalid: empty category to trigger validation error
           confirm_policy: "1", # Checked
           email_address: "test@example.com",
-          telephone_number: "+1234567890"
+          telephone_number: "+1234567890",
         },
-        "cf-turnstile-response": "test_token"
+        "cf-turnstile-response": "test_token",
       }
 
       assert_response :unprocessable_entity

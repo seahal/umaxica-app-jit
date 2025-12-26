@@ -14,40 +14,54 @@
   <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 </head>
 
-<body class="px-4">
-<%= render "concern/flash_messages" %>
-<header>
-  <h1><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (sign,
-    app)</a></h1>
-  <nav>
-    <% unless logged_in? %>
-      <ul>
-        <li><%= link_to t("auth.app.layout.nav.sign_up"), new_auth_app_registration_url %></li>
-        <li><%= link_to t("auth.app.layout.nav.log_in"), new_auth_app_authentication_url %></li>
-      </ul>
-    <% else %>
-      <ul>
-        <li><%= link_to t("auth.app.layout.nav.setting"), auth_app_setting_url %></li>
-        <li><%= link_to t("auth.app.layout.nav.logout"), edit_auth_app_exit_url %></li>
-      </ul>
-    <% end %>
-  </nav>
-</header>
+<body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
+<% edge_host = ENV["EDGE_SERVICE_URL"].presence %>
 
-<hr>
+<div class="min-h-screen">
+  <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
+    <%= render "concern/flash_messages" %>
 
-<main class="container mx-auto mt-28 px-5 block">
-  <%= yield %>
-</main>
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
+      <div class="flex flex-col">
+        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">Sign</span>
+        <h1 class="text-2xl font-semibold tracking-tight">
+          <% if edge_host.present? %>
+            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>/"><%= code_name %></a>
+          <% else %>
+            <%= code_name %>
+          <% end %>
+          <span class="text-[hsl(var(--muted-foreground))]">(app)</span>
+        </h1>
+      </div>
+      <nav class="flex flex-wrap gap-3">
+        <% unless logged_in? %>
+          <%= link_to t("auth.app.layout.nav.sign_up"), new_auth_app_registration_url,
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+          <%= link_to t("auth.app.layout.nav.log_in"), new_auth_app_authentication_url,
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% else %>
+          <%= link_to t("auth.app.layout.nav.setting"), auth_app_setting_url,
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+          <%= link_to t("auth.app.layout.nav.logout"), edit_auth_app_exit_url,
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% end %>
+      </nav>
+    </header>
 
-<hr>
+    <main class="flex-1 py-10">
+      <%= yield %>
+    </main>
 
-<footer>
-  <ul>
-    <li><a href="http://<%= ENV['EDGE_SERVICE_URL'] %>/">Home</a></li>
-  </ul>
-  <%= render "concern/copyright" %>
-</footer>
-
+    <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <% if edge_host.present? %>
+          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>/">Home</a>
+        <% end %>
+        <%= render "concern/copyright" %>
+      </div>
+    </footer>
+  </div>
+</div>
 </body>
 </html>

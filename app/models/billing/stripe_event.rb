@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: billing_stripe_events
@@ -23,7 +25,7 @@ module Billing
 
     validates :event_id, presence: true, uniqueness: true
     validates :event_type, presence: true
-    validates :livemode, inclusion: { in: [ true, false ] }
+    validates :livemode, inclusion: { in: [true, false] }
     validates :payload_json, presence: true
     validates :received_at, presence: true
   end

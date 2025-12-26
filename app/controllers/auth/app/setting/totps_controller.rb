@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module App
     module Setting
@@ -31,32 +33,32 @@ module Auth
 
         private
 
-          def generate_totp_session
-            session[:private_key] ||= ROTP::Base32.random_base32
-            @png = generate_qrcode(session[:private_key])
-          end
+        def generate_totp_session
+          session[:private_key] ||= ROTP::Base32.random_base32
+          @png = generate_qrcode(session[:private_key])
+        end
 
-          def render_totp_qrcode(private_key)
-            @png = generate_qrcode(private_key)
-          end
+        def render_totp_qrcode(private_key)
+          @png = generate_qrcode(private_key)
+        end
 
-          def generate_qrcode(private_key)
-            totp = ROTP::TOTP.new(private_key)
-            RQRCode::QRCode.new(totp.provisioning_uri(account_id)).as_png
-          end
+        def generate_qrcode(private_key)
+          totp = ROTP::TOTP.new(private_key)
+          RQRCode::QRCode.new(totp.provisioning_uri(account_id)).as_png
+        end
 
-          def verify_totp(private_key, token)
-            ROTP::TOTP.new(private_key).verify(token)
-          end
+        def verify_totp(private_key, token)
+          ROTP::TOTP.new(private_key).verify(token)
+        end
 
-          def account_id
-            # Use user's email address if available, otherwise use public_id
-            current_user.user_identity_emails.first&.address || current_user.public_id
-          end
+        def account_id
+          # Use user's email address if available, otherwise use public_id
+          current_user.user_identity_emails.first&.address || current_user.public_id
+        end
 
-          def totp_params
-            params.expect(time_based_one_time_password: [ :first_token ])
-          end
+        def totp_params
+          params.expect(time_based_one_time_password: [:first_token])
+        end
       end
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_contact_telephones
@@ -30,7 +32,7 @@ class AppContactTelephoneTest < ActiveSupport::TestCase
     @app_contact = app_contacts(:one)
     @telephone = AppContactTelephone.new(
       app_contact: @app_contact,
-      telephone_number: "+819012345678"
+      telephone_number: "+819012345678",
     )
   end
 
@@ -45,7 +47,7 @@ class AppContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should validate telephone format" do
-    valid_numbers = %w[+12125551234 090-1234-5678 1234567890]
+    valid_numbers = %w(+12125551234 090-1234-5678 1234567890)
     valid_numbers.each do |num|
       @telephone.telephone_number = num
 

@@ -1,0 +1,12 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" id="modal-overlay">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-2xl font-bold">New Document</h3>
+        <%= link_to "×", docs_com_cms_documents_path, class: "text-gray-400 hover:text-gray-600 text-3xl font-bold" %>
+      </div>
+
+      <%= render "form", document: @document %>
+    </div>
+  </div>
+<% end %>

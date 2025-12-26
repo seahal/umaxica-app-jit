@@ -12,24 +12,28 @@
 #  position      :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  status_id     :string(255)      default("NONE"), not null
 #
 # Indexes
 #
 #  index_com_documents_on_permalink                    (permalink) UNIQUE
 #  index_com_documents_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_com_documents_on_status_id                    (status_id)
 #
 
 one:
   permalink: com_doc_one
+  status_id: ACTIVE
   response_mode: html
   redirect_url:
   revision_key: rev_key_one
-  published_at: <%= Time.zone.parse("2999-01-01 00:00:00") %>
-  expires_at: <%= Time.zone.parse("2999-12-31 00:00:00") %>
+  published_at: <%= 1.day.ago %>
+  expires_at: <%= 100.years.from_now %>
   position: 0
 
 two:
   permalink: com_doc_two
+  status_id: DRAFT
   response_mode: html
   redirect_url:
   revision_key: rev_key_two

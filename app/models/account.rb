@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: accounts
@@ -17,8 +19,9 @@
 #
 
 class Account < IdentitiesRecord
-  delegated_type :accountable, types: %w[ Staff User ], dependent: :destroy
+  delegated_type :accountable, types: %w( Staff User ), dependent: :destroy
 
   validates :email, presence: true, uniqueness: true
+  validates :accountable_id, uniqueness: { scope: :accountable_type }
   validates :password_digest, presence: true
 end

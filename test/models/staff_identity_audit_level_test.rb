@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staff_identity_audit_levels
@@ -16,7 +18,7 @@ class StaffIdentityAuditLevelTest < ActiveSupport::TestCase
       staff: staffs(:one),
       staff_identity_audit_event: staff_identity_audit_events(:one),
       staff_identity_audit_level: level,
-      timestamp: Time.current
+      timestamp: Time.current,
     )
 
     assert_no_difference "StaffIdentityAuditLevel.count" do

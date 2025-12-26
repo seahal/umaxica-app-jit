@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: users
@@ -6,7 +8,7 @@
 #  webauthn_id             :string           default(""), not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
-#  public_id               :string(21)       default(""), not null
+#  public_id               :string(255)      default("")
 #  user_identity_status_id :string(255)      default("NONE"), not null
 #  withdrawn_at            :datetime         default("infinity")
 #
@@ -18,12 +20,11 @@
 #
 
 class User < IdentitiesRecord
-  include ::Accountably
   include ::PublicId
+  include ::Accountably
   include ::Accountable
   include Withdrawable
   include HasRoles
-  include Ax
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :user_identity_status_id, length: { maximum: 255 }
@@ -42,6 +43,7 @@ class User < IdentitiesRecord
   has_many :user_identity_passkeys,
            dependent: :destroy
   has_many :user_identity_audits,
+           -> { where(subject_type: "User") },
            foreign_key: :subject_id,
            dependent: :destroy,
            inverse_of: false

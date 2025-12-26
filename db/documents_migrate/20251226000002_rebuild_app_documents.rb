@@ -14,7 +14,7 @@ class RebuildAppDocuments < ActiveRecord::Migration[8.2]
     end
 
     add_index :app_documents, :permalink, unique: true
-    add_index :app_documents, [ :published_at, :expires_at ]
+    add_index :app_documents, [:published_at, :expires_at]
   end
 
   def down

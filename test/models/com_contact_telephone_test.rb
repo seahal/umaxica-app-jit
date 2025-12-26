@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_contact_telephones
@@ -40,7 +42,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 1,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_respond_to telephone, :com_contact
@@ -59,12 +61,12 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 5,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     # Read directly from database to check encryption
     raw_value = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone.id}'"
+      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone.id}'",
     ).first["telephone_number"]
 
     # Encrypted value should be different from plaintext
@@ -83,7 +85,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 5,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone2 = ComContactTelephone.create!(
@@ -92,16 +94,16 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 5,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     # With deterministic encryption, encrypted values should be the same
     raw1 = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone1.id}'"
+      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone1.id}'",
     ).first["telephone_number"]
 
     raw2 = ComContactTelephone.connection.execute(
-      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone2.id}'"
+      "SELECT telephone_number FROM com_contact_telephones WHERE id = '#{telephone2.id}'",
     ).first["telephone_number"]
 
     assert_equal raw1, raw2
@@ -117,7 +119,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
       activated: false,
       deletable: false,
       remaining_views: 1,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_predicate telephone, :valid?
@@ -128,7 +130,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+9876543210",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_kind_of String, telephone.id
@@ -141,7 +143,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+5555555555",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_respond_to telephone, :created_at
@@ -157,7 +159,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+6666666666",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_respond_to telephone, :telephone_number
@@ -173,7 +175,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_not telephone.activated
@@ -186,7 +188,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     contact = com_contacts(:one)
     telephone = ComContactTelephone.new(
       com_contact: contact,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_not telephone.valid?
@@ -197,12 +199,12 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     contact = com_contacts(:one)
 
     # Invalid telephone formats
-    invalid_phones = [ "abc", "123-abc-4567", "!!!" ]
+    invalid_phones = ["abc", "123-abc-4567", "!!!"]
     invalid_phones.each do |invalid_phone|
       telephone = ComContactTelephone.new(
         com_contact: contact,
         telephone_number: invalid_phone,
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
 
       assert_not telephone.valid?, "#{invalid_phone} should be invalid"
@@ -210,12 +212,12 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     end
 
     # Valid telephone formats
-    valid_phones = [ "+1234567890", "123-456-7890", "(123) 456-7890", "+81 90 1234 5678" ]
+    valid_phones = ["+1234567890", "123-456-7890", "(123) 456-7890", "+81 90 1234 5678"]
     valid_phones.each do |valid_phone|
       telephone = ComContactTelephone.new(
         com_contact: contact,
         telephone_number: valid_phone,
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
 
       assert_predicate telephone, :valid?, "#{valid_phone} should be valid"
@@ -228,7 +230,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     test_digest = "test_digest_value"
@@ -243,7 +245,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     test_time = 1.hour.from_now
@@ -258,7 +260,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     test_attempts = 5
@@ -275,7 +277,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     raw_otp = telephone.generate_otp!
@@ -294,7 +296,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     raw_otp = telephone.generate_otp!
@@ -309,7 +311,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone.generate_otp!
@@ -325,7 +327,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     raw_otp = telephone.generate_otp!
@@ -342,7 +344,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     raw_otp = telephone.generate_otp!
@@ -359,7 +361,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone.generate_otp!
@@ -376,7 +378,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone.generate_otp!
@@ -390,7 +392,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone.generate_otp!
@@ -404,7 +406,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone.generate_otp!
@@ -419,7 +421,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     code = telephone.generate_hotp!
@@ -441,7 +443,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone.generate_hotp!
@@ -457,7 +459,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     code = telephone.generate_hotp!
@@ -472,7 +474,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     code = telephone.generate_hotp!

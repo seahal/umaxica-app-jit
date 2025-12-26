@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 source "https://rubygems.org"
 # source "https://gem.coop"
 
-ruby "4.0.0-preview3"
+ruby "4.0"
 
 # Rake
 gem "rake"
@@ -14,8 +16,11 @@ gem "rails", github: "rails/rails", branch: "main"
 gem "puma"
 # JSON APIs
 gem "jbuilder"
+# Use OpenStruct
+gem "ostruct"
 # Database
 gem "pg"
+gem "neighbor"
 # Redis
 gem "redis"
 # CORS
@@ -28,7 +33,7 @@ gem "bcrypt"
 # SHA3
 gem "sha3"
 # Time zone data for Windows
-gem "tzinfo-data", platforms: %i[windows jruby]
+gem "tzinfo-data", platforms: %i(windows jruby)
 # Boot caching
 gem "bootsnap", require: false
 # File uploads and processing
@@ -58,18 +63,12 @@ gem "solid_cache"
 gem "solid_queue"
 gem "mission_control-jobs"
 # Pagination
-gem "kaminari"
-gem "pagy" # trying to use pagy
+gem "pagy"
 # Social login
 gem "omniauth"
 gem "omniauth-apple"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
-# OpenAPI
-gem "ostruct"
-gem "rswag"
-gem "rswag-api"
-gem "rswag-ui"
 # JWT
 gem "jwt"
 # Hotwire
@@ -95,13 +94,11 @@ gem "stripe"
 
 group :development, :test do
   # Debugging
-  gem "debug", platforms: %i[ mri windows ]
+  gem "debug", platforms: %i( mri windows )
   # Test coverage
   gem "simplecov", require: false
   # Minitest mock (extracted from minitest 6.0+)
   gem "minitest-mock"
-  # IntelliJ IDEA
-  # gem 'ruby-debug-ide'
   # Slow test profiling
   gem "test-prof"
   # Postgres performance viewer
@@ -114,6 +111,7 @@ group :development, :test do
   gem "database_consistency", require: false
   # ckecker for open api
   gem "committee-rails"
+  gem "debride"
 end
 
 group :development do
@@ -122,8 +120,8 @@ group :development do
   # Preview email in the browser instead of sending it
   gem "letter_opener"
   # Live reload
+  gem "hotwire-spark"
   gem "rails_live_reload"
-  gem "hotwire-livereload"
   # Performance profiling
   gem "rack-mini-profiler"
   # Speed up commands on slow machines / big apps

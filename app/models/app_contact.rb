@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_contacts
@@ -140,7 +142,7 @@ class AppContact < GuestsRecord
 
   private
 
-    def generate_token
-      self.token ||= SecureRandom.alphanumeric(32)
-    end
+  def generate_token
+    self.token ||= SecureRandom.alphanumeric(32)
+  end
 end

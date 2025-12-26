@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -37,7 +39,7 @@ Rails.application.configure do
   STDERR.sync = true
   logger = ActiveSupport::Logger.new $stdout
   config.logger = ActiveSupport::TaggedLogging.new logger
-  config.log_tags = [ :request_id ]
+  config.log_tags = [:request_id]
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!).
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
@@ -79,7 +81,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
+  config.active_record.attributes_for_inspect = [:id]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [

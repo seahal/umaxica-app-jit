@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_26_012721) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_26_020815) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -22,6 +22,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012721) do
     t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_app_contact_categories_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_app_contact_categories_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contact_categories_id_format"
   end
@@ -52,6 +53,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012721) do
     t.string "description", limit: 255, default: "", null: false
     t.string "parent_title", limit: 255, default: "", null: false
     t.integer "position", default: 0, null: false
+    t.index "lower((id)::text)", name: "index_app_contact_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contact_statuses_id_format"
   end
 
@@ -133,6 +135,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012721) do
     t.string "parent_id", limit: 255, default: "", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_com_contact_categories_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_com_contact_categories_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contact_categories_id_format"
   end
@@ -165,6 +168,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012721) do
     t.string "description", limit: 255, default: "", null: false
     t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
+    t.index "lower((id)::text)", name: "index_com_contact_statuses_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_com_contact_statuses_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contact_statuses_id_format"
   end
@@ -235,6 +239,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012721) do
     t.string "parent_id", limit: 255, default: "", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_org_contact_categories_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_org_contact_categories_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contact_categories_id_format"
   end
@@ -265,6 +270,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012721) do
     t.string "description", limit: 255, default: "", null: false
     t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
+    t.index "lower((id)::text)", name: "index_org_contact_statuses_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_org_contact_statuses_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contact_statuses_id_format"
   end
@@ -330,6 +336,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_012721) do
   add_foreign_key "app_contacts", "app_contact_categories", column: "category_id"
   add_foreign_key "app_contacts", "app_contact_statuses", column: "status_id"
   add_foreign_key "com_contact_audits", "com_contacts"
+  add_foreign_key "com_contact_emails", "com_contacts"
+  add_foreign_key "com_contact_telephones", "com_contacts"
   add_foreign_key "com_contact_topics", "com_contacts"
   add_foreign_key "com_contacts", "com_contact_categories", column: "category_id"
   add_foreign_key "com_contacts", "com_contact_statuses", column: "status_id"

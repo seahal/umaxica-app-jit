@@ -15,6 +15,6 @@ class CreateOrgDocumentVersions < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :org_document_versions, [ :org_document_id, :created_at ]
+    add_index :org_document_versions, [:org_document_id, :created_at]
   end
 end

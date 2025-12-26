@@ -12,15 +12,18 @@
 #  position      :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  status_id     :string(255)      default("NONE"), not null
 #
 # Indexes
 #
 #  index_com_timelines_on_permalink                    (permalink) UNIQUE
 #  index_com_timelines_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_com_timelines_on_status_id                    (status_id)
 #
 
 one:
   permalink: com_timeline_one
+  status_id: ACTIVE
   response_mode: html
   redirect_url:
   revision_key: rev_key_one
@@ -30,6 +33,7 @@ one:
 
 two:
   permalink: com_timeline_two
+  status_id: DRAFT
   response_mode: html
   redirect_url:
   revision_key: rev_key_two

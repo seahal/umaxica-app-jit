@@ -7,9 +7,9 @@ class AddIndexesToContactParentIds < ActiveRecord::Migration[8.2]
 
   private
 
-    def add_parent_id_index(table)
-      return if index_exists?(table, :parent_id)
+  def add_parent_id_index(table)
+    return if index_exists?(table, :parent_id)
 
-      add_index table, :parent_id
-    end
+    add_index table, :parent_id
+  end
 end

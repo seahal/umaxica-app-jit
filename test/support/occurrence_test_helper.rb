@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OccurrenceTestHelper
   PUBLIC_ID_REGEX = /\A[A-Za-z0-9_-]{21}\z/
 

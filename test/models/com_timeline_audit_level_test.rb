@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_timeline_audit_levels
@@ -18,13 +20,13 @@ class ComTimelineAuditLevelTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key"
+      revision_key: "rev_key",
     )
 
     ComTimelineAudit.create!(
       com_timeline: timeline,
       com_timeline_audit_event: com_timeline_audit_events(:CREATED),
-      com_timeline_audit_level: level
+      com_timeline_audit_level: level,
     )
 
     assert_no_difference "ComTimelineAuditLevel.count" do

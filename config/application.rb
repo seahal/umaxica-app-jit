@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "boot"
 
 require "rails/all"
@@ -13,7 +15,7 @@ class DeprecationFilter
     # Filter out the ActiveSupport::Configurable deprecation
     msg_str = message.to_s
     return if msg_str.include?("ActiveSupport::Configurable is deprecated") ||
-              msg_str.include?("You can emulate the previous behavior with")
+      msg_str.include?("You can emulate the previous behavior with")
 
     @original_stderr.write(message)
   end
@@ -22,7 +24,7 @@ class DeprecationFilter
     messages.each do |message|
       msg_str = message.to_s
       next if msg_str.include?("ActiveSupport::Configurable is deprecated") ||
-              msg_str.include?("You can emulate the previous behavior with")
+        msg_str.include?("You can emulate the previous behavior with")
 
       @original_stderr.puts(message)
     end
@@ -57,7 +59,7 @@ module Jit
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # CommonHelper ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    config.autoload_lib(ignore: %w(assets tasks))
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -74,7 +76,7 @@ module Jit
     # Rack Attack Middleware
     config.middleware.use Rack::Attack
     # Active Record Encryption Configuration
-    if [ "test", "production", "development" ].include? Rails.env
+    if %w(test production development).include? Rails.env
       config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
       config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
       config.active_record.encryption.key_derivation_salt = Rails.application.credentials.active_record_encryption.key_derivation_salt

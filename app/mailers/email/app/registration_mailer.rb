@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Email::App
   class RegistrationMailer < ApplicationMailer
     # Subject can be set in your I18n file at config/locales/en.yml

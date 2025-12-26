@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_26_020999) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -298,6 +298,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "staff_identity_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
@@ -325,6 +327,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "staff_identity_email_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_staff_identity_email_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_email_statuses_id_format"
   end
 
@@ -340,6 +343,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
     t.uuid "staff_id", null: false
     t.string "staff_identity_email_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((address)::text)", name: "index_staff_identity_emails_on_lower_address"
     t.index ["otp_last_sent_at"], name: "index_staff_identity_emails_on_otp_last_sent_at"
     t.index ["staff_id"], name: "index_staff_identity_emails_on_staff_id"
     t.index ["staff_identity_email_status_id"], name: "index_staff_identity_emails_on_staff_identity_email_status_id"
@@ -360,6 +364,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "staff_identity_secret_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_staff_identity_secret_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_secret_statuses_id_format"
   end
 
@@ -381,10 +386,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "staff_identity_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_staff_identity_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_statuses_id_format"
   end
 
   create_table "staff_identity_telephone_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_staff_identity_telephone_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_telephone_statuses_id_format"
   end
 
@@ -399,6 +406,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
     t.uuid "staff_id", null: false
     t.string "staff_identity_telephone_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((number)::text)", name: "index_staff_identity_telephones_on_lower_number"
     t.index ["staff_id"], name: "index_staff_identity_telephones_on_staff_id"
     t.index ["staff_identity_telephone_status_id"], name: "idx_on_staff_identity_telephone_status_id_f2b1a32f7a"
     t.check_constraint "staff_identity_telephone_status_id IS NULL OR staff_identity_telephone_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_telephones_staff_identity_telephone_status_i"
@@ -429,7 +437,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
 
   create_table "staffs", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "public_id", limit: 21, default: "", null: false
+    t.string "public_id", limit: 255, default: ""
     t.string "staff_identity_status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.string "webauthn_id", default: "", null: false
@@ -441,6 +449,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "user_identity_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
@@ -468,6 +478,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "user_identity_email_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_identity_email_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_email_statuses_id_format"
   end
 
@@ -491,6 +502,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "user_identity_one_time_password_statuses", id: :string, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_identity_otp_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_one_time_password_statuses_id_format"
   end
 
@@ -506,6 +518,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "user_identity_passkey_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_identity_passkey_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_passkey_statuses_id_format"
   end
 
@@ -526,6 +539,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "user_identity_secret_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_identity_secret_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_secret_statuses_id_format"
   end
 
@@ -547,6 +561,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "user_identity_social_apple_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_identity_apple_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_social_apple_statuses_id_format"
   end
 
@@ -570,6 +585,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "user_identity_social_google_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_identity_google_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_social_google_statuses_id_format"
   end
 
@@ -593,6 +609,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
   end
 
   create_table "user_identity_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_identity_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_statuses_id_format"
   end
 
@@ -612,6 +629,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_identity_telephone_status_id", limit: 255, default: "UNVERIFIED", null: false
+    t.index "lower((number)::text)", name: "index_user_identity_telephones_on_lower_number"
     t.index ["user_id"], name: "index_user_identity_telephones_on_user_id"
     t.index ["user_identity_telephone_status_id"], name: "idx_on_user_identity_telephone_status_id_a15207191e"
     t.check_constraint "user_identity_telephone_status_id IS NULL OR user_identity_telephone_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_telephones_user_identity_telephone_status_id_"
@@ -653,7 +671,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_013002) do
 
   create_table "users", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "public_id", limit: 21, default: "", null: false
+    t.string "public_id", limit: 255, default: ""
     t.datetime "updated_at", null: false
     t.string "user_identity_status_id", limit: 255, default: "NONE", null: false
     t.string "webauthn_id", default: "", null: false

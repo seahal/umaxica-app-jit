@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: org_contacts
@@ -38,7 +40,7 @@ class OrgContactTest < ActiveSupport::TestCase
       OrgContactEmail.create!(
         org_contact: contact,
         email_address: "test@example.com",
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
     end
 
@@ -46,7 +48,7 @@ class OrgContactTest < ActiveSupport::TestCase
       OrgContactTelephone.create!(
         org_contact: contact,
         telephone_number: "+1234567890",
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
       )
     end
 
@@ -77,7 +79,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = OrgContact.new(
       category_id: sample_category,
       status_id: sample_status,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -85,13 +87,13 @@ class OrgContactTest < ActiveSupport::TestCase
     OrgContactEmail.create!(
       org_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal sample_category, contact.category_id
@@ -102,7 +104,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = OrgContact.new(
       category_id: nil,
       status_id: nil,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -110,13 +112,13 @@ class OrgContactTest < ActiveSupport::TestCase
     OrgContactEmail.create!(
       org_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "ORGANIZATION_INQUIRY", contact.category_id
@@ -161,7 +163,7 @@ class OrgContactTest < ActiveSupport::TestCase
     OrgContactEmail.create!(
       org_contact: contact,
       email_address: "another@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal 2, contact.org_contact_emails.count
@@ -180,7 +182,7 @@ class OrgContactTest < ActiveSupport::TestCase
     OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+9876543210",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal 2, contact.org_contact_telephones.count
@@ -253,7 +255,7 @@ class OrgContactTest < ActiveSupport::TestCase
   test "should reference contact_category by title" do
     contact = OrgContact.new(
       category_id: "ORGANIZATION_INQUIRY",
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -261,13 +263,13 @@ class OrgContactTest < ActiveSupport::TestCase
     OrgContactEmail.create!(
       org_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "ORGANIZATION_INQUIRY", contact.category_id
@@ -276,7 +278,7 @@ class OrgContactTest < ActiveSupport::TestCase
   test "should set default category_id when nil" do
     contact = OrgContact.new(
       category_id: nil,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -284,13 +286,13 @@ class OrgContactTest < ActiveSupport::TestCase
     OrgContactEmail.create!(
       org_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "ORGANIZATION_INQUIRY", contact.category_id
@@ -299,7 +301,7 @@ class OrgContactTest < ActiveSupport::TestCase
   test "should set default status_id when nil" do
     contact = OrgContact.new(
       status_id: nil,
-      confirm_policy: "1"
+      confirm_policy: "1",
     )
 
     assert contact.save
@@ -307,13 +309,13 @@ class OrgContactTest < ActiveSupport::TestCase
     OrgContactEmail.create!(
       org_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal "NONE", contact.status_id
@@ -342,25 +344,25 @@ class OrgContactTest < ActiveSupport::TestCase
     email1 = OrgContactEmail.create!(
       org_contact: contact,
       email_address: "first@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     email2 = OrgContactEmail.create!(
       org_contact: contact,
       email_address: "second@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone1 = OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     telephone2 = OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+9876543210",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     assert_equal 2, contact.org_contact_emails.count
@@ -378,7 +380,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = OrgContact.new(
       confirm_policy: "0",
       category_id: sample_category,
-      status_id: sample_status
+      status_id: sample_status,
     )
 
     assert_not contact.valid?
@@ -389,7 +391,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = OrgContact.new(
       confirm_policy: "1",
       category_id: sample_category,
-      status_id: sample_status
+      status_id: sample_status,
     )
 
     assert_predicate contact, :valid?

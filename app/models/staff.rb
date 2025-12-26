@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staffs
@@ -6,7 +8,7 @@
 #  webauthn_id              :string           default(""), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
-#  public_id                :string(21)       default(""), not null
+#  public_id                :string(255)      default("")
 #  staff_identity_status_id :string(255)      default("NONE"), not null
 #  withdrawn_at             :datetime         default("infinity")
 #
@@ -23,7 +25,6 @@ class Staff < IdentitiesRecord
 
   include Withdrawable
   include HasRoles
-  include Ax
   include ::PublicId
   include ::Accountably
   include ::Accountable
@@ -36,7 +37,10 @@ class Staff < IdentitiesRecord
            dependent: :restrict_with_error
   has_many :staff_identity_telephones,
            dependent: :restrict_with_error
+  has_many :staff_identity_passkeys,
+           dependent: :destroy
   has_many :staff_identity_audits,
+           -> { where(subject_type: "Staff") },
            foreign_key: :subject_id,
            dependent: :nullify,
            inverse_of: false

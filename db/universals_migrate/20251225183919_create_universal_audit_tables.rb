@@ -31,8 +31,8 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
       # Indexes
       add_index table_name, :occurred_at
       add_index table_name, :expires_at
-      add_index table_name, [ :subject_type, :subject_id, :occurred_at ]
-      add_index table_name, [ :actor_id, :occurred_at ]
+      add_index table_name, %i(subject_type subject_id occurred_at)
+      add_index table_name, [:actor_id, :occurred_at]
       add_index table_name, :event_id
       add_index table_name, :level_id
 
@@ -85,8 +85,8 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     end
     add_index :app_contact_histories, :occurred_at
     add_index :app_contact_histories, :expires_at
-    add_index :app_contact_histories, [ :subject_type, :subject_id, :occurred_at ]
-    add_index :app_contact_histories, [ :actor_id, :occurred_at ]
+    add_index :app_contact_histories, %i(subject_type subject_id occurred_at)
+    add_index :app_contact_histories, [:actor_id, :occurred_at]
     add_index :app_contact_histories, :event_id
     add_index :app_contact_histories, :level_id
     add_index :app_contact_histories, :parent_id
@@ -130,8 +130,8 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     end
     add_index :com_contact_audits, :occurred_at
     add_index :com_contact_audits, :expires_at
-    add_index :com_contact_audits, [ :subject_type, :subject_id, :occurred_at ]
-    add_index :com_contact_audits, [ :actor_id, :occurred_at ]
+    add_index :com_contact_audits, %i(subject_type subject_id occurred_at)
+    add_index :com_contact_audits, [:actor_id, :occurred_at]
     add_index :com_contact_audits, :event_id
     add_index :com_contact_audits, :level_id
     add_index :com_contact_audits, :parent_id
@@ -175,8 +175,8 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     end
     add_index :org_contact_histories, :occurred_at
     add_index :org_contact_histories, :expires_at
-    add_index :org_contact_histories, [ :subject_type, :subject_id, :occurred_at ]
-    add_index :org_contact_histories, [ :actor_id, :occurred_at ]
+    add_index :org_contact_histories, %i(subject_type subject_id occurred_at)
+    add_index :org_contact_histories, [:actor_id, :occurred_at]
     add_index :org_contact_histories, :event_id
     add_index :org_contact_histories, :level_id
     add_index :org_contact_histories, :parent_id

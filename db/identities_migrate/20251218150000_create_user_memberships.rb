@@ -10,7 +10,7 @@ class CreateUserMemberships < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :user_memberships, %i[user_id workspace_id], unique: true
+    add_index :user_memberships, %i(user_id workspace_id), unique: true
 
     execute <<~SQL.squish
       INSERT INTO user_memberships (id, user_id, workspace_id, joined_at, created_at, updated_at)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_document_audit_levels
@@ -18,13 +20,13 @@ class ComDocumentAuditLevelTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key"
+      revision_key: "rev_key",
     )
 
     ComDocumentAudit.create!(
       com_document: doc,
       com_document_audit_event: com_document_audit_events(:CREATED),
-      com_document_audit_level: level
+      com_document_audit_level: level,
     )
 
     assert_no_difference "ComDocumentAuditLevel.count" do

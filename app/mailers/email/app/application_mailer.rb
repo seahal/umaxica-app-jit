@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Email::App
   class ApplicationMailer < ActionMailer::Base
     default from: Rails.application.credentials.dig(:SMTP_FROM_ADDRESS)

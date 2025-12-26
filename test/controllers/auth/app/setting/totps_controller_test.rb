@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require "minitest/mock"
 
@@ -64,10 +66,10 @@ class Auth::App::Setting::TotpsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-    def with_mocked_totp
-      known_secret = "JBSWY3DPEHPK3PXP"
-      ROTP::Base32.stub :random_base32, known_secret do
-        yield known_secret
-      end
+  def with_mocked_totp
+    known_secret = "JBSWY3DPEHPK3PXP"
+    ROTP::Base32.stub :random_base32, known_secret do
+      yield known_secret
     end
+  end
 end

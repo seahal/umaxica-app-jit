@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   scope module: :auth, as: :auth do
     # service page
@@ -14,42 +16,42 @@ Rails.application.routes.draw do
         # Sign up pages
         resource :registration, only: :new
         namespace :registration do
-          resources :emails, only: %i[new create edit update]
-          resources :passkeys, only: %i[new create edit update]
+          resources :emails, only: %i(new create edit update)
+          resources :passkeys, only: %i(new create edit update)
         end
         # Sign In/Out pages
-        resource :authentication, only: %i[new edit destroy]
+        resource :authentication, only: %i(new edit destroy)
         namespace :authentication do
-          resource :email, only: %i[new create edit update]
-          resource :passkey, only: %i[new create edit update]
-          resource :recovery, only: %i[new create]
+          resource :email, only: %i(new create edit update)
+          resource :passkey, only: %i(new create edit update)
+          resource :recovery, only: %i(new create)
         end
         # Social SignUp or LogIn
         namespace :social do
-          match "apple/callback", to: "sessions#create", defaults: { provider: "apple" }, via: %i[get post]
+          match "apple/callback", to: "sessions#create", defaults: { provider: "apple" }, via: %i(get post)
           get "google/callback", to: "sessions#create", defaults: { provider: "google_oauth2" }
         end
         # Settings with logined user
-        resource :setting, only: %i[show]
+        resource :setting, only: %i(show)
         namespace :setting do
           post "passkeys/challenge", to: "passkeys#challenge", as: :auth_app_setting_passkeys_challenge
           post "passkeys/verify", to: "passkeys#verify", as: :auth_app_setting_passkeys_verify
-          resources :passkeys, only: %i[index show new create edit update destroy] do
+          resources :passkeys, only: %i(index show new create edit update destroy) do
             collection do
               post :challenge
               post :verify
             end
           end
           # TODO: Implement TOTP settings management
-          resources :totps, only: [ :index, :new, :create, :edit ]
+          resources :totps, only: %i(index new create edit)
 
           # TODO: Implement telephone settings management
           # resources :passkeys
           # TODO: Implement email settings management
           # resources :emails
           # sign in with ***
-          resource :apple, only: [ :show ]
-          resource :google, only: [ :show ]
+          resource :apple, only: [:show]
+          resource :google, only: [:show]
           # TODO : Implement recovery code management
           resources :secrets
           # TODO: Implement connected apps management
@@ -60,7 +62,7 @@ Rails.application.routes.draw do
           resource :refresh, only: :create
         end
         # Sign out
-        resource :exit, only: [ :edit, :destroy ]
+        resource :exit, only: [:edit, :destroy]
         # Withdrawal
         resource :withdrawal, except: :show
       end
@@ -78,15 +80,15 @@ Rails.application.routes.draw do
           resource :csrf, only: :show
         end
         # Login
-        resource :authentication, only: [ :new, :destroy ] do
-          resource :passkey, only: %i[new create edit update]
-          resource :recovery, only: %i[new create]
+        resource :authentication, only: [:new, :destroy] do
+          resource :passkey, only: %i(new create edit update)
+          resource :recovery, only: %i(new create)
         end
-        resource :setting, only: [ :show ]
+        resource :setting, only: [:show]
         namespace :setting do
           # TODO: Implement TOTP settings (index, new, edit, update actions only)
           # resources :totp, only: [ :index, :new, :create, :edit, :update ]
-          resources :passkeys, only: [ :index, :edit, :update, :new ]
+          resources :passkeys, only: %i(index edit update new)
           # TODO: Implement email settings index
           # resources :emails, only: [ :index ]
           resources :secrets
@@ -98,7 +100,7 @@ Rails.application.routes.draw do
           resource :refresh, only: :create
         end
         # Sign out
-        resource :exit, only: [ :edit, :destroy ]
+        resource :exit, only: [:edit, :destroy]
         # TODO: Implement owner management
         # resources :owner
       end

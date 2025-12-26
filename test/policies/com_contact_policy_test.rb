@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class ComContactPolicyTest < ActiveSupport::TestCase
@@ -154,7 +156,7 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     policy_scope = scope_class.new(staff, ComContact)
     policy_scope.define_singleton_method(:admin_or_manager?) { false }
     # Should be where(staff_id: [actor.id, nil])
-    expected = ComContact.where(staff_id: [ staff.id, nil ])
+    expected = ComContact.where(staff_id: [staff.id, nil])
     assert_equal expected, policy_scope.resolve
 
     # Case 3: User

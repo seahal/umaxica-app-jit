@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: handle_assignments
@@ -30,13 +32,13 @@ class HandleAssignmentTest < ActiveSupport::TestCase
     @system_handle = Handle.create!(
       handle: "__unassigned__#{unique_suffix}",
       is_system: true,
-      cooldown_until: 1.week.from_now
+      cooldown_until: 1.week.from_now,
     )
     @avatar = Avatar.create!(
       capability: @capability,
       moniker: "avatar-#{unique_suffix}",
       active_handle: @system_handle,
-      image_data: {}
+      image_data: {},
     )
   end
 
@@ -44,7 +46,7 @@ class HandleAssignmentTest < ActiveSupport::TestCase
     assignment = HandleAssignment.create!(
       avatar: @avatar,
       handle: @system_handle,
-      valid_from: Time.current
+      valid_from: Time.current,
     )
 
     valid_to = assignment.reload.valid_to
@@ -56,7 +58,7 @@ class HandleAssignmentTest < ActiveSupport::TestCase
     HandleAssignment.create!(
       avatar: @avatar,
       handle: @system_handle,
-      valid_from: Time.current
+      valid_from: Time.current,
     )
 
     other_handle = Handle.create!(handle: "other-#{SecureRandom.hex(4)}", cooldown_until: 1.week.from_now)
@@ -64,14 +66,14 @@ class HandleAssignmentTest < ActiveSupport::TestCase
       capability: @capability,
       moniker: "another-#{SecureRandom.hex(4)}",
       active_handle: other_handle,
-      image_data: {}
+      image_data: {},
     )
 
     assert_raises ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique do
       HandleAssignment.create!(
         avatar: other_avatar,
         handle: @system_handle,
-        valid_from: Time.current
+        valid_from: Time.current,
       )
     end
   end

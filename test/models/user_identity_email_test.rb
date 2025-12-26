@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_emails
@@ -30,7 +32,7 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
     @valid_attributes = {
       address: "test@example.com",
       confirm_policy: true,
-      user: @user
+      user: @user,
     }.freeze
   end
 
@@ -58,7 +60,7 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
     user_email.require_turnstile(
       response: "test-token",
       remote_ip: "127.0.0.1",
-      error_message: "Turnstile failed"
+      error_message: "Turnstile failed",
     )
 
     assert_not user_email.turnstile_valid?
@@ -172,14 +174,14 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
       UserIdentityEmail.create!(
         address: "user#{i}@example.com",
         confirm_policy: true,
-        user: user
+        user: user,
       )
     end
 
     extra_email = UserIdentityEmail.new(
       address: "overflow@example.com",
       confirm_policy: true,
-      user: user
+      user: user,
     )
 
     assert_not extra_email.valid?

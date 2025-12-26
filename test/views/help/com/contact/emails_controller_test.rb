@@ -1,44 +1,41 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require "uri"
 
 class Help::Com::Contact::EmailsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :com_contacts
+
   setup do
-    # Load fixture as ActiveRecord model, not Hash
-    @contact = ComContact.find_by!(public_id: com_contacts(:one)["public_id"])
+    host! ENV.fetch("HELP_CORPORATE_URL", "help.com.localhost")
+    # Load fixture by public_id to ensure we get ActiveRecord object
+    @contact = ComContact.find_by!(public_id: "97463105827291840535")
+    @contact.update!(status_id: "SET_UP")
     # Delete any existing email for this contact to avoid conflicts
     ComContactEmail.where(com_contact_id: @contact.id).destroy_all
     # Create email for the contact since resource is singular
     @contact_email = ComContactEmail.create!(
       com_contact: @contact,
       email_address: "test@example.com",
-      expires_at: 24.hours.from_now
+      expires_at: 24.hours.from_now,
     )
   end
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should reject incorrect verification code" do
-    skip "Hash id error needs fixing"
     @contact_email.generate_verifier!
 
     initial_attempts = @contact_email.verifier_attempts_left
 
     # Set session
-    patch help_com_contact_email_url(contact_id: @contact.id), params: {
+    post help_com_contact_email_url(@contact), params: {
       com_contact_email: {
-        verification_code: "000000"
-      }
-    }, env: {
-      "rack.session" => {
-        com_contact_email_verification: {
-          "id" => @contact_email.id,
-          "contact_id" => @contact.id,
-          "expires_at" => 15.minutes.from_now.to_i
-        }
-      }
+        hotp_code: "000000",
+      },
     }
 
     assert_response :unprocessable_entity
-    assert_select "form[action^='#{help_com_contact_email_path(contact_id: @contact.id)}']"
+    assert_select "form[action^='#{help_com_contact_email_path(contact_id: @contact.public_id)}']"
 
     @contact_email.reload
 

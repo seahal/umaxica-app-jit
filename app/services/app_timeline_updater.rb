@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class AppTimelineUpdater
   def self.call(timeline:, attrs:, editor: nil)
-    TimelineBase.transaction do
+    TimelineRecord.transaction do
       timeline.update!(timeline_attributes(attrs))
       TimelineVersionWriter.write!(timeline, attrs: attrs, editor: editor)
     end

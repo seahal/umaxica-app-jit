@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class HasRolesTest < ActiveSupport::TestCase
@@ -7,7 +9,7 @@ class HasRolesTest < ActiveSupport::TestCase
     @organization = Workspace.create!(
       name: "Test Org",
       domain: "test.com",
-      parent_organization: root_workspace.id
+      parent_organization: root_workspace.id,
     )
     @admin_role = Role.create!(key: "admin", name: "Admin", organization: @organization)
     @manager_role = Role.create!(key: "manager", name: "Manager", organization: @organization)
@@ -68,11 +70,11 @@ class HasRolesTest < ActiveSupport::TestCase
 
   private
 
-    def root_workspace
-      Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
-        workspace.name = "Root Workspace"
-        workspace.domain = "root.example.com"
-        workspace.parent_organization = NIL_UUID
-      end
+  def root_workspace
+    Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
+      workspace.name = "Root Workspace"
+      workspace.domain = "root.example.com"
+      workspace.parent_organization = NIL_UUID
     end
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staff_identity_telephones
@@ -29,7 +31,7 @@ class StaffIdentityTelephoneTest < ActiveSupport::TestCase
       number: "+1234567890",
       confirm_policy: true,
       confirm_using_mfa: true,
-      staff: @staff
+      staff: @staff,
     }.freeze
   end
 
@@ -119,7 +121,7 @@ class StaffIdentityTelephoneTest < ActiveSupport::TestCase
         number: "+1234567890#{i}",
         confirm_policy: true,
         confirm_using_mfa: true,
-        staff: staff
+        staff: staff,
       )
     end
 
@@ -127,7 +129,7 @@ class StaffIdentityTelephoneTest < ActiveSupport::TestCase
       number: "+19876543210",
       confirm_policy: true,
       confirm_using_mfa: true,
-      staff: staff
+      staff: staff,
     )
 
     assert_not extra_telephone.valid?

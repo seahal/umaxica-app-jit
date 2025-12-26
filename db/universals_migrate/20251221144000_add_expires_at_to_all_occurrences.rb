@@ -1,12 +1,12 @@
 class AddExpiresAtToAllOccurrences < ActiveRecord::Migration[8.2]
-  TABLES = %i[
+  TABLES = %i(
     area_occurrences
     domain_occurrences
     email_occurrences
     ip_occurrences
     telephone_occurrences
     user_occurrences
-  ].freeze
+  ).freeze
 
   def change
     TABLES.each do |table|

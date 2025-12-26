@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staff_identity_audits
@@ -42,7 +44,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       staff_identity_audit_level: @audit_level,
       actor: @actor,
       timestamp: Time.current,
-      ip_address: "192.168.1.1"
+      ip_address: "192.168.1.1",
     )
   end
 
@@ -57,7 +59,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
   test "requires staff" do
     audit = StaffIdentityAudit.new(
       staff_identity_audit_event: @audit_event,
-      staff_identity_audit_level: @audit_level
+      staff_identity_audit_level: @audit_level,
     )
 
     assert_not audit.valid?
@@ -67,7 +69,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
   test "requires staff_identity_audit_event" do
     audit = StaffIdentityAudit.new(
       staff: @staff,
-      staff_identity_audit_level: @audit_level
+      staff_identity_audit_level: @audit_level,
     )
 
     # Defaults to NONE, so it should be valid
@@ -88,7 +90,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       staff: @staff,
       staff_identity_audit_event: @audit_event,
       staff_identity_audit_level: @audit_level,
-      actor: actor_user
+      actor: actor_user,
     )
 
     assert_equal actor_user.id, audit.actor_id
@@ -102,7 +104,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       staff: @staff,
       staff_identity_audit_event: @audit_event,
       staff_identity_audit_level: @audit_level,
-      actor: actor_staff
+      actor: actor_staff,
     )
 
     assert_equal actor_staff.id, audit.actor_id
@@ -119,14 +121,14 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       staff: @staff,
       staff_identity_audit_event: @audit_event,
       staff_identity_audit_level: @audit_level,
-      actor: actor_user
+      actor: actor_user,
     )
 
     StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,
       staff_identity_audit_level: @audit_level,
-      actor: actor_staff
+      actor: actor_staff,
     )
 
     # Retrieve multiple audits related to the same Staff
@@ -142,7 +144,7 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
       staff: @staff,
       staff_identity_audit_event: @audit_event,
       actor: @actor,
-      timestamp: Time.current
+      timestamp: Time.current,
     )
 
     assert_equal "NONE", audit.level_id

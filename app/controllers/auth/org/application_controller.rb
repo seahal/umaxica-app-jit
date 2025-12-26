@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module Org
     class ApplicationController < ActionController::Base
@@ -16,25 +18,25 @@ module Auth
 
       protected
 
-        def staff_not_authorized
-          respond_to do |format|
-            format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
-            format.any { head :forbidden }
-          end
+      def staff_not_authorized
+        respond_to do |format|
+          format.json { render json: { error: I18n.t("errors.forbidden") }, status: :forbidden }
+          format.any { head :forbidden }
         end
+      end
 
-        def logged_in_staff?
-          current_staff.present?
-        end
+      def logged_in_staff?
+        current_staff.present?
+      end
 
-        def logged_in_user?
-          # TODO: Implement staff-side end-user sessions
-          false
-        end
+      def logged_in_user?
+        # TODO: Implement staff-side end-user sessions
+        false
+      end
 
-        def logged_in?
-          logged_in_staff?
-        end
+      def logged_in?
+        logged_in_staff?
+      end
     end
   end
 end

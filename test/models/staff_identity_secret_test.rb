@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staff_identity_secrets
@@ -69,7 +71,7 @@ class StaffIdentitySecretTest < ActiveSupport::TestCase
     record, raw_secret = StaffIdentitySecret.issue!(
       name: "API Key",
       staff: @staff,
-      expires_at: 1.minute.ago
+      expires_at: 1.minute.ago,
     )
 
     assert_not record.verify_and_consume!(raw_secret)
@@ -80,7 +82,7 @@ class StaffIdentitySecretTest < ActiveSupport::TestCase
     record = StaffIdentitySecret.new(
       staff: @staff,
       name: "",
-      password: "SecretPass123!"
+      password: "SecretPass123!",
     )
 
     assert_not record.valid?
@@ -89,16 +91,16 @@ class StaffIdentitySecretTest < ActiveSupport::TestCase
 
   private
 
-    def create_secret!
-      StaffIdentitySecret.create!(
-        staff: @staff,
-        name: "Secret-#{SecureRandom.hex(4)}",
-        password: secure_secret,
-        password_confirmation: secure_secret
-      )
-    end
+  def create_secret!
+    StaffIdentitySecret.create!(
+      staff: @staff,
+      name: "Secret-#{SecureRandom.hex(4)}",
+      password: secure_secret,
+      password_confirmation: secure_secret,
+    )
+  end
 
-    def secure_secret
-      SecureRandom.base58(Secret::SECRET_PASSWORD_LENGTH)
-    end
+  def secure_secret
+    SecureRandom.base58(Secret::SECRET_PASSWORD_LENGTH)
+  end
 end

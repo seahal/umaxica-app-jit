@@ -1,7 +1,7 @@
 class FixContactDefaultValuesForForeignKeys < ActiveRecord::Migration[8.2]
   def change
     # Change default values for status_id to 'NONE' (valid foreign key)
-    %w[app_contacts com_contacts org_contacts].each do |table|
+    %w(app_contacts com_contacts org_contacts).each do |table|
       reversible do |dir|
         dir.up do
           # Update existing empty strings to 'NONE'

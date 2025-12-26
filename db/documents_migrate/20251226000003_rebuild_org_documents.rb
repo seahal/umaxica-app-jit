@@ -14,7 +14,7 @@ class RebuildOrgDocuments < ActiveRecord::Migration[8.2]
     end
 
     add_index :org_documents, :permalink, unique: true
-    add_index :org_documents, [ :published_at, :expires_at ]
+    add_index :org_documents, [:published_at, :expires_at]
   end
 
   def down

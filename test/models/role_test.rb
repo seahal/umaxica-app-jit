@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: roles
@@ -23,8 +25,8 @@ class RoleTest < ActiveSupport::TestCase
   setup do
     @organization = Workspace.create!(
       name: "Test Org",
-      domain: "test-#{Time.current.to_i}-#{rand(10000)}.example.com",
-      parent_organization: root_workspace.id
+      domain: "test-#{Time.current.to_i}-#{rand(10_000)}.example.com",
+      parent_organization: root_workspace.id,
     )
   end
 
@@ -52,11 +54,11 @@ class RoleTest < ActiveSupport::TestCase
 
   private
 
-    def root_workspace
-      Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
-        workspace.name = "Root Workspace"
-        workspace.domain = "root.example.com"
-        workspace.parent_organization = NIL_UUID
-      end
+  def root_workspace
+    Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
+      workspace.name = "Root Workspace"
+      workspace.domain = "root.example.com"
+      workspace.parent_organization = NIL_UUID
     end
+  end
 end

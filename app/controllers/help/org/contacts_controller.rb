@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Help
   module Org
     class ContactsController < ApplicationController
       include CloudflareTurnstile
       include Rotp
 
-      before_action :set_contact, only: [ :show, :edit, :update ]
+      before_action :set_contact, only: %i(show edit update)
 
       def show
         @topic = @contact.org_contact_topics.last
@@ -25,16 +27,16 @@ module Help
 
         @contact = OrgContact.new(
           category_id: params.dig(:org_contact, :category_id),
-          confirm_policy: params.dig(:org_contact, :confirm_policy)
+          confirm_policy: params.dig(:org_contact, :confirm_policy),
         )
         @contact_categories = OrgContactCategory.order(:description)
 
         @contact_email = @contact.org_contact_emails.build(
-          email_address: params.dig(:org_contact, :email_address)
+          email_address: params.dig(:org_contact, :email_address),
         )
 
         @contact.org_contact_telephones.build(
-          telephone_number: params.dig(:org_contact, :telephone_number)
+          telephone_number: params.dig(:org_contact, :telephone_number),
         )
 
         unless turnstile_result["success"]
@@ -52,12 +54,12 @@ module Help
 
           Email::Org::ContactMailer.with(
             email_address: @contact_email.email_address,
-            pass_code: verification_code
+            pass_code: verification_code,
           ).create.deliver_later
 
           redirect_to new_help_org_contact_email_url(
             contact_id: @contact.public_id,
-            **help_staff_redirect_options
+            **help_staff_redirect_options,
           ), notice: I18n.t("help.org.contacts.create.success")
         else
           @email_address = params.dig(:org_contact, :email_address) || ""
@@ -81,54 +83,54 @@ module Help
 
       private
 
-        def send_topic_notification(contact, topic)
-          contact_email = contact.org_contact_emails.order(created_at: :desc).first
+      def send_topic_notification(contact, topic)
+        contact_email = contact.org_contact_emails.order(created_at: :desc).first
 
-          unless contact_email
-            Rails.event.notify("contact.notification.skip",
-                               contact_id: contact.public_id,
-                               reason: "no email address configured")
-            return
-          end
-
-          Email::Org::TopicMailer.with(
-            contact: contact,
-            topic: topic,
-            email_address: contact_email.email_address
-          ).notice.deliver_later
-        rescue StandardError => e
-          Rails.event.notify("contact.notification.failed",
+        unless contact_email
+          Rails.event.notify("contact.notification.skip",
                              contact_id: contact.public_id,
-                             error_message: e.message)
+                             reason: "no email address configured",)
+          return
         end
 
-        def topic_params
-          params.expect(org_contact_topic: [ :title, :description ])
-        end
+        Email::Org::TopicMailer.with(
+          contact: contact,
+          topic: topic,
+          email_address: contact_email.email_address,
+        ).notice.deliver_later
+      rescue StandardError => e
+        Rails.event.notify("contact.notification.failed",
+                           contact_id: contact.public_id,
+                           error_message: e.message,)
+      end
 
-        def set_contact
-          @contact = OrgContact.find_by!(public_id: params[:id])
-        end
+      def topic_params
+        params.expect(org_contact_topic: [:title, :description])
+      end
 
-        def help_staff_redirect_options
-          {
-            host: help_staff_host,
-            port: request.port,
-            protocol: request.protocol.delete_suffix("://")
-          }.compact
-        end
+      def set_contact
+        @contact = OrgContact.find_by!(public_id: params[:id])
+      end
 
-        def help_staff_host
-          host_value = ENV["HELP_STAFF_URL"].presence || request.host
-          return request.host if host_value.blank?
+      def help_staff_redirect_options
+        {
+          host: help_staff_host,
+          port: request.port,
+          protocol: request.protocol.delete_suffix("://"),
+        }.compact
+      end
 
-          begin
-            uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
-            uri.host || host_value.split(":").first
-          rescue URI::InvalidURIError
-            host_value.split(":").first
-          end
+      def help_staff_host
+        host_value = ENV["HELP_STAFF_URL"].presence || request.host
+        return request.host if host_value.blank?
+
+        begin
+          uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
+          uri.host || host_value.split(":").first
+        rescue URI::InvalidURIError
+          host_value.split(":").first
         end
+      end
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
@@ -8,7 +10,7 @@ if ENV["RAILS_ENV"] == "test"
   require "simplecov"
 
   # Configure to allow coverage measurement even with parallelization
-  SimpleCov.command_name "minitest_#{Process.pid}#{ENV['TEST_ENV_NUMBER']}"
+  SimpleCov.command_name "minitest_#{Process.pid}#{ENV["TEST_ENV_NUMBER"]}"
 
   SimpleCov.start "rails" do
     # Reset filters if you want to include files that are filtered by default

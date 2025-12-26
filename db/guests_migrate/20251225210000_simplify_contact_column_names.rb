@@ -39,15 +39,18 @@ class SimplifyContactColumnNames < ActiveRecord::Migration[8.2]
     # org_contacts: Rename status
     rename_column :org_contacts, :contact_status_id, :status_id
 
-    # Add foreign keys
-    add_foreign_key :app_contacts, :app_contact_categories, column: :category_id
-    add_foreign_key :app_contacts, :app_contact_statuses, column: :status_id
+    # Add foreign keys (avoid duplicate constraints after rename)
+    remove_foreign_key :app_contacts, column: :status_id, if_exists: true
+    add_foreign_key :app_contacts, :app_contact_categories, column: :category_id, if_not_exists: true
+    add_foreign_key :app_contacts, :app_contact_statuses, column: :status_id, if_not_exists: true
 
-    add_foreign_key :com_contacts, :com_contact_categories, column: :category_id
-    add_foreign_key :com_contacts, :com_contact_statuses, column: :status_id
+    remove_foreign_key :com_contacts, column: :status_id, if_exists: true
+    add_foreign_key :com_contacts, :com_contact_categories, column: :category_id, if_not_exists: true
+    add_foreign_key :com_contacts, :com_contact_statuses, column: :status_id, if_not_exists: true
 
-    add_foreign_key :org_contacts, :org_contact_categories, column: :category_id
-    add_foreign_key :org_contacts, :org_contact_statuses, column: :status_id
+    remove_foreign_key :org_contacts, column: :status_id, if_exists: true
+    add_foreign_key :org_contacts, :org_contact_categories, column: :category_id, if_not_exists: true
+    add_foreign_key :org_contacts, :org_contact_statuses, column: :status_id, if_not_exists: true
 
     # Remove old columns
     remove_column :app_contacts, :category_title_old

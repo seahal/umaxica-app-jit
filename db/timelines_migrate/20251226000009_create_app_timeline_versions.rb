@@ -15,6 +15,6 @@ class CreateAppTimelineVersions < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :app_timeline_versions, [ :app_timeline_id, :created_at ]
+    add_index :app_timeline_versions, [:app_timeline_id, :created_at]
   end
 end

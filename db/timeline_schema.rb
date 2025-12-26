@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_26_032130) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "app_timeline_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "description", limit: 255, default: "", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_app_timeline_statuses_on_lower_id", unique: true
+    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_timeline_statuses_id_format"
+  end
 
   create_table "app_timeline_versions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "app_timeline_id", null: false
@@ -23,6 +33,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
     t.string "edited_by_type"
     t.datetime "expires_at", null: false
     t.string "permalink", limit: 200, null: false
+    t.string "public_id", limit: 255, default: "", null: false
     t.datetime "published_at", null: false
     t.string "redirect_url"
     t.string "response_mode", null: false
@@ -30,6 +41,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
     t.datetime "updated_at", null: false
     t.index ["app_timeline_id", "created_at"], name: "index_app_timeline_versions_on_app_timeline_id_and_created_at"
     t.index ["app_timeline_id"], name: "index_app_timeline_versions_on_app_timeline_id"
+    t.index ["public_id"], name: "index_app_timeline_versions_on_public_id", unique: true
   end
 
   create_table "app_timelines", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -41,9 +53,21 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
     t.string "redirect_url"
     t.string "response_mode", default: "html", null: false
     t.string "revision_key", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["permalink"], name: "index_app_timelines_on_permalink", unique: true
     t.index ["published_at", "expires_at"], name: "index_app_timelines_on_published_at_and_expires_at"
+    t.index ["status_id"], name: "index_app_timelines_on_status_id"
+  end
+
+  create_table "com_timeline_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "description", limit: 255, default: "", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_com_timeline_statuses_on_lower_id", unique: true
+    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_timeline_statuses_id_format"
   end
 
   create_table "com_timeline_versions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -55,6 +79,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
     t.string "edited_by_type"
     t.datetime "expires_at", null: false
     t.string "permalink", limit: 200, null: false
+    t.string "public_id", limit: 255, default: "", null: false
     t.datetime "published_at", null: false
     t.string "redirect_url"
     t.string "response_mode", null: false
@@ -62,6 +87,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
     t.datetime "updated_at", null: false
     t.index ["com_timeline_id", "created_at"], name: "index_com_timeline_versions_on_com_timeline_id_and_created_at"
     t.index ["com_timeline_id"], name: "index_com_timeline_versions_on_com_timeline_id"
+    t.index ["public_id"], name: "index_com_timeline_versions_on_public_id", unique: true
   end
 
   create_table "com_timelines", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -73,9 +99,21 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
     t.string "redirect_url"
     t.string "response_mode", default: "html", null: false
     t.string "revision_key", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["permalink"], name: "index_com_timelines_on_permalink", unique: true
     t.index ["published_at", "expires_at"], name: "index_com_timelines_on_published_at_and_expires_at"
+    t.index ["status_id"], name: "index_com_timelines_on_status_id"
+  end
+
+  create_table "org_timeline_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "description", limit: 255, default: "", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_org_timeline_statuses_on_lower_id", unique: true
+    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_timeline_statuses_id_format"
   end
 
   create_table "org_timeline_versions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -87,6 +125,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
     t.datetime "expires_at", null: false
     t.uuid "org_timeline_id", null: false
     t.string "permalink", limit: 200, null: false
+    t.string "public_id", limit: 255, default: "", null: false
     t.datetime "published_at", null: false
     t.string "redirect_url"
     t.string "response_mode", null: false
@@ -94,6 +133,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
     t.datetime "updated_at", null: false
     t.index ["org_timeline_id", "created_at"], name: "index_org_timeline_versions_on_org_timeline_id_and_created_at"
     t.index ["org_timeline_id"], name: "index_org_timeline_versions_on_org_timeline_id"
+    t.index ["public_id"], name: "index_org_timeline_versions_on_public_id", unique: true
   end
 
   create_table "org_timelines", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -105,9 +145,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_000011) do
     t.string "redirect_url"
     t.string "response_mode", default: "html", null: false
     t.string "revision_key", null: false
+    t.string "status_id", limit: 255, default: "NONE", null: false
     t.datetime "updated_at", null: false
     t.index ["permalink"], name: "index_org_timelines_on_permalink", unique: true
     t.index ["published_at", "expires_at"], name: "index_org_timelines_on_published_at_and_expires_at"
+    t.index ["status_id"], name: "index_org_timelines_on_status_id"
   end
 
   add_foreign_key "app_timeline_versions", "app_timelines"

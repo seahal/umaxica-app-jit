@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module App
     module Registration
@@ -20,8 +22,8 @@ module Auth
                  status: :bad_request and return if session[:user_telephone_registration].nil?
 
           registration_session = session[:user_telephone_registration]
-          if [ registration_session["id"] == params["id"],
-               registration_session["expires_at"].to_i > Time.now.to_i ].all?
+          if [registration_session["id"] == params["id"],
+              registration_session["expires_at"].to_i > Time.now.to_i,].all?
             @user_telephone = UserIdentityTelephone.find_by(id: params["id"]) || UserIdentityTelephone.new
           else
             redirect_to new_auth_app_registration_passkey_path,
@@ -34,12 +36,12 @@ module Auth
           render plain: t("auth.app.authentication.telephone.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
-          @user_telephone = UserIdentityTelephone.new(params.expect(user_identity_telephone: [ :number, :confirm_policy,
-                                                                                               :confirm_using_mfa ]))
+          @user_telephone = UserIdentityTelephone.new(params.expect(user_identity_telephone: %i(number confirm_policy
+                                                                                                confirm_using_mfa)))
 
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32
-          otp_count_number = [ Time.now.to_i, SecureRandom.random_number(1 << 64) ].map(&:to_s).join.to_i
+          otp_count_number = [Time.now.to_i, SecureRandom.random_number(1 << 64)].map(&:to_s).join.to_i
           hotp = ROTP::HOTP.new(otp_private_key)
           num = hotp.at(otp_count_number)
           expires_at = 12.minutes.from_now.to_i
@@ -54,14 +56,14 @@ module Auth
               id: @user_telephone.id,
               confirm_policy: boolean_value(@user_telephone.confirm_policy),
               confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
-              expires_at: expires_at
+              expires_at: expires_at,
             }
 
             # Send SMS with OTP
             AwsSmsService.send_message(
               to: @user_telephone.number,
               message: "PassCode => #{num}",
-              subject: "PassCode => #{num}"
+              subject: "PassCode => #{num}",
             )
 
             redirect_to edit_auth_app_registration_passkey_path(@user_telephone.id),
@@ -108,7 +110,7 @@ module Auth
           # Update attributes and clear OTP
           @user_telephone.update!(
             confirm_policy: registration_session.fetch("confirm_policy", true),
-            confirm_using_mfa: registration_session.fetch("confirm_using_mfa", true)
+            confirm_using_mfa: registration_session.fetch("confirm_using_mfa", true),
           )
           @user_telephone.clear_otp
           session[:user_telephone_registration] = nil
@@ -117,9 +119,9 @@ module Auth
 
         private
 
-          def boolean_value(value)
-            ActiveModel::Type::Boolean.new.cast(value)
-          end
+        def boolean_value(value)
+          ActiveModel::Type::Boolean.new.cast(value)
+        end
       end
     end
   end

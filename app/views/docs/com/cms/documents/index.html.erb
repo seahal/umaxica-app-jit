@@ -1,0 +1,64 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Documents</h1>
+    <%= link_to "New Document", new_docs_com_cms_document_path,
+        class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
+        data: { turbo_frame: "modal" } %>
+  </div>
+
+  <%= turbo_frame_tag "documents_list" do %>
+    <div class="bg-white shadow-md rounded">
+      <table class="min-w-full">
+        <thead>
+          <tr class="bg-gray-100 border-b">
+            <th class="text-left py-3 px-4 font-semibold text-sm">Permalink</th>
+            <th class="text-left py-3 px-4 font-semibold text-sm">Title</th>
+            <th class="text-left py-3 px-4 font-semibold text-sm">Status</th>
+            <th class="text-left py-3 px-4 font-semibold text-sm">Published At</th>
+            <th class="text-left py-3 px-4 font-semibold text-sm">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @documents.each do |document| %>
+            <%= render "document", document: document %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4">
+      <% if @total_pages > 1 %>
+        <nav class="flex justify-center">
+          <ul class="inline-flex -space-x-px">
+            <% if @page > 1 %>
+              <li>
+                <%= link_to "Previous", docs_com_cms_documents_path(page: @page - 1),
+                    class: "px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100" %>
+              </li>
+            <% end %>
+
+            <% (1..@total_pages).each do |page_num| %>
+              <li>
+                <% if page_num == @page %>
+                  <span class="px-3 py-2 text-blue-600 border border-gray-300 bg-blue-50"><%= page_num %></span>
+                <% else %>
+                  <%= link_to page_num, docs_com_cms_documents_path(page: page_num),
+                      class: "px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100" %>
+                <% end %>
+              </li>
+            <% end %>
+
+            <% if @page < @total_pages %>
+              <li>
+                <%= link_to "Next", docs_com_cms_documents_path(page: @page + 1),
+                    class: "px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100" %>
+              </li>
+            <% end %>
+          </ul>
+        </nav>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<%= turbo_frame_tag "modal" %>

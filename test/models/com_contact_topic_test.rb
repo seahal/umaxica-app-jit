@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: com_contact_topics
@@ -38,13 +40,13 @@ class ComContactTopicTest < ActiveSupport::TestCase
     ComContactEmail.create!(
       com_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     contact
@@ -70,7 +72,7 @@ class ComContactTopicTest < ActiveSupport::TestCase
 
     topic = ComContactTopic.new(
       com_contact: contact,
-      deletable: false
+      deletable: false,
     )
 
     assert topic.save

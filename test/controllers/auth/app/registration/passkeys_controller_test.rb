@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Auth::App::Registration
@@ -38,8 +40,8 @@ module Auth::App::Registration
           user_identity_telephone: {
             number: "+1234567890",
             confirm_policy: "1",
-            confirm_using_mfa: "1"
-          }
+            confirm_using_mfa: "1",
+          },
         }
       end
 
@@ -55,8 +57,8 @@ module Auth::App::Registration
         user_identity_telephone: {
           number: "+1234567890",
           confirm_policy: "1",
-          confirm_using_mfa: "1"
-        }
+          confirm_using_mfa: "1",
+        },
       }
       telephone = registration_telephone
 
@@ -67,7 +69,7 @@ module Auth::App::Registration
 
       # 3. Submit OTP
       patch auth_app_registration_passkey_url(telephone), params: {
-        user_identity_telephone: { pass_code: code }
+        user_identity_telephone: { pass_code: code },
       }
 
       assert_redirected_to "/"
@@ -77,19 +79,19 @@ module Auth::App::Registration
       # OTP should be cleared (-infinity)
       expires = telephone.otp_expires_at
       assert expires.nil? || expires.to_s == "-infinity" || (expires.is_a?(Float) && expires == -Float::INFINITY)
-      assert_equal [ nil, nil ], [ telephone.confirm_policy, telephone.confirm_using_mfa ]
+      assert_equal [nil, nil], [telephone.confirm_policy, telephone.confirm_using_mfa]
     end
 
     private
 
-      def regional_defaults
-        PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
-      end
+    def regional_defaults
+      PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
+    end
 
-      def registration_telephone
-        registration_session = session[:user_telephone_registration] || {}
-        telephone_id = registration_session[:id] || registration_session["id"]
-        UserIdentityTelephone.find(telephone_id)
-      end
+    def registration_telephone
+      registration_session = session[:user_telephone_registration] || {}
+      telephone_id = registration_session[:id] || registration_session["id"]
+      UserIdentityTelephone.find(telephone_id)
+    end
   end
 end

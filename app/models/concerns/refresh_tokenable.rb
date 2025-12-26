@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Shared refresh-token behavior for token models.
 # Keeps raw tokens out of the database by storing only digests.
 # Required gem: sha3
@@ -22,7 +24,7 @@ module RefreshTokenable
       public_id, verifier = token.split(REFRESH_TOKEN_SEPARATOR, 2)
       return nil if public_id.blank? || verifier.blank?
 
-      [ public_id, verifier ]
+      [public_id, verifier]
     end
   end
 
@@ -81,21 +83,21 @@ module RefreshTokenable
 
   private
 
-    # Hash with SHA3-384.
-    def digest_refresh_token(verifier)
-      SHA3::Digest.new(:sha3_384, verifier).digest
-    end
+  # Hash with SHA3-384.
+  def digest_refresh_token(verifier)
+    SHA3::Digest.new(:sha3_384, verifier).digest
+  end
 
-    # Build the token string returned to the client (public_id.verifier).
-    def build_refresh_token(verifier)
-      "#{public_id}#{REFRESH_TOKEN_SEPARATOR}#{verifier}"
-    end
+  # Build the token string returned to the client (public_id.verifier).
+  def build_refresh_token(verifier)
+    "#{public_id}#{REFRESH_TOKEN_SEPARATOR}#{verifier}"
+  end
 
-    def default_refresh_expires_at
-      Time.current + REFRESH_TTL
-    end
+  def default_refresh_expires_at
+    Time.current + REFRESH_TTL
+  end
 
-    def ensure_refresh_expires_at
-      self.refresh_expires_at ||= default_refresh_expires_at
-    end
+  def ensure_refresh_expires_at
+    self.refresh_expires_at ||= default_refresh_expires_at
+  end
 end

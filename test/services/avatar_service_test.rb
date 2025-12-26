@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class AvatarServiceTest < ActiveSupport::TestCase
@@ -13,7 +15,7 @@ class AvatarServiceTest < ActiveSupport::TestCase
             moniker: "Test Moniker",
             capability_id: capability.id,
             handle_status_id: handle_status.id,
-            handle_assignment_status_id: assignment_status.id
+            handle_assignment_status_id: assignment_status.id,
           )
         end
       end

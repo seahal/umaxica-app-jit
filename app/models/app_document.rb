@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_documents
@@ -12,14 +14,22 @@
 #  position      :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  status_id     :string(255)      default("NONE"), not null
 #
 # Indexes
 #
 #  index_app_documents_on_permalink                    (permalink) UNIQUE
 #  index_app_documents_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_app_documents_on_status_id                    (status_id)
 #
 
-class AppDocument < DocumentBase
+class AppDocument < DocumentRecord
+  include Document
+
+  belongs_to :app_document_status,
+             class_name: "AppDocumentStatus",
+             foreign_key: :status_id,
+             inverse_of: :app_documents
   has_many :app_document_versions, dependent: :delete_all
   has_many :app_document_audits,
            -> { where(subject_type: "AppDocument") },

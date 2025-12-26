@@ -1,0 +1,50 @@
+# License Finder Configuration
+# Documentation: https://github.com/pivotal/LicenseFinder
+
+# Ignore Go vendor experiment since this is a Ruby/JavaScript project
+decisions:
+  - :ignore_group:
+    - :name: "Go15VendorExperiment"
+
+# Only scan Ruby (Bundler) and JavaScript (NPM) dependencies
+enabled_package_managers:
+  - bundler
+  - npm
+
+# Permitted licenses (whitelist)
+whitelist:
+  - MIT
+  - Apache-2.0
+  - BSD-2-Clause
+  - BSD-3-Clause
+  - ISC
+  - Ruby
+  - Artistic-2.0
+  - 0BSD
+  - CC0-1.0
+  - Unlicense
+  - Python-2.0
+  - PostgreSQL
+  - BlueOak-1.0.0
+
+# Explicitly denied licenses (blacklist)
+blacklist:
+  - GPL-2.0
+  - GPL-3.0
+  - AGPL-3.0
+  - LGPL-2.0
+  - LGPL-2.1
+  - LGPL-3.0
+
+# Project information
+project_name: Umaxica App
+project_path: /home/jit/workspace
+
+# Ignore specific paths
+ignored_paths:
+  - vendor/
+  - node_modules/
+  - tmp/
+  - log/
+  - coverage/
+  - .git/

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Helper methods for checking authorization in views
 module AuthorizationHelper
   # Check if current actor is authorized for a given action on a record
@@ -101,20 +103,20 @@ module AuthorizationHelper
   #   <%= if_has_role 'admin' do %>
   #     <%= render 'admin_panel' %>
   #   <% end %>
-  def if_has_role(role_key, organization: nil, &block)
+  def if_has_role(role_key, organization: nil)
     yield if has_role?(role_key, organization: organization)
   end
 
   private
 
-    # Get current actor (User or Staff)
-    def current_actor
-      @current_actor ||= begin
-        if respond_to?(:current_user) && current_user
-          current_user
-        elsif respond_to?(:current_staff) && current_staff
-          current_staff
-        end
+  # Get current actor (User or Staff)
+  def current_actor
+    @current_actor ||= begin
+      if respond_to?(:current_user) && current_user
+        current_user
+      elsif respond_to?(:current_staff) && current_staff
+        current_staff
       end
     end
+  end
 end

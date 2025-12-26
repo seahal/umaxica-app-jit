@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   scope module: :news, as: :news do
     constraints host: ENV["NEWS_CORPORATE_URL"] do

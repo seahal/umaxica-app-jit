@@ -12,48 +12,64 @@
   <%= stylesheet_link_tag "core/main" %>
   <%= stylesheet_link_tag "core/org/main" %>
 </head>
-<body class="px-4">
-<header>
-  <h1 class="container mx-auto mt-28 px-5 flex">
-    <a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">Umaxica(www, org)</a></h1>
-  <% unless logged_in? %>
-    <ul>
-      <li><%= link_to t("auth.app.layout.nav.sign_up"), new_auth_app_registration_path %></li>
-      <li><%= link_to t("auth.app.layout.nav.log_in"), new_auth_app_authentication_path %></li>
-    </ul>
-  <% else %>
-    <ul>
-      <li><%= link_to t("auth.app.layout.nav.setting"), auth_app_setting_path %></li>
-      <li><%= link_to t("auth.app.layout.nav.logout"), auth_app_authentication_path, data: { turbo_method: :delete } %></li>
-    </ul>
-  <% end %>
-</header>
+<body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
+<% edge_host = ENV["EDGE_STAFF_URL"].presence %>
 
-<hr>
+<div class="min-h-screen">
+  <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
+      <div class="flex flex-col">
+        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">Core</span>
+        <h1 class="text-2xl font-semibold tracking-tight">
+          <% if edge_host.present? %>
+            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/"><%= code_name %></a>
+          <% else %>
+            <%= code_name %>
+          <% end %>
+          <span class="text-[hsl(var(--muted-foreground))]">(org)</span>
+        </h1>
+      </div>
+      <nav class="flex flex-wrap gap-3">
+        <% unless logged_in? %>
+          <%= link_to t("auth.app.layout.nav.sign_up"), new_auth_app_registration_path,
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+          <%= link_to t("auth.app.layout.nav.log_in"), new_auth_app_authentication_path,
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% else %>
+          <%= link_to t("auth.app.layout.nav.setting"), auth_app_setting_path,
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+          <%= link_to t("auth.app.layout.nav.logout"), auth_app_authentication_path, data: { turbo_method: :delete },
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% end %>
+      </nav>
+    </header>
 
-<main class="container mx-auto mt-28 px-5 block">
-  <%= yield %>
-</main>
+    <main class="flex-1 py-10">
+      <%= yield %>
+    </main>
 
-<nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
-</nav>
+    <nav id="app" class="mt-4"></nav>
 
-<hr>
-
-<footer>
-  <ul>
-    <li><a href="http://<%= ENV['EDGE_STAFF_URL'] %>:4444/">home</a></li>
-    <% if defined?(edit_www_org_preference_cookie_path) %>
-      <li><%= link_to 'Cookie', edit_www_org_preference_cookie_path %></li>
-    <% end %>
-    <li>Security</li>
-    <li>Support</li>
-    <li>Terms</li>
-    <li>Privacy</li>
-    <li>© <%= Time.now.year %> Umaxica</li>
-  </ul>
-  <%= render "concern/copyright" %>
-</footer>
-
+    <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
+      <nav class="flex flex-wrap items-center gap-4">
+        <% if edge_host.present? %>
+          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>:4444/">home</a>
+        <% end %>
+        <% if defined?(edit_www_org_preference_cookie_path) %>
+          <%= link_to "Cookie", edit_www_org_preference_cookie_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+        <% end %>
+        <span>Security</span>
+        <span>Support</span>
+        <span>Terms</span>
+        <span>Privacy</span>
+        <span>© <%= Time.current.year %> Umaxica</span>
+      </nav>
+      <div class="mt-4">
+        <%= render "concern/copyright" %>
+      </div>
+    </footer>
+  </div>
+</div>
 </body>
 </html>

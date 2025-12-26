@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: org_document_versions
@@ -16,13 +18,18 @@
 #  edited_by_id    :integer
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  public_id       :string(255)      default(""), not null
 #
 # Indexes
 #
 #  index_org_document_versions_on_org_document_id                 (org_document_id)
 #  index_org_document_versions_on_org_document_id_and_created_at  (org_document_id,created_at)
+#  index_org_document_versions_on_public_id                       (public_id) UNIQUE
 #
 
-class OrgDocumentVersion < DocumentVersionBase
+class OrgDocumentVersion < DocumentRecord
+  include Version
+  include ::PublicId
+
   belongs_to :org_document
 end

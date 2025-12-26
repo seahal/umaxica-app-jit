@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: emails
@@ -12,11 +14,11 @@
 require "test_helper"
 
 class IdentityEmailTest < ActiveSupport::TestCase
-  [ StaffIdentityEmail, UserIdentityEmail ].each do |model|
+  [StaffIdentityEmail, UserIdentityEmail].each do |model|
     test "#{model} valid with address and confirm_policy" do
       record = model.new(
         address: "eg@example.com",
-        confirm_policy: true
+        confirm_policy: true,
       ).tap { |instance| assign_owner(instance) }
 
       assert_predicate record, :valid?
@@ -60,13 +62,13 @@ class IdentityEmailTest < ActiveSupport::TestCase
     test "#{model} pass_code validations when address nil" do
       m = model.new(address: nil)
       assign_owner(m)
-      m.pass_code = 123456
+      m.pass_code = 123_456
 
       assert_predicate m, :valid?
-      m.pass_code = 12345
+      m.pass_code = 12_345
 
       assert_not m.valid?
-      m.pass_code = 1234567
+      m.pass_code = 1_234_567
 
       assert_not m.valid?
       m.pass_code = 0
@@ -88,12 +90,12 @@ class IdentityEmailTest < ActiveSupport::TestCase
 
   private
 
-    def assign_owner(record)
-      case record
-      when UserIdentityEmail
-        record.user = users(:none_user)
-      when StaffIdentityEmail
-        record.staff = staffs(:none_staff)
-      end
+  def assign_owner(record)
+    case record
+    when UserIdentityEmail
+      record.user = users(:none_user)
+    when StaffIdentityEmail
+      record.staff = staffs(:none_staff)
     end
+  end
 end

@@ -836,6 +836,15 @@ ja:
     passkey_removed_successfully: Passkey removed successfully.
     email_successfully_created: Email was successfully created.
     auth_error_occurred: 認証エラーが発生しました。もう一度お試しください。
+  docs:
+    com:
+      cms:
+        documents:
+          created: Document was successfully created.
+          updated: Document was successfully updated.
+          deleted: Document was successfully deleted.
+          published: Document was successfully published.
+          unpublished: Document was successfully unpublished.
   activerecord:
     attributes:
       user_identity_email:
