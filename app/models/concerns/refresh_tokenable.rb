@@ -85,7 +85,7 @@ module RefreshTokenable
 
   # Hash with SHA3-384.
   def digest_refresh_token(verifier)
-    SHA3::Digest.new(:sha3_384, verifier).digest
+    SHA3::Digest::SHA3_384.digest(verifier)
   end
 
   # Build the token string returned to the client (public_id.verifier).

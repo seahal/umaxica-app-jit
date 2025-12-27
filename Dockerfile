@@ -207,7 +207,7 @@ RUN --mount=type=cache,target=/tmp/bun-cache,uid=${DOCKER_UID},gid=${DOCKER_GID}
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
     useradd -l -u "${DOCKER_UID}" -g "${DOCKER_GROUP}" -m -s /bin/bash "${DOCKER_USER}"; \
-    echo "${DOCKER_USER}:hogehoge" | chpasswd; \
+    echo "${DOCKER_USER}:${DOCKER_USER_PASSWORD:-devpassword}" | chpasswd; \
     echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
     chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
     else \

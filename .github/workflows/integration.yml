@@ -22,7 +22,7 @@ env:
   DOCKER_BUILDKIT: '1'
   COMPOSE_DOCKER_CLI_BUILD: '1'
   # Version Configuration
-  RUBY_VERSION: '4.0'
+  RUBY_VERSION: '4.0.0'
   BUN_VERSION: '1.3.5'
   # Rails Configuration
   RAILS_ENV: test
@@ -289,8 +289,7 @@ jobs:
       POSTGRESQL_TIMELINE_SUB: localhost
       POSTGRESQL_BILLING_PUB: localhost
       POSTGRESQL_BILLING_SUB: localhost
-      POSTGRESQL_MESSAGE_PUB: localhost
-      POSTGRESQL_MESSAGE_SUB: localhost
+      # POSTGRESQL_MESSAGE_* - Message database does not exist (see CLAUDE.md)
       POSTGRESQL_NOTIFICATION_PUB: localhost
       POSTGRESQL_NOTIFICATION_SUB: localhost
       POSTGRESQL_CACHE_PUB: localhost

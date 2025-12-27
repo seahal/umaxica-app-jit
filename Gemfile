@@ -91,6 +91,8 @@ gem "view_component"
 gem "aasm"
 # billing
 gem "stripe"
+# sorbet
+gem "sorbet-runtime"
 
 group :development, :test do
   # Debugging
@@ -112,9 +114,12 @@ group :development, :test do
   # ckecker for open api
   gem "committee-rails"
   gem "debride"
+  # type
+  gem "tapioca", require: false
 end
 
 group :development do
+  gem "sorbet"
   gem "foreman"
   gem "yard"
   # Preview email in the browser instead of sending it

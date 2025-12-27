@@ -54,4 +54,12 @@ class ComTimelineVersionTest < ActiveSupport::TestCase
     assert_not_equal "Secret description", raw_data["description"] if raw_data
     assert_not_equal "Secret body", raw_data["body"] if raw_data
   end
+  test "validates presence of required fields" do
+    version = ComTimelineVersion.new
+    assert_not version.valid?
+    assert_not_empty version.errors[:permalink]
+    assert_not_empty version.errors[:response_mode]
+    assert_not_empty version.errors[:published_at]
+    assert_not_empty version.errors[:expires_at]
+  end
 end
