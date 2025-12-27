@@ -5,9 +5,9 @@
       <div class="mb-6">
         <h1 class="text-2xl font-bold mb-4">Documents</h1>
 
-        <%= form_with url: docs_com_find_path("search"), method: :get, local: true, class: "mb-4" do |f| %>
+        <%= form_with url: docs_com_posts_path, method: :get, local: true, class: "mb-4" do |f| %>
           <div class="flex gap-2">
-            <%= text_field_tag :q, params[:q],
+            <%= text_field_tag :q, params[:q], autocomplete: "off",
                 placeholder: "Search...",
                 class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" %>
             <%= submit_tag "Search", class: "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm" %>
@@ -17,7 +17,7 @@
         <div class="text-xs text-gray-600 mb-4">
           <% if @query.present? && @query != "all" %>
             <%= @total_count %> found
-            | <%= link_to "All", docs_com_find_path("all"), class: "text-blue-600 hover:underline" %>
+            | <%= link_to "All", docs_com_posts_path, class: "text-blue-600 hover:underline" %>
           <% else %>
             <%= @total_count %> documents
           <% end %>
@@ -28,7 +28,7 @@
         <div class="space-y-2">
           <% @documents.each do |document| %>
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
-              <%= link_to docs_com_post_path(id: document.permalink),
+              <%= link_to docs_com_posts_path(id: document.permalink),
                           data: { turbo_frame: "document_detail" },
                           class: "block" do %>
                 <h3 class="font-semibold text-sm mb-1 text-gray-900">
@@ -57,7 +57,7 @@
                 <% if @page > 1 %>
                   <li>
                     <%= link_to "‹",
-                        docs_com_find_path(@query.presence || "all", page: @page - 1),
+                        docs_com_posts_path(q: @query, page: @page - 1),
                         class: "px-3 py-2 border border-gray-300 rounded-l-lg hover:bg-gray-100" %>
                   </li>
                 <% end %>
@@ -68,7 +68,7 @@
                       <span class="px-3 py-2 border border-gray-300 bg-blue-50 text-blue-600"><%= page_num %></span>
                     <% else %>
                       <%= link_to page_num,
-                          docs_com_find_path(@query.presence || "all", page: page_num),
+                          docs_com_posts_path(q: @query, page: page_num),
                           class: "px-3 py-2 border border-gray-300 hover:bg-gray-100" %>
                     <% end %>
                   </li>
@@ -77,7 +77,7 @@
                 <% if @page < @total_pages %>
                   <li>
                     <%= link_to "›",
-                        docs_com_find_path(@query.presence || "all", page: @page + 1),
+                        docs_com_posts_path(q: @query, page: @page + 1),
                         class: "px-3 py-2 border border-gray-300 rounded-r-lg hover:bg-gray-100" %>
                   </li>
                 <% end %>
