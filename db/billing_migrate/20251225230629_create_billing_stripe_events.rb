@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateBillingStripeEvents < ActiveRecord::Migration[8.2]
   def change
     create_table :billing_stripe_events, id: :uuid, default: -> { "uuidv7()" } do |t|

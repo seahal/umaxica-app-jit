@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SeedIdentityAuditEventsAndLevels < ActiveRecord::Migration[8.2]
   USER_EVENTS = %w(
     LOGIN_SUCCESS

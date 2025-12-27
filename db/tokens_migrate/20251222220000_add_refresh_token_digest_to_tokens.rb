@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddRefreshTokenDigestToTokens < ActiveRecord::Migration[8.2]
   class UserToken < ActiveRecord::Base
     self.table_name = "user_tokens"

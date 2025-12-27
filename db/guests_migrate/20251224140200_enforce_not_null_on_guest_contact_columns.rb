@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EnforceNotNullOnGuestContactColumns < ActiveRecord::Migration[8.2]
   INFINITY_PAST = '-infinity'
   NIL_UUID = '00000000-0000-0000-0000-000000000000'

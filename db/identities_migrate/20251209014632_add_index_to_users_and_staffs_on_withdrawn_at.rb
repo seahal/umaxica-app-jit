@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddIndexToUsersAndStaffsOnWithdrawnAt < ActiveRecord::Migration[8.2]
   def change
     if column_exists?(:users, :withdrawn_at)

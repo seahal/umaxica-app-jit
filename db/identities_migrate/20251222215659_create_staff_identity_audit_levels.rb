@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateStaffIdentityAuditLevels < ActiveRecord::Migration[8.2]
   def change
     unless table_exists?(:staff_identity_audit_levels)

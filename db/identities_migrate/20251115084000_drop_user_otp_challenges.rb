@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DropUserOtpChallenges < ActiveRecord::Migration[8.0]
   def change
     drop_table :user_otp_challenges do |t|

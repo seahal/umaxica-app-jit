@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateStaffPasskeys < ActiveRecord::Migration[8.0]
   def change
     create_table :staff_passkeys, id: :uuid, default: -> { "uuidv7()" } do |t|

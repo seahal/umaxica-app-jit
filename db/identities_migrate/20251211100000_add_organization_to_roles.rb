@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddOrganizationToRoles < ActiveRecord::Migration[8.2]
   def change
     add_column :roles, :organization_id, :uuid

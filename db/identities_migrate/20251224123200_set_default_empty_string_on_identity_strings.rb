@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetDefaultEmptyStringOnIdentityStrings < ActiveRecord::Migration[8.2]
   def change
     columns = {

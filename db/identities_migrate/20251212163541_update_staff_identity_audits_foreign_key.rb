@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdateStaffIdentityAuditsForeignKey < ActiveRecord::Migration[8.2]
   def change
     return unless table_exists?(:staff_identity_audits)

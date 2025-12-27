@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FixIdentityConsistency < ActiveRecord::Migration[7.1]
   def up
     # Add level_id to staff_identity_audits if missing

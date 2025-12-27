@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddMissingForeignKeyToUserIdentityAudits < ActiveRecord::Migration[8.2]
   def change
     unless foreign_key_exists?(:user_identity_audits, column: :event_id)

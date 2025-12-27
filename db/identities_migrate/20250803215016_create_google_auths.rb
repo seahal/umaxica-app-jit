@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateGoogleAuths < ActiveRecord::Migration[8.0]
   def change
     create_table :google_auths, id: :uuid, default: -> { "uuidv7()" } do |t|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChristmasIdentityCleanup < ActiveRecord::Migration[8.2]
   def change
     # Staff Audits

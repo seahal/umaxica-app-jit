@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "digest"
 
 class AddFormatChecksToContactCategoryIds < ActiveRecord::Migration[8.2]

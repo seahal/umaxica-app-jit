@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddDefaultsToRoles < ActiveRecord::Migration[8.2]
   def change
     reversible do |dir|

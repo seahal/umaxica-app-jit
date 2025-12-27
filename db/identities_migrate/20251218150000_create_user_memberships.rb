@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUserMemberships < ActiveRecord::Migration[8.2]
   def up
     create_table :user_memberships, id: :uuid, default: -> { "uuidv7()" } do |t|

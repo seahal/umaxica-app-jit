@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddExpiresAtToOccurrenceStatuses < ActiveRecord::Migration[8.2]
   TABLES = %i(
     area_occurrence_statuses

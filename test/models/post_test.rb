@@ -1,3 +1,27 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: posts
+#
+#  id                    :string           not null, primary key
+#  public_id             :string           not null
+#  author_avatar_id      :string           not null
+#  post_status_id        :string           not null
+#  body                  :text             not null
+#  created_by_actor_id   :string           not null
+#  published_by_actor_id :string
+#  published_at          :timestamptz
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#
+# Indexes
+#
+#  index_posts_on_author_avatar_id_and_created_at  (author_avatar_id,created_at)
+#  index_posts_on_post_status_id                   (post_status_id)
+#  index_posts_on_public_id                        (public_id) UNIQUE
+#
+
 require "test_helper"
 
 class PostTest < ActiveSupport::TestCase

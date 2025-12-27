@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUserIdentityAppleAuthStatusToUserAppleAuths < ActiveRecord::Migration[8.2]
   def change
     unless column_exists?(:user_apple_auths, :user_identity_apple_auth_status_id)

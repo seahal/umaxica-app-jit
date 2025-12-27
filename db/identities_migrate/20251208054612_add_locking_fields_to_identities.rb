@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddLockingFieldsToIdentities < ActiveRecord::Migration[8.2]
   def change
     tables = %i(

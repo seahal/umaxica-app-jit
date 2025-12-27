@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddMissingIndexesToTokens < ActiveRecord::Migration[8.2]
   def change
     add_index :staff_tokens, :staff_id

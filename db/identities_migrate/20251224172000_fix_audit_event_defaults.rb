@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FixAuditEventDefaults < ActiveRecord::Migration[8.2]
   def change
     change_column_default :user_identity_audits, :event_id, from: "", to: "NONE"

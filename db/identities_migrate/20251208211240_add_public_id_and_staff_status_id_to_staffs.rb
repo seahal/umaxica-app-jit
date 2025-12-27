@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddPublicIdAndStaffStatusIdToStaffs < ActiveRecord::Migration[8.2]
   def up
     change_table :staffs, bulk: true do |t|

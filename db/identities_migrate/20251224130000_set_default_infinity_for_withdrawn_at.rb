@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetDefaultInfinityForWithdrawnAt < ActiveRecord::Migration[8.2]
   def up
     change_column_default :users, :withdrawn_at, from: nil, to: -> { "'+infinity'::timestamp" }

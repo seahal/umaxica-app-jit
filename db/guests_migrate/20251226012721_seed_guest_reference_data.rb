@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SeedGuestReferenceData < ActiveRecord::Migration[8.2]
   def up
     # ComContactCategory

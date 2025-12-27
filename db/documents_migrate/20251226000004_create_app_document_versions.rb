@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateAppDocumentVersions < ActiveRecord::Migration[8.2]
   def change
     create_table :app_document_versions, id: :uuid, default: -> { "uuidv7()" } do |t|

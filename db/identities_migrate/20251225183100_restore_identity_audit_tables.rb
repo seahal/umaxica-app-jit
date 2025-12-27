@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RestoreIdentityAuditTables < ActiveRecord::Migration[7.1]
   def change
     # Recreate User Identity Audit Tables

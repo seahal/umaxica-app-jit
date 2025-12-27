@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddMissingIndexesToGuests < ActiveRecord::Migration[8.2]
   def change
     # Polymorphic Actor Indexes

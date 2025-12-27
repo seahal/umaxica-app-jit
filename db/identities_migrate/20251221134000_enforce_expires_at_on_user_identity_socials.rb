@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EnforceExpiresAtOnUserIdentitySocials < ActiveRecord::Migration[8.2]
   def change
     change_column_null :user_identity_social_apples, :expires_at, false

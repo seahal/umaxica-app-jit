@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateMissingStatusTables < ActiveRecord::Migration[8.2]
   PREFIXES = %w(org com app).freeze
   TYPES = %w(timeline).freeze

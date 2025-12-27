@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RebuildComTimelines < ActiveRecord::Migration[8.2]
   def up
     drop_table :com_timelines, if_exists: true

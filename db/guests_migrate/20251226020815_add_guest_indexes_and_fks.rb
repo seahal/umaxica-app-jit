@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddGuestIndexesAndFks < ActiveRecord::Migration[8.2]
   def change
     # Lower ID Unique Indexes for Status Tables

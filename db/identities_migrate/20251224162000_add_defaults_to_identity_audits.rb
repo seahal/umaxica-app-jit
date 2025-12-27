@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddDefaultsToIdentityAudits < ActiveRecord::Migration[8.2]
   def change
     reversible do |dir|

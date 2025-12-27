@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FixContactDefaultValuesForForeignKeys < ActiveRecord::Migration[8.2]
   def change
     # Change default values for status_id to 'NONE' (valid foreign key)

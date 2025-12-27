@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddIndexesToContactParentIds < ActiveRecord::Migration[8.2]
   def change
     add_parent_id_index :app_contact_categories

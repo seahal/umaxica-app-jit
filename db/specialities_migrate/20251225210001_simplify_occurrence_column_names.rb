@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SimplifyOccurrenceColumnNames < ActiveRecord::Migration[8.2]
   def change
     # All occurrence tables already use status_id, which is the desired simple name

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RelaxRoleAssignmentConstraints < ActiveRecord::Migration[8.2]
   def change
     reversible do |dir|

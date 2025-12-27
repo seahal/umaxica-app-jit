@@ -19,7 +19,8 @@ module Auth
           @totp.user = current_user
           @totp.user_identity_one_time_password_status_id = "ACTIVE"
 
-          if (last_otp_at = verify_totp(@totp.private_key, @totp.first_token))
+          last_otp_at = verify_totp(@totp.private_key, @totp.first_token)
+          if last_otp_at
             @totp.last_otp_at = Time.zone.at(last_otp_at)
             @totp.save!
             session[:private_key] = nil

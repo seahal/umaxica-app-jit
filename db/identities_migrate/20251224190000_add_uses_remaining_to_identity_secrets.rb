@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Rails/BulkChangeTable
 class AddUsesRemainingToIdentitySecrets < ActiveRecord::Migration[8.2]
   def change

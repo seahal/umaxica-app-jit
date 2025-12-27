@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InsertDummyGuestData < ActiveRecord::Migration[8.2]
   def change
     up_only do

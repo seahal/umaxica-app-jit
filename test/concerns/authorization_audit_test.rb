@@ -3,7 +3,10 @@
 require "test_helper"
 
 class AuthorizationAuditTest < ActiveSupport::TestCase
-  class DummyPolicy; end
+  class DummyPolicy
+    def initialize
+    end
+  end
 
   class DummyAudit
     # rubocop:disable Layout/ClassStructure

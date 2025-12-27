@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "digest"
 
 class AddFormatChecksToIdentityStatusEventLevelIds < ActiveRecord::Migration[8.2]

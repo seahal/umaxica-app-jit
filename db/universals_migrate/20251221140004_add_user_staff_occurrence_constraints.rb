@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUserStaffOccurrenceConstraints < ActiveRecord::Migration[8.2]
   TABLES = %i(
     user_occurrences

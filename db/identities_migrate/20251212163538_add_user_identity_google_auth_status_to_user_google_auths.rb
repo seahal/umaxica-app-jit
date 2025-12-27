@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUserIdentityGoogleAuthStatusToUserGoogleAuths < ActiveRecord::Migration[8.2]
   def change
     unless column_exists?(:user_google_auths, :user_identity_google_auth_status_id)

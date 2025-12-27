@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUniversalIndexesAndFks < ActiveRecord::Migration[8.2]
   def change
     # Timeline/Document Audits Indexes - Removed invalid user_id indexes

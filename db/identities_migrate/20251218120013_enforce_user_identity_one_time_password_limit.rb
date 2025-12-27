@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EnforceUserIdentityOneTimePasswordLimit < ActiveRecord::Migration[8.2]
   FUNCTION_NAME = "check_user_identity_totp_limit"
   TRIGGER_NAME = "enforce_user_identity_totp_limit"

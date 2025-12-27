@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SeedUniversalReferenceData < ActiveRecord::Migration[8.2]
   def up
     # UserOccurrenceStatus

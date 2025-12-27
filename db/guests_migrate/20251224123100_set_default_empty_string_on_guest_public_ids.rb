@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetDefaultEmptyStringOnGuestPublicIds < ActiveRecord::Migration[8.2]
   def change
     columns = {

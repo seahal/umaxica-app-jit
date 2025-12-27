@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EnforceNotNullOnUniversalMemoColumns < ActiveRecord::Migration[8.2]
   def change
     # All occurrence tables have memo columns that should not be null

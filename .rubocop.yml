@@ -238,7 +238,8 @@ Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
 Style/FrozenStringLiteralComment:
-  Enabled: false  # 大規模な変更が必要なため無効化
+  Enabled: true
+  EnforcedStyle: always
 
 # ---------- ハッシュ・配列 ----------
 Style/HashSyntax:
@@ -373,41 +374,50 @@ Style/SwapValues:
 
 # ---------- Metrics（コード複雑度・サイズ制限） ----------
 Metrics/AbcSize:
-  Max: 18
+  Max: 12
   Exclude:
     - 'db/**/*_migrate/**/*'
     - 'test/**/*'
 
 Metrics/BlockLength:
-  Max: 25
+  Max: 20
   Exclude:
     - 'config/**/*'
     - 'db/**/*_migrate/**/*'
     - 'test/**/*'
 
 Metrics/ClassLength:
-  Max: 150
+  Max: 120
   Exclude:
     - 'test/**/*'
 
 Metrics/CyclomaticComplexity:
-  Max: 8
+  Max: 6
 
 Metrics/MethodLength:
-  Max: 12
+  Max: 10
   Exclude:
     - 'db/**/*_migrate/**/*'
     - 'test/**/*'
 
 Metrics/ModuleLength:
-  Max: 150
+  Max: 120
 
 Metrics/ParameterLists:
-  Max: 5
-  MaxOptionalParameters: 3
+  Max: 4
+  MaxOptionalParameters: 2
 
 Metrics/PerceivedComplexity:
-  Max: 8
+  Max: 6
+
+Metrics/BlockNesting:
+  Max: 2
+
+Metrics/CollectionLiteralLength:
+  LengthThreshold: 80
+  Exclude:
+    - 'db/**/*_migrate/**/*'
+    - 'test/**/*'
 
 # ---------- Lint（潜在的なバグの検出） ----------
 Lint/AmbiguousAssignment:
@@ -419,10 +429,16 @@ Lint/AmbiguousOperatorPrecedence:
 Lint/AmbiguousRange:
   Enabled: true
 
+Lint/AmbiguousRegexpLiteral:
+  Enabled: true
+
 Lint/DeprecatedConstants:
   Enabled: true
 
 Lint/DuplicateBranch:
+  Enabled: true
+
+Lint/DuplicateMethods:
   Enabled: true
 
 Lint/DuplicateRegexpCharacterClassElement:
@@ -437,7 +453,36 @@ Lint/EmptyBlock:
 
 Lint/EmptyClass:
   Enabled: true
-  AllowComments: true
+
+Lint/MissingSuper:
+  Enabled: true
+
+Lint/NestedMethodDefinition:
+  Enabled: true
+
+Lint/RescueException:
+  Enabled: true
+
+Lint/ShadowedException:
+  Enabled: true
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: true
+
+Lint/SuppressedException:
+  Enabled: true
+
+Lint/UnusedBlockArgument:
+  Enabled: true
+  AllowUnusedKeywordArguments: false
+  IgnoreEmptyBlocks: true
+  Exclude:
+    - 'test/**/*'
+
+Lint/UnusedMethodArgument:
+  Enabled: true
+  AllowUnusedKeywordArguments: false
+  IgnoreEmptyMethods: true
   Exclude:
     - 'app/services/**/*'
     - 'test/**/*'
@@ -521,21 +566,6 @@ Security/IoMethods:
 # ---------- デバッグコード検出 ----------
 Lint/Debugger:
   Enabled: true
-
-# ---------- 未使用引数検出 ----------
-Lint/UnusedMethodArgument:
-  Enabled: true
-  AllowUnusedKeywordArguments: false
-  IgnoreEmptyMethods: true
-  Exclude:
-    - 'test/**/*'
-
-Lint/UnusedBlockArgument:
-  Enabled: true
-  AllowUnusedKeywordArguments: false
-  IgnoreEmptyBlocks: true
-  Exclude:
-    - 'test/**/*'
 
 # ---------- 非推奨API検出 ----------
 Lint/UriEscapeUnescape:
@@ -1002,3 +1032,63 @@ I18n/RailsI18n:
 
 I18n/GetText:
   Enabled: false
+
+# ============================================================
+# 9. Thread Safety (Strengthened)
+# ============================================================
+
+
+
+ThreadSafety/ClassAndModuleAttributes:
+  Enabled: true
+
+ThreadSafety/ClassInstanceVariable:
+  Enabled: true
+
+ThreadSafety/MutableClassInstanceVariable:
+  Enabled: true
+
+ThreadSafety/NewThread:
+  Enabled: true
+
+ThreadSafety/RackMiddlewareInstanceVariable:
+  Enabled: true
+
+# ============================================================
+# 10. Additional Strictness for Accident Prevention
+# ============================================================
+
+# Warning: OpenStruct is slow and can have issues. Use Struct or Data.
+Performance/OpenStruct:
+  Enabled: true
+
+# Suggest using safe navigation operator &.
+Style/SafeNavigation:
+  Enabled: true
+
+# Prevent using return in a block (can cause LocalJumpError)
+Lint/NonLocalExitFromIterator:
+  Enabled: true
+
+# Prevent unintentional assignment in conditions
+Lint/AssignmentInCondition:
+  Enabled: true
+  AllowSafeAssignment: false
+
+# Prevent infinite loops
+Lint/Loop:
+  Enabled: true
+
+# Ensure 'to_i' etc are called safely
+Lint/SafeNavigationConsistency:
+  Enabled: true
+
+# Disallow 'return' where it's not needed (prevent dead code or confusion)
+Style/RedundantReturn:
+  Enabled: true
+  AllowMultipleReturnValues: true
+
+# Force use of .blank? or .present? in Rails (more robust than nil? or empty?)
+Rails/Blank:
+  Enabled: true
+

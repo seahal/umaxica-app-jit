@@ -14,6 +14,10 @@
 # SENTINEL RECORDS (Development Only)
 # ========================================
 
+# Ensure reference statuses exist before inserting sentinel users/staffs.
+UserIdentityStatus.find_or_create_by!(id: "NONE")
+StaffIdentityStatus.find_or_create_by!(id: "NONE")
+
 # USER
 NIL_ACCOUNT_ID = "00000000-0000-0000-0000-000000000000"
 User.find_or_create_by(id: NIL_ACCOUNT_ID) do |user|

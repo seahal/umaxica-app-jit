@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameUserIdentitySocialAuths < ActiveRecord::Migration[8.2]
   def up
     if table_exists?(:user_apple_auths) && !table_exists?(:user_identity_social_apples)

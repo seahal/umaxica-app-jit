@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetDefaultEmptyStringOnUniversalStrings < ActiveRecord::Migration[8.2]
   def change
     tables = %i(

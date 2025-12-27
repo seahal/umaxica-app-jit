@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddCheckConstraintToRoleAssignments < ActiveRecord::Migration[8.2]
   def change
     add_check_constraint :role_assignments,

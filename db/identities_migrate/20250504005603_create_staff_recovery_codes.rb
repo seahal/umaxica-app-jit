@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateStaffRecoveryCodes < ActiveRecord::Migration[8.0]
   def change
     create_table :staff_recovery_codes, id: :uuid, default: -> { "uuidv7()" } do |t|

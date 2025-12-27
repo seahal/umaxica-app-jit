@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddExpiresAtToZipAndStaffOccurrences < ActiveRecord::Migration[8.2]
   def change
     add_column :zip_occurrences, :expires_at, :datetime, null: false,

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "digest"
 
 class AddFormatChecksToTokenFkIds < ActiveRecord::Migration[8.2]

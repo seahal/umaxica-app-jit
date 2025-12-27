@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeStaffIdToUuidInStaffTables < ActiveRecord::Migration[8.2]
   def up
     # Change staff_id in staff_identity_emails

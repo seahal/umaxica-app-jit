@@ -3,7 +3,10 @@
 require "test_helper"
 
 class AppContactPolicyTest < ActiveSupport::TestCase
-  class MockContact; end
+  class MockContact
+    def initialize
+    end
+  end
 
   def setup
     @user = nil

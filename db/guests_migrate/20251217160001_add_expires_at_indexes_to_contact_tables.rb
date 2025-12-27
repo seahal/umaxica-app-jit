@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddExpiresAtIndexesToContactTables < ActiveRecord::Migration[8.2]
   TABLES = %i(
     app_contact_emails

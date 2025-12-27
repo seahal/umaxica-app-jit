@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RebuildOrgTimelines < ActiveRecord::Migration[8.2]
   def up
     drop_table :org_timelines, if_exists: true

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SimplifyContactColumnNames < ActiveRecord::Migration[8.2]
   def up
     # app_contacts: Rename and change type for category

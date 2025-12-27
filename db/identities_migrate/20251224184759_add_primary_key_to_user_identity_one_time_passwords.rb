@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddPrimaryKeyToUserIdentityOneTimePasswords < ActiveRecord::Migration[8.2]
   def up
     # Add UUID primary key column with uuidv7() default

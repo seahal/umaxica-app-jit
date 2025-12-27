@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeUserIdToUuidInUserIdentityEmails < ActiveRecord::Migration[8.2]
   def up
     # Remove the index first

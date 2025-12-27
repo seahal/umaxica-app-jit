@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateComContactAuditLevels < ActiveRecord::Migration[8.2]
   def change
     create_table :com_contact_audit_levels, id: false do |t|

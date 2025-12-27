@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDomainZipOccurrences < ActiveRecord::Migration[8.2]
   def change
     create_table :domain_zip_occurrences, id: :uuid do |t|

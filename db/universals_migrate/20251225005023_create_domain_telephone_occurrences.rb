@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDomainTelephoneOccurrences < ActiveRecord::Migration[8.2]
   def change
     create_table :domain_telephone_occurrences, id: :uuid do |t|

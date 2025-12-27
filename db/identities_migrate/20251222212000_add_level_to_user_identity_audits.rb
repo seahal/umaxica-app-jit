@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddLevelToUserIdentityAudits < ActiveRecord::Migration[7.1]
   def up
     # Ensure clean slate for correct type (string required for regex check constraint)

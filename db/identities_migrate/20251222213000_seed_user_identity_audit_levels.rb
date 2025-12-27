@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SeedUserIdentityAuditLevels < ActiveRecord::Migration[8.2]
   LEVELS = %w(NONE DEBUG INFO WARN ERROR FATAL UNKNOWN).freeze
 

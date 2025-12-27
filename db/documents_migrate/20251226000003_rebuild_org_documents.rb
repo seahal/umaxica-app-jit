@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RebuildOrgDocuments < ActiveRecord::Migration[8.2]
   def up
     drop_table :org_documents, if_exists: true

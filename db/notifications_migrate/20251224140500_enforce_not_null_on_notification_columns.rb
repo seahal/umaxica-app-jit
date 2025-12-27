@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EnforceNotNullOnNotificationColumns < ActiveRecord::Migration[8.2]
   NIL_UUID = '00000000-0000-0000-0000-000000000000'
 

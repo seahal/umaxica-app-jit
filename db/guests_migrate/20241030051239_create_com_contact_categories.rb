@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateComContactCategories < ActiveRecord::Migration[8.1]
   def change
     create_table :com_contact_categories, id: false do |t|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddMissingIndexesToUniversals < ActiveRecord::Migration[8.2]
   def change
     # Add indexes for status_id on all occurrence tables

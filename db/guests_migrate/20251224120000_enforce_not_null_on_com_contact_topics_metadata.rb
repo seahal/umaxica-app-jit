@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EnforceNotNullOnComContactTopicsMetadata < ActiveRecord::Migration[8.2]
   def up
     execute "UPDATE com_contact_topics SET title = '' WHERE title IS NULL"

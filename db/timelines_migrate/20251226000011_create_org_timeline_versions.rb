@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateOrgTimelineVersions < ActiveRecord::Migration[8.2]
   def change
     create_table :org_timeline_versions, id: :uuid, default: -> { "uuidv7()" } do |t|

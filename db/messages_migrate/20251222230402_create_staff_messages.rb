@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateStaffMessages < ActiveRecord::Migration[8.2]
   def change
     create_table :staff_messages, id: :uuid, default: -> { "uuidv7()" } do |t|

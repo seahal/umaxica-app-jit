@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
   def change
     create_table :handles, id: :string do |t|

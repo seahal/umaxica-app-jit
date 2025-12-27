@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameDomainOccurrenceTables < ActiveRecord::Migration[8.2]
   def up
     if table_exists?(:domain_occurences) && !table_exists?(:domain_occurrences)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   scope module: :docs, as: :docs do
     constraints host: ENV["DOCS_CORPORATE_URL"] do

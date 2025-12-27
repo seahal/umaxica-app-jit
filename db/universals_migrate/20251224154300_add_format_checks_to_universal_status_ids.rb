@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "digest"
 
 class AddFormatChecksToUniversalStatusIds < ActiveRecord::Migration[8.2]

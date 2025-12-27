@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ConsolidateOneTimePassword < ActiveRecord::Migration[8.2]
   class UserIdentityOneTimePassword < ActiveRecord::Base
     self.table_name = "user_identity_one_time_passwords"

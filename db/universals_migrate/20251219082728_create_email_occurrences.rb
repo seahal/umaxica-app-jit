@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateEmailOccurrences < ActiveRecord::Migration[8.2]
   def change
     create_table :email_occurrences, id: :uuid, default: -> { "uuidv7()" } do |t|

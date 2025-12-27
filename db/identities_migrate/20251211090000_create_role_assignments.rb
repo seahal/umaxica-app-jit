@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateRoleAssignments < ActiveRecord::Migration[8.2]
   def change
     create_table :role_assignments, id: :uuid, default: -> { "uuidv7()" } do |t|

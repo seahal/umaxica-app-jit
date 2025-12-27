@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeUserIdToUuidInOtherTables < ActiveRecord::Migration[8.2]
   def up
     # Change user_id in user_google_auths

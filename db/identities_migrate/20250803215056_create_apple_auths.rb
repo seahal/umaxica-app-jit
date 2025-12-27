@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateAppleAuths < ActiveRecord::Migration[8.0]
   def change
     create_table :apple_auths, id: :uuid, default: -> { "uuidv7()" } do |t|

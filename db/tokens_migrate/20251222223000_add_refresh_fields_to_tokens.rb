@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddRefreshFieldsToTokens < ActiveRecord::Migration[8.2]
   # refresh_token_digest is nullable for migration safety; plan to enforce NOT NULL after backfill.
   def up

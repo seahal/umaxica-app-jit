@@ -3,7 +3,10 @@
 require "test_helper"
 
 class StaffPolicyTest < ActiveSupport::TestCase
-  class MockStaff; end
+  class MockStaff
+    def initialize
+    end
+  end
 
   def setup
     @user = nil

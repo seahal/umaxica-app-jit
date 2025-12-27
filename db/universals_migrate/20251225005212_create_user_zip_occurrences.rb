@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUserZipOccurrences < ActiveRecord::Migration[8.2]
   def change
     create_table :user_zip_occurrences, id: :uuid do |t|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Rails/CreateTableWithTimestamps
 class CreateAppContactStatuses < ActiveRecord::Migration[8.1]
   def change

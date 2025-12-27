@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddPublicIdToContactTopics < ActiveRecord::Migration[8.2]
   TABLES = %i(app_contact_topics com_contact_topics org_contact_topics).freeze
 

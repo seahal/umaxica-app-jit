@@ -3,7 +3,10 @@
 require "test_helper"
 
 class ComDocumentPolicyTest < ActiveSupport::TestCase
-  class MockDocument; end
+  class MockDocument
+    def initialize
+    end
+  end
 
   def setup
     @user = nil

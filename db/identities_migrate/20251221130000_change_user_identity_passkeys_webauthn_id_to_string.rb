@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeUserIdentityPasskeysWebauthnIdToString < ActiveRecord::Migration[8.2]
   def up
     change_column :user_identity_passkeys, :webauthn_id, :string

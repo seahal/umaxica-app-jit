@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "digest"
 
 class AddFormatChecksToGuestStatusEventIds < ActiveRecord::Migration[8.2]

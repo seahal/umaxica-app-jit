@@ -24,9 +24,12 @@ module Authentication
       # Test helpers can inject a current user via request header to support
       # controller instance dispatch in tests. Only allow this in the test
       # environment to avoid an authentication backdoor in production.
-      if Rails.env.test? && respond_to?(:request) && request && (test_user_id = request.headers["X-TEST-CURRENT-USER"])
-        @current_user = ::User.find_by(id: test_user_id)
-        return @current_user
+      if Rails.env.test? && respond_to?(:request) && request
+        test_user_id = request.headers["X-TEST-CURRENT-USER"]
+        if test_user_id
+          @current_user = ::User.find_by(id: test_user_id)
+          return @current_user
+        end
       end
 
       # Extract token from Authorization header (Bearer) or Cookie
@@ -145,7 +148,8 @@ module Authentication
 
     def log_out
       user = current_user
-      if (token_value = cookies.encrypted[REFRESH_COOKIE_KEY])
+      token_value = cookies.encrypted[REFRESH_COOKIE_KEY]
+      if token_value
         begin
           public_id, = UserToken.parse_refresh_token(token_value)
           UserToken.find_by(public_id: public_id)&.destroy if public_id

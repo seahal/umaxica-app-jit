@@ -29,10 +29,13 @@ module Authentication
 
       # Test helpers can inject current staff via request header
       # This bypasses the withdrawn check to allow testing withdrawn states
-      if Rails.env.test? && respond_to?(:request) && request && (test_staff_id = request.headers["X-TEST-CURRENT-STAFF"])
-        @current_staff = ::Staff.find_by(id: test_staff_id)
-        @bypass_withdrawn_check = true
-        return @current_staff
+      if Rails.env.test? && respond_to?(:request) && request
+        test_staff_id = request.headers["X-TEST-CURRENT-STAFF"]
+        if test_staff_id
+          @current_staff = ::Staff.find_by(id: test_staff_id)
+          @bypass_withdrawn_check = true
+          return @current_staff
+        end
       end
 
       # Extract token from Authorization header (Bearer) or Cookie
@@ -149,7 +152,8 @@ module Authentication
 
     def log_out
       staff = current_staff
-      if (token_value = cookies.encrypted[REFRESH_COOKIE_KEY])
+      token_value = cookies.encrypted[REFRESH_COOKIE_KEY]
+      if token_value
         begin
           public_id, = StaffToken.parse_refresh_token(token_value)
           StaffToken.find_by(public_id: public_id)&.destroy if public_id

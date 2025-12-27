@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateComContactTopics < ActiveRecord::Migration[8.1]
   def change
     create_table :com_contact_topics, id: :uuid, default: -> { "uuidv7()" } do |t|
