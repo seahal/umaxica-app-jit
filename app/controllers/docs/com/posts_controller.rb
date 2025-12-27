@@ -73,7 +73,7 @@ module Docs
         begin
           uri = URI.parse(url)
           # Only allow http and https schemes
-          return false unless %w[http https].include?(uri.scheme)
+          return false unless %w(http https).include?(uri.scheme)
 
           # Check against allowlist if configured
           allowed_hosts = ENV["DOCS_ALLOWED_REDIRECT_HOSTS"]&.split(",")

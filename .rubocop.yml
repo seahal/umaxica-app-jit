@@ -355,7 +355,7 @@ Style/SwapValues:
 
 # ---------- Metrics（コード複雑度・サイズ制限） ----------
 Metrics/AbcSize:
-  Max: 20
+  Max: 18
   Exclude:
     - 'db/**/*_migrate/**/*'
     - 'test/**/*'
@@ -376,7 +376,7 @@ Metrics/CyclomaticComplexity:
   Max: 8
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 12
   Exclude:
     - 'db/**/*_migrate/**/*'
     - 'test/**/*'
@@ -463,6 +463,9 @@ Lint/UnmodifiedReduceAccumulator:
 Lint/UselessRuby2Keywords:
   Enabled: true
 
+Lint/UselessMethodDefinition:
+  Enabled: true
+
 Lint/ConstantDefinitionInBlock:
   Enabled: true
   Exclude:
@@ -541,7 +544,6 @@ Rails/SkipsModelValidations:
   Enabled: true
   AllowedMethods:
     - touch
-    - touch_all
 
 Rails/UnknownEnv:
   Enabled: true
@@ -608,6 +610,9 @@ Rails/ExpandedDateRange:
   Enabled: true
 
 Rails/FindById:
+  Enabled: true
+
+Rails/FindEach:
   Enabled: true
 
 Rails/FreezeTime:
@@ -758,6 +763,9 @@ Performance/ConcurrentMonotonicTime:
 Performance/ConstantRegexp:
   Enabled: true
 
+Performance/Detect:
+  Enabled: true
+
 Performance/MapCompact:
   Enabled: true
 
@@ -889,7 +897,8 @@ Minitest/LiteralAsActualArgument:
   Enabled: true
 
 Minitest/MultipleAssertions:
-  Enabled: false
+  Enabled: true
+  Max: 8
 
 Minitest/NoAssertions:
   Enabled: false
