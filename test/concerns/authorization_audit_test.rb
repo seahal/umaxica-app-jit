@@ -206,6 +206,7 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
       def format.html; yield; end
+
       def format.json; end # Do nothing for json
       block.call(format)
     end
@@ -225,6 +226,7 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
       def format.html; end # Do nothing for html
+
       def format.json; yield; end
       block.call(format)
     end

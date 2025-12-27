@@ -144,6 +144,37 @@ module Docs
         assert_response :success
         assert_select ".bg-gray-50.rounded-lg.p-8.text-center"
       end
+
+      # CRUD operations (not implemented yet)
+      test "should return not implemented for new" do
+        get new_docs_com_posts_url
+        assert_response :not_implemented
+      end
+
+      test "should return not implemented for create" do
+        post docs_com_posts_url, params: {}
+        assert_response :not_implemented
+      end
+
+      test "should return not implemented for edit" do
+        get edit_docs_com_posts_url
+        assert_response :not_implemented
+      end
+
+      test "should return not implemented for update with PATCH" do
+        patch docs_com_posts_url, params: {}
+        assert_response :not_implemented
+      end
+
+      test "should return not implemented for update with PUT" do
+        put docs_com_posts_url, params: {}
+        assert_response :not_implemented
+      end
+
+      test "should return not implemented for destroy" do
+        delete docs_com_posts_url
+        assert_response :not_implemented
+      end
     end
   end
 end

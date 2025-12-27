@@ -95,6 +95,16 @@ Layout/EmptyLineAfterGuardClause:
 Layout/EmptyLineAfterMagicComment:
   Enabled: true
 
+# メソッド間の空行を強制（1行の空行を要求）
+Layout/EmptyLineBetweenDefs:
+  Enabled: true
+  AllowAdjacentOneLineDefs: false
+  NumberOfEmptyLines: 1
+
+# 複数の連続空行を禁止
+Layout/EmptyLines:
+  Enabled: true
+
 # ---------- スペース ----------
 Layout/SpaceInsideHashLiteralBraces:
   Enabled: true
