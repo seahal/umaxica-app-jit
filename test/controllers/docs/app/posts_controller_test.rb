@@ -9,39 +9,39 @@ module Docs
         host! ENV.fetch("DOCS_SERVICE_URL", "docs.app.localhost")
       end
 
-      test "should return not implemented for show" do
+      test "should get index" do
         get docs_app_posts_url
-        assert_response :not_implemented
+        assert_response :success
       end
 
-      test "should return not implemented for new" do
-        get new_docs_app_posts_url
-        assert_response :not_implemented
+      test "should get show" do
+        get docs_app_post_url(id: 1)
+        assert_response :success
       end
 
-      test "should return not implemented for create" do
+      test "should get new" do
+        get new_docs_app_post_url
+        assert_response :success
+      end
+
+      test "should create post" do
         post docs_app_posts_url, params: {}
-        assert_response :not_implemented
+        assert_response :redirect
       end
 
-      test "should return not implemented for edit" do
-        get edit_docs_app_posts_url
-        assert_response :not_implemented
+      test "should get edit" do
+        get edit_docs_app_post_url(id: 1)
+        assert_response :success
       end
 
-      test "should return not implemented for update with PATCH" do
-        patch docs_app_posts_url, params: {}
-        assert_response :not_implemented
+      test "should update post" do
+        patch docs_app_post_url(id: 1), params: {}
+        assert_response :redirect
       end
 
-      test "should return not implemented for update with PUT" do
-        put docs_app_posts_url, params: {}
-        assert_response :not_implemented
-      end
-
-      test "should return not implemented for destroy" do
-        delete docs_app_posts_url
-        assert_response :not_implemented
+      test "should destroy post" do
+        delete docs_app_post_url(id: 1)
+        assert_response :redirect
       end
     end
   end

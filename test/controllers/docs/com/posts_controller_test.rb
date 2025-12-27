@@ -11,12 +11,12 @@ module Docs
       end
 
       test "should show document by permalink" do
-        get docs_com_posts_url(id: @document.permalink)
+        get docs_com_post_url(id: @document.permalink)
         assert_response :success
       end
 
       test "should display document title and content" do
-        get docs_com_posts_url(id: @document.permalink)
+        get docs_com_post_url(id: @document.permalink)
         assert_response :success
 
         # Check that the document is displayed (can't verify exact text due to encryption)
@@ -25,7 +25,7 @@ module Docs
       end
 
       test "should show 404 for non-existent permalink" do
-        get docs_com_posts_url(id: "nonexistent_permalink_xyz")
+        get docs_com_post_url(id: "nonexistent_permalink_xyz")
         assert_response :not_found
       end
 
@@ -39,7 +39,7 @@ module Docs
           status_id: "ACTIVE",
         )
 
-        get docs_com_posts_url(id: redirect_doc.permalink)
+        get docs_com_post_url(id: redirect_doc.permalink)
         assert_redirected_to "https://example.com"
       end
 
@@ -62,7 +62,7 @@ module Docs
           edited_by_type: "Staff",
         )
 
-        get docs_com_posts_url(id: text_doc.permalink)
+        get docs_com_post_url(id: text_doc.permalink)
         assert_response :success
         assert_equal "text/plain; charset=utf-8", response.content_type
         assert_equal "Plain text content", response.body
@@ -77,7 +77,7 @@ module Docs
           status_id: "ACTIVE",
         )
 
-        get docs_com_posts_url(id: expired_doc.permalink)
+        get docs_com_post_url(id: expired_doc.permalink)
         assert_response :not_found
       end
 
@@ -90,12 +90,12 @@ module Docs
           status_id: "ACTIVE",
         )
 
-        get docs_com_posts_url(id: future_doc.permalink)
+        get docs_com_post_url(id: future_doc.permalink)
         assert_response :not_found
       end
 
       test "should display version history" do
-        get docs_com_posts_url(id: @document.permalink)
+        get docs_com_post_url(id: @document.permalink)
         assert_response :success
         assert_select ".space-y-2" # Version history container
       end
@@ -145,35 +145,30 @@ module Docs
         assert_select ".bg-gray-50.rounded-lg.p-8.text-center"
       end
 
-      # CRUD operations (not implemented yet)
-      test "should return not implemented for new" do
-        get new_docs_com_posts_url
-        assert_response :not_implemented
+      # CRUD operations
+      test "should get new" do
+        get new_docs_com_post_url
+        assert_response :success
       end
 
-      test "should return not implemented for create" do
+      test "should create post" do
         post docs_com_posts_url, params: {}
-        assert_response :not_implemented
+        assert_response :redirect
       end
 
-      test "should return not implemented for edit" do
-        get edit_docs_com_posts_url
-        assert_response :not_implemented
+      test "should get edit" do
+        get edit_docs_com_post_url(id: 1)
+        assert_response :success
       end
 
-      test "should return not implemented for update with PATCH" do
-        patch docs_com_posts_url, params: {}
-        assert_response :not_implemented
+      test "should update post" do
+        patch docs_com_post_url(id: 1), params: {}
+        assert_response :redirect
       end
 
-      test "should return not implemented for update with PUT" do
-        put docs_com_posts_url, params: {}
-        assert_response :not_implemented
-      end
-
-      test "should return not implemented for destroy" do
-        delete docs_com_posts_url
-        assert_response :not_implemented
+      test "should destroy post" do
+        delete docs_com_post_url(id: 1)
+        assert_response :redirect
       end
     end
   end

@@ -10,7 +10,7 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # posts resource
-        resource :posts do
+        resources :posts do
           resources :versions
         end
       end
@@ -26,7 +26,7 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # posts resource
-        resource :posts do
+        resources :posts do
           resources :versions
         end
       end
@@ -43,7 +43,7 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # posts resource
-        resource :posts do
+        resources :posts do
           resources :versions
         end
       end

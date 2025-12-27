@@ -1,176 +1,177 @@
+<% default_host = ENV.fetch("POSTGRESQL_HOST", "localhost") %>
 default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } * 100 %>
   port: 5432
   timeout: 5000
-  username: <%= ENV["POSTGRESQL_USER"] %>
+  username: <%= ENV.fetch("POSTGRESQL_USER", "postgres") %>
   password: <%= ENV["POSTGRESQL_PASSWORD"] %>
 development:
   guest:
     !!merge <<: *default
     database: development_guest_db
-    host: <%=  ENV["POSTGRESQL_GUEST_PUB"] %>
+    host: <%= ENV["POSTGRESQL_GUEST_PUB"] || default_host %>
     migrations_paths: db/guests_migrate
   guest_replica:
     !!merge <<: *default
     replica: true
     database: development_guest_db
-    host: <%= ENV["POSTGRESQL_GUEST_SUB"] %>
+    host: <%= ENV["POSTGRESQL_GUEST_SUB"] || default_host %>
     migrations_paths: db/guests_migrate
   identity:
     !!merge <<: *default
     database: development_identity_db
-    host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] %>
+    host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] || default_host %>
     migrations_paths: db/identities_migrate
   identity_replica:
     !!merge <<: *default
     replica: true
     database: development_identity_db
-    host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] %>
+    host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] || default_host %>
     migrations_paths: db/identities_migrate
   profile:
     !!merge <<: *default
     database: development_profile_db
-    host: <%= ENV["POSTGRESQL_PROFILE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_PROFILE_PUB"] || default_host %>
     migrations_paths: db/profiles_migrate
   profile_replica:
     !!merge <<: *default
     replica: true
     database: development_profile_db
-    host: <%= ENV["POSTGRESQL_PROFILE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_PROFILE_SUB"] || default_host %>
     migrations_paths: db/profiles_migrate
   token:
     !!merge <<: *default
     database: development_token_db
-    host: <%= ENV["POSTGRESQL_TOKEN_PUB"] %>
+    host: <%= ENV["POSTGRESQL_TOKEN_PUB"] || default_host %>
     migrations_paths: db/tokens_migrate
   token_replica:
     !!merge <<: *default
     replica: true
     database: development_token_db
-    host: <%= ENV["POSTGRESQL_TOKEN_SUB"] %>
+    host: <%= ENV["POSTGRESQL_TOKEN_SUB"] || default_host %>
     migrations_paths: db/tokens_migrate
   business:
     !!merge <<: *default
     database: development_business_db
-    host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] %>
+    host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] || default_host %>
     migrations_paths: db/businesses_migrate
   business_replica:
     !!merge <<: *default
     replica: true
     database: development_business_db
-    host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
+    host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] || default_host %>
     migrations_paths: db/businesses_migrate
   document:
     !!merge <<: *default
     database: development_document_db
-    host: <%= ENV["POSTGRESQL_DOCUMENT_PUB"] %>
+    host: <%= ENV["POSTGRESQL_DOCUMENT_PUB"] || default_host %>
     migrations_paths: db/documents_migrate
   document_replica:
     !!merge <<: *default
     replica: true
     database: development_document_db
-    host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] %>
+    host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] || default_host %>
     migrations_paths: db/documents_migrate
   timeline:
     !!merge <<: *default
     database: development_timeline_db
-    host: <%= ENV["POSTGRESQL_TIMELINE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_TIMELINE_PUB"] || default_host %>
     migrations_paths: db/timelines_migrate
   timeline_replica:
     !!merge <<: *default
     replica: true
     database: development_timeline_db
-    host: <%= ENV["POSTGRESQL_TIMELINE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_TIMELINE_SUB"] || default_host %>
     migrations_paths: db/timelines_migrate
   billing:
     !!merge <<: *default
     database: development_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_IDENTITY_PUB"] %>
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_IDENTITY_PUB"] || default_host %>
     migrations_paths: db/billing_migrate
   billing_replica:
     !!merge <<: *default
     replica: true
     database: development_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_IDENTITY_SUB"] %>
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_IDENTITY_SUB"] || default_host %>
     migrations_paths: db/billing_migrate
   message:
     !!merge <<: *default
     database: development_message_db
-    host: <%= ENV["POSTGRESQL_MESSAGE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_MESSAGE_PUB"] || default_host %>
     migrations_paths: db/messages_migrate
   message_replica:
     !!merge <<: *default
     replica: true
     database: development_message_db
-    host: <%= ENV["POSTGRESQL_MESSAGE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_MESSAGE_SUB"] || default_host %>
     migrations_paths: db/messages_migrate
   notification:
     !!merge <<: *default
     database: development_notification_db
-    host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] %>
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] || default_host %>
     migrations_paths: db/notifications_migrate
   notification_replica:
     !!merge <<: *default
     replica: true
     database: development_notification_db
-    host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] %>
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] || default_host %>
     migrations_paths: db/notifications_migrate
   cache:
     !!merge <<: *default
     database: development_cache_db
-    host: <%= ENV["POSTGRESQL_CACHE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_CACHE_PUB"] || default_host %>
     migrations_paths: db/caches_migrate
   cache_replica:
     !!merge <<: *default
     replica: true
     database: development_cache_db
-    host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_CACHE_SUB"] || default_host %>
     migrations_paths: db/caches_migrate
   queue:
     !!merge <<: *default
     database: development_queue_db
-    host: <%= ENV["POSTGRESQL_QUEUE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_QUEUE_PUB"] || default_host %>
     migrations_paths: db/queues_migrate
   queue_replica:
     !!merge <<: *default
     replica: true
     database: development_queue_db
-    host: <%= ENV["POSTGRESQL_QUEUE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_QUEUE_SUB"] || default_host %>
     migrations_paths: db/queues_migrate
   storage:
     !!merge <<: *default
     database: development_storage_db
-    host: <%= ENV["POSTGRESQL_STORAGE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_STORAGE_PUB"] || default_host %>
     migrations_paths: db/storages_migrate
   storage_replica:
     !!merge <<: *default
     replica: true
     database: development_storage_db
-    host: <%= ENV["POSTGRESQL_STORAGE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_STORAGE_SUB"] || default_host %>
     migrations_paths: db/storages_migrate
   speciality:
     !!merge <<: *default
     database: development_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
+    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] || default_host %>
     migrations_paths: db/specialities_migrate
   speciality_replica:
     !!merge <<: *default
     replica: true
     database: development_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
+    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] || default_host %>
     migrations_paths: db/specialities_migrate
   universal:
     !!merge <<: *default
     database: development_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] || default_host %>
     migrations_paths: db/universals_migrate
   universal_replica:
     !!merge <<: *default
     replica: true
     database: development_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || default_host %>
     migrations_paths: db/universals_migrate
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -182,167 +183,167 @@ test:
   guest:
     !!merge <<: *default
     database: test_guest_db
-    host: <%= ENV["POSTGRESQL_GUEST_PUB"] %>
+    host: <%= ENV["POSTGRESQL_GUEST_PUB"] || default_host %>
     migrations_paths: db/guests_migrate
   guest_replica:
     !!merge <<: *default
     replica: true
     database: test_guest_db
-    host: <%= ENV["POSTGRESQL_GUEST_SUB"] %>
+    host: <%= ENV["POSTGRESQL_GUEST_SUB"] || default_host %>
     migrations_paths: db/guests_migrate
   identity:
     !!merge <<: *default
     database: test_identity_db
-    host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] %>
+    host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] || default_host %>
     migrations_paths: db/identities_migrate
   identity_replica:
     !!merge <<: *default
     replica: true
     database: test_identity_db
-    host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] %>
+    host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] || default_host %>
     migrations_paths: db/identities_migrate
   profile:
     !!merge <<: *default
     database: test_profile_db
-    host: <%= ENV["POSTGRESQL_PROFILE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_PROFILE_PUB"] || default_host %>
     migrations_paths: db/profiles_migrate
   profile_replica:
     !!merge <<: *default
     replica: true
     database: test_profile_db
-    host: <%= ENV["POSTGRESQL_PROFILE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_PROFILE_SUB"] || default_host %>
     migrations_paths: db/profiles_migrate
   token:
     !!merge <<: *default
     database: test_token_db
-    host: <%= ENV["POSTGRESQL_TOKEN_PUB"] %>
+    host: <%= ENV["POSTGRESQL_TOKEN_PUB"] || default_host %>
     migrations_paths: db/tokens_migrate
   token_replica:
     !!merge <<: *default
     replica: true
     database: test_token_db
-    host: <%= ENV["POSTGRESQL_TOKEN_SUB"] %>
+    host: <%= ENV["POSTGRESQL_TOKEN_SUB"] || default_host %>
     migrations_paths: db/tokens_migrate
   notification:
     !!merge <<: *default
     database: test_notification_db
-    host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] %>
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_PUB"] || default_host %>
     migrations_paths: db/notifications_migrate
   notification_replica:
     !!merge <<: *default
     replica: true
     database: test_notification_db
-    host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] %>
+    host: <%= ENV["POSTGRESQL_NOTIFICATION_SUB"] || default_host %>
     migrations_paths: db/notifications_migrate
   speciality:
     !!merge <<: *default
     database: test_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] %>
+    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] || default_host %>
     migrations_paths: db/specialities_migrate
   speciality_replica:
     !!merge <<: *default
     replica: true
     database: test_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] %>
+    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] || default_host %>
     migrations_paths: db/specialities_migrate
   cache:
     !!merge <<: *default
     database: test_cache_db
-    host: <%= ENV["POSTGRESQL_CACHE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_CACHE_PUB"] || default_host %>
     migrations_paths: db/caches_migrate
   cache_replica:
     !!merge <<: *default
     replica: true
     database: test_cache_db
-    host: <%= ENV["POSTGRESQL_CACHE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_CACHE_SUB"] || default_host %>
     migrations_paths: db/caches_migrate
   queue:
     !!merge <<: *default
     database: test_queue_db
-    host: <%= ENV["POSTGRESQL_QUEUE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_QUEUE_PUB"] || default_host %>
     migrations_paths: db/queues_migrate
   queue_replica:
     !!merge <<: *default
     replica: true
     database: test_queue_db
-    host: <%= ENV["POSTGRESQL_QUEUE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_QUEUE_SUB"] || default_host %>
     migrations_paths: db/queues_migrate
   storage:
     !!merge <<: *default
     database: test_storage_db
-    host: <%= ENV["POSTGRESQL_STORAGE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_STORAGE_PUB"] || default_host %>
     migrations_paths: db/storages_migrate
   storage_replica:
     !!merge <<: *default
     replica: true
     database: test_storage_db
-    host: <%= ENV["POSTGRESQL_STORAGE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_STORAGE_SUB"] || default_host %>
     migrations_paths: db/storages_migrate
   business:
     !!merge <<: *default
     database: test_business_db
-    host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] %>
+    host: <%= ENV["POSTGRESQL_BUSINESS_PUB"] || default_host %>
     migrations_paths: db/businesses_migrate
   business_replica:
     !!merge <<: *default
     replica: true
     database: test_business_db
-    host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] %>
+    host: <%= ENV["POSTGRESQL_BUSINESS_SUB"] || default_host %>
     migrations_paths: db/businesses_migrate
   document:
     !!merge <<: *default
     database: test_document_db
-    host: <%= ENV["POSTGRESQL_DOCUMENT_PUB"] %>
+    host: <%= ENV["POSTGRESQL_DOCUMENT_PUB"] || default_host %>
     migrations_paths: db/documents_migrate
   document_replica:
     !!merge <<: *default
     replica: true
     database: test_document_db
-    host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] %>
+    host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] || default_host %>
     migrations_paths: db/documents_migrate
   timeline:
     !!merge <<: *default
     database: test_timeline_db
-    host: <%= ENV["POSTGRESQL_TIMELINE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_TIMELINE_PUB"] || default_host %>
     migrations_paths: db/timelines_migrate
   timeline_replica:
     !!merge <<: *default
     replica: true
     database: test_timeline_db
-    host: <%= ENV["POSTGRESQL_TIMELINE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_TIMELINE_SUB"] || default_host %>
     migrations_paths: db/timelines_migrate
   billing:
     !!merge <<: *default
     database: test_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_IDENTITY_PUB"] %>
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_IDENTITY_PUB"] || default_host %>
     migrations_paths: db/billing_migrate
   billing_replica:
     !!merge <<: *default
     replica: true
     database: test_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_IDENTITY_SUB"] %>
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_IDENTITY_SUB"] || default_host %>
     migrations_paths: db/billing_migrate
   message:
     !!merge <<: *default
     database: test_message_db
-    host: <%= ENV["POSTGRESQL_MESSAGE_PUB"] %>
+    host: <%= ENV["POSTGRESQL_MESSAGE_PUB"] || default_host %>
     migrations_paths: db/messages_migrate
   message_replica:
     !!merge <<: *default
     replica: true
     database: test_message_db
-    host: <%= ENV["POSTGRESQL_MESSAGE_SUB"] %>
+    host: <%= ENV["POSTGRESQL_MESSAGE_SUB"] || default_host %>
     migrations_paths: db/messages_migrate
   universal:
     !!merge <<: *default
     database: test_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] %>
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] || default_host %>
     migrations_paths: db/universals_migrate
   universal_replica:
     !!merge <<: *default
     replica: true
     database: test_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] %>
+    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || default_host %>
     migrations_paths: db/universals_migrate
 # FIXME: please implement below code
 production:

@@ -3,34 +3,60 @@
 module News
   module App
     class PostsController < ApplicationController
+      def index
+        @posts = [
+          { id: 1, title: "Product Update", published_at: 2.days.ago },
+          { id: 2, title: "Release Notes", published_at: 1.day.ago },
+          { id: 3, title: "Community Spotlight", published_at: Time.current },
+        ]
+
+        Rails.event.notify("news.posts.listed",
+                           posts_count: @posts.size,)
+      end
+
       def show
-        # TODO: Implement news post display functionality
-        head :not_implemented
+        @post_id = params[:id]
+        @post = {
+          id: @post_id,
+          title: "News Post #{@post_id}",
+          body: "This is a placeholder news post for #{@post_id}.",
+          published_at: Time.current,
+        }
+
+        Rails.event.notify("news.post.viewed",
+                           post_id: @post_id,)
       end
 
       def new
-        # TODO: Implement news post creation form
-        head :not_implemented
+        @post = { title: "", body: "" }
       end
 
       def edit
-        # TODO: Implement news post edit form
-        head :not_implemented
+        @post_id = params[:id]
+        @post = { id: @post_id, title: "News Post #{@post_id}", body: "" }
       end
 
       def create
-        # TODO: Implement news post creation
-        head :not_implemented
+        Rails.event.notify("news.post.created",
+                           title: params.dig(:post, :title),)
+
+        redirect_to news_app_posts_path
       end
 
       def update
-        # TODO: Implement news post update
-        head :not_implemented
+        @post_id = params[:id]
+        Rails.event.notify("news.post.updated",
+                           post_id: @post_id,)
+
+        redirect_to news_app_post_path(@post_id)
       end
 
       def destroy
-        # TODO: Implement news post deletion
-        head :not_implemented
+        @post_id = params[:id]
+        Rails.event.notify("news.post.deleted",
+                           post_id: @post_id,)
+
+        redirect_to news_app_posts_path
       end
     end
   end

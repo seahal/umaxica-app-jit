@@ -9,39 +9,39 @@ module News
         host! ENV.fetch("NEWS_STAFF_URL", "news.org.localhost")
       end
 
-      test "should return not implemented for show" do
+      test "should get index" do
         get news_org_posts_url
-        assert_response :not_implemented
+        assert_response :success
       end
 
-      test "should return not implemented for new" do
-        get new_news_org_posts_url
-        assert_response :not_implemented
+      test "should get show" do
+        get news_org_post_url(id: 1)
+        assert_response :success
       end
 
-      test "should return not implemented for create" do
+      test "should get new" do
+        get new_news_org_post_url
+        assert_response :success
+      end
+
+      test "should create post" do
         post news_org_posts_url, params: {}
-        assert_response :not_implemented
+        assert_response :redirect
       end
 
-      test "should return not implemented for edit" do
-        get edit_news_org_posts_url
-        assert_response :not_implemented
+      test "should get edit" do
+        get edit_news_org_post_url(id: 1)
+        assert_response :success
       end
 
-      test "should return not implemented for update with PATCH" do
-        patch news_org_posts_url, params: {}
-        assert_response :not_implemented
+      test "should update post" do
+        patch news_org_post_url(id: 1), params: {}
+        assert_response :redirect
       end
 
-      test "should return not implemented for update with PUT" do
-        put news_org_posts_url, params: {}
-        assert_response :not_implemented
-      end
-
-      test "should return not implemented for destroy" do
-        delete news_org_posts_url
-        assert_response :not_implemented
+      test "should destroy post" do
+        delete news_org_post_url(id: 1)
+        assert_response :redirect
       end
     end
   end

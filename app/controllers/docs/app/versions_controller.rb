@@ -43,6 +43,50 @@ module Docs
           format.json { render json: @version }
         end
       end
+
+      # GET /posts/:post_id/versions/new
+      def new
+        @post_id = params[:post_id]
+        @version = { version: "", body: "" }
+      end
+
+      # GET /posts/:post_id/versions/:id/edit
+      def edit
+        @post_id = params[:post_id]
+        @version_id = params[:id]
+        @version = { id: @version_id, version: "1.0.0", body: "" }
+      end
+
+      # POST /posts/:post_id/versions
+      def create
+        @post_id = params[:post_id]
+        Rails.event.notify("docs.version.created",
+                           post_id: @post_id,)
+
+        redirect_to docs_app_post_versions_path(@post_id)
+      end
+
+      # PATCH/PUT /posts/:post_id/versions/:id
+      def update
+        @post_id = params[:post_id]
+        @version_id = params[:id]
+        Rails.event.notify("docs.version.updated",
+                           post_id: @post_id,
+                           version_id: @version_id,)
+
+        redirect_to docs_app_post_version_path(@post_id, @version_id)
+      end
+
+      # DELETE /posts/:post_id/versions/:id
+      def destroy
+        @post_id = params[:post_id]
+        @version_id = params[:id]
+        Rails.event.notify("docs.version.deleted",
+                           post_id: @post_id,
+                           version_id: @version_id,)
+
+        redirect_to docs_app_post_versions_path(@post_id)
+      end
     end
   end
 end

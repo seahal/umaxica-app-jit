@@ -1,0 +1,15 @@
+<div class="mx-auto max-w-3xl px-6 py-10">
+  <h2 class="text-xl font-semibold">Posts</h2>
+  <p class="text-sm text-[hsl(var(--muted-foreground))]">Placeholder list for the current namespace.</p>
+  <ul class="mt-4 space-y-2">
+    <% @posts.each do |post| %>
+      <li class="rounded border border-[hsl(var(--border))] px-4 py-3">
+        <div class="font-semibold"><%= post[:title] %></div>
+        <% timestamp = post[:updated_at] || post[:published_at] %>
+        <% if timestamp.present? %>
+          <div class="text-xs text-[hsl(var(--muted-foreground))]"><%= l(timestamp, format: :long) %></div>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>

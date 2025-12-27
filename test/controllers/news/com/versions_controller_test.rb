@@ -8,24 +8,24 @@ class News::Com::VersionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get news_com_posts_versions_url
+    get news_com_post_versions_url(post_id: 1)
     assert_response :success
   end
 
   test "should get index as json" do
-    get news_com_posts_versions_url(format: :json)
+    get news_com_post_versions_url(post_id: 1, format: :json)
     assert_response :success
     json_response = response.parsed_body
     assert_equal 3, json_response.size
   end
 
   test "should get show" do
-    get news_com_posts_version_url(id: 1)
+    get news_com_post_version_url(post_id: 1, id: 1)
     assert_response :success
   end
 
   test "should get show as json" do
-    get news_com_posts_version_url(id: 1, format: :json)
+    get news_com_post_version_url(post_id: 1, id: 1, format: :json)
     assert_response :success
     json_response = response.parsed_body
     assert_equal "1", json_response["id"]

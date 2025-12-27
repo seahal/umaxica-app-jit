@@ -3,40 +3,46 @@
 module Docs
   module Com
     class PostsController < ApplicationController
-      # GET /posts?id=:permalink or /posts?q=:query or /posts (show all)
+      # GET /posts?q=:query or /posts (show all)
+      def index
+        list_documents
+      end
+
+      # GET /posts/:id
       def show
-        # If id parameter is provided, show specific document
-        if params[:id].present?
-          show_document
-        else
-          # Otherwise, show list (with optional search)
-          list_documents
-        end
+        show_document
       end
 
       def new
-        # TODO: Implement document creation form
-        head :not_implemented
+        @post = { title: "", body: "" }
       end
 
       def edit
-        # TODO: Implement document edit form
-        head :not_implemented
+        @post_id = params[:id]
+        @post = { id: @post_id, title: "Document #{@post_id}", body: "" }
       end
 
       def create
-        # TODO: Implement document creation
-        head :not_implemented
+        Rails.event.notify("docs.post.created",
+                           title: params.dig(:post, :title),)
+
+        redirect_to docs_com_posts_path
       end
 
       def update
-        # TODO: Implement document update
-        head :not_implemented
+        @post_id = params[:id]
+        Rails.event.notify("docs.post.updated",
+                           post_id: @post_id,)
+
+        redirect_to docs_com_post_path(@post_id)
       end
 
       def destroy
-        # TODO: Implement document deletion
-        head :not_implemented
+        @post_id = params[:id]
+        Rails.event.notify("docs.post.deleted",
+                           post_id: @post_id,)
+
+        redirect_to docs_com_posts_path
       end
 
       private
