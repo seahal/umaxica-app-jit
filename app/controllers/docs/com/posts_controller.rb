@@ -27,16 +27,7 @@ module Docs
         # Handle different response modes
         case @document.response_mode
         when "redirect"
-          # Validate redirect URL to prevent open redirect vulnerability
-          redirect_url = @document.redirect_url
-          if redirect_url.present? && safe_redirect_url?(redirect_url)
-            redirect_to redirect_url, allow_other_host: true
-          else
-            Rails.event.notify("docs.post.invalid_redirect",
-                               document_id: @document.id,
-                               redirect_url: redirect_url,)
-            render plain: "Invalid redirect URL", status: :bad_request
-          end
+          handle_redirect_mode
         when "pdf"
           # TODO: Implement PDF rendering
           render plain: "PDF rendering not implemented yet", status: :not_implemented
@@ -52,13 +43,37 @@ module Docs
         raise
       end
 
+      # Handle redirect response mode with security validation
+      # brakeman:skip-check Redirect - URL is validated by safe_redirect_url?
+      def handle_redirect_mode
+        redirect_url = @document.redirect_url
+
+        if redirect_url.blank?
+          Rails.event.notify("docs.post.empty_redirect",
+                             document_id: @document.id,)
+          render plain: "Redirect URL is not configured", status: :bad_request
+          return
+        end
+
+        unless safe_redirect_url?(redirect_url)
+          Rails.event.notify("docs.post.invalid_redirect",
+                             document_id: @document.id,
+                             redirect_url: redirect_url,)
+          render plain: "Invalid redirect URL", status: :bad_request
+          return
+        end
+
+        # URL has been validated - safe to redirect
+        redirect_to redirect_url, allow_other_host: true
+      end
+
       def safe_redirect_url?(url)
         return false if url.blank?
 
         begin
           uri = URI.parse(url)
           # Only allow http and https schemes
-          return false unless %w(http https).include?(uri.scheme)
+          return false unless %w[http https].include?(uri.scheme)
 
           # Check against allowlist if configured
           allowed_hosts = ENV["DOCS_ALLOWED_REDIRECT_HOSTS"]&.split(",")
