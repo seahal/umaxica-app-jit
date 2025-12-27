@@ -25,11 +25,13 @@
 #
 
 one:
+  user_token_status_id: 'NEYO'
   user: one
   public_id: "USERTOKENPUBLICID0001"
   refresh_token_digest: "user_refresh_digest_one"
   refresh_expires_at: 2030-01-01 00:00:00
 two:
+  user_token_status_id: 'NEYO'
   user: two
   public_id: "USERTOKENPUBLICID0002"
   refresh_token_digest: "user_refresh_digest_two"

@@ -29,5 +29,5 @@ completed:
   id: 'COMPLETED_CONTACT_ACTION'
   description: 'contact completed'
 none:
-  id: 'NONE'
+  id: 'NEYO'
   description: 'null status'

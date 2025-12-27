@@ -10,7 +10,7 @@
 #  index_domain_occurrence_statuses_on_expires_at  (expires_at)
 #
 NONE:
-  id: NONE
+  id: NEYO
 ACTIVE:
   id: ACTIVE
 INACTIVE:

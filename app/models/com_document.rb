@@ -30,6 +30,8 @@ class ComDocument < DocumentRecord
              class_name: "ComDocumentStatus",
              foreign_key: :status_id,
              inverse_of: :com_documents
+
+  validates :status_id, length: { maximum: 255 }
   has_many :com_document_versions, dependent: :delete_all
   has_many :com_document_audits,
            -> { where(subject_type: "ComDocument") },
@@ -37,6 +39,17 @@ class ComDocument < DocumentRecord
            foreign_key: :subject_id,
            inverse_of: :com_document,
            dependent: :delete_all
+  has_many :com_document_tags, dependent: :delete_all, inverse_of: :com_document
+  has_many :tag_masters,
+           through: :com_document_tags,
+           source: :com_document_tag_master
+  has_one :category,
+          class_name: "ComDocumentCategory",
+          dependent: :delete,
+          inverse_of: :com_document
+  has_one :category_master,
+          through: :category,
+          source: :com_document_category_master
 
   def latest_version
     com_document_versions.order(created_at: :desc).first!

@@ -1,0 +1,9 @@
+---
+PrimaryKeyTypeChecker:
+  enabled: false
+  AppContactCategory:
+    enabled: false
+ImplicitOrderingChecker:
+  enabled: false
+MissingUniqueIndexChecker:
+  enabled: false

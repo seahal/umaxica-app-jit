@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_27_224336) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "staff_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_staff_token_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_token_statuses_id_format"
   end
 
@@ -40,6 +41,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_173000) do
   end
 
   create_table "user_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_token_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_token_statuses_id_format"
   end
 

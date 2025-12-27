@@ -57,12 +57,14 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
   end
 
   test "should show passkey" do
-    passkey = UserIdentityPasskey.create!(user: @user,
-                                          description: "Show Me",
-                                          public_key: "pk",
-                                          external_id: SecureRandom.uuid,
-                                          webauthn_id: SecureRandom.uuid,
-                                          sign_count: 0,)
+    passkey = UserIdentityPasskey.create!(
+      user: @user,
+      description: "Show Me",
+      public_key: "pk",
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.uuid,
+      sign_count: 0,
+    )
 
     get auth_app_setting_passkey_url(passkey), headers: @headers
 
@@ -70,12 +72,14 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
   end
 
   test "should get edit" do
-    passkey = UserIdentityPasskey.create!(user: @user,
-                                          description: "Edit Me",
-                                          public_key: "pk",
-                                          external_id: SecureRandom.uuid,
-                                          webauthn_id: SecureRandom.uuid,
-                                          sign_count: 0,)
+    passkey = UserIdentityPasskey.create!(
+      user: @user,
+      description: "Edit Me",
+      public_key: "pk",
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.uuid,
+      sign_count: 0,
+    )
 
     get edit_auth_app_setting_passkey_url(passkey), headers: @headers
 
@@ -99,12 +103,14 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
   end
 
   test "should update passkey" do
-    passkey = UserIdentityPasskey.create!(user: @user,
-                                          description: "Old Name",
-                                          public_key: "pk",
-                                          external_id: SecureRandom.uuid,
-                                          webauthn_id: SecureRandom.uuid,
-                                          sign_count: 0,)
+    passkey = UserIdentityPasskey.create!(
+      user: @user,
+      description: "Old Name",
+      public_key: "pk",
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.uuid,
+      sign_count: 0,
+    )
 
     patch auth_app_setting_passkey_url(passkey), params: {
       passkey: { description: "New Name" },
@@ -115,12 +121,14 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
   end
 
   test "should destroy passkey" do
-    passkey = UserIdentityPasskey.create!(user: @user,
-                                          description: "Delete Me",
-                                          public_key: "pk",
-                                          external_id: SecureRandom.uuid,
-                                          webauthn_id: SecureRandom.uuid,
-                                          sign_count: 0,)
+    passkey = UserIdentityPasskey.create!(
+      user: @user,
+      description: "Delete Me",
+      public_key: "pk",
+      external_id: SecureRandom.uuid,
+      webauthn_id: SecureRandom.uuid,
+      sign_count: 0,
+    )
 
     assert_difference("UserIdentityPasskey.count", -1) do
       delete auth_app_setting_passkey_url(passkey), headers: @headers

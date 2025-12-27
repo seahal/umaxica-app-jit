@@ -14,5 +14,5 @@ class StaffIdentityStatus < IdentitiesRecord
   has_many :staffs, dependent: :restrict_with_error, inverse_of: :staff_identity_status
 
   # Status constants
-  NONE = "NONE"
+  NEYO = "NEYO"
 end

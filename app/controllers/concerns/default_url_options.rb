@@ -30,7 +30,8 @@ module DefaultUrlOptions
     # TODO: implement!
   end
 
-  # Todo: Include only specified values contained in query parameters here. If there are no specified parameters, do not include parameters.
+  # Todo: Include only specified values contained in query parameters here.
+  # If there are no specified parameters, do not include parameters.
   # Todo: If GLOBAL_MODE exists, only ri is required.
   def read_cookie_preferences_for_url
     parsed = read_preference_cookie

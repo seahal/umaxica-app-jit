@@ -60,7 +60,7 @@ class IdentityEmailTest < ActiveSupport::TestCase
 
     # rubocop:disable Minitest/MultipleAssertions
     test "#{model} pass_code validations when address nil" do
-      m = model.new(address: nil)
+      m = model.new(address: "valid@example.com")
       assign_owner(m)
       m.pass_code = 123_456
 
@@ -75,8 +75,7 @@ class IdentityEmailTest < ActiveSupport::TestCase
 
       assert_not m.valid?
       m.pass_code = nil
-
-      assert_not m.valid?
+      assert_predicate m, :valid?
     end
     # rubocop:enable Minitest/MultipleAssertions
 

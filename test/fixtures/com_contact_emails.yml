@@ -22,7 +22,7 @@
 #
 # Indexes
 #
-#  index_com_contact_emails_on_com_contact_id       (com_contact_id)
+#  index_com_contact_emails_on_com_contact_id       (com_contact_id) UNIQUE
 #  index_com_contact_emails_on_email_address        (email_address)
 #  index_com_contact_emails_on_expires_at           (expires_at)
 #  index_com_contact_emails_on_verifier_expires_at  (verifier_expires_at)

@@ -20,7 +20,6 @@
 #
 # Indexes
 #
-#  index_com_document_versions_on_com_document_id                 (com_document_id)
 #  index_com_document_versions_on_com_document_id_and_created_at  (com_document_id,created_at)
 #  index_com_document_versions_on_public_id                       (public_id) UNIQUE
 #

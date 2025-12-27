@@ -5,10 +5,14 @@
 # Table name: staff_messages
 #
 #  id         :uuid             not null, primary key
-#  created_at :datetime         not null
-#  public_id  :uuid
 #  staff_id   :uuid
+#  public_id  :uuid
+#  created_at :datetime         not null
 #  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_staff_messages_on_staff_id  (staff_id)
 #
 
 require "test_helper"

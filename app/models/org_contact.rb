@@ -43,13 +43,16 @@ class OrgContact < GuestsRecord
              inverse_of: :org_contacts
   has_many :org_contact_topics, dependent: :destroy
 
+  attribute :status_id, default: "NEYO"
+  attribute :category_id, default: "NEYO"
+
   attr_accessor :confirm_policy
 
   after_initialize do
     if new_record?
-      self.category_id = "ORGANIZATION_INQUIRY" if category_id == "NONE" || category_id.nil?
+      self.category_id = "ORGANIZATION_INQUIRY" if category_id == "NEYO" || category_id.nil?
+      self.status_id = "NEYO" if status_id.nil?
     end
-    self.status_id ||= "NONE"
   end
 
   # Callbacks

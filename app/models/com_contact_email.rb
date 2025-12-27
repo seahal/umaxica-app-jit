@@ -5,26 +5,26 @@
 # Table name: com_contact_emails
 #
 #  id                     :string           not null, primary key
-#  activated              :boolean          default(FALSE), not null
-#  com_contact_id         :uuid             not null
-#  created_at             :datetime         not null
-#  deletable              :boolean          default(FALSE), not null
 #  email_address          :string(1000)     default(""), not null
-#  expires_at             :timestamptz      not null
-#  hotp_counter           :integer          default(0), not null
-#  hotp_secret            :string           default(""), not null
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
 #  remaining_views        :integer          default(10), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#  verifier_attempts_left :integer          default(5), not null
 #  token_digest           :string(255)      default(""), not null
 #  token_expires_at       :timestamptz      default("-infinity"), not null
 #  token_viewed           :boolean          default(FALSE), not null
+#  expires_at             :timestamptz      not null
+#  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  verifier_attempts_left :integer          default(5), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#  com_contact_id         :uuid             not null
+#  hotp_secret            :string           default(""), not null
+#  hotp_counter           :integer          default(0), not null
 #
 # Indexes
 #
-#  index_com_contact_emails_on_com_contact_id       (com_contact_id)
+#  index_com_contact_emails_on_com_contact_id       (com_contact_id) UNIQUE
 #  index_com_contact_emails_on_email_address        (email_address)
 #  index_com_contact_emails_on_expires_at           (expires_at)
 #  index_com_contact_emails_on_verifier_expires_at  (verifier_expires_at)
@@ -41,6 +41,7 @@ class ComContactEmail < GuestsRecord
   validates :email_address, presence: true, length: { maximum: 1000 }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :token_digest, length: { maximum: 255 }
   validates :verifier_digest, length: { maximum: 255 }
+  validates :com_contact_id, uniqueness: true
 
   # Encryptions
   encrypts :hotp_secret

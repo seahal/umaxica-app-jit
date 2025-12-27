@@ -19,7 +19,7 @@ The application consists of multiple endpoints, each with 3 domains (com/app/org
   - `AUTH_STAFF_URL` (org): Staff authentication (basic features only, auth flow not implemented)
   - Supports WebAuthn, TOTP, Apple/Google OAuth
 
-- **BACK** (formerly BFF): Backend for Frontend
+- **CORE**: Backend for Frontend
   - `CORE_CORPORATE_URL` (com): Corporate BFF
   - `CORE_SERVICE_URL` (app): Service BFF
   - `CORE_STAFF_URL` (org): Staff BFF
@@ -61,7 +61,7 @@ The application uses 10 separate PostgreSQL databases with primary/replica confi
 Controllers are organized by endpoint module and domain:
 - `app/controllers/apex/{com,app,org}/` - Top page controllers
 - `app/controllers/sign/{app,org}/` - Authentication controllers
-- `app/controllers/back/{com,app,org}/` - BFF controllers
+- `app/controllers/core/{com,app,org}/` - BFF controllers
 - `app/controllers/help/{com,app,org}/` - Help and contact controllers
 - `app/controllers/docs/{com,app,org}/` - Documentation controllers
 - `app/controllers/news/{com,app,org}/` - News controllers
@@ -202,7 +202,7 @@ Uses ViewComponent gem for reusable UI components. Components are in `app/compon
 Routes are split by endpoint in `config/routes/`:
 - `apex.rb` - Top page routes (com/app/org)
 - `sign.rb` - Authentication routes (app/org)
-- `back.rb` - BFF routes (com/app/org)
+- `core.rb` - BFF routes (com/app/org)
 - `help.rb` - Help routes (com/app/org)
 - `docs.rb` - Documentation routes (com/app/org)
 - `news.rb` - News routes (com/app/org)
@@ -239,7 +239,6 @@ Key environment variables required:
   - Example: `test/controllers/apex/app/`, `test/controllers/sign/app/`
 - Asset compilation uses Bun - ensure Bun is installed locally
 - The application expects Docker Compose for local database setup
-- **Note**: Actual controller structure and route filenames use `apex`, `back` (env vars maintain legacy naming)
 
 ### Prohibited Actions
 - Creating or modifying `.env` files

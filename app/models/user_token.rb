@@ -29,6 +29,7 @@
 # Refresh tokens are persisted as digests only.
 # The public_id is used as the session identifier (sid).
 class UserToken < TokensRecord
+  self.implicit_order_column = :created_at
   include ::PublicId
   include ::RefreshTokenable
 
@@ -36,6 +37,7 @@ class UserToken < TokensRecord
 
   belongs_to :user
   belongs_to :user_token_status
+  attribute :user_token_status_id, default: "NEYO"
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :refresh_expires_at, presence: true

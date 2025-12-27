@@ -40,13 +40,17 @@ class CreateOccurrenceConstraints < ActiveRecord::Migration[8.2]
         unless index_exists?(table, :body, name: body_index_name(table))
     end
 
-    add_check_constraint(table,
-                         "char_length(public_id) = 21",
-                         name: public_id_length_constraint_name(table),) unless check_constraint_exists?(table, name: public_id_length_constraint_name(table))
+    add_check_constraint(
+      table,
+      "char_length(public_id) = 21",
+      name: public_id_length_constraint_name(table),
+    ) unless check_constraint_exists?(table, name: public_id_length_constraint_name(table))
 
-    add_check_constraint(table,
-                         "public_id ~ '^[A-Za-z0-9_-]{21}$'",
-                         name: public_id_format_constraint_name(table),) unless check_constraint_exists?(table, name: public_id_format_constraint_name(table))
+    add_check_constraint(
+      table,
+      "public_id ~ '^[A-Za-z0-9_-]{21}$'",
+      name: public_id_format_constraint_name(table),
+    ) unless check_constraint_exists?(table, name: public_id_format_constraint_name(table))
   end
 
   def relax_table_constraints(table)

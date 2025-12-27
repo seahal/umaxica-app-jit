@@ -22,7 +22,10 @@ class IdFormatConstraintTest < ActiveSupport::TestCase
       record = model.create!(attributes)
       assert_equal valid_id, record.public_send(model.primary_key), "#{model.name} should allow valid id"
 
-      assert_raises(ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid, "#{model.name} should reject invalid id") do
+      assert_raises(
+        ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid,
+        "#{model.name} should reject invalid id",
+      ) do
         model.create!(build_required_attributes(model).merge(model.primary_key => invalid_id))
       end
     end

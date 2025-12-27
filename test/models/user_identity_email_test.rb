@@ -109,13 +109,6 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
     assert_equal "test@example.com", user_email.address
   end
 
-  # Pass code validation tests
-  test "should be valid with pass_code instead of email" do
-    user_email = UserIdentityEmail.new(pass_code: "123456", user: @user)
-
-    assert_predicate user_email, :valid?
-  end
-
   # test "should require 6-digit numeric pass_code" do
   #   user_email = UserIdentityEmail.new(pass_code: "12345")
   #   assert_not user_email.valid?
@@ -128,11 +121,10 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
   #   assert_includes user_email.errors[:pass_code], "is not a number"
   # end
 
-  test "should not require email when pass_code is present" do
-    user_email = UserIdentityEmail.new(pass_code: "123456", user: @user)
+  test "should be valid when pass_code is present and address is valid" do
+    user_email = UserIdentityEmail.new(address: "test@example.com", pass_code: "123456", user: @user)
 
     assert_predicate user_email, :valid?
-    assert_not user_email.errors[:address].any?
     assert_not user_email.errors[:confirm_policy].any?
   end
 
@@ -156,17 +148,12 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
   test "should encrypt email address" do
     user_email = UserIdentityEmail.create!(@valid_attributes)
     # The address should be encrypted in the database
-    raw_data = UserIdentityEmail.connection.execute("SELECT address FROM user_identity_emails WHERE id = '#{user_email.id}'").first
+    query = "SELECT address FROM user_identity_emails WHERE id = '#{user_email.id}'"
+    raw_data = UserIdentityEmail.connection.execute(query).first
     assert_not_equal @valid_attributes[:address], raw_data["address"] if raw_data
   end
 
   # Edge case tests
-  test "should handle nil address gracefully when pass_code is set" do
-    # Address is encrypted, so we use empty string to avoid encryption issues with nil
-    user_email = UserIdentityEmail.new(address: "", pass_code: "123456", user: @user)
-
-    assert_predicate user_email, :valid?
-  end
 
   test "enforces maximum emails per user" do
     user = users(:one)

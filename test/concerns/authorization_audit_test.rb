@@ -260,11 +260,12 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
       result[:log_data] = log_data
     end
 
-    notifier = Struct.new(:events) do
-      def notify(name, payload)
-        events << [name, payload]
+    notifier =
+      Struct.new(:events) do
+        def notify(name, payload)
+          events << [name, payload]
+        end
       end
-    end
 
     Rails.stub(:event, notifier.new(result[:events])) do
       audit.send(:log_authorization_failure, exception)

@@ -19,7 +19,7 @@ class ZipOccurrenceStatus < UniversalRecord
                              inverse_of: :zip_occurrence_status
 
   # Status constants
-  NONE = "NONE"
+  NEYO = "NEYO"
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"

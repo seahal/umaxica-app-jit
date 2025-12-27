@@ -16,7 +16,9 @@ module Auth
 
         def edit
           @user_email = UserIdentityEmail.find_by(id: params["id"])
-          if @user_email.blank? || @user_email.otp_expired? || @user_email.user_identity_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
+          if @user_email.blank? ||
+              @user_email.otp_expired? ||
+              @user_email.user_identity_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
             redirect_params = { notice: t("auth.app.registration.email.edit.session_expired") }
             redirect_params[:rd] = params[:rd] if params[:rd].present?
             redirect_to new_auth_app_registration_email_path(redirect_params)
@@ -65,8 +67,10 @@ module Auth
 
           # Send email
           # FIXME: use kafka!
-          Email::App::RegistrationMailer.with({ hotp_token: num,
-                                                email_address: @user_email.address, }).create.deliver_later
+          Email::App::RegistrationMailer.with(
+            { hotp_token: num,
+              email_address: @user_email.address, },
+          ).create.deliver_later
 
           # Preserve rd parameter if provided
           redirect_params = { notice: t("auth.app.registration.email.create.verification_code_sent") }
@@ -79,7 +83,9 @@ module Auth
           # FIXME: write test code!
           # Retrieve email record with OTP
           @user_email = UserIdentityEmail.find_by(id: params["id"])
-          if @user_email.blank? || @user_email.otp_expired? || @user_email.user_identity_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
+          if @user_email.blank? ||
+              @user_email.otp_expired? ||
+              @user_email.user_identity_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
             redirect_params = { alert: t("auth.app.registration.email.update.session_expired") }
             redirect_params[:rd] = params[:rd] if params[:rd].present?
             redirect_to new_auth_app_registration_email_path(redirect_params) and return

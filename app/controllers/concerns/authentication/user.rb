@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-# NOTE: If this code is only included in User controllers, consider moving to app/controllers/concerns/authentication/user.rb
+# NOTE: If this code is only included in User controllers, consider moving to
+# app/controllers/concerns/authentication/user.rb
 
 module Authentication
   module User
@@ -42,7 +43,9 @@ module Authentication
 
         @current_user = ::User.find_by(id: payload["sub"])
         # Treat withdrawn accounts as unauthenticated
-        @current_user = nil if @current_user&.respond_to?(:withdrawn?) && @current_user.withdrawn?
+        if @current_user&.respond_to?(:withdrawn?) && @current_user.withdrawn?
+          @current_user = nil
+        end
       rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
         @current_user = nil
       end
@@ -59,9 +62,10 @@ module Authentication
     def log_in(user, record_login_audit: true)
       reset_session
 
-      token = TokensRecord.connected_to(role: :writing) do
-        UserToken.create!(user_id: user.id)
-      end
+      token =
+        TokensRecord.connected_to(role: :writing) do
+          UserToken.create!(user_id: user.id)
+        end
       refresh_token = token.rotate_refresh_token!
       credentials = generate_access_token(user, session_public_id: token.public_id)
 
@@ -95,21 +99,25 @@ module Authentication
       old_token = result[:token]
 
       unless old_token.is_a?(UserToken)
-        Rails.event.notify("user.token.refresh.failed",
-                           refresh_token_id: refresh_token,
-                           reason: "token_not_found",
-                           ip_address: request_ip_address,)
+        Rails.event.notify(
+          "user.token.refresh.failed",
+          refresh_token_id: refresh_token,
+          reason: "token_not_found",
+          ip_address: request_ip_address,
+        )
         return nil
       end
 
       user = old_token.user
 
       unless user&.active?
-        Rails.event.notify("user.token.refresh.failed",
-                           user_id: user&.id,
-                           refresh_token_id: refresh_token,
-                           reason: "user_inactive",
-                           ip_address: request_ip_address,)
+        Rails.event.notify(
+          "user.token.refresh.failed",
+          user_id: user&.id,
+          refresh_token_id: refresh_token,
+          reason: "user_inactive",
+          ip_address: request_ip_address,
+        )
         TokensRecord.connected_to(role: :writing) { old_token.destroy! }
         return nil
       end
@@ -117,11 +125,13 @@ module Authentication
       # Generate new access token
       new_access_token = generate_access_token(user, session_public_id: old_token.public_id)
 
-      Rails.event.notify("user.token.refreshed",
-                         user_id: user.id,
-                         old_refresh_token_id: old_token.public_id,
-                         new_refresh_token_id: result[:refresh_token],
-                         ip_address: request_ip_address,)
+      Rails.event.notify(
+        "user.token.refreshed",
+        user_id: user.id,
+        old_refresh_token_id: old_token.public_id,
+        new_refresh_token_id: result[:refresh_token],
+        ip_address: request_ip_address,
+      )
 
       # Return new tokens
       {
@@ -131,18 +141,22 @@ module Authentication
         expires_in: ACCESS_TOKEN_EXPIRY.to_i,
       }
     rescue Auth::InvalidRefreshToken => e
-      Rails.event.notify("user.token.refresh.failed",
-                         refresh_token_id: refresh_token,
-                         reason: e.class.name,
-                         ip_address: request_ip_address,)
+      Rails.event.notify(
+        "user.token.refresh.failed",
+        refresh_token_id: refresh_token,
+        reason: e.class.name,
+        ip_address: request_ip_address,
+      )
       nil
     rescue StandardError => e
-      Rails.event.notify("user.token.refresh.error",
-                         user_id: user&.id,
-                         refresh_token_id: refresh_token,
-                         error_class: e.class.name,
-                         error_message: e.message,
-                         ip_address: request_ip_address,)
+      Rails.event.notify(
+        "user.token.refresh.error",
+        user_id: user&.id,
+        refresh_token_id: refresh_token,
+        error_class: e.class.name,
+        error_message: e.message,
+        ip_address: request_ip_address,
+      )
       nil
     end
 
@@ -154,10 +168,12 @@ module Authentication
           public_id, = UserToken.parse_refresh_token(token_value)
           UserToken.find_by(public_id: public_id)&.destroy if public_id
         rescue ActiveRecord::RecordNotDestroyed => e
-          Rails.event.notify("user.token.destroy.failed",
-                             token_id: token_value,
-                             error_message: e.message,
-                             ip_address: request_ip_address,)
+          Rails.event.notify(
+            "user.token.destroy.failed",
+            token_id: token_value,
+            error_message: e.message,
+            ip_address: request_ip_address,
+          )
         end
       end
       cookies.delete ACCESS_COOKIE_KEY, **cookie_deletion_options
@@ -178,8 +194,11 @@ module Authentication
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
         rt = Base64.urlsafe_encode64(request.original_url)
-        redirect_to new_auth_app_authentication_url(rt: rt, host: ENV["AUTH_SERVICE_URL"]), allow_other_host: true,
-                                                                                            alert: I18n.t("errors.messages.login_required")
+        redirect_to(
+          new_auth_app_authentication_url(rt: rt, host: ENV["AUTH_SERVICE_URL"]),
+          allow_other_host: true,
+          alert: I18n.t("errors.messages.login_required"),
+        )
       end
     end
 

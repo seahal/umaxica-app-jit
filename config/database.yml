@@ -74,17 +74,17 @@ development:
     database: development_document_db
     host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] || default_host %>
     migrations_paths: db/documents_migrate
-  timeline:
+  news:
     !!merge <<: *default
-    database: development_timeline_db
-    host: <%= ENV["POSTGRESQL_TIMELINE_PUB"] || default_host %>
-    migrations_paths: db/timelines_migrate
-  timeline_replica:
+    database: development_news_db
+    host: <%= ENV["POSTGRESQL_NEWS_PUB"] || default_host %>
+    migrations_paths: db/news_migrate
+  news_replica:
     !!merge <<: *default
     replica: true
-    database: development_timeline_db
-    host: <%= ENV["POSTGRESQL_TIMELINE_SUB"] || default_host %>
-    migrations_paths: db/timelines_migrate
+    database: development_news_db
+    host: <%= ENV["POSTGRESQL_NEWS_SUB"] || default_host %>
+    migrations_paths: db/news_migrate
   billing:
     !!merge <<: *default
     database: development_billing_db
@@ -173,6 +173,11 @@ development:
     database: development_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || default_host %>
     migrations_paths: db/universals_migrate
+  default:
+    !!merge <<: *default
+    database: development_default_db
+    host: <%= ENV["POSTGRESQL_DEFAULT_PUB"] || default_host %>
+    migrations_paths: db/defaults_migrate
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
@@ -301,17 +306,17 @@ test:
     database: test_document_db
     host: <%= ENV["POSTGRESQL_DOCUMENT_SUB"] || default_host %>
     migrations_paths: db/documents_migrate
-  timeline:
+  news:
     !!merge <<: *default
-    database: test_timeline_db
-    host: <%= ENV["POSTGRESQL_TIMELINE_PUB"] || default_host %>
-    migrations_paths: db/timelines_migrate
-  timeline_replica:
+    database: test_news_db
+    host: <%= ENV["POSTGRESQL_NEWS_PUB"] || default_host %>
+    migrations_paths: db/news_migrate
+  news_replica:
     !!merge <<: *default
     replica: true
-    database: test_timeline_db
-    host: <%= ENV["POSTGRESQL_TIMELINE_SUB"] || default_host %>
-    migrations_paths: db/timelines_migrate
+    database: test_news_db
+    host: <%= ENV["POSTGRESQL_NEWS_SUB"] || default_host %>
+    migrations_paths: db/news_migrate
   billing:
     !!merge <<: *default
     database: test_billing_db
@@ -345,6 +350,11 @@ test:
     database: test_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || default_host %>
     migrations_paths: db/universals_migrate
+  default:
+    !!merge <<: *default
+    database: test_default_db
+    host: <%= ENV["POSTGRESQL_DEFAULT_PUB"] || default_host %>
+    migrations_paths: db/defaults_migrate
 # FIXME: please implement below code
 production:
   guest:

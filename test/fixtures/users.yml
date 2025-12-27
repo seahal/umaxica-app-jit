@@ -37,5 +37,5 @@ none_user:
   public_id: "nil_user"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-  user_identity_status_id: 'NONE'
+  user_identity_status_id: 'NEYO'
   withdrawn_at: <%= Time.at(0) %>

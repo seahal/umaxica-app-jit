@@ -58,7 +58,7 @@ class UserTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     user = User.create!
 
-    assert_equal UserIdentityStatus::NONE, user.user_identity_status_id
+    assert_equal UserIdentityStatus::NEYO, user.user_identity_status_id
   end
 
   test "should have many user_identity_emails association" do

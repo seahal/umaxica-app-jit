@@ -34,6 +34,7 @@ class ComTimelineTest < ActiveSupport::TestCase
       expires_at: 1.hour.from_now,
       position: 0,
       revision_key: "rev_key",
+      status_id: "NEYO",
     }
   end
 
@@ -50,7 +51,12 @@ class ComTimelineTest < ActiveSupport::TestCase
 
   test "available scope returns published and unexpired timelines" do
     now = Time.current
-    available = ComTimeline.create!(base_attrs.merge(permalink: "available", published_at: now - 1.hour, expires_at: now + 1.hour))
+    available = ComTimeline.create!(
+      base_attrs.merge(
+        permalink: "available", published_at: now - 1.hour,
+        expires_at: now + 1.hour,
+      ),
+    )
     ComTimeline.create!(base_attrs.merge(permalink: "future", published_at: now + 1.hour, expires_at: now + 2.hours))
     ComTimeline.create!(base_attrs.merge(permalink: "expired", published_at: now - 2.hours, expires_at: now - 1.hour))
 

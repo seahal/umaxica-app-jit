@@ -70,11 +70,13 @@ module Turnstile
         ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"]
       return missing_secret_error if secret_key.blank?
 
-      response = Net::HTTP.post_form(VERIFY_URI, {
-        "secret" => secret_key,
-        "response" => turnstile_response,
-        "remoteip" => remote_ip,
-      })
+      response = Net::HTTP.post_form(
+        VERIFY_URI, {
+          "secret" => secret_key,
+          "response" => turnstile_response,
+          "remoteip" => remote_ip,
+        },
+      )
       JSON.parse(response.body)
     rescue StandardError => e
       Rails.event.notify("turnstile.verify.failed", error_class: e.class.name, error_message: e.message)

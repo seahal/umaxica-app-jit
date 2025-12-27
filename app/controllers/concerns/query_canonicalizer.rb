@@ -22,25 +22,29 @@ module QueryCanonicalizer
     keys = DEFAULTS.keys
     src = raw.slice(*keys)
 
-    lx = case (src["lx"].presence)
-    when "ja", "en" then src["lx"]
-    else "ja"
-    end
+    lx =
+      case (src["lx"].presence)
+      when "ja", "en" then src["lx"]
+      else "ja"
+      end
 
-    ri = case (src["ri"].presence)
-    when "jp", "us" then src["ri"]
-    else "jp"
-    end
+    ri =
+      case (src["ri"].presence)
+      when "jp", "us" then src["ri"]
+      else "jp"
+      end
 
-    tz = case (src["tz"].presence)
-    when "jst", "utc" then src["tz"]
-    else "jst"
-    end
+    tz =
+      case (src["tz"].presence)
+      when "jst", "utc" then src["tz"]
+      else "jst"
+      end
 
-    ct = case (src["ct"].presence)
-    when "sy", "mu", "dr" then src["ct"]
-    else "sy"
-    end
+    ct =
+      case (src["ct"].presence)
+      when "sy", "mu", "dr" then src["ct"]
+      else "sy"
+      end
 
     { "lx" => lx, "ri" => ri, "tz" => tz, "ct" => ct }
   end
@@ -92,4 +96,5 @@ end
 # Parameter settings are slightly different between global and region.
 # Do not include in URL if it is a fixed value.
 # - Which parameters should be included in the URL?
-#  - ri: language => This is required in the global environment, but in the region environment it is expressed in the subdomain.
+#  - ri: language => This is required in the global environment, but in the
+#    region environment it is expressed in the subdomain.

@@ -26,7 +26,7 @@
 
 one:
   category_id: APPLICATION_INQUIRY
-  status_id: NONE
+  status_id: NEYO
   token: ''
   token_digest: ''
   token_expires_at: -infinity
@@ -37,7 +37,7 @@ one:
   ip_address: 0.0.0.0
 two:
   category_id: APPLICATION_SUPPORT
-  status_id: NONE
+  status_id: NEYO
   token: ''
   token_digest: ''
   token_expires_at: -infinity

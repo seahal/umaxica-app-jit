@@ -19,7 +19,7 @@
 #
 # Indexes
 #
-#  index_com_contact_telephones_on_com_contact_id       (com_contact_id)
+#  index_com_contact_telephones_on_com_contact_id       (com_contact_id) UNIQUE
 #  index_com_contact_telephones_on_expires_at           (expires_at)
 #  index_com_contact_telephones_on_telephone_number     (telephone_number)
 #  index_com_contact_telephones_on_verifier_expires_at  (verifier_expires_at)

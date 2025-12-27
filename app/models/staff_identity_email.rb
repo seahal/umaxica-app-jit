@@ -43,7 +43,7 @@ class StaffIdentityEmail < IdentitiesRecord
 
   encrypts :address, deterministic: true
 
-  validates :address, presence: true, length: { maximum: 255 }, unless: -> { pass_code.present? }
+  validates :address, presence: true, length: { maximum: 255 }
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }

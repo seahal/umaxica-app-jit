@@ -12,9 +12,11 @@ module Docs
           { id: 3, version: "1.2.0", created_at: Time.current },
         ]
 
-        Rails.event.notify("docs.versions.listed",
-                           post_id: @post_id,
-                           versions_count: @versions.size,)
+        Rails.event.notify(
+          "docs.versions.listed",
+          post_id: @post_id,
+          versions_count: @versions.size,
+        )
 
         respond_to do |format|
           format.html
@@ -34,9 +36,11 @@ module Docs
           created_at: Time.current,
         }
 
-        Rails.event.notify("docs.version.viewed",
-                           post_id: @post_id,
-                           version_id: @version_id,)
+        Rails.event.notify(
+          "docs.version.viewed",
+          post_id: @post_id,
+          version_id: @version_id,
+        )
 
         respond_to do |format|
           format.html
@@ -60,8 +64,10 @@ module Docs
       # POST /posts/:post_id/versions
       def create
         @post_id = params[:post_id]
-        Rails.event.notify("docs.version.created",
-                           post_id: @post_id,)
+        Rails.event.notify(
+          "docs.version.created",
+          post_id: @post_id,
+        )
 
         redirect_to docs_com_post_versions_path(@post_id)
       end
@@ -70,9 +76,11 @@ module Docs
       def update
         @post_id = params[:post_id]
         @version_id = params[:id]
-        Rails.event.notify("docs.version.updated",
-                           post_id: @post_id,
-                           version_id: @version_id,)
+        Rails.event.notify(
+          "docs.version.updated",
+          post_id: @post_id,
+          version_id: @version_id,
+        )
 
         redirect_to docs_com_post_version_path(@post_id, @version_id)
       end
@@ -81,9 +89,11 @@ module Docs
       def destroy
         @post_id = params[:post_id]
         @version_id = params[:id]
-        Rails.event.notify("docs.version.deleted",
-                           post_id: @post_id,
-                           version_id: @version_id,)
+        Rails.event.notify(
+          "docs.version.deleted",
+          post_id: @post_id,
+          version_id: @version_id,
+        )
 
         redirect_to docs_com_post_versions_path(@post_id)
       end

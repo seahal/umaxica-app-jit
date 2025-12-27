@@ -173,23 +173,28 @@ class EmailTest < ActiveSupport::TestCase
 
     assert_equal 0, email.otp_attempts_count
     # Fixed expectation for locked_at
-    assert email.locked_at.is_a?(Time) || email.locked_at.to_s == "-infinity" || (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY)
+    assert(
+      email.locked_at.is_a?(Time) ||
+        email.locked_at.to_s == "-infinity" ||
+        (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
+    )
   end
 
   test "increment_attempts! is thread-safe under concurrent access" do
     email = create_email(address: "concurrent@example.com", confirm_policy: true)
 
     # rubocop:disable ThreadSafety/NewThread
-    threads = 10.times.map do
-      Thread.new do
-        10.times do
-          ActiveRecord::Base.connection_pool.with_connection do
-            # Use a fresh instance to better simulate concurrent requests
-            UserIdentityEmail.find(email.id).increment_attempts!
+    threads =
+      10.times.map do
+        Thread.new do
+          10.times do
+            ActiveRecord::Base.connection_pool.with_connection do
+              # Use a fresh instance to better simulate concurrent requests
+              UserIdentityEmail.find(email.id).increment_attempts!
+            end
           end
         end
       end
-    end
 
     threads.each(&:join)
 
@@ -211,7 +216,11 @@ class EmailTest < ActiveSupport::TestCase
     assert_equal otp_counter.to_s, email.otp_counter.to_s
     assert_equal 0, email.otp_attempts_count
     # Expect -infinity
-    assert email.locked_at.is_a?(Time) || email.locked_at.to_s == "-infinity" || (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY)
+    assert(
+      email.locked_at.is_a?(Time) ||
+        email.locked_at.to_s == "-infinity" ||
+        (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
+    )
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -337,17 +346,19 @@ class EmailTest < ActiveSupport::TestCase
     # AR might return nil if logic converts invalid date? No, -infinity is valid.
     # Test expects nil.
     # I should assert UNLOCKED (locked_at: -infinity) and EXPIRED (expires_at: -infinity).
-    assert email.otp_expires_at.is_a?(Time) || email.otp_expires_at.to_s == "-infinity" || (email.otp_expires_at.is_a?(Float) && email.otp_expires_at == -Float::INFINITY)
+    assert(
+      email.otp_expires_at.is_a?(Time) ||
+        email.otp_expires_at.to_s == "-infinity" ||
+        (email.otp_expires_at.is_a?(Float) && email.otp_expires_at == -Float::INFINITY),
+    )
     assert_equal 0, email.otp_attempts_count
-    assert email.locked_at.is_a?(Time) || email.locked_at.to_s == "-infinity" || (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY)
+    assert(
+      email.locked_at.is_a?(Time) ||
+        email.locked_at.to_s == "-infinity" ||
+        (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
+    )
   end
   # rubocop:enable Minitest/MultipleAssertions
-
-  test "validates address with pass_code when address is nil" do
-    email = build_email(address: nil, pass_code: "123456")
-
-    assert_predicate email, :valid?
-  end
 
   test "validates pass_code presence when pass_code is not nil" do
     email = build_email(address: nil, pass_code: nil)
@@ -356,17 +367,17 @@ class EmailTest < ActiveSupport::TestCase
   end
 
   test "validates pass_code length exactly 6" do
-    email = build_email(address: nil, pass_code: "12345")
+    email = build_email(address: "test@example.com", pass_code: "12345")
 
     assert_not email.valid?
 
-    email = build_email(address: nil, pass_code: "1234567")
+    email = build_email(address: "test@example.com", pass_code: "1234567")
 
     assert_not email.valid?
   end
 
   test "validates pass_code is integer" do
-    email = build_email(address: nil, pass_code: "12345a")
+    email = build_email(address: "test@example.com", pass_code: "12345a")
 
     assert_not email.valid?
   end

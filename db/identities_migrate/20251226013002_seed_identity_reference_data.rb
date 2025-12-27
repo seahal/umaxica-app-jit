@@ -27,48 +27,64 @@ class SeedIdentityReferenceData < ActiveRecord::Migration[8.2]
     seed_ids(:staff_identity_secret_statuses, %w(ACTIVE USED REVOKED DELETED))
 
     # AvatarCapability
-    seed_with_attributes(:avatar_capabilities, [
-      { id: "normal", key: "normal", name: "Normal" },
-      { id: "cooldown", key: "cooldown", name: "Cooldown" },
-      { id: "restricted", key: "restricted", name: "Restricted" },
-      { id: "suspended", key: "suspended", name: "Suspended" },
-      { id: "banned", key: "banned", name: "Banned" },
-    ],)
+    seed_with_attributes(
+      :avatar_capabilities, [
+        { id: "normal", key: "normal", name: "Normal" },
+        { id: "cooldown", key: "cooldown", name: "Cooldown" },
+        { id: "restricted", key: "restricted", name: "Restricted" },
+        { id: "suspended", key: "suspended", name: "Suspended" },
+        { id: "banned", key: "banned", name: "Banned" },
+      ],
+    )
 
     # HandleStatus
-    seed_with_attributes(:handle_statuses, [
-      { id: "ACTIVE", key: "ACTIVE", name: "Active" },
-    ],)
+    seed_with_attributes(
+      :handle_statuses, [
+        { id: "ACTIVE", key: "ACTIVE", name: "Active" },
+      ],
+    )
 
     # HandleAssignmentStatus
-    seed_with_attributes(:handle_assignment_statuses, [
-      { id: "ACTIVE", key: "ACTIVE", name: "Active" },
-    ],)
+    seed_with_attributes(
+      :handle_assignment_statuses, [
+        { id: "ACTIVE", key: "ACTIVE", name: "Active" },
+      ],
+    )
 
     # AvatarMonikerStatus
-    seed_with_attributes(:avatar_moniker_statuses, [
-      { id: "ACTIVE", key: "ACTIVE", name: "Active" },
-    ],)
+    seed_with_attributes(
+      :avatar_moniker_statuses, [
+        { id: "ACTIVE", key: "ACTIVE", name: "Active" },
+      ],
+    )
 
     # AvatarMembershipStatus
-    seed_with_attributes(:avatar_membership_statuses, [
-      { id: "ACTIVE", key: "ACTIVE", name: "Active" },
-    ],)
+    seed_with_attributes(
+      :avatar_membership_statuses, [
+        { id: "ACTIVE", key: "ACTIVE", name: "Active" },
+      ],
+    )
 
     # AvatarOwnershipStatus
-    seed_with_attributes(:avatar_ownership_statuses, [
-      { id: "ACTIVE", key: "ACTIVE", name: "Active" },
-    ],)
+    seed_with_attributes(
+      :avatar_ownership_statuses, [
+        { id: "ACTIVE", key: "ACTIVE", name: "Active" },
+      ],
+    )
 
     # PostStatus
-    seed_with_attributes(:post_statuses, [
-      { id: "DRAFT", key: "DRAFT", name: "Draft" },
-    ],)
+    seed_with_attributes(
+      :post_statuses, [
+        { id: "DRAFT", key: "DRAFT", name: "Draft" },
+      ],
+    )
 
     # PostReviewStatus
-    seed_with_attributes(:post_review_statuses, [
-      { id: "PENDING", key: "PENDING", name: "Pending" },
-    ],)
+    seed_with_attributes(
+      :post_review_statuses, [
+        { id: "PENDING", key: "PENDING", name: "Pending" },
+      ],
+    )
   end
 
   def down

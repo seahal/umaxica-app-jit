@@ -14,7 +14,7 @@
 #
 
 NONE:
-  id: "NONE"
+  id: "NEYO"
   description: "root of service site status inquiries"
   parent_id: nil
   position: 0

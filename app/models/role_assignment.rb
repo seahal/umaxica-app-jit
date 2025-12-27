@@ -19,6 +19,7 @@
 #
 
 class RoleAssignment < IdentityRecord
+  self.implicit_order_column = :created_at
   belongs_to :user, class_name: "User", optional: true, inverse_of: :role_assignments
   belongs_to :staff, class_name: "Staff", optional: true, inverse_of: :role_assignments
   belongs_to :role, inverse_of: :role_assignments

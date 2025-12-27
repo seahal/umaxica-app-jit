@@ -36,7 +36,8 @@ class ComContactPolicyTest < ActiveSupport::TestCase
     # User cannot view
     user = users(:one)
     policy = ComContactPolicy.new(user, @record)
-    # create? is false by default for user in logic if not stubbed? No, index logic logic: actor.is_a?(Staff) && can_view?
+    # create? is false by default for user in logic if not stubbed? No, index
+    # logic: actor.is_a?(Staff) && can_view?
     # User is not Staff, so should be false regardless of can_view?
     policy.define_singleton_method(:can_view?) { true }
     assert_not policy.index?
@@ -92,7 +93,8 @@ class ComContactPolicyTest < ActiveSupport::TestCase
   def test_update
     # Admin staff can update
     staff = staffs(:one) # assuming fixture one is admin/manager-like? We might need to mock admin_or_manager?
-    # Helper to stub permissions helper since we don't know exact implementation of admin_or_manager? in ApplicationPolicy or its mixins from just this file.
+    # Helper to stub permissions helper since we don't know exact implementation
+    # of admin_or_manager? in ApplicationPolicy or its mixins from just this file.
     # Looking at ApplicationPolicy would be good but usually we can stub.
 
     # Let's check ApplicationPolicy if we can or just stub methods on policy instance.

@@ -22,7 +22,7 @@ class ComTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "inherits from BusinessesRecord" do
-    assert_operator ComTimelineStatus, :<, TimelineRecord
+    assert_operator ComTimelineStatus, :<, NewsRecord
   end
 
   test "id is required" do

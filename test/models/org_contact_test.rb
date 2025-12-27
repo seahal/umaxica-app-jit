@@ -72,7 +72,7 @@ class OrgContactTest < ActiveSupport::TestCase
 
     assert_predicate contact, :valid?
     assert_equal "ORGANIZATION_INQUIRY", contact.category_id
-    assert_equal "NONE", contact.status_id
+    assert_equal "NEYO", contact.status_id
   end
 
   test "should create contact with relationship titles" do
@@ -122,7 +122,7 @@ class OrgContactTest < ActiveSupport::TestCase
     )
 
     assert_equal "ORGANIZATION_INQUIRY", contact.category_id
-    assert_equal "NONE", contact.status_id
+    assert_equal "NEYO", contact.status_id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -318,7 +318,7 @@ class OrgContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now,
     )
 
-    assert_equal "NONE", contact.status_id
+    assert_equal "NEYO", contact.status_id
   end
 
   # Validation tests
@@ -490,7 +490,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact.save!
 
     assert_equal "ORGANIZATION_INQUIRY", contact.category_id
-    assert_equal "NONE", contact.status_id
+    assert_equal "NEYO", contact.status_id
   end
 
   test "should verify email" do

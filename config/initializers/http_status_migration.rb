@@ -9,10 +9,11 @@ Rails.application.config.after_initialize do
     mapping = ActionDispatch::ExceptionWrapper.rescue_responses
     next unless mapping.respond_to?(:transform_values)
 
-    updated = mapping.transform_values { |v|
-      sym = v.is_a?(String) ? v.to_sym : v
-      (sym == :unprocessable_entity) ? :unprocessable_content : v
-    }
+    updated =
+      mapping.transform_values { |v|
+        sym = v.is_a?(String) ? v.to_sym : v
+        (sym == :unprocessable_entity) ? :unprocessable_content : v
+      }
 
     # Apply the updated mapping via configuration API
     Rails.application.config.action_dispatch.rescue_responses.merge!(updated)

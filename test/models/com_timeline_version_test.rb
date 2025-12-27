@@ -20,7 +20,6 @@
 #
 # Indexes
 #
-#  index_com_timeline_versions_on_com_timeline_id                 (com_timeline_id)
 #  index_com_timeline_versions_on_com_timeline_id_and_created_at  (com_timeline_id,created_at)
 #  index_com_timeline_versions_on_public_id                       (public_id) UNIQUE
 #

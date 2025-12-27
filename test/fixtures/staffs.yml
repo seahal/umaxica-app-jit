@@ -22,20 +22,20 @@ one:
   id: "550e8400-e29b-41d4-a716-446655440010"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-  staff_identity_status_id: 'NONE'
+  staff_identity_status_id: 'NEYO'
   public_id: "4-4zX8pRwV8iRFEAeQxs4"
   withdrawn_at: 'infinity'
 two:
   id: "550e8400-e29b-41d4-a716-446655440011"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-  staff_identity_status_id: 'NONE'
+  staff_identity_status_id: 'NEYO'
   public_id: "054uO-PRGSe7EHHAxtN05"
   withdrawn_at: 'infinity'
 none_staff:
   id: "00000000-0000-0000-0000-000000000000"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-  staff_identity_status_id: 'NONE'
+  staff_identity_status_id: 'NEYO'
   public_id: "nil_staff"
   withdrawn_at: <%= Time.at(0) %>

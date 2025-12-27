@@ -31,9 +31,10 @@ class TelephoneTest < ActiveSupport::TestCase
 
   # rubocop:disable Minitest/MultipleAssertions
   test "confirm_policy acceptance skipped when number missing but pass_code present" do
-    validator = StaffIdentityTelephone.validators_on(:confirm_policy).find do |v|
-      v.is_a?(ActiveModel::Validations::AcceptanceValidator)
-    end
+    validator =
+      StaffIdentityTelephone.validators_on(:confirm_policy).find do |v|
+        v.is_a?(ActiveModel::Validations::AcceptanceValidator)
+      end
 
     assert_not_nil validator
 
@@ -51,9 +52,10 @@ class TelephoneTest < ActiveSupport::TestCase
 
   # rubocop:disable Minitest/MultipleAssertions
   test "pass_code validation skipped when pass_code missing but number present" do
-    validator = StaffIdentityTelephone.validators_on(:pass_code).find do |v|
-      v.is_a?(ActiveModel::Validations::PresenceValidator)
-    end
+    validator =
+      StaffIdentityTelephone.validators_on(:pass_code).find do |v|
+        v.is_a?(ActiveModel::Validations::PresenceValidator)
+      end
 
     assert_not_nil validator
 

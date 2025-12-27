@@ -48,10 +48,11 @@ Workspace.find_or_create_by!(id: NIL_WORKSPACE_ID) do |workspace|
 end
 
 # Create default organization
-default_org = Workspace.find_or_create_by!(name: "Default Organization") do |org|
-  org.domain = "localhost"
-  org.parent_organization = NIL_WORKSPACE_ID
-end
+default_org =
+  Workspace.find_or_create_by!(name: "Default Organization") do |org|
+    org.domain = "localhost"
+    org.parent_organization = NIL_WORKSPACE_ID
+  end
 
 # Define roles with their keys, names, and descriptions
 roles_data = [
@@ -84,12 +85,13 @@ roles_data = [
 
 # Create roles
 roles_data.each do |role_data|
-  role = Role.find_or_create_by!(
-    key: role_data[:key],
-    organization: default_org,
-  ) do |r|
-    r.name = role_data[:name]
-    r.description = role_data[:description]
-  end
+  role =
+    Role.find_or_create_by!(
+      key: role_data[:key],
+      organization: default_org,
+    ) do |r|
+      r.name = role_data[:name]
+      r.description = role_data[:description]
+    end
   Rails.logger.debug { "  ✓ Role: #{role.name} (#{role.key})" }
 end

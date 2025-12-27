@@ -19,7 +19,7 @@ class StaffOccurrenceStatus < UniversalRecord
                                inverse_of: :staff_occurrence_status
 
   # Status constants
-  NONE = "NONE"
+  NEYO = "NEYO"
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"

@@ -8,6 +8,10 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+# Indexes
+#
+#  index_staff_notifications_on_staff_id  (staff_id)
+#
 
 one:
   staff_id: 00000000-0000-0000-0000-000000000000

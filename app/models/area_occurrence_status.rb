@@ -19,7 +19,7 @@ class AreaOccurrenceStatus < UniversalRecord
                               inverse_of: :area_occurrence_status
 
   # Status constants
-  NONE = "NONE"
+  NEYO = "NEYO"
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"

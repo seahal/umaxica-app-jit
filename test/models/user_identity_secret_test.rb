@@ -83,14 +83,15 @@ class UserIdentitySecretTest < ActiveSupport::TestCase
     record, raw_secret = UserIdentitySecret.issue!(name: "API Key", user: @user, uses: 1)
     gate = Queue.new
 
-    futures = 2.times.map do
-      Concurrent::Future.execute do
-        ActiveRecord::Base.connection_pool.with_connection do
-          gate.pop
-          UserIdentitySecret.find(record.id).verify_and_consume!(raw_secret)
+    futures =
+      2.times.map do
+        Concurrent::Future.execute do
+          ActiveRecord::Base.connection_pool.with_connection do
+            gate.pop
+            UserIdentitySecret.find(record.id).verify_and_consume!(raw_secret)
+          end
         end
       end
-    end
 
     2.times { gate << true }
     results = futures.map(&:value!)

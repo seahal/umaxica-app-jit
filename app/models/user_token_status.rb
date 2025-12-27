@@ -13,5 +13,5 @@ class UserTokenStatus < TokensRecord
   has_many :user_tokens, dependent: :restrict_with_error
 
   # Status constants
-  NONE = "NONE"
+  NEYO = "NEYO"
 end

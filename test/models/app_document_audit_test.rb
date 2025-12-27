@@ -28,6 +28,7 @@
 #  index_app_document_audits_on_expires_at                (expires_at)
 #  index_app_document_audits_on_level_id                  (level_id)
 #  index_app_document_audits_on_occurred_at               (occurred_at)
+#  index_app_document_audits_on_subject_id                (subject_id)
 #
 
 require "test_helper"

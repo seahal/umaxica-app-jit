@@ -20,7 +20,6 @@
 #
 # Indexes
 #
-#  index_app_timeline_versions_on_app_timeline_id                 (app_timeline_id)
 #  index_app_timeline_versions_on_app_timeline_id_and_created_at  (app_timeline_id,created_at)
 #  index_app_timeline_versions_on_public_id                       (public_id) UNIQUE
 #

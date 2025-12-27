@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-# NOTE: If this code is only included in Staff controllers, consider moving to app/controllers/concerns/authentication/staff.rb
+# NOTE: If this code is only included in Staff controllers, consider moving to
+# app/controllers/concerns/authentication/staff.rb
 
 module Authentication
   module Staff
@@ -48,7 +49,11 @@ module Authentication
 
         @current_staff = ::Staff.find_by(id: payload["sub"])
         # Treat withdrawn accounts as unauthenticated (unless bypassed for testing)
-        @current_staff = nil if @current_staff&.respond_to?(:withdrawn?) && @current_staff.withdrawn? && !@bypass_withdrawn_check
+        if @current_staff&.respond_to?(:withdrawn?) &&
+            @current_staff.withdrawn? &&
+            !@bypass_withdrawn_check
+          @current_staff = nil
+        end
       rescue JWT::ExpiredSignature, JWT::VerificationError, ActiveRecord::RecordNotFound
         @current_staff = nil
       end
@@ -63,9 +68,10 @@ module Authentication
     def log_in(staff)
       reset_session
 
-      token = TokensRecord.connected_to(role: :writing) do
-        StaffToken.create!(staff_id: staff.id)
-      end
+      token =
+        TokensRecord.connected_to(role: :writing) do
+          StaffToken.create!(staff_id: staff.id)
+        end
       refresh_token = token.rotate_refresh_token!
       credentials = generate_access_token(staff, session_public_id: token.public_id)
 
@@ -99,21 +105,25 @@ module Authentication
       old_token = result[:token]
 
       unless old_token.is_a?(StaffToken)
-        Rails.event.notify("staff.token.refresh.failed",
-                           refresh_token_id: refresh_token,
-                           reason: "token_not_found",
-                           ip_address: request_ip_address,)
+        Rails.event.notify(
+          "staff.token.refresh.failed",
+          refresh_token_id: refresh_token,
+          reason: "token_not_found",
+          ip_address: request_ip_address,
+        )
         return nil
       end
 
       staff = old_token.staff
 
       unless staff&.active?
-        Rails.event.notify("staff.token.refresh.failed",
-                           staff_id: staff&.id,
-                           refresh_token_id: refresh_token,
-                           reason: "staff_inactive",
-                           ip_address: request_ip_address,)
+        Rails.event.notify(
+          "staff.token.refresh.failed",
+          staff_id: staff&.id,
+          refresh_token_id: refresh_token,
+          reason: "staff_inactive",
+          ip_address: request_ip_address,
+        )
         TokensRecord.connected_to(role: :writing) { old_token.destroy! }
         return nil
       end
@@ -121,11 +131,13 @@ module Authentication
       # Generate new access token
       new_access_token = generate_access_token(staff, session_public_id: old_token.public_id)
 
-      Rails.event.notify("staff.token.refreshed",
-                         staff_id: staff.id,
-                         old_refresh_token_id: old_token.public_id,
-                         new_refresh_token_id: result[:refresh_token],
-                         ip_address: request_ip_address,)
+      Rails.event.notify(
+        "staff.token.refreshed",
+        staff_id: staff.id,
+        old_refresh_token_id: old_token.public_id,
+        new_refresh_token_id: result[:refresh_token],
+        ip_address: request_ip_address,
+      )
 
       # Return new tokens
       {
@@ -135,18 +147,22 @@ module Authentication
         expires_in: Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i,
       }
     rescue Auth::InvalidRefreshToken => e
-      Rails.event.notify("staff.token.refresh.failed",
-                         refresh_token_id: refresh_token,
-                         reason: e.class.name,
-                         ip_address: request_ip_address,)
+      Rails.event.notify(
+        "staff.token.refresh.failed",
+        refresh_token_id: refresh_token,
+        reason: e.class.name,
+        ip_address: request_ip_address,
+      )
       nil
     rescue StandardError => e
-      Rails.event.notify("staff.token.refresh.error",
-                         staff_id: staff&.id,
-                         refresh_token_id: refresh_token,
-                         error_class: e.class.name,
-                         error_message: e.message,
-                         ip_address: request_ip_address,)
+      Rails.event.notify(
+        "staff.token.refresh.error",
+        staff_id: staff&.id,
+        refresh_token_id: refresh_token,
+        error_class: e.class.name,
+        error_message: e.message,
+        ip_address: request_ip_address,
+      )
       nil
     end
 
@@ -158,10 +174,12 @@ module Authentication
           public_id, = StaffToken.parse_refresh_token(token_value)
           StaffToken.find_by(public_id: public_id)&.destroy if public_id
         rescue ActiveRecord::RecordNotDestroyed => e
-          Rails.event.notify("staff.token.destroy.failed",
-                             token_id: token_value,
-                             error_message: e.message,
-                             ip_address: request_ip_address,)
+          Rails.event.notify(
+            "staff.token.destroy.failed",
+            token_id: token_value,
+            error_message: e.message,
+            ip_address: request_ip_address,
+          )
         end
       end
       cookies.delete ACCESS_COOKIE_KEY, **cookie_deletion_options
@@ -178,8 +196,11 @@ module Authentication
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
         rt = Base64.urlsafe_encode64(request.original_url)
-        redirect_to new_auth_org_authentication_url(rt: rt, host: ENV["AUTH_STAFF_URL"]), allow_other_host: true,
-                                                                                          alert: I18n.t("errors.messages.login_required")
+        redirect_to(
+          new_auth_org_authentication_url(rt: rt, host: ENV["AUTH_STAFF_URL"]),
+          allow_other_host: true,
+          alert: I18n.t("errors.messages.login_required"),
+        )
       end
     end
 

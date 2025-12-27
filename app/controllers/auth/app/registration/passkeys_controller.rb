@@ -36,8 +36,12 @@ module Auth
           render plain: t("auth.app.authentication.telephone.new.you_have_already_logged_in"),
                  status: :bad_request and return if logged_in?
 
-          @user_telephone = UserIdentityTelephone.new(params.expect(user_identity_telephone: %i(number confirm_policy
-                                                                                                confirm_using_mfa)))
+          @user_telephone = UserIdentityTelephone.new(
+            params.expect(
+              user_identity_telephone: %i(number confirm_policy
+                                          confirm_using_mfa),
+            ),
+          )
 
           res = cloudflare_turnstile_validation
           otp_private_key = ROTP::Base32.random_base32
@@ -86,7 +90,9 @@ module Auth
 
           # Retrieve telephone record with OTP
           @user_telephone = UserIdentityTelephone.find_by(id: params["id"])
-          if @user_telephone.blank? || @user_telephone.otp_expired? || registration_session["expires_at"].to_i <= Time.now.to_i
+          if @user_telephone.blank? ||
+              @user_telephone.otp_expired? ||
+              registration_session["expires_at"].to_i <= Time.now.to_i
             render :edit, status: :unprocessable_content and return
           end
 

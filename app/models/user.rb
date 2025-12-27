@@ -20,9 +20,12 @@
 #
 
 class User < IdentitiesRecord
+  self.implicit_order_column = :created_at
   include ::PublicId
   include ::Accountably
   include ::Accountable
+
+  attribute :user_identity_status_id, default: UserIdentityStatus::NEYO
   include Withdrawable
   include HasRoles
 
@@ -41,6 +44,8 @@ class User < IdentitiesRecord
   has_many :user_identity_secrets,
            dependent: :destroy
   has_many :user_identity_passkeys,
+           dependent: :destroy
+  has_many :user_identity_one_time_passwords,
            dependent: :destroy
   has_many :user_identity_audits,
            -> { where(subject_type: "User") },
@@ -62,6 +67,14 @@ class User < IdentitiesRecord
            dependent: :destroy
   has_many :user_notifications,
            dependent: :destroy
+
+  # Avatar assignments
+  has_many :avatar_assignments, dependent: :destroy
+  has_many :assigned_avatars, through: :avatar_assignments, source: :avatar
+  has_many :owned_avatars,
+           -> { joins(:avatar_assignments).where(avatar_assignments: { role: "owner" }) },
+           through: :avatar_assignments,
+           source: :avatar
 
   def staff?
     false

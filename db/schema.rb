@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_26_020815) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_27_223040) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -157,7 +157,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020815) do
     t.integer "verifier_attempts_left", limit: 2, default: 5, null: false
     t.string "verifier_digest", limit: 255, default: "", null: false
     t.timestamptz "verifier_expires_at", default: -::Float::INFINITY, null: false
-    t.index ["com_contact_id"], name: "index_com_contact_emails_on_com_contact_id"
+    t.index ["com_contact_id"], name: "index_com_contact_emails_on_com_contact_id", unique: true
     t.index ["email_address"], name: "index_com_contact_emails_on_email_address"
     t.index ["expires_at"], name: "index_com_contact_emails_on_expires_at"
     t.index ["verifier_expires_at"], name: "index_com_contact_emails_on_verifier_expires_at"
@@ -187,7 +187,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020815) do
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255, default: "", null: false
     t.timestamptz "verifier_expires_at", default: -::Float::INFINITY, null: false
-    t.index ["com_contact_id"], name: "index_com_contact_telephones_on_com_contact_id"
+    t.index ["com_contact_id"], name: "index_com_contact_telephones_on_com_contact_id", unique: true
     t.index ["expires_at"], name: "index_com_contact_telephones_on_expires_at"
     t.index ["telephone_number"], name: "index_com_contact_telephones_on_telephone_number"
     t.index ["verifier_expires_at"], name: "index_com_contact_telephones_on_verifier_expires_at"
@@ -333,17 +333,17 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020815) do
   add_foreign_key "app_contact_emails", "app_contacts"
   add_foreign_key "app_contact_telephones", "app_contacts"
   add_foreign_key "app_contact_topics", "app_contacts"
-  add_foreign_key "app_contacts", "app_contact_categories", column: "category_id"
-  add_foreign_key "app_contacts", "app_contact_statuses", column: "status_id"
+  add_foreign_key "app_contacts", "app_contact_categories", column: "category_id", on_delete: :nullify
+  add_foreign_key "app_contacts", "app_contact_statuses", column: "status_id", on_delete: :nullify
   add_foreign_key "com_contact_audits", "com_contacts"
   add_foreign_key "com_contact_emails", "com_contacts"
   add_foreign_key "com_contact_telephones", "com_contacts"
   add_foreign_key "com_contact_topics", "com_contacts"
-  add_foreign_key "com_contacts", "com_contact_categories", column: "category_id"
-  add_foreign_key "com_contacts", "com_contact_statuses", column: "status_id"
+  add_foreign_key "com_contacts", "com_contact_categories", column: "category_id", on_delete: :nullify
+  add_foreign_key "com_contacts", "com_contact_statuses", column: "status_id", on_delete: :nullify
   add_foreign_key "org_contact_emails", "org_contacts"
   add_foreign_key "org_contact_telephones", "org_contacts"
   add_foreign_key "org_contact_topics", "org_contacts"
-  add_foreign_key "org_contacts", "org_contact_categories", column: "category_id"
-  add_foreign_key "org_contacts", "org_contact_statuses", column: "status_id"
+  add_foreign_key "org_contacts", "org_contact_categories", column: "category_id", on_delete: :nullify
+  add_foreign_key "org_contacts", "org_contact_statuses", column: "status_id", on_delete: :nullify
 end

@@ -54,16 +54,18 @@ class SolidCacheTest < ActiveSupport::TestCase
     call_count = 0
 
     # First fetch should execute the block
-    value1 = @cache.fetch("fetch_test_key") do
-      call_count += 1
-      "computed_value"
-    end
+    value1 =
+      @cache.fetch("fetch_test_key") do
+        call_count += 1
+        "computed_value"
+      end
 
     # Second fetch should use cached value
-    value2 = @cache.fetch("fetch_test_key") do
-      call_count += 1
-      "should_not_be_called"
-    end
+    value2 =
+      @cache.fetch("fetch_test_key") do
+        call_count += 1
+        "should_not_be_called"
+      end
 
     assert_equal "computed_value", value1
     assert_equal "computed_value", value2
@@ -144,9 +146,10 @@ class SolidCacheTest < ActiveSupport::TestCase
     @cache.write("multi_key2", "value2")
     @cache.write("multi_key3", "value3")
 
-    results = @cache.fetch_multi("multi_key1", "multi_key2", "multi_key3") do |key|
-      "default_#{key}"
-    end
+    results =
+      @cache.fetch_multi("multi_key1", "multi_key2", "multi_key3") do |key|
+        "default_#{key}"
+      end
 
     assert_equal "value1", results["multi_key1"]
     assert_equal "value2", results["multi_key2"]

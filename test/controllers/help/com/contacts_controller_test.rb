@@ -90,8 +90,14 @@ module Help
       end
 
       test "should update contact and send notification email" do
-        contact = com_contacts(:one)
-        contact.create_com_contact_email(email_address: "notify@example.com")
+        contact = ComContact.create!(
+          category_id: "SECURITY_ISSUE",
+          status_id: "CHECKED_EMAIL_ADDRESS",
+          confirm_policy: "1",
+          created_at: Time.current,
+          updated_at: Time.current,
+        )
+        contact.create_com_contact_email!(email_address: "notify@example.com")
 
         assert_difference("ComContactTopic.count") do
           perform_enqueued_jobs do
@@ -108,8 +114,14 @@ module Help
       end
 
       test "should update contact and redirect to contact page" do
-        contact = com_contacts(:one)
-        contact.create_com_contact_email(email_address: "notify@example.com")
+        contact = ComContact.create!(
+          category_id: "SECURITY_ISSUE",
+          status_id: "CHECKED_EMAIL_ADDRESS",
+          confirm_policy: "1",
+          created_at: Time.current,
+          updated_at: Time.current,
+        )
+        contact.create_com_contact_email!(email_address: "notify@example.com")
 
         patch help_com_contact_url(contact), params: {
           com_contact_topic: {
@@ -123,7 +135,13 @@ module Help
       end
 
       test "should update contact even with blank title" do
-        contact = com_contacts(:one)
+        contact = ComContact.create!(
+          category_id: "SECURITY_ISSUE",
+          status_id: "CHECKED_EMAIL_ADDRESS",
+          confirm_policy: "1",
+          created_at: Time.current,
+          updated_at: Time.current,
+        )
 
         assert_difference("ComContactTopic.count") do
           patch help_com_contact_url(contact), params: {

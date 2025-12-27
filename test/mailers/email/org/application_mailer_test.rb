@@ -9,16 +9,19 @@ class Email::Org::ApplicationMailerTest < ActionMailer::TestCase
 
     assert_equal expected_from, Email::Org::ApplicationMailer.default[:from]
 
-    mailer = Class.new(Email::Org::ApplicationMailer) do
-      def sample
-        mail(to: "org-user@example.com", subject: I18n.t("test.email.org.application_mailer.subject")) do |format|
-          format.text { render plain: "hello" }
+    mailer =
+      Class.new(Email::Org::ApplicationMailer) do
+        def sample
+          mail(to: "org-user@example.com", subject: I18n.t("test.email.org.application_mailer.subject")) do |format|
+            format.text { render plain: "hello" }
+          end
         end
       end
-    end
 
-    I18n.backend.store_translations(:en,
-                                    { test: { email: { org: { application_mailer: { subject: "Org Sample" } } } } })
+    I18n.backend.store_translations(
+      :en,
+      { test: { email: { org: { application_mailer: { subject: "Org Sample" } } } } },
+    )
     email = mailer.new.sample
 
     assert_equal [expected_from], email.from

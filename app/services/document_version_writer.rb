@@ -2,13 +2,14 @@
 
 class DocumentVersionWriter
   def self.write!(document, attrs:, editor: nil)
-    version_class, document_key = case document
-    when ComDocument then [ComDocumentVersion, :com_document]
-    when AppDocument then [AppDocumentVersion, :app_document]
-    when OrgDocument then [OrgDocumentVersion, :org_document]
-    else
-      raise ArgumentError, "unsupported document type: #{document.class}"
-    end
+    version_class, document_key =
+      case document
+      when ComDocument then [ComDocumentVersion, :com_document]
+      when AppDocument then [AppDocumentVersion, :app_document]
+      when OrgDocument then [OrgDocumentVersion, :org_document]
+      else
+        raise ArgumentError, "unsupported document type: #{document.class}"
+      end
 
     version_class.create!(
       document_key => document,

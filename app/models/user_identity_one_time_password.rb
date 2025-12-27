@@ -4,17 +4,18 @@
 #
 # Table name: user_identity_one_time_passwords
 #
-#  user_id                                   :binary           not null
 #  created_at                                :datetime         not null
 #  updated_at                                :datetime         not null
 #  private_key                               :string(1024)     default(""), not null
 #  last_otp_at                               :datetime         default("-infinity"), not null
 #  user_identity_one_time_password_status_id :string           default("NONE"), not null
 #  id                                        :uuid             not null, primary key
+#  user_id                                   :uuid             not null
 #
 # Indexes
 #
 #  idx_on_user_identity_one_time_password_status_id_01264db86c  (user_identity_one_time_password_status_id)
+#  index_user_identity_one_time_passwords_on_user_id            (user_id)
 #
 
 class UserIdentityOneTimePassword < IdentitiesRecord
@@ -22,6 +23,7 @@ class UserIdentityOneTimePassword < IdentitiesRecord
 
   belongs_to :user
   belongs_to :user_identity_one_time_password_status, optional: true, inverse_of: :user_identity_one_time_passwords
+  attribute :user_identity_one_time_password_status_id, default: "NEYO"
 
   attr_accessor :first_token
 

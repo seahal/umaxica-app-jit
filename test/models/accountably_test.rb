@@ -20,9 +20,10 @@ class AccountablyTest < ActiveSupport::TestCase
     dummy = Object.new
     dummy.extend(::Accountably)
 
-    error = assert_raises(NotImplementedError) do
-      dummy.staff?
-    end
+    error =
+      assert_raises(NotImplementedError) do
+        dummy.staff?
+      end
     assert_match(/must implement staff\? method/, error.message)
   end
 
@@ -30,9 +31,10 @@ class AccountablyTest < ActiveSupport::TestCase
     dummy = Object.new
     dummy.extend(::Accountably)
 
-    error = assert_raises(NotImplementedError) do
-      dummy.user?
-    end
+    error =
+      assert_raises(NotImplementedError) do
+        dummy.user?
+      end
     assert_match(/must implement user\? method/, error.message)
   end
 end

@@ -43,13 +43,16 @@ class ComContact < GuestsRecord
              inverse_of: :com_contacts
   has_many :com_contact_topics, dependent: :destroy
 
+  attribute :status_id, default: "NEYO"
+  attribute :category_id, default: "NEYO"
+
   attr_accessor :confirm_policy
 
   after_initialize do
     if new_record?
-      self.category_id = "SECURITY_ISSUE" if category_id == "NONE" || category_id.nil?
+      self.category_id = "SECURITY_ISSUE" if category_id == "NEYO" || category_id.nil?
+      self.status_id = "NEYO" if status_id.nil?
     end
-    self.status_id ||= "NONE"
   end
 
   # Callbacks

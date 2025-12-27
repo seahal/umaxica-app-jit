@@ -27,7 +27,7 @@ module Help
             status.position = 0
             status.active = true
           end
-          ComContactStatus.find_or_create_by!(id: "NONE") do |status|
+          ComContactStatus.find_or_create_by!(id: "NEYO") do |status|
             status.description = "initial state"
             status.parent_id = "NULL_COM_STATUS"
             status.position = 0
@@ -35,7 +35,7 @@ module Help
           end
           # Create a fresh contact with correct status instead of using fixture
           @contact = ComContact.create!(
-            category_id: "NONE",
+            category_id: "SECURITY_ISSUE",
             status_id: "SET_UP",
             confirm_policy: "1",
           )
@@ -64,7 +64,7 @@ module Help
         end
 
         test "should show error for invalid contact status" do
-          @contact.update!(status_id: "NONE")
+          @contact.update!(status_id: "NEYO")
 
           get new_help_com_contact_email_url(@contact), headers: { "Host" => @host }
 

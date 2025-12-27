@@ -5,20 +5,21 @@ module Auth
     module Social
       class SessionsController < Auth::App::ApplicationController
         def create
+          auth = request.env["omniauth.auth"] || mock_auth_from_test_mode
           ActiveRecord::Base.connected_to(role: :writing) do
-            auth = request.env["omniauth.auth"] || mock_auth_from_test_mode
             raise "Missing OmniAuth data" unless auth
 
             provider = auth.provider
 
-            identity = case provider
-            when "google_oauth2"
-              UserIdentitySocialGoogle.find_or_create_from_auth_hash(auth)
-            when "apple"
-              UserIdentitySocialApple.find_or_create_from_auth_hash(auth)
-            else
-              raise "Unknown provider: #{provider}"
-            end
+            identity =
+              case provider
+              when "google_oauth2"
+                UserIdentitySocialGoogle.find_or_create_from_auth_hash(auth)
+              when "apple"
+                UserIdentitySocialApple.find_or_create_from_auth_hash(auth)
+              else
+                raise "Unknown provider: #{provider}"
+              end
 
             notice_message = I18n.t("sign.app.social.sessions.create.success", provider: provider.humanize)
 
@@ -30,9 +31,11 @@ module Auth
                             notice: notice_message
               else
                 # Identity exists but no user - create and link
-                Rails.event.notify("auth.social.orphaned_identity",
-                                   provider: provider,
-                                   identity_id: identity.id,)
+                Rails.event.notify(
+                  "auth.social.orphaned_identity",
+                  provider: provider,
+                  identity_id: identity.id,
+                )
 
                 user = User.new
                 identity.user = user
@@ -66,10 +69,12 @@ module Auth
             end
           end
         rescue StandardError => e
-          Rails.event.notify("auth.social.failed",
-                             error_class: e.class.name,
-                             error_message: e.message,
-                             provider: auth&.provider,)
+          Rails.event.notify(
+            "auth.social.failed",
+            error_class: e.class.name,
+            error_message: e.message,
+            provider: auth&.provider,
+          )
 
           redirect_to new_auth_app_authentication_path,
                       alert: I18n.t("sign.app.social.sessions.create.failure")

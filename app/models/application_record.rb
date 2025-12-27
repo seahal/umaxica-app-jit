@@ -3,5 +3,5 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
 
-  connects_to database: { writing: :business, reading: :business }
+  connects_to database: { writing: :default, reading: :default }
 end

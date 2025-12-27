@@ -22,7 +22,6 @@
 #
 # Indexes
 #
-#  index_org_document_versions_on_org_document_id                 (org_document_id)
 #  index_org_document_versions_on_org_document_id_and_created_at  (org_document_id,created_at)
 #  index_org_document_versions_on_public_id                       (public_id) UNIQUE
 #
@@ -32,4 +31,9 @@ class OrgDocumentVersion < DocumentRecord
   include ::PublicId
 
   belongs_to :org_document
+
+  validates :permalink, presence: true, length: { maximum: 200 }
+  validates :response_mode, presence: true
+  validates :published_at, presence: true
+  validates :expires_at, presence: true
 end

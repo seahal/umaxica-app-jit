@@ -5,23 +5,23 @@
 # Table name: com_contact_telephones
 #
 #  id                     :string           not null, primary key
-#  activated              :boolean          default(FALSE), not null
-#  com_contact_id         :uuid             not null
-#  created_at             :datetime         not null
-#  deletable              :boolean          default(FALSE), not null
-#  expires_at             :timestamptz      not null
-#  hotp_counter           :integer          default(0), not null
-#  hotp_secret            :string           default(""), not null
-#  remaining_views        :integer          default(10), not null
 #  telephone_number       :string(1000)     default(""), not null
-#  updated_at             :datetime         not null
-#  verifier_attempts_left :integer          default(3), not null
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
+#  remaining_views        :integer          default(10), not null
 #  verifier_digest        :string(255)      default(""), not null
 #  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  expires_at             :timestamptz      not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  com_contact_id         :uuid             not null
+#  hotp_secret            :string           default(""), not null
+#  hotp_counter           :integer          default(0), not null
 #
 # Indexes
 #
-#  index_com_contact_telephones_on_com_contact_id       (com_contact_id)
+#  index_com_contact_telephones_on_com_contact_id       (com_contact_id) UNIQUE
 #  index_com_contact_telephones_on_expires_at           (expires_at)
 #  index_com_contact_telephones_on_telephone_number     (telephone_number)
 #  index_com_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
@@ -42,6 +42,7 @@ class ComContactTelephone < GuestsRecord
   validates :telephone_number, presence: true, length: { maximum: 1000 },
                                format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
   validates :verifier_digest, length: { maximum: 255 }
+  validates :com_contact_id, uniqueness: true
 
   # Generate and store OTP
   def generate_otp!

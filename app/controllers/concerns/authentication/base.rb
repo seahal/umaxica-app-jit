@@ -44,41 +44,51 @@ module Authentication
 
       JWT.encode(payload, JwtConfig.private_key, JWT_ALGORITHM)
     rescue StandardError => e
-      Rails.event.notify("authentication.token.generation.failed",
-                         error_class: e.class.name,
-                         error_message: e.message,
-                         backtrace: e.backtrace.first(5),
-                         resource_type: resource.class.name,
-                         resource_id: resource.id,)
+      Rails.event.notify(
+        "authentication.token.generation.failed",
+        error_class: e.class.name,
+        error_message: e.message,
+        backtrace: e.backtrace.first(5),
+        resource_type: resource.class.name,
+        resource_id: resource.id,
+      )
       raise "Access token generation failed"
     end
 
     def verify_access_token(token)
       raise ArgumentError, "Token cannot be blank" if token.blank?
 
-      JWT.decode(token, JwtConfig.public_key, true, {
-        algorithms: [JWT_ALGORITHM],
-        verify_iat: true,
-        verify_exp: true,
-        verify_iss: true,
-        iss: request.host,
-        verify_aud: true,
-        aud: "umaxica-api",
-      }).first
+      JWT.decode(
+        token, JwtConfig.public_key, true, {
+          algorithms: [JWT_ALGORITHM],
+          verify_iat: true,
+          verify_exp: true,
+          verify_iss: true,
+          iss: request.host,
+          verify_aud: true,
+          aud: "umaxica-api",
+        },
+      ).first
     rescue JWT::ExpiredSignature
-      Rails.event.notify("authentication.token.verification.expired",
-                         host: request.host,)
+      Rails.event.notify(
+        "authentication.token.verification.expired",
+        host: request.host,
+      )
       raise JWT::ExpiredSignature, "Token has expired"
     rescue JWT::DecodeError, JWT::VerificationError => e
-      Rails.event.notify("authentication.token.verification.failed",
-                         error_class: e.class.name,
-                         host: request.host,)
+      Rails.event.notify(
+        "authentication.token.verification.failed",
+        error_class: e.class.name,
+        host: request.host,
+      )
       raise JWT::VerificationError, "Invalid token"
     rescue StandardError => e
-      Rails.event.notify("authentication.token.verification.error",
-                         error_class: e.class.name,
-                         error_message: e.message,
-                         host: request.host,)
+      Rails.event.notify(
+        "authentication.token.verification.error",
+        error_class: e.class.name,
+        error_message: e.message,
+        host: request.host,
+      )
       raise JWT::VerificationError, "Token verification failed"
     end
 
@@ -99,15 +109,16 @@ module Authentication
     end
 
     def shared_cookie_domain
-      @shared_cookie_domain ||= begin
-        configured = ENV["AUTH_COOKIE_DOMAIN"]&.strip
-        if configured.present?
-          formatted_domain(configured)
-        else
-          derived = derive_cookie_domain_from_host
-          formatted_domain(derived)
+      @shared_cookie_domain ||=
+        begin
+          configured = ENV["AUTH_COOKIE_DOMAIN"]&.strip
+          if configured.present?
+            formatted_domain(configured)
+          else
+            derived = derive_cookie_domain_from_host
+            formatted_domain(derived)
+          end
         end
-      end
     end
 
     def derive_cookie_domain_from_host

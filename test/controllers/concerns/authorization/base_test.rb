@@ -9,9 +9,10 @@ class AuthorizationBaseTest < ActiveSupport::TestCase
     dummy = Object.new
     dummy.extend(Authorization::Base)
 
-    error = assert_raises(NotImplementedError) do
-      dummy.active?
-    end
+    error =
+      assert_raises(NotImplementedError) do
+        dummy.active?
+      end
     assert_match(/active\? must be implemented/, error.message)
   end
 
@@ -19,9 +20,10 @@ class AuthorizationBaseTest < ActiveSupport::TestCase
     dummy = Object.new
     dummy.extend(Authorization::Base)
 
-    error = assert_raises(NotImplementedError) do
-      dummy.am_i_user?
-    end
+    error =
+      assert_raises(NotImplementedError) do
+        dummy.am_i_user?
+      end
     assert_match(/am_i_user\? must be implemented/, error.message)
   end
 
@@ -29,9 +31,10 @@ class AuthorizationBaseTest < ActiveSupport::TestCase
     dummy = Object.new
     dummy.extend(Authorization::Base)
 
-    error = assert_raises(NotImplementedError) do
-      dummy.am_i_staff?
-    end
+    error =
+      assert_raises(NotImplementedError) do
+        dummy.am_i_staff?
+      end
     assert_match(/am_i_staff\? must be implemented/, error.message)
   end
 
@@ -39,9 +42,10 @@ class AuthorizationBaseTest < ActiveSupport::TestCase
     dummy = Object.new
     dummy.extend(Authorization::Base)
 
-    error = assert_raises(NotImplementedError) do
-      dummy.am_i_owner?
-    end
+    error =
+      assert_raises(NotImplementedError) do
+        dummy.am_i_owner?
+      end
     assert_match(/am_i_owner\? must be implemented/, error.message)
   end
 end

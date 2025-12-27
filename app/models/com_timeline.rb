@@ -23,13 +23,15 @@
 #  index_com_timelines_on_status_id                    (status_id)
 #
 
-class ComTimeline < TimelineRecord
+class ComTimeline < NewsRecord
   include Timeline
 
   belongs_to :com_timeline_status,
              class_name: "ComTimelineStatus",
              foreign_key: :status_id,
              inverse_of: :com_timelines
+
+  validates :status_id, length: { maximum: 255 }
   has_many :com_timeline_versions, dependent: :delete_all
   has_many :com_timeline_audits,
            -> { where(subject_type: "ComTimeline") },
@@ -37,6 +39,17 @@ class ComTimeline < TimelineRecord
            foreign_key: :subject_id,
            inverse_of: :com_timeline,
            dependent: :delete_all
+  has_many :com_timeline_tags, dependent: :delete_all, inverse_of: :com_timeline
+  has_many :tag_masters,
+           through: :com_timeline_tags,
+           source: :com_timeline_tag_master
+  has_one :category,
+          class_name: "ComTimelineCategory",
+          dependent: :delete,
+          inverse_of: :com_timeline
+  has_one :category_master,
+          through: :category,
+          source: :com_timeline_category_master
 
   def latest_version
     com_timeline_versions.order(created_at: :desc).first!

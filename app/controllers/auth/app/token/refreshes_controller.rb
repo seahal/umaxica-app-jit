@@ -8,9 +8,11 @@ module Auth
           refresh_token = params[:refresh_token]
 
           if refresh_token.blank?
-            Rails.event.notify("user.token.refresh.validation_failed",
-                               reason: "missing_refresh_token",
-                               ip_address: request.remote_ip,)
+            Rails.event.notify(
+              "user.token.refresh.validation_failed",
+              reason: "missing_refresh_token",
+              ip_address: request.remote_ip,
+            )
 
             render json: {
               error: I18n.t("auth.token_refresh.errors.missing_refresh_token"),

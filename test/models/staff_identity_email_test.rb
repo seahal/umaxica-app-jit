@@ -107,7 +107,8 @@ class StaffIdentityEmailTest < ActiveSupport::TestCase
   test "should encrypt email address" do
     staff_email = StaffIdentityEmail.create!(@valid_attributes)
     # The address should be encrypted in the database
-    raw_data = StaffIdentityEmail.connection.execute("SELECT address FROM staff_identity_emails WHERE id = '#{staff_email.id}'").first
+    query = "SELECT address FROM staff_identity_emails WHERE id = '#{staff_email.id}'"
+    raw_data = StaffIdentityEmail.connection.execute(query).first
     assert_not_equal @valid_attributes[:address], raw_data["address"] if raw_data
   end
 

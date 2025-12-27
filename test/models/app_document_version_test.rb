@@ -20,7 +20,6 @@
 #
 # Indexes
 #
-#  index_app_document_versions_on_app_document_id                 (app_document_id)
 #  index_app_document_versions_on_app_document_id_and_created_at  (app_document_id,created_at)
 #  index_app_document_versions_on_public_id                       (public_id) UNIQUE
 #

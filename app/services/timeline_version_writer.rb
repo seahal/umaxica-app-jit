@@ -2,13 +2,14 @@
 
 class TimelineVersionWriter
   def self.write!(timeline, attrs:, editor: nil)
-    version_class, timeline_key = case timeline
-    when AppTimeline then [AppTimelineVersion, :app_timeline]
-    when ComTimeline then [ComTimelineVersion, :com_timeline]
-    when OrgTimeline then [OrgTimelineVersion, :org_timeline]
-    else
-      raise ArgumentError, "unsupported timeline type: #{timeline.class}"
-    end
+    version_class, timeline_key =
+      case timeline
+      when AppTimeline then [AppTimelineVersion, :app_timeline]
+      when ComTimeline then [ComTimelineVersion, :com_timeline]
+      when OrgTimeline then [OrgTimelineVersion, :org_timeline]
+      else
+        raise ArgumentError, "unsupported timeline type: #{timeline.class}"
+      end
 
     version_class.create!(
       timeline_key => timeline,

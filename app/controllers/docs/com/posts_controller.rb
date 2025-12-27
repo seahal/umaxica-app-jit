@@ -13,47 +13,17 @@ module Docs
         show_document
       end
 
-      def new
-        @post = { title: "", body: "" }
-      end
-
-      def edit
-        @post_id = params[:id]
-        @post = { id: @post_id, title: "Document #{@post_id}", body: "" }
-      end
-
-      def create
-        Rails.event.notify("docs.post.created",
-                           title: params.dig(:post, :title),)
-
-        redirect_to docs_com_posts_path
-      end
-
-      def update
-        @post_id = params[:id]
-        Rails.event.notify("docs.post.updated",
-                           post_id: @post_id,)
-
-        redirect_to docs_com_post_path(@post_id)
-      end
-
-      def destroy
-        @post_id = params[:id]
-        Rails.event.notify("docs.post.deleted",
-                           post_id: @post_id,)
-
-        redirect_to docs_com_posts_path
-      end
-
       private
 
       def show_document
         permalink = params[:id]
         @document = ComDocument.available.find_by!(permalink: permalink)
 
-        Rails.event.notify("docs.post.viewed",
-                           document_id: @document.id,
-                           permalink: @document.permalink,)
+        Rails.event.notify(
+          "docs.post.viewed",
+          document_id: @document.id,
+          permalink: @document.permalink,
+        )
 
         # Handle different response modes
         case @document.response_mode
@@ -69,8 +39,10 @@ module Docs
           render "show"
         end
       rescue ActiveRecord::RecordNotFound
-        Rails.event.notify("docs.post.not_found",
-                           permalink: permalink,)
+        Rails.event.notify(
+          "docs.post.not_found",
+          permalink: permalink,
+        )
         raise
       end
 
@@ -80,16 +52,20 @@ module Docs
         redirect_url = @document.redirect_url
 
         if redirect_url.blank?
-          Rails.event.notify("docs.post.empty_redirect",
-                             document_id: @document.id,)
+          Rails.event.notify(
+            "docs.post.empty_redirect",
+            document_id: @document.id,
+          )
           render plain: "Redirect URL is not configured", status: :bad_request
           return
         end
 
         unless safe_redirect_url?(redirect_url)
-          Rails.event.notify("docs.post.invalid_redirect",
-                             document_id: @document.id,
-                             redirect_url: redirect_url,)
+          Rails.event.notify(
+            "docs.post.invalid_redirect",
+            document_id: @document.id,
+            redirect_url: redirect_url,
+          )
           render plain: "Invalid redirect URL", status: :bad_request
           return
         end
@@ -156,9 +132,11 @@ module Docs
 
         @total_pages = (@total_count.to_f / @per_page).ceil
 
-        Rails.event.notify("docs.posts.listed",
-                           query: @query,
-                           results_count: @total_count,)
+        Rails.event.notify(
+          "docs.posts.listed",
+          query: @query,
+          results_count: @total_count,
+        )
 
         render "index"
       end

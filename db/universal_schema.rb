@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_27_224333) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -81,6 +81,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
     t.index ["expires_at"], name: "index_app_document_audits_on_expires_at"
     t.index ["level_id"], name: "index_app_document_audits_on_level_id"
     t.index ["occurred_at"], name: "index_app_document_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_app_document_audits_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_cf1fa79ee4"
   end
 
@@ -114,6 +115,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
     t.index ["expires_at"], name: "index_app_timeline_audits_on_expires_at"
     t.index ["level_id"], name: "index_app_timeline_audits_on_level_id"
     t.index ["occurred_at"], name: "index_app_timeline_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_app_timeline_audits_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_c80b4e4f83"
   end
 
@@ -269,6 +271,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
     t.index ["expires_at"], name: "index_com_document_audits_on_expires_at"
     t.index ["level_id"], name: "index_com_document_audits_on_level_id"
     t.index ["occurred_at"], name: "index_com_document_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_com_document_audits_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_c40361e81b"
   end
 
@@ -302,6 +305,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
     t.index ["expires_at"], name: "index_com_timeline_audits_on_expires_at"
     t.index ["level_id"], name: "index_com_timeline_audits_on_level_id"
     t.index ["occurred_at"], name: "index_com_timeline_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_com_timeline_audits_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_99ec847a5c"
   end
 
@@ -575,6 +579,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
     t.index ["expires_at"], name: "index_org_document_audits_on_expires_at"
     t.index ["level_id"], name: "index_org_document_audits_on_level_id"
     t.index ["occurred_at"], name: "index_org_document_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_org_document_audits_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_bf53171ad0"
   end
 
@@ -608,6 +613,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
     t.index ["expires_at"], name: "index_org_timeline_audits_on_expires_at"
     t.index ["level_id"], name: "index_org_timeline_audits_on_level_id"
     t.index ["occurred_at"], name: "index_org_timeline_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_org_timeline_audits_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_0f4341deba"
   end
 
@@ -637,10 +643,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_staff_identity_audits_on_actor_id_and_occurred_at"
+    t.index ["actor_type", "actor_id"], name: "index_staff_identity_audits_on_actor"
     t.index ["event_id"], name: "index_staff_identity_audits_on_event_id"
     t.index ["expires_at"], name: "index_staff_identity_audits_on_expires_at"
     t.index ["level_id"], name: "index_staff_identity_audits_on_level_id"
     t.index ["occurred_at"], name: "index_staff_identity_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_staff_identity_audits_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_2e96c29236"
   end
 
@@ -761,10 +769,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020813) do
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_user_identity_audits_on_actor_id_and_occurred_at"
+    t.index ["actor_type", "actor_id"], name: "index_user_identity_audits_on_actor"
     t.index ["event_id"], name: "index_user_identity_audits_on_event_id"
     t.index ["expires_at"], name: "index_user_identity_audits_on_expires_at"
     t.index ["level_id"], name: "index_user_identity_audits_on_level_id"
     t.index ["occurred_at"], name: "index_user_identity_audits_on_occurred_at"
+    t.index ["subject_id"], name: "index_user_identity_audits_on_subject_id"
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_a29eb711dd"
   end
 

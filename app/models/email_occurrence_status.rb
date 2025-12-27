@@ -19,7 +19,7 @@ class EmailOccurrenceStatus < UniversalRecord
                                inverse_of: :email_occurrence_status
 
   # Status constants
-  NONE = "NONE"
+  NEYO = "NEYO"
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"

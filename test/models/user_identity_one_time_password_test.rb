@@ -4,17 +4,18 @@
 #
 # Table name: user_identity_one_time_passwords
 #
-#  user_id                                   :binary           not null
 #  created_at                                :datetime         not null
 #  updated_at                                :datetime         not null
 #  private_key                               :string(1024)     default(""), not null
 #  last_otp_at                               :datetime         default("-infinity"), not null
 #  user_identity_one_time_password_status_id :string           default("NONE"), not null
 #  id                                        :uuid             not null, primary key
+#  user_id                                   :uuid             not null
 #
 # Indexes
 #
 #  idx_on_user_identity_one_time_password_status_id_01264db86c  (user_identity_one_time_password_status_id)
+#  index_user_identity_one_time_passwords_on_user_id            (user_id)
 #
 
 require "test_helper"
@@ -23,9 +24,9 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
   def setup
     @user = users(:one)
     @status = user_identity_one_time_password_statuses(:active)
-    # Ensure NONE status exists for defaults
-    unless UserIdentityOneTimePasswordStatus.exists?("NONE")
-      UserIdentityOneTimePasswordStatus.create!(id: "NONE")
+    # Ensure NEYO status exists for defaults
+    unless UserIdentityOneTimePasswordStatus.exists?("NEYO")
+      UserIdentityOneTimePasswordStatus.create!(id: "NEYO")
     end
 
     @private_key = "test-secret-key-12345"
@@ -105,16 +106,20 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum totp records per user" do
+    new_user = User.create!(
+      user_identity_status_id: "NEYO",
+    )
+
     UserIdentityOneTimePassword::MAX_TOTPS_PER_USER.times do
       UserIdentityOneTimePassword.create!(
-        user: @user,
+        user: new_user,
         private_key: ROTP::Base32.random_base32,
         last_otp_at: Time.current,
       )
     end
 
     extra_totp = UserIdentityOneTimePassword.new(
-      user: @user,
+      user: new_user,
       private_key: ROTP::Base32.random_base32,
       last_otp_at: Time.current,
     )

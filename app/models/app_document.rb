@@ -30,6 +30,8 @@ class AppDocument < DocumentRecord
              class_name: "AppDocumentStatus",
              foreign_key: :status_id,
              inverse_of: :app_documents
+
+  validates :status_id, length: { maximum: 255 }
   has_many :app_document_versions, dependent: :delete_all
   has_many :app_document_audits,
            -> { where(subject_type: "AppDocument") },
@@ -37,6 +39,17 @@ class AppDocument < DocumentRecord
            foreign_key: :subject_id,
            inverse_of: :app_document,
            dependent: :delete_all
+  has_many :app_document_tags, dependent: :delete_all, inverse_of: :app_document
+  has_many :tag_masters,
+           through: :app_document_tags,
+           source: :app_document_tag_master
+  has_one :category,
+          class_name: "AppDocumentCategory",
+          dependent: :delete,
+          inverse_of: :app_document
+  has_one :category_master,
+          through: :category,
+          source: :app_document_category_master
 
   def latest_version
     app_document_versions.order(created_at: :desc).first!

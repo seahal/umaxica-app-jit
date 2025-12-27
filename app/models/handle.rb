@@ -37,8 +37,8 @@ class Handle < IdentitiesRecord
            dependent: :restrict_with_error
 
   validates :public_id, presence: true, uniqueness: true
-  validates :handle, presence: true,
-                     uniqueness: { conditions: -> { where(is_system: false) } },
+  validates :handle, presence: true
+  validates :handle, uniqueness: { conditions: -> { where(is_system: false) } },
                      unless: :is_system?
   validates :cooldown_until, presence: true
 end

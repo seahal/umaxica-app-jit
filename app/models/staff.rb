@@ -29,6 +29,8 @@ class Staff < IdentitiesRecord
   include ::Accountably
   include ::Accountable
 
+  attribute :staff_identity_status_id, default: StaffIdentityStatus::NEYO
+
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :staff_identity_status_id, length: { maximum: 255 }
 

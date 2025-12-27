@@ -47,11 +47,12 @@ class ApplicationPolicy
   # Get the workspace from the record if it has one
   # @return [Workspace, nil]
   def organization
-    @organization ||= if record.respond_to?(:organization)
-      record.organization
-    elsif record.respond_to?(:organization_id) && record.organization_id.present?
-      Workspace.find_by(id: record.organization_id)
-    end
+    @organization ||=
+      if record.respond_to?(:organization)
+        record.organization
+      elsif record.respond_to?(:organization_id) && record.organization_id.present?
+        Workspace.find_by(id: record.organization_id)
+      end
   end
 
   # Check if actor owns the record

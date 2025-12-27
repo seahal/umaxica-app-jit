@@ -50,7 +50,12 @@ class AppTimelineTest < ActiveSupport::TestCase
 
   test "available scope returns published and unexpired timelines" do
     now = Time.current
-    available = AppTimeline.create!(base_attrs.merge(permalink: "available", published_at: now - 1.hour, expires_at: now + 1.hour))
+    available = AppTimeline.create!(
+      base_attrs.merge(
+        permalink: "available", published_at: now - 1.hour,
+        expires_at: now + 1.hour,
+      ),
+    )
     AppTimeline.create!(base_attrs.merge(permalink: "future", published_at: now + 1.hour, expires_at: now + 2.hours))
     AppTimeline.create!(base_attrs.merge(permalink: "expired", published_at: now - 2.hours, expires_at: now - 1.hour))
 

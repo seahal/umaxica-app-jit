@@ -19,7 +19,7 @@ class UserOccurrenceStatus < UniversalRecord
                               inverse_of: :user_occurrence_status
 
   # Status constants
-  NONE = "NONE"
+  NEYO = "NEYO"
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"

@@ -34,10 +34,14 @@ module Help
             status.active = true
           end
           # Create a fresh contact with correct status instead of using fixture
+          # Create a fresh contact with correct status instead of using fixture
           @contact = ComContact.create!(
+            public_id: "ctrl_test_contact",
             category_id: "OTHERS",
             status_id: "CHECKED_EMAIL_ADDRESS",
             confirm_policy: "1",
+            created_at: Time.current,
+            updated_at: Time.current,
           )
           # Create telephone for verification
           @contact_telephone = ComContactTelephone.create!(
@@ -45,6 +49,7 @@ module Help
             telephone_number: "+15555555555",
             verifier_attempts_left: 3,
             verifier_expires_at: 15.minutes.from_now,
+            expires_at: 1.day.from_now,
           )
         end
 

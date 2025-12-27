@@ -72,7 +72,7 @@ class ComContactTest < ActiveSupport::TestCase
 
     assert_predicate contact, :valid?
     assert_equal "SECURITY_ISSUE", contact.category_id
-    assert_equal "NONE", contact.status_id
+    assert_equal "NEYO", contact.status_id
   end
 
   test "should create contact with relationship titles" do
@@ -122,7 +122,7 @@ class ComContactTest < ActiveSupport::TestCase
     )
 
     assert_equal "SECURITY_ISSUE", contact.category_id
-    assert_equal "NONE", contact.status_id
+    assert_equal "NEYO", contact.status_id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -343,7 +343,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now,
     )
 
-    assert_equal "NONE", contact.status_id
+    assert_equal "NEYO", contact.status_id
   end
 
   # Validation tests

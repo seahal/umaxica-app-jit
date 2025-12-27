@@ -176,7 +176,7 @@ Layout/TrailingEmptyLines:
 
 # ---------- 行の長さ ----------
 Layout/LineLength:
-  Max: 160
+  Max: 120
   Exclude:
     - 'config/**/*'
     - 'db/**/*_migrate/**/*'
@@ -186,15 +186,26 @@ Layout/MultilineMethodCallIndentation:
   Enabled: true
   EnforcedStyle: indented
 
+Layout/MultilineAssignmentLayout:
+  Enabled: true
+  EnforcedStyle: new_line
+
 Layout/MultilineOperationIndentation:
   Enabled: true
   EnforcedStyle: indented
+
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: true
 
 Layout/FirstArrayElementIndentation:
   Enabled: true
   EnforcedStyle: consistent
 
 Layout/FirstHashElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+
+Layout/FirstArgumentIndentation:
   Enabled: true
   EnforcedStyle: consistent
 
@@ -210,6 +221,10 @@ Layout/ArgumentAlignment:
 Layout/ParameterAlignment:
   Enabled: true
   EnforcedStyle: with_first_parameter
+
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: true
+  AllowMultilineFinalElement: false
 
 Layout/LineEndStringConcatenationIndentation:
   Enabled: true
@@ -1091,4 +1106,3 @@ Style/RedundantReturn:
 # Force use of .blank? or .present? in Rails (more robust than nil? or empty?)
 Rails/Blank:
   Enabled: true
-

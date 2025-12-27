@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_24_140500) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_27_223048) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_140500) do
     t.uuid "public_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.uuid "staff_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.datetime "updated_at", null: false
+    t.index ["staff_id"], name: "index_staff_notifications_on_staff_id"
   end
 
   create_table "user_notifications", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -26,5 +27,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_24_140500) do
     t.uuid "public_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.index ["user_id"], name: "index_user_notifications_on_user_id"
   end
 end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-# NOTE: If this code is only included in User controllers, consider moving to app/controllers/concerns/authentication/user.rb
+# NOTE: If this code is only included in User controllers, consider moving to
+# app/controllers/concerns/authentication/user.rb
 
 module Authorization
   module User

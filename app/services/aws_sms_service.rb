@@ -16,11 +16,13 @@ class AwsSmsService
   def send_message(to:, message:, subject: nil)
     validate_params(to: to, message: message)
 
-    @client.publish({
-      phone_number: to,
-      message: message,
-      subject: subject || "SMS",
-    })
+    @client.publish(
+      {
+        phone_number: to,
+        message: message,
+        subject: subject || "SMS",
+      },
+    )
   end
 
   private

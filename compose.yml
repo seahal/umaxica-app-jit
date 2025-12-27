@@ -20,9 +20,6 @@ services:
       - type: bind
         source: .
         target: /home/jit/workspace
-    tmpfs:
-      - /app/tmp
-      - /app/log
     networks:
       backend: { }
       frontend:

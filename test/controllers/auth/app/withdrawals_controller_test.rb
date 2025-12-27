@@ -47,14 +47,14 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new withdrawal page" do
-    @user.update!(user_identity_status_id: "NONE")
+    @user.update!(user_identity_status_id: "NEYO")
     get new_auth_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_response :success
   end
 
   test "should create withdrawal and set withdrawn_at" do
-    @user.update!(user_identity_status_id: "NONE")
+    @user.update!(user_identity_status_id: "NEYO")
 
     post auth_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
@@ -105,7 +105,7 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # Error path tests for withdrawal state validation
-  test "should raise InvalidUserStatusError when accessing new for non-NONE user" do
+  test "should raise InvalidUserStatusError when accessing new for non-NEYO user" do
     @user.update!(user_identity_status_id: UserIdentityStatus::PRE_WITHDRAWAL_CONDITION)
 
     assert_raises(InvalidUserStatusError) do
@@ -139,7 +139,7 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
 
   # Turnstile Widget Verification Tests
   test "new withdrawal page renders Turnstile widget" do
-    @user.update!(user_identity_status_id: "NONE")
+    @user.update!(user_identity_status_id: "NEYO")
 
     get new_auth_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
@@ -149,7 +149,7 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
 
   # Checkbox visibility tests
   # test "new withdrawal page renders confirm_create_recovery_code checkbox" do
-  #   @user.update!(user_identity_status_id: "NONE")
+  #   @user.update!(user_identity_status_id: "NEYO")
 
   #   get new_auth_app_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
@@ -173,7 +173,7 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create accepts confirm_create_recovery_code parameter" do
-    @user.update!(user_identity_status_id: "NONE")
+    @user.update!(user_identity_status_id: "NEYO")
 
     post auth_app_withdrawal_url, params: { confirm_create_recovery_code: "1" },
                                   headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
@@ -224,7 +224,7 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle creation failure" do
-    @user.update!(user_identity_status_id: "NONE")
+    @user.update!(user_identity_status_id: "NEYO")
 
     # We need to stub current_user.save to return false.
     # Since we can't easily access the exact instance controller uses,
@@ -253,7 +253,7 @@ class Auth::App::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
 
     user_mock = @user
     user_mock.define_singleton_method(:save) { false }
-    user_mock.define_singleton_method(:user_identity_status_id) { "NONE" } # Ensure checking status works
+    user_mock.define_singleton_method(:user_identity_status_id) { "NEYO" } # Ensure checking status works
 
     # Stub finding methods likely used by authentication
     User.stub(:find, user_mock) do

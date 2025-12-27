@@ -30,6 +30,8 @@ class OrgDocument < DocumentRecord
              class_name: "OrgDocumentStatus",
              foreign_key: :status_id,
              inverse_of: :org_documents
+
+  validates :status_id, length: { maximum: 255 }
   has_many :org_document_versions, dependent: :delete_all
   has_many :org_document_audits,
            -> { where(subject_type: "OrgDocument") },
@@ -37,6 +39,17 @@ class OrgDocument < DocumentRecord
            foreign_key: :subject_id,
            inverse_of: :org_document,
            dependent: :delete_all
+  has_many :org_document_tags, dependent: :delete_all, inverse_of: :org_document
+  has_many :tag_masters,
+           through: :org_document_tags,
+           source: :org_document_tag_master
+  has_one :category,
+          class_name: "OrgDocumentCategory",
+          dependent: :delete,
+          inverse_of: :org_document
+  has_one :category_master,
+          through: :category,
+          source: :org_document_category_master
 
   def latest_version
     org_document_versions.order(created_at: :desc).first!

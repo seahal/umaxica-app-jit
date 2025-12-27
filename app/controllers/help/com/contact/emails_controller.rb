@@ -58,8 +58,10 @@ module Help
                 # Generate HOTP code
                 telephone_token = @contact_telephone.generate_hotp!
 
-                AwsSmsService.new.send_message(to: @contact_telephone.telephone_number,
-                                               message: "PassCode => #{telephone_token}",)
+                AwsSmsService.new.send_message(
+                  to: @contact_telephone.telephone_number,
+                  message: "PassCode => #{telephone_token}",
+                )
               end
             end
 
@@ -70,9 +72,13 @@ module Help
             attempts_left = @contact_email.verifier_attempts_left
 
             if attempts_left > 0
-              @contact_email.errors.add(:hotp_code,
-                                        I18n.t("help.com.contact.emails.update.invalid_code",
-                                               attempts_left: attempts_left,),)
+              @contact_email.errors.add(
+                :hotp_code,
+                I18n.t(
+                  "help.com.contact.emails.update.invalid_code",
+                  attempts_left: attempts_left,
+                ),
+              )
             else
               @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.max_attempts"))
             end

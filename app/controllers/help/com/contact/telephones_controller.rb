@@ -56,9 +56,13 @@ module Help
             attempts_left = @contact_telephone.verifier_attempts_left
 
             if attempts_left > 0
-              @contact_telephone.errors.add(:hotp_code,
-                                            I18n.t("help.com.contact.telephones.update.invalid_code",
-                                                   attempts_left: attempts_left,),)
+              @contact_telephone.errors.add(
+                :hotp_code,
+                I18n.t(
+                  "help.com.contact.telephones.update.invalid_code",
+                  attempts_left: attempts_left,
+                ),
+              )
             else
               @contact_telephone.errors.add(:hotp_code, I18n.t("help.com.contact.telephones.update.max_attempts"))
             end

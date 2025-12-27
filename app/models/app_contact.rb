@@ -42,13 +42,16 @@ class AppContact < GuestsRecord
   has_many :app_contact_emails, dependent: :destroy
   has_many :app_contact_telephones, dependent: :destroy
 
+  attribute :status_id, default: "NEYO"
+  attribute :category_id, default: "NEYO"
+
   attr_accessor :confirm_policy
 
   after_initialize do
     if new_record?
-      self.category_id = "APPLICATION_INQUIRY" if category_id == "NONE" || category_id.nil?
+      self.category_id = "APPLICATION_INQUIRY" if category_id == "NEYO" || category_id.nil?
+      self.status_id = "NEYO" if status_id.nil?
     end
-    self.status_id ||= "NONE"
   end
 
   # Callbacks

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_26_020999) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_27_230020) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -38,6 +38,19 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020999) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["user_id"], name: "index_apple_auths_on_user_id"
+  end
+
+  create_table "avatar_assignments", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "avatar_id", limit: 255, null: false
+    t.datetime "created_at", null: false
+    t.string "role", limit: 50, default: "viewer", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["avatar_id", "user_id", "role"], name: "index_avatar_assignments_unique", unique: true
+    t.index ["avatar_id"], name: "index_avatar_assignments_unique_affiliation", unique: true, where: "((role)::text = 'affiliation'::text)"
+    t.index ["avatar_id"], name: "index_avatar_assignments_unique_owner", unique: true, where: "((role)::text = 'owner'::text)"
+    t.index ["user_id"], name: "index_avatar_assignments_on_user_id"
+    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'affiliation'::character varying, 'administrator'::character varying, 'editor'::character varying, 'reviewer'::character varying, 'viewer'::character varying]::text[])", name: "check_avatar_assignment_role"
   end
 
   create_table "avatar_capabilities", id: :string, force: :cascade do |t|
@@ -152,6 +165,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020999) do
     t.string "capability_id", null: false
     t.datetime "created_at", null: false
     t.jsonb "image_data", default: {}, null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "moniker", null: false
     t.string "owner_organization_id"
     t.string "public_id", null: false
@@ -511,8 +525,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020999) do
     t.datetime "last_otp_at", default: -::Float::INFINITY, null: false
     t.string "private_key", limit: 1024, default: "", null: false
     t.datetime "updated_at", null: false
-    t.binary "user_id", null: false
+    t.uuid "user_id", null: false
     t.string "user_identity_one_time_password_status_id", default: "NONE", null: false
+    t.index ["user_id"], name: "index_user_identity_one_time_passwords_on_user_id"
     t.index ["user_identity_one_time_password_status_id"], name: "idx_on_user_identity_one_time_password_status_id_01264db86c"
     t.check_constraint "user_identity_one_time_password_status_id IS NULL OR user_identity_one_time_password_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_one_time_passwords_user_identity_one_time_pas"
   end
@@ -693,6 +708,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020999) do
   end
 
   add_foreign_key "apple_auths", "users"
+  add_foreign_key "avatar_assignments", "avatars", on_delete: :cascade
+  add_foreign_key "avatar_assignments", "users", on_delete: :cascade
   add_foreign_key "avatar_memberships", "avatar_membership_statuses"
   add_foreign_key "avatar_memberships", "avatars"
   add_foreign_key "avatar_monikers", "avatar_moniker_statuses"
@@ -731,6 +748,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_26_020999) do
   add_foreign_key "user_identity_emails", "user_identity_email_statuses"
   add_foreign_key "user_identity_emails", "users"
   add_foreign_key "user_identity_one_time_passwords", "user_identity_one_time_password_statuses"
+  add_foreign_key "user_identity_one_time_passwords", "users", validate: false
   add_foreign_key "user_identity_passkeys", "user_identity_passkey_statuses"
   add_foreign_key "user_identity_passkeys", "users"
   add_foreign_key "user_identity_secrets", "user_identity_secret_statuses"

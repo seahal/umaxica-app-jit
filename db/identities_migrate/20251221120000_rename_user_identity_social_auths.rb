@@ -30,27 +30,35 @@ class RenameUserIdentitySocialAuths < ActiveRecord::Migration[8.2]
                     :user_identity_social_google_status_id
     end
 
-    rename_social_indexes(:user_identity_social_apples,
-                          old_table: :user_apple_auths,
-                          old_status_column: :user_identity_apple_auth_status_id,
-                          new_status_column: :user_identity_social_apple_status_id,)
-    rename_social_indexes(:user_identity_social_googles,
-                          old_table: :user_google_auths,
-                          old_status_column: :user_identity_google_auth_status_id,
-                          new_status_column: :user_identity_social_google_status_id,)
+    rename_social_indexes(
+      :user_identity_social_apples,
+      old_table: :user_apple_auths,
+      old_status_column: :user_identity_apple_auth_status_id,
+      new_status_column: :user_identity_social_apple_status_id,
+    )
+    rename_social_indexes(
+      :user_identity_social_googles,
+      old_table: :user_google_auths,
+      old_status_column: :user_identity_google_auth_status_id,
+      new_status_column: :user_identity_social_google_status_id,
+    )
   end
 
   def down
-    rename_social_indexes(:user_identity_social_apples,
-                          old_table: :user_identity_social_apples,
-                          new_table: :user_apple_auths,
-                          old_status_column: :user_identity_social_apple_status_id,
-                          new_status_column: :user_identity_apple_auth_status_id,)
-    rename_social_indexes(:user_identity_social_googles,
-                          old_table: :user_identity_social_googles,
-                          new_table: :user_google_auths,
-                          old_status_column: :user_identity_social_google_status_id,
-                          new_status_column: :user_identity_google_auth_status_id,)
+    rename_social_indexes(
+      :user_identity_social_apples,
+      old_table: :user_identity_social_apples,
+      new_table: :user_apple_auths,
+      old_status_column: :user_identity_social_apple_status_id,
+      new_status_column: :user_identity_apple_auth_status_id,
+    )
+    rename_social_indexes(
+      :user_identity_social_googles,
+      old_table: :user_identity_social_googles,
+      new_table: :user_google_auths,
+      old_status_column: :user_identity_social_google_status_id,
+      new_status_column: :user_identity_google_auth_status_id,
+    )
 
     if column_exists?(:user_identity_social_apples, :user_identity_social_apple_status_id)
       rename_column :user_identity_social_apples,

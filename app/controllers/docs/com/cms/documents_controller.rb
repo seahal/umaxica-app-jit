@@ -41,13 +41,17 @@ module Docs
           if @document.save
             create_version(@document, document_version_params)
 
-            Rails.event.notify("cms.document.created",
-                               document_id: @document.id,
-                               permalink: @document.permalink,
-                               actor_type: "Staff",)
+            Rails.event.notify(
+              "cms.document.created",
+              document_id: @document.id,
+              permalink: @document.permalink,
+              actor_type: "Staff",
+            )
 
             respond_to do |format|
-              format.html { redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.created") }
+              format.html {
+                redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.created")
+              }
               format.turbo_stream
             end
           else
@@ -60,13 +64,17 @@ module Docs
           if @document.update(document_params)
             create_version(@document, document_version_params)
 
-            Rails.event.notify("cms.document.updated",
-                               document_id: @document.id,
-                               permalink: @document.permalink,
-                               actor_type: "Staff",)
+            Rails.event.notify(
+              "cms.document.updated",
+              document_id: @document.id,
+              permalink: @document.permalink,
+              actor_type: "Staff",
+            )
 
             respond_to do |format|
-              format.html { redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.updated") }
+              format.html {
+                redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.updated")
+              }
               format.turbo_stream
             end
           else
@@ -78,10 +86,12 @@ module Docs
         def destroy
           @document.destroy!
 
-          Rails.event.notify("cms.document.deleted",
-                             document_id: @document.id,
-                             permalink: @document.permalink,
-                             actor_type: "Staff",)
+          Rails.event.notify(
+            "cms.document.deleted",
+            document_id: @document.id,
+            permalink: @document.permalink,
+            actor_type: "Staff",
+          )
 
           respond_to do |format|
             format.html { redirect_to docs_com_cms_documents_path, notice: t("docs.com.cms.documents.deleted") }
@@ -93,15 +103,22 @@ module Docs
         def publish
           @document.update!(status_id: "ACTIVE", published_at: Time.current)
 
-          Rails.event.notify("cms.document.published",
-                             document_id: @document.id,
-                             permalink: @document.permalink,
-                             actor_type: "Staff",)
+          Rails.event.notify(
+            "cms.document.published",
+            document_id: @document.id,
+            permalink: @document.permalink,
+            actor_type: "Staff",
+          )
 
           respond_to do |format|
-            format.html { redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.published") }
+            format.html {
+              redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.published")
+            }
             format.turbo_stream {
-              render turbo_stream: turbo_stream.replace("document_#{@document.id}", partial: "docs/com/cms/documents/document", locals: { document: @document })
+              render turbo_stream: turbo_stream.replace(
+                "document_#{@document.id}",
+                partial: "docs/com/cms/documents/document", locals: { document: @document },
+              )
             }
           end
         end
@@ -110,15 +127,22 @@ module Docs
         def unpublish
           @document.update!(status_id: "DRAFT")
 
-          Rails.event.notify("cms.document.unpublished",
-                             document_id: @document.id,
-                             permalink: @document.permalink,
-                             actor_type: "Staff",)
+          Rails.event.notify(
+            "cms.document.unpublished",
+            document_id: @document.id,
+            permalink: @document.permalink,
+            actor_type: "Staff",
+          )
 
           respond_to do |format|
-            format.html { redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.unpublished") }
+            format.html {
+              redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.unpublished")
+            }
             format.turbo_stream {
-              render turbo_stream: turbo_stream.replace("document_#{@document.id}", partial: "docs/com/cms/documents/document", locals: { document: @document })
+              render turbo_stream: turbo_stream.replace(
+                "document_#{@document.id}",
+                partial: "docs/com/cms/documents/document", locals: { document: @document },
+              )
             }
           end
         end

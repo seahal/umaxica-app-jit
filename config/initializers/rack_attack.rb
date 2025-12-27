@@ -6,16 +6,17 @@ class Rack::Attack
   ############################################################
   # 0) Rack::Attack dedicated Redis (required)
   ############################################################
-  Rack::Attack.cache.store = if Rails.env.test?
-    ActiveSupport::Cache::MemoryStore.new
-  else
-    ActiveSupport::Cache::RedisCacheStore.new(
-      url: ENV.fetch("VALKEY_RACK_ATTACK_URL"),
-      namespace: "rack_attack",
-      reconnect_attempts: 3,
-      timeout: 1.0,
-    )
-  end
+  Rack::Attack.cache.store =
+    if Rails.env.test?
+      ActiveSupport::Cache::MemoryStore.new
+    else
+      ActiveSupport::Cache::RedisCacheStore.new(
+        url: ENV.fetch("VALKEY_RACK_ATTACK_URL"),
+        namespace: "rack_attack",
+        reconnect_attempts: 3,
+        timeout: 1.0,
+      )
+    end
 
   ############################################################
   # 1) disable throttling in test env
@@ -90,13 +91,14 @@ class Rack::Attack
   ############################################################
   # 8) blocked response (simple)
   ############################################################
-  self.throttled_responder = lambda do |request|
-    [
-      429,
-      { "Content-Type" => "application/json" },
-      [{ error: "rate_limited", host: request.host }.to_json],
-    ]
-  end
+  self.throttled_responder =
+    lambda do |request|
+      [
+        429,
+        { "Content-Type" => "application/json" },
+        [{ error: "rate_limited", host: request.host }.to_json],
+      ]
+    end
 end
 
 ##############################################################

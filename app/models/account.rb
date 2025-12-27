@@ -19,6 +19,7 @@
 #
 
 class Account < IdentitiesRecord
+  self.implicit_order_column = :created_at
   delegated_type :accountable, types: %w( Staff User ), dependent: :destroy
 
   validates :email, presence: true, uniqueness: true

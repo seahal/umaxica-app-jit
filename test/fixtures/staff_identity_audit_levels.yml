@@ -7,7 +7,7 @@
 #  updated_at :datetime         not null
 #
 none:
-  id: "NONE"
+  id: "NEYO"
 info:
   id: "INFO"
 warn:

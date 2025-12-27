@@ -5,7 +5,15 @@ require "test_helper"
 class Help::Com::Contact::TelephonesControllerTest < ActionDispatch::IntegrationTest
   setup do
     # Load fixture directly - it returns ActiveRecord object in Rails 8
-    @contact = com_contacts(:one)
+    # Create a fresh contact with correct status instead of using fixture
+    @contact = ComContact.create!(
+      public_id: "view_test_contact",
+      category_id: "OTHERS",
+      status_id: "CHECKED_EMAIL_ADDRESS",
+      confirm_policy: "1",
+      created_at: Time.current,
+      updated_at: Time.current,
+    )
     # Create telephone for the contact since resource is singular
     @contact_telephone = ComContactTelephone.create!(
       com_contact: @contact,

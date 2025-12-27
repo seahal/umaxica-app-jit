@@ -5,11 +5,12 @@ require "test_helper"
 class Auth::App::WithdrawalsHelperTest < ActionView::TestCase
   include ActiveSupport::Testing::TimeHelpers
 
-  UserStub = Struct.new(:withdrawn, :recovery_deadline) do
-    def withdrawn?
-      withdrawn
+  UserStub =
+    Struct.new(:withdrawn, :recovery_deadline) do
+      def withdrawn?
+        withdrawn
+      end
     end
-  end
 
   setup do
     extend Auth::App::WithdrawalsHelper

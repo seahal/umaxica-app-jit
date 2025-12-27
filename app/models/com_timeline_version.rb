@@ -22,14 +22,19 @@
 #
 # Indexes
 #
-#  index_com_timeline_versions_on_com_timeline_id                 (com_timeline_id)
 #  index_com_timeline_versions_on_com_timeline_id_and_created_at  (com_timeline_id,created_at)
 #  index_com_timeline_versions_on_public_id                       (public_id) UNIQUE
 #
 
-class ComTimelineVersion < TimelineVersionBase
+class ComTimelineVersion < NewsRecord
+  self.implicit_order_column = :created_at
   include Version
   include ::PublicId
+
+  validates :permalink, presence: true, length: { maximum: 200 }
+  validates :response_mode, presence: true
+  validates :published_at, presence: true
+  validates :expires_at, presence: true
 
   belongs_to :com_timeline
 end

@@ -144,32 +144,6 @@ module Docs
         assert_response :success
         assert_select ".bg-gray-50.rounded-lg.p-8.text-center"
       end
-
-      # CRUD operations
-      test "should get new" do
-        get new_docs_com_post_url
-        assert_response :success
-      end
-
-      test "should create post" do
-        post docs_com_posts_url, params: {}
-        assert_response :redirect
-      end
-
-      test "should get edit" do
-        get edit_docs_com_post_url(id: 1)
-        assert_response :success
-      end
-
-      test "should update post" do
-        patch docs_com_post_url(id: 1), params: {}
-        assert_response :redirect
-      end
-
-      test "should destroy post" do
-        delete docs_com_post_url(id: 1)
-        assert_response :redirect
-      end
     end
   end
 end

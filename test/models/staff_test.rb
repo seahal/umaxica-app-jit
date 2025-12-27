@@ -71,7 +71,7 @@ class StaffTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     staff = Staff.create!
 
-    assert_equal StaffIdentityStatus::NONE, staff.staff_identity_status_id
+    assert_equal StaffIdentityStatus::NEYO, staff.staff_identity_status_id
   end
 
   test "has_role? should correctly identify assigned roles" do

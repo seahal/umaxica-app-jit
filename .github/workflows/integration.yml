@@ -273,6 +273,7 @@ jobs:
       # PostgreSQL - Primary/Replica Hosts
       POSTGRESQL_UNIVERSAL_PUB: localhost
       POSTGRESQL_UNIVERSAL_SUB: localhost
+      POSTGRESQL_DEFAULT_PUB: localhost
       POSTGRESQL_GUEST_PUB: localhost
       POSTGRESQL_GUEST_SUB: localhost
       POSTGRESQL_IDENTITY_PUB: localhost
@@ -285,8 +286,8 @@ jobs:
       POSTGRESQL_BUSINESS_SUB: localhost
       POSTGRESQL_DOCUMENT_PUB: localhost
       POSTGRESQL_DOCUMENT_SUB: localhost
-      POSTGRESQL_TIMELINE_PUB: localhost
-      POSTGRESQL_TIMELINE_SUB: localhost
+      POSTGRESQL_NEWS_PUB: localhost
+      POSTGRESQL_NEWS_SUB: localhost
       POSTGRESQL_BILLING_PUB: localhost
       POSTGRESQL_BILLING_SUB: localhost
       # POSTGRESQL_MESSAGE_* - Message database does not exist (see CLAUDE.md)

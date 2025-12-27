@@ -18,6 +18,7 @@
 #
 
 class Role < IdentityRecord
+  self.implicit_order_column = :created_at
   belongs_to :organization, class_name: "Workspace", inverse_of: :roles
   has_many :role_assignments, dependent: :destroy, inverse_of: :role
   has_many :users, through: :role_assignments, source: :user

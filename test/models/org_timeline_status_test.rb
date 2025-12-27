@@ -22,7 +22,7 @@ class OrgTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "inherits from BusinessesRecord" do
-    assert_operator OrgTimelineStatus, :<, TimelineRecord
+    assert_operator OrgTimelineStatus, :<, NewsRecord
   end
 
   test "id is required" do
