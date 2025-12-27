@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetDefaultUserIdentityStatus < ActiveRecord::Migration[8.2]
   def change
     # Update existing null values to NONE

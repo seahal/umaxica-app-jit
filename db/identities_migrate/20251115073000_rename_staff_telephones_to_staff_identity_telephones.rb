@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameStaffTelephonesToStaffIdentityTelephones < ActiveRecord::Migration[8.2]
   def up
     return unless table_exists?(:staff_telephones)

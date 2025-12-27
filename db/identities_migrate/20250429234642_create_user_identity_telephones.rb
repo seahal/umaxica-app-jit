@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUserIdentityTelephones < ActiveRecord::Migration[8.0]
   def change
     create_table :user_identity_telephones, id: :uuid, default: -> { "uuidv7()" } do |t|

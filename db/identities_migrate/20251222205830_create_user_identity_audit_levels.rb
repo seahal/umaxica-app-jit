@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUserIdentityAuditLevels < ActiveRecord::Migration[8.2]
   def change
     create_table :user_identity_audit_levels, id: :string do |t|

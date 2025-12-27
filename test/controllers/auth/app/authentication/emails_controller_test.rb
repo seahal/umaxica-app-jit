@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::IntegrationTest
@@ -88,8 +90,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     # Turnstile is automatically mocked to return true in test environment
     post auth_app_authentication_email_url,
          params: {
-           user_identity_email: { address: test_email },
-           "cf-turnstile-response" => "test_token"
+           :user_identity_email => { address: test_email },
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
@@ -105,8 +107,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     # Start session
     post auth_app_authentication_email_url,
          params: {
-           user_identity_email: { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           :user_identity_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
@@ -124,8 +126,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     test_email.update!(pass_code: "123456", otp_attempts_count: 0)
     post auth_app_authentication_email_url,
          params: {
-           user_identity_email: { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           :user_identity_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
@@ -141,7 +143,7 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     # Times should be similar (within 50% tolerance for timing attack protection)
     time_difference = (valid_time - invalid_time).abs
-    max_allowed_difference = [ valid_time, invalid_time ].max * 1
+    max_allowed_difference = [valid_time, invalid_time].max * 1
 
     assert_operator time_difference, :<=, max_allowed_difference,
                     "Response times differ too much: valid=#{valid_time.round(4)}s, invalid=#{invalid_time.round(4)}s"
@@ -160,14 +162,14 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   test "successful OTP verification redirects to root" do
     # Create email without user association (user_id field is not properly typed for UUID refs)
     test_email = UserIdentityEmail.create!(
-      address: "login_test_#{SecureRandom.hex(4)}@example.com"
+      address: "login_test_#{SecureRandom.hex(4)}@example.com",
     )
 
     # Start authentication process to trigger email discovery
     post auth_app_authentication_email_url,
          params: {
-           user_identity_email: { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           :user_identity_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
@@ -176,7 +178,7 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     # Generate valid OTP code
     otp_private_key = ROTP::Base32.random_base32
-    otp_counter = 12345
+    otp_counter = 12_345
     hotp = ROTP::HOTP.new(otp_private_key)
     valid_pass_code = hotp.at(otp_counter).to_s
 
@@ -195,15 +197,15 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
   test "otp resend enforces cooldown" do
     test_email = UserIdentityEmail.create!(
-      address: "cooldown_test_#{SecureRandom.hex(4)}@example.com"
+      address: "cooldown_test_#{SecureRandom.hex(4)}@example.com",
     )
 
     assert_difference -> { ActionMailer::Base.deliveries.count }, 1 do
       perform_enqueued_jobs do
         post auth_app_authentication_email_url,
              params: {
-               user_identity_email: { address: test_email.address },
-               "cf-turnstile-response" => "test_token"
+               :user_identity_email => { address: test_email.address },
+               "cf-turnstile-response" => "test_token",
              },
              headers: { "Host" => @host }
       end
@@ -216,8 +218,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     assert_no_difference -> { ActionMailer::Base.deliveries.count } do
       post auth_app_authentication_email_url,
            params: {
-             user_identity_email: { address: test_email.address },
-             "cf-turnstile-response" => "test_token"
+             :user_identity_email => { address: test_email.address },
+             "cf-turnstile-response" => "test_token",
            },
            headers: { "Host" => @host }
     end
@@ -228,8 +230,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
         perform_enqueued_jobs do
           post auth_app_authentication_email_url,
                params: {
-                 user_identity_email: { address: test_email.address },
-                 "cf-turnstile-response" => "test_token"
+                 :user_identity_email => { address: test_email.address },
+                 "cf-turnstile-response" => "test_token",
                },
                headers: { "Host" => @host }
         end
@@ -244,15 +246,15 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     post auth_app_authentication_email_url,
          params: {
-           user_identity_email: { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           :user_identity_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
     assert_equal test_email.id.to_s, session[:user_email_authentication_id]
 
     otp_private_key = ROTP::Base32.random_base32
-    otp_counter = 12345
+    otp_counter = 12_345
     hotp = ROTP::HOTP.new(otp_private_key)
     valid_pass_code = hotp.at(otp_counter).to_s
     test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
@@ -272,14 +274,14 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
   test "invalid OTP code returns error message" do
     test_email = UserIdentityEmail.create!(
-      address: "invalid_otp_test_#{SecureRandom.hex(4)}@example.com"
+      address: "invalid_otp_test_#{SecureRandom.hex(4)}@example.com",
     )
 
     # Start authentication
     post auth_app_authentication_email_url,
          params: {
-           user_identity_email: { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           :user_identity_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
@@ -287,7 +289,7 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     # Set up valid OTP but provide wrong code
     otp_private_key = ROTP::Base32.random_base32
-    otp_counter = 12345
+    otp_counter = 12_345
     test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
 
     # Try with invalid code
@@ -304,20 +306,20 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   test "invalid OTP attempt records login failed audit event" do
     user = users(:one)
     test_email = user.user_identity_emails.create!(
-      address: "audit_login_failed_#{SecureRandom.hex(4)}@example.com"
+      address: "audit_login_failed_#{SecureRandom.hex(4)}@example.com",
     )
 
     post auth_app_authentication_email_url,
          params: {
-           user_identity_email: { address: test_email.address },
-           "cf-turnstile-response" => "test_token"
+           :user_identity_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
          },
          headers: { "Host" => @host }
 
     assert_equal test_email.id.to_s, session[:user_email_authentication_id]
 
     otp_private_key = ROTP::Base32.random_base32
-    otp_counter = 56789
+    otp_counter = 56_789
     test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
 
     assert_difference -> { UserIdentityAudit.where(event_id: "LOGIN_FAILED").count }, 1 do
@@ -346,18 +348,18 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   test "redirects to encoded URL after successful login when rd parameter is provided" do
     # Create a test user and email
     test_email = UserIdentityEmail.create!(
-      address: "redirect_login_test_#{SecureRandom.hex(4)}@example.com"
+      address: "redirect_login_test_#{SecureRandom.hex(4)}@example.com",
     )
 
-    redirect_url = "https://#{ENV['PEAK_SERVICE_URL']}/dashboard"
+    redirect_url = "https://#{ENV["PEAK_SERVICE_URL"]}/dashboard"
     encoded_rd = Base64.urlsafe_encode64(redirect_url)
 
     # Start authentication with rd parameter
     post auth_app_authentication_email_url,
          params: {
-           user_identity_email: { address: test_email.address },
+           :user_identity_email => { address: test_email.address },
            "cf-turnstile-response" => "test_token",
-           rd: encoded_rd
+           :rd => encoded_rd,
          },
          headers: { "Host" => @host }
 
@@ -368,7 +370,7 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     # Generate valid OTP code
     otp_private_key = ROTP::Base32.random_base32
-    otp_counter = 12345
+    otp_counter = 12_345
     hotp = ROTP::HOTP.new(otp_private_key)
     valid_pass_code = hotp.at(otp_counter).to_s
 
@@ -379,7 +381,7 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
     patch auth_app_authentication_email_url,
           params: {
             user_identity_email: { pass_code: valid_pass_code },
-            rd: encoded_rd
+            rd: encoded_rd,
           },
           headers: { "Host" => @host }
 

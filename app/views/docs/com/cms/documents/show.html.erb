@@ -1,0 +1,144 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to "← Back to Documents", docs_com_cms_documents_path, class: "text-blue-600 hover:underline" %>
+  </div>
+
+  <%= turbo_frame_tag dom_id(@document) do %>
+    <div class="bg-white shadow-md rounded-lg p-6">
+      <div class="flex justify-between items-start mb-6">
+        <div>
+          <h1 class="text-3xl font-bold mb-2">
+            <% begin %>
+              <%= @document.latest_version.title %>
+            <% rescue ActiveRecord::RecordNotFound %>
+              <span class="text-gray-400 italic">Untitled Document</span>
+            <% end %>
+          </h1>
+          <p class="text-gray-600">Permalink: <code class="bg-gray-100 px-2 py-1 rounded"><%= @document.permalink %></code></p>
+        </div>
+        <div class="flex gap-2">
+          <%= link_to "Edit", edit_docs_com_cms_document_path(@document),
+              class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded",
+              data: { turbo_frame: "modal" } %>
+
+          <% if @document.status_id == "DRAFT" %>
+            <%= button_to "Publish", publish_docs_com_cms_document_path(@document),
+                method: :post,
+                class: "bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded",
+                data: { turbo_stream: true } %>
+          <% elsif @document.status_id == "PUBLISHED" %>
+            <%= button_to "Unpublish", unpublish_docs_com_cms_document_path(@document),
+                method: :post,
+                class: "bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded",
+                data: { turbo_stream: true } %>
+          <% end %>
+
+          <%= button_to "Delete", docs_com_cms_document_path(@document),
+              method: :delete,
+              class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded",
+              data: { turbo_confirm: "Are you sure?", turbo_method: :delete } %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+          <% if @document.status_id == "PUBLISHED" %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              Published
+            </span>
+          <% elsif @document.status_id == "DRAFT" %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+              Draft
+            </span>
+          <% else %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+              <%= @document.status_id %>
+            </span>
+          <% end %>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Response Mode</label>
+          <p class="text-gray-900"><%= @document.response_mode %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Published At</label>
+          <p class="text-gray-900"><%= @document.published_at.strftime("%Y-%m-%d %H:%M:%S") if @document.published_at %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Expires At</label>
+          <p class="text-gray-900"><%= @document.expires_at.strftime("%Y-%m-%d %H:%M:%S") if @document.expires_at %></p>
+        </div>
+        <% if @document.redirect_url.present? %>
+          <div class="col-span-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Redirect URL</label>
+            <p class="text-gray-900"><%= @document.redirect_url %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <% begin %>
+        <% latest = @document.latest_version %>
+        <div class="mb-6">
+          <h2 class="text-xl font-bold mb-3">Current Content</h2>
+          <div class="border rounded p-4 bg-white">
+            <% if latest.description.present? %>
+              <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                <p class="text-gray-700"><%= latest.description %></p>
+              </div>
+            <% end %>
+            <% if latest.body.present? %>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Body</label>
+                <div class="prose max-w-none">
+                  <%= simple_format latest.body %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% rescue ActiveRecord::RecordNotFound %>
+        <div class="mb-6">
+          <p class="text-gray-500 italic">No content versions available</p>
+        </div>
+      <% end %>
+
+      <div>
+        <h2 class="text-xl font-bold mb-3">Version History</h2>
+        <div class="border rounded overflow-hidden">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Response Mode</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edited By</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @versions.each do |version| %>
+                <tr>
+                  <td class="px-4 py-3 text-sm text-gray-900">
+                    <%= version.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-900">
+                    <%= version.title %>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-900">
+                    <%= version.response_mode %>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-900">
+                    <%= version.edited_by_type %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%= turbo_frame_tag "modal" %>

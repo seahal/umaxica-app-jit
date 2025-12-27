@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateRoleAssignments < ActiveRecord::Migration[8.2]
   def change
     create_table :role_assignments, id: :uuid, default: -> { "uuidv7()" } do |t|
@@ -10,9 +12,9 @@ class CreateRoleAssignments < ActiveRecord::Migration[8.2]
 
     add_index :role_assignments, :user_id
     add_index :role_assignments, :staff_id
-    add_index :role_assignments, [ :user_id, :role_id ],
+    add_index :role_assignments, [:user_id, :role_id],
               unique: true, name: "index_role_assignments_on_user_role"
-    add_index :role_assignments, [ :staff_id, :role_id ],
+    add_index :role_assignments, [:staff_id, :role_id],
               unique: true, name: "index_role_assignments_on_staff_role"
     add_index :role_assignments, :role_id
 

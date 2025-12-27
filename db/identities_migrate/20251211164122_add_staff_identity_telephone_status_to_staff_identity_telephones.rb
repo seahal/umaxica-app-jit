@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddStaffIdentityTelephoneStatusToStaffIdentityTelephones < ActiveRecord::Migration[8.2]
   def change
     add_column :staff_identity_telephones, :staff_identity_telephone_status_id, :string, limit: 255, default: "UNVERIFIED", null: false unless column_exists?(:staff_identity_telephones, :staff_identity_telephone_status_id)

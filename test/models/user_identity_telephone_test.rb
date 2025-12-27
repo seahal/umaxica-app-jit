@@ -1,25 +1,37 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_telephones
 #
-#  id         :uuid             not null, primary key
-#  number     :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  user_id    :bigint
+#  id                                :uuid             not null, primary key
+#  created_at                        :datetime         not null
+#  locked_at                         :datetime         default("-infinity"), not null
+#  number                            :string           default(""), not null
+#  otp_attempts_count                :integer          default(0), not null
+#  otp_counter                       :text             default(""), not null
+#  otp_expires_at                    :datetime         default("-infinity"), not null
+#  otp_private_key                   :string           default(""), not null
+#  updated_at                        :datetime         not null
+#  user_id                           :uuid             not null
+#  user_identity_telephone_status_id :string(255)      default("UNVERIFIED"), not null
 #
 # Indexes
 #
-#  index_user_identity_telephones_on_user_id  (user_id)
+#  idx_on_user_identity_telephone_status_id_a15207191e  (user_identity_telephone_status_id)
+#  index_user_identity_telephones_on_user_id            (user_id)
 #
+
 require "test_helper"
 
 class UserIdentityTelephoneTest < ActiveSupport::TestCase
   setup do
+    @user = users(:none_user)
     @valid_attributes = {
       number: "+1234567890",
       confirm_policy: true,
-      confirm_using_mfa: true
+      confirm_using_mfa: true,
+      user: @user,
     }.freeze
   end
 
@@ -47,7 +59,7 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
     user_telephone.require_turnstile(
       response: "test-token",
       remote_ip: "127.0.0.1",
-      error_message: "Turnstile failed"
+      error_message: "Turnstile failed",
     )
 
     assert_not user_telephone.valid?
@@ -132,7 +144,7 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
         number: "+1234567890#{i}",
         confirm_policy: true,
         confirm_using_mfa: true,
-        user: user
+        user: user,
       )
     end
 
@@ -140,7 +152,7 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
       number: "+19876543210",
       confirm_policy: true,
       confirm_using_mfa: true,
-      user: user
+      user: user,
     )
 
     assert_not extra_telephone.valid?

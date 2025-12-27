@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Peak::App::Privacy::CookiesControllerTest < ActionDispatch::IntegrationTest
@@ -46,7 +48,7 @@ class Peak::App::Privacy::CookiesControllerTest < ActionDispatch::IntegrationTes
           params: {
             accept_functional_cookies: "1",
             accept_performance_cookies: "1",
-            accept_targeting_cookies: "1"
+            accept_targeting_cookies: "1",
           }
     follow_redirect!
 
@@ -61,7 +63,7 @@ class Peak::App::Privacy::CookiesControllerTest < ActionDispatch::IntegrationTes
           params: {
             accept_functional_cookies: "0",
             accept_performance_cookies: "0",
-            accept_targeting_cookies: "0"
+            accept_targeting_cookies: "0",
           }
     follow_redirect!
 

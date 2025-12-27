@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Email::Com::ApplicationMailerTest < ActionMailer::TestCase
@@ -19,8 +21,8 @@ class Email::Com::ApplicationMailerTest < ActionMailer::TestCase
                                     { test: { email: { com: { application_mailer: { subject: "Com Sample" } } } } })
     email = mailer.new.sample
 
-    assert_equal [ expected_from ], email.from
-    assert_equal [ "com-user@example.com" ], email.to
+    assert_equal [expected_from], email.from
+    assert_equal ["com-user@example.com"], email.to
     assert_equal I18n.t("test.email.com.application_mailer.subject"), email.subject
     assert_equal "hello", email.body.encoded
   end

@@ -4,24 +4,56 @@
 <% docs_service_host = ENV["DOCS_SERVICE_URL"].presence || "" %>
 <% news_service_host = ENV["NEWS_SERVICE_URL"].presence || "" %>
 
-<div
-  id="help-app-react-roots"
-  class="min-h-[60vh]"
-  data-code-name="<%= code_name %>"
-  data-help-service-url="<%= help_service_host %>"
-  data-docs-service-url="<%= docs_service_host %>"
-  data-news-service-url="<%= news_service_host %>">
-</div>
+<div class="relative min-h-screen overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_hsl(var(--secondary)),_transparent_55%)] opacity-70"></div>
 
-<section class="prose max-w-none px-4 py-8 text-slate-900">
-  <h2><%= code_name %> Help Center</h2>
-  <p>JavaScript を有効にすると、React Aria を使ったインタラクティブな体験をご覧いただけます。</p>
-  <ul>
-    <li>Current language: <%= I18n.locale %></li>
-    <li>TimeZone: <%= params[:tz].to_s.downcase == 'utc' ? "utc" : 'jst' %></li>
-    <li><%= I18n.t "hello" %></li>
-    <li><%= Time.current.in_time_zone("Tokyo") %></li>
-    <li><%= to_localetime Time.current, 'jst' %></li>
-    <li><%= link_to "Contact", new_help_app_contact_path %></li>
-  </ul>
-</section>
+  <div class="relative mx-auto max-w-6xl px-6 py-16">
+    <div
+      id="help-app-react-roots"
+      class="min-h-[60vh]"
+      data-code-name="<%= code_name %>"
+      data-help-service-url="<%= help_service_host %>"
+      data-docs-service-url="<%= docs_service_host %>"
+      data-news-service-url="<%= news_service_host %>">
+    </div>
+
+    <section class="mt-10 grid gap-6 lg:grid-cols-2">
+      <div class="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 shadow-[0_20px_60px_-45px_hsl(var(--foreground)/0.25)]">
+        <h2 class="text-lg font-semibold"><%= code_name %> Help Center</h2>
+        <p class="mt-3 text-sm text-[hsl(var(--muted-foreground))]">
+          JavaScript を有効にすると、React Aria を使ったインタラクティブな体験をご覧いただけます。
+        </p>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <%= link_to "Contact", new_help_app_contact_path,
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-5 py-2 text-sm font-semibold text-[hsl(var(--foreground))] transition hover:-translate-y-0.5 hover:shadow-lg" %>
+        </div>
+      </div>
+
+      <div class="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6">
+        <h3 class="text-lg font-semibold">クイックステータス</h3>
+        <dl class="mt-4 grid gap-3 text-sm text-[hsl(var(--muted-foreground))]">
+          <div class="flex items-center justify-between">
+            <dt>Current language</dt>
+            <dd class="font-medium text-[hsl(var(--foreground))]"><%= I18n.locale %></dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt>TimeZone</dt>
+            <dd class="font-medium text-[hsl(var(--foreground))]"><%= params[:tz].to_s.downcase == "utc" ? "utc" : "jst" %></dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt>Hello</dt>
+            <dd class="font-medium text-[hsl(var(--foreground))]"><%= I18n.t "hello" %></dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt>Tokyo time</dt>
+            <dd class="font-medium text-[hsl(var(--foreground))]"><%= Time.current.in_time_zone("Tokyo") %></dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt>Local time</dt>
+            <dd class="font-medium text-[hsl(var(--foreground))]"><%= to_localetime Time.current, "jst" %></dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </div>
+</div>

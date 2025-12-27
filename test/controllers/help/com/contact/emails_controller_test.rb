@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Help
@@ -33,9 +35,9 @@ module Help
           end
           # Create a fresh contact with correct status instead of using fixture
           @contact = ComContact.create!(
-            contact_category_title: "NONE",
-            contact_status_id: "SET_UP",
-            confirm_policy: "1"
+            category_id: "NONE",
+            status_id: "SET_UP",
+            confirm_policy: "1",
           )
           # Reload to ensure status is persisted
           @contact.reload
@@ -44,25 +46,25 @@ module Help
             com_contact: @contact,
             email_address: "test@example.com",
             verifier_attempts_left: 3,
-            verifier_expires_at: 15.minutes.from_now
+            verifier_expires_at: 15.minutes.from_now,
           )
           # Create telephone for email verification flow
           @contact_telephone = ComContactTelephone.create!(
             com_contact: @contact,
             telephone_number: "+15551234567",
-            verifier_attempts_left: 3
+            verifier_attempts_left: 3,
           )
         end
 
         test "should get new with valid contact status" do
-          @contact.update!(contact_status_id: "SET_UP")
+          @contact.update!(status_id: "SET_UP")
           get new_help_com_contact_email_url(@contact), headers: { "Host" => @host }
 
           assert_response :success
         end
 
         test "should show error for invalid contact status" do
-          @contact.update!(contact_status_id: "NONE")
+          @contact.update!(status_id: "NONE")
 
           get new_help_com_contact_email_url(@contact), headers: { "Host" => @host }
 
@@ -71,7 +73,7 @@ module Help
         end
 
         test "should require hotp_code parameter" do
-          @contact.update!(contact_status_id: "SET_UP")
+          @contact.update!(status_id: "SET_UP")
           post help_com_contact_email_url(@contact),
                params: { com_contact_email: { hotp_code: "" } },
                headers: { "Host" => @host }
@@ -80,18 +82,18 @@ module Help
         end
 
         test "should verify valid hotp code" do
-          @contact.update!(contact_status_id: "SET_UP")
+          @contact.update!(status_id: "SET_UP")
           # Reset email state
           @contact_email.update!(
             verifier_attempts_left: 3,
-            verifier_expires_at: 15.minutes.from_now
+            verifier_expires_at: 15.minutes.from_now,
           )
           # Recreate telephone fresh to avoid encryption issues in parallel tests
           ComContactTelephone.where(com_contact_id: @contact.id).delete_all
           ComContactTelephone.create!(
             com_contact: @contact,
             telephone_number: "+15551234567",
-            verifier_attempts_left: 3
+            verifier_attempts_left: 3,
           )
           # Generate a valid HOTP code
           code = @contact_email.generate_hotp!
@@ -104,11 +106,11 @@ module Help
           assert_match %r{/contacts/.*/telephone/new}, response.redirect_url
           @contact.reload
 
-          assert_equal "CHECKED_EMAIL_ADDRESS", @contact.contact_status_id
+          assert_equal "CHECKED_EMAIL_ADDRESS", @contact.status_id
         end
 
         test "should reject invalid hotp code" do
-          @contact.update!(contact_status_id: "SET_UP")
+          @contact.update!(status_id: "SET_UP")
           @contact_email.generate_hotp!
 
           post help_com_contact_email_url(@contact),
@@ -119,7 +121,7 @@ module Help
         end
 
         test "should reject expired hotp code" do
-          @contact.update!(contact_status_id: "SET_UP")
+          @contact.update!(status_id: "SET_UP")
           code = @contact_email.generate_hotp!
           @contact_email.update!(verifier_expires_at: 1.minute.ago)
 
@@ -131,7 +133,7 @@ module Help
         end
 
         test "should enforce max attempts" do
-          @contact.update!(contact_status_id: "SET_UP")
+          @contact.update!(status_id: "SET_UP")
           @contact_email.generate_hotp!
           @contact_email.update!(verifier_attempts_left: 0)
 

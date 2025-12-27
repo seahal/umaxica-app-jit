@@ -38,6 +38,7 @@
 				"anthropic.claude-code"
 			],
 			"settings": {
+				"claude.allowDangerouslySkipPermissions": true,
 				"extensions.verifySignature": false,
 				"terminal.integrated.defaultProfile.linux": "bash",
 				"terminal.integrated.profiles.linux": {

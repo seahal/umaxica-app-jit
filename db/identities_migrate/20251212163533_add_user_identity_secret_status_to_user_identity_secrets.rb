@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUserIdentitySecretStatusToUserIdentitySecrets < ActiveRecord::Migration[8.2]
   def change
     unless column_exists?(:user_identity_secrets, :user_identity_secret_status_id)

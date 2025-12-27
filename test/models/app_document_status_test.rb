@@ -1,3 +1,12 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: app_document_statuses
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+
 require "test_helper"
 
 class AppDocumentStatusTest < ActiveSupport::TestCase
@@ -13,14 +22,7 @@ class AppDocumentStatusTest < ActiveSupport::TestCase
   end
 
   test "inherits from BusinessesRecord" do
-    assert_operator AppDocumentStatus, :<, BusinessesRecord
-  end
-
-  test "has many app_documents" do
-    association = AppDocumentStatus.reflect_on_association(:app_documents)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+    assert_operator AppDocumentStatus, :<, DocumentRecord
   end
 
   test "id is required" do

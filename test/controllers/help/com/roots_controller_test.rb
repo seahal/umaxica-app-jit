@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
@@ -25,6 +27,7 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   test "renders expected layout structure" do
     get help_com_root_url
 
+    assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "title", text: "#{brand_name} (com) Help Center"
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
@@ -41,7 +44,7 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-    def brand_name
-      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    end
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

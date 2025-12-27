@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # AccountService provides a polymorphic interface for User and Staff models
 # This allows treating both types uniformly while maintaining their distinct behaviors
 #
@@ -18,21 +20,6 @@ class AccountService
   delegate :id, :created_at, :updated_at, :webauthn_id,
            :persisted?, :new_record?, :destroyed?,
            to: :accountable
-
-  # Initialize a new AccountService wrapper
-  #
-  # @param accountable [User, Staff] The underlying model instance
-  # @raise [ArgumentError] if accountable is not User or Staff
-  def initialize(accountable)
-    raise ArgumentError,
-          "accountable must be User or Staff, got #{accountable.class}" unless valid_accountable?(accountable)
-
-    @accountable = accountable
-    @type = accountable.class.name.downcase.to_sym # :user or :staff
-  end
-
-  # Factory Methods
-  # ---------------
 
   # Find an account by ID
   #
@@ -97,6 +84,39 @@ class AccountService
     # Staff doesn't have phone authentication in current implementation
     new(user) if user
   end
+
+  # Find a record by ID and optional type
+  #
+  # @param id [String, Integer] The record ID
+  # @param type [Symbol, String, nil] Optional type hint
+  # @return [User, Staff, nil] The found record or nil
+  def self.find_record(id, type)
+    case type&.to_sym
+    when :user
+      User.find_by(id: id)
+    when :staff
+      Staff.find_by(id: id)
+    when nil
+      User.find_by(id: id) || Staff.find_by(id: id)
+    else
+      raise ArgumentError, "Invalid type: #{type}. Must be :user or :staff"
+    end
+  end
+
+  # Initialize a new AccountService wrapper
+  #
+  # @param accountable [User, Staff] The underlying model instance
+  # @raise [ArgumentError] if accountable is not User or Staff
+  def initialize(accountable)
+    raise ArgumentError,
+          "accountable must be User or Staff, got #{accountable.class}" unless valid_accountable?(accountable)
+
+    @accountable = accountable
+    @type = accountable.class.name.downcase.to_sym # :user or :staff
+  end
+
+  # Factory Methods
+  # ---------------
 
   # Type Checking Methods
   # ---------------------
@@ -310,35 +330,17 @@ class AccountService
 
   private
 
-    # Validate that the object is a User or Staff
-    #
-    # @param obj [Object] The object to validate
-    # @return [Boolean] true if valid
-    def valid_accountable?(obj)
-      obj.is_a?(User) || obj.is_a?(Staff)
-    end
+  # Validate that the object is a User or Staff
+  #
+  # @param obj [Object] The object to validate
+  # @return [Boolean] true if valid
+  def valid_accountable?(obj)
+    obj.is_a?(User) || obj.is_a?(Staff)
+  end
 
-    # Find a record by ID and optional type
-    #
-    # @param id [String, Integer] The record ID
-    # @param type [Symbol, String, nil] Optional type hint
-    # @return [User, Staff, nil] The found record or nil
-    def self.find_record(id, type)
-      case type&.to_sym
-      when :user
-        User.find_by(id: id)
-      when :staff
-        Staff.find_by(id: id)
-      when nil
-        User.find_by(id: id) || Staff.find_by(id: id)
-      else
-        raise ArgumentError, "Invalid type: #{type}. Must be :user or :staff"
-      end
-    end
+  private_class_method :find_record
 
-    private_class_method :find_record
-
-    def collection_present?(collection)
-      collection.respond_to?(:exists?) ? collection.exists? : collection.any?
-    end
+  def collection_present?(collection)
+    collection.respond_to?(:exists?) ? collection.exists? : collection.any?
+  end
 end

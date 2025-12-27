@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddStaffIdentityEmailStatusToStaffIdentityEmails < ActiveRecord::Migration[8.2]
   def change
     add_column :staff_identity_emails, :staff_identity_email_status_id, :string, limit: 255, default: "UNVERIFIED", null: false unless column_exists?(:staff_identity_emails, :staff_identity_email_status_id)

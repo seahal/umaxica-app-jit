@@ -1,3 +1,33 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: app_contact_emails
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  app_contact_id         :uuid             not null
+#  created_at             :datetime         not null
+#  deletable              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  expires_at             :timestamptz      not null
+#  remaining_views        :integer          default(10), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default("-infinity"), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  updated_at             :datetime         not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#
+# Indexes
+#
+#  index_app_contact_emails_on_app_contact_id       (app_contact_id)
+#  index_app_contact_emails_on_email_address        (email_address)
+#  index_app_contact_emails_on_expires_at           (expires_at)
+#  index_app_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#
+
 class AppContactEmail < GuestsRecord
   belongs_to :app_contact
 
@@ -6,11 +36,13 @@ class AppContactEmail < GuestsRecord
   encrypts :email_address, downcase: true, deterministic: true
 
   # Validations
-  validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email_address, presence: true, length: { maximum: 1000 }, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :token_digest, length: { maximum: 255 }
+  validates :verifier_digest, length: { maximum: 255 }
 
   # Generate and store email verification code
   def generate_verifier!
-    raw_code = SecureRandom.random_number(100000..999999).to_s # 6-digit code
+    raw_code = SecureRandom.random_number(100_000..999_999).to_s # 6-digit code
     self.verifier_digest = Argon2::Password.create(raw_code)
     self.verifier_expires_at = 15.minutes.from_now
     self.verifier_attempts_left = 3
@@ -43,7 +75,7 @@ class AppContactEmail < GuestsRecord
 
   private
 
-    def generate_id
-      self.id ||= Nanoid.generate(size: 21)
-    end
+  def generate_id
+    self.id ||= Nanoid.generate(size: 21)
+  end
 end

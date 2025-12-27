@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
@@ -6,7 +8,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       "NEWS_STAFF_URL" => ENV["NEWS_STAFF_URL"],
       "EDGE_STAFF_URL" => ENV["EDGE_STAFF_URL"],
       "NAME" => ENV["NAME"],
-      "BRAND_NAME" => ENV["BRAND_NAME"]
+      "BRAND_NAME" => ENV["BRAND_NAME"],
     }
 
     # Ensure host-constrained routes and layout-rendered ENV.fetch calls work in test
@@ -83,18 +85,19 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   test "renders expected layout structure" do
     get news_org_root_url
 
+    assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "title", count: 1, text: "#{brand_name} (org) Newsroom"
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
-        assert_select "h1", text: "#{brand_name} (news, org)"
+        assert_select "h1", text: /#{brand_name}.*\(org\)/
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
-        assert_select "ul" do
-          assert_select "li"
+        assert_select "nav", count: 1 do
+          assert_select "span", minimum: 1
         end
         assert_select "small", text: /^©/
       end
@@ -104,7 +107,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-    def brand_name
-      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    end
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

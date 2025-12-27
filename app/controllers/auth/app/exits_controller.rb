@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module App
     class ExitsController < ApplicationController
@@ -13,9 +15,9 @@ module Auth
 
       private
 
-        def verify_session_user
-          raise ActionController::RoutingError, "Not Found" if session[:user].blank?
-        end
+      def verify_session_user
+        raise ActionController::RoutingError, "Not Found" if session[:user].blank?
+      end
     end
   end
 end

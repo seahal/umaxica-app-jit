@@ -1,4 +1,15 @@
-class ComTimelineAuditEvent < BusinessesRecord
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: com_timeline_audit_events
+#
+#  id         :string(255)      default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
+class ComTimelineAuditEvent < UniversalRecord
   include UppercaseId
 
   self.table_name = "com_timeline_audit_events"

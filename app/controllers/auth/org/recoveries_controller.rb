@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module Org
     class RecoveriesController < ApplicationController
@@ -12,15 +14,15 @@ module Auth
 
       private
 
-        def recovery_params
-          params.fetch(:recovery_form, {}).permit(:account_identifiable_information, :recovery_code)
-        end
+      def recovery_params
+        params.fetch(:recovery_form, {}).permit(:account_identifiable_information, :recovery_code)
+      end
 
-        class RecoveryForm
-          include ActiveModel::Model
+      class RecoveryForm
+        include ActiveModel::Model
 
-          attr_accessor :account_identifiable_information, :recovery_code
-        end
+        attr_accessor :account_identifiable_information, :recovery_code
+      end
     end
   end
 end

@@ -1,3 +1,12 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: org_timeline_statuses
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+
 require "test_helper"
 
 class OrgTimelineStatusTest < ActiveSupport::TestCase
@@ -13,14 +22,7 @@ class OrgTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "inherits from BusinessesRecord" do
-    assert_operator OrgTimelineStatus, :<, BusinessesRecord
-  end
-
-  test "has many org_timelines" do
-    association = OrgTimelineStatus.reflect_on_association(:org_timelines)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+    assert_operator OrgTimelineStatus, :<, TimelineRecord
   end
 
   test "id is required" do

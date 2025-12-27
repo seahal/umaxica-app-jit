@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module Setting
     module Secrets
@@ -5,7 +7,7 @@ module Auth
 
       included do
         before_action :authenticate_identity!
-        before_action :set_secret, only: %i[show edit update destroy]
+        before_action :set_secret, only: %i(show edit update destroy)
       end
 
       def index
@@ -48,35 +50,35 @@ module Auth
 
       private
 
-        def secret_scope
-          raise NotImplementedError, "#{self.class.name} must implement #secret_scope"
-        end
+      def secret_scope
+        raise NotImplementedError, "#{self.class.name} must implement #secret_scope"
+      end
 
-        def authenticate_identity!
-          raise NotImplementedError, "#{self.class.name} must implement #authenticate_identity!"
-        end
+      def authenticate_identity!
+        raise NotImplementedError, "#{self.class.name} must implement #authenticate_identity!"
+      end
 
-        def secret_param_key
-          raise NotImplementedError, "#{self.class.name} must implement #secret_param_key"
-        end
+      def secret_param_key
+        raise NotImplementedError, "#{self.class.name} must implement #secret_param_key"
+      end
 
-        def secrets_index_path
-          raise NotImplementedError, "#{self.class.name} must implement #secrets_index_path"
-        end
+      def secrets_index_path
+        raise NotImplementedError, "#{self.class.name} must implement #secrets_index_path"
+      end
 
-        def secret_path(secret)
-          raise NotImplementedError, "#{self.class.name} must implement #secret_path"
-        end
+      def secret_path(secret)
+        raise NotImplementedError, "#{self.class.name} must implement #secret_path"
+      end
 
-        def set_secret
-          @secret = secret_scope.find(params[:id])
-        end
+      def set_secret
+        @secret = secret_scope.find(params[:id])
+      end
 
-        def secret_params
-          params.expect(secret_param_key => [ :name, :value ]).tap do |attrs|
-            attrs.delete(:value) if attrs[:value].blank?
-          end
+      def secret_params
+        params.expect(secret_param_key => [:name, :value]).tap do |attrs|
+          attrs.delete(:value) if attrs[:value].blank?
         end
+      end
     end
   end
 end

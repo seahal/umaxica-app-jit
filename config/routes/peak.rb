@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   scope module: :peak, as: :peak do
     constraints host: ENV["PEAK_CORPORATE_URL"] do
@@ -10,21 +12,21 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # preferences
-        resource :preference, only: [ :show ]
-        resource :privacy, only: [ :show ]
+        resource :preference, only: [:show]
+        resource :privacy, only: [:show]
         namespace :privacy do
           # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
+          resource :cookie, only: [:edit, :update]
         end
         namespace :preference do
           # for region settings.
-          resource :region, only: [ :edit, :update ]
+          resource :region, only: [:edit, :update]
           # for lx and tz settings.
-          resource :locale, only: [ :edit, :update ]
+          resource :locale, only: [:edit, :update]
           # for dark/light mode
-          resource :theme, only: [ :edit, :update ]
+          resource :theme, only: [:edit, :update]
           # endpoint of reset preferences.
-          resource :reset, only: [ :edit, :destroy ]
+          resource :reset, only: [:edit, :destroy]
         end
       end
     end
@@ -39,26 +41,26 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # preferences
-        resource :preference, only: [ :show ]
+        resource :preference, only: [:show]
         namespace :preference do
           # for region settings.
-          resource :region, only: [ :edit, :update ]
+          resource :region, only: [:edit, :update]
           # for dark/light mode
-          resource :theme, only: [ :edit, :update ]
+          resource :theme, only: [:edit, :update]
           # for lx and tz settings.
-          resource :locale, only: [ :edit, :update ]
+          resource :locale, only: [:edit, :update]
           # endpoint of reset preferences.
-          resource :reset, only: [ :edit, :destroy ]
+          resource :reset, only: [:edit, :destroy]
         end
-        resource :privacy, only: [ :show ]
+        resource :privacy, only: [:show]
         namespace :privacy do
           # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
+          resource :cookie, only: [:edit, :update]
         end
-        resource :configuration, only: [ :show ]
+        resource :configuration, only: [:show]
         namespace :configuration do
           # non-login user's email settings.
-          resources :emails, only: [ :edit, :update, :new, :create ]
+          resources :emails, only: %i(edit update new create)
         end
       end
     end
@@ -73,21 +75,21 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # preferences
-        resource :preference, only: [ :show ]
+        resource :preference, only: [:show]
         namespace :preference do
           # for region settings.
-          resource :region, only: [ :edit, :update ]
+          resource :region, only: [:edit, :update]
           # for dark/light mode
-          resource :theme, only: [ :edit, :update ]
+          resource :theme, only: [:edit, :update]
           # for lx and tz settings.
-          resource :locale, only: [ :edit, :update ]
+          resource :locale, only: [:edit, :update]
           # endpoint of reset preferences.
-          resource :reset, only: [ :edit, :destroy ]
+          resource :reset, only: [:edit, :destroy]
         end
-        resource :privacy, only: [ :show ]
+        resource :privacy, only: [:show]
         namespace :privacy do
           # for ePrivacy settings.
-          resource :cookie, only: [ :edit, :update ]
+          resource :cookie, only: [:edit, :update]
         end
       end
     end

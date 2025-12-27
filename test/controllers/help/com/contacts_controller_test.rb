@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Help
@@ -62,10 +64,10 @@ module Help
         assert_no_difference("ComContact.count") do
           post help_com_contacts_url, params: {
             com_contact: {
-              contact_category_title: "SECURITY_ISSUE",
+              category_id: "SECURITY_ISSUE",
               email_address: "test@example.com",
-              confirm_policy: "1"
-            }
+              confirm_policy: "1",
+            },
           }, headers: { "Host" => @host }
         end
 
@@ -77,10 +79,10 @@ module Help
         assert_no_difference("ComContact.count") do
           post help_com_contacts_url, params: {
             com_contact: {
-              contact_category_title: "",
+              category_id: "",
               email_address: "test@example.com",
-              confirm_policy: "1"
-            }
+              confirm_policy: "1",
+            },
           }, headers: { "Host" => @host }
         end
 
@@ -96,8 +98,8 @@ module Help
             patch help_com_contact_url(contact), params: {
               com_contact_topic: {
                 title: "New Topic",
-                description: I18n.t("test_data.contact_topic_description")
-              }
+                description: I18n.t("test_data.contact_topic_description"),
+              },
             }, headers: { "Host" => @host }
           end
         end
@@ -112,8 +114,8 @@ module Help
         patch help_com_contact_url(contact), params: {
           com_contact_topic: {
             title: "New Topic",
-            description: I18n.t("test_data.contact_topic_description")
-          }
+            description: I18n.t("test_data.contact_topic_description"),
+          },
         }, headers: { "Host" => @host }
 
         assert_response :redirect
@@ -127,8 +129,8 @@ module Help
           patch help_com_contact_url(contact), params: {
             com_contact_topic: {
               title: "", # Invalid: title is blank
-              description: I18n.t("test_data.contact_topic_description")
-            }
+              description: I18n.t("test_data.contact_topic_description"),
+            },
           }, headers: { "Host" => @host }
         end
 
@@ -138,16 +140,16 @@ module Help
 
       private
 
-        def post_valid_contact
-          post help_com_contacts_url, params: {
-            com_contact: {
-              contact_category_title: "SECURITY_ISSUE",
-              email_address: "test@example.com",
-              telephone_number: "123-456-7890",
-              confirm_policy: "1"
-            }
-          }, headers: { "Host" => @host }
-        end
+      def post_valid_contact
+        post help_com_contacts_url, params: {
+          com_contact: {
+            category_id: "SECURITY_ISSUE",
+            email_address: "test@example.com",
+            telephone_number: "123-456-7890",
+            confirm_policy: "1",
+          },
+        }, headers: { "Host" => @host }
+      end
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Core::App
@@ -8,6 +10,13 @@ module Core::App
       get core_app_root_url
 
       assert_response :success
+    end
+
+    test "renders layout contract" do
+      get core_app_root_url
+
+      assert_response :success
+      assert_layout_contract
     end
   end
 end

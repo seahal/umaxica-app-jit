@@ -1,7 +1,12 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class UserPolicyTest < ActiveSupport::TestCase
-  class MockUser; end
+  class MockUser
+    def initialize
+    end
+  end
 
   def setup
     @user = nil

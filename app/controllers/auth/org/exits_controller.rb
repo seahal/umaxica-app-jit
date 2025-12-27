@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module Org
     class ExitsController < ApplicationController
@@ -13,10 +15,10 @@ module Auth
 
       private
 
-        def verify_session_staff
-          # puts "DEBUG: session[:staff] = #{session[:staff].inspect}"
-          raise ActionController::RoutingError, "Not Found" if session[:staff].blank?
-        end
+      def verify_session_staff
+        # puts "DEBUG: session[:staff] = #{session[:staff].inspect}"
+        raise ActionController::RoutingError, "Not Found" if session[:staff].blank?
+      end
     end
   end
 end

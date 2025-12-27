@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   # Base exception for withdrawal-related errors
   class WithdrawalError < ApplicationError

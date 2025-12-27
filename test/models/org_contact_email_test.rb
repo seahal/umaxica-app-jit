@@ -1,3 +1,33 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: org_contact_emails
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  created_at             :datetime         not null
+#  deletable              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  expires_at             :timestamptz      not null
+#  org_contact_id         :uuid             not null
+#  remaining_views        :integer          default(10), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default("-infinity"), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  updated_at             :datetime         not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#
+# Indexes
+#
+#  index_org_contact_emails_on_email_address        (email_address)
+#  index_org_contact_emails_on_expires_at           (expires_at)
+#  index_org_contact_emails_on_org_contact_id       (org_contact_id)
+#  index_org_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#
+
 require "test_helper"
 
 class OrgContactEmailTest < ActiveSupport::TestCase
@@ -5,7 +35,7 @@ class OrgContactEmailTest < ActiveSupport::TestCase
     @org_contact = org_contacts(:one)
     @email = OrgContactEmail.new(
       org_contact: @org_contact,
-      email_address: "test@example.com"
+      email_address: "test@example.com",
     )
   end
 
@@ -20,14 +50,14 @@ class OrgContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should validate email format" do
-    valid_addresses = %w[user@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp]
+    valid_addresses = %w(user@example.com USER@foo.COM A_US-ER@foo.bar.org first.last@foo.jp)
     valid_addresses.each do |valid_address|
       @email.email_address = valid_address
 
       assert_predicate @email, :valid?, "#{valid_address.inspect} should be valid"
     end
 
-    invalid_addresses = %w[user@example,com user_at_foo.org user.name@example.]
+    invalid_addresses = %w(user@example,com user_at_foo.org user.name@example.)
     invalid_addresses.each do |invalid_address|
       @email.email_address = invalid_address
 
@@ -64,7 +94,7 @@ class OrgContactEmailTest < ActiveSupport::TestCase
   end
 
   test "can_resend_verifier? logic" do
-    assert_not @email.can_resend_verifier? # Fresh record
+    assert_predicate @email, :can_resend_verifier? # Fresh record (defaults to expired)
     @email.generate_verifier!
     # Still valid attempt window
     assert_not @email.can_resend_verifier?

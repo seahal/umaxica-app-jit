@@ -1,16 +1,17 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# == Schema Information
+#
+# Table name: staff_identity_telephone_statuses
+#
+#  id :string(255)      default("UNVERIFIED"), not null, primary key
+#
 
 none:
   id: "NONE"
-
 unverified:
   id: "UNVERIFIED"
-
 verified:
   id: "VERIFIED"
-
 suspended:
   id: "SUSPENDED"
-
 deleted:
   id: "DELETED"

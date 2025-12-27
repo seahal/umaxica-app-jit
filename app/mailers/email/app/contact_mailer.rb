@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Email
   module App
     class ContactMailer < ApplicationMailer

@@ -1,12 +1,17 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# == Schema Information
+#
+# Table name: user_identity_audit_levels
+#
+#  id         :string(255)      default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 none:
   id: "NONE"
-
 info:
   id: "INFO"
-
 warn:
   id: "WARN"
-
 error:
   id: "ERROR"

@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Auth
   module App
     module Setting
       class PasskeysController < ApplicationController
         before_action :authenticate_user! # Required in production
-        before_action :set_passkey, only: %i[ show edit update destroy ]
-        before_action :set_webauthn_user, only: %i[ challenge verify ]
+        before_action :set_passkey, only: %i( show edit update destroy )
+        before_action :set_webauthn_user, only: %i( challenge verify )
 
         # POST /v1/passkeys/challenge
         def challenge
@@ -15,10 +17,10 @@ module Auth
               id: @webauthn_user.webauthn_id,
               name: (@webauthn_user.try(:email) || "user@example.com").to_s,
               display_name: (@webauthn_user.try(:name) || @webauthn_user.try(:email) ||
-                             I18n.t("auth.default_user_name")).to_s
+                             I18n.t("auth.default_user_name")).to_s,
             },
             authenticator_selection: { user_verification: "preferred" },
-            attestation: "none"
+            attestation: "none",
           )
 
           session[:webauthn_user_create_challenge] = creation_options.challenge
@@ -40,7 +42,7 @@ module Auth
             external_id: SecureRandom.uuid,
             webauthn_id: webauthn_id_from_credential(credential),
             public_key: credential.public_key,
-            sign_count: credential.sign_count
+            sign_count: credential.sign_count,
           )
 
           authorize passkey, :create?
@@ -123,49 +125,49 @@ module Auth
 
         private
 
-          # Use callbacks to share common setup or constraints between actions.
-          def set_passkey
-            @passkey = current_user.user_identity_passkeys.find(params[:id])
-          end
+        # Use callbacks to share common setup or constraints between actions.
+        def set_passkey
+          @passkey = current_user.user_identity_passkeys.find(params[:id])
+        end
 
-          # Only allow a list of trusted parameters through.
-          def passkey_params
-            params.expect(passkey: [ :description, :public_key, :external_id, :webauthn_id, :sign_count ])
-          end
+        # Only allow a list of trusted parameters through.
+        def passkey_params
+          params.expect(passkey: %i(description public_key external_id webauthn_id sign_count))
+        end
 
-          def authenticate_user!
-            # This should be implemented in ApplicationController
-            # For now, assuming current_user method exists
-          end
+        def authenticate_user!
+          # This should be implemented in ApplicationController
+          # For now, assuming current_user method exists
+        end
 
-          def set_webauthn_user
-            return render(json: { error: I18n.t("errors.unauthorized") }, status: :unauthorized) unless current_user
+        def set_webauthn_user
+          return render(json: { error: I18n.t("errors.unauthorized") }, status: :unauthorized) unless current_user
 
-            if current_user.webauthn_id.blank?
-              current_user.update!(webauthn_id: SecureRandom.urlsafe_base64(32))
-            end
-            @webauthn_user = current_user
+          if current_user.webauthn_id.blank?
+            current_user.update!(webauthn_id: SecureRandom.urlsafe_base64(32))
           end
+          @webauthn_user = current_user
+        end
 
-          def passkey_credential_params
-            params.expect(
-              credential: [ :id,
-                            :rawId,
-                            :type,
-                            :authenticatorAttachment,
-                            { transports: [] },
-                            { response: [ :clientDataJSON, :attestationObject ] },
-                            { clientExtensionResults: {} } ]
-            )
-          end
+        def passkey_credential_params
+          params.expect(
+            credential: [:id,
+                         :rawId,
+                         :type,
+                         :authenticatorAttachment,
+                         { transports: [] },
+                         { response: [:clientDataJSON, :attestationObject] },
+                         { clientExtensionResults: {} },],
+          )
+        end
 
-          def passkey_description
-            params[:description].presence || I18n.t("sign.default_passkey_description")
-          end
+        def passkey_description
+          params[:description].presence || I18n.t("sign.default_passkey_description")
+        end
 
-          def webauthn_id_from_credential(credential)
-            credential.id
-          end
+        def webauthn_id_from_credential(credential)
+          credential.id
+        end
       end
     end
   end

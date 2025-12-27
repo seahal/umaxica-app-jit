@@ -20,8 +20,17 @@ services:
   zookeeper:
     container_name: jit-devcontainer-zookeeper
     ports:  !reset []
-  minio:
-    container_name: jit-devcontainer-minio
+  master:
+    container_name: jit-devcontainer-seaweedfs-master
+    ports:  !reset []
+  volume:
+    container_name: jit-devcontainer-seaweedfs-volume
+    ports:  !reset []
+  filer:
+    container_name: jit-devcontainer-seaweedfs-filer
+    ports:  !reset []
+  s3:
+    container_name: jit-devcontainer-seaweedfs-s3
     ports:  !reset []
   loki:
     container_name: jit-devcontainer-loki

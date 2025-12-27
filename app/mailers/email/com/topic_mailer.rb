@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Email
   module Com
     class TopicMailer < ApplicationMailer
@@ -6,7 +8,7 @@ module Email
         @topic = params.fetch(:topic)
         mail(
           to: params.fetch(:email_address),
-          subject: "#{ENV.fetch('BRAND_NAME', 'Umaxica')} - We received your inquiry"
+          subject: "#{ENV.fetch("BRAND_NAME", "Umaxica")} - We received your inquiry",
         )
       end
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUserIdentityOneTimePasswords < ActiveRecord::Migration[8.0]
   def change
     create_table :user_identity_one_time_passwords, id: false do |t|

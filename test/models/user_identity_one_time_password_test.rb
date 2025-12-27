@@ -1,20 +1,33 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_identity_one_time_passwords
 #
-#  user_id                              :binary           not null
-#  user_identity_one_time_password_status_id :string
-#  private_key                          :string(1024)
-#  last_otp_at                          :datetime
-#  created_at                           :datetime         not null
-#  updated_at                           :datetime         not null
+#  user_id                                   :binary           not null
+#  created_at                                :datetime         not null
+#  updated_at                                :datetime         not null
+#  private_key                               :string(1024)     default(""), not null
+#  last_otp_at                               :datetime         default("-infinity"), not null
+#  user_identity_one_time_password_status_id :string           default("NONE"), not null
+#  id                                        :uuid             not null, primary key
 #
+# Indexes
+#
+#  idx_on_user_identity_one_time_password_status_id_01264db86c  (user_identity_one_time_password_status_id)
+#
+
 require "test_helper"
 
 class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
   def setup
     @user = users(:one)
     @status = user_identity_one_time_password_statuses(:active)
+    # Ensure NONE status exists for defaults
+    unless UserIdentityOneTimePasswordStatus.exists?("NONE")
+      UserIdentityOneTimePasswordStatus.create!(id: "NONE")
+    end
+
     @private_key = "test-secret-key-12345"
     @last_otp_at = Time.current
   end
@@ -41,7 +54,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     record = UserIdentityOneTimePassword.new(
       user: @user,
       private_key: @private_key,
-      last_otp_at: @last_otp_at
+      last_otp_at: @last_otp_at,
     )
 
     assert_equal @private_key, record.private_key
@@ -51,7 +64,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     record = UserIdentityOneTimePassword.new(
       user: @user,
       private_key: @private_key,
-      last_otp_at: @last_otp_at
+      last_otp_at: @last_otp_at,
     )
 
     # Compare timestamps ignoring nanosecond precision
@@ -61,7 +74,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
   test "auto-generates private_key if blank" do
     record = UserIdentityOneTimePassword.new(
       user: @user,
-      last_otp_at: @last_otp_at
+      last_otp_at: @last_otp_at,
     )
 
     # Private key should be generated automatically
@@ -72,7 +85,8 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
   test "validates presence of last_otp_at" do
     record = UserIdentityOneTimePassword.new(
       user: @user,
-      private_key: @private_key
+      private_key: @private_key,
+      last_otp_at: nil,
     )
 
     assert_not record.valid?
@@ -83,7 +97,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     record = UserIdentityOneTimePassword.new(
       user: @user,
       private_key: "x" * 1025,
-      last_otp_at: @last_otp_at
+      last_otp_at: @last_otp_at,
     )
 
     assert_not record.valid?
@@ -95,14 +109,14 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
       UserIdentityOneTimePassword.create!(
         user: @user,
         private_key: ROTP::Base32.random_base32,
-        last_otp_at: Time.current
+        last_otp_at: Time.current,
       )
     end
 
     extra_totp = UserIdentityOneTimePassword.new(
       user: @user,
       private_key: ROTP::Base32.random_base32,
-      last_otp_at: Time.current
+      last_otp_at: Time.current,
     )
 
     assert_not extra_totp.valid?

@@ -1,3 +1,12 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: staff_identity_telephone_statuses
+#
+#  id :string(255)      default("UNVERIFIED"), not null, primary key
+#
+
 require "test_helper"
 
 class StaffIdentityTelephoneStatusTest < ActiveSupport::TestCase
@@ -51,7 +60,7 @@ class StaffIdentityTelephoneStatusTest < ActiveSupport::TestCase
       id: SecureRandom.uuid,
       number: "+81901234567",
       staff_id: staff.id,
-      staff_identity_telephone_status_id: status.id
+      staff_identity_telephone_status_id: status.id,
     )
 
     assert_raises(ActiveRecord::RecordNotDestroyed) do

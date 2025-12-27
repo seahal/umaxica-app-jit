@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EnforceUserIdentityPasskeyLimit < ActiveRecord::Migration[8.2]
   FUNCTION_NAME = "check_user_identity_passkeys_limit"
   TRIGGER_NAME = "enforce_user_identity_passkeys_limit"

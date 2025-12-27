@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateStaffOccurrences < ActiveRecord::Migration[8.2]
   def change
     create_table :staff_occurrences, id: :uuid do |t|

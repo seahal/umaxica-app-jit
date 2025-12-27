@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api::Org::ApplicationHelper
   def to_localetime(time, tz = "utc")
     raise if time.nil?

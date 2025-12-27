@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Help::Com
@@ -12,7 +14,7 @@ module Help::Com
       assert_response :success
       # form_with doesn't set action attribute explicitly, so just check for form existence
       assert_select "form"
-      assert_select "select[name='com_contact[contact_category_title]']"
+      assert_select "select[name='com_contact[category_id]']"
     end
 
     # TODO: Uncomment when hotp_secret and hotp_counter columns are added via migration
@@ -22,7 +24,7 @@ module Help::Com
     #   ) do
     #     post help_com_contacts_url, params: {
     #       com_contact: {
-    #         contact_category_title: @category.id,
+    #         category_id: @category.id,
     #         confirm_policy: "1",
     #         email_address: "test@example.com",
     #         telephone_number: "+1234567890"
@@ -51,65 +53,65 @@ module Help::Com
 
     test "should require valid category" do
       # Test with invalid/nil category
-      assert_no_difference([ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ]) do
+      assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
         post help_com_contacts_url, params: {
           com_contact: {
-            contact_category_title: "", # Invalid: empty category
+            category_id: "", # Invalid: empty category
             confirm_policy: "1",
             email_address: "test@example.com",
-            telephone_number: "+1234567890"
+            telephone_number: "+1234567890",
           },
-          "cf-turnstile-response": "test_token"
+          "cf-turnstile-response": "test_token",
         }
       end
 
       assert_response :unprocessable_entity
-      assert_select "select[name='com_contact[contact_category_title]']"
+      assert_select "select[name='com_contact[category_id]']"
     end
 
     test "should render new when validation fails" do
-      assert_no_difference([ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ]) do
+      assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
         post help_com_contacts_url, params: {
           com_contact: {
-            contact_category_title: @category.id,
+            category_id: @category.id,
             confirm_policy: "0", # Invalid: not accepted
             email_address: "test@example.com",
-            telephone_number: "+1234567890"
+            telephone_number: "+1234567890",
           },
-          "cf-turnstile-response": "test_token"
+          "cf-turnstile-response": "test_token",
         }
       end
 
       assert_response :unprocessable_entity
-      assert_select "select[name='com_contact[contact_category_title]']"
+      assert_select "select[name='com_contact[category_id]']"
     end
 
     test "should preserve input values on validation error" do
       post help_com_contacts_url, params: {
         com_contact: {
-          contact_category_title: @category.id,
+          category_id: @category.id,
           confirm_policy: "0",
           email_address: "preserve@example.com",
-          telephone_number: "+9876543210"
+          telephone_number: "+9876543210",
         },
-        "cf-turnstile-response": "test_token"
+        "cf-turnstile-response": "test_token",
       }
 
       assert_response :unprocessable_entity
       # Form should be re-rendered with category select
-      assert_select "select[name='com_contact[contact_category_title]']"
+      assert_select "select[name='com_contact[category_id]']"
       assert_select "input[name='com_contact[confirm_policy]']"
     end
 
     test "should preserve unchecked confirm_policy on validation error" do
       post help_com_contacts_url, params: {
         com_contact: {
-          contact_category_title: @category.id,
+          category_id: @category.id,
           confirm_policy: "0", # Unchecked
           email_address: "test@example.com",
-          telephone_number: "+1234567890"
+          telephone_number: "+1234567890",
         },
-        "cf-turnstile-response": "test_token"
+        "cf-turnstile-response": "test_token",
       }
 
       assert_response :unprocessable_entity
@@ -120,12 +122,12 @@ module Help::Com
     test "should preserve checked confirm_policy on validation error" do
       post help_com_contacts_url, params: {
         com_contact: {
-          contact_category_title: "", # Invalid: empty category to trigger validation error
+          category_id: "", # Invalid: empty category to trigger validation error
           confirm_policy: "1", # Checked
           email_address: "test@example.com",
-          telephone_number: "+1234567890"
+          telephone_number: "+1234567890",
         },
-        "cf-turnstile-response": "test_token"
+        "cf-turnstile-response": "test_token",
       }
 
       assert_response :unprocessable_entity

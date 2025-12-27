@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUserIdentityPasskeyStatusToUserIdentityPasskeys < ActiveRecord::Migration[8.2]
   def change
     unless column_exists?(:user_identity_passkeys, :user_identity_passkey_status_id)

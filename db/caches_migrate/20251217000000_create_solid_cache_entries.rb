@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateSolidCacheEntries < ActiveRecord::Migration[8.2]
   def change
     create_table :solid_cache_entries do |t|
@@ -8,7 +10,7 @@ class CreateSolidCacheEntries < ActiveRecord::Migration[8.2]
       t.integer :byte_size, null: false, limit: 4
 
       t.index :key_hash, unique: true
-      t.index [ :key_hash, :byte_size ]
+      t.index [:key_hash, :byte_size]
       t.index :byte_size
     end
   end

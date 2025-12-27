@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
@@ -8,7 +10,7 @@ if ENV["RAILS_ENV"] == "test"
   require "simplecov"
 
   # Configure to allow coverage measurement even with parallelization
-  SimpleCov.command_name "minitest_#{Process.pid}#{ENV['TEST_ENV_NUMBER']}"
+  SimpleCov.command_name "minitest_#{Process.pid}#{ENV["TEST_ENV_NUMBER"]}"
 
   SimpleCov.start "rails" do
     # Reset filters if you want to include files that are filtered by default
@@ -44,5 +46,28 @@ module ActiveSupport
     fixtures :all
 
     include ActiveJob::TestHelper
+
+    # Fixtures handle seed data for audit reference tables
+    # No manual seeding needed in test setup
   end
+end
+
+module LayoutAssertions
+  def assert_layout_contract
+    assert_select "head", count: 1 do
+      assert_select "link[rel=?][href*=?]", "stylesheet", "application", count: 1
+      assert_select "link[rel=?][href*=?]", "stylesheet", "tailwind", count: 1
+    end
+
+    assert_select "header", minimum: 1
+    assert_select "main", count: 1
+    assert_select "footer", count: 1 do
+      assert_select "nav", count: 1
+      assert_select "small", text: /^©/
+    end
+  end
+end
+
+class ActionDispatch::IntegrationTest
+  include LayoutAssertions
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class TurnstileFormsTest < ActionDispatch::IntegrationTest
@@ -11,7 +13,7 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
       # { name: "Auth::Org registration emails", env_key: "AUTH_STAFF_URL", path: "/registration/emails/new" },
       # { name: "Auth::Org registration telephones", env_key: "AUTH_STAFF_URL", path: "/registration/passkeys/new" },
       { name: "Help::App contacts", env_key: "HELP_SERVICE_URL", path: "/contacts/new" },
-      { name: "Help::Com contacts", env_key: "HELP_CORPORATE_URL", path: "/contacts/new" }
+      { name: "Help::Com contacts", env_key: "HELP_CORPORATE_URL", path: "/contacts/new" },
     ]
   end
 

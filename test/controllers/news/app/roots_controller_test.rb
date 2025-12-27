@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
@@ -19,17 +21,20 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "renders expected layout structure" do
     get news_app_root_url
 
+    assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "title", count: 1, text: "#{brand_name} (app) Newsroom"
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
-        assert_select "h1", text: "#{brand_name} (news, app)"
+        assert_select "h1", text: /#{brand_name}.*\(news, app\)/
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
-        assert_select "li"
+        assert_select "nav", count: 1 do
+          assert_select "span", minimum: 1
+        end
         assert_select "small", text: /^©/
       end
     end
@@ -38,7 +43,7 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-    def brand_name
-      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    end
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 end

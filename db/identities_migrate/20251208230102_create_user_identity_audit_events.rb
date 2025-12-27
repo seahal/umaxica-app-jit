@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Rails/CreateTableWithTimestamps
 class CreateUserIdentityAuditEvents < ActiveRecord::Migration[8.2]
   def up

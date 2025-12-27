@@ -1,3 +1,12 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: user_identity_social_apple_statuses
+#
+#  id :string(255)      not null, primary key
+#
+
 class UserIdentitySocialAppleStatus < IdentitiesRecord
   include UppercaseId
 

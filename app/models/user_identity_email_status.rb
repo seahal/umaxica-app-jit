@@ -1,3 +1,12 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: user_identity_email_statuses
+#
+#  id :string(255)      default("UNVERIFIED"), not null, primary key
+#
+
 class UserIdentityEmailStatus < IdentitiesRecord
   include UppercaseId
 

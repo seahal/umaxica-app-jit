@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   scope module: :core, as: :core do
     # for client site
@@ -25,9 +27,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
         end
-        # configuration
-        # namespace :configuration do
-        # end
       end
     end
 
@@ -43,9 +42,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
         end
-        # configuration
-        # namespace :configuration do
-        # end
       end
     end
   end

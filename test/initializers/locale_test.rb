@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class LocaleInitializerTest < ActiveSupport::TestCase
@@ -24,10 +26,10 @@ class LocaleInitializerTest < ActiveSupport::TestCase
 
     assert_nothing_raised { reload_locale_initializer }
     assert_includes_locale_path("config/locales/jp")
-    assert_equal [ :en, :ja ], I18n.available_locales.sort
+    assert_equal [:en, :ja], I18n.available_locales.sort
     assert_equal :ja, I18n.default_locale
-    assert_equal [ :en, :ja ], I18n.fallbacks[:en]
-    assert_equal [ :ja, :en ], I18n.fallbacks[:ja]
+    assert_equal [:en, :ja], I18n.fallbacks[:en]
+    assert_equal [:ja, :en], I18n.fallbacks[:ja]
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -63,13 +65,13 @@ class LocaleInitializerTest < ActiveSupport::TestCase
 
   private
 
-    def reload_locale_initializer
-      load INITIALIZER_PATH
-    end
+  def reload_locale_initializer
+    load INITIALIZER_PATH
+  end
 
-    def assert_includes_locale_path(location)
-      matched_paths = I18n.load_path.grep(/#{Regexp.escape(location)}/)
+  def assert_includes_locale_path(location)
+    matched_paths = I18n.load_path.grep(/#{Regexp.escape(location)}/)
 
-      assert_predicate matched_paths, :any?, "Expected I18n.load_path to include #{location}, but got #{I18n.load_path}"
-    end
+    assert_predicate matched_paths, :any?, "Expected I18n.load_path to include #{location}, but got #{I18n.load_path}"
+  end
 end

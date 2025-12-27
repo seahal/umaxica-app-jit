@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EnforceUserTokenLimit < ActiveRecord::Migration[8.2]
   FUNCTION_NAME = "check_user_tokens_limit"
   TRIGGER_NAME = "enforce_user_tokens_limit"

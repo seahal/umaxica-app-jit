@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Auth::Org::V1::CsrfControllerTest < ActionDispatch::IntegrationTest

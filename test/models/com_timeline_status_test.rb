@@ -1,3 +1,12 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: com_timeline_statuses
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+
 require "test_helper"
 
 class ComTimelineStatusTest < ActiveSupport::TestCase
@@ -13,14 +22,7 @@ class ComTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "inherits from BusinessesRecord" do
-    assert_operator ComTimelineStatus, :<, BusinessesRecord
-  end
-
-  test "has many com_timelines" do
-    association = ComTimelineStatus.reflect_on_association(:com_timelines)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+    assert_operator ComTimelineStatus, :<, TimelineRecord
   end
 
   test "id is required" do

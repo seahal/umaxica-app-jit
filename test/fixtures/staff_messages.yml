@@ -1,9 +1,17 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# == Schema Information
+#
+# Table name: staff_messages
+#
+#  id         :uuid             not null, primary key
+#  staff_id   :uuid
+#  public_id  :uuid
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 
 one:
-  staff_id: 
-  public_id: 
-
+  staff_id:
+  public_id:
 two:
-  staff_id: 
-  public_id: 
+  staff_id:
+  public_id:

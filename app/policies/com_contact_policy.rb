@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Authorization policy for ComContact resources (Corporate contact inquiries)
 # Staff members handle contacts, users can only see their own
 class ComContactPolicy < ApplicationPolicy
@@ -34,7 +36,7 @@ class ComContactPolicy < ApplicationPolicy
         scope.all
       elsif actor.is_a?(Staff)
         # Other staff see assigned or unassigned contacts
-        scope.where(staff_id: [ actor.id, nil ])
+        scope.where(staff_id: [actor.id, nil])
       elsif actor.is_a?(User)
         # Users see only their own contact inquiries
         scope.where(user_id: actor.id)

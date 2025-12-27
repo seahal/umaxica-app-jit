@@ -1,4 +1,32 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# == Schema Information
+#
+# Table name: com_contact_emails
+#
+#  id                     :string           not null, primary key
+#  email_address          :string(1000)     default(""), not null
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
+#  remaining_views        :integer          default(10), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#  verifier_attempts_left :integer          default(5), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default("-infinity"), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  expires_at             :timestamptz      not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  com_contact_id         :uuid             not null
+#  hotp_secret            :string           default(""), not null
+#  hotp_counter           :integer          default(0), not null
+#
+# Indexes
+#
+#  index_com_contact_emails_on_com_contact_id       (com_contact_id)
+#  index_com_contact_emails_on_email_address        (email_address)
+#  index_com_contact_emails_on_expires_at           (expires_at)
+#  index_com_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#
 
 one:
   com_contact: one
@@ -9,7 +37,6 @@ one:
   expires_at: 2025-10-27 09:07:30
   created_at: 2025-10-27 09:07:30
   updated_at: 2025-10-27 09:07:30
-
 two:
   com_contact: two
   email_address: test2@example.com
@@ -19,7 +46,6 @@ two:
   expires_at: 2025-10-27 09:07:30
   created_at: 2025-10-27 09:07:30
   updated_at: 2025-10-27 09:07:30
-
 verified_email_pending:
   com_contact: verified_email_pending
   email_address: pending@example.com

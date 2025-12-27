@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Rails/CreateTableWithTimestamps
 class CreateStaffIdentityTelephoneStatuses < ActiveRecord::Migration[8.2]
   def up

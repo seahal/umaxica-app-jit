@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Peak::Org
@@ -6,6 +8,13 @@ module Peak::Org
       get peak_org_root_url
 
       assert_response :success
+    end
+
+    test "renders layout contract" do
+      get peak_org_root_url
+
+      assert_response :success
+      assert_layout_contract
     end
 
     # rubocop:disable Minitest/MultipleAssertions

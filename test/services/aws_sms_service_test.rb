@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require "minitest/mock"
 
@@ -35,9 +37,9 @@ class AwsSmsServiceTest < ActiveSupport::TestCase
     expected_params = {
       phone_number: "+819012345678",
       message: "Hello World",
-      subject: "SMS"
+      subject: "SMS",
     }
-    mock_client.expect :publish, { message_id: "msg-123" }, [ expected_params ]
+    mock_client.expect :publish, { message_id: "msg-123" }, [expected_params]
 
     Aws::SNS::Client.stub :new, mock_client do
       service = AwsSmsService.new
@@ -54,9 +56,9 @@ class AwsSmsServiceTest < ActiveSupport::TestCase
     expected_params = {
       phone_number: "+819012345678",
       message: "Hello World",
-      subject: "Important"
+      subject: "Important",
     }
-    mock_client.expect :publish, { message_id: "msg-456" }, [ expected_params ]
+    mock_client.expect :publish, { message_id: "msg-456" }, [expected_params]
 
     Aws::SNS::Client.stub :new, mock_client do
       service = AwsSmsService.new

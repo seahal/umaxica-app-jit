@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module News
   module Org
     module V1

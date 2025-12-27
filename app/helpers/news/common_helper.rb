@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module News::CommonHelper
   def to_localetime(time, tz = "utc")
     raise if time.nil?

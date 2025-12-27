@@ -1,5 +1,4 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 # == Schema Information
 #
 # Table name: identifier_region_codes
@@ -12,7 +11,6 @@ jp:
   id: JP
   created_at: 2024-01-01 00:00:00
   updated_at: 2024-01-01 00:00:00
-
 us:
   id: US
   created_at: 2024-01-01 00:00:00

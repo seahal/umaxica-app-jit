@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Peak::Com::PreferencesControllerTest < ActionDispatch::IntegrationTest
   private
 
-    def brand_name
-      (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
-    end
+  def brand_name
+    (ENV["BRAND_NAME"].presence || ENV["NAME"]).to_s
+  end
 
   public
 
@@ -42,7 +44,7 @@ class Peak::Com::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get peak_com_preference_url
 
     assert_select "footer" do
-      assert_select "a[href=?]", "https://#{ENV['EDGE_CORPORATE_URL']}",
+      assert_select "a[href=?]", "https://#{ENV["EDGE_CORPORATE_URL"]}",
                     text: I18n.t("peak.com.preferences.footer.home")
       assert_select "a[href^=?]", peak_com_preference_path, text: I18n.t("peak.com.preferences.footer.preference")
       assert_select "a[href^=?]", peak_com_privacy_path, text: I18n.t("peak.com.preferences.footer.privacy")

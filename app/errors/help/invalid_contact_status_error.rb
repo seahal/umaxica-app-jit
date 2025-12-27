@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Help
   # Raised when contact has invalid status
   class InvalidContactStatusError < ContactError

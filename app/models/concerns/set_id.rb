@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SetId
   extend ActiveSupport::Concern
 
@@ -7,9 +9,9 @@ module SetId
 
   private
 
-    # Generates a UUID v7 for the record before creation.
-    # UUID v7 is time-ordered and includes timestamp information for better database performance.
-    def generate_id
-      self.id = SecureRandom.uuid_v7
-    end
+  # Generates a UUID v7 for the record before creation.
+  # UUID v7 is time-ordered and includes timestamp information for better database performance.
+  def generate_id
+    self.id = SecureRandom.uuid_v7
+  end
 end

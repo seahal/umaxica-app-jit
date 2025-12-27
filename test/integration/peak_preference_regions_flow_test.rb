@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class ApexPreferenceRegionsFlowTest < ActionDispatch::IntegrationTest
@@ -7,11 +9,11 @@ class ApexPreferenceRegionsFlowTest < ActionDispatch::IntegrationTest
 
   DOMAINS = [
     { name: "app", edit: :edit_peak_app_preference_region_url, update: :peak_app_preference_region_url,
-      scope: "apex.app.preferences" },
+      scope: "apex.app.preferences", },
     { name: "com", edit: :edit_peak_com_preference_region_url, update: :peak_com_preference_region_url,
-      scope: "apex.com.preferences" },
+      scope: "apex.com.preferences", },
     { name: "org", edit: :edit_peak_org_preference_region_url, update: :peak_org_preference_region_url,
-      scope: "apex.org.preferences" }
+      scope: "apex.org.preferences", },
   ].freeze
 
   DOMAINS.each do |domain|

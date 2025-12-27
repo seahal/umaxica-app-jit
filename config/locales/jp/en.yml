@@ -62,6 +62,7 @@ en:
         sessions:
           create:
             success: "Account created and signed in with %{provider}."
+            failure: "Authentication failed. Please try again."
       authentication:
         new:
           page_title: "Choose how to sign in"

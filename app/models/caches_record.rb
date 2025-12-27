@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CachesRecord < ApplicationRecord
   self.abstract_class = true
 

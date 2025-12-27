@@ -1,3 +1,12 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: user_identity_one_time_password_statuses
+#
+#  id :string           not null, primary key
+#
+
 class UserIdentityOneTimePasswordStatus < IdentitiesRecord
   include UppercaseId
 

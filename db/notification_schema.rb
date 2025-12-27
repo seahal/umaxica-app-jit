@@ -10,21 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_22_230523) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_24_140500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "staff_notifications", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id"
-    t.uuid "staff_id"
+    t.uuid "public_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.uuid "staff_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "user_notifications", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id"
+    t.uuid "public_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_id"
+    t.uuid "user_id", default: "00000000-0000-0000-0000-000000000000", null: false
   end
 end

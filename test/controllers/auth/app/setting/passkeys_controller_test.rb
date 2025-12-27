@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require "minitest/mock"
 
@@ -60,7 +62,7 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
                                           public_key: "pk",
                                           external_id: SecureRandom.uuid,
                                           webauthn_id: SecureRandom.uuid,
-                                          sign_count: 0)
+                                          sign_count: 0,)
 
     get auth_app_setting_passkey_url(passkey), headers: @headers
 
@@ -73,7 +75,7 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
                                           public_key: "pk",
                                           external_id: SecureRandom.uuid,
                                           webauthn_id: SecureRandom.uuid,
-                                          sign_count: 0)
+                                          sign_count: 0,)
 
     get edit_auth_app_setting_passkey_url(passkey), headers: @headers
 
@@ -88,8 +90,8 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
           public_key: "dummy_public_key",
           external_id: SecureRandom.uuid,
           webauthn_id: SecureRandom.uuid,
-          sign_count: 0
-        }
+          sign_count: 0,
+        },
       }, headers: @headers
     end
 
@@ -102,10 +104,10 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
                                           public_key: "pk",
                                           external_id: SecureRandom.uuid,
                                           webauthn_id: SecureRandom.uuid,
-                                          sign_count: 0)
+                                          sign_count: 0,)
 
     patch auth_app_setting_passkey_url(passkey), params: {
-      passkey: { description: "New Name" }
+      passkey: { description: "New Name" },
     }, headers: @headers
 
     assert_redirected_to auth_app_setting_passkey_url(passkey, regional_defaults)
@@ -118,7 +120,7 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
                                           public_key: "pk",
                                           external_id: SecureRandom.uuid,
                                           webauthn_id: SecureRandom.uuid,
-                                          sign_count: 0)
+                                          sign_count: 0,)
 
     assert_difference("UserIdentityPasskey.count", -1) do
       delete auth_app_setting_passkey_url(passkey), headers: @headers
@@ -128,7 +130,7 @@ class Auth::App::Setting::PasskeysControllerTest < ActionDispatch::IntegrationTe
 
   private
 
-    def regional_defaults
-      PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
-    end
+  def regional_defaults
+    PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
+  end
 end

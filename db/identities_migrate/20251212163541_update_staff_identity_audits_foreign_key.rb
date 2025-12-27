@@ -1,5 +1,10 @@
+# frozen_string_literal: true
+
 class UpdateStaffIdentityAuditsForeignKey < ActiveRecord::Migration[8.2]
   def change
+    return unless table_exists?(:staff_identity_audits)
+    return unless table_exists?(:staff_identity_audit_statuses)
+
     # Since the table has been renamed, FK is automatically updated
     # If there is a problem with FK, recreate it explicitly
     unless foreign_key_exists?(:staff_identity_audits, column: :status_id)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Run using bin/ci
 
 CI.run do
@@ -8,6 +10,8 @@ CI.run do
   step "Security: Gem audit", "bin/bundler-audit"
   step "Security: Importmap vulnerability audit", "bin/importmap audit"
   step "Security: Brakeman code analysis", "bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
+
+  step "Database consistency", "bundle exec database_consistency"
 
   step "Tests: Rails", "bin/rails test"
   step "Tests: System", "bin/rails test:system"

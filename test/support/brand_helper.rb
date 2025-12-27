@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Helper methods for brand name in tests
 module BrandHelper
   # Get the brand name from environment variables

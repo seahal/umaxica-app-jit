@@ -1,4 +1,15 @@
-class OrgDocumentAuditEvent < BusinessesRecord
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: org_document_audit_events
+#
+#  id         :string(255)      default("NONE"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
+class OrgDocumentAuditEvent < UniversalRecord
   self.table_name = "org_document_audit_events"
 
   has_many :org_document_audits,

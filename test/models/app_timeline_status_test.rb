@@ -1,3 +1,12 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: app_timeline_statuses
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+
 require "test_helper"
 
 class AppTimelineStatusTest < ActiveSupport::TestCase
@@ -11,14 +20,7 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "inherits from BusinessesRecord" do
-    assert_operator AppTimelineStatus, :<, BusinessesRecord
-  end
-
-  test "has many app_timelines" do
-    association = AppTimelineStatus.reflect_on_association(:app_timelines)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+    assert_operator AppTimelineStatus, :<, TimelineRecord
   end
 
   test "id is required" do

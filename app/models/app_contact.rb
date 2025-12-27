@@ -1,30 +1,42 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_contacts
 #
 #  id               :uuid             not null, primary key
-#  description      :text
-#  email_address    :string
-#  ip_address       :cidr
-#  telephone_number :string
-#  title            :string
+#  public_id        :string(21)       default(""), not null
+#  token            :string(32)       default(""), not null
+#  token_digest     :string(255)      default(""), not null
+#  token_expires_at :timestamptz      default("-infinity"), not null
+#  token_viewed     :boolean          default(FALSE), not null
+#  ip_address       :inet             default("0.0.0.0"), not null
+#  status_id        :string(255)      default("NONE"), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
+#  category_id      :string(255)      default("NONE"), not null
 #
+# Indexes
+#
+#  index_app_contacts_on_category_id       (category_id)
+#  index_app_contacts_on_public_id         (public_id)
+#  index_app_contacts_on_status_id         (status_id)
+#  index_app_contacts_on_token             (token)
+#  index_app_contacts_on_token_digest      (token_digest)
+#  index_app_contacts_on_token_expires_at  (token_expires_at)
+#
+
 class AppContact < GuestsRecord
   include ::PublicId
 
   # Associations
   belongs_to :app_contact_category,
              class_name: "AppContactCategory",
-             foreign_key: :contact_category_title,
-             primary_key: :id,
-             optional: true,
+             foreign_key: :category_id,
              inverse_of: :app_contacts
   belongs_to :app_contact_status,
              class_name: "AppContactStatus",
-             foreign_key: :contact_status_id,
-             optional: true,
+             foreign_key: :status_id,
              inverse_of: :app_contacts
   has_many :app_contact_topics, dependent: :destroy
   has_many :app_contact_emails, dependent: :destroy
@@ -32,27 +44,36 @@ class AppContact < GuestsRecord
 
   attr_accessor :confirm_policy
 
-  after_initialize :set_default_category_and_status, if: :new_record?
+  after_initialize do
+    if new_record?
+      self.category_id = "APPLICATION_INQUIRY" if category_id == "NONE" || category_id.nil?
+    end
+    self.status_id ||= "NONE"
+  end
+
   # Callbacks
-  before_validation { self.contact_category_title = contact_category_title&.upcase }
-  before_validation { self.contact_status_id = contact_status_id&.upcase }
+  before_validation { self.category_id = category_id&.upcase }
+  before_validation { self.status_id = status_id&.upcase }
   before_create :generate_token
 
   # Validations
   validates :confirm_policy, acceptance: true
-  validates :contact_category_title, presence: true
+  validates :category_id, length: { maximum: 255 }
+  validates :status_id, length: { maximum: 255 }
+  validates :token, length: { maximum: 32 }
+  validates :token_digest, length: { maximum: 255 }
 
   # State transition helpers
   def email_pending?
-    contact_status_id == "SET_UP"
+    status_id == "SET_UP"
   end
 
   def email_verified?
-    contact_status_id == "CHECKED_EMAIL_ADDRESS"
+    status_id == "CHECKED_EMAIL_ADDRESS"
   end
 
   def phone_verified?
-    contact_status_id == "CHECKED_TELEPHONE_NUMBER"
+    status_id == "CHECKED_TELEPHONE_NUMBER"
   end
 
   def can_verify_email?
@@ -70,19 +91,19 @@ class AppContact < GuestsRecord
   def verify_email!
     raise StandardError, "Cannot verify email at this time" unless can_verify_email?
 
-    update!(contact_status_id: "CHECKED_EMAIL_ADDRESS")
+    update!(status_id: "CHECKED_EMAIL_ADDRESS")
   end
 
   def verify_phone!
     raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
 
-    update!(contact_status_id: "CHECKED_TELEPHONE_NUMBER")
+    update!(status_id: "CHECKED_TELEPHONE_NUMBER")
   end
 
   def complete!
     raise StandardError, "Cannot complete contact at this time" unless can_complete?
 
-    update!(contact_status_id: "COMPLETED_CONTACT_ACTION")
+    update!(status_id: "COMPLETED_CONTACT_ACTION")
   end
 
   # Token management
@@ -109,6 +130,8 @@ class AppContact < GuestsRecord
   end
 
   def token_expired?
+    return false if token_expires_at.to_s == "-Infinity"
+
     token_expires_at && Time.current >= token_expires_at
   end
 
@@ -119,12 +142,7 @@ class AppContact < GuestsRecord
 
   private
 
-    def generate_token
-      self.token ||= SecureRandom.alphanumeric(32)
-    end
-
-    def set_default_category_and_status
-      self.contact_category_title ||= "NULL_APP_CATEGORY"
-      self.contact_status_id ||= "NULL_APP_STATUS"
-    end
+  def generate_token
+    self.token ||= SecureRandom.alphanumeric(32)
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class EmailDeliveryTest < ActionDispatch::IntegrationTest
@@ -27,9 +29,9 @@ class EmailDeliveryTest < ActionDispatch::IntegrationTest
            params: {
              user_identity_email: {
                address: email,
-               confirm_policy: "1"
+               confirm_policy: "1",
              },
-             "cf-turnstile-response": "test_token"
+             "cf-turnstile-response": "test_token",
            },
            headers: { "Host" => ENV["AUTH_SERVICE_URL"] || "auth.app.localhost" }
 

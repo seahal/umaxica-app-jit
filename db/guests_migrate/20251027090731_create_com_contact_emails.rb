@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateComContactEmails < ActiveRecord::Migration[8.1]
   def change
     create_table :com_contact_emails, id: :string do |t|

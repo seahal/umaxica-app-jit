@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddOtpFieldsToStaffIdentityEmails < ActiveRecord::Migration[8.0]
   def change
     change_table :staff_identity_emails, bulk: true do |t|

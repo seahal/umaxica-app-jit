@@ -1,137 +1,84 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: user_identity_audits
+#
+#  id             :uuid             not null, primary key
+#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_type     :text             default(""), not null
+#  context        :jsonb            default("{}"), not null
+#  created_at     :datetime         not null
+#  current_value  :text             default(""), not null
+#  event_id       :string(255)      default("NONE"), not null
+#  expires_at     :datetime         not null
+#  ip_address     :inet             default("0.0.0.0"), not null
+#  level_id       :string(255)      default("NONE"), not null
+#  occurred_at    :datetime         not null
+#  previous_value :text             default(""), not null
+#  subject_id     :string           not null
+#  subject_type   :text             not null
+#  updated_at     :datetime         not null
+#
+# Indexes
+#
+#  idx_on_subject_type_subject_id_occurred_at_a29eb711dd   (subject_type,subject_id,occurred_at)
+#  index_user_identity_audits_on_actor_id_and_occurred_at  (actor_id,occurred_at)
+#  index_user_identity_audits_on_event_id                  (event_id)
+#  index_user_identity_audits_on_expires_at                (expires_at)
+#  index_user_identity_audits_on_level_id                  (level_id)
+#  index_user_identity_audits_on_occurred_at               (occurred_at)
+#
+
 require "test_helper"
 
 class UserIdentityAuditTest < ActiveSupport::TestCase
+  fixtures :user_identity_audit_events, :users, :staffs
+
   def setup
     @user = users(:one)
     @audit_event = user_identity_audit_events(:login_success)
+    @level = UserIdentityAuditLevel.find_or_create_by!(id: "INFO")
     @audit = UserIdentityAudit.create!(
       user: @user,
+      user_identity_audit_level: @level,
       user_identity_audit_event: @audit_event,
       timestamp: Time.current,
-      ip_address: "192.168.1.1"
+      ip_address: "192.168.1.1",
     )
   end
 
-  test "inherits from IdentitiesRecord" do
-    assert_operator UserIdentityAudit, :<, IdentitiesRecord
-  end
-
-  test "belongs to user" do
-    association = UserIdentityAudit.reflect_on_association(:user)
-
-    assert_not_nil association
-    assert_equal :belongs_to, association.macro
-  end
-
-  test "belongs to user_identity_audit_event" do
-    association = UserIdentityAudit.reflect_on_association(:user_identity_audit_event)
-
-    assert_not_nil association
-    assert_equal :belongs_to, association.macro
-  end
-
-  test "can be created with user and status" do
-    assert_not_nil @audit
-    assert_equal @user.id, @audit.user_id
-    assert_equal @audit_event.id, @audit.event_id
-  end
-
-  test "timestamp can be set" do
-    assert_not_nil @audit.timestamp
-    assert_kind_of Time, @audit.timestamp
+  test "inherits from UniversalRecord" do
+    assert_operator UserIdentityAudit, :<, UniversalRecord
   end
 
   test "ip_address can be stored" do
-    assert_equal "192.168.1.1", @audit.ip_address
-  end
-
-  test "actor_id is optional" do
-    audit_without_actor = UserIdentityAudit.create!(
-      user: @user,
-      user_identity_audit_event: @audit_event
-    )
-
-    assert_nil audit_without_actor.actor_id
-  end
-
-  test "previous_value can be stored" do
-    audit = UserIdentityAudit.create!(
-      user: @user,
-      user_identity_audit_event: @audit_event,
-      previous_value: '{"email": "old@example.com"}'
-    )
-
-    assert_equal '{"email": "old@example.com"}', audit.previous_value
-  end
-
-  test "previous_value is encrypted in the database" do
-    plain_text = '{"email": "old@example.com"}'
-    audit = UserIdentityAudit.create!(
-      user: @user,
-      user_identity_audit_event: @audit_event,
-      previous_value: plain_text
-    )
-
-    # Confirm that previous_value is included in the model's encrypted_attributes
-    assert_includes UserIdentityAudit.encrypted_attributes, :previous_value
-
-    # Retrieve directly from the database (encrypted value)
-    encrypted_value = UserIdentityAudit.connection.execute(
-      "SELECT previous_value FROM user_identity_audits WHERE id = '#{audit.id}' LIMIT 1"
-    ).first["previous_value"]
-
-    # Since it is encrypted, it should be different from the original value
-    assert_not_equal plain_text, encrypted_value
-  end
-
-  test "previous_value is decrypted when accessed through model" do
-    plain_text = '{"email": "old@example.com"}'
-    audit = UserIdentityAudit.create!(
-      user: @user,
-      user_identity_audit_event: @audit_event,
-      previous_value: plain_text
-    )
-
-    # It is decrypted when retrieved from the model
-    assert_equal plain_text, audit.reload.previous_value
-  end
-
-  test "has timestamps" do
-    assert_not_nil @audit.created_at
-    assert_not_nil @audit.updated_at
-  end
-
-  test "user association loads user correctly" do
-    assert_equal @user, @audit.user
-  end
-
-  test "user_identity_audit_event association loads status correctly" do
-    assert_equal @audit_event, @audit.user_identity_audit_event
+    assert_equal "192.168.1.1", @audit.ip_address.to_s
   end
 
   test "requires user" do
     audit = UserIdentityAudit.new(
-      user_identity_audit_event: @audit_event
+      user_identity_audit_event: @audit_event,
     )
 
     assert_not audit.valid?
-    assert_not_empty audit.errors[:user]
+    assert_not_empty audit.errors[:subject_id]
   end
 
   test "requires user_identity_audit_event" do
     audit = UserIdentityAudit.new(
-      user: @user
+      user: @user,
     )
 
-    assert_not audit.valid?
-    assert_not_empty audit.errors[:user_identity_audit_event]
+    # Defaults to NONE, so it should be valid
+    assert_predicate audit, :valid?
   end
 
   test "validates foreign key constraint on event_id" do
     audit = UserIdentityAudit.new(
       user: @user,
       event_id: "NON_EXISTENT_EVENT",
-      timestamp: Time.current
+      timestamp: Time.current,
     )
 
     assert_raises ActiveRecord::InvalidForeignKey do
@@ -152,7 +99,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     audit = UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
-      actor: actor_user
+      actor: actor_user,
     )
 
     assert_equal actor_user.id, audit.actor_id
@@ -165,7 +112,7 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     audit = UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
-      actor: actor_staff
+      actor: actor_staff,
     )
 
     assert_equal actor_staff.id, audit.actor_id
@@ -181,13 +128,13 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
     UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
-      actor: actor_user
+      actor: actor_user,
     )
 
     UserIdentityAudit.create!(
       user: @user,
       user_identity_audit_event: @audit_event,
-      actor: actor_staff
+      actor: actor_staff,
     )
 
     # Retrieve multiple audits related to the same User

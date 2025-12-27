@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class RedirectConcernTest < ActiveSupport::TestCase
@@ -5,7 +7,7 @@ class RedirectConcernTest < ActiveSupport::TestCase
 
   # Mock ENV variables for testing by overriding the method
   def allowed_hosts
-    [ "example.com", "trusted.jp" ]
+    ["example.com", "trusted.jp"]
   end
 
   test "allowed_host? allows exact match" do

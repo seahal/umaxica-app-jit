@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Auth::App::Authentication
@@ -12,8 +14,8 @@ module Auth::App::Authentication
       post auth_app_authentication_recovery_url, params: {
         recovery_form: {
           account_identifiable_information: "user@example.com",
-          recovery_code: "123456"
-        }
+          recovery_code: "123456",
+        },
       }
 
       assert_response :unprocessable_content

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Help
@@ -59,10 +61,10 @@ module Help
         assert_no_difference("OrgContact.count") do
           post help_org_contacts_url, params: {
             org_contact: {
-              contact_category_title: "ORGANIZATION_INQUIRY",
+              category_id: "ORGANIZATION_INQUIRY",
               email_address: "org_test@example.com",
-              confirm_policy: "1"
-            }
+              confirm_policy: "1",
+            },
           }, headers: { "Host" => @host }
         end
 
@@ -74,10 +76,10 @@ module Help
         assert_no_difference("OrgContact.count") do
           post help_org_contacts_url, params: {
             org_contact: {
-              contact_category_title: "",
+              category_id: "",
               email_address: "org_test@example.com",
-              confirm_policy: "1"
-            }
+              confirm_policy: "1",
+            },
           }, headers: { "Host" => @host }
         end
 
@@ -93,8 +95,8 @@ module Help
             patch help_org_contact_url(contact), params: {
               org_contact_topic: {
                 title: "New Topic",
-                description: I18n.t("test_data.contact_topic_description")
-              }
+                description: I18n.t("test_data.contact_topic_description"),
+              },
             }, headers: { "Host" => @host }
           end
         end
@@ -109,8 +111,8 @@ module Help
         patch help_org_contact_url(contact), params: {
           org_contact_topic: {
             title: "New Topic",
-            description: I18n.t("test_data.contact_topic_description")
-          }
+            description: I18n.t("test_data.contact_topic_description"),
+          },
         }, headers: { "Host" => @host }
 
         assert_response :redirect
@@ -124,8 +126,8 @@ module Help
           patch help_org_contact_url(contact), params: {
             org_contact_topic: {
               title: "",
-              description: I18n.t("test_data.contact_topic_description")
-            }
+              description: I18n.t("test_data.contact_topic_description"),
+            },
           }, headers: { "Host" => @host }
         end
 
@@ -135,16 +137,16 @@ module Help
 
       private
 
-        def post_valid_contact
-          post help_org_contacts_url, params: {
-            org_contact: {
-              contact_category_title: "ORGANIZATION_INQUIRY",
-              email_address: "org_test@example.com",
-              telephone_number: "+1234567890",
-              confirm_policy: "1"
-            }
-          }, headers: { "Host" => @host }
-        end
+      def post_valid_contact
+        post help_org_contacts_url, params: {
+          org_contact: {
+            category_id: "ORGANIZATION_INQUIRY",
+            email_address: "org_test@example.com",
+            telephone_number: "+1234567890",
+            confirm_policy: "1",
+          },
+        }, headers: { "Host" => @host }
+      end
     end
   end
 end

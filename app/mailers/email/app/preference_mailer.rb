@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Email
   module App
     class PreferenceMailer < ApplicationMailer
@@ -7,7 +9,7 @@ module Email
 
         mail(
           to: @preference_request.email_address,
-          subject: t("email.app.preference_mailer.update_request.subject")
+          subject: t("email.app.preference_mailer.update_request.subject"),
         )
       end
     end

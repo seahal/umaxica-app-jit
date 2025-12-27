@@ -1,0 +1,58 @@
+<%= turbo_frame_tag dom_id(document) do %>
+  <tr class="border-b hover:bg-gray-50">
+    <td class="py-3 px-4">
+      <%= link_to document.permalink, docs_com_cms_document_path(document), class: "text-blue-600 hover:underline" %>
+    </td>
+    <td class="py-3 px-4">
+      <% begin %>
+        <%= document.latest_version.title %>
+      <% rescue ActiveRecord::RecordNotFound %>
+        <span class="text-gray-400 italic">No version</span>
+      <% end %>
+    </td>
+    <td class="py-3 px-4">
+      <% if document.status_id == "PUBLISHED" %>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          Published
+        </span>
+      <% elsif document.status_id == "DRAFT" %>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          Draft
+        </span>
+      <% else %>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          <%= document.status_id %>
+        </span>
+      <% end %>
+    </td>
+    <td class="py-3 px-4 text-sm text-gray-600">
+      <%= document.published_at.strftime("%Y-%m-%d %H:%M") if document.published_at %>
+    </td>
+    <td class="py-3 px-4">
+      <div class="flex gap-2">
+        <%= link_to "View", docs_com_cms_document_path(document),
+            class: "text-blue-600 hover:underline text-sm" %>
+        <%= link_to "Edit", edit_docs_com_cms_document_path(document),
+            class: "text-green-600 hover:underline text-sm",
+            data: { turbo_frame: "modal" } %>
+
+        <% if document.status_id == "DRAFT" %>
+          <%= button_to "Publish", publish_docs_com_cms_document_path(document),
+              method: :post,
+              class: "text-purple-600 hover:underline text-sm",
+              data: { turbo_stream: true } %>
+        <% elsif document.status_id == "PUBLISHED" %>
+          <%= button_to "Unpublish", unpublish_docs_com_cms_document_path(document),
+              method: :post,
+              class: "text-orange-600 hover:underline text-sm",
+              data: { turbo_stream: true } %>
+        <% end %>
+
+        <%= button_to "Delete", docs_com_cms_document_path(document),
+            method: :delete,
+            class: "text-red-600 hover:underline text-sm",
+            data: { turbo_confirm: "Are you sure?", turbo_stream: true } %>
+      </div>
+    </td>
+  </tr>
+<% end %>

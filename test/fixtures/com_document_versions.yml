@@ -1,0 +1,54 @@
+# == Schema Information
+#
+# Table name: com_document_versions
+#
+#  id              :uuid             not null, primary key
+#  com_document_id :uuid             not null
+#  permalink       :string(200)      not null
+#  response_mode   :string           not null
+#  redirect_url    :string
+#  title           :string
+#  description     :string
+#  body            :text
+#  published_at    :datetime         not null
+#  expires_at      :datetime         not null
+#  edited_by_type  :string
+#  edited_by_id    :integer
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  public_id       :string(255)      default(""), not null
+#
+# Indexes
+#
+#  index_com_document_versions_on_com_document_id                 (com_document_id)
+#  index_com_document_versions_on_com_document_id_and_created_at  (com_document_id,created_at)
+#  index_com_document_versions_on_public_id                       (public_id) UNIQUE
+#
+
+one_v1:
+  com_document: one
+  permalink: com_doc_one
+  response_mode: html
+  redirect_url:
+  title: ""
+  description: ""
+  body: ""
+  published_at: <%= 1.day.ago %>
+  expires_at: <%= 100.years.from_now %>
+  edited_by_type: Staff
+  edited_by_id:
+  public_id: <%= Nanoid.generate(size: 21) %>
+
+two_v1:
+  com_document: two
+  permalink: com_doc_two
+  response_mode: html
+  redirect_url:
+  title: ""
+  description: ""
+  body: ""
+  published_at: <%= Time.zone.parse("2024-01-02 00:00:00") %>
+  expires_at: <%= Time.zone.parse("2024-12-31 00:00:00") %>
+  edited_by_type: Staff
+  edited_by_id:
+  public_id: <%= Nanoid.generate(size: 21) %>

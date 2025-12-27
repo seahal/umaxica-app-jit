@@ -1,3 +1,29 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: org_contact_topics
+#
+#  id                :uuid             not null, primary key
+#  activated         :boolean          default(FALSE), not null
+#  created_at        :datetime         not null
+#  deletable         :boolean          default(FALSE), not null
+#  expires_at        :timestamptz      not null
+#  org_contact_id    :uuid             not null
+#  otp_attempts_left :integer          default(3), not null
+#  otp_digest        :string(255)      default(""), not null
+#  otp_expires_at    :timestamptz      default("-infinity"), not null
+#  public_id         :string(21)       default(""), not null
+#  remaining_views   :integer          default(10), not null
+#  updated_at        :datetime         not null
+#
+# Indexes
+#
+#  index_org_contact_topics_on_expires_at      (expires_at)
+#  index_org_contact_topics_on_org_contact_id  (org_contact_id)
+#  index_org_contact_topics_on_public_id       (public_id)
+#
+
 require "test_helper"
 
 class OrgContactTopicTest < ActiveSupport::TestCase
@@ -13,13 +39,13 @@ class OrgContactTopicTest < ActiveSupport::TestCase
     OrgContactEmail.create!(
       org_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
     )
 
     contact
@@ -45,7 +71,7 @@ class OrgContactTopicTest < ActiveSupport::TestCase
 
     topic = OrgContactTopic.new(
       org_contact: contact,
-      deletable: false
+      deletable: false,
     )
 
     assert topic.save

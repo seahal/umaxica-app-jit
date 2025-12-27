@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Email::App::ContactMailerTest < ActionMailer::TestCase
@@ -6,7 +8,7 @@ class Email::App::ContactMailerTest < ActionMailer::TestCase
 
     assert_equal "Create", mail.subject
     # assert_equal [ "to@example.org" ], mail.to
-    assert_equal [ "from@umaxica.net" ], mail.from
+    assert_equal ["from@umaxica.net"], mail.from
     assert_match "pass", mail.body.encoded
   end
 
@@ -14,8 +16,8 @@ class Email::App::ContactMailerTest < ActionMailer::TestCase
     mail = Email::App::ContactMailer.with(email_address: "test@example.com", pass_code: "123456").create
 
     assert_equal "Create", mail.subject
-    assert_equal [ "test@example.com" ], mail.to
-    assert_equal [ "from@umaxica.net" ], mail.from
+    assert_equal ["test@example.com"], mail.to
+    assert_equal ["from@umaxica.net"], mail.from
   end
 
   test "create with pass_code parameter" do

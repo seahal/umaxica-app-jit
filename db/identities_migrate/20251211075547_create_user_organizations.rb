@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUserOrganizations < ActiveRecord::Migration[8.2]
   def change
     create_table :user_organizations, id: :uuid, default: -> { "uuidv7()" } do |t|

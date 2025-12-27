@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auth
   module App
     module WithdrawalsHelper
@@ -14,7 +16,7 @@ module Auth
         return 0 unless recovery_deadline
 
         days_remaining = ((recovery_deadline - Time.current) / 1.day).ceil
-        [ days_remaining, 0 ].max
+        [days_remaining, 0].max
       end
 
       # Check if recovery period has expired

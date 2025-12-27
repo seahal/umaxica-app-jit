@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FixUserIdentityStatusIdDefault < ActiveRecord::Migration[8.2]
   def up
     # rubocop:disable Rails/BulkChangeTable

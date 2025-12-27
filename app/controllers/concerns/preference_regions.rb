@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Shared behavior for the region preference controllers that live under the
 # Top namespace. This keeps the three domain-specific controllers focused on
 # routing concerns while centralizing preference parsing and persistence.
@@ -17,33 +19,33 @@ module PreferenceRegions
     end
   end
 
-  SELECTABLE_LANGUAGES = %w[JA EN].freeze
+  SELECTABLE_LANGUAGES = %w(JA EN).freeze
   DEFAULT_LANGUAGE = "JA"
-  SELECTABLE_REGIONS = %w[US JP].freeze
+  SELECTABLE_REGIONS = %w(US JP).freeze
   DEFAULT_REGION = "US"
-  SELECTABLE_TIMEZONES = %w[Etc/UTC Asia/Tokyo].freeze
+  SELECTABLE_TIMEZONES = %w(Etc/UTC Asia/Tokyo).freeze
   DEFAULT_TIMEZONE = "Asia/Tokyo"
 
   LANGUAGE_COOKIE_MAP = {
     "JA" => "ja",
-    "EN" => "en"
+    "EN" => "en",
   }.freeze
   LANGUAGE_PARAM_MAP = LANGUAGE_COOKIE_MAP.invert.transform_keys(&:downcase).freeze
 
   REGION_COOKIE_MAP = {
     "JP" => "jp",
-    "US" => "us"
+    "US" => "us",
   }.freeze
   REGION_PARAM_MAP = REGION_COOKIE_MAP.invert.transform_keys(&:downcase).freeze
 
   TIMEZONE_COOKIE_MAP = {
     "Asia/Tokyo" => "jst",
-    "Etc/UTC" => "utc"
+    "Etc/UTC" => "utc",
   }.freeze
   TIMEZONE_PARAM_MAP = {
     "jst" => "Asia/Tokyo",
     "utc" => "Etc/UTC",
-    "kst" => "Asia/Seoul"
+    "kst" => "Asia/Seoul",
   }.freeze
 
   THEME_PARAM_MAP = {
@@ -54,13 +56,13 @@ module PreferenceRegions
     "system" => "system",
     "li" => "light",
     "lt" => "light",
-    "light" => "light"
+    "light" => "light",
   }.freeze
 
   THEME_COOKIE_MAP = {
     "dark" => "dr",
     "system" => "sy",
-    "light" => "li"
+    "light" => "li",
   }.freeze
 
   def edit
@@ -83,211 +85,211 @@ module PreferenceRegions
 
   private
 
-    def preference_params
-      params.permit(:region, :country, :language, :timezone)
+  def preference_params
+    params.permit(:region, :country, :language, :timezone)
+  end
+
+  def apply_updates(preferences)
+    updated = false
+
+    Rails.event.debug("preference_regions.params", preferences: preferences.to_h)
+    Rails.event.debug("preference_regions.preferences",
+                      region: preferences[:region],
+                      country: preferences[:country],
+                      language: preferences[:language],
+                      timezone: preferences[:timezone],)
+    updated |= assign_if_present(:region, preferences[:region])
+    updated |= assign_if_present(:country, preferences[:country])
+
+    if preferences[:language].present?
+      language_result = update_language(preferences[:language])
+      return language_result if language_result.error?
+
+      updated ||= language_result.updated?
     end
 
-    def apply_updates(preferences)
-      updated = false
+    if preferences[:timezone].present?
+      timezone_result = update_timezone(preferences[:timezone])
+      return timezone_result if timezone_result.error?
 
-      Rails.event.debug("preference_regions.params", preferences: preferences.to_h)
-      Rails.event.debug("preference_regions.preferences",
-                        region: preferences[:region],
-                        country: preferences[:country],
-                        language: preferences[:language],
-                        timezone: preferences[:timezone])
-      updated |= assign_if_present(:region, preferences[:region])
-      updated |= assign_if_present(:country, preferences[:country])
+      updated ||= timezone_result.updated?
+    end
 
-      if preferences[:language].present?
-        language_result = update_language(preferences[:language])
-        return language_result if language_result.error?
+    Result.new(updated, nil)
+  end
 
-        updated ||= language_result.updated?
+  def assign_if_present(key, value)
+    return false if value.blank?
+
+    session[key] = value
+    true
+  end
+
+  def update_language(language)
+    normalized = normalized_language(language)
+    return error_result(:languages, :unsupported) unless normalized
+
+    session[:language] = normalized
+    Result.new(true, nil)
+  end
+
+  def normalized_language(value)
+    normalized = LANGUAGE_PARAM_MAP[value.to_s.downcase] || value&.to_s&.upcase
+    return unless normalized.present? && SELECTABLE_LANGUAGES.include?(normalized)
+
+    normalized
+  end
+
+  def update_timezone(timezone)
+    candidate = timezone.to_s
+    return error_result(:timezones, :invalid) unless selectable_timezone?(candidate)
+
+    zone = resolve_timezone(candidate)
+    return error_result(:timezones, :invalid) unless zone
+
+    session[:timezone] = zone_identifier(zone, candidate)
+    Result.new(true, nil)
+  end
+
+  def selectable_timezone?(candidate)
+    SELECTABLE_TIMEZONES.any? { |identifier| identifier.casecmp?(candidate) }
+  end
+
+  def resolve_timezone(value)
+    return if value.blank?
+    return value if value.is_a?(ActiveSupport::TimeZone)
+
+    candidate = value.to_s
+    ActiveSupport::TimeZone[candidate] || ActiveSupport::TimeZone.all.find do |zone|
+      timezone_matches?(zone, candidate)
+    end
+  end
+
+  def timezone_matches?(zone, candidate)
+    [zone.tzinfo&.identifier, zone.name, zone.to_s].compact.any? do |option|
+      option.casecmp?(candidate)
+    end
+  end
+
+  def zone_identifier(zone, fallback)
+    zone.tzinfo&.identifier || zone.name || fallback.to_s
+  end
+
+  def set_edit_variables
+    region_param = normalize_region_from_param(params[:ri].presence)
+    language_param = normalize_language_from_param(params[:lx].presence)
+    timezone_param = normalize_timezone_from_param(params[:tz].presence)
+    theme_param = normalize_theme_from_param(params[:ct].presence)
+
+    @current_region = region_param || session[:region] || DEFAULT_REGION
+    @current_country = session[:country] || DEFAULT_REGION
+    @current_language = language_param || session[:language] || DEFAULT_LANGUAGE
+    @current_theme = theme_param || session[:theme]
+
+    timezone_candidate = timezone_param || session[:timezone]
+    timezone = resolve_timezone(timezone_candidate) || resolve_timezone(DEFAULT_TIMEZONE)
+    identifier_source = timezone_candidate.presence || DEFAULT_TIMEZONE
+    @current_timezone = timezone ? timezone.to_s : DEFAULT_TIMEZONE
+    @current_timezone_identifier =
+      if timezone
+        zone_identifier(timezone, identifier_source)
+      else
+        identifier_source
       end
+  end
 
-      if preferences[:timezone].present?
-        timezone_result = update_timezone(preferences[:timezone])
-        return timezone_result if timezone_result.error?
+  def persist_preference_cookie!
+    write_preference_cookie(cookie_preferences)
+  end
 
-        updated ||= timezone_result.updated?
-      end
+  def cookie_preferences
+    {
+      "lx" => normalize_language_for_cookie,
+      "ri" => normalize_region_for_cookie,
+      "tz" => normalize_timezone_for_cookie,
+      "ct" => normalize_theme_for_cookie,
+    }.compact.presence || DEFAULT_PREFERENCES
+  end
 
-      Result.new(updated, nil)
+  def normalize_language_for_cookie
+    LANGUAGE_COOKIE_MAP.fetch(session[:language].to_s.upcase) do
+      existing_cookie_preferences["lx"] || DEFAULT_PREFERENCES["lx"]
+    end
+  end
+
+  def normalize_region_for_cookie
+    REGION_COOKIE_MAP.fetch(session[:region].to_s.upcase) do
+      existing_cookie_preferences["ri"] || DEFAULT_PREFERENCES["ri"]
+    end
+  end
+
+  def normalize_timezone_for_cookie
+    candidate = (session[:timezone].presence || DEFAULT_TIMEZONE).to_s
+    TIMEZONE_COOKIE_MAP.each do |full, shortcode|
+      return shortcode if full.casecmp?(candidate)
     end
 
-    def assign_if_present(key, value)
-      return false if value.blank?
+    existing_cookie_preferences["tz"] || DEFAULT_PREFERENCES["tz"]
+  end
 
-      session[key] = value
-      true
+  def normalize_theme_for_cookie
+    candidate = session[:theme].presence || existing_cookie_preferences["ct"]
+    THEME_COOKIE_MAP.fetch(candidate.to_s.downcase) do
+      existing_cookie_preferences["ct"] || DEFAULT_PREFERENCES["ct"]
     end
+  end
 
-    def update_language(language)
-      normalized = normalized_language(language)
-      return error_result(:languages, :unsupported) unless normalized
+  def existing_cookie_preferences
+    return @existing_cookie_preferences if defined?(@existing_cookie_preferences)
 
-      session[:language] = normalized
-      Result.new(true, nil)
-    end
+    @existing_cookie_preferences = read_preference_cookie
+  end
 
-    def normalized_language(value)
-      normalized = LANGUAGE_PARAM_MAP[value.to_s.downcase] || value&.to_s&.upcase
-      return unless normalized.present? && SELECTABLE_LANGUAGES.include?(normalized)
+  def normalize_region_from_param(value)
+    return if value.blank?
 
-      normalized
-    end
+    REGION_PARAM_MAP[value.to_s.downcase] || value.to_s.upcase
+  end
 
-    def update_timezone(timezone)
-      candidate = timezone.to_s
-      return error_result(:timezones, :invalid) unless selectable_timezone?(candidate)
+  def normalize_language_from_param(value)
+    return if value.blank?
 
-      zone = resolve_timezone(candidate)
-      return error_result(:timezones, :invalid) unless zone
+    LANGUAGE_PARAM_MAP[value.to_s.downcase] || value.to_s.upcase
+  end
 
-      session[:timezone] = zone_identifier(zone, candidate)
-      Result.new(true, nil)
-    end
+  def normalize_timezone_from_param(value)
+    return if value.blank?
 
-    def selectable_timezone?(candidate)
-      SELECTABLE_TIMEZONES.any? { |identifier| identifier.casecmp?(candidate) }
-    end
+    TIMEZONE_PARAM_MAP[value.to_s.downcase] || value.to_s
+  end
 
-    def resolve_timezone(value)
-      return if value.blank?
-      return value if value.is_a?(ActiveSupport::TimeZone)
+  def normalize_theme_from_param(value)
+    return if value.blank?
 
-      candidate = value.to_s
-      ActiveSupport::TimeZone[candidate] || ActiveSupport::TimeZone.all.find do |zone|
-        timezone_matches?(zone, candidate)
-      end
-    end
+    THEME_PARAM_MAP[value.to_s.downcase] || value.to_s
+  end
 
-    def timezone_matches?(zone, candidate)
-      [ zone.tzinfo&.identifier, zone.name, zone.to_s ].compact.any? do |option|
-        option.casecmp?(candidate)
-      end
-    end
+  def redirect_params
+    params = {}
+    params[:lx] = session[:language].to_s.downcase if session[:language].present?
+    params[:ri] = session[:region].to_s.downcase if session[:region].present?
+    params[:tz] = session[:timezone].to_s.downcase if session[:timezone].present?
+    params
+  end
 
-    def zone_identifier(zone, fallback)
-      zone.tzinfo&.identifier || zone.name || fallback.to_s
-    end
+  def error_result(*key_parts)
+    Result.new(false, i18n_key(*key_parts))
+  end
 
-    def set_edit_variables
-      region_param = normalize_region_from_param(params[:ri].presence)
-      language_param = normalize_language_from_param(params[:lx].presence)
-      timezone_param = normalize_timezone_from_param(params[:tz].presence)
-      theme_param = normalize_theme_from_param(params[:ct].presence)
+  def i18n_key(*segments)
+    ([translation_scope] + segments).join(".")
+  end
 
-      @current_region = region_param || session[:region] || DEFAULT_REGION
-      @current_country = session[:country] || DEFAULT_REGION
-      @current_language = language_param || session[:language] || DEFAULT_LANGUAGE
-      @current_theme = theme_param || session[:theme]
+  def translation_scope
+    raise NotImplementedError, "#{self.class.name} must implement #translation_scope"
+  end
 
-      timezone_candidate = timezone_param || session[:timezone]
-      timezone = resolve_timezone(timezone_candidate) || resolve_timezone(DEFAULT_TIMEZONE)
-      identifier_source = timezone_candidate.presence || DEFAULT_TIMEZONE
-      @current_timezone = timezone ? timezone.to_s : DEFAULT_TIMEZONE
-      @current_timezone_identifier =
-        if timezone
-          zone_identifier(timezone, identifier_source)
-        else
-          identifier_source
-        end
-    end
-
-    def persist_preference_cookie!
-      write_preference_cookie(cookie_preferences)
-    end
-
-    def cookie_preferences
-      {
-        "lx" => normalize_language_for_cookie,
-        "ri" => normalize_region_for_cookie,
-        "tz" => normalize_timezone_for_cookie,
-        "ct" => normalize_theme_for_cookie
-      }.compact.presence || DEFAULT_PREFERENCES
-    end
-
-    def normalize_language_for_cookie
-      LANGUAGE_COOKIE_MAP.fetch(session[:language].to_s.upcase) do
-        existing_cookie_preferences["lx"] || DEFAULT_PREFERENCES["lx"]
-      end
-    end
-
-    def normalize_region_for_cookie
-      REGION_COOKIE_MAP.fetch(session[:region].to_s.upcase) do
-        existing_cookie_preferences["ri"] || DEFAULT_PREFERENCES["ri"]
-      end
-    end
-
-    def normalize_timezone_for_cookie
-      candidate = (session[:timezone].presence || DEFAULT_TIMEZONE).to_s
-      TIMEZONE_COOKIE_MAP.each do |full, shortcode|
-        return shortcode if full.casecmp?(candidate)
-      end
-
-      existing_cookie_preferences["tz"] || DEFAULT_PREFERENCES["tz"]
-    end
-
-    def normalize_theme_for_cookie
-      candidate = session[:theme].presence || existing_cookie_preferences["ct"]
-      THEME_COOKIE_MAP.fetch(candidate.to_s.downcase) do
-        existing_cookie_preferences["ct"] || DEFAULT_PREFERENCES["ct"]
-      end
-    end
-
-    def existing_cookie_preferences
-      return @existing_cookie_preferences if defined?(@existing_cookie_preferences)
-
-      @existing_cookie_preferences = read_preference_cookie
-    end
-
-    def normalize_region_from_param(value)
-      return if value.blank?
-
-      REGION_PARAM_MAP[value.to_s.downcase] || value.to_s.upcase
-    end
-
-    def normalize_language_from_param(value)
-      return if value.blank?
-
-      LANGUAGE_PARAM_MAP[value.to_s.downcase] || value.to_s.upcase
-    end
-
-    def normalize_timezone_from_param(value)
-      return if value.blank?
-
-      TIMEZONE_PARAM_MAP[value.to_s.downcase] || value.to_s
-    end
-
-    def normalize_theme_from_param(value)
-      return if value.blank?
-
-      THEME_PARAM_MAP[value.to_s.downcase] || value.to_s
-    end
-
-    def redirect_params
-      params = {}
-      params[:lx] = session[:language].to_s.downcase if session[:language].present?
-      params[:ri] = session[:region].to_s.downcase if session[:region].present?
-      params[:tz] = session[:timezone].to_s.downcase if session[:timezone].present?
-      params
-    end
-
-    def error_result(*key_parts)
-      Result.new(false, i18n_key(*key_parts))
-    end
-
-    def i18n_key(*segments)
-      ([ translation_scope ] + segments).join(".")
-    end
-
-    def translation_scope
-      raise NotImplementedError, "#{self.class.name} must implement #translation_scope"
-    end
-
-    def preference_region_edit_url
-      raise NotImplementedError, "#{self.class.name} must implement #preference_region_edit_url"
-    end
+  def preference_region_edit_url
+    raise NotImplementedError, "#{self.class.name} must implement #preference_region_edit_url"
+  end
 end

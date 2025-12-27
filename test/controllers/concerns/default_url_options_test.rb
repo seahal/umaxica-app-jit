@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 class DefaultUrlOptionsTest < ActiveSupport::TestCase
   # rubocop:disable Rails/ApplicationController
@@ -40,7 +42,7 @@ class DefaultUrlOptionsTest < ActiveSupport::TestCase
 
   test "read_cookie_preferences_for_url handles legacy JSON gracefully" do
     cookie_jar = @controller.request.cookie_jar
-    cookie_jar.signed[@controller.send(:preference_cookie_key)] = JSON.generate([ "array", "value" ])
+    cookie_jar.signed[@controller.send(:preference_cookie_key)] = JSON.generate(["array", "value"])
 
     result = @controller.send(:read_cookie_preferences_for_url)
 

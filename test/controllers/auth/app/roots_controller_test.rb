@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Auth::App::RootsControllerTest < ActionDispatch::IntegrationTest
@@ -13,5 +15,12 @@ class Auth::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get auth_app_root_url
 
     assert_response :success
+  end
+
+  test "renders layout contract" do
+    get auth_app_root_url
+
+    assert_response :success
+    assert_layout_contract
   end
 end

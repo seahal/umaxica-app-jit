@@ -1,3 +1,23 @@
+# == Schema Information
+#
+# Table name: staff_identity_passkeys
+#
+#  id          :uuid             not null, primary key
+#  created_at  :datetime         not null
+#  description :string           default(""), not null
+#  external_id :uuid             not null
+#  public_key  :text             not null
+#  sign_count  :integer          default(0), not null
+#  staff_id    :uuid             not null
+#  updated_at  :datetime         not null
+#  webauthn_id :binary           not null
+#
+# Indexes
+#
+#  index_staff_identity_passkeys_on_staff_id     (staff_id)
+#  index_staff_identity_passkeys_on_webauthn_id  (webauthn_id) UNIQUE
+#
+
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 # Fixture is intentionally empty. These child table fixtures reference parent records

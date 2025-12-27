@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Auth::App::Registration::EmailsControllerTest < ActionDispatch::IntegrationTest
@@ -62,9 +64,9 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
          params: {
            user_identity_email: {
              address: email,
-             confirm_policy: "1"
+             confirm_policy: "1",
            },
-           "cf-turnstile-response": "test"
+           "cf-turnstile-response": "test",
          },
          headers: default_headers
 
@@ -83,9 +85,9 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
          params: {
            user_identity_email: {
              address: email,
-             confirm_policy: "1"
+             confirm_policy: "1",
            },
-           "cf-turnstile-response": "test"
+           "cf-turnstile-response": "test",
          },
          headers: default_headers
 
@@ -112,9 +114,9 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
            params: {
              user_identity_email: {
                address: email,
-               confirm_policy: "1"
+               confirm_policy: "1",
              },
-             "cf-turnstile-response": "test"
+             "cf-turnstile-response": "test",
            },
            headers: default_headers
     end
@@ -128,8 +130,8 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
           params: {
             id: user_email.id,
             user_identity_email: {
-              pass_code: "000000"
-            }
+              pass_code: "000000",
+            },
           },
           headers: default_headers
 
@@ -146,9 +148,9 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
            params: {
              user_identity_email: {
                address: email,
-               confirm_policy: "1"
+               confirm_policy: "1",
              },
-             "cf-turnstile-response": "test"
+             "cf-turnstile-response": "test",
            },
            headers: default_headers
     end
@@ -163,8 +165,8 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
             params: {
               id: user_email.id,
               user_identity_email: {
-                pass_code: "000000"
-              }
+                pass_code: "000000",
+              },
             },
             headers: default_headers
     end
@@ -215,7 +217,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
   # rubocop:disable Minitest/MultipleAssertions
   test "redirects to encoded URL after successful registration when rd parameter is provided" do
     email = "redirect_test@example.com"
-    redirect_url = "https://#{ENV['PEAK_SERVICE_URL']}/dashboard"
+    redirect_url = "https://#{ENV["PEAK_SERVICE_URL"]}/dashboard"
     encoded_rd = Base64.urlsafe_encode64(redirect_url)
 
     # Create registration record with rd parameter
@@ -223,10 +225,10 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
          params: {
            user_identity_email: {
              address: email,
-             confirm_policy: "1"
+             confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
-           rd: encoded_rd
+           rd: encoded_rd,
          },
          headers: default_headers
 
@@ -247,9 +249,9 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
           params: {
             id: user_email.id,
             user_identity_email: {
-              pass_code: correct_code
+              pass_code: correct_code,
             },
-            rd: encoded_rd
+            rd: encoded_rd,
           },
           headers: default_headers
 
@@ -269,9 +271,9 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
            params: {
              user_identity_email: {
                address: email,
-               confirm_policy: "1"
+               confirm_policy: "1",
              },
-             "cf-turnstile-response": "test"
+             "cf-turnstile-response": "test",
            },
            headers: default_headers
     end
@@ -291,8 +293,8 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
           params: {
             id: user_email.id,
             user_identity_email: {
-              pass_code: correct_code
-            }
+              pass_code: correct_code,
+            },
           },
           headers: default_headers
 
@@ -334,9 +336,9 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
            params: {
              user_identity_email: {
                address: email,
-               confirm_policy: "1"
+               confirm_policy: "1",
              },
-             "cf-turnstile-response": "test"
+             "cf-turnstile-response": "test",
            },
            headers: default_headers
     end
@@ -353,8 +355,8 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
           params: {
             id: user_email.id,
             user_identity_email: {
-              pass_code: correct_code
-            }
+              pass_code: correct_code,
+            },
           },
           headers: default_headers
 
@@ -379,9 +381,9 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
            params: {
              user_identity_email: {
                address: email,
-               confirm_policy: "1"
+               confirm_policy: "1",
              },
-             "cf-turnstile-response": "test"
+             "cf-turnstile-response": "test",
            },
            headers: default_headers
     end
@@ -401,8 +403,8 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
           params: {
             id: user_email.id,
             user_identity_email: {
-              pass_code: correct_code
-            }
+              pass_code: correct_code,
+            },
           },
           headers: default_headers
 
@@ -414,11 +416,11 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
   private
 
-    def default_headers
-      { "Host" => host, "HTTPS" => "on" }
-    end
+  def default_headers
+    { "Host" => host, "HTTPS" => "on" }
+  end
 
-    def host
-      ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
-    end
+  def host
+    ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
+  end
 end

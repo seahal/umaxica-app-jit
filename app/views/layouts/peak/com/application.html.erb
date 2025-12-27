@@ -10,12 +10,27 @@
   <%= stylesheet_link_tag "peak/main" %>
   <%= stylesheet_link_tag "peak/com/main" %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
 </head>
 
 <body class="px-4">
-<header>
-  <h1><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica(www, com)</a></h1></header>
+<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
+<% edge_host = ENV["EDGE_CORPORATE_URL"].presence %>
+
+<div class="mx-auto max-w-6xl px-6">
+<header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
+  <div class="flex flex-col">
+    <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
+    <h1 class="text-2xl font-semibold tracking-tight">
+      <% if edge_host.present? %>
+        <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/">Umaxica(www, com)</a>
+      <% else %>
+        Umaxica(www, com)
+      <% end %>
+    </h1>
+  </div>
+</header>
 
 <hr>
 
@@ -29,14 +44,17 @@
 
 <hr>
 
-<footer>
-  <ul>
-    <li><a href="https://<%= ENV['EDGE_CORPORATE_URL'] %>"><%= t('peak.com.preferences.footer.home') %></a></li>
-    <li><%= link_to t('peak.com.preferences.footer.preference'), peak_com_preference_path %></li>
-    <li><%= link_to t('peak.com.preferences.footer.privacy'), peak_com_privacy_path %></li>
-  </ul>
-  <%= render "concern/copyright" %>
+<footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
+  <nav class="flex flex-wrap items-center gap-4">
+    <a class="font-semibold text-[hsl(var(--foreground))]" href="https://<%= ENV['EDGE_CORPORATE_URL'] %>"><%= t('peak.com.preferences.footer.home') %></a>
+    <%= link_to t('peak.com.preferences.footer.preference'), peak_com_preference_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+    <%= link_to t('peak.com.preferences.footer.privacy'), peak_com_privacy_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+  </nav>
+  <div class="mt-4">
+    <%= render "concern/copyright" %>
+  </div>
 </footer>
+</div>
 
 </body>
 </html>

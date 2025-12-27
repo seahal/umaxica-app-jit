@@ -1,3 +1,30 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: app_contact_telephones
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  app_contact_id         :uuid             not null
+#  created_at             :datetime         not null
+#  deletable              :boolean          default(FALSE), not null
+#  expires_at             :timestamptz      not null
+#  remaining_views        :integer          default(10), not null
+#  telephone_number       :string(1000)     default(""), not null
+#  updated_at             :datetime         not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default("-infinity"), not null
+#
+# Indexes
+#
+#  index_app_contact_telephones_on_app_contact_id       (app_contact_id)
+#  index_app_contact_telephones_on_expires_at           (expires_at)
+#  index_app_contact_telephones_on_telephone_number     (telephone_number)
+#  index_app_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
+#
+
 require "test_helper"
 
 class AppContactTelephoneTest < ActiveSupport::TestCase
@@ -5,7 +32,7 @@ class AppContactTelephoneTest < ActiveSupport::TestCase
     @app_contact = app_contacts(:one)
     @telephone = AppContactTelephone.new(
       app_contact: @app_contact,
-      telephone_number: "+819012345678"
+      telephone_number: "+819012345678",
     )
   end
 
@@ -20,7 +47,7 @@ class AppContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should validate telephone format" do
-    valid_numbers = %w[+12125551234 090-1234-5678 1234567890]
+    valid_numbers = %w(+12125551234 090-1234-5678 1234567890)
     valid_numbers.each do |num|
       @telephone.telephone_number = num
 
@@ -58,7 +85,7 @@ class AppContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "can_resend_otp? logic" do
-    assert_not @telephone.can_resend_otp?
+    assert_predicate @telephone, :can_resend_otp?
     @telephone.generate_otp!
 
     assert_not @telephone.can_resend_otp?

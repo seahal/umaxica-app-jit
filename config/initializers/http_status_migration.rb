@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Migrate deprecated Rack/Rails status symbol :unprocessable_entity (422)
 # to the recommended :unprocessable_content to silence deprecation warnings
 # during tests and runtime.
@@ -9,7 +11,7 @@ Rails.application.config.after_initialize do
 
     updated = mapping.transform_values { |v|
       sym = v.is_a?(String) ? v.to_sym : v
-      sym == :unprocessable_entity ? :unprocessable_content : v
+      (sym == :unprocessable_entity) ? :unprocessable_content : v
     }
 
     # Apply the updated mapping via configuration API

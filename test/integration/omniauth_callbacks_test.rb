@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
@@ -14,18 +16,18 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
   test "should sign in with Google" do
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new({
-                                                                         provider: "google_oauth2",
-                                                                         uid: "123456789",
-                                                                         info: {
-                                                                           email: "test@example.com",
-                                                                           image: "http://example.com/image.jpg"
-                                                                         },
-                                                                         credentials: {
-                                                                           token: "token",
-                                                                           refresh_token: "refresh_token",
-                                                                           expires_at: 1.week.from_now.to_i
-                                                                         }
-                                                                       })
+      provider: "google_oauth2",
+      uid: "123456789",
+      info: {
+        email: "test@example.com",
+        image: "http://example.com/image.jpg",
+      },
+      credentials: {
+        token: "token",
+        refresh_token: "refresh_token",
+        expires_at: 1.week.from_now.to_i,
+      },
+    })
 
     get auth_app_social_google_callback_url, headers: { "Host" => @host }
     assert_redirected_to @expected_redirect
@@ -40,16 +42,16 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
   test "should sign in with Apple" do
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new({
-                                                                 provider: "apple",
-                                                                 uid: "apple_uid_123",
-                                                                 info: {
-                                                                   email: "apple@example.com"
-                                                                 },
-                                                                 credentials: {
-                                                                   token: "apple_token",
-                                                                   expires_at: 1.week.from_now.to_i
-                                                                 }
-                                                               })
+      provider: "apple",
+      uid: "apple_uid_123",
+      info: {
+        email: "apple@example.com",
+      },
+      credentials: {
+        token: "apple_token",
+        expires_at: 1.week.from_now.to_i,
+      },
+    })
 
     get auth_app_social_apple_callback_url, headers: { "Host" => @host }
     assert_redirected_to @expected_redirect
@@ -71,33 +73,27 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       token: "existing_token",
       email: "existing@example.com",
       expires_at: 1.week.from_now.to_i,
-      user_identity_social_google_status: user_identity_social_google_statuses(:active)
+      user_identity_social_google_status: user_identity_social_google_statuses(:active),
     )
 
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new({
-                                                                         provider: "google_oauth2",
-                                                                         uid: "existing_uid",
-                                                                         info: {
-                                                                           email: "existing@example.com",
-                                                                           image: "http://example.com/image.jpg"
-                                                                         },
-                                                                         credentials: {
-                                                                           token: "new_token",
-                                                                           refresh_token: "new_refresh_token",
-                                                                           expires_at: 1.week.from_now.to_i
-                                                                         }
-                                                                       })
+      provider: "google_oauth2",
+      uid: "existing_uid",
+      info: {
+        email: "existing@example.com",
+        image: "http://example.com/image.jpg",
+      },
+      credentials: {
+        token: "new_token",
+        refresh_token: "new_refresh_token",
+        expires_at: 1.week.from_now.to_i,
+      },
+    })
 
     get auth_app_social_google_callback_url, headers: { "Host" => @host }
     assert_redirected_to @expected_redirect
     follow_redirect!
 
     assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Google oauth2"), flash[:notice]
-  end
-
-  test "should link to existing user if email matches? (Not implemented logic yet)" do
-    # My current implementation creates a NEW user if identity not found.
-    # Future improvement: Link by email.
-    skip "Not implemented yet"
   end
 end

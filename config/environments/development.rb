@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
@@ -123,7 +125,7 @@ Rails.application.configure do
     user_name: ENV["RESEND_SMTP_USER_NAME"],
     password: Rails.application.credentials.dig(:RESEND_SMTP_PASSWORD),
     port: 465,
-    tls: true
+    tls: true,
   }
 
   # static file serve

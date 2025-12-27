@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   scope module: :docs, as: :docs do
     constraints host: ENV["DOCS_CORPORATE_URL"] do
@@ -8,6 +10,10 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
+        end
+        # posts resource
+        resources :posts do
+          resources :versions
         end
       end
     end
@@ -21,6 +27,10 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
+        # posts resource
+        resources :posts do
+          resources :versions
+        end
       end
     end
 
@@ -33,6 +43,10 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
+        end
+        # posts resource
+        resources :posts do
+          resources :versions
         end
       end
     end
