@@ -8,6 +8,7 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "auth/main" %>
   <%= stylesheet_link_tag "auth/org/main" %>
@@ -33,7 +34,7 @@
           <span class="text-[hsl(var(--muted-foreground))]">(org)</span>
         </h1>
       </div>
-      <nav class="flex flex-wrap gap-3">
+      <nav class="flex flex-wrap gap-3 text-sm">
         <% unless logged_in? %>
           <%= link_to t("auth.org.layout.nav.log_in"), new_auth_org_authentication_path,
                       class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
@@ -51,10 +52,12 @@
     </main>
 
     <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
-      <div class="flex flex-wrap items-center justify-between gap-4">
+      <nav class="flex flex-wrap items-center gap-4">
         <% if edge_host.present? %>
           <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>:4444/">home</a>
         <% end %>
+      </nav>
+      <div class="mt-4">
         <%= render "concern/copyright" %>
       </div>
     </footer>

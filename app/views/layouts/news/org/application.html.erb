@@ -10,6 +10,7 @@
   <%= stylesheet_link_tag "news/main" %>
   <%= stylesheet_link_tag "news/org/main" %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <link rel="icon" href="https://perm.umaxica.org/favicon.ico" sizes="32x32">
 </head>
@@ -30,7 +31,7 @@
           <% else %>
             <%= code_name %>
           <% end %>
-          <span class="text-[hsl(var(--muted-foreground))]">(news, org)</span>
+          <span class="text-[hsl(var(--muted-foreground))]">(org)</span>
         </h1>
       </div>
     </header>
@@ -40,16 +41,16 @@
     </main>
 
     <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
-      <ul class="flex flex-wrap items-center gap-4">
+      <nav class="flex flex-wrap items-center gap-4">
         <% if edge_host.present? %>
-          <li><a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>:4444/">home</a></li>
+          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>:4444/">home</a>
         <% end %>
-        <li>Security</li>
-        <li>Support</li>
-        <li>Terms</li>
-        <li>Privacy</li>
-        <li>Accessibility</li>
-      </ul>
+        <span>Security</span>
+        <span>Support</span>
+        <span>Terms</span>
+        <span>Privacy</span>
+        <span>Accessibility</span>
+      </nav>
       <div class="mt-4">
         <%= render "concern/copyright" %>
       </div>

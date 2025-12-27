@@ -6,10 +6,12 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
   class DummyPolicy; end
 
   class DummyAudit
+    # rubocop:disable Layout/ClassStructure
     def self.rescue_from(*)
     end
 
     include AuthorizationAudit
+    # rubocop:enable Layout/ClassStructure
 
     attr_accessor :current_user, :current_staff, :request, :action_name, :controller_name
 

@@ -11,5 +11,12 @@ module Core::Org
 
       assert_response :success
     end
+
+    test "renders layout contract" do
+      get core_org_root_url
+
+      assert_response :success
+      assert_layout_contract
+    end
   end
 end

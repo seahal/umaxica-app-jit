@@ -51,3 +51,23 @@ module ActiveSupport
     # No manual seeding needed in test setup
   end
 end
+
+module LayoutAssertions
+  def assert_layout_contract
+    assert_select "head", count: 1 do
+      assert_select "link[rel=?][href*=?]", "stylesheet", "application", count: 1
+      assert_select "link[rel=?][href*=?]", "stylesheet", "tailwind", count: 1
+    end
+
+    assert_select "header", minimum: 1
+    assert_select "main", count: 1
+    assert_select "footer", count: 1 do
+      assert_select "nav", count: 1
+      assert_select "small", text: /^©/
+    end
+  end
+end
+
+class ActionDispatch::IntegrationTest
+  include LayoutAssertions
+end

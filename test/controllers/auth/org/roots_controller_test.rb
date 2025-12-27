@@ -15,4 +15,12 @@ class Auth::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
   end
+
+  test "renders layout contract after redirect" do
+    get auth_org_root_url
+
+    follow_redirect!
+    assert_response :success
+    assert_layout_contract
+  end
 end

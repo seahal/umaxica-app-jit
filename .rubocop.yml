@@ -43,6 +43,7 @@ AllCops:
     - 'db/*_schema.rb'
     - 'bin/**/*'
     - 'tmp/**/*'
+    - 'log/**/*'
   Include:
     - '**/*.rb'
     - '**/*.rake'
@@ -54,6 +55,13 @@ AllCops:
 # ============================================================
 
 Layout:
+  Enabled: true
+
+# ---------- クラス構造 ----------
+Layout/ClassStructure:
+  Enabled: true
+
+Style/AccessorGrouping:
   Enabled: true
 
 # ---------- インデント ----------

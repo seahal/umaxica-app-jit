@@ -16,4 +16,11 @@ class Auth::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+
+  test "renders layout contract" do
+    get auth_app_root_url
+
+    assert_response :success
+    assert_layout_contract
+  end
 end

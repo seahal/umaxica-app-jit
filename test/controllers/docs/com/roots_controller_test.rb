@@ -21,6 +21,7 @@ class Docs::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   test "renders expected layout structure" do
     get docs_com_root_url
 
+    assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
       assert_select "title", count: 1, text: "#{brand_name} (com) Documents"

@@ -10,6 +10,13 @@ module Peak::Org
       assert_response :success
     end
 
+    test "renders layout contract" do
+      get peak_org_root_url
+
+      assert_response :success
+      assert_layout_contract
+    end
+
     # rubocop:disable Minitest/MultipleAssertions
     test "should display navigation links" do
       get peak_org_root_url

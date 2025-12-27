@@ -28,6 +28,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "renders expected layout structure" do
     get help_app_root_url
 
+    assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "title", count: 1, text: "#{brand_name} (app) Help Center"
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1

@@ -10,6 +10,7 @@
   <%= javascript_importmap_tags %>
   <%= stylesheet_link_tag "auth/main" %>
   <%= stylesheet_link_tag "auth/app/main" %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 </head>
@@ -34,7 +35,7 @@
           <span class="text-[hsl(var(--muted-foreground))]">(app)</span>
         </h1>
       </div>
-      <nav class="flex flex-wrap gap-3">
+      <nav class="flex flex-wrap gap-3 text-sm">
         <% unless logged_in? %>
           <%= link_to t("auth.app.layout.nav.sign_up"), new_auth_app_registration_url,
                       class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
@@ -54,10 +55,12 @@
     </main>
 
     <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
-      <div class="flex flex-wrap items-center justify-between gap-4">
+      <nav class="flex flex-wrap items-center gap-4">
         <% if edge_host.present? %>
           <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>/">Home</a>
         <% end %>
+      </nav>
+      <div class="mt-4">
         <%= render "concern/copyright" %>
       </div>
     </footer>

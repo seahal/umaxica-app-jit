@@ -36,6 +36,14 @@ class UserIdentitySecret < IdentitiesRecord
 
   validate :enforce_secret_limit, on: :create
 
+  def self.identity_secret_status_class
+    UserIdentitySecretStatus
+  end
+
+  def self.identity_secret_status_id_column
+    :user_identity_secret_status_id
+  end
+
   # Alias for password to match controller params
   def value=(val)
     self.password = val
@@ -43,14 +51,6 @@ class UserIdentitySecret < IdentitiesRecord
 
   def value
     password
-  end
-
-  def self.identity_secret_status_class
-    UserIdentitySecretStatus
-  end
-
-  def self.identity_secret_status_id_column
-    :user_identity_secret_status_id
   end
 
   private

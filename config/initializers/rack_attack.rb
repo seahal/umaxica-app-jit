@@ -42,6 +42,15 @@ class Rack::Attack
   end
 
   ############################################################
+  # 6) expensive paths (only what's needed)
+  ############################################################
+  HEAVY_PATHS = [
+    %r{\A/api/search},
+    %r{\A/api/reports},
+    %r{\A/api/exports},
+    %r{\A/documents/export},
+  ].freeze
+  ############################################################
   # 3) tenant_key (multi-domain support)
   ############################################################
   def self.tenant_key(req)
@@ -61,16 +70,6 @@ class Rack::Attack
   throttle("req/tenant/ip", limit: 300, period: 1.minute) do |req|
     "#{tenant_key(req)}:#{req.ip}"
   end
-
-  ############################################################
-  # 6) expensive paths (only what's needed)
-  ############################################################
-  HEAVY_PATHS = [
-    %r{\A/api/search},
-    %r{\A/api/reports},
-    %r{\A/api/exports},
-    %r{\A/documents/export},
-  ].freeze
 
   throttle("req/heavy/tenant/ip", limit: 60, period: 1.minute) do |req|
     next unless HEAVY_PATHS.any? { |re| re.match?(req.path) }

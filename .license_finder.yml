@@ -1,15 +1,12 @@
 # License Finder Configuration
 # Documentation: https://github.com/pivotal/LicenseFinder
 
-# Ignore Go vendor experiment since this is a Ruby/JavaScript project
-decisions:
-  - :ignore_group:
-    - :name: "Go15VendorExperiment"
-
 # Only scan Ruby (Bundler) and JavaScript (NPM) dependencies
+# Note: Bun is not officially supported by LicenseFinder yet,
+# but NPM mode will read dependencies from package.json
 enabled_package_managers:
-  - bundler
-  - npm
+  bundler: true
+  npm: true
 
 # Permitted licenses (whitelist)
 whitelist:

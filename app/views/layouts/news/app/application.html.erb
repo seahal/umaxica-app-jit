@@ -10,6 +10,7 @@
   <%= stylesheet_link_tag "news/main" %>
   <%= stylesheet_link_tag "news/app/main" %>
   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 </head>
@@ -41,14 +42,14 @@
     </main>
 
     <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
-      <ul class="flex flex-wrap items-center gap-4">
+      <nav class="flex flex-wrap items-center gap-4">
         <% if edge_host.present? %>
-          <li><a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>/">Home</a></li>
+          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>/">Home</a>
         <% end %>
-        <li>Help Center</li>
-        <li>Newsroom</li>
-        <li>Document Archive</li>
-      </ul>
+        <span>Help Center</span>
+        <span>Newsroom</span>
+        <span>Document Archive</span>
+      </nav>
       <div class="mt-4">
         <%= render "concern/copyright" %>
       </div>
