@@ -27,7 +27,7 @@ class UserIdentitySecret < IdentitiesRecord
 
   MAX_SECRETS_PER_USER = 10
 
-  belongs_to :user
+  belongs_to :user, inverse_of: :user_identity_secrets
   belongs_to :user_identity_secret_status
 
   validates :name, length: { maximum: 255 }

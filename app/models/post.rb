@@ -29,7 +29,7 @@ class Post < IdentitiesRecord
   belongs_to :author_avatar, class_name: "Avatar", inverse_of: :posts
   belongs_to :post_status
 
-  has_many :post_reviews, dependent: :restrict_with_error
+  has_many :post_reviews, dependent: :restrict_with_error, inverse_of: :post
 
   validates :public_id, presence: true, uniqueness: true
   validates :body, presence: true

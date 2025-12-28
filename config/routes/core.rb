@@ -42,6 +42,41 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
         end
+
+        namespace :docs do
+          namespace :com do
+            resources :posts do
+              resources :versions
+            end
+          end
+          namespace :org do
+            resources :posts do
+              resources :versions
+            end
+          end
+          namespace :app do
+            resources :posts do
+              resources :versions
+            end
+          end
+        end
+        namespace :news do
+          namespace :com do
+            resources :posts do
+              resources :versions
+            end
+          end
+          namespace :org do
+            resources :posts do
+              resources :versions
+            end
+          end
+          namespace :app do
+            resources :posts do
+              resources :versions
+            end
+          end
+        end
       end
     end
   end

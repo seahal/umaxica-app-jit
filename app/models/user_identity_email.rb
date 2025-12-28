@@ -32,7 +32,7 @@ class UserIdentityEmail < IdentitiesRecord
   MAX_EMAILS_PER_USER = 4
 
   belongs_to :user_identity_email_status
-  belongs_to :user
+  belongs_to :user, inverse_of: :user_identity_emails
 
   before_validation do
     self.user_id ||= "00000000-0000-0000-0000-000000000000"

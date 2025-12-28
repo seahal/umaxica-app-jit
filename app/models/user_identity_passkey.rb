@@ -25,7 +25,7 @@
 class UserIdentityPasskey < IdentityRecord
   MAX_PASSKEYS_PER_USER = 4
 
-  belongs_to :user
+  belongs_to :user, inverse_of: :user_identity_passkeys
   belongs_to :user_identity_passkey_status, optional: true
 
   validates :webauthn_id, presence: true, uniqueness: true

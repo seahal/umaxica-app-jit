@@ -21,7 +21,7 @@
 class UserIdentityOneTimePassword < IdentitiesRecord
   MAX_TOTPS_PER_USER = 2
 
-  belongs_to :user
+  belongs_to :user, inverse_of: :user_identity_one_time_passwords
   belongs_to :user_identity_one_time_password_status, optional: true, inverse_of: :user_identity_one_time_passwords
   attribute :user_identity_one_time_password_status_id, default: "NEYO"
 

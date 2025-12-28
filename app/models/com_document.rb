@@ -32,7 +32,7 @@ class ComDocument < DocumentRecord
              inverse_of: :com_documents
 
   validates :status_id, length: { maximum: 255 }
-  has_many :com_document_versions, dependent: :delete_all
+  has_many :com_document_versions, dependent: :delete_all, inverse_of: :com_document
   has_many :com_document_audits,
            -> { where(subject_type: "ComDocument") },
            class_name: "ComDocumentAudit",

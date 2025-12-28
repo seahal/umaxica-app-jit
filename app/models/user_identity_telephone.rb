@@ -30,7 +30,7 @@ class UserIdentityTelephone < IdentitiesRecord
   MAX_TELEPHONES_PER_USER = 4
 
   belongs_to :user_identity_telephone_status
-  belongs_to :user
+  belongs_to :user, inverse_of: :user_identity_telephones
 
   before_validation do
     self.user_id ||= "00000000-0000-0000-0000-000000000000"

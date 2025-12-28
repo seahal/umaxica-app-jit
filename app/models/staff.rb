@@ -36,11 +36,14 @@ class Staff < IdentitiesRecord
 
   belongs_to :staff_identity_status
   has_many :staff_identity_emails,
-           dependent: :restrict_with_error
+           dependent: :restrict_with_error,
+           inverse_of: :staff
   has_many :staff_identity_telephones,
-           dependent: :restrict_with_error
+           dependent: :restrict_with_error,
+           inverse_of: :staff
   has_many :staff_identity_passkeys,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :staff
   has_many :staff_identity_audits,
            -> { where(subject_type: "Staff") },
            foreign_key: :subject_id,
@@ -50,13 +53,17 @@ class Staff < IdentitiesRecord
            as: :actor,
            dependent: :nullify
   has_many :staff_identity_secrets,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :staff
   has_many :staff_tokens,
-           dependent: :nullify
+           dependent: :nullify,
+           inverse_of: :staff
   has_many :staff_messages,
-           dependent: :nullify
+           dependent: :nullify,
+           inverse_of: :staff
   has_many :staff_notifications,
-           dependent: :nullify
+           dependent: :nullify,
+           inverse_of: :staff
 
   def staff?
     true

@@ -21,6 +21,7 @@ gem "ostruct"
 # Database
 gem "pg"
 gem "neighbor"
+gem "strong_migrations"
 # Redis
 gem "redis"
 # CORS
@@ -134,6 +135,8 @@ group :development do
   gem "brakeman", require: false
   # Web console on exception pages
   gem "web-console"
+  gem "better_errors"
+  gem "binding_of_caller"
   # RuboCop
   gem "rubocop", require: false
   gem "rubocop-performance", require: false

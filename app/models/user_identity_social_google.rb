@@ -26,7 +26,7 @@
 #
 
 class UserIdentitySocialGoogle < IdentitiesRecord
-  belongs_to :user
+  belongs_to :user, inverse_of: :user_identity_social_google
   belongs_to :user_identity_social_google_status, optional: true
 
   validates :token, presence: true

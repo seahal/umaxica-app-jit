@@ -26,7 +26,7 @@
 #
 
 class UserIdentitySocialApple < IdentitiesRecord
-  belongs_to :user
+  belongs_to :user, inverse_of: :user_identity_social_apple
   belongs_to :user_identity_social_apple_status, optional: true
 
   validates :token, presence: true

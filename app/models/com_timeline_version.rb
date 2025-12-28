@@ -36,5 +36,5 @@ class ComTimelineVersion < NewsRecord
   validates :published_at, presence: true
   validates :expires_at, presence: true
 
-  belongs_to :com_timeline
+  belongs_to :com_timeline, inverse_of: :com_timeline_versions
 end

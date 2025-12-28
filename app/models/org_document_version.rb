@@ -30,7 +30,7 @@ class OrgDocumentVersion < DocumentRecord
   include Version
   include ::PublicId
 
-  belongs_to :org_document
+  belongs_to :org_document, inverse_of: :org_document_versions
 
   validates :permalink, presence: true, length: { maximum: 200 }
   validates :response_mode, presence: true

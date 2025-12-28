@@ -35,7 +35,7 @@ class UserToken < TokensRecord
 
   MAX_SESSIONS_PER_USER = 2
 
-  belongs_to :user
+  belongs_to :user, inverse_of: :user_tokens
   belongs_to :user_token_status
   attribute :user_token_status_id, default: "NEYO"
 

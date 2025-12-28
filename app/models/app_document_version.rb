@@ -30,7 +30,7 @@ class AppDocumentVersion < DocumentRecord
   include ::Version
   include ::PublicId
 
-  belongs_to :app_document
+  belongs_to :app_document, inverse_of: :app_document_versions
 
   validates :permalink, presence: true, length: { maximum: 200 }
   validates :response_mode, presence: true

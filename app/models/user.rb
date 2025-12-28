@@ -34,39 +34,50 @@ class User < IdentitiesRecord
 
   belongs_to :user_identity_status
   has_one :user_identity_social_apple,
-          dependent: :destroy
+          dependent: :destroy,
+          inverse_of: :user
   has_one :user_identity_social_google,
-          dependent: :destroy
+          dependent: :destroy,
+          inverse_of: :user
   has_many :user_identity_emails,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :user
   has_many :user_identity_telephones,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :user
   has_many :user_identity_secrets,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :user
   has_many :user_identity_passkeys,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :user
   has_many :user_identity_one_time_passwords,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :user
   has_many :user_identity_audits,
-           -> { where(subject_type: "User") },
            foreign_key: :subject_id,
            dependent: :destroy,
            inverse_of: false
   has_many :user_tokens,
-           dependent: :destroy # , disable_joins: true
+           dependent: :destroy, # , disable_joins: true
+           inverse_of: :user
   has_many :user_memberships,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :user
   has_many :workspaces,
            through: :user_memberships
   has_many :user_workspaces,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :user
   has_many :staff_identity_audits,
            as: :actor,
            dependent: :destroy
   has_many :user_messages,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :user
   has_many :user_notifications,
-           dependent: :destroy
+           dependent: :destroy,
+           inverse_of: :user
 
   # Avatar assignments
   has_many :avatar_assignments, dependent: :destroy

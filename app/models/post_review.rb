@@ -23,7 +23,7 @@
 class PostReview < IdentitiesRecord
   include StringPrimaryKey
 
-  belongs_to :post
+  belongs_to :post, inverse_of: :post_reviews
   belongs_to :post_review_status
 
   validates :post_id, uniqueness: { scope: :reviewer_actor_id }

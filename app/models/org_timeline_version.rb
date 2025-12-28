@@ -36,5 +36,5 @@ class OrgTimelineVersion < NewsRecord
   validates :published_at, presence: true
   validates :expires_at, presence: true
 
-  belongs_to :org_timeline
+  belongs_to :org_timeline, inverse_of: :org_timeline_versions
 end

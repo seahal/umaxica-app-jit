@@ -32,7 +32,7 @@ class AppTimeline < NewsRecord
              inverse_of: :app_timelines
 
   validates :status_id, length: { maximum: 255 }
-  has_many :app_timeline_versions, dependent: :delete_all
+  has_many :app_timeline_versions, dependent: :delete_all, inverse_of: :app_timeline
   has_many :app_timeline_audits,
            -> { where(subject_type: "AppTimeline") },
            class_name: "AppTimelineAudit",
