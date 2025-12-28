@@ -51,7 +51,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   create_table "app_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.string "description", limit: 255, default: "", null: false
-    t.string "parent_title", limit: 255, default: "", null: false
+    t.string "parent_title", limit: 255, default: ""
     t.integer "position", default: 0, null: false
     t.index "lower((id)::text)", name: "index_app_contact_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contact_statuses_id_format"
@@ -97,7 +97,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NONE"
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
@@ -166,7 +166,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   create_table "com_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.string "description", limit: 255, default: "", null: false
-    t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000"
     t.integer "position", default: 0, null: false
     t.index "lower((id)::text)", name: "index_com_contact_statuses_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_com_contact_statuses_on_parent_id"
@@ -217,7 +217,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NONE"
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
@@ -268,7 +268,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   create_table "org_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.string "description", limit: 255, default: "", null: false
-    t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000"
     t.integer "position", default: 0, null: false
     t.index "lower((id)::text)", name: "index_org_contact_statuses_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_org_contact_statuses_on_parent_id"
@@ -315,7 +315,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NONE"
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false

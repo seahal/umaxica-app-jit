@@ -12,8 +12,6 @@ require "test_helper"
 class ComDocumentStatusTest < ActiveSupport::TestCase
   include StatusModelTestHelper
 
-  fixtures :com_document_statuses
-
   def setup
     @model_class = ComDocumentStatus
     @valid_id = "ACTIVE"

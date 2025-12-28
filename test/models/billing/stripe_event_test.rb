@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: billing_stripe_events
@@ -15,7 +14,7 @@
 #
 # Indexes
 #
-#  index_billing_stripe_events_on_event_id     (event_id) UNIQUE
+#  index_billing_stripe_events_on_event_id     (event_id)
 #  index_billing_stripe_events_on_received_at  (received_at)
 #
 
@@ -43,27 +42,12 @@ module Billing
     end
 
     test "enforces unique event_id at the database level" do
-      event_id = "evt_unique_1"
-      Billing::StripeEvent.create!(build_attributes(event_id: event_id))
+      event_id = "evt_#{SecureRandom.uuid}"
+      event = Billing::StripeEvent.create!(build_attributes(event_id: event_id))
 
-      attributes = build_attributes(event_id: event_id)
-      timestamp = Time.current
-      sql = <<~SQL.squish
-        INSERT INTO billing_stripe_events (
-          event_id, event_type, livemode, payload_json, received_at, created_at, updated_at
-        ) VALUES (
-          #{Billing::StripeEvent.connection.quote(attributes[:event_id])},
-          #{Billing::StripeEvent.connection.quote(attributes[:event_type])},
-          #{Billing::StripeEvent.connection.quote(attributes[:livemode])},
-          #{Billing::StripeEvent.connection.quote(attributes[:payload_json].to_json)},
-          #{Billing::StripeEvent.connection.quote(attributes[:received_at])},
-          #{Billing::StripeEvent.connection.quote(timestamp)},
-          #{Billing::StripeEvent.connection.quote(timestamp)}
-        )
-      SQL
-
+      duplicate = Billing::StripeEvent.new(build_attributes(event_id: event_id))
       assert_raises ActiveRecord::RecordNotUnique do
-        Billing::StripeEvent.connection.execute(sql)
+        duplicate.save(validate: false)
       end
     end
   end

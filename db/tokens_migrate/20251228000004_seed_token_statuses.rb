@@ -5,12 +5,19 @@ class SeedTokenStatuses < ActiveRecord::Migration[7.1]
 
   def up
     safety_assured do
-      statuses = [
-        { id: 'NEYO' },
-        { id: 'NONE' },
-      ]
-      upsert_table('staff_token_statuses', statuses)
-      upsert_table('user_token_statuses', statuses)
+      # StaffTokenStatus
+      upsert_table(
+        'staff_token_statuses', [
+          { id: 'NEYO' },
+        ],
+      )
+
+      # UserTokenStatus
+      upsert_table(
+        'user_token_statuses', [
+          { id: 'NEYO' },
+        ],
+      )
     end
   end
 

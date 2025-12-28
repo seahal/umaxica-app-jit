@@ -12,8 +12,6 @@ require "test_helper"
 class OrgDocumentStatusTest < ActiveSupport::TestCase
   include StatusModelTestHelper
 
-  fixtures :org_document_statuses
-
   def setup
     @model_class = OrgDocumentStatus
     @valid_id = "ACTIVE"

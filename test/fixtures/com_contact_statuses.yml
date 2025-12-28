@@ -1,51 +1,41 @@
-# == Schema Information
-#
-# Table name: com_contact_statuses
-#
-#  id          :string(255)      not null, primary key
-#  description :string(255)      default(""), not null
-#  parent_id   :string(255)      default("00000000-0000-0000-0000-000000000000"), not null
-#  position    :integer          default(0), not null
-#  active      :boolean          default(TRUE), not null
-#
-# Indexes
-#
-#  index_com_contact_statuses_on_parent_id  (parent_id)
-#
-
-NONE:
+NEYO:
   id: "NEYO"
-  description: "root of service site status inquiries"
-  parent_id: nil
-  position: 0
+  description: "NEYO"
   active: true
+  position: 1
+
 SET_UP:
   id: "SET_UP"
-  description: "first step completed"
-  parent_id: "NONE"
-  position: 0
+  description: "Set Up"
   active: true
+  position: 2
+
 CHECKED_EMAIL_ADDRESS:
   id: "CHECKED_EMAIL_ADDRESS"
-  description: "second step completed"
-  parent_id: "SET_UP"
-  position: 0
+  description: "Checked Email"
   active: true
+  position: 3
+
 CHECKED_TELEPHONE_NUMBER:
   id: "CHECKED_TELEPHONE_NUMBER"
-  description: "second step completed"
-  parent_id: "CHECKED_EMAIL_ADDRESS"
-  position: 0
+  description: "Checked Telephone"
   active: true
+  position: 4
+
+COMPLETED:
+  id: "COMPLETED"
+  description: "Completed"
+  active: true
+  position: 5
+
 COMPLETED_CONTACT_ACTION:
   id: "COMPLETED_CONTACT_ACTION"
-  description: "second step completed"
-  parent_id: "CHECKED_TELEPHONE_NUMBER"
-  position: 0
+  description: "Completed Contact Action"
   active: true
-NULL_COM_STATUS:
-  id: "NULL_COM_STATUS"
-  description: "null status for com contact"
-  parent_id: nil
-  position: 0
+  position: 6
+
+NONE:
+  id: "NONE"
+  description: "None"
   active: true
+  position: 0

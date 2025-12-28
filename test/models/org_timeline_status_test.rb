@@ -12,8 +12,6 @@ require "test_helper"
 class OrgTimelineStatusTest < ActiveSupport::TestCase
   include StatusModelTestHelper
 
-  fixtures :org_timeline_statuses
-
   def setup
     @model_class = OrgTimelineStatus
     @valid_id = "ACTIVE"

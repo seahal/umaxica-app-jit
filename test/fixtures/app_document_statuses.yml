@@ -1,14 +1,23 @@
-# == Schema Information
-#
-# Table name: app_document_statuses
-#
-#  id :string(255)      default("NONE"), not null, primary key
-#
 ACTIVE:
-  id: ACTIVE
+  id: "ACTIVE"
+  description: "Active"
+  active: true
+  position: 1
+
 DRAFT:
-  id: DRAFT
+  id: "DRAFT"
+  description: "Draft"
+  active: true
+  position: 2
+
 ARCHIVED:
-  id: ARCHIVED
+  id: "ARCHIVED"
+  description: "Archived"
+  active: true
+  position: 3
+
 NONE:
-  id: NEYO
+  id: "NONE"
+  description: "None"
+  active: true
+  position: 0

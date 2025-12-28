@@ -1,33 +1,41 @@
-# == Schema Information
-#
-# Table name: org_contact_statuses
-#
-#  id          :string(255)      not null, primary key
-#  description :string(255)      default(""), not null
-#  parent_id   :string(255)      default("00000000-0000-0000-0000-000000000000"), not null
-#  position    :integer          default(0), not null
-#  active      :boolean          default(TRUE), not null
-#
-# Indexes
-#
-#  index_org_contact_statuses_on_parent_id  (parent_id)
-#
+NEYO:
+  id: "NEYO"
+  description: "NEYO"
+  active: true
+  position: 1
 
-organization_root:
-  id: 'ORGANIZATION_SITE_STATUS'
-  description: 'ROOT'
+NONE:
+  id: "NONE"
+  description: "None"
+  active: true
+  position: 0
+
 set_up:
-  id: 'SET_UP'
-  description: 'first step completed'
-email_verified:
-  id: 'CHECKED_EMAIL_ADDRESS'
-  description: 'second step completed'
-phone_verified:
-  id: 'CHECKED_TELEPHONE_NUMBER'
-  description: 'third step completed'
+  id: "SET_UP"
+  description: "Set Up"
+  active: true
+  position: 2
+
+checked_email_address:
+  id: "CHECKED_EMAIL_ADDRESS"
+  description: "Checked Email"
+  active: true
+  position: 3
+
+checked_telephone_number:
+  id: "CHECKED_TELEPHONE_NUMBER"
+  description: "Checked Telephone"
+  active: true
+  position: 4
+
 completed:
-  id: 'COMPLETED_CONTACT_ACTION'
-  description: 'contact completed'
-none:
-  id: 'NEYO'
-  description: 'null status'
+  id: "COMPLETED"
+  description: "Completed"
+  active: true
+  position: 5
+
+completed_contact_action:
+  id: "COMPLETED_CONTACT_ACTION"
+  description: "Completed Contact Action"
+  active: true
+  position: 6

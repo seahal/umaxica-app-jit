@@ -1,26 +1,5 @@
-# == Schema Information
-#
-# Table name: com_contact_categories
-#
-#  id          :string(255)      not null, primary key
-#  description :string(255)      default(""), not null
-#  parent_id   :string(255)      default(""), not null
-#  position    :integer          default(0), not null
-#  active      :boolean          default(TRUE), not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#
-# Indexes
-#
-#  index_com_contact_categories_on_parent_id  (parent_id)
-#
-
-SECURITY_ISSUE:
-  id: 'SECURITY_ISSUE'
-  description: 'ROOT'
-OTHERS:
-  id: 'OTHERS'
-  description: 'Miscellaneous inquiries'
-NONE:
-  id: 'NEYO'
-  description: 'NONE'
+security_issue:
+  id: "SECURITY_ISSUE"
+  description: "Security Issue"
+  active: true
+  position: 1

@@ -11,7 +11,7 @@
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
 #  ip_address       :inet             default("0.0.0.0"), not null
-#  status_id        :string(255)      default("NONE"), not null
+#  status_id        :string(255)      default("NONE")
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  category_id      :string(255)      default("NONE"), not null
@@ -33,6 +33,8 @@ class AppContactTest < ActiveSupport::TestCase
     # Create contact first
     contact = AppContact.new(**attrs.except(:app_contact_emails, :app_contact_telephones))
     contact.confirm_policy = "1" unless attrs.key?(:confirm_policy)
+    contact.category_id ||= sample_category
+    contact.status_id ||= sample_status
     contact.save!
 
     # Create email and telephone associated with the contact

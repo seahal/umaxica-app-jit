@@ -20,25 +20,24 @@ class SeedGuestStatuses < ActiveRecord::Migration[7.1]
       upsert_table('app_contact_statuses', app_statuses)
 
       # ComContactStatus
-      default_parent_id = "00000000-0000-0000-0000-000000000000"
       com_statuses = [
-        { id: "NEYO", description: "root of service site status inquiries", parent_id: default_parent_id, position: 0, active: true },
+        { id: "NEYO", description: "root of service site status inquiries", parent_id: nil, position: 0, active: true },
         { id: "SET_UP", description: "first step completed", parent_id: "NEYO", position: 0, active: true },
         { id: "CHECKED_EMAIL_ADDRESS", description: "second step completed", parent_id: "SET_UP", position: 0, active: true },
         { id: "CHECKED_TELEPHONE_NUMBER", description: "second step completed", parent_id: "CHECKED_EMAIL_ADDRESS", position: 0, active: true },
         { id: "COMPLETED_CONTACT_ACTION", description: "second step completed", parent_id: "CHECKED_TELEPHONE_NUMBER", position: 0, active: true },
-        { id: "NULL_COM_STATUS", description: "null status for com contact", parent_id: default_parent_id, position: 0, active: true },
+        { id: "NULL_COM_STATUS", description: "null status for com contact", parent_id: nil, position: 0, active: true },
       ]
       upsert_table('com_contact_statuses', com_statuses)
 
       # OrgContactStatus
       org_statuses = [
-        { id: 'ORGANIZATION_SITE_STATUS', description: 'ROOT', parent_id: default_parent_id },
+        { id: 'ORGANIZATION_SITE_STATUS', description: 'ROOT', parent_id: nil },
         { id: 'SET_UP', description: 'first step completed', parent_id: 'ORGANIZATION_SITE_STATUS' },
         { id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP' },
         { id: 'CHECKED_TELEPHONE_NUMBER', description: 'third step completed', parent_id: 'CHECKED_EMAIL_ADDRESS' },
         { id: 'COMPLETED_CONTACT_ACTION', description: 'contact completed', parent_id: 'CHECKED_TELEPHONE_NUMBER' },
-        { id: 'NEYO', description: 'null status', parent_id: default_parent_id },
+        { id: 'NEYO', description: 'null status', parent_id: nil },
       ]
       upsert_table('org_contact_statuses', org_statuses)
     end
