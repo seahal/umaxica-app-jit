@@ -395,25 +395,21 @@ Metrics/AbcSize:
     - 'test/**/*'
 
 Metrics/BlockLength:
-  Max: 20
+  Max: 40
   Exclude:
     - 'config/**/*'
     - 'db/**/*_migrate/**/*'
-    - 'test/**/*'
 
 Metrics/ClassLength:
-  Max: 120
-  Exclude:
-    - 'test/**/*'
+  Max: 200
 
 Metrics/CyclomaticComplexity:
   Max: 6
 
 Metrics/MethodLength:
-  Max: 10
+  Max: 20
   Exclude:
     - 'db/**/*_migrate/**/*'
-    - 'test/**/*'
 
 Metrics/ModuleLength:
   Max: 120
@@ -463,8 +459,6 @@ Lint/EmptyBlock:
   Enabled: true
   AllowComments: true
   AllowEmptyLambdas: true
-  Exclude:
-    - 'test/**/*'
 
 Lint/EmptyClass:
   Enabled: true
@@ -491,8 +485,6 @@ Lint/UnusedBlockArgument:
   Enabled: true
   AllowUnusedKeywordArguments: false
   IgnoreEmptyBlocks: true
-  Exclude:
-    - 'test/**/*'
 
 Lint/UnusedMethodArgument:
   Enabled: true
@@ -500,7 +492,7 @@ Lint/UnusedMethodArgument:
   IgnoreEmptyMethods: true
   Exclude:
     - 'app/services/**/*'
-    - 'test/**/*'
+    - 'test/support/**/*'
 
 Lint/IncompatibleIoSelectWithFiberScheduler:
   Enabled: true
@@ -1072,10 +1064,6 @@ ThreadSafety/RackMiddlewareInstanceVariable:
 # ============================================================
 # 10. Additional Strictness for Accident Prevention
 # ============================================================
-
-# Warning: OpenStruct is slow and can have issues. Use Struct or Data.
-Performance/OpenStruct:
-  Enabled: true
 
 # Suggest using safe navigation operator &.
 Style/SafeNavigation:

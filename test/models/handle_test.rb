@@ -56,8 +56,39 @@ class HandleTest < ActiveSupport::TestCase
     assert_not_empty duplicate.errors[:handle]
   end
 
-  test "public_id generation" do
+  test "handle is invalid when empty" do
+    @handle.handle = ""
+    assert_not @handle.valid?
+    assert_not_empty @handle.errors[:handle]
+  end
+
+  test "handle is invalid when only whitespace" do
+    @handle.handle = "   "
+    assert_not @handle.valid?
+    assert_not_empty @handle.errors[:handle]
+  end
+
+  test "public_id uniqueness" do
     @handle.save!
-    assert_not_nil @handle.public_id
+    duplicate = Handle.new(
+      handle: "new_handle",
+      cooldown_until: Time.current,
+      public_id: @handle.public_id,
+    )
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:public_id]
+  end
+
+  test "association deletion: restriction by active_avatars" do
+    @handle.save!
+    capability = AvatarCapability.find_or_create_by!(key: "handle_test_cap", name: "Test Cap")
+    Avatar.create!(
+      moniker: "Avatar with Handle",
+      active_handle: @handle,
+      capability: capability,
+    )
+
+    assert_not @handle.destroy
+    assert_includes @handle.errors[:base], "Cannot delete record because dependent active_avatars exist"
   end
 end

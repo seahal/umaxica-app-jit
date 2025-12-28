@@ -30,7 +30,7 @@ class QueryCanonicalizerTest < ActiveSupport::TestCase
       @request = request
     end
 
-    def redirect_to(location, allow_other_host:, status:)
+    def redirect_to(location, _allow_other_host:, status:)
       @redirected_to = location
       @redirect_status = status
     end

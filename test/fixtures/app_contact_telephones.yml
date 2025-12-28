@@ -23,21 +23,3 @@
 #  index_app_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
 #
 
-one:
-  app_contact: one
-  telephone_number: "+11234567891"
-  activated: false
-  deletable: false
-  remaining_views: 1
-  expires_at: 2025-10-27 09:24:03
-  created_at: 2025-10-27 09:24:03
-  updated_at: 2025-10-27 09:24:03
-two:
-  app_contact: two
-  telephone_number: "+19876543211"
-  activated: false
-  deletable: false
-  remaining_views: 1
-  expires_at: 2025-10-27 09:24:03
-  created_at: 2025-10-27 09:24:03
-  updated_at: 2025-10-27 09:24:03

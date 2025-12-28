@@ -76,12 +76,43 @@ class AvatarTest < ActiveSupport::TestCase
     assert_empty(avatar.image_data)
   end
 
-  test "unique public_id is generated" do
-    avatar = Avatar.create!(
+  test "moniker is invalid when only whitespace" do
+    avatar = Avatar.new(capability: @capability, active_handle: @handle, moniker: "   ")
+    assert_not avatar.valid?
+    assert_not_empty avatar.errors[:moniker]
+  end
+
+  test "public_id uniqueness" do
+    @avatar = Avatar.create!(
       capability: @capability,
       active_handle: @handle,
-      moniker: "Public ID Test",
+      moniker: "Public ID Uniqueness Test",
     )
-    assert_not_nil avatar.public_id
+    duplicate = Avatar.new(
+      capability: @capability,
+      active_handle: @handle,
+      moniker: "Another Moniker",
+      public_id: @avatar.public_id,
+    )
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:public_id]
+  end
+
+  test "association deletion: restriction by posts" do
+    avatar = Avatar.create!(
+      moniker: "Post Author",
+      capability: @capability,
+      active_handle: @handle,
+    )
+    status = PostStatus.find_or_create_by!(id: "DRAFT") { |s| s.key = "draft"; s.name = "Draft" }
+    Post.create!(
+      author_avatar: avatar,
+      post_status: status,
+      body: "Test Post",
+      created_by_actor_id: "user-1",
+    )
+
+    assert_not avatar.destroy
+    assert_includes avatar.errors[:base], "Cannot delete record because dependent posts exist"
   end
 end

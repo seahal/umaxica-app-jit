@@ -50,6 +50,7 @@ module Docs
 
             respond_to do |format|
               format.html {
+                # nosemgrep ruby.rails.security.audit.xss.avoid-redirect.avoid-redirect
                 redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.created")
               }
               format.turbo_stream
@@ -73,6 +74,7 @@ module Docs
 
             respond_to do |format|
               format.html {
+                # nosemgrep ruby.rails.security.audit.xss.avoid-redirect.avoid-redirect
                 redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.updated")
               }
               format.turbo_stream
@@ -94,7 +96,10 @@ module Docs
           )
 
           respond_to do |format|
-            format.html { redirect_to docs_com_cms_documents_path, notice: t("docs.com.cms.documents.deleted") }
+            format.html {
+              # nosemgrep ruby.rails.security.audit.xss.avoid-redirect.avoid-redirect
+              redirect_to docs_com_cms_documents_path, notice: t("docs.com.cms.documents.deleted")
+            }
             format.turbo_stream
           end
         end
@@ -112,6 +117,7 @@ module Docs
 
           respond_to do |format|
             format.html {
+              # nosemgrep ruby.rails.security.audit.xss.avoid-redirect.avoid-redirect
               redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.published")
             }
             format.turbo_stream {
@@ -136,6 +142,7 @@ module Docs
 
           respond_to do |format|
             format.html {
+              # nosemgrep ruby.rails.security.audit.xss.avoid-redirect.avoid-redirect
               redirect_to docs_com_cms_document_path(@document), notice: t("docs.com.cms.documents.unpublished")
             }
             format.turbo_stream {

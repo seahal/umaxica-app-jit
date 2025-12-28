@@ -24,8 +24,3 @@ one:
   body: "area-body-one"
   status_id: ACTIVE
   memo: "Area occurrence one"
-two:
-  public_id: "BBBBBBBBBBBBBBBBBBBBB"
-  body: "area-body-two"
-  status_id: INACTIVE
-  memo: "Area occurrence two"

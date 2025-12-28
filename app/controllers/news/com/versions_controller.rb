@@ -69,7 +69,8 @@ module News
           post_id: @post_id,
         )
 
-        redirect_to news_com_post_versions_path(@post_id)
+        safe_post_id = safe_segment(@post_id)
+        redirect_to news_com_post_versions_path(safe_post_id)
       end
 
       # PATCH/PUT /posts/:post_id/versions/:id
@@ -82,7 +83,9 @@ module News
           version_id: @version_id,
         )
 
-        redirect_to news_com_post_version_path(@post_id, @version_id)
+        safe_post_id = safe_segment(@post_id)
+        safe_version_id = safe_segment(@version_id)
+        redirect_to news_com_post_version_path(safe_post_id, safe_version_id)
       end
 
       # DELETE /posts/:post_id/versions/:id
@@ -95,7 +98,14 @@ module News
           version_id: @version_id,
         )
 
-        redirect_to news_com_post_versions_path(@post_id)
+        safe_post_id = safe_segment(@post_id)
+        redirect_to news_com_post_versions_path(safe_post_id)
+      end
+
+      private
+
+      def safe_segment(value)
+        value.to_s.gsub(/[^0-9A-Za-z_-]/, "")
       end
     end
   end

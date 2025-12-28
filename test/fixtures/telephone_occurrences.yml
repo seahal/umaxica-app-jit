@@ -24,8 +24,3 @@ one:
   body: "telephone-body-one"
   status_id: ACTIVE
   memo: "Telephone occurrence one"
-two:
-  public_id: "JJJJJJJJJJJJJJJJJJJJJ"
-  body: "telephone-body-two"
-  status_id: INACTIVE
-  memo: "Telephone occurrence two"

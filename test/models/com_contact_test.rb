@@ -569,4 +569,34 @@ class ComContactTest < ActiveSupport::TestCase
 
     assert_not contact.verify_token("any_token")
   end
+
+  test "category_id length boundary" do
+    contact = ComContact.new(confirm_policy: "1", category_id: "a" * 256)
+    assert_not contact.valid?
+    assert_not_empty contact.errors[:category_id]
+  end
+
+  test "status_id length boundary" do
+    contact = ComContact.new(confirm_policy: "1", status_id: "a" * 256)
+    assert_not contact.valid?
+    assert_not_empty contact.errors[:status_id]
+  end
+
+  test "token length boundary" do
+    contact = ComContact.new(confirm_policy: "1", token: "a" * 33)
+    assert_not contact.valid?
+    assert_not_empty contact.errors[:token]
+  end
+
+  test "association deletion: destroys dependent email, telephone, and topics" do
+    contact = build_contact
+    email = contact.com_contact_email
+    phone = contact.com_contact_telephone
+    topic = ComContactTopic.create!(com_contact: contact)
+
+    contact.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { email.reload }
+    assert_raise(ActiveRecord::RecordNotFound) { phone.reload }
+    assert_raise(ActiveRecord::RecordNotFound) { topic.reload }
+  end
 end

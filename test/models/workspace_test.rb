@@ -55,4 +55,37 @@ class WorkspaceTest < ActiveSupport::TestCase
     assert_not duplicate.valid?
     assert_not_empty duplicate.errors[:domain]
   end
+
+  test "boundary values: name cannot be empty" do
+    workspace = Workspace.new(name: "", domain: "valid.com")
+    assert_not workspace.valid?
+    assert_not_empty workspace.errors[:name]
+  end
+
+  test "association deletion: destroys dependent roles" do
+    workspace = Workspace.create!(
+      name: "Role Test", domain: "role-#{SecureRandom.hex(4)}.com",
+      parent_organization: "00000000-0000-0000-0000-000000000000",
+    )
+    role = Role.create!(name: "Custom Role", organization: workspace)
+
+    assert_difference("Role.count", -1) do
+      workspace.destroy
+    end
+    assert_raise(ActiveRecord::RecordNotFound) { role.reload }
+  end
+
+  test "association deletion: destroys dependent user_memberships" do
+    workspace = Workspace.create!(
+      name: "Membership Test", domain: "mem-#{SecureRandom.hex(4)}.com",
+      parent_organization: "00000000-0000-0000-0000-000000000000",
+    )
+    user = users(:one)
+    membership = UserMembership.create!(user: user, workspace: workspace)
+
+    assert_difference("UserMembership.count", -1) do
+      workspace.destroy
+    end
+    assert_raise(ActiveRecord::RecordNotFound) { membership.reload }
+  end
 end

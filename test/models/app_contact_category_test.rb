@@ -52,6 +52,82 @@ class AppContactCategoryTest < ActiveSupport::TestCase
     end
   end
 
+  test "id is invalid when nil or blank" do
+    category = AppContactCategory.new(id: nil, parent_id: AppContactCategory::NIL_UUID)
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+
+    category = AppContactCategory.new(id: "", parent_id: AppContactCategory::NIL_UUID)
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+
+    category = AppContactCategory.new(id: " ", parent_id: AppContactCategory::NIL_UUID)
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+  end
+
+  test "id enforces length and format boundaries" do
+    category = AppContactCategory.new(id: "A" * 255, parent_id: AppContactCategory::NIL_UUID)
+    assert_predicate category, :valid?
+
+    category = AppContactCategory.new(id: "A" * 256, parent_id: AppContactCategory::NIL_UUID)
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+
+    category = AppContactCategory.new(id: "BAD-ID", parent_id: AppContactCategory::NIL_UUID)
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+  end
+
+  test "id uniqueness is case-insensitive" do
+    AppContactCategory.create!(id: "CASE_CHECK")
+
+    duplicate = AppContactCategory.new(id: "case_check", parent_id: AppContactCategory::NIL_UUID)
+    assert_not duplicate.valid?
+    assert_predicate duplicate.errors[:id], :any?
+  end
+
+  test "parent_id is required" do
+    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: nil)
+    assert_not category.valid?
+    assert_predicate category.errors[:parent_id], :any?
+
+    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "")
+    assert_not category.valid?
+    assert_predicate category.errors[:parent_id], :any?
+
+    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: " ")
+    assert_not category.valid?
+    assert_predicate category.errors[:parent_id], :any?
+  end
+
+  test "parent_id respects length bounds" do
+    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "A" * 255)
+    assert_predicate category, :valid?
+
+    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "A" * 256)
+    assert_not category.valid?
+    assert_predicate category.errors[:parent_id], :any?
+  end
+
+  test "destroy is restricted when children exist" do
+    parent = AppContactCategory.create!(id: "PARENT", parent_id: AppContactCategory::NIL_UUID)
+    AppContactCategory.create!(id: "CHILD", parent_id: parent.id)
+
+    assert_not parent.destroy
+    assert_predicate parent.errors[:base], :any?
+  end
+
+  test "destroy raises when contacts enforce non-null category_id" do
+    category = AppContactCategory.create!(id: "CONTACT_PARENT", parent_id: AppContactCategory::NIL_UUID)
+    status = AppContactStatus.create!(id: "ACTIVE")
+    AppContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
+
+    assert_raises(ActiveRecord::StatementInvalid) do
+      category.destroy
+    end
+  end
+
   # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     category = AppContactCategory.create!(id: "test_app_category")

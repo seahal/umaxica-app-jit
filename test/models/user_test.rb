@@ -92,6 +92,48 @@ class UserTest < ActiveSupport::TestCase
     assert_not @user.has_role?("viewer")
   end
 
+  test "boundary values: public_id must be unique" do
+    @user.public_id = "duplicate-id"
+    @user.save!
+
+    duplicate_user = User.new(public_id: "duplicate-id")
+    assert_not duplicate_user.valid?
+    assert_not_empty duplicate_user.errors[:public_id]
+  end
+
+  test "boundary values: public_id length" do
+    @user.public_id = "a" * 22
+    assert_not @user.valid?
+    assert_not_empty @user.errors[:public_id]
+  end
+
+  test "association deletion: destroys dependent user_identity_emails" do
+    email = UserIdentityEmail.create!(user: @user, address: "delete_test@example.com")
+    assert_difference("UserIdentityEmail.count", -1) do
+      @user.destroy
+    end
+    assert_raise(ActiveRecord::RecordNotFound) { email.reload }
+  end
+
+  test "association deletion: destroys dependent user_identity_telephones" do
+    phone = UserIdentityTelephone.create!(user: @user, number: "+15551234567")
+    assert_difference("UserIdentityTelephone.count", -1) do
+      @user.destroy
+    end
+    assert_raise(ActiveRecord::RecordNotFound) { phone.reload }
+  end
+
+  test "association deletion: destroys dependent user_tokens" do
+    token = UserToken.create!(
+      user: @user,
+      refresh_expires_at: 1.day.from_now,
+    )
+    assert_difference("UserToken.count", -1) do
+      @user.destroy
+    end
+    assert_raise(ActiveRecord::RecordNotFound) { token.reload }
+  end
+
   private
 
   def root_workspace

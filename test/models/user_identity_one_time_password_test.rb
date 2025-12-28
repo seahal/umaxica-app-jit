@@ -127,4 +127,10 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     assert_not extra_totp.valid?
     assert_includes extra_totp.errors[:base], "exceeds maximum totps per user (#{UserIdentityOneTimePassword::MAX_TOTPS_PER_USER})"
   end
+
+  test "association deletion: destroys when user is destroyed" do
+    record = UserIdentityOneTimePassword.create!(user: @user)
+    @user.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { record.reload }
+  end
 end

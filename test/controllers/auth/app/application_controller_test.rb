@@ -21,7 +21,7 @@ module Auth::App
     test "authenticate_user! allows logged in users" do
       controller = ApplicationController.new
       controller.define_singleton_method(:logged_in?) { true }
-      controller.define_singleton_method(:respond_to) { |&block| }
+      controller.define_singleton_method(:respond_to) { |_block| nil }
 
       # Should not raise or call respond_to
       assert_nothing_raised do

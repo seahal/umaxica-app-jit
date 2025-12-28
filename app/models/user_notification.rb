@@ -17,4 +17,6 @@
 
 class UserNotification < NotificationRecord
   include ::PublicId
+
+  belongs_to :user, inverse_of: :user_notifications
 end

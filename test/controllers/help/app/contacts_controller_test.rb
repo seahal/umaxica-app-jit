@@ -9,6 +9,14 @@ module Help
         @host = ENV["HELP_SERVICE_URL"] || "help.app.localhost"
         @contact = app_contacts(:one)
         @contact_category = app_contact_categories(:application_inquiry)
+        CloudflareTurnstile.test_mode = true
+        CloudflareTurnstile.test_validation_response = { "success" => true }
+        ActionMailer::Base.deliveries.clear
+      end
+
+      teardown do
+        CloudflareTurnstile.test_mode = false
+        CloudflareTurnstile.test_validation_response = nil
       end
 
       test "should get new" do

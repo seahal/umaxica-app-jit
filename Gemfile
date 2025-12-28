@@ -136,7 +136,6 @@ group :development do
   # Web console on exception pages
   gem "web-console"
   gem "better_errors"
-  gem "binding_of_caller"
   # RuboCop
   gem "rubocop", require: false
   gem "rubocop-performance", require: false

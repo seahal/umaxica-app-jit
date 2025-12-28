@@ -77,30 +77,33 @@ class UserIdentityEmailTest < ActiveSupport::TestCase
     assert_predicate user_email, :valid?
   end
 
-  # test "should require valid email format" do
-  #   user_email = UserIdentityEmail.new(@valid_attributes.merge(address: "invalid-email"))
-  #   assert_not user_email.valid?
-  #   assert_includes user_email.errors[:address], "is invalid"
-  # end
+  test "should require valid email format" do
+    user_email = UserIdentityEmail.new(@valid_attributes.merge(address: "invalid-email"))
+    assert_not user_email.valid?
+    assert_not_empty user_email.errors[:address]
+  end
 
-  # test "should require email presence" do
-  #   user_email = UserIdentityEmail.new(@valid_attributes.except(:address))
-  #   assert_not user_email.valid?
-  #   assert_includes user_email.errors[:address], "can't be blank"
-  # end
+  test "should require email presence" do
+    user_email = UserIdentityEmail.new(@valid_attributes.except(:address))
+    # address is initialized to "" in after_initialize, so it won't be nil, but empty string
+    # validates presence checks for non-blank.
+    user_email.address = ""
+    assert_not user_email.valid?
+    assert_not_empty user_email.errors[:address]
+  end
 
-  # test "should require policy confirmation" do
-  #   user_email = UserIdentityEmail.new(@valid_attributes.merge(confirm_policy: false))
-  #   assert_not user_email.valid?
-  #   assert_includes user_email.errors[:confirm_policy], "must be accepted"
-  # end
+  test "should require policy confirmation" do
+    user_email = UserIdentityEmail.new(@valid_attributes.merge(confirm_policy: false))
+    assert_not user_email.valid?
+    assert_not_empty user_email.errors[:confirm_policy]
+  end
 
-  # test "should require unique email addresses" do
-  #   UserIdentityEmail.create!(@valid_attributes)
-  #   duplicate_email = UserIdentityEmail.new(@valid_attributes)
-  #   assert_not duplicate_email.valid?
-  #   assert_includes duplicate_email.errors[:address], "has already been taken"
-  # end
+  test "should require unique email addresses" do
+    UserIdentityEmail.create!(@valid_attributes)
+    duplicate_email = UserIdentityEmail.new(@valid_attributes)
+    assert_not duplicate_email.valid?
+    assert_not_empty duplicate_email.errors[:address]
+  end
 
   test "should downcase email address before saving" do
     user_email = UserIdentityEmail.new(@valid_attributes.merge(address: "TEST@EXAMPLE.COM"))

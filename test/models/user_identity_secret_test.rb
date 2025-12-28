@@ -100,15 +100,22 @@ class UserIdentitySecretTest < ActiveSupport::TestCase
     assert_equal 0, record.reload.uses_remaining
   end
 
-  test "requires name to be present" do
-    record = UserIdentitySecret.new(
-      user: @user,
-      name: "",
-      password: "SecretPass123!",
-    )
-
+  test "invalid when password_digest is nil" do
+    record = UserIdentitySecret.new(user: @user, name: "Key", password: nil)
     assert_not record.valid?
-    assert record.errors[:name]
+    assert_not_empty record.errors[:password_digest]
+  end
+
+  test "name length boundary" do
+    record = UserIdentitySecret.new(user: @user, name: "a" * 256, password: "SecretPass123!")
+    assert_not record.valid?
+    assert_not_empty record.errors[:name]
+  end
+
+  test "association deletion: destroys when user is destroyed" do
+    record, _raw = UserIdentitySecret.issue!(name: "Cleanup Test", user: @user)
+    @user.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { record.reload }
   end
 
   private

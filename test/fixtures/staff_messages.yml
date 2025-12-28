@@ -13,9 +13,3 @@
 #  index_staff_messages_on_staff_id  (staff_id)
 #
 
-one:
-  staff_id:
-  public_id:
-two:
-  staff_id:
-  public_id:

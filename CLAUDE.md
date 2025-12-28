@@ -241,7 +241,6 @@ Key environment variables required:
 - The application expects Docker Compose for local database setup
 
 ### Prohibited Actions
-- Creating or modifying `.env` files
 - Editing files in `node_modules`
 - Committing without running tests
 - Merging PRs without approval

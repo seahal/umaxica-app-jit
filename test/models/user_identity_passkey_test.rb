@@ -91,4 +91,22 @@ class UserIdentityPasskeyTest < ActiveSupport::TestCase
     assert_not extra_passkey.valid?
     assert_includes extra_passkey.errors[:base], "exceeds maximum passkeys per user (#{UserIdentityPasskey::MAX_PASSKEYS_PER_USER})"
   end
+
+  test "description is invalid when blank" do
+    @passkey.description = ""
+    assert_not @passkey.valid?
+    assert_not_empty @passkey.errors[:description]
+  end
+
+  test "sign_count cannot be negative" do
+    @passkey.sign_count = -1
+    assert_not @passkey.valid?
+    assert_not_empty @passkey.errors[:sign_count]
+  end
+
+  test "association deletion: destroys when user is destroyed" do
+    @passkey.save!
+    @user.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { @passkey.reload }
+  end
 end

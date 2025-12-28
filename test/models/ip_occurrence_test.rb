@@ -94,4 +94,13 @@ class IpOccurrenceTest < ActiveSupport::TestCase
 
     assert_expires_at_default(record)
   end
+
+  test "association deletion: destroys joining relations" do
+    record = build_occurrence(IpOccurrence, body: "192.168.1.1")
+    record.save!
+    join = AreaIpOccurrence.create!(ip_occurrence: record, area_occurrence: area_occurrences(:one))
+
+    record.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { join.reload }
+  end
 end

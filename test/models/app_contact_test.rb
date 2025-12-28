@@ -588,4 +588,34 @@ class AppContactTest < ActiveSupport::TestCase
     assert_predicate contact, :token_expired?
     assert_not contact.verify_token(raw_token)
   end
+
+  test "category_id length boundary" do
+    contact = AppContact.new(confirm_policy: "1", category_id: "a" * 256)
+    assert_not contact.valid?
+    assert_not_empty contact.errors[:category_id]
+  end
+
+  test "status_id length boundary" do
+    contact = AppContact.new(confirm_policy: "1", status_id: "a" * 256)
+    assert_not contact.valid?
+    assert_not_empty contact.errors[:status_id]
+  end
+
+  test "token length boundary" do
+    contact = AppContact.new(confirm_policy: "1", token: "a" * 33)
+    assert_not contact.valid?
+    assert_not_empty contact.errors[:token]
+  end
+
+  test "association deletion: destroys dependent emails, telephones, and topics" do
+    contact = build_contact
+    email = contact.app_contact_emails.first
+    phone = contact.app_contact_telephones.first
+    topic = AppContactTopic.create!(app_contact: contact, name: "Topic")
+
+    contact.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { email.reload }
+    assert_raise(ActiveRecord::RecordNotFound) { phone.reload }
+    assert_raise(ActiveRecord::RecordNotFound) { topic.reload }
+  end
 end

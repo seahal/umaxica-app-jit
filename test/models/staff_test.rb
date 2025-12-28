@@ -52,11 +52,11 @@ class StaffTest < ActiveSupport::TestCase
                  Staff.reflect_on_association(:user_identity_audits).options[:dependent]
     assert_equal :destroy,
                  Staff.reflect_on_association(:staff_identity_secrets).options[:dependent]
-    assert_equal :nullify,
+    assert_equal :destroy,
                  Staff.reflect_on_association(:staff_tokens).options[:dependent]
-    assert_equal :nullify,
+    assert_equal :destroy,
                  Staff.reflect_on_association(:staff_messages).options[:dependent]
-    assert_equal :nullify,
+    assert_equal :destroy,
                  Staff.reflect_on_association(:staff_notifications).options[:dependent]
   end
 
@@ -87,6 +87,48 @@ class StaffTest < ActiveSupport::TestCase
 
     assert @staff.has_role?("admin")
     assert_not @staff.has_role?("viewer")
+  end
+
+  test "boundary values: public_id must be unique" do
+    @staff.public_id = "duplicate-id"
+    @staff.save!
+
+    duplicate_staff = Staff.new(public_id: "duplicate-id")
+    assert_not duplicate_staff.valid?
+    assert_not_empty duplicate_staff.errors[:public_id]
+  end
+
+  test "boundary values: public_id length" do
+    @staff.public_id = "a" * 22
+    assert_not @staff.valid?
+    assert_not_empty @staff.errors[:public_id]
+  end
+
+  # Staff associations are mostly dependent: :restrict_with_error or :nullify
+
+  test "association deletion: restriction by dependent emails" do
+    StaffIdentityEmail.create!(staff: @staff, address: "staff_test@example.com")
+    assert_no_difference("Staff.count") do
+      assert_not @staff.destroy
+      assert_not_empty @staff.errors[:base]
+    end
+  end
+
+  test "association deletion: restriction by dependent telephones" do
+    StaffIdentityTelephone.create!(staff: @staff, number: "+15559876543")
+    assert_no_difference("Staff.count") do
+      assert_not @staff.destroy
+      assert_not_empty @staff.errors[:base]
+    end
+  end
+
+  test "association deletion: destroys dependent staff_tokens" do
+    token = StaffToken.create!(
+      staff: @staff,
+      refresh_expires_at: 1.day.from_now,
+    )
+    @staff.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { token.reload }
   end
 
   private

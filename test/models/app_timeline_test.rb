@@ -95,4 +95,38 @@ class AppTimelineTest < ActiveSupport::TestCase
 
     assert_equal newest, timeline.latest_version
   end
+
+  test "permalink is required and must not be empty" do
+    timeline = AppTimeline.new(base_attrs.merge(permalink: nil))
+    assert_not timeline.valid?
+    timeline = AppTimeline.new(base_attrs.merge(permalink: ""))
+    assert_not timeline.valid?
+    timeline = AppTimeline.new(base_attrs.merge(permalink: "   "))
+    assert_not timeline.valid?
+  end
+
+  test "published_at must be before expires_at" do
+    timeline = AppTimeline.new(base_attrs.merge(published_at: 1.day.from_now, expires_at: 1.day.ago))
+    assert_not timeline.valid?
+    assert_not_empty timeline.errors[:published_at]
+  end
+
+  test "revision_key is ensured before validation" do
+    timeline = AppTimeline.new(base_attrs.merge(revision_key: nil))
+    assert_predicate timeline, :valid?
+    assert_not_nil timeline.revision_key
+  end
+
+  test "association deletion: destroys dependent versions" do
+    timeline = AppTimeline.create!(base_attrs.merge(permalink: "delete_test"))
+    version = AppTimelineVersion.create!(
+      app_timeline: timeline,
+      permalink: timeline.permalink,
+      response_mode: timeline.response_mode,
+      published_at: timeline.published_at,
+      expires_at: timeline.expires_at,
+    )
+    timeline.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { version.reload }
+  end
 end

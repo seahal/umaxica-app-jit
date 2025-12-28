@@ -94,4 +94,14 @@ class EmailOccurrenceTest < ActiveSupport::TestCase
 
     assert_expires_at_default(record)
   end
+
+  test "association deletion: destroys joining relations" do
+    record = build_occurrence(EmailOccurrence, body: "joined@example.com")
+    record.save!
+    # Mocking a join - assuming AreaEmailOccurrence works
+    join = AreaEmailOccurrence.create!(email_occurrence: record, area_occurrence: area_occurrences(:one))
+
+    record.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { join.reload }
+  end
 end

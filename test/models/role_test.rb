@@ -61,4 +61,15 @@ class RoleTest < ActiveSupport::TestCase
       workspace.parent_organization = NIL_UUID
     end
   end
+
+  test "association deletion: destroys dependent role_assignments" do
+    role = Role.create!(name: "Assignment Test", organization: @organization)
+    user = users(:one)
+    assignment = RoleAssignment.create!(role: role, user: user)
+
+    assert_difference("RoleAssignment.count", -1) do
+      role.destroy
+    end
+    assert_raise(ActiveRecord::RecordNotFound) { assignment.reload }
+  end
 end

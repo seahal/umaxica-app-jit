@@ -47,4 +47,34 @@ class UserIdentitySocialGoogleTest < ActiveSupport::TestCase
     assert_not duplicate.valid?
     assert_includes duplicate.errors[:user_id], "はすでに存在します"
   end
+
+  test "token is required" do
+    identity = UserIdentitySocialGoogle.new(user: users(:one), uid: "uid", expires_at: 123)
+    assert_not identity.valid?
+    assert_not_empty identity.errors[:token]
+  end
+
+  test "uid is required" do
+    identity = UserIdentitySocialGoogle.new(user: users(:one), token: "token", expires_at: 123)
+    assert_not identity.valid?
+    assert_not_empty identity.errors[:uid]
+  end
+
+  test "expires_at is required" do
+    identity = UserIdentitySocialGoogle.new(user: users(:one), uid: "uid", token: "token")
+    assert_not identity.valid?
+    assert_not_empty identity.errors[:expires_at]
+  end
+
+  test "association deletion: destroys when user is destroyed" do
+    user = User.create!
+    identity = UserIdentitySocialGoogle.create!(
+      user: user,
+      uid: "uid-cleanup",
+      token: "token-cleanup",
+      expires_at: 1.week.from_now.to_i,
+    )
+    user.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { identity.reload }
+  end
 end

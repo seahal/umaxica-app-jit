@@ -52,6 +52,77 @@ class ComContactCategoryTest < ActiveSupport::TestCase
     end
   end
 
+  test "id is invalid when nil or blank" do
+    category = ComContactCategory.new(id: nil)
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+
+    category = ComContactCategory.new(id: "")
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+
+    category = ComContactCategory.new(id: " ")
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+  end
+
+  test "id enforces length and format boundaries" do
+    category = ComContactCategory.new(id: "A" * 255)
+    assert_predicate category, :valid?
+
+    category = ComContactCategory.new(id: "A" * 256)
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+
+    category = ComContactCategory.new(id: "BAD-ID")
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+  end
+
+  test "id uniqueness is case-insensitive" do
+    ComContactCategory.create!(id: "CASE_CHECK")
+
+    duplicate = ComContactCategory.new(id: "case_check")
+    assert_not duplicate.valid?
+    assert_predicate duplicate.errors[:id], :any?
+  end
+
+  test "parent_id allows blank but enforces max length" do
+    category = ComContactCategory.new(id: "NO_PARENT", parent_id: nil)
+    assert_predicate category, :valid?
+
+    category = ComContactCategory.new(id: "NO_PARENT", parent_id: "")
+    assert_predicate category, :valid?
+
+    category = ComContactCategory.new(id: "NO_PARENT", parent_id: " ")
+    assert_predicate category, :valid?
+
+    category = ComContactCategory.new(id: "NO_PARENT", parent_id: "A" * 255)
+    assert_predicate category, :valid?
+
+    category = ComContactCategory.new(id: "NO_PARENT", parent_id: "A" * 256)
+    assert_not category.valid?
+    assert_predicate category.errors[:parent_id], :any?
+  end
+
+  test "destroy is restricted when children exist" do
+    parent = ComContactCategory.create!(id: "PARENT")
+    ComContactCategory.create!(id: "CHILD", parent_id: parent.id)
+
+    assert_not parent.destroy
+    assert_predicate parent.errors[:base], :any?
+  end
+
+  test "destroy raises when contacts enforce non-null category_id" do
+    category = ComContactCategory.create!(id: "CONTACT_PARENT")
+    status = ComContactStatus.create!(id: "ACTIVE")
+    ComContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
+
+    assert_raises(ActiveRecord::StatementInvalid) do
+      category.destroy
+    end
+  end
+
   # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
     category = ComContactCategory.create!(id: "test_com_category")

@@ -31,12 +31,3 @@ one:
   expires_at: <%= Time.zone.parse("2999-12-31 00:00:00") %>
   position: 0
 
-two:
-  permalink: app_timeline_two
-  status_id: DRAFT
-  response_mode: html
-  redirect_url:
-  revision_key: rev_key_two
-  published_at: <%= Time.zone.parse("2024-01-02 00:00:00") %>
-  expires_at: <%= Time.zone.parse("2024-12-31 00:00:00") %>
-  position: 1

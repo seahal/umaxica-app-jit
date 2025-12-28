@@ -56,13 +56,13 @@ class Staff < IdentitiesRecord
            dependent: :destroy,
            inverse_of: :staff
   has_many :staff_tokens,
-           dependent: :nullify,
+           dependent: :destroy,
            inverse_of: :staff
   has_many :staff_messages,
-           dependent: :nullify,
+           dependent: :destroy,
            inverse_of: :staff
   has_many :staff_notifications,
-           dependent: :nullify,
+           dependent: :destroy,
            inverse_of: :staff
 
   def staff?

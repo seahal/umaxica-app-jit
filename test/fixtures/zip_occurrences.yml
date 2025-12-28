@@ -24,8 +24,3 @@ one:
   body: "zip-body-one"
   status_id: ACTIVE
   memo: "Zip occurrence one"
-two:
-  public_id: "LLLLLLLLLLLLLLLLLLLLL"
-  body: "zip-body-two"
-  status_id: INACTIVE
-  memo: "Zip occurrence two"

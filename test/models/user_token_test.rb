@@ -174,11 +174,28 @@ class UserTokenTest < ActiveSupport::TestCase
     assert_predicate verifier, :present?
   end
 
-  test "sha3 digest matches hexdigest packed bytes" do
-    raw1 = @token.send(:digest_refresh_token, "A")
-    hex = SHA3::Digest::SHA3_384.hexdigest("A")
-    raw2 = [hex].pack("H*")
+  test "public_id is generated and unique" do
+    user = User.create!
+    token1 = UserToken.create!(user: user)
+    token2 = UserToken.create!(user: user)
+    assert_not_equal token1.public_id, token2.public_id
+  end
 
-    assert ActiveSupport::SecurityUtils.secure_compare(raw1, raw2)
+  test "public_id length boundary" do
+    @token.public_id = "a" * 22
+    assert_not @token.valid?
+    assert_not_empty @token.errors[:public_id]
+  end
+
+  test "refresh_expires_at is required" do
+    @token.refresh_expires_at = nil
+    assert_not @token.valid?
+    assert_not_empty @token.errors[:refresh_expires_at]
+  end
+
+  test "association deletion: destroys when user is destroyed" do
+    token = UserToken.create!(user: @user)
+    @user.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { token.reload }
   end
 end

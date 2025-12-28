@@ -24,30 +24,3 @@
 #  index_com_document_versions_on_public_id                       (public_id) UNIQUE
 #
 
-one_v1:
-  com_document: one
-  permalink: com_doc_one
-  response_mode: html
-  redirect_url:
-  title: ""
-  description: ""
-  body: ""
-  published_at: <%= 1.day.ago %>
-  expires_at: <%= 100.years.from_now %>
-  edited_by_type: Staff
-  edited_by_id:
-  public_id: <%= Nanoid.generate(size: 21) %>
-
-two_v1:
-  com_document: two
-  permalink: com_doc_two
-  response_mode: html
-  redirect_url:
-  title: ""
-  description: ""
-  body: ""
-  published_at: <%= Time.zone.parse("2024-01-02 00:00:00") %>
-  expires_at: <%= Time.zone.parse("2024-12-31 00:00:00") %>
-  edited_by_type: Staff
-  edited_by_id:
-  public_id: <%= Nanoid.generate(size: 21) %>

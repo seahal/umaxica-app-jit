@@ -17,4 +17,6 @@
 
 class UserMessage < MessageRecord
   include ::PublicId
+
+  belongs_to :user, inverse_of: :user_messages
 end

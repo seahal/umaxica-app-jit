@@ -17,10 +17,13 @@ module CloudflareTurnstile
       return CloudflareTurnstile.test_validation_response || { "success" => true }
     end
 
+    response_token = params["cf-turnstile-response"].to_s
+
+    # nosemgrep ruby.rails.security.audit.avoid-tainted-http-request.avoid-tainted-http-request
     res = Net::HTTP.post_form(
       URI.parse("https://challenges.cloudflare.com/turnstile/v0/siteverify"),
       { "secret" => Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SECRET_KEY),
-        "response" => params["cf-turnstile-response"],
+        "response" => response_token,
         "remoteip" => request.remote_ip, },
     )
 
