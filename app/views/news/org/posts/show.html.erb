@@ -1,4 +1,25 @@
-<div class="mx-auto max-w-3xl px-6 py-10">
-  <h2 class="text-2xl font-semibold"><%= @post[:title] %></h2>
-  <div class="mt-4 whitespace-pre-wrap text-sm leading-relaxed"><%= @post[:body] %></div>
-</div>
+<%= turbo_frame_tag "post_detail" do %>
+  <article class="bg-white shadow-lg rounded-lg overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6">
+      <div class="flex justify-between items-start">
+        <div class="flex-1">
+          <h1 class="text-3xl font-bold mb-2"><%= @post[:title] %></h1>
+          <div class="flex gap-3 text-xs text-blue-100">
+            <span>
+              <code class="bg-blue-700 px-2 py-1 rounded"><%= @post[:id] %></code>
+            </span>
+            <% if @post[:published_at].present? %>
+              <span><%= @post[:published_at].strftime("%Y-%m-%d") %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <div class="prose max-w-none">
+        <%= simple_format(@post[:body], {}, sanitize: true) %>
+      </div>
+    </div>
+  </article>
+<% end %>

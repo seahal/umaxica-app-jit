@@ -1,9 +1,31 @@
 # frozen_string_literal: true
 
-class Core::Org::News::App::VersionsController < ApplicationController
-  def index
-  end
+module Core
+  module Org
+    module News
+      module App
+        class VersionsController < Core::Org::NewsController
+          def new
+            head :ok
+          end
 
-  def show
+          def edit
+            head :ok
+          end
+
+          def create
+            head :ok
+          end
+
+          def update
+            head :ok
+          end
+
+          def destroy
+            head :ok
+          end
+        end
+      end
+    end
   end
 end

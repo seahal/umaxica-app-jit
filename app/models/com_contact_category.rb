@@ -20,12 +20,29 @@
 class ComContactCategory < GuestsRecord
   include UppercaseId
 
-  validates :description, length: { maximum: 255 }
-  validates :parent_id, length: { maximum: 255 }
+  EMPTY_STRING = ""
+
+  belongs_to :parent,
+             class_name: "ComContactCategory",
+             inverse_of: :children,
+             optional: true
+
+  has_many :children,
+           class_name: "ComContactCategory",
+           foreign_key: :parent_id,
+           inverse_of: :parent,
+           dependent: :restrict_with_error
 
   has_many :com_contacts,
            foreign_key: :category_id,
            primary_key: :id,
            inverse_of: :com_contact_category,
            dependent: :nullify
+
+  validates :description, length: { maximum: 255 }
+  validates :parent_id, length: { maximum: 255 }, allow_blank: true
+
+  def root?
+    parent_id == EMPTY_STRING
+  end
 end

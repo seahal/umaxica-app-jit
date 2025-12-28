@@ -10,6 +10,8 @@
 #
 
 class AppDocumentAuditEvent < UniversalRecord
+  include UppercaseId
+
   self.table_name = "app_document_audit_events"
 
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')

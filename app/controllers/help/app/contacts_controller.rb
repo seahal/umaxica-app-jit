@@ -12,7 +12,8 @@ module Help
       end
 
       def new
-        @contact = AppContact.new
+        category_id = validate_category_id(params[:category])
+        @contact = AppContact.new(category_id: category_id)
         @email_address = ""
         @telephone_number = ""
         @contact_categories = AppContactCategory.all
@@ -79,6 +80,21 @@ module Help
       end
 
       private
+
+      def validate_category_id(category_param)
+        return nil if category_param.blank?
+
+        if AppContactCategory.exists?(id: category_param)
+          category_param
+        else
+          Rails.event.notify(
+            "contact.invalid_category",
+            category_param: category_param,
+            controller: "help/app/contacts",
+          )
+          nil
+        end
+      end
 
       def help_email_redirect_options
         {

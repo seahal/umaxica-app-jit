@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 92481359a7f74261059a292a7cea61e68144b57e
+  revision: 84133e11702d57aff97cc6001027c141070e5afd
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -803,7 +803,6 @@ GEM
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
-    tailwindcss-ruby (4.1.18)
     tailwindcss-ruby (4.1.18-x86_64-linux-gnu)
     tapioca (0.16.11)
       benchmark

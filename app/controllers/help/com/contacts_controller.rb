@@ -12,7 +12,8 @@ module Help
       end
 
       def new
-        @contact = ComContact.new
+        category_id = validate_category_id(params[:category])
+        @contact = ComContact.new(category_id: category_id)
         @contact_categories = ComContactCategory.all
       end
 
@@ -91,6 +92,21 @@ module Help
       end
 
       private
+
+      def validate_category_id(category_param)
+        return nil if category_param.blank?
+
+        if ComContactCategory.exists?(id: category_param)
+          category_param
+        else
+          Rails.event.notify(
+            "contact.invalid_category",
+            category_param: category_param,
+            controller: "help/com/contacts",
+          )
+          nil
+        end
+      end
 
       def send_topic_notification(contact, topic)
         contact_email = contact.com_contact_email

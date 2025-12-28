@@ -1,5 +1,4 @@
 <% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
-<% help_host = ENV["HELP_STAFF_URL"].presence %>
 
 <div class="relative min-h-screen overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
   <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_hsl(var(--secondary)),_transparent_55%)] opacity-70"></div>
@@ -16,10 +15,8 @@
         社内スタッフ向けの運用・トレーニング資料をまとめています。現場向けの手順やFAQを中心に整理しています。
       </p>
       <div class="flex flex-wrap gap-3">
-        <% if help_host %>
-          <%= link_to "Help Center", "https://#{help_host}",
-                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-5 py-2 text-sm font-semibold text-[hsl(var(--foreground))] transition hover:-translate-y-0.5 hover:shadow-lg" %>
-        <% end %>
+      <%= link_to "Help Center", help_org_root_url,
+                    class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-5 py-2 text-sm font-semibold text-[hsl(var(--foreground))] transition hover:-translate-y-0.5 hover:shadow-lg" %>
       </div>
     </header>
 

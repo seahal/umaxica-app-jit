@@ -21,6 +21,8 @@ module Peak::App
     test "should display navigation links" do
       get peak_app_root_url
 
+      assert_select "a", text: "Umaxica(app)"
+
       assert_select "footer" do
         assert_select "a", text: I18n.t("peak.app.preferences.footer.home")
         assert_select "a[href^=?]", peak_app_preference_path, text: I18n.t("peak.app.preferences.footer.preference")

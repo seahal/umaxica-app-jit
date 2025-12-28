@@ -20,12 +20,29 @@
 class AppContactCategory < GuestsRecord
   include UppercaseId
 
-  validates :description, length: { maximum: 255 }
-  validates :parent_id, length: { maximum: 255 }
+  NIL_UUID = "00000000-0000-0000-0000-000000000000"
+
+  belongs_to :parent,
+             class_name: "AppContactCategory",
+             inverse_of: :children,
+             optional: true
+
+  has_many :children,
+           class_name: "AppContactCategory",
+           foreign_key: :parent_id,
+           inverse_of: :parent,
+           dependent: :restrict_with_error
 
   has_many :app_contacts,
            foreign_key: :category_id,
            primary_key: :id,
            dependent: :nullify,
            inverse_of: :app_contact_category
+
+  validates :description, length: { maximum: 255 }
+  validates :parent_id, presence: true, length: { maximum: 255 }
+
+  def root?
+    parent_id == NIL_UUID
+  end
 end

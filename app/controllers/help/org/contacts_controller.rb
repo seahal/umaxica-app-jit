@@ -13,7 +13,8 @@ module Help
       end
 
       def new
-        @contact = OrgContact.new
+        category_id = validate_category_id(params[:category])
+        @contact = OrgContact.new(category_id: category_id)
         @contact_categories = OrgContactCategory.order(:description)
       end
 
@@ -82,6 +83,21 @@ module Help
       end
 
       private
+
+      def validate_category_id(category_param)
+        return nil if category_param.blank?
+
+        if OrgContactCategory.exists?(id: category_param)
+          category_param
+        else
+          Rails.event.notify(
+            "contact.invalid_category",
+            category_param: category_param,
+            controller: "help/org/contacts",
+          )
+          nil
+        end
+      end
 
       def send_topic_notification(contact, topic)
         contact_email = contact.org_contact_emails.order(created_at: :desc).first

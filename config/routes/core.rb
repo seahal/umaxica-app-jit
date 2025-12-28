@@ -77,6 +77,17 @@ Rails.application.routes.draw do
             end
           end
         end
+        namespace :help do
+          namespace :com do
+            resources :contacts
+          end
+          namespace :org do
+            resources :contacts
+          end
+          namespace :app do
+            resources :contacts
+          end
+        end
       end
     end
   end

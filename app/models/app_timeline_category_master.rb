@@ -15,6 +15,8 @@
 # frozen_string_literal: true
 
 class AppTimelineCategoryMaster < NewsRecord
+  include UppercaseId
+
   self.primary_key = "id"
 
   belongs_to :parent,

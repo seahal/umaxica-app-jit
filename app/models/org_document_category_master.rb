@@ -15,6 +15,7 @@
 # frozen_string_literal: true
 
 class OrgDocumentCategoryMaster < DocumentRecord
+  include UppercaseId
   include ::CatTagMaster
 
   self.primary_key = "id"

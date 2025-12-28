@@ -24,6 +24,30 @@ module Help
         assert_response :success
       end
 
+      test "should get new with valid category parameter" do
+        get new_help_com_contact_url(category: @contact_category.id), headers: { "Host" => @host }
+
+        assert_response :success
+        assert_select "select[name='com_contact[category_id]'] option[selected][value='#{@contact_category.id}']",
+                      count: 1
+      end
+
+      test "should get new with invalid category parameter" do
+        get new_help_com_contact_url(category: "INVALID_CATEGORY_ID"), headers: { "Host" => @host }
+
+        assert_response :success
+        # Invalid category is not selected (validate controller returns nil)
+        assert_select "select[name='com_contact[category_id]'] option[value='INVALID_CATEGORY_ID'][selected]", count: 0
+      end
+
+      test "should get new with blank category parameter" do
+        get new_help_com_contact_url(category: ""), headers: { "Host" => @host }
+
+        assert_response :success
+        # No specific category should be selected
+        assert_select "select[name='com_contact[category_id]']"
+      end
+
       test "should show contact" do
         contact = com_contacts(:one)
         get help_com_contact_url(contact), headers: { "Host" => @host }

@@ -2,8 +2,37 @@
 
 require "test_helper"
 
-class Core::Org::Docs::App::VersionsControllerTest < ActionDispatch::IntegrationTest
-  # test "the truth" do
-  #   assert true
-  # end
+module Core
+  module Org
+    module Docs
+      module App
+        class VersionsControllerTest < ActionDispatch::IntegrationTest
+          test "should get new" do
+            get new_core_org_docs_app_post_version_url("post_id")
+            assert_response :success
+          end
+
+          test "should create version" do
+            post core_org_docs_app_post_versions_url("post_id")
+            assert_response :success
+          end
+
+          test "should get edit" do
+            get edit_core_org_docs_app_post_version_url("post_id", "id")
+            assert_response :success
+          end
+
+          test "should update version" do
+            patch core_org_docs_app_post_version_url("post_id", "id")
+            assert_response :success
+          end
+
+          test "should destroy version" do
+            delete core_org_docs_app_post_version_url("post_id", "id")
+            assert_response :success
+          end
+        end
+      end
+    end
+  end
 end

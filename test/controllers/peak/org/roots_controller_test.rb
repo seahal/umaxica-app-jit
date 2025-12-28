@@ -21,6 +21,8 @@ module Peak::Org
     test "should display navigation links" do
       get peak_org_root_url
 
+      assert_select "a", text: "Umaxica(org)"
+
       assert_select "footer" do
         assert_select "a", text: I18n.t("peak.org.preferences.footer.home")
         assert_select "a[href^=?]", peak_org_preference_path, text: I18n.t("peak.org.preferences.footer.preference")
