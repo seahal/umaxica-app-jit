@@ -22,7 +22,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_25_230629) do
     t.jsonb "payload_json", null: false
     t.datetime "received_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["event_id"], name: "index_billing_stripe_events_on_event_id"
+    t.index ["event_id"], name: "index_billing_stripe_events_on_event_id", unique: true
     t.index ["received_at"], name: "index_billing_stripe_events_on_received_at"
   end
 end

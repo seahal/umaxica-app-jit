@@ -11,10 +11,10 @@
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
 #  ip_address       :inet             default("0.0.0.0"), not null
-#  status_id        :string(255)      default("NONE")
+#  status_id        :string(255)      default("")
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string(255)      default("NONE"), not null
+#  category_id      :string(255)      default(""), not null
 #
 # Indexes
 #
@@ -58,11 +58,11 @@ class OrgContactTest < ActiveSupport::TestCase
   end
 
   def sample_category
-    org_contact_categories(:organization_inquiry).id
+    OrgContactCategory.find_by(id: "ORGANIZATION_INQUIRY")&.id || "NEYO"
   end
 
   def sample_status
-    org_contact_statuses(:set_up).id
+    OrgContactStatus.find_by(id: "SET_UP")&.id || "NEYO"
   end
 
   test "should inherit from GuestsRecord" do

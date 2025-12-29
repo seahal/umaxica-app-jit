@@ -3,7 +3,7 @@
 # Table name: app_document_category_masters
 #
 #  id         :string(255)      not null, primary key
-#  parent_id  :string(255)      default("none"), not null
+#  parent_id  :string(255)      default("NEYO"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #

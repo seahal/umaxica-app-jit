@@ -19,6 +19,6 @@
 class AreaDomainOccurrence < UniversalRecord
   self.implicit_order_column = :created_at
 
-  belongs_to :area_occurrence
-  belongs_to :domain_occurrence
+  belongs_to :area_occurrence, inverse_of: :area_domain_occurrences
+  belongs_to :domain_occurrence, inverse_of: :area_domain_occurrences
 end

@@ -3,31 +3,25 @@
 # Table name: app_timelines
 #
 #  id            :uuid             not null, primary key
-#  permalink     :string(200)      not null
 #  response_mode :string           default("html"), not null
 #  redirect_url  :string
-#  revision_key  :string           not null
 #  published_at  :datetime         default("infinity"), not null
 #  expires_at    :datetime         default("infinity"), not null
 #  position      :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  status_id     :string(255)      default("NONE"), not null
+#  status_id     :string(255)      default("NEYO"), not null
+#  public_id     :string(21)       default(""), not null
 #
 # Indexes
 #
-#  index_app_timelines_on_permalink                    (permalink) UNIQUE
+#  index_app_timelines_on_public_id                    (public_id)
 #  index_app_timelines_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_app_timelines_on_status_id                    (status_id)
 #
 
-one:
-  permalink: app_timeline_one
-  status_id: ACTIVE
-  response_mode: html
-  redirect_url:
-  revision_key: rev_key_one
-  published_at: <%= Time.zone.parse("2999-01-01 00:00:00") %>
-  expires_at: <%= Time.zone.parse("2999-12-31 00:00:00") %>
-  position: 0
+# Fixture file cleared - data migrated to seed migrations
 
+one:
+  public_id: "app_timelines_0000001"
+  status_id: "NEYO"

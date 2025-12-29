@@ -11,10 +11,10 @@
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
 #  ip_address       :inet             default("0.0.0.0"), not null
-#  status_id        :string(255)      default("NONE")
+#  status_id        :string(255)      default("")
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string(255)      default("NONE"), not null
+#  category_id      :string(255)      default(""), not null
 #
 # Indexes
 #
@@ -30,8 +30,8 @@ class ComContact < GuestsRecord
   include ::PublicId
 
   # Associations
-  has_one :com_contact_email, dependent: :destroy
-  has_one :com_contact_telephone, dependent: :destroy
+  has_one :com_contact_email, dependent: :destroy, inverse_of: :com_contact
+  has_one :com_contact_telephone, dependent: :destroy, inverse_of: :com_contact
   belongs_to :com_contact_category,
              class_name: "ComContactCategory",
              foreign_key: :category_id,
@@ -41,7 +41,7 @@ class ComContact < GuestsRecord
              class_name: "ComContactStatus",
              foreign_key: :status_id,
              inverse_of: :com_contacts
-  has_many :com_contact_topics, dependent: :destroy
+  has_many :com_contact_topics, dependent: :destroy, inverse_of: :com_contact
 
   attribute :status_id, default: "NEYO"
   attribute :category_id, default: "NEYO"

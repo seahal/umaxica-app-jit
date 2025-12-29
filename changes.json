@@ -1,0 +1,205 @@
+[
+  {
+    "table": "org_contact_emails",
+    "column": "remaining_views",
+    "type": "integer",
+    "old": 10,
+    "new": 0
+  },
+  {
+    "table": "org_contact_emails",
+    "column": "verifier_attempts_left",
+    "type": "integer",
+    "old": 3,
+    "new": 0
+  },
+  {
+    "table": "org_contact_telephones",
+    "column": "remaining_views",
+    "type": "integer",
+    "old": 10,
+    "new": 0
+  },
+  {
+    "table": "org_contact_telephones",
+    "column": "verifier_attempts_left",
+    "type": "integer",
+    "old": 3,
+    "new": 0
+  },
+  {
+    "table": "app_contact_telephones",
+    "column": "remaining_views",
+    "type": "integer",
+    "old": 10,
+    "new": 0
+  },
+  {
+    "table": "app_contact_telephones",
+    "column": "verifier_attempts_left",
+    "type": "integer",
+    "old": 3,
+    "new": 0
+  },
+  {
+    "table": "app_contact_emails",
+    "column": "remaining_views",
+    "type": "integer",
+    "old": 10,
+    "new": 0
+  },
+  {
+    "table": "app_contact_emails",
+    "column": "verifier_attempts_left",
+    "type": "integer",
+    "old": 3,
+    "new": 0
+  },
+  {
+    "table": "com_contact_emails",
+    "column": "remaining_views",
+    "type": "integer",
+    "old": 10,
+    "new": 0
+  },
+  {
+    "table": "com_contact_emails",
+    "column": "verifier_attempts_left",
+    "type": "integer",
+    "old": 5,
+    "new": 0
+  },
+  {
+    "table": "com_contact_telephones",
+    "column": "remaining_views",
+    "type": "integer",
+    "old": 10,
+    "new": 0
+  },
+  {
+    "table": "com_contact_telephones",
+    "column": "verifier_attempts_left",
+    "type": "integer",
+    "old": 3,
+    "new": 0
+  },
+  {
+    "table": "app_contact_topics",
+    "column": "remaining_views",
+    "type": "integer",
+    "old": 10,
+    "new": 0
+  },
+  {
+    "table": "app_contact_topics",
+    "column": "otp_attempts_left",
+    "type": "integer",
+    "old": 3,
+    "new": 0
+  },
+  {
+    "table": "com_contact_topics",
+    "column": "remaining_views",
+    "type": "integer",
+    "old": 10,
+    "new": 0
+  },
+  {
+    "table": "com_contact_topics",
+    "column": "otp_attempts_left",
+    "type": "integer",
+    "old": 3,
+    "new": 0
+  },
+  {
+    "table": "org_contact_topics",
+    "column": "remaining_views",
+    "type": "integer",
+    "old": 10,
+    "new": 0
+  },
+  {
+    "table": "org_contact_topics",
+    "column": "otp_attempts_left",
+    "type": "integer",
+    "old": 3,
+    "new": 0
+  },
+  {
+    "table": "app_contact_categories",
+    "column": "parent_id",
+    "type": "string",
+    "old": "00000000-0000-0000-0000-000000000000",
+    "new": ""
+  },
+  {
+    "table": "com_contact_statuses",
+    "column": "parent_id",
+    "type": "string",
+    "old": "00000000-0000-0000-0000-000000000000",
+    "new": ""
+  },
+  {
+    "table": "org_contact_statuses",
+    "column": "parent_id",
+    "type": "string",
+    "old": "00000000-0000-0000-0000-000000000000",
+    "new": ""
+  },
+  {
+    "table": "com_contact_audits",
+    "column": "event_id",
+    "type": "string",
+    "old": "NEYO",
+    "new": ""
+  },
+  {
+    "table": "com_contact_audits",
+    "column": "level_id",
+    "type": "string",
+    "old": "NEYO",
+    "new": ""
+  },
+  {
+    "table": "app_contacts",
+    "column": "status_id",
+    "type": "string",
+    "old": "NEYO",
+    "new": ""
+  },
+  {
+    "table": "app_contacts",
+    "column": "category_id",
+    "type": "string",
+    "old": "NEYO",
+    "new": ""
+  },
+  {
+    "table": "com_contacts",
+    "column": "status_id",
+    "type": "string",
+    "old": "NEYO",
+    "new": ""
+  },
+  {
+    "table": "com_contacts",
+    "column": "category_id",
+    "type": "string",
+    "old": "NEYO",
+    "new": ""
+  },
+  {
+    "table": "org_contacts",
+    "column": "status_id",
+    "type": "string",
+    "old": "NEYO",
+    "new": ""
+  },
+  {
+    "table": "org_contacts",
+    "column": "category_id",
+    "type": "string",
+    "old": "NEYO",
+    "new": ""
+  }
+]

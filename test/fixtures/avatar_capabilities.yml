@@ -14,7 +14,4 @@
 #  index_avatar_capabilities_on_key  (key) UNIQUE
 #
 
-normal:
-  id: normal
-  key: normal
-  name: Normal
+# Fixture file cleared - data migrated to seed migrations

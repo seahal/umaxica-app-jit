@@ -5,17 +5,17 @@
 # Table name: org_contact_topics
 #
 #  id                :uuid             not null, primary key
-#  activated         :boolean          default(FALSE), not null
-#  created_at        :datetime         not null
-#  deletable         :boolean          default(FALSE), not null
-#  expires_at        :timestamptz      not null
 #  org_contact_id    :uuid             not null
-#  otp_attempts_left :integer          default(3), not null
+#  activated         :boolean          default(FALSE), not null
+#  deletable         :boolean          default(FALSE), not null
+#  remaining_views   :integer          default(0), not null
 #  otp_digest        :string(255)      default(""), not null
 #  otp_expires_at    :timestamptz      default("-infinity"), not null
-#  public_id         :string(21)       default(""), not null
-#  remaining_views   :integer          default(10), not null
+#  otp_attempts_left :integer          default(0), not null
+#  expires_at        :timestamptz      not null
+#  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  public_id         :string(21)       default(""), not null
 #
 # Indexes
 #
@@ -27,7 +27,7 @@
 class OrgContactTopic < GuestsRecord
   include ::PublicId
 
-  belongs_to :org_contact
+  belongs_to :org_contact, inverse_of: :org_contact_topics
 
   validates :otp_digest, length: { maximum: 255 }
 

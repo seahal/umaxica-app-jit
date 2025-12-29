@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_30_092047) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -64,7 +64,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
 
   create_table "avatar_membership_statuses", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description"
     t.string "key", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
@@ -88,7 +87,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
 
   create_table "avatar_moniker_statuses", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description"
     t.string "key", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
@@ -125,7 +123,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
 
   create_table "avatar_ownership_statuses", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description"
     t.string "key", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
@@ -168,7 +165,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.integer "lock_version", default: 0, null: false
     t.string "moniker", null: false
     t.string "owner_organization_id"
-    t.string "public_id", null: false
+    t.string "public_id", default: "", null: false
     t.string "representing_organization_id"
     t.datetime "updated_at", null: false
     t.index ["active_handle_id"], name: "index_avatars_on_active_handle_id"
@@ -196,7 +193,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
 
   create_table "handle_assignment_statuses", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description"
     t.string "key", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
@@ -221,7 +217,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
 
   create_table "handle_statuses", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description"
     t.string "key", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
@@ -234,7 +229,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.string "handle", null: false
     t.string "handle_status_id"
     t.boolean "is_system", default: false, null: false
-    t.string "public_id", null: false
+    t.string "public_id", default: "", null: false
     t.datetime "updated_at", null: false
     t.index ["cooldown_until"], name: "index_handles_on_cooldown_until"
     t.index ["handle"], name: "uniq_handles_handle_non_system", unique: true, where: "(is_system = false)"
@@ -245,7 +240,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
 
   create_table "post_review_statuses", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description"
     t.string "key", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
@@ -267,7 +261,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
 
   create_table "post_statuses", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description"
     t.string "key", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
@@ -280,7 +273,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.datetime "created_at", null: false
     t.string "created_by_actor_id", null: false
     t.string "post_status_id", null: false
-    t.string "public_id", null: false
+    t.string "public_id", default: "", null: false
     t.timestamptz "published_at"
     t.string "published_by_actor_id"
     t.datetime "updated_at", null: false
@@ -311,12 +304,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.index ["organization_id"], name: "index_roles_on_organization_id"
   end
 
-  create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_identity_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
+  create_table "staff_identity_audit_levels", id: :string, default: "NEYO", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -325,9 +318,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.string "actor_type", default: "", null: false
     t.datetime "created_at", null: false
-    t.string "event_id", limit: 255, default: "", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.string "ip_address", default: "", null: false
-    t.string "level_id", default: "NONE", null: false
+    t.string "level_id", default: "NEYO", null: false
     t.text "previous_value"
     t.uuid "staff_id", null: false
     t.string "subject_id"
@@ -364,6 +357,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.check_constraint "staff_identity_email_status_id IS NULL OR staff_identity_email_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_emails_staff_identity_email_status_id_format"
   end
 
+  create_table "staff_identity_passkey_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_staff_identity_passkey_statuses_on_lower_id", unique: true
+    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_passkey_statuses_id_format"
+  end
+
   create_table "staff_identity_passkeys", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
@@ -371,9 +369,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.text "public_key", null: false
     t.bigint "sign_count", default: 0, null: false
     t.uuid "staff_id", null: false
+    t.string "staff_identity_passkey_status_id", limit: 255, default: "ACTIVE", null: false
     t.datetime "updated_at", null: false
     t.binary "webauthn_id", null: false
     t.index ["staff_id"], name: "index_staff_identity_passkeys_on_staff_id"
+    t.index ["staff_identity_passkey_status_id"], name: "idx_on_staff_identity_passkey_status_id_159c890738"
     t.index ["webauthn_id"], name: "index_staff_identity_passkeys_on_webauthn_id", unique: true
   end
 
@@ -399,7 +399,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.check_constraint "uses_remaining >= 0", name: "chk_staff_identity_secrets_uses_remaining_non_negative"
   end
 
-  create_table "staff_identity_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "staff_identity_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_staff_identity_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_statuses_id_format"
   end
@@ -452,7 +452,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
   create_table "staffs", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "public_id", limit: 255, default: ""
-    t.string "staff_identity_status_id", limit: 255, default: "NONE", null: false
+    t.string "staff_identity_status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.string "webauthn_id", default: "", null: false
     t.datetime "withdrawn_at", default: ::Float::INFINITY
@@ -462,12 +462,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.check_constraint "staff_identity_status_id IS NULL OR staff_identity_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staffs_staff_identity_status_id_format"
   end
 
-  create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_identity_audit_levels", id: :string, default: "NONE", force: :cascade do |t|
+  create_table "user_identity_audit_levels", id: :string, default: "NEYO", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -476,9 +476,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.string "actor_type", default: "", null: false
     t.datetime "created_at", null: false
-    t.string "event_id", limit: 255, default: "", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.string "ip_address", default: "", null: false
-    t.string "level_id", default: "NONE", null: false
+    t.string "level_id", default: "NEYO", null: false
     t.text "previous_value"
     t.string "subject_id"
     t.string "subject_type", default: "", null: false
@@ -491,7 +491,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.index ["user_id"], name: "index_user_identity_audits_on_user_id"
   end
 
-  create_table "user_identity_email_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
+  create_table "user_identity_email_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_user_identity_email_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_email_statuses_id_format"
   end
@@ -507,7 +507,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.string "otp_private_key", default: "", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_identity_email_status_id", limit: 255, default: "UNVERIFIED", null: false
+    t.string "user_identity_email_status_id", limit: 255, default: "NEYO", null: false
     t.index "lower((address)::text)", name: "index_user_identity_emails_on_lower_address", unique: true
     t.index ["otp_last_sent_at"], name: "index_user_identity_emails_on_otp_last_sent_at"
     t.index ["user_id"], name: "index_user_identity_emails_on_user_id"
@@ -515,7 +515,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.check_constraint "user_identity_email_status_id IS NULL OR user_identity_email_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_emails_user_identity_email_status_id_format"
   end
 
-  create_table "user_identity_one_time_password_statuses", id: :string, force: :cascade do |t|
+  create_table "user_identity_one_time_password_statuses", id: :string, default: "NEYO", force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_user_identity_otp_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_one_time_password_statuses_id_format"
   end
@@ -526,7 +526,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.string "private_key", limit: 1024, default: "", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_identity_one_time_password_status_id", default: "NONE", null: false
+    t.string "user_identity_one_time_password_status_id", default: "NEYO", null: false
     t.index ["user_id"], name: "index_user_identity_one_time_passwords_on_user_id"
     t.index ["user_identity_one_time_password_status_id"], name: "idx_on_user_identity_one_time_password_status_id_01264db86c"
     t.check_constraint "user_identity_one_time_password_status_id IS NULL OR user_identity_one_time_password_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_one_time_passwords_user_identity_one_time_pas"
@@ -623,12 +623,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.check_constraint "user_identity_social_google_status_id IS NULL OR user_identity_social_google_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_social_googles_user_identity_social_google_st"
   end
 
-  create_table "user_identity_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "user_identity_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_user_identity_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_statuses_id_format"
   end
 
-  create_table "user_identity_telephone_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
+  create_table "user_identity_telephone_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_user_identity_telephone_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_telephone_statuses_id_format"
   end
@@ -643,7 +643,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.string "otp_private_key", default: "", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_identity_telephone_status_id", limit: 255, default: "UNVERIFIED", null: false
+    t.string "user_identity_telephone_status_id", limit: 255, default: "NEYO", null: false
     t.index "lower((number)::text)", name: "index_user_identity_telephones_on_lower_number"
     t.index ["user_id"], name: "index_user_identity_telephones_on_user_id"
     t.index ["user_identity_telephone_status_id"], name: "idx_on_user_identity_telephone_status_id_a15207191e"
@@ -688,7 +688,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
     t.datetime "created_at", null: false
     t.string "public_id", limit: 255, default: ""
     t.datetime "updated_at", null: false
-    t.string "user_identity_status_id", limit: 255, default: "NONE", null: false
+    t.string "user_identity_status_id", limit: 255, default: "NEYO", null: false
     t.string "webauthn_id", default: "", null: false
     t.datetime "withdrawn_at", default: ::Float::INFINITY
     t.index ["public_id"], name: "index_users_on_public_id", unique: true
@@ -736,6 +736,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000005) do
   add_foreign_key "staff_identity_audits", "staff_identity_audit_levels", column: "level_id", name: "fk_staff_audits_level", on_delete: :restrict
   add_foreign_key "staff_identity_emails", "staff_identity_email_statuses"
   add_foreign_key "staff_identity_emails", "staffs"
+  add_foreign_key "staff_identity_passkeys", "staff_identity_passkey_statuses", validate: false
   add_foreign_key "staff_identity_passkeys", "staffs"
   add_foreign_key "staff_identity_secrets", "staff_identity_secret_statuses"
   add_foreign_key "staff_identity_secrets", "staffs"

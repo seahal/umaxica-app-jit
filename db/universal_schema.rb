@@ -10,17 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_30_080013) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "app_contact_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "app_contact_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "app_contact_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "app_contact_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -31,10 +31,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
@@ -51,12 +51,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_21d52ab3f6"
   end
 
-  create_table "app_document_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "app_document_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "app_document_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "app_document_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -67,10 +67,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
     t.string "subject_id", null: false
@@ -85,12 +85,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_cf1fa79ee4"
   end
 
-  create_table "app_timeline_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "app_timeline_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "app_timeline_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "app_timeline_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -101,10 +101,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
     t.string "subject_id", null: false
@@ -147,9 +147,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
   end
 
   create_table "area_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.index "lower((id)::text)", name: "index_area_occurrence_statuses_on_lower_id", unique: true
-    t.index ["expires_at"], name: "index_area_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_area_occurrence_statuses_id_format"
   end
 
@@ -159,7 +157,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_area_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_area_occurrences_on_expires_at"
@@ -205,12 +203,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["zip_occurrence_id"], name: "index_area_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "com_contact_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "com_contact_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "com_contact_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "com_contact_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -221,10 +219,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
@@ -241,12 +239,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_1ec6aec32c"
   end
 
-  create_table "com_document_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "com_document_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "com_document_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "com_document_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -257,10 +255,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
     t.string "subject_id", null: false
@@ -275,12 +273,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_c40361e81b"
   end
 
-  create_table "com_timeline_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "com_timeline_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "com_timeline_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "com_timeline_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -291,10 +289,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
     t.string "subject_id", null: false
@@ -328,9 +326,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
   end
 
   create_table "domain_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.index "lower((id)::text)", name: "index_domain_occurrence_statuses_on_lower_id", unique: true
-    t.index ["expires_at"], name: "index_domain_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_domain_occurrence_statuses_id_format"
   end
 
@@ -340,7 +336,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_domain_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_domain_occurrences_on_expires_at"
@@ -396,9 +392,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
   end
 
   create_table "email_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.index "lower((id)::text)", name: "index_email_occurrence_statuses_on_lower_id", unique: true
-    t.index ["expires_at"], name: "index_email_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_email_occurrence_statuses_id_format"
   end
 
@@ -408,7 +402,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_email_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_email_occurrences_on_expires_at"
@@ -455,9 +449,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
   end
 
   create_table "ip_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.index "lower((id)::text)", name: "index_ip_occurrence_statuses_on_lower_id", unique: true
-    t.index ["expires_at"], name: "index_ip_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_ip_occurrence_statuses_id_format"
   end
 
@@ -467,7 +459,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_ip_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_ip_occurrences_on_expires_at"
@@ -513,12 +505,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["zip_occurrence_id"], name: "index_ip_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "org_contact_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "org_contact_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "org_contact_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "org_contact_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -529,10 +521,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
@@ -549,12 +541,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_3eb778d373"
   end
 
-  create_table "org_document_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "org_document_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "org_document_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "org_document_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -565,10 +557,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
     t.string "subject_id", null: false
@@ -583,12 +575,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_bf53171ad0"
   end
 
-  create_table "org_timeline_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "org_timeline_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "org_timeline_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "org_timeline_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -599,10 +591,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
     t.string "subject_id", null: false
@@ -617,12 +609,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_0f4341deba"
   end
 
-  create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "staff_identity_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "staff_identity_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -633,10 +625,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
     t.string "subject_id", null: false
@@ -652,10 +644,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_2e96c29236"
   end
 
-  create_table "staff_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+  create_table "staff_occurrence_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_staff_occurrence_statuses_on_lower_id", unique: true
-    t.index ["expires_at"], name: "index_staff_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_occurrence_statuses_id_format"
   end
 
@@ -665,7 +655,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_staff_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_staff_occurrences_on_expires_at"
@@ -703,9 +693,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
   end
 
   create_table "telephone_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.index "lower((id)::text)", name: "index_telephone_occurrence_statuses_on_lower_id", unique: true
-    t.index ["expires_at"], name: "index_telephone_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_telephone_occurrence_statuses_id_format"
   end
 
@@ -715,7 +703,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_telephone_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_telephone_occurrences_on_expires_at"
@@ -743,12 +731,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["zip_occurrence_id"], name: "index_telephone_zip_occurrences_on_zip_occurrence_id"
   end
 
-  create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_identity_audit_levels", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "user_identity_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -759,10 +747,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
     t.text "current_value", default: "", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
-    t.string "level_id", limit: 255, default: "NONE", null: false
+    t.string "level_id", limit: 255, default: "NEYO", null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
     t.string "subject_id", null: false
@@ -778,10 +766,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_on_subject_type_subject_id_occurred_at_a29eb711dd"
   end
 
-  create_table "user_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
+  create_table "user_occurrence_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_user_occurrence_statuses_on_lower_id", unique: true
-    t.index ["expires_at"], name: "index_user_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_occurrence_statuses_id_format"
   end
 
@@ -791,7 +777,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_user_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_user_occurrences_on_expires_at"
@@ -811,9 +797,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
   end
 
   create_table "zip_occurrence_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
-    t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.index "lower((id)::text)", name: "index_zip_occurrence_statuses_on_lower_id", unique: true
-    t.index ["expires_at"], name: "index_zip_occurrence_statuses_on_expires_at"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_zip_occurrence_statuses_id_format"
   end
 
@@ -823,7 +807,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000006) do
     t.datetime "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
     t.string "memo", limit: 1024, default: "", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE", null: false
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["body"], name: "index_zip_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_zip_occurrences_on_expires_at"

@@ -38,6 +38,10 @@ ja:
     contact_topic_description: "トピックの詳細です。"
     inquiry_detail: "問い合わせの詳細です。"
   auth:
+  test:
+    support:
+      fix_fk_dependency:
+        apply: "FK依存関係パッチを適用しています..."
     token_refresh:
       errors:
         missing_refresh_token: "リフレッシュトークンは必須です"

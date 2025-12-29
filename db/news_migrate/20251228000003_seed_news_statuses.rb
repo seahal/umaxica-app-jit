@@ -10,7 +10,7 @@ class SeedNewsStatuses < ActiveRecord::Migration[7.1]
         { id: 'ACTIVE' },
         { id: 'DRAFT' },
         { id: 'ARCHIVED' },
-        { id: 'NONE' },
+        { id: 'NEYO' },
       ]
       upsert_table('app_timeline_statuses', app_statuses)
 

@@ -38,6 +38,10 @@ en:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
+  test:
+    support:
+      fix_fk_dependency:
+        apply: "Applying FK Dependency Patch..."
     token_refresh:
       errors:
         missing_refresh_token: "Refresh token is required"

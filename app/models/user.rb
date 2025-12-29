@@ -9,7 +9,7 @@
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  public_id               :string(255)      default("")
-#  user_identity_status_id :string(255)      default("NONE"), not null
+#  user_identity_status_id :string(255)      default("NEYO"), not null
 #  withdrawn_at            :datetime         default("infinity")
 #
 # Indexes

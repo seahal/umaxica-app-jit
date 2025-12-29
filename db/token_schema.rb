@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_28_054814) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_30_090011) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "staff_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "staff_token_statuses", id: { type: :string, limit: 255, default: "" }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_staff_token_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_token_statuses_id_format"
+    t.check_constraint "id IS NULL OR id::text = ''::text OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_token_statuses_id_format"
   end
 
   create_table "staff_tokens", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -29,7 +29,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_054814) do
     t.datetime "revoked_at"
     t.datetime "rotated_at"
     t.uuid "staff_id", null: false
-    t.string "staff_token_status_id", default: "NONE", null: false
+    t.string "staff_token_status_id", default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_staff_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_staff_tokens_on_refresh_expires_at"
@@ -40,9 +40,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_054814) do
     t.check_constraint "staff_token_status_id IS NULL OR staff_token_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_tokens_staff_token_status_id_format"
   end
 
-  create_table "user_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "user_token_statuses", id: { type: :string, limit: 255, default: "" }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_user_token_statuses_on_lower_id", unique: true
-    t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_token_statuses_id_format"
+    t.check_constraint "id IS NULL OR id::text = ''::text OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_token_statuses_id_format"
   end
 
   create_table "user_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -55,7 +55,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_054814) do
     t.datetime "rotated_at"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_token_status_id", default: "NONE", null: false
+    t.string "user_token_status_id", default: "NEYO", null: false
     t.index ["public_id"], name: "index_user_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_user_tokens_on_refresh_expires_at"
     t.index ["refresh_token_digest"], name: "index_user_tokens_on_refresh_token_digest", unique: true

@@ -5,7 +5,7 @@
 # Table name: posts
 #
 #  id                    :string           not null, primary key
-#  public_id             :string           not null
+#  public_id             :string           default(""), not null
 #  author_avatar_id      :string           not null
 #  post_status_id        :string           not null
 #  body                  :text             not null
@@ -97,7 +97,12 @@ class PostTest < ActiveSupport::TestCase
   test "association deletion: restriction by post_reviews" do
     post = Post.create!(@valid_attributes)
     # PostReview might require more fields, assuming basic creation works for now
-    PostReview.create!(post: post, reviewer_avatar_id: @avatar.id, review_status_id: "PENDING")
+    # Create status if not exists
+    PostReviewStatus.find_or_create_by!(id: "PENDING") { |s| s.key = "pending"; s.name = "Pending" }
+    PostReview.create!(
+      post: post, reviewer_actor_id: @avatar.id, post_review_status_id: "PENDING",
+      decided_at: Time.current,
+    )
 
     assert_not post.destroy
     assert_includes post.errors[:base], "Cannot delete record because dependent post_reviews exist"

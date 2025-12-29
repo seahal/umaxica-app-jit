@@ -5,7 +5,7 @@
 #  id         :uuid             not null, primary key
 #  public_id  :string(21)       default(""), not null
 #  body       :string(255)      default(""), not null
-#  status_id  :string(255)      default("NONE"), not null
+#  status_id  :string(255)      default("NEYO"), not null
 #  memo       :string(1024)     default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -19,8 +19,9 @@
 #  index_email_occurrences_on_status_id   (status_id)
 #
 
+# Fixture file cleared - data migrated to seed migrations
+
 one:
-  public_id: "EEEEEEEEEEEEEEEEEEEEE"
-  body: "email-body-one"
-  status_id: ACTIVE
-  memo: "Email occurrence one"
+  public_id: "email_occur_pub_00001"
+  body: "email_test"
+  status_id: "NEYO"

@@ -19,6 +19,6 @@
 class StaffZipOccurrence < UniversalRecord
   self.implicit_order_column = :created_at
 
-  belongs_to :staff_occurrence
-  belongs_to :zip_occurrence
+  belongs_to :staff_occurrence, inverse_of: :staff_zip_occurrences
+  belongs_to :zip_occurrence, inverse_of: :staff_zip_occurrences
 end

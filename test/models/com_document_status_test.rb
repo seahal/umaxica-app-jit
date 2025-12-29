@@ -10,8 +10,6 @@
 require "test_helper"
 
 class ComDocumentStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
   def setup
     @model_class = ComDocumentStatus
     @valid_id = "ACTIVE"

@@ -10,34 +10,34 @@ class SeedGuestStatuses < ActiveRecord::Migration[7.1]
 
       # AppContactStatus
       app_statuses = [
-        { id: 'APP_SITE_STATUS', description: 'ROOT', parent_title: '' },
-        { id: 'SET_UP', description: 'first step completed', parent_title: '' },
-        { id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_title: '' },
-        { id: 'CHECKED_TELEPHONE_NUMBER', description: 'third step completed', parent_title: '' },
-        { id: 'COMPLETED_CONTACT_ACTION', description: 'contact completed', parent_title: '' },
-        { id: 'NEYO', description: 'null status', parent_title: '' },
+        { id: 'NEYO', description: 'NEYO', parent_title: '', position: 1, active: true },
+        { id: 'SET_UP', description: 'Set Up', parent_title: '', position: 2, active: true },
+        { id: 'CHECKED_EMAIL_ADDRESS', description: 'Checked Email', parent_title: '', position: 3, active: true },
+        { id: 'CHECKED_TELEPHONE_NUMBER', description: 'Checked Telephone', parent_title: '', position: 4, active: true },
+        { id: 'COMPLETED', description: 'Completed', parent_title: '', position: 5, active: true },
+        { id: 'COMPLETED_CONTACT_ACTION', description: 'Completed Contact Action', parent_title: '', position: 6, active: true },
       ]
       upsert_table('app_contact_statuses', app_statuses)
 
       # ComContactStatus
       com_statuses = [
-        { id: "NEYO", description: "root of service site status inquiries", parent_id: nil, position: 0, active: true },
-        { id: "SET_UP", description: "first step completed", parent_id: "NEYO", position: 0, active: true },
-        { id: "CHECKED_EMAIL_ADDRESS", description: "second step completed", parent_id: "SET_UP", position: 0, active: true },
-        { id: "CHECKED_TELEPHONE_NUMBER", description: "second step completed", parent_id: "CHECKED_EMAIL_ADDRESS", position: 0, active: true },
-        { id: "COMPLETED_CONTACT_ACTION", description: "second step completed", parent_id: "CHECKED_TELEPHONE_NUMBER", position: 0, active: true },
-        { id: "NULL_COM_STATUS", description: "null status for com contact", parent_id: nil, position: 0, active: true },
+        { id: "NEYO", description: "NEYO", parent_id: nil, position: 1, active: true },
+        { id: "SET_UP", description: "Set Up", parent_id: nil, position: 2, active: true },
+        { id: "CHECKED_EMAIL_ADDRESS", description: "Checked Email", parent_id: nil, position: 3, active: true },
+        { id: "CHECKED_TELEPHONE_NUMBER", description: "Checked Telephone", parent_id: nil, position: 4, active: true },
+        { id: "COMPLETED", description: "Completed", parent_id: nil, position: 5, active: true },
+        { id: "COMPLETED_CONTACT_ACTION", description: "Completed Contact Action", parent_id: nil, position: 6, active: true },
       ]
       upsert_table('com_contact_statuses', com_statuses)
 
       # OrgContactStatus
       org_statuses = [
-        { id: 'ORGANIZATION_SITE_STATUS', description: 'ROOT', parent_id: nil },
-        { id: 'SET_UP', description: 'first step completed', parent_id: 'ORGANIZATION_SITE_STATUS' },
-        { id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP' },
-        { id: 'CHECKED_TELEPHONE_NUMBER', description: 'third step completed', parent_id: 'CHECKED_EMAIL_ADDRESS' },
-        { id: 'COMPLETED_CONTACT_ACTION', description: 'contact completed', parent_id: 'CHECKED_TELEPHONE_NUMBER' },
-        { id: 'NEYO', description: 'null status', parent_id: nil },
+        { id: 'NEYO', description: 'NEYO', parent_id: nil, position: 1, active: true },
+        { id: 'SET_UP', description: 'Set Up', parent_id: nil, position: 2, active: true },
+        { id: 'CHECKED_EMAIL_ADDRESS', description: 'Checked Email', parent_id: nil, position: 3, active: true },
+        { id: 'CHECKED_TELEPHONE_NUMBER', description: 'Checked Telephone', parent_id: nil, position: 4, active: true },
+        { id: 'COMPLETED', description: 'Completed', parent_id: nil, position: 5, active: true },
+        { id: 'COMPLETED_CONTACT_ACTION', description: 'Completed Contact Action', parent_id: nil, position: 6, active: true },
       ]
       upsert_table('org_contact_statuses', org_statuses)
     end
@@ -54,7 +54,14 @@ class SeedGuestStatuses < ActiveRecord::Migration[7.1]
   private
 
   def upsert_table(table_name, rows)
+    now = Time.current
+    has_created_at = connection.column_exists?(table_name, :created_at)
+    has_updated_at = connection.column_exists?(table_name, :updated_at)
+
     rows.each do |row|
+      row[:created_at] ||= now if has_created_at
+      row[:updated_at] ||= now if has_updated_at
+
       cols = row.keys.join(", ")
       vals = row.values.map { |v| connection.quote(v) }.join(", ")
 

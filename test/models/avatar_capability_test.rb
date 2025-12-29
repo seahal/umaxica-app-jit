@@ -59,6 +59,6 @@ class AvatarCapabilityTest < ActiveSupport::TestCase
     )
 
     assert_not @capability.destroy
-    assert_includes @capability.errors[:base], "Cannot delete record because dependent avatars exist"
+    assert_includes @capability.errors[:base], "avatarsが存在しているので削除できません"
   end
 end

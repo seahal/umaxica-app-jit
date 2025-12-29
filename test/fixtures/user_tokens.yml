@@ -6,7 +6,7 @@
 #  user_id              :uuid             not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  user_token_status_id :string           default("NONE"), not null
+#  user_token_status_id :string           default("NEYO"), not null
 #  refresh_token_digest :binary
 #  public_id            :string(21)       default(""), not null
 #  refresh_expires_at   :datetime         not null
@@ -23,16 +23,3 @@
 #  index_user_tokens_on_user_id               (user_id)
 #  index_user_tokens_on_user_token_status_id  (user_token_status_id)
 #
-
-one:
-  user_token_status_id: 'NEYO'
-  user: one
-  public_id: "USERTOKENPUBLICID0001"
-  refresh_token_digest: "user_refresh_digest_one"
-  refresh_expires_at: 2030-01-01 00:00:00
-two:
-  user_token_status_id: 'NEYO'
-  user: two
-  public_id: "USERTOKENPUBLICID0002"
-  refresh_token_digest: "user_refresh_digest_two"
-  refresh_expires_at: 2030-01-01 00:00:00

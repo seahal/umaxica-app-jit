@@ -28,9 +28,9 @@ class SeedUniversalConstants < ActiveRecord::Migration[7.1]
       upsert_table('telephone_occurrence_statuses', extra_active)
 
       # Audit Levels
-      # Group 1: NONE, INFO, WARN, ERROR (App/Com/Org Document/Timeline)
+      # Group 1: NEYO, INFO, WARN, ERROR (App/Com/Org Document/Timeline)
       standard_levels = [
-        { id: 'NONE' },
+        { id: 'NEYO' },
         { id: 'INFO' },
         { id: 'WARN' },
         { id: 'ERROR' },

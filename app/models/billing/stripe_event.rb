@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: billing_stripe_events
@@ -14,7 +15,7 @@
 #
 # Indexes
 #
-#  index_billing_stripe_events_on_event_id     (event_id)
+#  index_billing_stripe_events_on_event_id     (event_id) UNIQUE
 #  index_billing_stripe_events_on_received_at  (received_at)
 #
 

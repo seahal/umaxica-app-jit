@@ -1,4 +1,3 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 # == Schema Information
 #
 # Table name: users
@@ -8,7 +7,7 @@
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  public_id               :string(255)      default("")
-#  user_identity_status_id :string(255)      default("NONE"), not null
+#  user_identity_status_id :string(255)      default("NEYO"), not null
 #  withdrawn_at            :datetime         default("infinity")
 #
 # Indexes
@@ -19,23 +18,5 @@
 #
 
 one:
-  id: "550e8400-e29b-41d4-a716-446655440020"
-  public_id: "test_user_one"
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-  user_identity_status_id: 'ALIVE'
-  withdrawn_at: 'infinity'
-two:
-  id: "550e8400-e29b-41d4-a716-446655440021"
-  public_id: "test_user_two"
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-  user_identity_status_id: 'ALIVE'
-  withdrawn_at: 'infinity'
-none_user:
-  id: "00000000-0000-0000-0000-000000000000"
-  public_id: "nil_user"
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-  user_identity_status_id: 'NEYO'
-  withdrawn_at: <%= Time.at(0) %>
+  public_id: "one_user_public_id01"
+  user_identity_status_id: "NEYO"

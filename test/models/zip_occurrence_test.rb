@@ -7,7 +7,7 @@
 #  id         :uuid             not null, primary key
 #  public_id  :string(21)       default(""), not null
 #  body       :string(16)       default(""), not null
-#  status_id  :string(255)      default("NONE"), not null
+#  status_id  :string(255)      default("NEYO"), not null
 #  memo       :string(1024)     default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -24,8 +24,6 @@
 require "test_helper"
 
 class ZipOccurrenceTest < ActiveSupport::TestCase
-  include OccurrenceTestHelper
-
   test "public_id presence" do
     record = build_occurrence(ZipOccurrence, body: "1500001", public_id: nil, generate_public_id: false)
 

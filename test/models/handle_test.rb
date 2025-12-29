@@ -5,7 +5,7 @@
 # Table name: handles
 #
 #  id               :string           not null, primary key
-#  public_id        :string           not null
+#  public_id        :string           default(""), not null
 #  handle           :string           not null
 #  is_system        :boolean          default(FALSE), not null
 #  cooldown_until   :timestamptz      not null

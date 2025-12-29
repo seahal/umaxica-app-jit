@@ -10,16 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "app_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
-    t.string "description", limit: 255, default: "", null: false
-    t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "parent_id", limit: 255, default: "", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_app_contact_categories_on_lower_id", unique: true
@@ -34,12 +32,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.boolean "deletable", default: false, null: false
     t.string "email_address", limit: 1000, default: "", null: false
     t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
-    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.integer "remaining_views", limit: 2, default: 0, null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", null: false
-    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 0, null: false
     t.string "verifier_digest", limit: 255, default: "", null: false
     t.timestamptz "verifier_expires_at", default: -::Float::INFINITY, null: false
     t.index ["app_contact_id"], name: "index_app_contact_emails_on_app_contact_id"
@@ -49,8 +47,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   end
 
   create_table "app_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.boolean "active", default: true, null: false
-    t.string "description", limit: 255, default: "", null: false
     t.string "parent_title", limit: 255, default: ""
     t.integer "position", default: 0, null: false
     t.index "lower((id)::text)", name: "index_app_contact_statuses_on_lower_id", unique: true
@@ -63,10 +59,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
-    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.integer "remaining_views", limit: 2, default: 0, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
-    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 0, null: false
     t.string "verifier_digest", limit: 255, default: "", null: false
     t.timestamptz "verifier_expires_at", default: -::Float::INFINITY, null: false
     t.index ["app_contact_id"], name: "index_app_contact_telephones_on_app_contact_id"
@@ -81,11 +77,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.datetime "created_at", null: false
     t.boolean "deletable", default: false, null: false
     t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
-    t.integer "otp_attempts_left", limit: 2, default: 3, null: false
+    t.integer "otp_attempts_left", limit: 2, default: 0, null: false
     t.string "otp_digest", limit: 255, default: "", null: false
     t.timestamptz "otp_expires_at", default: -::Float::INFINITY, null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.integer "remaining_views", limit: 2, default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["app_contact_id"], name: "index_app_contact_topics_on_app_contact_id"
     t.index ["expires_at"], name: "index_app_contact_topics_on_expires_at"
@@ -93,11 +89,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   end
 
   create_table "app_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "category_id", limit: 255, default: "NONE", null: false
+    t.string "category_id", limit: 255, default: "", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE"
+    t.string "status_id", limit: 255, default: ""
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
@@ -117,8 +113,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.string "actor_type", default: "", null: false
     t.uuid "com_contact_id", null: false
     t.datetime "created_at", null: false
-    t.string "event_id", limit: 255, default: "NONE", null: false
-    t.string "level_id", default: "NONE", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
+    t.string "level_id", default: "NEYO", null: false
     t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
@@ -129,9 +125,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   end
 
   create_table "com_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
-    t.string "description", limit: 255, default: "", null: false
     t.string "parent_id", limit: 255, default: "", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
@@ -149,12 +143,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
     t.integer "hotp_counter", default: 0, null: false
     t.string "hotp_secret", default: "", null: false
-    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.integer "remaining_views", limit: 2, default: 0, null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", null: false
-    t.integer "verifier_attempts_left", limit: 2, default: 5, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 0, null: false
     t.string "verifier_digest", limit: 255, default: "", null: false
     t.timestamptz "verifier_expires_at", default: -::Float::INFINITY, null: false
     t.index ["com_contact_id"], name: "index_com_contact_emails_on_com_contact_id", unique: true
@@ -164,9 +158,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   end
 
   create_table "com_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.boolean "active", default: true, null: false
-    t.string "description", limit: 255, default: "", null: false
-    t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000"
+    t.string "parent_id", limit: 255, default: ""
     t.integer "position", default: 0, null: false
     t.index "lower((id)::text)", name: "index_com_contact_statuses_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_com_contact_statuses_on_parent_id"
@@ -184,7 +176,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.integer "remaining_views", limit: 2, default: 10, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
-    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 0, null: false
     t.string "verifier_digest", limit: 255, default: "", null: false
     t.timestamptz "verifier_expires_at", default: -::Float::INFINITY, null: false
     t.index ["com_contact_id"], name: "index_com_contact_telephones_on_com_contact_id", unique: true
@@ -200,11 +192,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.boolean "deletable", default: false, null: false
     t.text "description", default: "", null: false
     t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
-    t.integer "otp_attempts_left", limit: 2, default: 3, null: false
+    t.integer "otp_attempts_left", limit: 2, default: 0, null: false
     t.string "otp_digest", limit: 255, default: "", null: false
     t.timestamptz "otp_expires_at", default: -::Float::INFINITY, null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.integer "remaining_views", limit: 2, default: 0, null: false
     t.string "title", default: "", null: false
     t.datetime "updated_at", null: false
     t.index ["com_contact_id"], name: "index_com_contact_topics_on_com_contact_id"
@@ -213,11 +205,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   end
 
   create_table "com_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "category_id", limit: 255, default: "NONE", null: false
+    t.string "category_id", limit: 255, default: "", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE"
+    t.string "status_id", limit: 255, default: ""
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
@@ -233,9 +225,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   end
 
   create_table "org_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
-    t.string "description", limit: 255, default: "", null: false
     t.string "parent_id", limit: 255, default: "", null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
@@ -251,12 +241,12 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.string "email_address", limit: 1000, default: "", null: false
     t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
     t.uuid "org_contact_id", null: false
-    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.integer "remaining_views", limit: 2, default: 0, null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
     t.boolean "token_viewed", default: false, null: false
     t.datetime "updated_at", null: false
-    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 0, null: false
     t.string "verifier_digest", limit: 255, default: "", null: false
     t.timestamptz "verifier_expires_at", default: -::Float::INFINITY, null: false
     t.index ["email_address"], name: "index_org_contact_emails_on_email_address"
@@ -266,9 +256,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   end
 
   create_table "org_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.boolean "active", default: true, null: false
-    t.string "description", limit: 255, default: "", null: false
-    t.string "parent_id", limit: 255, default: "00000000-0000-0000-0000-000000000000"
+    t.string "parent_id", limit: 255, default: ""
     t.integer "position", default: 0, null: false
     t.index "lower((id)::text)", name: "index_org_contact_statuses_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_org_contact_statuses_on_parent_id"
@@ -281,10 +269,10 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.boolean "deletable", default: false, null: false
     t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
     t.uuid "org_contact_id", null: false
-    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.integer "remaining_views", limit: 2, default: 0, null: false
     t.string "telephone_number", limit: 1000, default: "", null: false
     t.datetime "updated_at", null: false
-    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 0, null: false
     t.string "verifier_digest", limit: 255, default: "", null: false
     t.timestamptz "verifier_expires_at", default: -::Float::INFINITY, null: false
     t.index ["expires_at"], name: "index_org_contact_telephones_on_expires_at"
@@ -299,11 +287,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
     t.boolean "deletable", default: false, null: false
     t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
     t.uuid "org_contact_id", null: false
-    t.integer "otp_attempts_left", limit: 2, default: 3, null: false
+    t.integer "otp_attempts_left", limit: 2, default: 0, null: false
     t.string "otp_digest", limit: 255, default: "", null: false
     t.timestamptz "otp_expires_at", default: -::Float::INFINITY, null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.integer "remaining_views", limit: 2, default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["expires_at"], name: "index_org_contact_topics_on_expires_at"
     t.index ["org_contact_id"], name: "index_org_contact_topics_on_org_contact_id"
@@ -311,11 +299,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_28_000007) do
   end
 
   create_table "org_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "category_id", limit: 255, default: "NONE", null: false
+    t.string "category_id", limit: 255, default: "", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NONE"
+    t.string "status_id", limit: 255, default: ""
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false

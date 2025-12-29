@@ -10,8 +10,6 @@
 require "test_helper"
 
 class OrgTimelineStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
   def setup
     @model_class = OrgTimelineStatus
     @valid_id = "ACTIVE"

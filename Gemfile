@@ -160,6 +160,7 @@ group :development do
   # ERD diagrams
   gem "rails-erd", require: false
   gem "railroady", require: false
+  gem "rails-mermaid_erd", require: false
   # Security
   gem "bundler-audit", require: false
 end

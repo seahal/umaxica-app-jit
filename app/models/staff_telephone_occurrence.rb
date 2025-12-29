@@ -19,6 +19,6 @@
 class StaffTelephoneOccurrence < UniversalRecord
   self.implicit_order_column = :created_at
 
-  belongs_to :staff_occurrence
-  belongs_to :telephone_occurrence
+  belongs_to :staff_occurrence, inverse_of: :staff_telephone_occurrences
+  belongs_to :telephone_occurrence, inverse_of: :staff_telephone_occurrences
 end

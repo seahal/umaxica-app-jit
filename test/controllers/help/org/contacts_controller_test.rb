@@ -8,7 +8,7 @@ module Help
       setup do
         @host = ENV["HELP_STAFF_URL"] || "help.org.localhost"
         @contact = org_contacts(:one)
-        @contact_category = org_contact_categories(:organization_inquiry)
+        @contact_category = org_contact_categories(:ORGANIZATION_INQUIRY)
         CloudflareTurnstile.test_mode = true
         CloudflareTurnstile.test_validation_response = { "success" => true }
         ActionMailer::Base.deliveries.clear

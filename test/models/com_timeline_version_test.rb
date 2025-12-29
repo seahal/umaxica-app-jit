@@ -34,11 +34,20 @@ class ComTimelineVersionTest < ActiveSupport::TestCase
   end
 
   test "encrypts title, description, and body" do
+    timeline = ComTimeline.create!(
+      permalink: "test_#{SecureRandom.hex(4)}",
+      response_mode: "html",
+      revision_key: SecureRandom.hex(16),
+      status_id: "NEYO",
+      published_at: Time.zone.parse("2024-01-01 00:00:00"),
+      expires_at: Time.zone.parse("2999-12-31 00:00:00"),
+    )
+
     record = ComTimelineVersion.create!(
-      com_timeline: com_timelines(:one),
+      com_timeline: timeline,
       permalink: "permalink_#{SecureRandom.hex(4)}",
       response_mode: "html",
-      published_at: Time.zone.parse("2999-01-01 00:00:00"),
+      published_at: Time.zone.parse("2024-01-01 00:00:00"),
       expires_at: Time.zone.parse("2999-12-31 00:00:00"),
       title: "Secret title",
       description: "Secret description",

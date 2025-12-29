@@ -14,6 +14,7 @@
 
 class ZipOccurrenceStatus < UniversalRecord
   include UppercaseId
+  include OccurrenceStatus
 
   has_many :zip_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
                              inverse_of: :zip_occurrence_status

@@ -33,7 +33,7 @@ class SeedGuestReferenceData < ActiveRecord::Migration[8.2]
     # ComContactStatus
     seed_with_attributes(
       :com_contact_statuses, [
-        { id: 'NONE', description: 'root of service site status inquiries' },
+        { id: 'NEYO', description: 'NEYO' },
         { id: 'SET_UP', description: 'first step completed' },
         { id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP' },
         { id: 'CHECKED_TELEPHONE_NUMBER', description: 'second step completed', parent_id: 'CHECKED_EMAIL_ADDRESS' },
@@ -44,7 +44,7 @@ class SeedGuestReferenceData < ActiveRecord::Migration[8.2]
     # AppContactStatus
     seed_with_attributes(
       :app_contact_statuses, [
-        { id: 'NONE', description: 'null status' },
+        { id: 'NEYO', description: 'NEYO' },
         { id: 'STAFF_SITE_STATUS', description: 'root of staff site status inquiries' },
       ],
     )
@@ -52,7 +52,7 @@ class SeedGuestReferenceData < ActiveRecord::Migration[8.2]
     # OrgContactStatus
     seed_with_attributes(
       :org_contact_statuses, [
-        { id: 'NONE', description: 'null status' },
+        { id: 'NEYO', description: 'NEYO' },
         { id: 'ORG_SITE_STATUS', description: 'root of org site status inquiries' },
         { id: 'SET_UP', description: 'first step completed' },
         { id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP' },
@@ -62,9 +62,9 @@ class SeedGuestReferenceData < ActiveRecord::Migration[8.2]
     )
 
     # Contact Audit Events
-    seed_ids(:com_contact_audit_events, %w(NONE CREATED UPDATED DESTROYED))
-    seed_ids(:app_contact_audit_events, %w(NONE CREATED UPDATED DESTROYED))
-    seed_ids(:org_contact_audit_events, %w(NONE CREATED UPDATED DESTROYED))
+    seed_ids(:com_contact_audit_events, %w(NEYO CREATED UPDATED DESTROYED))
+    seed_ids(:app_contact_audit_events, %w(NEYO CREATED UPDATED DESTROYED))
+    seed_ids(:org_contact_audit_events, %w(NEYO CREATED UPDATED DESTROYED))
   end
 
   def down

@@ -10,8 +10,6 @@
 require "test_helper"
 
 class AppTimelineStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
   def setup
     @status = app_timeline_statuses(:ACTIVE)
     @model_class = AppTimelineStatus

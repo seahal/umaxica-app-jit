@@ -18,8 +18,6 @@
 require "test_helper"
 
 class ComContactStatusTest < ActiveSupport::TestCase
-  include ContactStatusModelTestHelper
-
   setup do
     @model_class = ComContactStatus
     @valid_id = "ACTIVE".freeze

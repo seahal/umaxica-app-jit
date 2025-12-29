@@ -7,7 +7,7 @@
 #  id         :uuid             not null, primary key
 #  public_id  :string(21)       default(""), not null
 #  body       :string(36)       default(""), not null
-#  status_id  :string(255)      default("NONE"), not null
+#  status_id  :string(255)      default("NEYO"), not null
 #  memo       :string(1024)     default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -26,19 +26,19 @@ class UserOccurrence < UniversalRecord
   include Occurrence
 
   belongs_to :user_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :user_occurrences
-  has_many :area_user_occurrences, dependent: :destroy
+  has_many :area_user_occurrences, dependent: :destroy, inverse_of: :user_occurrence
   has_many :area_occurrences, through: :area_user_occurrences
-  has_many :domain_user_occurrences, dependent: :destroy
+  has_many :domain_user_occurrences, dependent: :destroy, inverse_of: :user_occurrence
   has_many :domain_occurrences, through: :domain_user_occurrences
-  has_many :email_user_occurrences, dependent: :destroy
+  has_many :email_user_occurrences, dependent: :destroy, inverse_of: :user_occurrence
   has_many :email_occurrences, through: :email_user_occurrences
-  has_many :ip_user_occurrences, dependent: :destroy
+  has_many :ip_user_occurrences, dependent: :destroy, inverse_of: :user_occurrence
   has_many :ip_occurrences, through: :ip_user_occurrences
-  has_many :staff_user_occurrences, dependent: :destroy
+  has_many :staff_user_occurrences, dependent: :destroy, inverse_of: :user_occurrence
   has_many :staff_occurrences, through: :staff_user_occurrences
-  has_many :telephone_user_occurrences, dependent: :destroy
+  has_many :telephone_user_occurrences, dependent: :destroy, inverse_of: :user_occurrence
   has_many :telephone_occurrences, through: :telephone_user_occurrences
-  has_many :user_zip_occurrences, dependent: :destroy
+  has_many :user_zip_occurrences, dependent: :destroy, inverse_of: :user_occurrence
   has_many :zip_occurrences, through: :user_zip_occurrences
 
   validates :body, length: { maximum: 36 }

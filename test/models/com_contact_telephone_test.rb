@@ -11,7 +11,7 @@
 #  remaining_views        :integer          default(10), not null
 #  verifier_digest        :string(255)      default(""), not null
 #  verifier_expires_at    :timestamptz      default("-infinity"), not null
-#  verifier_attempts_left :integer          default(3), not null
+#  verifier_attempts_left :integer          default(0), not null
 #  expires_at             :timestamptz      not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null

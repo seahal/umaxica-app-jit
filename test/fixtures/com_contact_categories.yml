@@ -1,5 +1,0 @@
-security_issue:
-  id: "SECURITY_ISSUE"
-  description: "Security Issue"
-  active: true
-  position: 1

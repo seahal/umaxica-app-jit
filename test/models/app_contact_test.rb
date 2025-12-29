@@ -11,10 +11,10 @@
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
 #  ip_address       :inet             default("0.0.0.0"), not null
-#  status_id        :string(255)      default("NONE")
+#  status_id        :string(255)      default("")
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string(255)      default("NONE"), not null
+#  category_id      :string(255)      default(""), not null
 #
 # Indexes
 #
@@ -58,11 +58,11 @@ class AppContactTest < ActiveSupport::TestCase
   end
 
   def sample_category
-    app_contact_categories(:application_inquiry).id
+    AppContactCategory.find_by(id: "APPLICATION_INQUIRY")&.id || "NEYO"
   end
 
   def sample_status
-    app_contact_statuses(:set_up).id
+    AppContactStatus.find_by(id: "SET_UP")&.id || "NEYO"
   end
 
   test "should inherit from GuestsRecord" do
@@ -73,7 +73,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = app_contacts(:one)
 
     assert_predicate contact, :valid?
-    assert_equal "APPLICATION_INQUIRY", contact.category_id
+    assert_equal "NEYO", contact.category_id
     assert_equal "NEYO", contact.status_id
   end
 

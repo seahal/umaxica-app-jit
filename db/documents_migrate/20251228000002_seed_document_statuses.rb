@@ -6,10 +6,10 @@ class SeedDocumentStatuses < ActiveRecord::Migration[7.1]
   def up
     safety_assured do
       statuses = [
-        { id: 'ACTIVE' },
-        { id: 'DRAFT' },
-        { id: 'ARCHIVED' },
-        { id: 'NEYO' },
+        { id: 'NEYO', description: 'NEYO', active: true, position: 0 },
+        { id: 'ACTIVE', description: 'Active', active: true, position: 1 },
+        { id: 'DRAFT', description: 'Draft', active: true, position: 2 },
+        { id: 'ARCHIVED', description: 'Archived', active: true, position: 3 },
       ]
 
       upsert_table('app_document_statuses', statuses)

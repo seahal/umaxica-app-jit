@@ -9,8 +9,8 @@
 #  subject_type   :text             not null
 #  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  actor_type     :text             default(""), not null
-#  event_id       :string(255)      default("NONE"), not null
-#  level_id       :string(255)      default("NONE"), not null
+#  event_id       :string(255)      default("NEYO"), not null
+#  level_id       :string(255)      default("NEYO"), not null
 #  occurred_at    :datetime         not null
 #  expires_at     :datetime         not null
 #  ip_address     :inet             default("0.0.0.0"), not null

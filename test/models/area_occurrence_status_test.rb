@@ -15,8 +15,6 @@
 require "test_helper"
 
 class AreaOccurrenceStatusTest < ActiveSupport::TestCase
-  include OccurrenceStatusTestHelper
-
   test "upcases id before validation" do
     assert_upcases_id(AreaOccurrenceStatus)
   end

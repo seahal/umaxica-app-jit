@@ -12,7 +12,7 @@ class CreateBillingStripeEvents < ActiveRecord::Migration[8.2]
       t.timestamps
     end
 
-    add_index :billing_stripe_events, :event_id
+    add_index :billing_stripe_events, :event_id, unique: true
     add_index :billing_stripe_events, :received_at
   end
 end

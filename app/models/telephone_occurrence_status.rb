@@ -14,6 +14,7 @@
 
 class TelephoneOccurrenceStatus < UniversalRecord
   include UppercaseId
+  include OccurrenceStatus
 
   has_many :telephone_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
                                    inverse_of: :telephone_occurrence_status

@@ -9,10 +9,10 @@
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
 #  ip_address       :inet             default("0.0.0.0"), not null
-#  status_id        :string(255)      default("NONE")
+#  status_id        :string(255)      default("")
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string(255)      default("NONE"), not null
+#  category_id      :string(255)      default(""), not null
 #
 # Indexes
 #
@@ -24,47 +24,3 @@
 #  index_com_contacts_on_token_expires_at  (token_expires_at)
 #
 
-one:
-  category_id: SECURITY_ISSUE
-  status_id: NEYO
-  token: ''
-  token_digest: ''
-  token_expires_at: -infinity
-  token_viewed: false
-  created_at: 2025-10-27 09:00:00
-  updated_at: 2025-10-27 09:00:00
-  public_id: "97463105827291840535"
-  ip_address: 0.0.0.0
-two:
-  category_id: SECURITY_ISSUE
-  status_id: NEYO
-  token: ''
-  token_digest: ''
-  token_expires_at: -infinity
-  token_viewed: false
-  created_at: 2025-10-27 10:00:00
-  updated_at: 2025-10-27 10:00:00
-  public_id: "97463105827291840536"
-  ip_address: 0.0.0.0
-verified_email_pending:
-  category_id: SECURITY_ISSUE
-  status_id: SET_UP
-  token: ''
-  token_digest: ''
-  token_expires_at: -infinity
-  token_viewed: false
-  created_at: 2025-10-27 11:00:00
-  updated_at: 2025-10-27 11:00:00
-  public_id: "97463105827291840537"
-  ip_address: 0.0.0.0
-verified_email_complete:
-  category_id: SECURITY_ISSUE
-  status_id: CHECKED_EMAIL_ADDRESS
-  token: ''
-  token_digest: ''
-  token_expires_at: -infinity
-  token_viewed: false
-  created_at: 2025-10-27 12:00:00
-  updated_at: 2025-10-27 12:00:00
-  public_id: "97463105827291840538"
-  ip_address: 0.0.0.0

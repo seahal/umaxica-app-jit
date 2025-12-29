@@ -5,7 +5,7 @@
 # Table name: posts
 #
 #  id                    :string           not null, primary key
-#  public_id             :string           not null
+#  public_id             :string           default(""), not null
 #  author_avatar_id      :string           not null
 #  post_status_id        :string           not null
 #  body                  :text             not null

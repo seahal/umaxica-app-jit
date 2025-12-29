@@ -11,10 +11,10 @@
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
 #  ip_address       :inet             default("0.0.0.0"), not null
-#  status_id        :string(255)      default("NONE")
+#  status_id        :string(255)      default("")
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string(255)      default("NONE"), not null
+#  category_id      :string(255)      default(""), not null
 #
 # Indexes
 #
@@ -33,14 +33,15 @@ class AppContact < GuestsRecord
   belongs_to :app_contact_category,
              class_name: "AppContactCategory",
              foreign_key: :category_id,
+             primary_key: :id,
              inverse_of: :app_contacts
   belongs_to :app_contact_status,
              class_name: "AppContactStatus",
              foreign_key: :status_id,
              inverse_of: :app_contacts
-  has_many :app_contact_topics, dependent: :destroy
-  has_many :app_contact_emails, dependent: :destroy
-  has_many :app_contact_telephones, dependent: :destroy
+  has_many :app_contact_topics, dependent: :destroy, inverse_of: :app_contact
+  has_many :app_contact_emails, dependent: :destroy, inverse_of: :app_contact
+  has_many :app_contact_telephones, dependent: :destroy, inverse_of: :app_contact
 
   attribute :status_id, default: "NEYO"
   attribute :category_id, default: "NEYO"

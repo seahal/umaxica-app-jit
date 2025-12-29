@@ -120,6 +120,10 @@ bundle exec rails db:migrate
 # Examples: identity, universal, guest, profile, token, business, speciality
 ```
 
+### Generation and Linting
+- Prefer `bundle exec rails generate ...` for creating files when possible.
+- After modifying source code, run `bundle exec rubocop -a`.
+
 ## Structured Logging
 
 This application uses structured logging with `Rails.event` (ActiveSupport::Notifications) instead of traditional `Rails.logger.info`.

@@ -4,7 +4,7 @@
 #
 # Table name: com_document_audit_events
 #
-#  id         :string(255)      default("NONE"), not null, primary key
+#  id         :string(255)      default("NEYO"), not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
@@ -12,8 +12,6 @@
 require "test_helper"
 
 class ComDocumentAuditEventTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
   setup do
     @model_class = ComDocumentAuditEvent
     @valid_id = "UPLOADED".freeze

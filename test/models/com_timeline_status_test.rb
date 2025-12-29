@@ -10,8 +10,6 @@
 require "test_helper"
 
 class ComTimelineStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
   def setup
     @model_class = ComTimelineStatus
     @valid_id = "ACTIVE"

@@ -19,6 +19,6 @@
 class DomainUserOccurrence < UniversalRecord
   self.implicit_order_column = :created_at
 
-  belongs_to :domain_occurrence
-  belongs_to :user_occurrence
+  belongs_to :domain_occurrence, inverse_of: :domain_user_occurrences
+  belongs_to :user_occurrence, inverse_of: :domain_user_occurrences
 end

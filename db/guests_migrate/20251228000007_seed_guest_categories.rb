@@ -7,7 +7,7 @@ class SeedGuestCategories < ActiveRecord::Migration[7.1]
     safety_assured do
       upsert_table(
         "app_contact_categories", [
-          { id: "NONE", description: "None/Default category" },
+          { id: "NEYO", description: "None/Default category" },
           { id: "APPLICATION_INQUIRY", description: "Application inquiry category" },
           { id: "APPLICATION_SUPPORT", description: "Application support category" },
           { id: "APPLICATION_FEEDBACK", description: "Application feedback category" },
@@ -24,7 +24,7 @@ class SeedGuestCategories < ActiveRecord::Migration[7.1]
 
       upsert_table(
         "org_contact_categories", [
-          { id: "NONE", description: "None/Default category" },
+          { id: "NEYO", description: "None/Default category" },
           { id: "ORGANIZATION_INQUIRY", description: "Organization inquiry category" },
           { id: "ORGANIZATION_PARTNERSHIP", description: "Organization partnership category" },
           { id: "ORGANIZATION_FEEDBACK", description: "Organization feedback category" },

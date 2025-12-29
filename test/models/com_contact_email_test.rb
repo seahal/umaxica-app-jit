@@ -8,10 +8,10 @@
 #  email_address          :string(1000)     default(""), not null
 #  activated              :boolean          default(FALSE), not null
 #  deletable              :boolean          default(FALSE), not null
-#  remaining_views        :integer          default(10), not null
+#  remaining_views        :integer          default(0), not null
 #  verifier_digest        :string(255)      default(""), not null
 #  verifier_expires_at    :timestamptz      default("-infinity"), not null
-#  verifier_attempts_left :integer          default(5), not null
+#  verifier_attempts_left :integer          default(0), not null
 #  token_digest           :string(255)      default(""), not null
 #  token_expires_at       :timestamptz      default("-infinity"), not null
 #  token_viewed           :boolean          default(FALSE), not null

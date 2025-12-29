@@ -37,7 +37,7 @@ class OrgContactCategory < GuestsRecord
            foreign_key: :category_id,
            primary_key: :id,
            inverse_of: :org_contact_category,
-           dependent: :nullify
+           dependent: :restrict_with_error
 
   validates :description, length: { maximum: 255 }
   validates :parent_id, length: { maximum: 255 }, allow_blank: true

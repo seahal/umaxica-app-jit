@@ -4,20 +4,22 @@
 #
 # Table name: staff_identity_passkeys
 #
-#  id          :uuid             not null, primary key
-#  created_at  :datetime         not null
-#  description :string           default(""), not null
-#  external_id :uuid             not null
-#  public_key  :text             not null
-#  sign_count  :integer          default(0), not null
-#  staff_id    :uuid             not null
-#  updated_at  :datetime         not null
-#  webauthn_id :binary           not null
+#  id                               :uuid             not null, primary key
+#  staff_id                         :uuid             not null
+#  webauthn_id                      :binary           not null
+#  public_key                       :text             not null
+#  description                      :string           default(""), not null
+#  sign_count                       :integer          default(0), not null
+#  external_id                      :uuid             not null
+#  created_at                       :datetime         not null
+#  updated_at                       :datetime         not null
+#  staff_identity_passkey_status_id :string(255)      default("ACTIVE"), not null
 #
 # Indexes
 #
-#  index_staff_identity_passkeys_on_staff_id     (staff_id)
-#  index_staff_identity_passkeys_on_webauthn_id  (webauthn_id) UNIQUE
+#  idx_on_staff_identity_passkey_status_id_159c890738  (staff_identity_passkey_status_id)
+#  index_staff_identity_passkeys_on_staff_id           (staff_id)
+#  index_staff_identity_passkeys_on_webauthn_id        (webauthn_id) UNIQUE
 #
 
 require "test_helper"

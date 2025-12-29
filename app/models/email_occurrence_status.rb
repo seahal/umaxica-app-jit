@@ -14,6 +14,7 @@
 
 class EmailOccurrenceStatus < UniversalRecord
   include UppercaseId
+  include OccurrenceStatus
 
   has_many :email_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
                                inverse_of: :email_occurrence_status

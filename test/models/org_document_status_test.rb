@@ -10,8 +10,6 @@
 require "test_helper"
 
 class OrgDocumentStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
   def setup
     @model_class = OrgDocumentStatus
     @valid_id = "ACTIVE"

@@ -7,7 +7,7 @@
 #  id         :uuid             not null, primary key
 #  public_id  :string(21)       default(""), not null
 #  body       :string(36)       default(""), not null
-#  status_id  :string(255)      default("NONE"), not null
+#  status_id  :string(255)      default("NEYO"), not null
 #  memo       :string(1024)     default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -24,8 +24,6 @@
 require "test_helper"
 
 class StaffOccurrenceTest < ActiveSupport::TestCase
-  include OccurrenceTestHelper
-
   test "expires_at default" do
     record = build_occurrence(StaffOccurrence, body: "staff-occur-1", public_id: "Y" * 21)
 

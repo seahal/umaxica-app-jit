@@ -14,8 +14,6 @@
 require "test_helper"
 
 class AppContactStatusTest < ActiveSupport::TestCase
-  include ContactStatusModelTestHelper
-
   def setup
     @model_class = AppContactStatus
     @status = AppContactStatus.create!(id: "ACTIVE")

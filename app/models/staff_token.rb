@@ -8,7 +8,7 @@
 #  staff_id              :uuid             not null
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  staff_token_status_id :string           default("NONE"), not null
+#  staff_token_status_id :string           default("NEYO"), not null
 #  refresh_token_digest  :binary
 #  public_id             :string(21)       default(""), not null
 #  refresh_expires_at    :datetime         not null

@@ -15,7 +15,7 @@ class AddFormatChecksToTokenStatusIds < ActiveRecord::Migration[8.2]
   def add_format_check(table, column)
     add_check_constraint(
       table,
-      "#{column} IS NULL OR #{column} ~ '#{FORMAT_REGEX}'",
+      "#{column} IS NULL OR #{column} = '' OR #{column} ~ '#{FORMAT_REGEX}'",
       name: constraint_name(table, column),
     )
   end

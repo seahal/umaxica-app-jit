@@ -4,12 +4,11 @@
 #
 # Table name: post_review_statuses
 #
-#  id          :string           not null, primary key
-#  key         :string           not null
-#  name        :string           not null
-#  description :text
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  id         :string           not null, primary key
+#  key        :string           not null
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 # Indexes
 #

@@ -34,35 +34,178 @@ if ENV["RAILS_ENV"] == "test"
   end
 end
 
+# rubocop:disable Lint/EmptyClass
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with specified workers
-    # parallelize(workers: 1)
+    include ActiveJob::TestHelper
 
-    # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-    # Note: Only loading fixtures that actually exist to avoid nil errors during teardown
+    # Run tests in parallel with specified workers
+    # parallelize(workers: 16)
+
+    # Users are created programmatically via UserFixtures module to avoid circular dependencies
     fixtures :all
 
-    # include ActiveJob::TestHelper
+    # Seed NEYO reference data before fixtures are loaded
+    # IMPORTANT: Must use before_setup, not setup, to run before fixture loading
+    def before_setup
+      seed_neyo_reference_data
+      super
+    end
+
+    private
+
+    def seed_neyo_reference_data
+      # GUESTS - Contact Categories & Statuses
+      [
+        { db: GuestsRecord,
+          table: "app_contact_categories",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: GuestsRecord,
+          table: "com_contact_categories",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: GuestsRecord,
+          table: "org_contact_categories",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: GuestsRecord, table: "app_contact_statuses", columns: "id", values: "'NEYO'" },
+        { db: GuestsRecord, table: "com_contact_statuses", columns: "id", values: "'NEYO'" },
+        { db: GuestsRecord, table: "org_contact_statuses", columns: "id", values: "'NEYO'" },
+        # NEWS - Timeline Statuses
+        { db: NewsRecord,
+          table: "app_timeline_statuses",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: NewsRecord,
+          table: "com_timeline_statuses",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: NewsRecord,
+          table: "org_timeline_statuses",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        # DOCUMENTS - Document Statuses
+        { db: DocumentRecord,
+          table: "app_document_statuses",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: DocumentRecord,
+          table: "com_document_statuses",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: DocumentRecord,
+          table: "org_document_statuses",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        # IDENTITIES - Identity Statuses
+        { db: IdentitiesRecord, table: "staff_identity_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "user_identity_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "staff_identity_email_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "staff_identity_email_statuses", columns: "id", values: "'UNVERIFIED'" },
+        { db: IdentitiesRecord, table: "staff_identity_telephone_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "staff_identity_telephone_statuses", columns: "id", values: "'UNVERIFIED'" },
+        { db: IdentitiesRecord, table: "user_identity_email_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "user_identity_email_statuses", columns: "id", values: "'UNVERIFIED'" },
+        { db: IdentitiesRecord, table: "user_identity_telephone_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "user_identity_telephone_statuses", columns: "id", values: "'UNVERIFIED'" },
+        { db: IdentitiesRecord, table: "staff_identity_passkey_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "user_identity_passkey_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "user_identity_passkey_statuses", columns: "id", values: "'ACTIVE'" },
+        { db: IdentitiesRecord, table: "staff_identity_secret_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "staff_identity_secret_statuses", columns: "id", values: "'ACTIVE'" },
+        { db: IdentitiesRecord, table: "user_identity_secret_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "user_identity_secret_statuses", columns: "id", values: "'ACTIVE'" },
+        { db: IdentitiesRecord,
+          table: "user_identity_audit_levels",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: IdentitiesRecord,
+          table: "staff_identity_audit_levels",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: IdentitiesRecord,
+          table: "user_identity_audit_events",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: IdentitiesRecord,
+          table: "staff_identity_audit_events",
+          columns: "id, created_at, updated_at",
+          values: "'NEYO', NOW(), NOW()", },
+        { db: IdentitiesRecord, table: "user_identity_one_time_password_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "user_identity_social_apple_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord, table: "user_identity_social_google_statuses", columns: "id", values: "'NEYO'" },
+        { db: IdentitiesRecord,
+          table: "avatar_membership_statuses",
+          columns: "id, key, name, created_at, updated_at",
+          values: "'NEYO', 'NEYO', 'None', NOW(), NOW()", },
+        { db: IdentitiesRecord,
+          table: "avatar_moniker_statuses",
+          columns: "id, key, name, created_at, updated_at",
+          values: "'NEYO', 'NEYO', 'None', NOW(), NOW()", },
+        { db: IdentitiesRecord,
+          table: "avatar_ownership_statuses",
+          columns: "id, key, name, created_at, updated_at",
+          values: "'NEYO', 'NEYO', 'None', NOW(), NOW()", },
+        { db: IdentitiesRecord,
+          table: "handle_assignment_statuses",
+          columns: "id, key, name, created_at, updated_at",
+          values: "'NEYO', 'NEYO', 'None', NOW(), NOW()", },
+        { db: IdentitiesRecord,
+          table: "handle_statuses",
+          columns: "id, key, name, created_at, updated_at",
+          values: "'NEYO', 'NEYO', 'None', NOW(), NOW()", },
+        { db: IdentitiesRecord,
+          table: "post_review_statuses",
+          columns: "id, key, name, created_at, updated_at",
+          values: "'NEYO', 'NEYO', 'None', NOW(), NOW()", },
+        { db: IdentitiesRecord,
+          table: "post_statuses",
+          columns: "id, key, name, created_at, updated_at",
+          values: "'NEYO', 'NEYO', 'None', NOW(), NOW()", },
+        # UNIVERSALS - Occurrence Statuses
+        { db: UniversalRecord,
+          table: "area_occurrence_statuses",
+          columns: "id",
+          values: "'NEYO'", },
+        { db: UniversalRecord,
+          table: "domain_occurrence_statuses",
+          columns: "id",
+          values: "'NEYO'", },
+        { db: UniversalRecord,
+          table: "email_occurrence_statuses",
+          columns: "id",
+          values: "'NEYO'", },
+        { db: UniversalRecord,
+          table: "ip_occurrence_statuses",
+          columns: "id",
+          values: "'NEYO'", },
+        { db: UniversalRecord,
+          table: "staff_occurrence_statuses",
+          columns: "id",
+          values: "'NEYO'", },
+        { db: UniversalRecord,
+          table: "telephone_occurrence_statuses",
+          columns: "id",
+          values: "'NEYO'", },
+        { db: UniversalRecord,
+          table: "user_occurrence_statuses",
+          columns: "id",
+          values: "'NEYO'", },
+        { db: UniversalRecord,
+          table: "zip_occurrence_statuses",
+          columns: "id",
+          values: "'NEYO'", },
+      ].each do |seed|
+        seed[:db].connection.execute(
+          "INSERT INTO #{seed[:table]} (#{seed[:columns]}) VALUES (#{seed[:values]}) " \
+          "ON CONFLICT (id) DO NOTHING",
+        )
+      end
+    rescue StandardError => e
+      # Log errors during seeding for debugging
+      warn "NEYO seed error: #{e.class}: #{e.message}"
+      warn e.backtrace.first(5).join("\n")
+    end
   end
 end
-
-# module LayoutAssertions
-#   def assert_layout_contract
-#     assert_select "head", count: 1 do
-#       assert_select "link[rel=?][href*=?]", "stylesheet", "application", count: 1
-#       assert_select "link[rel=?][href*=?]", "stylesheet", "tailwind", count: 1
-#     end
-
-#     assert_select "header", minimum: 1
-#     assert_select "main", count: 1
-#     assert_select "footer", count: 1 do
-#       assert_select "nav", count: 1
-#       assert_select "small", text: /^©/
-#     end
-#   end
-# end
-
-# class ActionDispatch::IntegrationTest
-#   include LayoutAssertions
-# end

@@ -36,7 +36,7 @@ class AppContactCategory < GuestsRecord
   has_many :app_contacts,
            foreign_key: :category_id,
            primary_key: :id,
-           dependent: :nullify,
+           dependent: :restrict_with_error,
            inverse_of: :app_contact_category
 
   validates :description, length: { maximum: 255 }

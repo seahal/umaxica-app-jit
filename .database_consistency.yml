@@ -1,9 +1,662 @@
 ---
-PrimaryKeyTypeChecker:
-  enabled: false
-  AppContactCategory:
-    enabled: false
-ImplicitOrderingChecker:
-  enabled: false
-MissingUniqueIndexChecker:
-  enabled: false
+AppContact:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppContactCategory:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppContactEmail:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppContactStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppContactTelephone:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppContactTopic:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppDocument:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppDocumentAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppDocumentAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppDocumentAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppDocumentCategory:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppDocumentCategoryMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppDocumentStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppDocumentTag:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppDocumentTagMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppDocumentVersion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppTimeline:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppTimelineAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppTimelineAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppTimelineAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppTimelineCategory:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppTimelineCategoryMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppTimelineStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppTimelineTag:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppTimelineTagMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AreaOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AreaOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+Avatar:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarAssignment:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AvatarCapability:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarMembership:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarMembershipStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarMoniker:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarMonikerStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarOwnershipPeriod:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarOwnershipStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarPermission:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarRole:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AvatarRolePermission:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+Billing::StripeEvent:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComContact:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComContactCategory:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComContactEmail:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComContactStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComContactTelephone:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComContactTopic:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComDocument:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComDocumentAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComDocumentAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComDocumentAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComDocumentCategory:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComDocumentCategoryMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComDocumentStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComDocumentTag:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComDocumentTagMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComDocumentVersion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComTimeline:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComTimelineAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComTimelineAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComTimelineAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComTimelineCategory:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComTimelineCategoryMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComTimelineStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComTimelineTag:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComTimelineTagMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+DomainOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+DomainOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+EmailOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+EmailOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+Handle:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+HandleAssignment:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+HandleAssignmentStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+HandleStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+IpOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+IpOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgContact:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgContactCategory:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgContactEmail:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgContactStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgContactTelephone:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgContactTopic:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgDocument:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgDocumentAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgDocumentAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgDocumentAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgDocumentCategory:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgDocumentCategoryMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgDocumentStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgDocumentTag:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgDocumentTagMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgDocumentVersion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgTimeline:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgTimelineAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgTimelineAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgTimelineAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgTimelineCategory:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgTimelineCategoryMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgTimelineStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgTimelineTag:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgTimelineTagMaster:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+Post:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+PostReview:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+PostReviewStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+PostStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+Staff:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffIdentityAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffIdentityAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffIdentityAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffIdentityEmail:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  lower(address):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffIdentityEmailStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffIdentityPasskey:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffIdentitySecret:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffIdentitySecretStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffIdentityStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffIdentityTelephone:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  lower(number):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffIdentityTelephoneStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffMessage:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffNotification:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffTokenStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+TelephoneOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+TelephoneOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserIdentityAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentityAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityEmail:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentityEmailStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserIdentityOneTimePassword:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentityOneTimePasswordStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserIdentityPasskey:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentityPasskeyStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserIdentitySecret:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentitySecretStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserIdentitySocialApple:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentitySocialAppleStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserIdentitySocialGoogle:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserIdentitySocialGoogleStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserIdentityStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserIdentityTelephone:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  lower(number):
+    MissingUniqueIndexChecker:
+      enabled: false
+UserIdentityTelephoneStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserMembership:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserMessage:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserNotification:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserTokenStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserWorkspace:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+Workspace:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ZipOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ZipOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false

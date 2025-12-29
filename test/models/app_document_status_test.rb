@@ -10,10 +10,6 @@
 require "test_helper"
 
 class AppDocumentStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
-  fixtures :app_document_statuses
-
   def setup
     @model_class = AppDocumentStatus
     @valid_id = "ACTIVE"

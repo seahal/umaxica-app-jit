@@ -5,15 +5,15 @@
 # Table name: avatars
 #
 #  id                           :string           not null, primary key
-#  active_handle_id             :string           not null
-#  avatar_status_id             :string
-#  capability_id                :string           not null
-#  created_at                   :datetime         not null
-#  image_data                   :jsonb            default("{}"), not null
+#  public_id                    :string           default(""), not null
 #  moniker                      :string           not null
+#  image_data                   :jsonb            default("{}"), not null
 #  owner_organization_id        :string
-#  public_id                    :string           not null
 #  representing_organization_id :string
+#  active_handle_id             :string           not null
+#  capability_id                :string           not null
+#  avatar_status_id             :string
+#  created_at                   :datetime         not null
 #  updated_at                   :datetime         not null
 #  lock_version                 :integer          default(0), not null
 #

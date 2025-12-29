@@ -15,8 +15,6 @@
 require "test_helper"
 
 class EmailOccurrenceStatusTest < ActiveSupport::TestCase
-  include OccurrenceStatusTestHelper
-
   test "upcases id before validation" do
     assert_upcases_id(EmailOccurrenceStatus)
   end
