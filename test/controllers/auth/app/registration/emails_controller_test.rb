@@ -7,6 +7,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
   setup do
     CloudflareTurnstile.test_mode = true
+    CloudflareTurnstile.test_validation_response = { "success" => true }
   end
 
   teardown do
@@ -122,6 +123,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     end
 
     # Extract email ID from redirect location
+    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
     user_email = UserIdentityEmail.find(email_id)
 
@@ -156,6 +158,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     end
 
     # Extract email ID from redirect location
+    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
     user_email = UserIdentityEmail.find(email_id)
 
@@ -204,7 +207,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
 
   test "redirects to root when user is already logged in" do
     # Create a user and log them in
-    user = User.create!(user_identity_status_id: "VERIFIED_WITH_SIGN_UP")
+    user = User.create!(status_id: "VERIFIED_WITH_SIGN_UP")
 
     # Try to access registration page while logged in (using test header to inject current user)
     get new_auth_app_registration_email_url,
@@ -237,6 +240,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     assert_includes response.location, "rd=#{CGI.escape(encoded_rd)}"
 
     # Extract email ID from redirect location
+    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
     user_email = UserIdentityEmail.find(email_id)
 
@@ -279,6 +283,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     end
 
     # Extract email ID from redirect location
+    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
     user_email = UserIdentityEmail.find(email_id)
     otp_data = user_email.get_otp
@@ -313,7 +318,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     # Verify User has correct status
     user = user_email.user
 
-    assert_equal "VERIFIED_WITH_SIGN_UP", user.user_identity_status_id
+    assert_equal "VERIFIED_WITH_SIGN_UP", user.status_id
 
     # Verify UserIdentityAudit was created
     assert_equal initial_audit_count + 1, UserIdentityAudit.count
@@ -344,6 +349,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     end
 
     # Extract email ID from redirect location
+    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
     user_email = UserIdentityEmail.find(email_id)
     otp_data = user_email.get_otp
@@ -389,6 +395,7 @@ class Auth::App::Registration::EmailsControllerTest < ActionDispatch::Integratio
     end
 
     # Extract email ID from redirect location
+    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
     email_id = response.location.match(/\/registration\/emails\/([^\/\?]+)/)[1]
     user_email = UserIdentityEmail.find(email_id)
     otp_data = user_email.get_otp

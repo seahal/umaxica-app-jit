@@ -4,19 +4,19 @@
 #
 # Table name: staffs
 #
-#  id                       :uuid             not null, primary key
-#  webauthn_id              :string           default(""), not null
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  public_id                :string(255)      default("")
-#  staff_identity_status_id :string(255)      default("NEYO"), not null
-#  withdrawn_at             :datetime         default("infinity")
+#  id           :uuid             not null, primary key
+#  webauthn_id  :string           default(""), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  public_id    :string(255)      default("")
+#  status_id    :string(255)      default("NEYO"), not null
+#  withdrawn_at :datetime         default("infinity")
 #
 # Indexes
 #
-#  index_staffs_on_public_id                 (public_id) UNIQUE
-#  index_staffs_on_staff_identity_status_id  (staff_identity_status_id)
-#  index_staffs_on_withdrawn_at              (withdrawn_at)
+#  index_staffs_on_public_id     (public_id) UNIQUE
+#  index_staffs_on_status_id     (status_id)
+#  index_staffs_on_withdrawn_at  (withdrawn_at)
 #
 
 require "test_helper"
@@ -71,7 +71,7 @@ class StaffTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     staff = Staff.create!
 
-    assert_equal StaffIdentityStatus::NEYO, staff.staff_identity_status_id
+    assert_equal StaffIdentityStatus::NEYO, staff.status_id
   end
 
   test "has_role? should correctly identify assigned roles" do

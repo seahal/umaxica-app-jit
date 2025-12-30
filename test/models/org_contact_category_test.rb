@@ -87,40 +87,41 @@ class OrgContactCategoryTest < ActiveSupport::TestCase
     assert_predicate duplicate.errors[:id], :any?
   end
 
-  test "parent_id allows blank but enforces max length" do
-    category = OrgContactCategory.new(id: "NO_PARENT", parent_id: nil)
-    assert_predicate category, :valid?
+  # parent_id column has been removed from org_contact_categories
+  # test "parent_id allows blank but enforces max length" do
+  #   category = OrgContactCategory.new(id: "NO_PARENT", parent_id: nil)
+  #   assert_predicate category, :valid?
+  #
+  #   category = OrgContactCategory.new(id: "NO_PARENT", parent_id: "")
+  #   assert_predicate category, :valid?
+  #
+  #   category = OrgContactCategory.new(id: "NO_PARENT", parent_id: " ")
+  #   assert_predicate category, :valid?
+  #
+  #   category = OrgContactCategory.new(id: "NO_PARENT", parent_id: "A" * 255)
+  #   assert_predicate category, :valid?
+  #
+  #   category = OrgContactCategory.new(id: "NO_PARENT", parent_id: "A" * 256)
+  #   assert_not category.valid?
+  #   assert_predicate category.errors[:parent_id], :any?
+  # end
 
-    category = OrgContactCategory.new(id: "NO_PARENT", parent_id: "")
-    assert_predicate category, :valid?
+  # parent_id column has been removed from org_contact_categories
+  # test "destroy is restricted when children exist" do
+  #   parent = OrgContactCategory.create!(id: "PARENT")
+  #   OrgContactCategory.create!(id: "CHILD", parent_id: parent.id)
+  #
+  #   assert_not parent.destroy
+  #   assert_predicate parent.errors[:base], :any?
+  # end
 
-    category = OrgContactCategory.new(id: "NO_PARENT", parent_id: " ")
-    assert_predicate category, :valid?
-
-    category = OrgContactCategory.new(id: "NO_PARENT", parent_id: "A" * 255)
-    assert_predicate category, :valid?
-
-    category = OrgContactCategory.new(id: "NO_PARENT", parent_id: "A" * 256)
-    assert_not category.valid?
-    assert_predicate category.errors[:parent_id], :any?
-  end
-
-  test "destroy is restricted when children exist" do
-    parent = OrgContactCategory.create!(id: "PARENT")
-    OrgContactCategory.create!(id: "CHILD", parent_id: parent.id)
-
-    assert_not parent.destroy
-    assert_predicate parent.errors[:base], :any?
-  end
-
-  test "destroy raises when contacts enforce non-null category_id" do
+  test "destroy is restricted when contacts exist" do
     category = OrgContactCategory.create!(id: "CONTACT_PARENT")
     status = OrgContactStatus.create!(id: "ACTIVE")
     OrgContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
-    assert_raises(ActiveRecord::StatementInvalid) do
-      category.destroy
-    end
+    assert_not category.destroy
+    assert_predicate category.errors[:base], :any?
   end
 
   # rubocop:disable Minitest/MultipleAssertions

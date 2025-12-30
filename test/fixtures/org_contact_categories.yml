@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+neyo:
+  id: NEYO
+
+organization_inquiry:
+  id: ORGANIZATION_INQUIRY
+
+organization_partnership:
+  id: ORGANIZATION_PARTNERSHIP
+
+organization_feedback:
+  id: ORGANIZATION_FEEDBACK

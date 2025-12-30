@@ -122,7 +122,7 @@ module Auth
           begin
             ActiveRecord::Base.transaction do
               # Use create! to raise exception on validation failure
-              @user = User.create!(user_identity_status_id: "VERIFIED_WITH_SIGN_UP")
+              @user = User.create!(status_id: "VERIFIED_WITH_SIGN_UP")
               # Use association to set the user
               @user_email.user = @user
               audit = UserIdentityAudit.new(actor: @user, event_id: "SIGNED_UP_WITH_EMAIL")

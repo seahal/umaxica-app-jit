@@ -10,18 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_30_131000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "app_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "parent_id", limit: 255, default: "", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_app_contact_categories_on_lower_id", unique: true
-    t.index ["parent_id"], name: "index_app_contact_categories_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contact_categories_id_format"
   end
 
@@ -47,8 +44,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
   end
 
   create_table "app_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.string "parent_title", limit: 255, default: ""
-    t.integer "position", default: 0, null: false
     t.index "lower((id)::text)", name: "index_app_contact_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_contact_statuses_id_format"
   end
@@ -89,11 +84,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
   end
 
   create_table "app_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "category_id", limit: 255, default: "", null: false
+    t.string "category_id", limit: 255, default: "NEYO", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: ""
+    t.string "status_id", limit: 255, default: "NEYO"
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
@@ -126,11 +121,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
 
   create_table "com_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "parent_id", limit: 255, default: "", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_com_contact_categories_on_lower_id", unique: true
-    t.index ["parent_id"], name: "index_com_contact_categories_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contact_categories_id_format"
   end
 
@@ -158,10 +150,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
   end
 
   create_table "com_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.string "parent_id", limit: 255, default: ""
-    t.integer "position", default: 0, null: false
     t.index "lower((id)::text)", name: "index_com_contact_statuses_on_lower_id", unique: true
-    t.index ["parent_id"], name: "index_com_contact_statuses_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_contact_statuses_id_format"
   end
 
@@ -205,11 +194,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
   end
 
   create_table "com_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "category_id", limit: 255, default: "", null: false
+    t.string "category_id", limit: 255, default: "NEYO", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: ""
+    t.string "status_id", limit: 255, default: "NEYO"
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
@@ -226,11 +215,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
 
   create_table "org_contact_categories", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "parent_id", limit: 255, default: "", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_org_contact_categories_on_lower_id", unique: true
-    t.index ["parent_id"], name: "index_org_contact_categories_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contact_categories_id_format"
   end
 
@@ -256,10 +242,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
   end
 
   create_table "org_contact_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.string "parent_id", limit: 255, default: ""
-    t.integer "position", default: 0, null: false
     t.index "lower((id)::text)", name: "index_org_contact_statuses_on_lower_id", unique: true
-    t.index ["parent_id"], name: "index_org_contact_statuses_on_parent_id"
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_contact_statuses_id_format"
   end
 
@@ -299,11 +282,11 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080061) do
   end
 
   create_table "org_contacts", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.string "category_id", limit: 255, default: "", null: false
+    t.string "category_id", limit: 255, default: "NEYO", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: ""
+    t.string "status_id", limit: 255, default: "NEYO"
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false

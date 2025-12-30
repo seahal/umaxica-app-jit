@@ -1,0 +1,19 @@
+# frozen_string_literal: true
+
+neyo:
+  id: NEYO
+
+set_up:
+  id: SET_UP
+
+null_com_status:
+  id: NULL_COM_STATUS
+
+checked_email_address:
+  id: CHECKED_EMAIL_ADDRESS
+
+checked_telephone_number:
+  id: CHECKED_TELEPHONE_NUMBER
+
+completed_contact_action:
+  id: COMPLETED_CONTACT_ACTION

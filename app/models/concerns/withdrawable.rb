@@ -8,7 +8,7 @@ module Withdrawable
   WITHDRAWAL_RECOVERY_PERIOD = 30.days
 
   included do
-    scope :withdrawn, -> { where("withdrawn_at < '+infinity'::timestamp") }
+    scope :withdrawn, -> { where.not(withdrawn_at: nil) }
   end
 
   def withdrawn?

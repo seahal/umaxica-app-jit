@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+neyo:
+  id: NEYO
+
+application_inquiry:
+  id: APPLICATION_INQUIRY
+
+application_support:
+  id: APPLICATION_SUPPORT
+
+application_feedback:
+  id: APPLICATION_FEEDBACK

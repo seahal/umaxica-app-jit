@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_30_080044) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_30_123013) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,7 +32,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080044) do
 
   create_table "app_document_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_app_document_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_document_statuses_id_format"
@@ -76,13 +75,16 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080044) do
   create_table "app_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
+    t.string "permalink", limit: 200, default: "", null: false
     t.integer "position", default: 0, null: false
     t.string "public_id", limit: 21, default: "", null: false
     t.datetime "published_at", default: ::Float::INFINITY, null: false
     t.string "redirect_url"
     t.string "response_mode", default: "html", null: false
+    t.string "revision_key", default: "", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
+    t.index ["permalink"], name: "index_app_documents_on_permalink", unique: true
     t.index ["public_id"], name: "index_app_documents_on_public_id"
     t.index ["published_at", "expires_at"], name: "index_app_documents_on_published_at_and_expires_at"
     t.index ["status_id"], name: "index_app_documents_on_status_id"
@@ -106,7 +108,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080044) do
 
   create_table "com_document_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_com_document_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_document_statuses_id_format"
@@ -150,13 +151,16 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080044) do
   create_table "com_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
+    t.string "permalink", limit: 200, default: "", null: false
     t.integer "position", default: 0, null: false
     t.string "public_id", limit: 21, default: "", null: false
     t.datetime "published_at", default: ::Float::INFINITY, null: false
     t.string "redirect_url"
     t.string "response_mode", default: "html", null: false
+    t.string "revision_key", default: "", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
+    t.index ["permalink"], name: "index_com_documents_on_permalink", unique: true
     t.index ["public_id"], name: "index_com_documents_on_public_id"
     t.index ["published_at", "expires_at"], name: "index_com_documents_on_published_at_and_expires_at"
     t.index ["status_id"], name: "index_com_documents_on_status_id"
@@ -180,7 +184,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080044) do
 
   create_table "org_document_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_org_document_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_document_statuses_id_format"
@@ -224,13 +227,16 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080044) do
   create_table "org_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
+    t.string "permalink", limit: 200, default: "", null: false
     t.integer "position", default: 0, null: false
     t.string "public_id", limit: 21, default: "", null: false
     t.datetime "published_at", default: ::Float::INFINITY, null: false
     t.string "redirect_url"
     t.string "response_mode", default: "html", null: false
+    t.string "revision_key", default: "", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
+    t.index ["permalink"], name: "index_org_documents_on_permalink", unique: true
     t.index ["public_id"], name: "index_org_documents_on_public_id"
     t.index ["published_at", "expires_at"], name: "index_org_documents_on_published_at_and_expires_at"
     t.index ["status_id"], name: "index_org_documents_on_status_id"

@@ -94,6 +94,7 @@ class UserIdentityPasskeyTest < ActiveSupport::TestCase
 
   test "description is invalid when blank" do
     @passkey.description = ""
+    @passkey.define_singleton_method(:set_defaults) { } # Skip callback to test validation
     assert_not @passkey.valid?
     assert_not_empty @passkey.errors[:description]
   end

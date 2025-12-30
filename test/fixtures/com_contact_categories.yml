@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+neyo:
+  id: NEYO
+
+security_issue:
+  id: SECURITY_ISSUE
+
+others:
+  id: OTHERS

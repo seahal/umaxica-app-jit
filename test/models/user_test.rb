@@ -4,19 +4,19 @@
 #
 # Table name: users
 #
-#  id                      :uuid             not null, primary key
-#  webauthn_id             :string           default(""), not null
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  public_id               :string(255)      default("")
-#  user_identity_status_id :string(255)      default("NEYO"), not null
-#  withdrawn_at            :datetime         default("infinity")
+#  id           :uuid             not null, primary key
+#  webauthn_id  :string           default(""), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  public_id    :string(255)      default("")
+#  status_id    :string(255)      default("NEYO"), not null
+#  withdrawn_at :datetime         default("infinity")
 #
 # Indexes
 #
-#  index_users_on_public_id                (public_id) UNIQUE
-#  index_users_on_user_identity_status_id  (user_identity_status_id)
-#  index_users_on_withdrawn_at             (withdrawn_at)
+#  index_users_on_public_id     (public_id) UNIQUE
+#  index_users_on_status_id     (status_id)
+#  index_users_on_withdrawn_at  (withdrawn_at)
 #
 
 require "test_helper"
@@ -58,7 +58,7 @@ class UserTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     user = User.create!
 
-    assert_equal UserIdentityStatus::NEYO, user.user_identity_status_id
+    assert_equal UserIdentityStatus::NEYO, user.status_id
   end
 
   test "should have many user_identity_emails association" do

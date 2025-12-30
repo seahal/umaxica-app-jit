@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_30_080056) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_30_123015) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,7 +32,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080056) do
 
   create_table "app_timeline_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_app_timeline_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_app_timeline_statuses_id_format"
@@ -106,7 +105,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080056) do
 
   create_table "com_timeline_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_com_timeline_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_com_timeline_statuses_id_format"
@@ -180,7 +178,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_080056) do
 
   create_table "org_timeline_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_org_timeline_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_org_timeline_statuses_id_format"

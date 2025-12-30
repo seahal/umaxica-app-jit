@@ -15,6 +15,6 @@ module OccurrenceStatus
   end
 
   def ensure_expires_at
-    self.expires_at ||= 7.years.from_now
+    self.expires_at ||= 7.years.from_now if has_attribute?(:expires_at)
   end
 end

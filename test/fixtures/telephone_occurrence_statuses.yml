@@ -1,0 +1,14 @@
+# == Schema Information
+#
+# Table name: telephone_occurrence_statuses
+#
+#  id :string(255) default("NEYO"), not null, primary key
+#
+
+# frozen_string_literal: true
+
+neyo:
+  id: NEYO
+
+active:
+  id: ACTIVE

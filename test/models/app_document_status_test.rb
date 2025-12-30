@@ -4,12 +4,14 @@
 #
 # Table name: app_document_statuses
 #
-#  id :string(255)      default("NONE"), not null, primary key
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 
 require "test_helper"
 
 class AppDocumentStatusTest < ActiveSupport::TestCase
+  fixtures :app_document_statuses
+
   def setup
     @model_class = AppDocumentStatus
     @valid_id = "ACTIVE"

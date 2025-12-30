@@ -4,12 +4,14 @@
 #
 # Table name: org_document_statuses
 #
-#  id :string(255)      default("NONE"), not null, primary key
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 
 require "test_helper"
 
 class OrgDocumentStatusTest < ActiveSupport::TestCase
+  fixtures :org_document_statuses
+
   def setup
     @model_class = OrgDocumentStatus
     @valid_id = "ACTIVE"

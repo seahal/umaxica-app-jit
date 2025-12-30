@@ -1,0 +1,23 @@
+# == Schema Information
+#
+# Table name: app_document_statuses
+#
+#  id :string(255)      default("NEYO"), not null, primary key
+#
+
+# frozen_string_literal: true
+
+NEYO:
+  id: NEYO
+
+ACTIVE:
+  id: ACTIVE
+
+DRAFT:
+  id: DRAFT
+
+ARCHIVED:
+  id: ARCHIVED
+
+PUBLISHED:
+  id: PUBLISHED

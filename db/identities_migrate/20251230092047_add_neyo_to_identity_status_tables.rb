@@ -27,11 +27,23 @@ class AddNeyoToIdentityStatusTables < ActiveRecord::Migration[8.2]
         post_statuses
         post_review_statuses
       ).each do |table_name|
-        execute <<-SQL.squish
-          INSERT INTO #{table_name} (id, key, name, created_at, updated_at)
-          VALUES ('NEYO', 'NEYO', 'None', NOW(), NOW())
-          ON CONFLICT (id) DO NOTHING;
-        SQL
+        # Check if key and name columns exist (they may have been removed by later migrations)
+        has_key = column_exists?(table_name.to_sym, :key)
+        has_name = column_exists?(table_name.to_sym, :name)
+
+        if has_key && has_name
+          execute <<-SQL.squish
+            INSERT INTO #{table_name} (id, key, name, created_at, updated_at)
+            VALUES ('NEYO', 'NEYO', 'None', NOW(), NOW())
+            ON CONFLICT (id) DO NOTHING;
+          SQL
+        else
+          execute <<-SQL.squish
+            INSERT INTO #{table_name} (id, created_at, updated_at)
+            VALUES ('NEYO', NOW(), NOW())
+            ON CONFLICT (id) DO NOTHING;
+          SQL
+        end
       end
     end
   end

@@ -21,18 +21,16 @@ require "test_helper"
 class OrgTimelineUpdaterTest < ActiveSupport::TestCase
   def base_attrs
     {
-      permalink: "Org_1",
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key",
       status_id: "NEYO",
     }
   end
 
   test "call always creates a new version" do
-    timeline = OrgTimeline.create!(base_attrs.merge(permalink: "updatable"))
+    timeline = OrgTimeline.create!(base_attrs)
 
     attrs = {
       permalink: "updatable",

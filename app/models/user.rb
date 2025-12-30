@@ -4,19 +4,19 @@
 #
 # Table name: users
 #
-#  id                      :uuid             not null, primary key
-#  webauthn_id             :string           default(""), not null
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  public_id               :string(255)      default("")
-#  user_identity_status_id :string(255)      default("NEYO"), not null
-#  withdrawn_at            :datetime         default("infinity")
+#  id           :uuid             not null, primary key
+#  webauthn_id  :string           default(""), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  public_id    :string(255)      default("")
+#  status_id    :string(255)      default("NEYO"), not null
+#  withdrawn_at :datetime         default("infinity")
 #
 # Indexes
 #
-#  index_users_on_public_id                (public_id) UNIQUE
-#  index_users_on_user_identity_status_id  (user_identity_status_id)
-#  index_users_on_withdrawn_at             (withdrawn_at)
+#  index_users_on_public_id     (public_id) UNIQUE
+#  index_users_on_status_id     (status_id)
+#  index_users_on_withdrawn_at  (withdrawn_at)
 #
 
 class User < IdentitiesRecord
@@ -25,14 +25,16 @@ class User < IdentitiesRecord
   include ::Accountably
   include ::Accountable
 
-  attribute :user_identity_status_id, default: UserIdentityStatus::NEYO
+  attribute :status_id, default: UserIdentityStatus::NEYO
   include Withdrawable
   include HasRoles
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
-  validates :user_identity_status_id, length: { maximum: 255 }
+  validates :status_id, length: { maximum: 255 }
 
-  belongs_to :user_identity_status
+  belongs_to :user_identity_status,
+             foreign_key: :status_id,
+             inverse_of: :users
   has_one :user_identity_social_apple,
           dependent: :destroy,
           inverse_of: :user
@@ -76,6 +78,9 @@ class User < IdentitiesRecord
            dependent: :destroy,
            inverse_of: :user
   has_many :user_notifications,
+           dependent: :destroy,
+           inverse_of: :user
+  has_many :clients,
            dependent: :destroy,
            inverse_of: :user
 

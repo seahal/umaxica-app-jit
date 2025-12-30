@@ -83,8 +83,9 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
   test "POST create with existing email generates OTP and redirects to edit" do
     # Create a test email in the database
+    user = users(:one)
     test_email = "auth_test_#{SecureRandom.hex(4)}@example.com"
-    UserIdentityEmail.create!(address: test_email)
+    user.user_identity_emails.create!(address: test_email)
 
     # Make the POST request with valid email and Turnstile response
     # Turnstile is automatically mocked to return true in test environment
@@ -101,7 +102,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
   test "timing attack protection in update action" do
     # Create and verify an email
-    test_email = UserIdentityEmail.create!(address: "timing_test@example.com", confirm_policy: true)
+    user = users(:one)
+    test_email = user.user_identity_emails.create!(address: "timing_test@example.com")
     test_email.update!(pass_code: "123456", otp_attempts_count: 0)
 
     # Start session
@@ -160,8 +162,9 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   # Login Tests
   # rubocop:disable Minitest/MultipleAssertions
   test "successful OTP verification redirects to root" do
-    # Create email without user association (user_id field is not properly typed for UUID refs)
-    test_email = UserIdentityEmail.create!(
+    # Create email with user association
+    user = users(:one)
+    test_email = user.user_identity_emails.create!(
       address: "login_test_#{SecureRandom.hex(4)}@example.com",
     )
 
@@ -196,7 +199,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   end
 
   test "otp resend enforces cooldown" do
-    test_email = UserIdentityEmail.create!(
+    user = users(:one)
+    test_email = user.user_identity_emails.create!(
       address: "cooldown_test_#{SecureRandom.hex(4)}@example.com",
     )
 
@@ -273,7 +277,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   # rubocop:enable Minitest/MultipleAssertions
 
   test "invalid OTP code returns error message" do
-    test_email = UserIdentityEmail.create!(
+    user = users(:one)
+    test_email = user.user_identity_emails.create!(
       address: "invalid_otp_test_#{SecureRandom.hex(4)}@example.com",
     )
 
@@ -347,7 +352,8 @@ class Auth::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
   # rubocop:disable Minitest/MultipleAssertions
   test "redirects to encoded URL after successful login when rd parameter is provided" do
     # Create a test user and email
-    test_email = UserIdentityEmail.create!(
+    user = users(:one)
+    test_email = user.user_identity_emails.create!(
       address: "redirect_login_test_#{SecureRandom.hex(4)}@example.com",
     )
 

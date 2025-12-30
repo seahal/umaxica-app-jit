@@ -5,18 +5,21 @@
 # Table name: org_documents
 #
 #  id            :uuid             not null, primary key
-#  response_mode :string           default("html"), not null
-#  redirect_url  :string
-#  published_at  :datetime         default("infinity"), not null
+#  created_at    :datetime         not null
 #  expires_at    :datetime         default("infinity"), not null
 #  position      :integer          default(0), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  status_id     :string(255)      default("NEYO"), not null
 #  public_id     :string(21)       default(""), not null
+#  published_at  :datetime         default("infinity"), not null
+#  redirect_url  :string
+#  response_mode :string           default("html"), not null
+#  status_id     :string(255)      default("NEYO"), not null
+#  updated_at    :datetime         not null
+#  permalink     :string(200)      default(""), not null
+#  revision_key  :string           default(""), not null
 #
 # Indexes
 #
+#  index_org_documents_on_permalink                    (permalink) UNIQUE
 #  index_org_documents_on_public_id                    (public_id)
 #  index_org_documents_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_org_documents_on_status_id                    (status_id)

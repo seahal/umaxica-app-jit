@@ -5,16 +5,16 @@
 # Table name: org_contacts
 #
 #  id               :uuid             not null, primary key
+#  category_id      :string(255)      default("NEYO"), not null
+#  created_at       :datetime         not null
+#  ip_address       :inet             default("0.0.0.0"), not null
 #  public_id        :string(21)       default(""), not null
+#  status_id        :string(255)      default("NEYO")
 #  token            :string(32)       default(""), not null
 #  token_digest     :string(255)      default(""), not null
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
-#  ip_address       :inet             default("0.0.0.0"), not null
-#  status_id        :string(255)      default("")
-#  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string(255)      default(""), not null
 #
 # Indexes
 #
@@ -43,15 +43,12 @@ class OrgContact < GuestsRecord
              inverse_of: :org_contacts
   has_many :org_contact_topics, dependent: :destroy, inverse_of: :org_contact
 
-  attribute :status_id, default: "NEYO"
-  attribute :category_id, default: "NEYO"
-
   attr_accessor :confirm_policy
 
   after_initialize do
     if new_record?
-      self.category_id = "ORGANIZATION_INQUIRY" if category_id == "NEYO" || category_id.nil?
-      self.status_id = "NEYO" if status_id.nil?
+      self.category_id ||= "ORGANIZATION_INQUIRY"
+      self.status_id ||= "NEYO"
     end
   end
 

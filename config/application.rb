@@ -102,5 +102,8 @@ module Jit
     config.generators do |g|
       g.orm :active_record, primary_key_type: :uuid
     end
+
+    # Enable structured logging in all environments.
+    config.active_support.structured_logging = true
   end
 end

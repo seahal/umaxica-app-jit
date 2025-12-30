@@ -7,20 +7,20 @@ module Auth
 
       def new
         # NOTE: change this status check according to your business logic
-        unless current_user.user_identity_status_id == "NEYO"
+        unless current_user.status_id == "NEYO"
           raise InvalidUserStatusError.new(invalid_status: "new is not implemented")
         end
       end
 
       def create
         # NOTE: change this status check according to your business logic
-        unless current_user.user_identity_status_id == "NEYO"
+        unless current_user.status_id == "NEYO"
           raise InvalidUserStatusError.new(invalid_status: "new is not implemented")
         end
 
         # Soft delete: set withdrawn_at to now and mark pre-withdrawal status
         current_user.withdrawn_at = Time.current
-        current_user.user_identity_status_id = UserIdentityStatus::PRE_WITHDRAWAL_CONDITION
+        current_user.status_id = UserIdentityStatus::PRE_WITHDRAWAL_CONDITION
 
         if current_user.save
           User.transaction do

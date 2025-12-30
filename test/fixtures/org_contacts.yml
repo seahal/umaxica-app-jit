@@ -9,10 +9,10 @@
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
 #  ip_address       :inet             default("0.0.0.0"), not null
-#  status_id        :string(255)      default("")
+#  status_id        :string(255)      default("NEYO")
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string(255)      default(""), not null
+#  category_id      :string(255)      default("NEYO"), not null
 #
 # Indexes
 #
@@ -24,3 +24,15 @@
 #  index_org_contacts_on_token_expires_at  (token_expires_at)
 #
 
+one:
+  id: 019b6f92-3030-7624-883a-064372edcf28
+  category_id: ORGANIZATION_INQUIRY
+  status_id: NEYO
+  public_id: test_org_contact_0001
+  ip_address: 127.0.0.1
+  token: abcdefghijklmnopqrstuvwx
+  token_digest: ""
+  token_expires_at: <%= 1.day.from_now %>
+  token_viewed: false
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

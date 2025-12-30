@@ -15,11 +15,11 @@ module Help
       def new
         category_id = validate_category_id(params[:category])
         @contact = OrgContact.new(category_id: category_id)
-        @contact_categories = OrgContactCategory.order(:description)
+        @contact_categories = OrgContactCategory.order(:id)
       end
 
       def edit
-        @contact_categories = OrgContactCategory.order(:description)
+        @contact_categories = OrgContactCategory.order(:id)
         @topic = @contact.org_contact_topics.build
       end
 
@@ -30,7 +30,7 @@ module Help
           category_id: params.dig(:org_contact, :category_id),
           confirm_policy: params.dig(:org_contact, :confirm_policy),
         )
-        @contact_categories = OrgContactCategory.order(:description)
+        @contact_categories = OrgContactCategory.order(:id)
 
         @contact_email = @contact.org_contact_emails.build(
           email_address: params.dig(:org_contact, :email_address),

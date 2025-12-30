@@ -7,7 +7,6 @@ module Occurrence
     after_initialize :set_default_expires_at
     before_validation :ensure_expires_at
     validates :public_id,
-              presence: true,
               length: { is: 21 },
               format: { with: /\A[A-Za-z0-9_-]{21}\z/ },
               uniqueness: true

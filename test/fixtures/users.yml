@@ -2,21 +2,27 @@
 #
 # Table name: users
 #
-#  id                      :uuid             not null, primary key
-#  webauthn_id             :string           default(""), not null
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  public_id               :string(255)      default("")
-#  user_identity_status_id :string(255)      default("NEYO"), not null
-#  withdrawn_at            :datetime         default("infinity")
+#  id           :uuid             not null, primary key
+#  webauthn_id  :string           default(""), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  public_id    :string(255)      default("")
+#  status_id    :string(255)      default("NEYO"), not null
+#  withdrawn_at :datetime         default("infinity")
 #
 # Indexes
 #
-#  index_users_on_public_id                (public_id) UNIQUE
-#  index_users_on_user_identity_status_id  (user_identity_status_id)
-#  index_users_on_withdrawn_at             (withdrawn_at)
+#  index_users_on_public_id     (public_id) UNIQUE
+#  index_users_on_status_id     (status_id)
+#  index_users_on_withdrawn_at  (withdrawn_at)
 #
 
 one:
+  id: "11111111-1111-1111-1111-111111111111"
   public_id: "one_user_public_id01"
-  user_identity_status_id: "NEYO"
+  status_id: "NEYO"
+
+two:
+  id: "22222222-2222-2222-2222-222222222222"
+  public_id: "two_user_public_id02"
+  status_id: "NEYO"

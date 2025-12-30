@@ -35,7 +35,7 @@
 require "test_helper"
 
 class UserIdentityAuditTest < ActiveSupport::TestCase
-  fixtures :users, :staffs
+  fixtures :users, :staffs, :user_identity_audit_events, :user_identity_audit_levels
 
   def setup
     @user = users(:one)

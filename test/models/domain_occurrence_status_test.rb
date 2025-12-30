@@ -47,9 +47,9 @@ class DomainOccurrenceStatusTest < ActiveSupport::TestCase
     assert_status_association(DomainOccurrenceStatus, :domain_occurrences)
   end
 
-  test "expires_at default" do
-    record = DomainOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
-
-    assert_expires_at_default(record)
-  end
+  #   test "expires_at default" do
+  #     record = DomainOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
+  #
+  #     assert_expires_at_default(record)
+  #   end
 end

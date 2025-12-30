@@ -13,7 +13,7 @@ class TimelineVersionWriter
 
     version_class.create!(
       timeline_key => timeline,
-      :permalink => timeline.permalink,
+      :permalink => attrs[:permalink],
       :response_mode => timeline.response_mode,
       :redirect_url => timeline.redirect_url,
       :published_at => timeline.published_at,

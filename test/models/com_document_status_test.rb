@@ -4,12 +4,14 @@
 #
 # Table name: com_document_statuses
 #
-#  id :string(255)      default("NONE"), not null, primary key
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 
 require "test_helper"
 
 class ComDocumentStatusTest < ActiveSupport::TestCase
+  fixtures :com_document_statuses
+
   def setup
     @model_class = ComDocumentStatus
     @valid_id = "ACTIVE"

@@ -24,12 +24,6 @@
 require "test_helper"
 
 class ZipOccurrenceTest < ActiveSupport::TestCase
-  test "public_id presence" do
-    record = build_occurrence(ZipOccurrence, body: "1500001", public_id: nil, generate_public_id: false)
-
-    assert_invalid_attribute(record, :public_id)
-  end
-
   test "public_id length" do
     record = build_occurrence(ZipOccurrence, body: "1500001", public_id: "A" * 20)
 

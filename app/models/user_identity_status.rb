@@ -10,7 +10,10 @@
 class UserIdentityStatus < IdentitiesRecord
   include UppercaseId
 
-  has_many :users, dependent: :restrict_with_error
+  has_many :users,
+           foreign_key: :status_id,
+           dependent: :restrict_with_error,
+           inverse_of: :user_identity_status
 
   # Status constants
   NEYO = "NEYO"

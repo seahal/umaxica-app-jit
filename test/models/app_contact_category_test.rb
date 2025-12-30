@@ -53,28 +53,28 @@ class AppContactCategoryTest < ActiveSupport::TestCase
   end
 
   test "id is invalid when nil or blank" do
-    category = AppContactCategory.new(id: nil, parent_id: AppContactCategory::NIL_UUID)
+    category = AppContactCategory.new(id: nil)
     assert_not category.valid?
     assert_predicate category.errors[:id], :any?
 
-    category = AppContactCategory.new(id: "", parent_id: AppContactCategory::NIL_UUID)
+    category = AppContactCategory.new(id: "")
     assert_not category.valid?
     assert_predicate category.errors[:id], :any?
 
-    category = AppContactCategory.new(id: " ", parent_id: AppContactCategory::NIL_UUID)
+    category = AppContactCategory.new(id: " ")
     assert_not category.valid?
     assert_predicate category.errors[:id], :any?
   end
 
   test "id enforces length and format boundaries" do
-    category = AppContactCategory.new(id: "A" * 255, parent_id: AppContactCategory::NIL_UUID)
+    category = AppContactCategory.new(id: "A" * 255)
     assert_predicate category, :valid?
 
-    category = AppContactCategory.new(id: "A" * 256, parent_id: AppContactCategory::NIL_UUID)
+    category = AppContactCategory.new(id: "A" * 256)
     assert_not category.valid?
     assert_predicate category.errors[:id], :any?
 
-    category = AppContactCategory.new(id: "BAD-ID", parent_id: AppContactCategory::NIL_UUID)
+    category = AppContactCategory.new(id: "BAD-ID")
     assert_not category.valid?
     assert_predicate category.errors[:id], :any?
   end
@@ -82,50 +82,52 @@ class AppContactCategoryTest < ActiveSupport::TestCase
   test "id uniqueness is case-insensitive" do
     AppContactCategory.create!(id: "CASE_CHECK")
 
-    duplicate = AppContactCategory.new(id: "case_check", parent_id: AppContactCategory::NIL_UUID)
+    duplicate = AppContactCategory.new(id: "case_check")
     assert_not duplicate.valid?
     assert_predicate duplicate.errors[:id], :any?
   end
 
-  test "parent_id is required" do
-    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: nil)
-    assert_not category.valid?
-    assert_predicate category.errors[:parent_id], :any?
+  # parent_id column has been removed from app_contact_categories
+  # test "parent_id is required" do
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: nil)
+  #   assert_not category.valid?
+  #   assert_predicate category.errors[:parent_id], :any?
+  #
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "")
+  #   assert_not category.valid?
+  #   assert_predicate category.errors[:parent_id], :any?
+  #
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: " ")
+  #   assert_not category.valid?
+  #   assert_predicate category.errors[:parent_id], :any?
+  # end
 
-    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "")
-    assert_not category.valid?
-    assert_predicate category.errors[:parent_id], :any?
+  # parent_id column has been removed from app_contact_categories
+  # test "parent_id respects length bounds" do
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "A" * 255)
+  #   assert_predicate category, :valid?
+  #
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "A" * 256)
+  #   assert_not category.valid?
+  #   assert_predicate category.errors[:parent_id], :any?
+  # end
 
-    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: " ")
-    assert_not category.valid?
-    assert_predicate category.errors[:parent_id], :any?
-  end
+  # parent_id column has been removed from app_contact_categories
+  # test "destroy is restricted when children exist" do
+  #   parent = AppContactCategory.create!(id: "PARENT")
+  #   AppContactCategory.create!(id: "CHILD", parent_id: parent.id)
+  #
+  #   assert_not parent.destroy
+  #   assert_predicate parent.errors[:base], :any?
+  # end
 
-  test "parent_id respects length bounds" do
-    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "A" * 255)
-    assert_predicate category, :valid?
-
-    category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "A" * 256)
-    assert_not category.valid?
-    assert_predicate category.errors[:parent_id], :any?
-  end
-
-  test "destroy is restricted when children exist" do
-    parent = AppContactCategory.create!(id: "PARENT", parent_id: AppContactCategory::NIL_UUID)
-    AppContactCategory.create!(id: "CHILD", parent_id: parent.id)
-
-    assert_not parent.destroy
-    assert_predicate parent.errors[:base], :any?
-  end
-
-  test "destroy raises when contacts enforce non-null category_id" do
-    category = AppContactCategory.create!(id: "CONTACT_PARENT", parent_id: AppContactCategory::NIL_UUID)
+  test "destroy is restricted when contacts exist" do
+    category = AppContactCategory.create!(id: "CONTACT_PARENT")
     status = AppContactStatus.create!(id: "ACTIVE")
     AppContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
-    assert_raises(ActiveRecord::StatementInvalid) do
-      category.destroy
-    end
+    assert_not category.destroy
+    assert_predicate category.errors[:base], :any?
   end
 
   # rubocop:disable Minitest/MultipleAssertions

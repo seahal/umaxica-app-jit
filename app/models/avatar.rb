@@ -99,6 +99,49 @@ class Avatar < IdentitiesRecord
            through: :viewer_assignments,
            source: :user
 
+  # follows
+  has_many :outgoing_follows,
+           class_name: "AvatarFollow",
+           foreign_key: :follower_avatar_id,
+           inverse_of: :follower_avatar,
+           dependent: :destroy
+
+  has_many :incoming_follows,
+           class_name: "AvatarFollow",
+           foreign_key: :followed_avatar_id,
+           inverse_of: :followed_avatar,
+           dependent: :destroy
+
+  has_many :followings,
+           through: :outgoing_follows,
+           source: :followed_avatar
+
+  has_many :followers,
+           through: :incoming_follows,
+           source: :follower_avatar
+
+  # blocks
+  has_many :outgoing_blocks,
+           class_name: "AvatarBlock",
+           foreign_key: :blocker_avatar_id,
+           inverse_of: :blocker_avatar,
+           dependent: :destroy
+
+  has_many :blocked_avatars,
+           through: :outgoing_blocks,
+           source: :blocked_avatar
+
+  # mutes
+  has_many :outgoing_mutes,
+           class_name: "AvatarMute",
+           foreign_key: :muter_avatar_id,
+           inverse_of: :muter_avatar,
+           dependent: :destroy
+
+  has_many :muted_avatars,
+           through: :outgoing_mutes,
+           source: :muted_avatar
+
   validates :public_id, presence: true, uniqueness: true
   validates :moniker, presence: true
 

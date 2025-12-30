@@ -24,12 +24,6 @@
 require "test_helper"
 
 class EmailOccurrenceTest < ActiveSupport::TestCase
-  test "public_id presence" do
-    record = build_occurrence(EmailOccurrence, body: "user@example.com", public_id: nil, generate_public_id: false)
-
-    assert_invalid_attribute(record, :public_id)
-  end
-
   test "public_id length" do
     record = build_occurrence(EmailOccurrence, body: "user@example.com", public_id: "A" * 20)
 

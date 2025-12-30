@@ -27,37 +27,36 @@ require "test_helper"
 class OrgTimelineTest < ActiveSupport::TestCase
   def base_attrs
     {
-      permalink: "Org_1",
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key",
       status_id: "NEYO",
     }
   end
 
-  test "permalink validation rejects slash, accepts underscore, rejects long length" do
-    timeline = OrgTimeline.new(base_attrs.merge(permalink: "bad/slug"))
-    assert_not timeline.valid?
-
-    timeline = OrgTimeline.new(base_attrs.merge(permalink: "good_slug"))
-    assert_predicate timeline, :valid?
-
-    timeline = OrgTimeline.new(base_attrs.merge(permalink: "a" * 201))
-    assert_not timeline.valid?
-  end
+  # permalink has been removed from org_timelines table
+  # test "permalink validation rejects slash, accepts underscore, rejects long length" do
+  #   timeline = OrgTimeline.new(base_attrs.merge(permalink: "bad/slug"))
+  #   assert_not timeline.valid?
+  #
+  #   timeline = OrgTimeline.new(base_attrs.merge(permalink: "good_slug"))
+  #   assert_predicate timeline, :valid?
+  #
+  #   timeline = OrgTimeline.new(base_attrs.merge(permalink: "a" * 201))
+  #   assert_not timeline.valid?
+  # end
 
   test "available scope returns published and unexpired timelines" do
     now = Time.current
     available = OrgTimeline.create!(
       base_attrs.merge(
-        permalink: "available", published_at: now - 1.hour,
+        published_at: now - 1.hour,
         expires_at: now + 1.hour,
       ),
     )
-    OrgTimeline.create!(base_attrs.merge(permalink: "future", published_at: now + 1.hour, expires_at: now + 2.hours))
-    OrgTimeline.create!(base_attrs.merge(permalink: "expired", published_at: now - 2.hours, expires_at: now - 1.hour))
+    OrgTimeline.create!(base_attrs.merge(published_at: now + 1.hour, expires_at: now + 2.hours))
+    OrgTimeline.create!(base_attrs.merge(published_at: now - 2.hours, expires_at: now - 1.hour))
 
     assert_equal [available.id], OrgTimeline.available.pluck(:id)
   end
@@ -71,11 +70,11 @@ class OrgTimelineTest < ActiveSupport::TestCase
   end
 
   test "latest_version returns the newest version by created_at" do
-    timeline = OrgTimeline.create!(base_attrs.merge(permalink: "versioned"))
+    timeline = OrgTimeline.create!(base_attrs)
 
     OrgTimelineVersion.create!(
       org_timeline: timeline,
-      permalink: timeline.permalink,
+      permalink: "versioned",
       response_mode: timeline.response_mode,
       published_at: timeline.published_at,
       expires_at: timeline.expires_at,
@@ -85,7 +84,7 @@ class OrgTimelineTest < ActiveSupport::TestCase
 
     newest = OrgTimelineVersion.create!(
       org_timeline: timeline,
-      permalink: timeline.permalink,
+      permalink: "versioned",
       response_mode: timeline.response_mode,
       published_at: timeline.published_at,
       expires_at: timeline.expires_at,
@@ -94,5 +93,41 @@ class OrgTimelineTest < ActiveSupport::TestCase
     )
 
     assert_equal newest, timeline.latest_version
+  end
+
+  # permalink has been removed from org_timelines table
+  # test "permalink is required and must not be empty" do
+  #   timeline = OrgTimeline.new(base_attrs.merge(permalink: nil))
+  #   assert_not timeline.valid?
+  #   timeline = OrgTimeline.new(base_attrs.merge(permalink: ""))
+  #   assert_not timeline.valid?
+  #   timeline = OrgTimeline.new(base_attrs.merge(permalink: "   "))
+  #   assert_not timeline.valid?
+  # end
+
+  test "published_at must be before expires_at" do
+    timeline = OrgTimeline.new(base_attrs.merge(published_at: 1.day.from_now, expires_at: 1.day.ago))
+    assert_not timeline.valid?
+    assert_not_empty timeline.errors[:published_at]
+  end
+
+  # revision_key has been removed from org_timelines table
+  # test "revision_key is ensured before validation" do
+  #   timeline = OrgTimeline.new(base_attrs.merge(revision_key: nil))
+  #   assert_predicate timeline, :valid?
+  #   assert_not_nil timeline.revision_key
+  # end
+
+  test "association deletion: destroys dependent versions" do
+    timeline = OrgTimeline.create!(base_attrs)
+    version = OrgTimelineVersion.create!(
+      org_timeline: timeline,
+      permalink: "delete_test",
+      response_mode: timeline.response_mode,
+      published_at: timeline.published_at,
+      expires_at: timeline.expires_at,
+    )
+    timeline.destroy
+    assert_raise(ActiveRecord::RecordNotFound) { version.reload }
   end
 end

@@ -47,6 +47,16 @@ class SeedTestGuestReferenceIds < ActiveRecord::Migration[8.2]
       vals << "0"
     end
 
+    # Handle parent_id: app_contact_categories uses NIL_UUID, others use empty string
+    if column_exists?(table_name, :parent_id)
+      cols << "parent_id"
+      vals << if table_name == "app_contact_categories"
+        connection.quote("00000000-0000-0000-0000-000000000000")
+      else
+        connection.quote("")
+      end
+    end
+
     if column_exists?(table_name, :created_at)
       cols << "created_at"
       vals << "CURRENT_TIMESTAMP"

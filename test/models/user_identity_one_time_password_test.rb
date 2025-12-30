@@ -107,7 +107,7 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
 
   test "enforces maximum totp records per user" do
     new_user = User.create!(
-      user_identity_status_id: "NEYO",
+      status_id: "NEYO",
     )
 
     UserIdentityOneTimePassword::MAX_TOTPS_PER_USER.times do

@@ -15,12 +15,10 @@ class AppTimelineAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
     level = app_timeline_audit_levels(:none)
     timeline = AppTimeline.create!(
-      permalink: "audit_timeline",
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key",
     )
 
     AppTimelineAudit.create!(

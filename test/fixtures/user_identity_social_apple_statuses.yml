@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+neyo:
+  id: NEYO
+
+active:
+  id: ACTIVE
+
+revoked:
+  id: REVOKED
+
+deleted:
+  id: DELETED
