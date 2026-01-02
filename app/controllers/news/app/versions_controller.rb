@@ -70,7 +70,7 @@ module News
         )
 
         safe_post_id = safe_segment(@post_id)
-        redirect_to news_app_post_versions_path(safe_post_id)
+        redirect_to news_app_post_versions_path(safe_post_id), allow_other_host: false
       end
 
       # PATCH/PUT /posts/:post_id/versions/:id
@@ -85,7 +85,7 @@ module News
 
         safe_post_id = safe_segment(@post_id)
         safe_version_id = safe_segment(@version_id)
-        redirect_to news_app_post_version_path(safe_post_id, safe_version_id)
+        redirect_to news_app_post_version_path(safe_post_id, safe_version_id), allow_other_host: false
       end
 
       # DELETE /posts/:post_id/versions/:id
@@ -99,7 +99,7 @@ module News
         )
 
         safe_post_id = safe_segment(@post_id)
-        redirect_to news_app_post_versions_path(safe_post_id)
+        redirect_to news_app_post_versions_path(safe_post_id), allow_other_host: false
       end
 
       private
