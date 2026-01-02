@@ -1,0 +1,35 @@
+# == Schema Information
+#
+# Table name: com_document_versions
+#
+#  id              :uuid             not null, primary key
+#  com_document_id :uuid             not null
+#  permalink       :string(200)      not null
+#  response_mode   :string           not null
+#  redirect_url    :string
+#  title           :string
+#  description     :string
+#  body            :text
+#  published_at    :datetime         not null
+#  expires_at      :datetime         not null
+#  edited_by_type  :string
+#  edited_by_id    :integer
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  public_id       :string(255)      default(""), not null
+#
+# Indexes
+#
+#  index_com_document_versions_on_com_document_id_and_created_at  (com_document_id,created_at)
+#  index_com_document_versions_on_public_id                       (public_id) UNIQUE
+#
+
+one:
+  com_document: one
+  permalink: "test-doc-one"
+  response_mode: "html"
+  title: "Test Document One"
+  body: "This is a test document."
+  published_at: <%= 1.day.ago %>
+  expires_at: <%= 1.year.from_now %>
+  created_at: <%= 1.hour.ago %>

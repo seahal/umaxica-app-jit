@@ -30,8 +30,13 @@ class Post < IdentitiesRecord
   belongs_to :post_status
 
   has_many :post_reviews, dependent: :restrict_with_error, inverse_of: :post
+  has_many :post_versions, dependent: :delete_all, inverse_of: :post
 
   validates :public_id, presence: true, uniqueness: true
   validates :body, presence: true
   validates :created_by_actor_id, presence: true
+
+  def latest_version
+    post_versions.order(created_at: :desc).first!
+  end
 end

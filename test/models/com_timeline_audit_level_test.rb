@@ -15,18 +15,16 @@ class ComTimelineAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
     level = com_timeline_audit_levels(:none)
     timeline = ComTimeline.create!(
-      permalink: "audit_timeline",
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key",
       status_id: "NEYO",
     )
 
     ComTimelineAudit.create!(
       com_timeline: timeline,
-      com_timeline_audit_event: com_timeline_audit_events(:CREATED),
+      com_timeline_audit_event: com_timeline_audit_events(:created),
       com_timeline_audit_level: level,
     )
 

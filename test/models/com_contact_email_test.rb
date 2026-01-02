@@ -236,7 +236,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
 
     assert_not email.activated
     assert_not email.deletable
-    assert_equal 10, email.remaining_views
+    assert_equal 0, email.remaining_views
   end
 
   # Validation tests

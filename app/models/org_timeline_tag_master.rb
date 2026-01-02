@@ -15,7 +15,12 @@
 # frozen_string_literal: true
 
 class OrgTimelineTagMaster < NewsRecord
+  include UppercaseId
+  include ::CatTagMaster
+
   self.primary_key = "id"
+
+  attribute :parent_id, default: "NEYO"
 
   belongs_to :parent,
              class_name: "OrgTimelineTagMaster",
@@ -39,6 +44,6 @@ class OrgTimelineTagMaster < NewsRecord
   end
 
   def root?
-    parent_id == "none"
+    parent_id == "NEYO"
   end
 end

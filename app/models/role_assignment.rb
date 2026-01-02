@@ -18,7 +18,7 @@
 #  index_role_assignments_on_user_role   (user_id,role_id) UNIQUE
 #
 
-class RoleAssignment < IdentityRecord
+class RoleAssignment < IdentitiesRecord
   self.implicit_order_column = :created_at
   belongs_to :user, class_name: "User", optional: true, inverse_of: :role_assignments
   belongs_to :staff, class_name: "Staff", optional: true, inverse_of: :role_assignments

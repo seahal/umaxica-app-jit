@@ -13,6 +13,7 @@
 #  active_handle_id             :string           not null
 #  capability_id                :string           not null
 #  avatar_status_id             :string
+#  client_id                    :uuid
 #  created_at                   :datetime         not null
 #  updated_at                   :datetime         not null
 #  lock_version                 :integer          default(0), not null
@@ -21,6 +22,7 @@
 #
 #  index_avatars_on_active_handle_id              (active_handle_id)
 #  index_avatars_on_capability_id                 (capability_id)
+#  index_avatars_on_client_id                     (client_id)
 #  index_avatars_on_owner_organization_id         (owner_organization_id)
 #  index_avatars_on_public_id                     (public_id) UNIQUE
 #  index_avatars_on_representing_organization_id  (representing_organization_id)
@@ -30,6 +32,7 @@ class Avatar < IdentitiesRecord
   include StringPrimaryKey
   include PublicId
 
+  belongs_to :client, optional: true, inverse_of: :avatars
   belongs_to :capability, class_name: "AvatarCapability"
   belongs_to :active_handle, class_name: "Handle"
 

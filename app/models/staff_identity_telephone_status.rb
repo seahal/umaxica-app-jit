@@ -17,4 +17,6 @@ class StaffIdentityTelephoneStatus < IdentitiesRecord
   VERIFIED = "VERIFIED"
   SUSPENDED = "SUSPENDED"
   DELETED = "DELETED"
+
+  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

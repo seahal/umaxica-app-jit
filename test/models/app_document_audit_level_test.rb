@@ -26,7 +26,7 @@ class AppDocumentAuditLevelTest < ActiveSupport::TestCase
 
     AppDocumentAudit.create!(
       app_document: doc,
-      app_document_audit_event: app_document_audit_events(:CREATED),
+      app_document_audit_event: app_document_audit_events(:created),
       app_document_audit_level: level,
     )
 

@@ -381,4 +381,26 @@ class EmailTest < ActiveSupport::TestCase
 
     assert_not email.valid?
   end
+
+  test "otp_cooldown_active? and remaining" do
+    email = create_email(address: "cooldown@example.com", confirm_policy: true)
+
+    # Not active initially
+    assert_not email.otp_cooldown_active?
+    assert_equal 0, email.otp_cooldown_remaining
+
+    # Active after send
+    email.update!(otp_last_sent_at: Time.current)
+    assert_predicate email, :otp_cooldown_active?
+    assert_operator email.otp_cooldown_remaining, :>, 0
+
+    # Not active after cooldown period
+    email.update!(otp_last_sent_at: 2.minutes.ago)
+    assert_not email.otp_cooldown_active?
+    assert_equal 0, email.otp_cooldown_remaining
+
+    # Handles sentinel -infinity
+    email.update!(otp_last_sent_at: "-infinity")
+    assert_not email.otp_cooldown_active?
+  end
 end

@@ -21,21 +21,18 @@ require "test_helper"
 class ComTimelineUpdaterTest < ActiveSupport::TestCase
   def base_attrs
     {
-      permalink: "Com_1",
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key",
       status_id: "NEYO",
     }
   end
 
   test "call always creates a new version" do
-    timeline = ComTimeline.create!(base_attrs.merge(permalink: "updatable"))
+    timeline = ComTimeline.create!(base_attrs)
 
     attrs = {
-      permalink: "updatable",
       response_mode: "html",
       published_at: timeline.published_at,
       expires_at: timeline.expires_at,
@@ -43,6 +40,7 @@ class ComTimelineUpdaterTest < ActiveSupport::TestCase
       title: "Title",
       description: "Description",
       body: "Body",
+      permalink: "permalink_#{SecureRandom.hex(4)}",
     }
 
     assert_difference "ComTimelineVersion.count", 1 do

@@ -22,7 +22,7 @@
 #  index_staff_identity_passkeys_on_webauthn_id        (webauthn_id) UNIQUE
 #
 
-class StaffIdentityPasskey < IdentityRecord
+class StaffIdentityPasskey < IdentitiesRecord
   MAX_PASSKEYS_PER_STAFF = 4
 
   belongs_to :staff

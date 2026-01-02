@@ -10,9 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_27_223046) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_30_204800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "admin_messages", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "public_id"
+    t.uuid "staff_message_id"
+    t.datetime "updated_at", null: false
+    t.index ["staff_message_id"], name: "index_admin_messages_on_staff_message_id"
+  end
+
+  create_table "client_messages", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "public_id"
+    t.datetime "updated_at", null: false
+    t.uuid "user_message_id"
+    t.index ["user_message_id"], name: "index_client_messages_on_user_message_id"
+  end
 
   create_table "staff_messages", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false

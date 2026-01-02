@@ -19,4 +19,5 @@ class StaffMessage < MessageRecord
   include ::PublicId
 
   belongs_to :staff, optional: true, inverse_of: :staff_messages
+  has_many :admin_messages, inverse_of: :staff_message, dependent: :delete_all
 end

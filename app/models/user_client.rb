@@ -17,7 +17,8 @@
 
 # frozen_string_literal: true
 
-class UserClient < IdentityRecord
+class UserClient < IdentitiesRecord
+  self.implicit_order_column = :created_at
   belongs_to :user
   belongs_to :client
 

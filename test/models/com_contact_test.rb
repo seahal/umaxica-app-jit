@@ -29,6 +29,8 @@
 require "test_helper"
 
 class ComContactTest < ActiveSupport::TestCase
+  # Fixtures are handled lazily via setup_fixtures.rb or loaded via fixtures :all
+
   def build_contact(**attrs)
     # Create contact first
     contact = ComContact.new(**attrs.except(:com_contact_email, :com_contact_telephone))
@@ -70,7 +72,7 @@ class ComContactTest < ActiveSupport::TestCase
   end
 
   test "should have valid fixtures" do
-    contact = com_contacts(:one)
+    contact = ComContact.find("37f7eeff-831b-5c41-984a-254965f58c0f")
 
     assert_predicate contact, :valid?
     assert_equal "SECURITY_ISSUE", contact.category_id
@@ -256,7 +258,7 @@ class ComContactTest < ActiveSupport::TestCase
   # Foreign key constraint tests
   test "should reference contact_category by title" do
     contact = ComContact.new(
-      category_id: "OTHERS",
+      category_id: "SECURITY_ISSUE",
       confirm_policy: "1",
     )
 
@@ -274,7 +276,7 @@ class ComContactTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now,
     )
 
-    assert_equal "OTHERS", contact.category_id
+    assert_equal "SECURITY_ISSUE", contact.category_id
   end
 
   test "should reference contact_status by title" do

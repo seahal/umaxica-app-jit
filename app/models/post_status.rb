@@ -13,4 +13,6 @@ class PostStatus < IdentitiesRecord
   include StringPrimaryKey
 
   has_many :posts, dependent: :restrict_with_error
+
+  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

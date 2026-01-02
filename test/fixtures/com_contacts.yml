@@ -3,16 +3,16 @@
 # Table name: com_contacts
 #
 #  id               :uuid             not null, primary key
-#  category_id      :string(255)      default("NEYO"), not null
-#  created_at       :datetime         not null
-#  ip_address       :inet             default("0.0.0.0"), not null
 #  public_id        :string(21)       default(""), not null
-#  status_id        :string(255)      default("NEYO")
 #  token            :string(32)       default(""), not null
 #  token_digest     :string(255)      default(""), not null
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
+#  ip_address       :inet             default("0.0.0.0"), not null
+#  status_id        :string(255)      default("NEYO")
+#  created_at       :datetime         not null
 #  updated_at       :datetime         not null
+#  category_id      :string(255)      default("NEYO"), not null
 #
 # Indexes
 #
@@ -27,8 +27,7 @@
 one:
   id: "37f7eeff-831b-5c41-984a-254965f58c0f"
   public_id: "97463105827291840535"
-  category_id: "SECURITY_ISSUE"
-  status_id: "NEYO"
+  category_id: SECURITY_ISSUE
   token: "test_token_123456789012345678"
   token_digest: "$argon2id$v=19$m=19456,t=2,p=1$aaaaaaaaaaaaaaaa$aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
   token_expires_at: <%= 7.days.from_now %>
@@ -38,10 +37,20 @@ one:
 two:
   id: "aa67c98c-d81f-5a9c-b0bc-26caa0051aea"
   public_id: "test_contact_id_00002"
-  category_id: "OTHERS"
-  status_id: "NEYO"
+  category_id: SECURITY_ISSUE
   token: "test_token_234567890123456789"
   token_digest: "$argon2id$v=19$m=19456,t=2,p=1$bbbbbbbbbbbbbbbb$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
   token_expires_at: <%= 7.days.from_now %>
   token_viewed: false
   ip_address: "192.168.1.2"
+
+verified_email_complete:
+  id: "6a9e1d88-2947-4e6f-870f-17855340051e"
+  public_id: "verified_email_001"
+  category_id: SECURITY_ISSUE
+  token: "test_token_verified_email_123"
+  token_digest: "$argon2id$v=19$m=19456,t=2,p=1$cccccccccccccccc$ccccccccccccccccccccccccccccccccccccccccccccc"
+  token_expires_at: <%= 7.days.from_now %>
+  token_viewed: false
+  ip_address: "192.168.1.3"
+  status_id: "CHECKED_EMAIL_ADDRESS"

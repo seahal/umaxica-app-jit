@@ -1,0 +1,17 @@
+# == Schema Information
+#
+# Table name: com_timeline_tag_masters
+#
+#  id         :string(255)      not null, primary key
+#  parent_id  :string(255)      default("none"), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_com_timeline_tag_masters_on_parent_id  (parent_id)
+#
+
+neyo:
+  id: NEYO
+  parent_id: NEYO

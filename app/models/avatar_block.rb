@@ -18,7 +18,8 @@
 
 # frozen_string_literal: true
 
-class AvatarBlock < IdentityRecord
+class AvatarBlock < IdentitiesRecord
+  self.implicit_order_column = :created_at
   belongs_to :blocker_avatar,
              class_name: "Avatar",
              inverse_of: :outgoing_blocks

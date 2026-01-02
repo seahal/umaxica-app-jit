@@ -26,7 +26,7 @@ class ComDocumentAuditLevelTest < ActiveSupport::TestCase
 
     ComDocumentAudit.create!(
       com_document: doc,
-      com_document_audit_event: com_document_audit_events(:CREATED),
+      com_document_audit_event: com_document_audit_events(:created),
       com_document_audit_level: level,
     )
 

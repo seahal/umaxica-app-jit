@@ -19,9 +19,12 @@
 #  index_ip_occurrences_on_status_id   (status_id)
 #
 
-# Fixture file cleared - data migrated to seed migrations
-
 one:
-  public_id: "ip_occur_pub_id_00001"
-  body: "ip_test"
   status_id: "NEYO"
+  public_id: "one_ip_occ_id_0000001"
+  body: "127.0.0.1"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+

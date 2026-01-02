@@ -15,18 +15,16 @@ class OrgTimelineAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
     level = org_timeline_audit_levels(:none)
     timeline = OrgTimeline.create!(
-      permalink: "audit_timeline",
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key",
       status_id: "NEYO",
     )
 
     OrgTimelineAudit.create!(
       org_timeline: timeline,
-      org_timeline_audit_event: org_timeline_audit_events(:CREATED),
+      org_timeline_audit_event: org_timeline_audit_events(:created),
       org_timeline_audit_level: level,
     )
 

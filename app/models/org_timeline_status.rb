@@ -16,4 +16,6 @@ class OrgTimelineStatus < NewsRecord
            foreign_key: :status_id,
            inverse_of: :org_timeline_status,
            dependent: :restrict_with_error
+
+  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

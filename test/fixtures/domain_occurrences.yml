@@ -19,9 +19,12 @@
 #  index_domain_occurrences_on_status_id   (status_id)
 #
 
-# Fixture file cleared - data migrated to seed migrations
-
 one:
-  public_id: "domain_occur_pub_0001"
-  body: "domain_test"
   status_id: "NEYO"
+  public_id: "one_domain_occ_id_001"
+  body: "example.com"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+

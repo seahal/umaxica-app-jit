@@ -19,8 +19,8 @@
 require "test_helper"
 
 class UserWorkspaceTest < ActiveSupport::TestCase
-  test "should inherit from IdentityRecord" do
-    assert_operator UserWorkspace, :<, IdentityRecord
+  test "should inherit from IdentitiesRecord" do
+    assert_operator UserWorkspace, :<, IdentitiesRecord
   end
 
   test "should belong to user" do

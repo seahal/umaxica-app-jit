@@ -30,11 +30,9 @@ class AppContactStatusTest < ActiveSupport::TestCase
     # The model says `dependent: :nullify`
     # Foreign key is `status_id`
 
-    assert_raises(ActiveRecord::NotNullViolation) do
-      @status.destroy
-    end
+    @status.destroy
     @contact.reload
 
-    assert_equal "ACTIVE", @contact.status_id
+    assert_nil @contact.status_id
   end
 end

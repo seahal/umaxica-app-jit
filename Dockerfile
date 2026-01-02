@@ -168,20 +168,26 @@ RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
     bash \
     bat \
+    entr \
     fd-find \
     fontconfig \
     fzf \
     htop \
     iproute2 \
     jq \
+    yq \
     lsb-release \
+    ncdu \
     openssl \
     ripgrep \
     silversearcher-ag \
     sudo \
+    tig \
+    tmux \
     tree \
     unzip \
     vim \
+    watch \
     wget \
     zip \
     zsh \
@@ -192,16 +198,16 @@ COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.l
 
 RUN --mount=type=cache,target=/tmp/bun-cache,uid=${DOCKER_UID},gid=${DOCKER_GID} \
     if curl -fsSL --retry 5 --retry-delay 3 --retry-max-time 120 https://bun.sh/install -o /tmp/bun.sh \
-       && bash /tmp/bun.sh "bun-v${BUN_VERSION}"; then \
-        echo "Bun installed successfully"; \
+    && bash /tmp/bun.sh "bun-v${BUN_VERSION}"; then \
+    echo "Bun installed successfully"; \
     else \
-        echo "Bun installation failed, trying direct download..." \
-        && curl -fsSL --retry 5 --retry-delay 3 --retry-max-time 120 \
-           "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64.zip" -o /tmp/bun.zip \
-        && unzip -q /tmp/bun.zip -d /tmp \
-        && mv /tmp/bun-linux-x64/bun /usr/local/bin/bun \
-        && chmod +x /usr/local/bin/bun \
-        && rm -rf /tmp/bun.zip /tmp/bun-linux-x64; \
+    echo "Bun installation failed, trying direct download..." \
+    && curl -fsSL --retry 5 --retry-delay 3 --retry-max-time 120 \
+    "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64.zip" -o /tmp/bun.zip \
+    && unzip -q /tmp/bun.zip -d /tmp \
+    && mv /tmp/bun-linux-x64/bun /usr/local/bin/bun \
+    && chmod +x /usr/local/bin/bun \
+    && rm -rf /tmp/bun.zip /tmp/bun-linux-x64; \
     fi
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \

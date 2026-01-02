@@ -674,6 +674,9 @@ ja:
   test_data:
     contact_topic_description: "トピックの詳細です。"
     inquiry_detail: "問い合わせの詳細です。"
+  scripts:
+    update_contact_fixtures:
+      done: "連絡先ステータスとカテゴリの更新が完了しました。"
   helpers:
     select:
       prompt: 選択してください

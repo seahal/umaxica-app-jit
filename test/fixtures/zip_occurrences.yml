@@ -21,6 +21,18 @@
 #
 
 one:
-  public_id: "zip_occur_pub_id_0001"
-  body: "zip_test"
   status_id: "NEYO"
+  public_id: "one_zip_occ_id_000001"
+  body: "90210"
+  expires_at: <%= 1.year.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+
+one:
+  status_id: "NEYO"
+  public_id: "one_zip_occ_id_000001"
+  body: "90210"
+  expires_at: <%= 1.year.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

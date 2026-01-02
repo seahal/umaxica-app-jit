@@ -16,7 +16,7 @@
 #  index_user_workspaces_on_workspace_id  (workspace_id)
 #
 
-class UserWorkspace < IdentityRecord
+class UserWorkspace < IdentitiesRecord
   belongs_to :user, class_name: "User", inverse_of: :user_workspaces
   belongs_to :workspace, class_name: "Workspace", inverse_of: :user_workspaces
 end

@@ -29,6 +29,8 @@
 class OrgContact < GuestsRecord
   include ::PublicId
 
+  self.implicit_order_column = :created_at
+
   # Associations
   has_many :org_contact_emails, dependent: :destroy, inverse_of: :org_contact
   has_many :org_contact_telephones, dependent: :destroy, inverse_of: :org_contact

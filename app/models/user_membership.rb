@@ -18,7 +18,7 @@
 #  index_user_memberships_on_workspace_id              (workspace_id)
 #
 
-class UserMembership < IdentityRecord
+class UserMembership < IdentitiesRecord
   belongs_to :user, class_name: "User", inverse_of: :user_memberships
   belongs_to :workspace, class_name: "Workspace", inverse_of: :user_memberships
   validates :user_id, uniqueness: { scope: :workspace_id }

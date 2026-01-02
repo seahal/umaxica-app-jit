@@ -32,6 +32,7 @@ require "test_helper"
 class StaffTokenTest < ActiveSupport::TestCase
   def setup
     @staff = staffs(:one)
+    StaffToken.where(staff: @staff).destroy_all
     @token = StaffToken.create!(staff: @staff, staff_token_status_id: "ACTIVE")
   end
 

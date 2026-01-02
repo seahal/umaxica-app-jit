@@ -8,7 +8,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  status_id  :string(255)      default("NEYO"), not null
-#  staff_id   :uuid             not null
+#  staff_id   :uuid
 #
 # Indexes
 #
@@ -22,7 +22,21 @@
 require "test_helper"
 
 class AdminTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "belongs to staff" do
+    staff = staffs(:one)
+    admin = Admin.new(staff: staff)
+    assert_equal staff, admin.staff
+  end
+
+  test "can create admin with staff" do
+    staff = staffs(:one)
+    admin = Admin.create!(staff: staff)
+    assert_not_nil admin.staff_id
+    assert_equal staff.id, admin.staff_id
+  end
+
+  test "staff has many admins" do
+    staff = staffs(:one)
+    assert_includes staff.admins, admins(:admin_one)
+  end
 end

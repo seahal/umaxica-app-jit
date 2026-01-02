@@ -22,7 +22,7 @@
 #  index_user_identity_passkeys_on_webauthn_id        (webauthn_id) UNIQUE
 #
 
-class UserIdentityPasskey < IdentityRecord
+class UserIdentityPasskey < IdentitiesRecord
   MAX_PASSKEYS_PER_USER = 4
 
   belongs_to :user, inverse_of: :user_identity_passkeys

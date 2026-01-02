@@ -7,16 +7,13 @@
 #  updated_at :datetime         not null
 #
 
-# frozen_string_literal: true
-
 neyo:
   id: NEYO
-
 info:
   id: INFO
-
+debug:
+  id: DEBUG
 warn:
   id: WARN
-
 error:
   id: ERROR

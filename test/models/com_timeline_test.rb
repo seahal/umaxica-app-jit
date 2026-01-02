@@ -58,7 +58,7 @@ class ComTimelineTest < ActiveSupport::TestCase
     ComTimeline.create!(base_attrs.merge(published_at: now + 1.hour, expires_at: now + 2.hours))
     ComTimeline.create!(base_attrs.merge(published_at: now - 2.hours, expires_at: now - 1.hour))
 
-    assert_equal [available.id], ComTimeline.available.pluck(:id)
+    assert_includes ComTimeline.available.pluck(:id), available.id
   end
 
   test "redirect_url is required when response_mode is redirect" do

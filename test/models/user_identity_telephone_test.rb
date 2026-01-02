@@ -183,4 +183,16 @@ class UserIdentityTelephoneTest < ActiveSupport::TestCase
     @user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { phone.reload }
   end
+
+  test "enforce_user_telephone_limit validation on create" do
+    # Create maximum allowed telephones
+    UserIdentityTelephone::MAX_TELEPHONES_PER_USER.times do |i|
+      UserIdentityTelephone.create!(@valid_attributes.merge(number: "+155512310#{i}"))
+    end
+
+    # Try to create one more
+    extra_phone = UserIdentityTelephone.new(@valid_attributes.merge(number: "+15559999999"))
+    assert_not extra_phone.valid?
+    assert_includes extra_phone.errors[:base], "exceeds maximum telephones per user (#{UserIdentityTelephone::MAX_TELEPHONES_PER_USER})"
+  end
 end

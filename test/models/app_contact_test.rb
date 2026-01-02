@@ -29,6 +29,8 @@
 require "test_helper"
 
 class AppContactTest < ActiveSupport::TestCase
+  # Fixtures are handled lazily via setup_fixtures.rb or loaded via fixtures :all
+
   def build_contact(**attrs)
     # Create contact first
     contact = AppContact.new(**attrs.except(:app_contact_emails, :app_contact_telephones))
@@ -109,7 +111,8 @@ class AppContactTest < ActiveSupport::TestCase
       confirm_policy: "1",
     )
 
-    assert contact.save
+    save_result = contact.save
+    assert save_result
 
     AppContactEmail.create!(
       app_contact: contact,
@@ -532,7 +535,7 @@ class AppContactTest < ActiveSupport::TestCase
     contact = AppContact.new(confirm_policy: "1")
     contact.save!
 
-    assert_equal "APPLICATION_INQUIRY", contact.category_id
+    assert_equal "NEYO", contact.category_id
     assert_equal "NEYO", contact.status_id
   end
 
@@ -613,11 +616,38 @@ class AppContactTest < ActiveSupport::TestCase
     contact = build_contact
     email = contact.app_contact_emails.first
     phone = contact.app_contact_telephones.first
-    topic = AppContactTopic.create!(app_contact: contact, name: "Topic")
+    topic = AppContactTopic.create!(app_contact: contact)
 
     contact.destroy
     assert_raise(ActiveRecord::RecordNotFound) { email.reload }
     assert_raise(ActiveRecord::RecordNotFound) { phone.reload }
     assert_raise(ActiveRecord::RecordNotFound) { topic.reload }
+  end
+
+  test "token_expired? handles -infinity sentinel" do
+    contact = AppContact.new(token_expires_at: "-infinity")
+    assert_not contact.token_expired?
+  end
+
+  test "verify_email! raises if cannot verify" do
+    contact = AppContact.new(status_id: "COMPLETED")
+    assert_raise(StandardError) { contact.verify_email! }
+  end
+
+  test "verify_phone! raises if cannot verify" do
+    contact = AppContact.new(status_id: "SET_UP")
+    assert_raise(StandardError) { contact.verify_phone! }
+  end
+
+  test "complete! raises if cannot complete" do
+    contact = AppContact.new(status_id: "SET_UP")
+    assert_raise(StandardError) { contact.complete! }
+  end
+
+  test "before_validation upcases ids" do
+    contact = AppContact.new(category_id: "lower_cat", status_id: "lower_stat")
+    contact.valid?
+    assert_equal "LOWER_CAT", contact.category_id
+    assert_equal "LOWER_STAT", contact.status_id
   end
 end

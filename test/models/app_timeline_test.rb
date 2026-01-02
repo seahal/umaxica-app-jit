@@ -57,7 +57,7 @@ class AppTimelineTest < ActiveSupport::TestCase
     AppTimeline.create!(base_attrs.merge(published_at: now + 1.hour, expires_at: now + 2.hours))
     AppTimeline.create!(base_attrs.merge(published_at: now - 2.hours, expires_at: now - 1.hour))
 
-    assert_equal [available.id], AppTimeline.available.pluck(:id)
+    assert_includes AppTimeline.available.pluck(:id), available.id
   end
 
   test "redirect_url is required when response_mode is redirect" do

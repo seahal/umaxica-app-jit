@@ -37,6 +37,7 @@ module Docs
           published_at: Time.current,
           expires_at: 100.years.from_now,
           status_id: "ACTIVE",
+          revision_key: SecureRandom.hex(16),
         )
 
         get docs_com_post_url(id: redirect_doc.permalink)
@@ -50,6 +51,7 @@ module Docs
           published_at: Time.current,
           expires_at: 100.years.from_now,
           status_id: "ACTIVE",
+          revision_key: SecureRandom.hex(16),
         )
 
         text_doc.com_document_versions.create!(
@@ -75,6 +77,7 @@ module Docs
           published_at: 2.days.ago,
           expires_at: 1.day.ago,
           status_id: "ACTIVE",
+          revision_key: SecureRandom.hex(16),
         )
 
         get docs_com_post_url(id: expired_doc.permalink)
@@ -88,6 +91,7 @@ module Docs
           published_at: 1.day.from_now,
           expires_at: 100.years.from_now,
           status_id: "ACTIVE",
+          revision_key: SecureRandom.hex(16),
         )
 
         get docs_com_post_url(id: future_doc.permalink)
@@ -120,6 +124,7 @@ module Docs
             published_at: Time.current,
             expires_at: 100.years.from_now,
             status_id: "ACTIVE",
+            revision_key: SecureRandom.hex(16),
           )
 
           doc.com_document_versions.create!(

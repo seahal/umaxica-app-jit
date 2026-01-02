@@ -8,7 +8,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  status_id  :string(255)      default("NEYO"), not null
-#  staff_id   :uuid             not null
+#  staff_id   :uuid
 #
 # Indexes
 #
@@ -18,12 +18,9 @@
 #
 
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-# Note: admins table does not exist yet, so this fixture is empty
 
-# one:
-#   public_id: MyString
-#   moniker: MyString
-
-# two:
-#   public_id: MyString
-#   moniker: MyString
+admin_one:
+  staff_id: "11111111-1111-1111-1111-111111111111"
+  public_id: ADM001
+  moniker: Admin One
+  status_id: ACTIVE

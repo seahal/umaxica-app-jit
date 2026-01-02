@@ -25,6 +25,9 @@ en:
   test_data:
     contact_topic_description: "Details about the topic."
     inquiry_detail: "Detail of inquiry."
+  scripts:
+    update_contact_fixtures:
+      done: "Done updating contact statuses/categories."
   controller:
     help:
       com:

@@ -24,4 +24,18 @@
 #  index_staff_tokens_on_staff_token_status_id  (staff_token_status_id)
 #
 
-# Fixture file cleared - data migrated to seed migrations
+one:
+  staff: one
+  staff_token_status_id: "ACTIVE"
+  public_id: "one_staff_token_00001"
+  refresh_expires_at: <%= 1.year.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+two:
+  staff: placeholder
+  staff_token_status_id: "ACTIVE"
+  public_id: "two_staff_token_00001"
+  refresh_expires_at: <%= 1.year.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

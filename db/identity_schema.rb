@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_30_170004) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -35,7 +35,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_170004) do
     t.datetime "created_at", null: false
     t.string "moniker"
     t.string "public_id"
-    t.uuid "staff_id", null: false
+    t.uuid "staff_id"
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_admins_on_public_id", unique: true
@@ -67,7 +67,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_170004) do
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_affiliation", unique: true, where: "((role)::text = 'affiliation'::text)"
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_owner", unique: true, where: "((role)::text = 'owner'::text)"
     t.index ["user_id"], name: "index_avatar_assignments_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'affiliation'::character varying, 'administrator'::character varying, 'editor'::character varying, 'reviewer'::character varying, 'viewer'::character varying]::text[])", name: "check_avatar_assignment_role"
+    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying::text, 'affiliation'::character varying::text, 'administrator'::character varying::text, 'editor'::character varying::text, 'reviewer'::character varying::text, 'viewer'::character varying::text])", name: "check_avatar_assignment_role"
   end
 
   create_table "avatar_blocks", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -198,6 +198,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_170004) do
     t.string "active_handle_id", null: false
     t.string "avatar_status_id"
     t.string "capability_id", null: false
+    t.uuid "client_id"
     t.datetime "created_at", null: false
     t.jsonb "image_data", default: {}, null: false
     t.integer "lock_version", default: 0, null: false
@@ -208,6 +209,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_170004) do
     t.datetime "updated_at", null: false
     t.index ["active_handle_id"], name: "index_avatars_on_active_handle_id"
     t.index ["capability_id"], name: "index_avatars_on_capability_id"
+    t.index ["client_id"], name: "index_avatars_on_client_id"
     t.index ["owner_organization_id"], name: "index_avatars_on_owner_organization_id"
     t.index ["public_id"], name: "index_avatars_on_public_id", unique: true
     t.index ["representing_organization_id"], name: "index_avatars_on_representing_organization_id"
@@ -224,8 +226,40 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_170004) do
     t.string "public_id"
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
+    t.uuid "user_id"
     t.index ["public_id"], name: "index_clients_on_public_id", unique: true
     t.index ["status_id"], name: "index_clients_on_status_id"
+    t.index ["user_id"], name: "index_clients_on_user_id"
+  end
+
+  create_table "department_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "departments", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "department_status_id", limit: 255, null: false
+    t.uuid "parent_id"
+    t.datetime "updated_at", null: false
+    t.index ["department_status_id"], name: "index_departments_on_department_status_id"
+    t.index ["parent_id", "department_status_id"], name: "index_organizations_unique", unique: true
+    t.index ["parent_id"], name: "index_departments_on_parent_id"
+  end
+
+  create_table "division_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "divisions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "division_status_id", limit: 255, null: false
+    t.uuid "parent_id"
+    t.datetime "updated_at", null: false
+    t.index ["division_status_id"], name: "index_divisions_on_division_status_id"
+    t.index ["parent_id", "division_status_id"], name: "index_divisions_unique", unique: true
+    t.index ["parent_id"], name: "index_divisions_on_parent_id"
   end
 
   create_table "google_auths", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -309,6 +343,25 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_170004) do
   create_table "post_statuses", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "post_versions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "edited_by_id"
+    t.string "edited_by_type"
+    t.datetime "expires_at", null: false
+    t.string "permalink", limit: 200, null: false
+    t.string "post_id", null: false
+    t.string "public_id", default: "", null: false
+    t.datetime "published_at", null: false
+    t.string "redirect_url"
+    t.string "response_mode", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["post_id", "created_at"], name: "index_post_versions_on_post_id_and_created_at", order: { created_at: :desc }
+    t.index ["public_id"], name: "index_post_versions_on_public_id", unique: true
   end
 
   create_table "posts", id: :string, force: :cascade do |t|
@@ -772,7 +825,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_170004) do
   end
 
   add_foreign_key "admins", "admin_identity_statuses", column: "status_id"
-  add_foreign_key "admins", "staffs", validate: false
+  add_foreign_key "admins", "staffs"
   add_foreign_key "apple_auths", "users"
   add_foreign_key "avatar_assignments", "avatars", on_delete: :cascade
   add_foreign_key "avatar_assignments", "users", on_delete: :cascade
@@ -791,8 +844,13 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_170004) do
   add_foreign_key "avatar_role_permissions", "avatar_permissions"
   add_foreign_key "avatar_role_permissions", "avatar_roles"
   add_foreign_key "avatars", "avatar_capabilities", column: "capability_id"
+  add_foreign_key "avatars", "clients", validate: false
   add_foreign_key "avatars", "handles", column: "active_handle_id"
   add_foreign_key "clients", "client_identity_statuses", column: "status_id"
+  add_foreign_key "clients", "users", validate: false
+  add_foreign_key "departments", "department_statuses"
+  add_foreign_key "departments", "departments", column: "parent_id"
+  add_foreign_key "divisions", "division_statuses"
   add_foreign_key "google_auths", "users"
   add_foreign_key "handle_assignments", "avatars"
   add_foreign_key "handle_assignments", "handle_assignment_statuses"

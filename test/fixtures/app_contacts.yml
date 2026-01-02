@@ -24,3 +24,9 @@
 #  index_app_contacts_on_token_digest      (token_digest)
 #  index_app_contacts_on_token_expires_at  (token_expires_at)
 #
+one:
+  status_id: "NEYO"
+  public_id: "one_app_contact_00001"
+  category_id: "NEYO"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

@@ -68,6 +68,16 @@ class UserIdentityAudit < UniversalRecord
   validates :event_id, length: { maximum: 255 }
   validates :level_id, length: { maximum: 255 }
 
+  # Validate that event_id exists in user_identity_audit_events table
+  validate :event_id_must_exist
+
+  def event_id_must_exist
+    return if event_id.blank?
+    return if UserIdentityAuditEvent.exists?(id: event_id)
+
+    errors.add(:event_id, "must reference a valid user identity audit event")
+  end
+
   before_validation do
     if actor_id.blank?
       self.actor_id = "00000000-0000-0000-0000-000000000000"

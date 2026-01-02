@@ -9,35 +9,16 @@ module Help
         setup do
           @host = ENV["HELP_CORPORATE_URL"] || "help.com.localhost"
           # Ensure required statuses exist (parent first)
-          ComContactStatus.find_or_create_by!(id: "NULL_COM_STATUS") do |status|
-            status.description = "root status"
-            status.parent_id = nil
-            status.position = 0
-            status.active = true
-          end
-          ComContactStatus.find_or_create_by!(id: "SET_UP") do |status|
-            status.description = "first step"
-            status.parent_id = "NULL_COM_STATUS"
-            status.position = 0
-            status.active = true
-          end
-          ComContactStatus.find_or_create_by!(id: "CHECKED_EMAIL_ADDRESS") do |status|
-            status.description = "second step completed"
-            status.parent_id = "SET_UP"
-            status.position = 0
-            status.active = true
-          end
-          ComContactStatus.find_or_create_by!(id: "CHECKED_TELEPHONE_NUMBER") do |status|
-            status.description = "telephone verified"
-            status.parent_id = "CHECKED_EMAIL_ADDRESS"
-            status.position = 0
-            status.active = true
-          end
+          ComContactCategory.find_or_create_by!(id: "SECURITY_ISSUE")
+          ComContactStatus.find_or_create_by!(id: "NULL_COM_STATUS")
+          ComContactStatus.find_or_create_by!(id: "SET_UP")
+          ComContactStatus.find_or_create_by!(id: "CHECKED_EMAIL_ADDRESS")
+          ComContactStatus.find_or_create_by!(id: "CHECKED_TELEPHONE_NUMBER")
           # Create a fresh contact with correct status instead of using fixture
           # Create a fresh contact with correct status instead of using fixture
           @contact = ComContact.create!(
             public_id: "ctrl_test_contact",
-            category_id: "OTHERS",
+            category_id: "SECURITY_ISSUE",
             status_id: "CHECKED_EMAIL_ADDRESS",
             confirm_policy: "1",
             created_at: Time.current,

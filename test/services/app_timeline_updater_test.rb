@@ -21,17 +21,15 @@ require "test_helper"
 class AppTimelineUpdaterTest < ActiveSupport::TestCase
   def base_attrs
     {
-      permalink: "App_1",
       response_mode: "html",
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      revision_key: "rev_key",
     }
   end
 
   test "call always creates a new version" do
-    timeline = AppTimeline.create!(base_attrs.merge(permalink: "updatable"))
+    timeline = AppTimeline.create!(base_attrs)
 
     attrs = {
       permalink: "updatable",

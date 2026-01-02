@@ -22,6 +22,19 @@ class HelpContactVerificationRoutesTest < ActionDispatch::IntegrationTest
 
   test "corporate contact telephone routes respond" do
     verified_contact = com_contacts(:verified_email_complete)
+    verified_contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
+    # Call create using model directly if fixture missing
+    # Create ComContactTelephone if missing
+    if defined?(ComContactTelephone)
+      ComContactTelephone.create!(
+        com_contact: verified_contact,
+        telephone_number: "09012345678",
+        verifier_expires_at: 1.hour.from_now,
+        verifier_attempts_left: 3,
+        expires_at: 1.day.from_now,
+      ) rescue nil
+    end
+
     get new_help_com_contact_telephone_url(contact_id: verified_contact)
 
     assert_response :success

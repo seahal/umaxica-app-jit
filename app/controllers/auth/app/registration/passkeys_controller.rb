@@ -48,30 +48,38 @@ module Auth
           otp_count_number = [Time.now.to_i, SecureRandom.random_number(1 << 64)].map(&:to_s).join.to_i
           hotp = ROTP::HOTP.new(otp_private_key)
           num = hotp.at(otp_count_number)
-          expires_at = 12.minutes.from_now.to_i
+          expires_at = 12.minutes.from_now
 
-          if res["success"] && @user_telephone.valid?
-            # Save telephone and store OTP in database
-            @user_telephone.save!
-            @user_telephone.store_otp(otp_private_key, otp_count_number, expires_at)
+          if res["success"]
+            @user_telephone.otp_private_key = otp_private_key
+            @user_telephone.otp_counter = otp_count_number
+            @user_telephone.otp_expires_at = expires_at
 
-            # Store only the reference ID and expiry in session
-            session[:user_telephone_registration] = {
-              id: @user_telephone.id,
-              confirm_policy: boolean_value(@user_telephone.confirm_policy),
-              confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
-              expires_at: expires_at,
-            }
+            if @user_telephone.valid?
+              # Save telephone and store OTP in database
+              @user_telephone.save!
+              # @user_telephone.store_otp(otp_private_key, otp_count_number, expires_at) # Already set above
 
-            # Send SMS with OTP
-            AwsSmsService.send_message(
-              to: @user_telephone.number,
-              message: "PassCode => #{num}",
-              subject: "PassCode => #{num}",
-            )
+              # Store only the reference ID and expiry in session
+              session[:user_telephone_registration] = {
+                id: @user_telephone.id,
+                confirm_policy: boolean_value(@user_telephone.confirm_policy),
+                confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
+                expires_at: expires_at.to_i,
+              }
 
-            redirect_to edit_auth_app_registration_passkey_path(@user_telephone.id),
-                        notice: t("auth.app.registration.telephone.create.verification_code_sent")
+              # Send SMS with OTP
+              AwsSmsService.send_message(
+                to: @user_telephone.number,
+                message: "PassCode => #{num}",
+                subject: "PassCode => #{num}",
+              )
+
+              redirect_to edit_auth_app_registration_passkey_path(@user_telephone.id),
+                          notice: t("auth.app.registration.telephone.create.verification_code_sent")
+            else
+              render :new, status: :unprocessable_content
+            end
           else
             render :new, status: :unprocessable_content
           end

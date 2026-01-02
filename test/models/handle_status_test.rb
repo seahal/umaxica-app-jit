@@ -13,7 +13,7 @@ require "test_helper"
 
 class HandleStatusTest < ActiveSupport::TestCase
   test "validations" do
-    status = HandleStatus.new
+    status = HandleStatus.new(id: "TEST_STATUS")
     assert_predicate status, :valid?
   end
 end

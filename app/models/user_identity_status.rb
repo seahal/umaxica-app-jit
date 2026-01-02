@@ -20,4 +20,6 @@ class UserIdentityStatus < IdentitiesRecord
   ALIVE = "ALIVE"
   PRE_WITHDRAWAL_CONDITION = "PRE_WITHDRAWAL_CONDITION"
   WITHDRAWAL_COMPLETED = "WITHDRAWAL_COMPLETED"
+
+  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

@@ -34,10 +34,7 @@ class PostTest < ActiveSupport::TestCase
         a.active_handle = @handle
       end
     @status =
-      PostStatus.find_or_create_by!(id: "DRAFT") do |s|
-        s.key = "draft"
-        s.name = "Draft"
-      end
+      PostStatus.find_or_create_by!(id: "DRAFT")
     @valid_attributes = {
       author_avatar: @avatar,
       post_status: @status,
@@ -105,6 +102,6 @@ class PostTest < ActiveSupport::TestCase
     )
 
     assert_not post.destroy
-    assert_includes post.errors[:base], "Cannot delete record because dependent post_reviews exist"
+    assert_includes post.errors[:base], "post reviewsが存在しているので削除できません"
   end
 end

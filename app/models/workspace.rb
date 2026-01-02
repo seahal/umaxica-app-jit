@@ -17,7 +17,7 @@
 #  index_workspaces_on_parent_organization  (parent_organization)
 #
 
-class Workspace < IdentityRecord
+class Workspace < IdentitiesRecord
   self.table_name = "workspaces"
 
   has_many :user_workspaces,

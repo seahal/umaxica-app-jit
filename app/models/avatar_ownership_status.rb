@@ -13,4 +13,6 @@ class AvatarOwnershipStatus < IdentitiesRecord
   include StringPrimaryKey
 
   has_many :avatar_ownership_periods, dependent: :restrict_with_error
+
+  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

@@ -79,13 +79,14 @@ class UserIdentityAuditTest < ActiveSupport::TestCase
   test "validates foreign key constraint on event_id" do
     audit = UserIdentityAudit.new(
       user: @user,
-      event_id: "NON_EXISTENT_EVENT",
+      event_id: "INVALID_EVENT_ID",
       timestamp: Time.current,
     )
 
-    assert_raises ActiveRecord::InvalidForeignKey do
-      audit.save!(validate: false)
-    end
+    # Now validation should catch it before reaching the database
+    assert_not audit.valid?
+    assert_not_empty audit.errors[:event_id]
+    assert_includes audit.errors[:event_id], "must reference a valid user identity audit event"
   end
 
   test "belongs to polymorphic actor" do

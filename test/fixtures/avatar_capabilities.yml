@@ -14,4 +14,10 @@
 #  index_avatar_capabilities_on_key  (key) UNIQUE
 #
 
-# Fixture file cleared - data migrated to seed migrations
+
+normal:
+  id: NORMAL
+  key: "normal"
+  name: "Normal"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

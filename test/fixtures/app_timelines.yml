@@ -20,8 +20,12 @@
 #  index_app_timelines_on_status_id                    (status_id)
 #
 
-# Fixture file cleared - data migrated to seed migrations
-
 one:
-  public_id: "app_timelines_0000001"
   status_id: "NEYO"
+  public_id: "one_app_timeline_0001"
+  response_mode: "html"
+  published_at: <%= Time.current %>
+  expires_at: <%= 1.day.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+

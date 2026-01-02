@@ -20,6 +20,8 @@ class OrgDocumentCategoryMaster < DocumentRecord
 
   self.primary_key = "id"
 
+  attribute :parent_id, default: "NEYO"
+
   belongs_to :parent,
              class_name: "OrgDocumentCategoryMaster",
              inverse_of: :children,
@@ -31,14 +33,16 @@ class OrgDocumentCategoryMaster < DocumentRecord
            inverse_of: :parent,
            dependent: :restrict_with_error
 
-  has_many :org_document_categories, dependent: :restrict_with_error
+  has_many :org_document_categories,
+           dependent: :restrict_with_error,
+           inverse_of: :org_document_category_master
   has_many :org_documents, through: :org_document_categories
 
   validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
   validates :parent_id, presence: true, length: { maximum: 255 }
 
   def name
-    I18n.t("org_document_categories.%{id}", id: id)
+    I18n.t("org_document_categorys.%{id}", id: id)
   end
 
   def root?

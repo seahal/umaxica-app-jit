@@ -3,5 +3,5 @@
 class IdentityRecord < ApplicationRecord
   self.abstract_class = true
 
-  connects_to database: { writing: :identity, reading: :identity_replica }
+  connects_to database: { writing: :identity }
 end

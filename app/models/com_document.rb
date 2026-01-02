@@ -26,7 +26,10 @@
 #
 
 class ComDocument < DocumentRecord
+  include ::PublicId
   include Document
+
+  self.implicit_order_column = :created_at
 
   belongs_to :com_document_status,
              class_name: "ComDocumentStatus",

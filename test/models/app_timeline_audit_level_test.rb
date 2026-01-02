@@ -23,7 +23,7 @@ class AppTimelineAuditLevelTest < ActiveSupport::TestCase
 
     AppTimelineAudit.create!(
       app_timeline: timeline,
-      app_timeline_audit_event: app_timeline_audit_events(:CREATED),
+      app_timeline_audit_event: app_timeline_audit_events(:created),
       app_timeline_audit_level: level,
     )
 

@@ -58,5 +58,15 @@ class StaffIdentityAudit < UniversalRecord
   validates :event_id, length: { maximum: 255 }
   validates :level_id, length: { maximum: 255 }
 
+  # Validate that event_id exists in staff_identity_audit_events table
+  validate :event_id_must_exist
+
+  def event_id_must_exist
+    return if event_id.blank?
+    return if StaffIdentityAuditEvent.exists?(id: event_id)
+
+    errors.add(:event_id, "must reference a valid staff identity audit event")
+  end
+
   encrypts :previous_value
 end

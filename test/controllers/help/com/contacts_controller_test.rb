@@ -6,7 +6,7 @@ module Help
   module Com
     class ContactsControllerTest < ActionDispatch::IntegrationTest
       setup do
-        @contact_category = com_contact_categories(:SECURITY_ISSUE)
+        @contact_category = com_contact_categories(:security_issue)
         CloudflareTurnstile.test_mode = true
         CloudflareTurnstile.test_validation_response = { "success" => true }
         ActionMailer::Base.deliveries.clear

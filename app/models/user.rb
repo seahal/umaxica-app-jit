@@ -80,8 +80,14 @@ class User < IdentitiesRecord
   has_many :user_notifications,
            dependent: :destroy,
            inverse_of: :user
-  has_many :clients,
+  has_many :user_clients,
            dependent: :destroy,
+           inverse_of: :user
+  has_many :clients,
+           through: :user_clients
+  has_many :owned_clients,
+           class_name: "Client",
+           dependent: :nullify,
            inverse_of: :user
 
   # Avatar assignments

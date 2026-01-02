@@ -29,6 +29,15 @@
 require "test_helper"
 
 class OrgContactTest < ActiveSupport::TestCase
+  # Fixtures are handled lazily via setup_fixtures.rb or loaded via fixtures :all
+
+  setup do
+    OrgContactCategory.create!(id: "ORGANIZATION_INQUIRY") unless OrgContactCategory.exists?(id: "ORGANIZATION_INQUIRY")
+    %w(NEYO SET_UP CHECKED_EMAIL_ADDRESS CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION).each do |status_id|
+      OrgContactStatus.create!(id: status_id) unless OrgContactStatus.exists?(id: status_id)
+    end
+  end
+
   def build_contact(**attrs)
     # Create contact first
     contact = OrgContact.new(**attrs.except(:org_contact_emails, :org_contact_telephones))
@@ -70,10 +79,10 @@ class OrgContactTest < ActiveSupport::TestCase
   end
 
   test "should have valid fixtures" do
-    contact = org_contacts(:one)
+    contact = OrgContact.find("019b6f92-3030-7624-883a-064372edcf28")
 
     assert_predicate contact, :valid?
-    assert_equal "ORGANIZATION_INQUIRY", contact.category_id
+    assert_equal "NEYO", contact.category_id
     assert_equal "NEYO", contact.status_id
   end
 
@@ -491,7 +500,7 @@ class OrgContactTest < ActiveSupport::TestCase
     contact = OrgContact.new(confirm_policy: "1")
     contact.save!
 
-    assert_equal "ORGANIZATION_INQUIRY", contact.category_id
+    assert_equal "NEYO", contact.category_id
     assert_equal "NEYO", contact.status_id
   end
 

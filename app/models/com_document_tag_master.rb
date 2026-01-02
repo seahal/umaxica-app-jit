@@ -15,9 +15,12 @@
 # frozen_string_literal: true
 
 class ComDocumentTagMaster < DocumentRecord
+  include UppercaseId
   include ::CatTagMaster
 
   self.primary_key = "id"
+
+  attribute :parent_id, default: "NEYO"
 
   belongs_to :parent,
              class_name: "ComDocumentTagMaster",
@@ -41,6 +44,6 @@ class ComDocumentTagMaster < DocumentRecord
   end
 
   def root?
-    parent_id == "none"
+    parent_id == "NEYO"
   end
 end

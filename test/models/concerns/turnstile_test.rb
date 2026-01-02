@@ -74,4 +74,21 @@ class TurnstileTest < ActiveSupport::TestCase
   ensure
     ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"] = old_env
   end
+
+  test "verify_turnstile returns error result on exception" do
+    Net::HTTP.stub(:post_form, ->(_uri, _params) { raise StandardError, "Network error" }) do
+      # Set a dummy secret so it doesn't fail on missing secret
+      ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"] = "dummy"
+      result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
+      assert_not result["success"]
+      assert_equal "Network error", result["error"]
+    end
+  ensure
+    ENV.delete("CLOUDFLARE_TURNSTILE_SECRET_KEY")
+  end
+
+  test "turnstile_error_message uses default when none provided" do
+    model = DummyTurnstile.new
+    assert_equal I18n.t("turnstile_error"), model.turnstile_error_message
+  end
 end

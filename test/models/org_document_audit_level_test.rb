@@ -26,7 +26,7 @@ class OrgDocumentAuditLevelTest < ActiveSupport::TestCase
 
     OrgDocumentAudit.create!(
       org_document: doc,
-      org_document_audit_event: org_document_audit_events(:CREATED),
+      org_document_audit_event: org_document_audit_events(:created),
       org_document_audit_level: level,
     )
 

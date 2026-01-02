@@ -128,10 +128,22 @@ class UserTest < ActiveSupport::TestCase
       user: @user,
       refresh_expires_at: 1.day.from_now,
     )
-    assert_difference("UserToken.count", -1) do
+    assert_difference("UserToken.count", -@user.user_tokens.count) do
       @user.destroy
     end
     assert_raise(ActiveRecord::RecordNotFound) { token.reload }
+  end
+
+  test "owned_avatars association" do
+    capability = AvatarCapability.create!(key: "user-owned-#{SecureRandom.hex(4)}", name: "User")
+    handle = Handle.create!(
+      handle: "owned_handle-#{SecureRandom.hex(4)}",
+      cooldown_until: Time.current,
+    )
+    avatar = Avatar.create!(capability: capability, active_handle: handle, moniker: "Owned")
+    avatar.avatar_assignments.create!(user: @user, role: "owner")
+
+    assert_includes @user.owned_avatars, avatar
   end
 
   private

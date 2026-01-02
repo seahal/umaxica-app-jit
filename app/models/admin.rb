@@ -8,7 +8,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  status_id  :string(255)      default("NEYO"), not null
-#  staff_id   :uuid             not null
+#  staff_id   :uuid
 #
 # Indexes
 #
@@ -22,8 +22,11 @@
 class Admin < IdentitiesRecord
   include ::PublicId
 
+  self.implicit_order_column = :created_at
+
   attribute :status_id, default: AdminIdentityStatus::NEYO
 
+  validates :public_id, uniqueness: true, allow_nil: true
   validates :status_id, length: { maximum: 255 }
 
   belongs_to :admin_identity_status,

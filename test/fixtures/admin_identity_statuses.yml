@@ -7,14 +7,23 @@
 #  updated_at :datetime         not null
 #
 
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+neyo:
+  id: NEYO
+active:
+  id: ACTIVE
+used:
+  id: USED
+revoked:
+  id: REVOKED
+unverified:
+  id: UNVERIFIED
+verified:
+  id: VERIFIED
+unverified_with_sign_up:
+  id: UNVERIFIED_WITH_SIGN_UP
+verified_with_sign_up:
+  id: VERIFIED_WITH_SIGN_UP
+pre_withdrawal_condition:
+  id: PRE_WITHDRAWAL_CONDITION
+withdrawn:
+  id: WITHDRAWN

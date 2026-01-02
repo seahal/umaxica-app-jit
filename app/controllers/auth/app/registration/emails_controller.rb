@@ -49,24 +49,27 @@ module Auth
             ).destroy_all
           end
 
-          # Validate the new email
-          unless @user_email.valid?
-            render :new, status: :unprocessable_content and return
-          end
-
           # Generate OTP
           otp_private_key = ROTP::Base32.random_base32
           otp_count_number = [Time.now.to_i, SecureRandom.random_number(1 << 64)].map(&:to_s).join.to_i
           hotp = ROTP::HOTP.new(otp_private_key)
           num = hotp.at(otp_count_number)
-          expires_at = 12.minutes.from_now.to_i
+          expires_at = 12.minutes.from_now
+
+          @user_email.otp_private_key = otp_private_key
+          @user_email.otp_counter = otp_count_number
+          @user_email.otp_expires_at = expires_at
+
+          # Validate the new email
+          unless @user_email.valid?
+            render :new, status: :unprocessable_content and return
+          end
 
           # Save email and store OTP in database
           @user_email.save!
-          @user_email.store_otp(otp_private_key, otp_count_number, expires_at)
+          # @user_email.store_otp(otp_private_key, otp_count_number, expires_at) # Already set above
 
           # Send email
-          # FIXME: use kafka!
           Email::App::RegistrationMailer.with(
             { hotp_token: num,
               email_address: @user_email.address, },

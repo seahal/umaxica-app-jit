@@ -8,7 +8,13 @@ class TimelineVersionWriterTest < ActiveSupport::TestCase
 
     version = nil
     assert_difference "ComTimelineVersion.count", 1 do
-      version = TimelineVersionWriter.write!(timeline, attrs: { title: "Title", description: "Desc", body: "Body" })
+      version = TimelineVersionWriter.write!(
+        timeline,
+        attrs: { title: "Title",
+                 description: "Desc",
+                 body: "Body",
+                 permalink: "test-permalink", },
+      )
     end
 
     assert_equal timeline, version.com_timeline
@@ -22,7 +28,13 @@ class TimelineVersionWriterTest < ActiveSupport::TestCase
 
     version = nil
     assert_difference "AppTimelineVersion.count", 1 do
-      version = TimelineVersionWriter.write!(timeline, attrs: { title: "Title", description: "Desc", body: "Body" })
+      version = TimelineVersionWriter.write!(
+        timeline,
+        attrs: { title: "Title",
+                 description: "Desc",
+                 body: "Body",
+                 permalink: "test-permalink", },
+      )
     end
 
     assert_equal timeline, version.app_timeline
@@ -34,7 +46,13 @@ class TimelineVersionWriterTest < ActiveSupport::TestCase
 
     version = nil
     assert_difference "OrgTimelineVersion.count", 1 do
-      version = TimelineVersionWriter.write!(timeline, attrs: { title: "Title", description: "Desc", body: "Body" })
+      version = TimelineVersionWriter.write!(
+        timeline,
+        attrs: { title: "Title",
+                 description: "Desc",
+                 body: "Body",
+                 permalink: "test-permalink", },
+      )
     end
 
     assert_equal timeline, version.org_timeline

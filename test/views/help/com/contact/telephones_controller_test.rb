@@ -2,9 +2,12 @@
 
 require "test_helper"
 
-class Help::Com::Contact::TelephonesControllerTest < ActionDispatch::IntegrationTest
+# NOTE: Keep this view test class name distinct so it doesn't override the controller test.
+class Help::Com::Contact::TelephonesViewTest < ActionDispatch::IntegrationTest
   setup do
     # Load fixture directly - it returns ActiveRecord object in Rails 8
+    ComContactCategory.find_or_create_by!(id: "OTHERS")
+    ComContactStatus.find_or_create_by!(id: "CHECKED_EMAIL_ADDRESS")
     # Create a fresh contact with correct status instead of using fixture
     @contact = ComContact.create!(
       public_id: "view_test_contact",

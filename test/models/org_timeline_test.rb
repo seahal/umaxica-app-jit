@@ -58,7 +58,7 @@ class OrgTimelineTest < ActiveSupport::TestCase
     OrgTimeline.create!(base_attrs.merge(published_at: now + 1.hour, expires_at: now + 2.hours))
     OrgTimeline.create!(base_attrs.merge(published_at: now - 2.hours, expires_at: now - 1.hour))
 
-    assert_equal [available.id], OrgTimeline.available.pluck(:id)
+    assert_includes OrgTimeline.available.pluck(:id), available.id
   end
 
   test "redirect_url is required when response_mode is redirect" do

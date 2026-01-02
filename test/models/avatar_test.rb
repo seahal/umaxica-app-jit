@@ -5,22 +5,24 @@
 # Table name: avatars
 #
 #  id                           :string           not null, primary key
-#  public_id                    :string           default(""), not null
-#  moniker                      :string           not null
-#  image_data                   :jsonb            default("{}"), not null
-#  owner_organization_id        :string
-#  representing_organization_id :string
 #  active_handle_id             :string           not null
-#  capability_id                :string           not null
 #  avatar_status_id             :string
+#  capability_id                :string           not null
 #  created_at                   :datetime         not null
-#  updated_at                   :datetime         not null
+#  image_data                   :jsonb            default("{}"), not null
 #  lock_version                 :integer          default(0), not null
+#  moniker                      :string           not null
+#  owner_organization_id        :string
+#  public_id                    :string           default(""), not null
+#  representing_organization_id :string
+#  updated_at                   :datetime         not null
+#  client_id                    :uuid
 #
 # Indexes
 #
 #  index_avatars_on_active_handle_id              (active_handle_id)
 #  index_avatars_on_capability_id                 (capability_id)
+#  index_avatars_on_client_id                     (client_id)
 #  index_avatars_on_owner_organization_id         (owner_organization_id)
 #  index_avatars_on_public_id                     (public_id) UNIQUE
 #  index_avatars_on_representing_organization_id  (representing_organization_id)
@@ -104,7 +106,7 @@ class AvatarTest < ActiveSupport::TestCase
       capability: @capability,
       active_handle: @handle,
     )
-    status = PostStatus.find_or_create_by!(id: "DRAFT") { |s| s.key = "draft"; s.name = "Draft" }
+    status = PostStatus.find_or_create_by!(id: "DRAFT")
     Post.create!(
       author_avatar: avatar,
       post_status: status,
@@ -113,6 +115,102 @@ class AvatarTest < ActiveSupport::TestCase
     )
 
     assert_not avatar.destroy
-    assert_includes avatar.errors[:base], "Cannot delete record because dependent posts exist"
+    assert_includes avatar.errors[:base], "postsが存在しているので削除できません"
+  end
+
+  test "create_with_owner creates avatar and assigns owner" do
+    user = users(:one)
+    avatar = nil
+    assert_difference ["Avatar.count", "AvatarAssignment.count"], 1 do
+      avatar = Avatar.create_with_owner(
+        {
+          capability: @capability,
+          active_handle: @handle,
+          moniker: "Owned Avatar",
+        }, user,
+      )
+    end
+
+    assert_equal user, avatar.owner
+    assert_includes avatar.avatar_assignments.pluck(:role), "owner"
+  end
+
+  test "role associations" do
+    user = users(:one)
+    avatar = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Role Test")
+
+    # Affiliation
+    avatar.avatar_assignments.create!(user: user, role: "affiliation")
+    assert_equal user, avatar.affiliation_user
+
+    # Administrators
+    avatar.avatar_assignments.create!(user: user, role: "administrator")
+    assert_includes avatar.administrators, user
+
+    # Editors
+    avatar.avatar_assignments.create!(user: user, role: "editor")
+    assert_includes avatar.editors, user
+
+    # Reviewers
+    avatar.avatar_assignments.create!(user: user, role: "reviewer")
+    assert_includes avatar.reviewers, user
+
+    # Viewers
+    avatar.avatar_assignments.create!(user: user, role: "viewer")
+    assert_includes avatar.viewers, user
+  end
+
+  test "social associations: follows" do
+    follower = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Follower")
+    followed = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Followed")
+
+    follower.outgoing_follows.create!(followed_avatar: followed)
+
+    assert_includes follower.followings, followed
+    assert_includes followed.followers, follower
+  end
+
+  test "social associations: blocks" do
+    blocker = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Blocker")
+    blocked = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Blocked")
+
+    blocker.outgoing_blocks.create!(blocked_avatar: blocked)
+
+    assert_includes blocker.blocked_avatars, blocked
+  end
+
+  test "social associations: mutes" do
+    muter = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Muter")
+    muted = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Muted")
+
+    muter.outgoing_mutes.create!(muted_avatar: muted)
+
+    assert_includes muter.muted_avatars, muted
+  end
+
+  test "dependent associations" do
+    avatar = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Dependent Test")
+    user = users(:one)
+
+    # Assignments
+    avatar.avatar_assignments.create!(user: user, role: "viewer")
+    # Follows
+    other = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Other")
+    avatar.outgoing_follows.create!(followed_avatar: other)
+    avatar.incoming_follows.create!(follower_avatar: other)
+    # Blocks
+    avatar.outgoing_blocks.create!(blocked_avatar: other)
+    # Mutes
+    avatar.outgoing_mutes.create!(muted_avatar: other)
+
+    assert_difference "AvatarAssignment.count", -1 do
+      assert_difference "AvatarFollow.count", -2 do
+        assert_difference "AvatarBlock.count", -1 do
+          assert_difference "AvatarMute.count", -1 do
+            avatar.destroy
+          end
+        end
+      end
+    end
   end
 end

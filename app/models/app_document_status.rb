@@ -16,4 +16,6 @@ class AppDocumentStatus < DocumentRecord
            dependent: :restrict_with_error
 
   validates :description, length: { maximum: 255 }
+
+  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

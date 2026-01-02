@@ -1,0 +1,10 @@
+neyo:
+  id: NEYO
+set_up:
+  id: SET_UP
+checked_email:
+  id: CHECKED_EMAIL_ADDRESS
+checked_phone:
+  id: CHECKED_TELEPHONE_NUMBER
+completed:
+  id: COMPLETED_CONTACT_ACTION

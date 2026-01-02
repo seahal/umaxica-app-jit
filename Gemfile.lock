@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 3d31d593e6cf0f82fa9bd0338b635af2f30d627b
+  revision: aa1bee96f565b2f894e4b9eef434990ecfaaa833
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -105,7 +105,7 @@ GEM
   specs:
     aasm (5.5.2)
       concurrent-ruby (~> 1.0)
-    action_text-trix (2.1.15)
+    action_text-trix (2.1.16)
       railties
     addressable (2.8.8)
       public_suffix (>= 2.0.2, < 8.0)
@@ -119,8 +119,8 @@ GEM
       ffi-compiler (~> 1.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1199.0)
-    aws-sdk-connect (1.231.0)
+    aws-partitions (1.1200.0)
+    aws-sdk-connect (1.232.0)
       aws-sdk-core (~> 3, >= 3.239.1)
       aws-sigv4 (~> 1.5)
     aws-sdk-core (3.240.0)
@@ -140,7 +140,7 @@ GEM
     aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
-    bcrypt (3.1.20)
+    bcrypt (3.1.21)
     benchmark (0.5.0)
     better_errors (2.10.1)
       erubi (>= 1.0.0)
@@ -685,7 +685,7 @@ GEM
       io-console (~> 0.5)
     rexml (3.4.4)
     rotp (6.3.0)
-    rouge (4.6.1)
+    rouge (4.7.0)
     rqrcode (3.1.1)
       chunky_png (~> 1.0)
       rqrcode_core (~> 2.0)

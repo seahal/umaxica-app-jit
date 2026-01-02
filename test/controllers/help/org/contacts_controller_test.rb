@@ -7,8 +7,19 @@ module Help
     class ContactsControllerTest < ActionDispatch::IntegrationTest
       setup do
         @host = ENV["HELP_STAFF_URL"] || "help.org.localhost"
-        @contact = org_contacts(:one)
-        @contact_category = org_contact_categories(:ORGANIZATION_INQUIRY)
+
+        # Ensure dependencies exist
+        @contact_category = OrgContactCategory.find_or_create_by!(id: "ORGANIZATION_INQUIRY")
+        OrgContactStatus.find_or_create_by!(id: "NEYO")
+
+        # Create contact manually instead of using fixtures
+        @contact = OrgContact.create!(
+          category_id: @contact_category.id,
+          confirm_policy: "1",
+          status_id: "NEYO",
+        )
+        @contact.org_contact_emails.create!(email_address: "org_test@example.com")
+
         CloudflareTurnstile.test_mode = true
         CloudflareTurnstile.test_validation_response = { "success" => true }
         ActionMailer::Base.deliveries.clear
@@ -111,7 +122,7 @@ module Help
       end
 
       test "should update contact and send notification email" do
-        contact = org_contacts(:one)
+        contact = @contact
         contact.org_contact_emails.create!(email_address: "notify-org@example.com")
 
         assert_difference("OrgContactTopic.count") do
@@ -129,7 +140,7 @@ module Help
       end
 
       test "should update contact and redirect to contact page" do
-        contact = org_contacts(:one)
+        contact = @contact
         contact.org_contact_emails.create!(email_address: "notify-org@example.com")
 
         patch help_org_contact_url(contact), params: {

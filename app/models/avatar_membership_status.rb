@@ -13,4 +13,6 @@ class AvatarMembershipStatus < IdentitiesRecord
   include StringPrimaryKey
 
   has_many :avatar_memberships, dependent: :restrict_with_error
+
+  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

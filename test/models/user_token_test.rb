@@ -87,7 +87,8 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "timestamp is set on creation" do
-    token = UserToken.create!(user: @user)
+    user = User.create!
+    token = UserToken.create!(user: user)
 
     assert_not_nil token.created_at
     assert_not_nil token.updated_at
@@ -117,6 +118,7 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "refresh token digest updates and authenticates" do
+    @token.destroy
     token = UserToken.create!(user: @user)
 
     token.refresh_token = "verifier-value"
@@ -128,7 +130,7 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "active state reflects revoked and expired refresh tokens" do
-    token = UserToken.create!(user: @user)
+    token = UserToken.create!(user: User.create!)
 
     assert_predicate token, :active?
 
@@ -142,6 +144,7 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "rotate_refresh_token! updates digest and timestamps" do
+    @token.destroy
     token = UserToken.create!(user: @user)
     old_digest = token.refresh_token_digest
 
@@ -154,6 +157,7 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "rotate_refresh_token! generates token that authenticates" do
+    @token.destroy
     token = UserToken.create!(user: @user)
     raw = token.rotate_refresh_token!
 
@@ -165,6 +169,7 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "parse_refresh_token splits public_id and verifier" do
+    @token.destroy
     token = UserToken.create!(user: @user)
     raw = token.rotate_refresh_token!
 
@@ -194,8 +199,8 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "association deletion: destroys when user is destroyed" do
-    token = UserToken.create!(user: @user)
+    @token.reload # Ensure it exists
     @user.destroy
-    assert_raise(ActiveRecord::RecordNotFound) { token.reload }
+    assert_raise(ActiveRecord::RecordNotFound) { @token.reload }
   end
 end

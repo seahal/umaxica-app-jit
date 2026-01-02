@@ -19,9 +19,10 @@
 #  index_telephone_occurrences_on_status_id   (status_id)
 #
 
-# Fixture file cleared - data migrated to seed migrations
-
 one:
-  public_id: "tel_occur_pub_id_0001"
-  body: "tel_test"
   status_id: "NEYO"
+  public_id: "one_tel_occ_id_000001"
+  body: "+15551234567"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
