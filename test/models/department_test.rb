@@ -11,7 +11,6 @@
 # Indexes
 #
 #  index_departments_on_department_status_id  (department_status_id)
-#  index_departments_on_parent_id             (parent_id)
 #  index_organizations_unique                 (parent_id,department_status_id) UNIQUE
 #
 

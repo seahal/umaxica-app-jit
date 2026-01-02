@@ -7,6 +7,9 @@ AppContactCategory:
   id:
     PrimaryKeyTypeChecker:
       enabled: false
+  app_contacts:
+    ForeignKeyCascadeChecker:
+      enabled: false
 AppContactEmail:
   id:
     PrimaryKeyTypeChecker:
@@ -14,6 +17,9 @@ AppContactEmail:
 AppContactStatus:
   id:
     PrimaryKeyTypeChecker:
+      enabled: false
+  app_contacts:
+    ForeignKeyCascadeChecker:
       enabled: false
 AppContactTelephone:
   id:
@@ -111,6 +117,10 @@ AppTimelineTagMaster:
   id:
     PrimaryKeyTypeChecker:
       enabled: false
+AdminIdentityStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
 AreaOccurrence:
   id:
     ImplicitOrderingChecker:
@@ -178,6 +188,9 @@ ComContact:
 ComContactCategory:
   id:
     PrimaryKeyTypeChecker:
+      enabled: false
+  com_contacts:
+    ForeignKeyCascadeChecker:
       enabled: false
 ComContactEmail:
   id:
@@ -283,11 +296,30 @@ ComTimelineTagMaster:
   id:
     PrimaryKeyTypeChecker:
       enabled: false
+ClientIdentityStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+Client:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  avatars:
+    ForeignKeyCascadeChecker:
+      enabled: false
 DomainOccurrence:
   id:
     ImplicitOrderingChecker:
       enabled: false
 DomainOccurrenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+DepartmentStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+DivisionStatus:
   id:
     PrimaryKeyTypeChecker:
       enabled: false
@@ -330,6 +362,9 @@ OrgContact:
 OrgContactCategory:
   id:
     PrimaryKeyTypeChecker:
+      enabled: false
+  org_contacts:
+    ForeignKeyCascadeChecker:
       enabled: false
 OrgContactEmail:
   id:
@@ -439,6 +474,9 @@ Post:
   id:
     PrimaryKeyTypeChecker:
       enabled: false
+  post_versions:
+    ForeignKeyCascadeChecker:
+      enabled: false
 PostReview:
   id:
     PrimaryKeyTypeChecker:
@@ -488,6 +526,10 @@ StaffIdentityPasskey:
   id:
     ImplicitOrderingChecker:
       enabled: false
+StaffIdentityPasskeyStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
 StaffIdentitySecret:
   id:
     ImplicitOrderingChecker:
@@ -515,9 +557,15 @@ StaffMessage:
   id:
     ImplicitOrderingChecker:
       enabled: false
+  admin_messages:
+    ForeignKeyCascadeChecker:
+      enabled: false
 StaffNotification:
   id:
     ImplicitOrderingChecker:
+      enabled: false
+  admin_notifications:
+    ForeignKeyCascadeChecker:
       enabled: false
 StaffOccurrence:
   id:
@@ -628,9 +676,22 @@ UserMessage:
   id:
     ImplicitOrderingChecker:
       enabled: false
+  client_messages:
+    ForeignKeyCascadeChecker:
+      enabled: false
 UserNotification:
   id:
     ImplicitOrderingChecker:
+      enabled: false
+  client_notifications:
+    ForeignKeyCascadeChecker:
+      enabled: false
+User:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+  owned_clients:
+    ForeignKeyCascadeChecker:
       enabled: false
 UserOccurrence:
   id:

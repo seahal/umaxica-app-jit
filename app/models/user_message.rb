@@ -5,7 +5,7 @@
 # Table name: user_messages
 #
 #  id         :uuid             not null, primary key
-#  user_id    :uuid
+#  user_id    :uuid             not null
 #  public_id  :uuid
 #  created_at :datetime         not null
 #  updated_at :datetime         not null

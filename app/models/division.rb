@@ -13,11 +13,12 @@
 # Indexes
 #
 #  index_divisions_on_division_status_id  (division_status_id)
-#  index_divisions_on_parent_id           (parent_id)
 #  index_divisions_unique                 (parent_id,division_status_id) UNIQUE
 #
 
 class Division < IdentitiesRecord
+  self.implicit_order_column = :created_at
+
   belongs_to :parent,
              class_name: "Division",
              inverse_of: :children,

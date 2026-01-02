@@ -5,16 +5,16 @@
 # Table name: app_contacts
 #
 #  id               :uuid             not null, primary key
-#  category_id      :string(255)      default("NEYO"), not null
-#  created_at       :datetime         not null
-#  ip_address       :inet             default("0.0.0.0"), not null
 #  public_id        :string(21)       default(""), not null
-#  status_id        :string(255)      default("NEYO")
 #  token            :string(32)       default(""), not null
 #  token_digest     :string(255)      default(""), not null
 #  token_expires_at :timestamptz      default("-infinity"), not null
 #  token_viewed     :boolean          default(FALSE), not null
+#  ip_address       :inet             default("0.0.0.0"), not null
+#  status_id        :string(255)      default("NEYO"), not null
+#  created_at       :datetime         not null
 #  updated_at       :datetime         not null
+#  category_id      :string(255)      default("NEYO"), not null
 #
 # Indexes
 #

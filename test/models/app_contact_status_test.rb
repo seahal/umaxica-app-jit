@@ -26,13 +26,9 @@ class AppContactStatusTest < ActiveSupport::TestCase
     assert_includes @status.app_contacts, @contact
   end
 
-  test "should nullify app_status_id when destroyed" do
-    # The model says `dependent: :nullify`
-    # Foreign key is `status_id`
-
-    @status.destroy
-    @contact.reload
-
-    assert_nil @contact.status_id
+  test "should restrict destroy when app_contacts exist" do
+    assert_raises(ActiveRecord::DeleteRestrictionError) do
+      @status.destroy
+    end
   end
 end

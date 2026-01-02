@@ -11,7 +11,6 @@
 # Indexes
 #
 #  index_staff_admins_on_admin_id               (admin_id)
-#  index_staff_admins_on_staff_id               (staff_id)
 #  index_staff_admins_on_staff_id_and_admin_id  (staff_id,admin_id) UNIQUE
 #
 

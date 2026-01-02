@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_30_131000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_02_035344) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -88,7 +88,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_131000) do
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO"
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
@@ -198,7 +198,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_131000) do
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO"
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false
@@ -286,7 +286,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_131000) do
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.string "public_id", limit: 21, default: "", null: false
-    t.string "status_id", limit: 255, default: "NEYO"
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.string "token", limit: 32, default: "", null: false
     t.string "token_digest", limit: 255, default: "", null: false
     t.timestamptz "token_expires_at", default: -::Float::INFINITY, null: false

@@ -12,7 +12,7 @@ region_dir = locale_root.join(region_code)
 
 unless region_dir.directory?
   raise "REGION_CODE='#{region_code}' is invalid. Directory not found: #{region_dir}. " \
-        "Valid values are: #{locale_root.children.select(&:directory?).map(&:basename).join(", ")}"
+        "Valid values are: #{locale_root.children.filter_map { |child| child.basename if child.directory? }.join(", ")}"
 end
 
 config_locale_files = Dir[locale_root.join("**", "*.{rb,yml}")]

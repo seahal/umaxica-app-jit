@@ -50,16 +50,15 @@ module Billing
     end
 
     test "enforces unique event_id at the database level" do
-      skip "Skipping DB constraint test to avoid verbose failure logs requested by user"
-      # # Generate a unique ID for this specific test run
-      # event_id = "evt_#{SecureRandom.uuid}"
-      # Billing::StripeEvent.create!(build_attributes(event_id: event_id))
+      # Generate a unique ID for this specific test run
+      event_id = "evt_#{SecureRandom.uuid}"
+      Billing::StripeEvent.create!(build_attributes(event_id: event_id))
 
-      # # Try to create a duplicate with the same ID, bypassing validations
-      # duplicate = Billing::StripeEvent.new(build_attributes(event_id: event_id))
-      # assert_raises ActiveRecord::RecordNotUnique do
-      #   duplicate.save!(validate: false)
-      # end
+      # Try to create a duplicate with the same ID, bypassing validations
+      duplicate = Billing::StripeEvent.new(build_attributes(event_id: event_id))
+      assert_raises ActiveRecord::RecordNotUnique do
+        duplicate.save!(validate: false)
+      end
     end
   end
 end

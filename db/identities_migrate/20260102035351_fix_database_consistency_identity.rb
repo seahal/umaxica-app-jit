@@ -1,0 +1,99 @@
+# frozen_string_literal: true
+
+class FixDatabaseConsistencyIdentity < ActiveRecord::Migration[8.2]
+  disable_ddl_transaction!
+
+  def up
+    # Remove redundant indexes
+    remove_index :user_clients, :user_id, if_exists: true
+    remove_index :staff_admins, :staff_id, if_exists: true
+    remove_index :divisions, :parent_id, if_exists: true
+    remove_index :departments, :parent_id, if_exists: true
+
+    # Add NOT NULL constraint to admins.staff_id using safe approach
+    add_check_constraint :admins, "staff_id IS NOT NULL",
+                         name: "admins_staff_id_null", validate: false
+    validate_check_constraint :admins, name: "admins_staff_id_null"
+    change_column_null :admins, :staff_id, false
+    remove_check_constraint :admins, name: "admins_staff_id_null"
+
+    # Add unique indexes for case-insensitive lookups on status tables
+    unless index_exists?(:division_statuses, "lower(id)", name: "index_division_statuses_on_lower_id")
+      add_index :division_statuses, "lower(id)", unique: true,
+                                                 name: "index_division_statuses_on_lower_id",
+                                                 algorithm: :concurrently
+    end
+
+    unless index_exists?(:department_statuses, "lower(id)", name: "index_department_statuses_on_lower_id")
+      add_index :department_statuses, "lower(id)", unique: true,
+                                                   name: "index_department_statuses_on_lower_id",
+                                                   algorithm: :concurrently
+    end
+
+    unless index_exists?(
+      :client_identity_statuses, "lower(id)",
+      name: "index_client_identity_statuses_on_lower_id",
+    )
+      add_index :client_identity_statuses, "lower(id)", unique: true,
+                                                        name: "index_client_identity_statuses_on_lower_id",
+                                                        algorithm: :concurrently
+    end
+
+    unless index_exists?(
+      :admin_identity_statuses, "lower(id)",
+      name: "index_admin_identity_statuses_on_lower_id",
+    )
+      add_index :admin_identity_statuses, "lower(id)", unique: true,
+                                                       name: "index_admin_identity_statuses_on_lower_id",
+                                                       algorithm: :concurrently
+    end
+
+    # Add foreign key for post versions
+    unless foreign_key_exists?(:post_versions, :posts, column: :post_id)
+      add_foreign_key :post_versions, :posts, column: :post_id, validate: false
+      validate_foreign_key :post_versions, :posts
+    end
+
+    # Add foreign key for self-referential division parent
+    unless foreign_key_exists?(:divisions, :divisions, column: :parent_id)
+      add_foreign_key :divisions, :divisions, column: :parent_id, validate: false
+      validate_foreign_key :divisions, :divisions
+    end
+
+    # Add foreign key for user owned_clients
+    unless foreign_key_exists?(:clients, :users, column: :user_id)
+      add_foreign_key :clients, :users, column: :user_id, on_delete: :nullify, validate: false
+      validate_foreign_key :clients, :users
+    end
+
+    # Add foreign key for client avatars
+    unless foreign_key_exists?(:avatars, :clients, column: :client_id)
+      add_foreign_key :avatars, :clients,
+                      column: :client_id,
+                      on_delete: :nullify,
+                      validate: false
+      validate_foreign_key :avatars, :clients
+    end
+  end
+
+  def down
+    # Revert changes in reverse order
+    remove_foreign_key :avatars, :clients, if_exists: true
+    remove_foreign_key :clients, :users, if_exists: true
+    remove_foreign_key :divisions, :divisions, if_exists: true
+    remove_foreign_key :post_versions, :posts, if_exists: true
+
+    remove_index :admin_identity_statuses, name: "index_admin_identity_statuses_on_lower_id",
+                                           if_exists: true
+    remove_index :client_identity_statuses, name: "index_client_identity_statuses_on_lower_id",
+                                            if_exists: true
+    remove_index :department_statuses, name: "index_department_statuses_on_lower_id",
+                                       if_exists: true
+    remove_index :division_statuses, name: "index_division_statuses_on_lower_id",
+                                     if_exists: true
+
+    change_column_null :admins, :staff_id, true
+
+    # Note: Not re-adding redundant indexes as they were redundant
+  end
+end

@@ -13,11 +13,12 @@
 # Indexes
 #
 #  index_departments_on_department_status_id  (department_status_id)
-#  index_departments_on_parent_id             (parent_id)
 #  index_organizations_unique                 (parent_id,department_status_id) UNIQUE
 #
 
 class Department < IdentitiesRecord
+  self.implicit_order_column = :created_at
+
   belongs_to :parent,
              class_name: "Department",
              inverse_of: :children,

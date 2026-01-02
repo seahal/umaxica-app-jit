@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -29,13 +29,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
   create_table "admin_identity_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_admin_identity_statuses_on_lower_id", unique: true
   end
 
   create_table "admins", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "moniker"
     t.string "public_id"
-    t.uuid "staff_id"
+    t.uuid "staff_id", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_admins_on_public_id", unique: true
@@ -67,7 +68,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_affiliation", unique: true, where: "((role)::text = 'affiliation'::text)"
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_owner", unique: true, where: "((role)::text = 'owner'::text)"
     t.index ["user_id"], name: "index_avatar_assignments_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying::text, 'affiliation'::character varying::text, 'administrator'::character varying::text, 'editor'::character varying::text, 'reviewer'::character varying::text, 'viewer'::character varying::text])", name: "check_avatar_assignment_role"
+    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'affiliation'::character varying, 'administrator'::character varying, 'editor'::character varying, 'reviewer'::character varying, 'viewer'::character varying]::text[])", name: "check_avatar_assignment_role"
   end
 
   create_table "avatar_blocks", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -218,6 +219,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
   create_table "client_identity_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_client_identity_statuses_on_lower_id", unique: true
   end
 
   create_table "clients", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -235,6 +237,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
   create_table "department_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_department_statuses_on_lower_id", unique: true
   end
 
   create_table "departments", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -244,12 +247,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
     t.datetime "updated_at", null: false
     t.index ["department_status_id"], name: "index_departments_on_department_status_id"
     t.index ["parent_id", "department_status_id"], name: "index_organizations_unique", unique: true
-    t.index ["parent_id"], name: "index_departments_on_parent_id"
   end
 
   create_table "division_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_division_statuses_on_lower_id", unique: true
   end
 
   create_table "divisions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -259,7 +262,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
     t.datetime "updated_at", null: false
     t.index ["division_status_id"], name: "index_divisions_on_division_status_id"
     t.index ["parent_id", "division_status_id"], name: "index_divisions_unique", unique: true
-    t.index ["parent_id"], name: "index_divisions_on_parent_id"
   end
 
   create_table "google_auths", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -408,7 +410,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
     t.datetime "updated_at", null: false
     t.index ["admin_id"], name: "index_staff_admins_on_admin_id"
     t.index ["staff_id", "admin_id"], name: "index_staff_admins_on_staff_id_and_admin_id", unique: true
-    t.index ["staff_id"], name: "index_staff_admins_on_staff_id"
   end
 
   create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
@@ -576,7 +577,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
     t.uuid "user_id", null: false
     t.index ["client_id"], name: "index_user_clients_on_client_id"
     t.index ["user_id", "client_id"], name: "index_user_clients_on_user_id_and_client_id", unique: true
-    t.index ["user_id"], name: "index_user_clients_on_user_id"
   end
 
   create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
@@ -851,6 +851,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
   add_foreign_key "departments", "department_statuses"
   add_foreign_key "departments", "departments", column: "parent_id"
   add_foreign_key "divisions", "division_statuses"
+  add_foreign_key "divisions", "divisions", column: "parent_id"
   add_foreign_key "google_auths", "users"
   add_foreign_key "handle_assignments", "avatars"
   add_foreign_key "handle_assignments", "handle_assignment_statuses"
@@ -858,6 +859,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_030400) do
   add_foreign_key "handles", "handle_statuses"
   add_foreign_key "post_reviews", "post_review_statuses"
   add_foreign_key "post_reviews", "posts"
+  add_foreign_key "post_versions", "posts"
   add_foreign_key "posts", "avatars", column: "author_avatar_id"
   add_foreign_key "posts", "post_statuses"
   add_foreign_key "role_assignments", "roles"

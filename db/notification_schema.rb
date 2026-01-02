@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_30_202300) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_02_035354) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,4 +45,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_202300) do
     t.uuid "user_id", default: "00000000-0000-0000-0000-000000000000", null: false
     t.index ["user_id"], name: "index_user_notifications_on_user_id"
   end
+
+  add_foreign_key "admin_notifications", "staff_notifications"
+  add_foreign_key "client_notifications", "user_notifications"
 end

@@ -17,7 +17,7 @@ class AppContactStatus < GuestsRecord
   has_many :app_contacts,
            foreign_key: :status_id,
            inverse_of: :app_contact_status,
-           dependent: :nullify
+           dependent: :restrict_with_exception
 
   validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

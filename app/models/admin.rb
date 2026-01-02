@@ -8,7 +8,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  status_id  :string(255)      default("NEYO"), not null
-#  staff_id   :uuid
+#  staff_id   :uuid             not null
 #
 # Indexes
 #

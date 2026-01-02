@@ -8,7 +8,9 @@ if Rails.env.development?
   task set_annotation_options: :environment do
     model_dirs =
       if ENV["model_dir"]
-        ENV["model_dir"].split(",").map(&:strip).reject(&:empty?)
+        dirs = ENV["model_dir"].split(",").map(&:strip)
+        dirs.reject!(&:empty?)
+        dirs
       else
         ["app/models"]
       end

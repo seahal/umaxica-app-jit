@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_30_123013) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_02_035400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,6 +27,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_123013) do
     t.datetime "created_at", null: false
     t.string "parent_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_app_document_category_masters_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_app_document_category_masters_on_parent_id"
   end
 
@@ -41,6 +42,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_123013) do
     t.datetime "created_at", null: false
     t.string "parent_id", limit: 255, default: "none", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_app_document_tag_masters_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_app_document_tag_masters_on_parent_id"
   end
 
@@ -103,6 +105,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_123013) do
     t.datetime "created_at", null: false
     t.string "parent_id", limit: 255, default: "none", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_com_document_category_masters_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_com_document_category_masters_on_parent_id"
   end
 
@@ -117,6 +120,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_123013) do
     t.datetime "created_at", null: false
     t.string "parent_id", limit: 255, default: "none", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_com_document_tag_masters_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_com_document_tag_masters_on_parent_id"
   end
 
@@ -179,6 +183,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_123013) do
     t.datetime "created_at", null: false
     t.string "parent_id", limit: 255, default: "none", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_org_document_category_masters_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_org_document_category_masters_on_parent_id"
   end
 
@@ -193,6 +198,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_123013) do
     t.datetime "created_at", null: false
     t.string "parent_id", limit: 255, default: "none", null: false
     t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_org_document_tag_masters_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_org_document_tag_masters_on_parent_id"
   end
 

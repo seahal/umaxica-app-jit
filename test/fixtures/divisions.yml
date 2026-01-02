@@ -11,7 +11,6 @@
 # Indexes
 #
 #  index_divisions_on_division_status_id  (division_status_id)
-#  index_divisions_on_parent_id           (parent_id)
 #  index_divisions_unique                 (parent_id,division_status_id) UNIQUE
 #
 
