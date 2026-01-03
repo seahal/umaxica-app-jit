@@ -70,7 +70,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_03_120000) do
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_affiliation", unique: true, where: "((role)::text = 'affiliation'::text)"
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_owner", unique: true, where: "((role)::text = 'owner'::text)"
     t.index ["user_id"], name: "index_avatar_assignments_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'affiliation'::character varying, 'administrator'::character varying, 'editor'::character varying, 'reviewer'::character varying, 'viewer'::character varying]::text[])", name: "check_avatar_assignment_role"
+    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying::text, 'affiliation'::character varying::text, 'administrator'::character varying::text, 'editor'::character varying::text, 'reviewer'::character varying::text, 'viewer'::character varying::text])", name: "check_avatar_assignment_role"
   end
 
   create_table "avatar_blocks", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|

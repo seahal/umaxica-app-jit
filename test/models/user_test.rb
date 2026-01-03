@@ -34,7 +34,7 @@ class UserTest < ActiveSupport::TestCase
     UserIdentitySocialAppleStatus.find_or_create_by!(id: "NEYO")
     UserIdentitySocialGoogleStatus.find_or_create_by!(id: "NEYO")
     @user =
-      User.find_or_create_by!(public_id: "one_id") do |u|
+      User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
         u.status_id = "NEYO"
       end
   end

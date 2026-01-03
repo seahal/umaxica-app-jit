@@ -28,19 +28,14 @@ Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 class ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
-  # Run tests in parallel with specified workers
-  # parallelize(workers: :number_of_processors)
+  # Use database transactions to roll back changes after each test
+  # self.use_transactional_tests = true
 
-  # Setup all fixtures in test/fixtures/*.yml for all tests
-  # For multi-database setup, fixtures need to be loaded per-test
-  # rather than globally with `fixtures :all`
+  # Load fixtures only when explicitly needed in individual test files
+  # instead of loading all fixtures globally
+  # To use fixtures in a specific test file, add:
   fixtures :all
-  self.use_transactional_tests = true
-
-  # Helper method to load specific fixtures for multi-database tests
-  def self.use_fixtures(*fixture_names)
-    fixtures(*fixture_names)
-  end
 
   # Add more helper methods to be used by all tests here...
+  # fixtures :all  # Disabled to avoid loading broken/incomplete fixtures globally
 end

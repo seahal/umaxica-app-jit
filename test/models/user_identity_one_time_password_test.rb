@@ -22,7 +22,7 @@ require "test_helper"
 
 class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
   def setup
-    @user = users(:one)
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: "NEYO")
     @status = UserIdentityOneTimePasswordStatus.find("ACTIVE")
     # Ensure NEYO status exists for defaults
     unless UserIdentityOneTimePasswordStatus.exists?("NEYO")

@@ -31,7 +31,7 @@ require "test_helper"
 # Covers refresh token behavior and session constraints for users.
 class UserTokenTest < ActiveSupport::TestCase
   def setup
-    @user = User.find_by!(public_id: "one_id")
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: "NEYO")
     @token = UserToken.create!(user: @user)
   end
 

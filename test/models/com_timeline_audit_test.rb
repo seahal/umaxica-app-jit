@@ -46,4 +46,27 @@ class ComTimelineAuditTest < ActiveSupport::TestCase
     assert_not_nil refl_level, "expected belongs_to :com_timeline_audit_level association"
     assert_equal :belongs_to, refl_level.macro
   end
+
+  test "com_timeline helper method returns nil when subject_type is not ComTimeline" do
+    audit = ComTimelineAudit.new(
+      subject_id: "123",
+      subject_type: "SomeOtherType",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    assert_nil audit.com_timeline
+  end
+
+  test "com_timeline= helper method sets subject_id and subject_type" do
+    test_uuid = SecureRandom.uuid
+
+    timeline = ComTimeline.new
+    timeline.define_singleton_method(:id) { test_uuid }
+
+    audit = ComTimelineAudit.new
+    audit.com_timeline = timeline
+
+    assert_equal test_uuid, audit.subject_id
+    assert_equal "ComTimeline", audit.subject_type
+  end
 end

@@ -104,4 +104,42 @@ class PostTest < ActiveSupport::TestCase
     assert_not post.destroy
     assert_includes post.errors[:base], "post reviewsが存在しているので削除できません"
   end
+
+  test "latest_version returns the most recent post version" do
+    post = Post.create!(@valid_attributes)
+
+    # Create post versions with different timestamps
+    PostVersion.create!(
+      post: post,
+      body: "First version",
+      permalink: "first-version",
+      response_mode: "html",
+      published_at: 3.days.ago,
+      expires_at: 1.year.from_now,
+      created_at: 3.days.ago,
+    )
+
+    PostVersion.create!(
+      post: post,
+      body: "Second version",
+      permalink: "second-version",
+      response_mode: "html",
+      published_at: 2.days.ago,
+      expires_at: 1.year.from_now,
+      created_at: 2.days.ago,
+    )
+
+    latest = PostVersion.create!(
+      post: post,
+      body: "Latest version",
+      permalink: "latest-version",
+      response_mode: "html",
+      published_at: 1.day.ago,
+      expires_at: 1.year.from_now,
+      created_at: 1.day.ago,
+    )
+
+    assert_equal latest, post.latest_version
+    assert_equal "Latest version", post.latest_version.body
+  end
 end

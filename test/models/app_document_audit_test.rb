@@ -46,4 +46,28 @@ class AppDocumentAuditTest < ActiveSupport::TestCase
     assert_not_nil refl_level, "expected belongs_to :app_document_audit_level association"
     assert_equal :belongs_to, refl_level.macro
   end
+
+  test "app_document helper method returns nil when subject_type is not AppDocument" do
+    audit = AppDocumentAudit.new(
+      subject_id: "123",
+      subject_type: "SomeOtherType",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    assert_nil audit.app_document
+  end
+
+  test "app_document= helper method sets subject_id and subject_type" do
+    test_uuid = SecureRandom.uuid
+
+    # Create a mock document object with an ID
+    doc = AppDocument.new
+    doc.define_singleton_method(:id) { test_uuid }
+
+    audit = AppDocumentAudit.new
+    audit.app_document = doc
+
+    assert_equal test_uuid, audit.subject_id
+    assert_equal "AppDocument", audit.subject_type
+  end
 end

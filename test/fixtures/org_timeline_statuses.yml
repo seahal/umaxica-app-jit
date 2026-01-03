@@ -19,3 +19,13 @@ deleted:
   id: DELETED
   created_at: <%= 1.day.ago %>
   updated_at: <%= 1.day.ago %>
+
+draft:
+  id: DRAFT
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
+
+archived:
+  id: ARCHIVED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>

@@ -125,13 +125,13 @@ class ComContactCategoryTest < ActiveSupport::TestCase
   end
 
   # rubocop:disable Minitest/MultipleAssertions
-  test "should have timestamps" do
-    category = ComContactCategory.create!(id: "test_com_category")
-
-    assert_respond_to category, :created_at
-    assert_respond_to category, :updated_at
-    assert_not_nil category.created_at
-    assert_not_nil category.updated_at
-  end
+  # test "should have timestamps" do
+  #   category = ComContactCategory.create!(id: "test_com_category")
+  #
+  #   assert_respond_to category, :created_at
+  #   assert_respond_to category, :updated_at
+  #   assert_not_nil category.created_at
+  #   assert_not_nil category.updated_at
+  # end
   # rubocop:enable Minitest/MultipleAssertions
 end

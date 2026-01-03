@@ -96,8 +96,6 @@ gem "stripe"
 gem "sorbet-runtime"
 
 group :development, :test do
-  # Debugging
-  gem "debug", platforms: %i( mri windows )
   # Test coverage
   gem "simplecov", require: false
   # Minitest mock (extracted from minitest 6.0+)
@@ -120,6 +118,8 @@ group :development, :test do
 end
 
 group :development do
+  # Debugging
+  gem "debug", platforms: %i( mri windows )
   gem "sorbet"
   gem "foreman"
   gem "yard"

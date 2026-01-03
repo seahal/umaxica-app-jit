@@ -46,4 +46,27 @@ class OrgTimelineAuditTest < ActiveSupport::TestCase
     assert_not_nil refl_level, "expected belongs_to :org_timeline_audit_level association"
     assert_equal :belongs_to, refl_level.macro
   end
+
+  test "org_timeline helper method returns nil when subject_type is not OrgTimeline" do
+    audit = OrgTimelineAudit.new(
+      subject_id: "123",
+      subject_type: "SomeOtherType",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    assert_nil audit.org_timeline
+  end
+
+  test "org_timeline= helper method sets subject_id and subject_type" do
+    test_uuid = SecureRandom.uuid
+
+    timeline = OrgTimeline.new
+    timeline.define_singleton_method(:id) { test_uuid }
+
+    audit = OrgTimelineAudit.new
+    audit.org_timeline = timeline
+
+    assert_equal test_uuid, audit.subject_id
+    assert_equal "OrgTimeline", audit.subject_type
+  end
 end

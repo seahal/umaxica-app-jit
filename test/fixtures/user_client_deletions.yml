@@ -3,10 +3,10 @@
 # Table name: user_client_deletions
 #
 #  id         :uuid             not null, primary key
-#  user_id    :uuid             not null
 #  client_id  :uuid             not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  user_id    :uuid             not null
 #
 # Indexes
 #
@@ -20,11 +20,9 @@ one:
   client: one
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-# column: value
-#
+
 two:
   user: two
   client: two
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-# column: value

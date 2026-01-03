@@ -26,7 +26,7 @@ require "test_helper"
 
 class UserIdentityPasskeyTest < ActiveSupport::TestCase
   def setup
-    @user = User.find_by!(public_id: "one_id")
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: "NEYO")
     @passkey = UserIdentityPasskey.new(
       user: @user,
       webauthn_id: SecureRandom.uuid,

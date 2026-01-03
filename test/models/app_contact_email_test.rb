@@ -131,4 +131,48 @@ class AppContactEmailTest < ActiveSupport::TestCase
       assert_not @email.verify_code(raw_code)
     end
   end
+
+  test "verifier_expired? returns true when verifier has expired" do
+    @email.generate_verifier!
+
+    travel 16.minutes do
+      assert_predicate @email, :verifier_expired?
+    end
+  end
+
+  test "verifier_expired? returns false when verifier has not expired" do
+    @email.generate_verifier!
+
+    travel 10.minutes do
+      assert_not @email.verifier_expired?
+    end
+  end
+
+  test "can_resend_verifier? returns true when not activated and expired" do
+    @email.generate_verifier!
+
+    travel 16.minutes do
+      assert_predicate @email, :can_resend_verifier?
+    end
+  end
+
+  test "can_resend_verifier? returns true when not activated and no attempts left" do
+    @email.generate_verifier!
+    @email.update!(verifier_attempts_left: 0)
+
+    assert_predicate @email, :can_resend_verifier?
+  end
+
+  test "can_resend_verifier? returns false when already activated" do
+    @email.generate_verifier!
+    @email.update!(activated: true)
+
+    assert_not @email.can_resend_verifier?
+  end
+
+  test "can_resend_verifier? returns false when not activated but still has attempts and not expired" do
+    @email.generate_verifier!
+
+    assert_not @email.can_resend_verifier?
+  end
 end

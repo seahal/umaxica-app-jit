@@ -46,4 +46,27 @@ class ComDocumentAuditTest < ActiveSupport::TestCase
     assert_not_nil refl_level, "expected belongs_to :com_document_audit_level association"
     assert_equal :belongs_to, refl_level.macro
   end
+
+  test "com_document helper method returns nil when subject_type is not ComDocument" do
+    audit = ComDocumentAudit.new(
+      subject_id: "123",
+      subject_type: "SomeOtherType",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    assert_nil audit.com_document
+  end
+
+  test "com_document= helper method sets subject_id and subject_type" do
+    test_uuid = SecureRandom.uuid
+
+    doc = ComDocument.new
+    doc.define_singleton_method(:id) { test_uuid }
+
+    audit = ComDocumentAudit.new
+    audit.com_document = doc
+
+    assert_equal test_uuid, audit.subject_id
+    assert_equal "ComDocument", audit.subject_type
+  end
 end

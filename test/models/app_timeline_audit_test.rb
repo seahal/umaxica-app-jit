@@ -46,4 +46,27 @@ class AppTimelineAuditTest < ActiveSupport::TestCase
     assert_not_nil refl_level, "expected belongs_to :app_timeline_audit_level association"
     assert_equal :belongs_to, refl_level.macro
   end
+
+  test "app_timeline helper method returns nil when subject_type is not AppTimeline" do
+    audit = AppTimelineAudit.new(
+      subject_id: "123",
+      subject_type: "SomeOtherType",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    assert_nil audit.app_timeline
+  end
+
+  test "app_timeline= helper method sets subject_id and subject_type" do
+    test_uuid = SecureRandom.uuid
+
+    timeline = AppTimeline.new
+    timeline.define_singleton_method(:id) { test_uuid }
+
+    audit = AppTimelineAudit.new
+    audit.app_timeline = timeline
+
+    assert_equal test_uuid, audit.subject_id
+    assert_equal "AppTimeline", audit.subject_type
+  end
 end
