@@ -28,15 +28,17 @@
 require "test_helper"
 
 class UserIdentitySocialAppleTest < ActiveSupport::TestCase
+  fixtures :users, :user_identity_statuses, :user_identity_social_apples, :user_identity_social_apple_statuses
+
   test "allows only one apple auth per user" do
-    user = users(:one)
+    user = User.find_by!(public_id: "one_id")
 
     UserIdentitySocialApple.create!(
       user: user,
       uid: "uid-1",
       token: "token-1",
       expires_at: 1.week.from_now.to_i,
-      user_identity_social_apple_status: user_identity_social_apple_statuses(:active),
+      user_identity_social_apple_status: UserIdentitySocialAppleStatus.find("ACTIVE"),
     )
 
     duplicate = UserIdentitySocialApple.new(
@@ -49,19 +51,19 @@ class UserIdentitySocialAppleTest < ActiveSupport::TestCase
   end
 
   test "token is required" do
-    identity = UserIdentitySocialApple.new(user: users(:one), uid: "uid", expires_at: 123)
+    identity = UserIdentitySocialApple.new(user: User.find_by!(public_id: "one_id"), uid: "uid", expires_at: 123)
     assert_not identity.valid?
     assert_not_empty identity.errors[:token]
   end
 
   test "uid is required" do
-    identity = UserIdentitySocialApple.new(user: users(:one), token: "token", expires_at: 123)
+    identity = UserIdentitySocialApple.new(user: User.find_by!(public_id: "one_id"), token: "token", expires_at: 123)
     assert_not identity.valid?
     assert_not_empty identity.errors[:uid]
   end
 
   test "expires_at is required" do
-    identity = UserIdentitySocialApple.new(user: users(:one), uid: "uid", token: "token")
+    identity = UserIdentitySocialApple.new(user: User.find_by!(public_id: "one_id"), uid: "uid", token: "token")
     assert_not identity.valid?
     assert_not_empty identity.errors[:expires_at]
   end

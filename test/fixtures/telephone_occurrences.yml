@@ -18,11 +18,9 @@
 #  index_telephone_occurrences_on_public_id   (public_id) UNIQUE
 #  index_telephone_occurrences_on_status_id   (status_id)
 #
-
 one:
   status_id: "NEYO"
   public_id: "one_tel_occ_id_000001"
   body: "+15551234567"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-

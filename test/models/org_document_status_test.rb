@@ -16,7 +16,7 @@ class OrgDocumentStatusTest < ActiveSupport::TestCase
     @model_class = OrgDocumentStatus
     @valid_id = "ACTIVE"
     @subject = @model_class.new(id: @valid_id)
-    @status = org_document_statuses(:active)
+    @status = OrgDocumentStatus.find("ACTIVE")
   end
 
   test "inherits from BusinessesRecord" do
@@ -53,14 +53,14 @@ class OrgDocumentStatusTest < ActiveSupport::TestCase
   end
 
   test "can load draft status from fixtures" do
-    draft = org_document_statuses(:draft)
+    draft = OrgDocumentStatus.find("DRAFT")
 
     assert_not_nil draft
     assert_equal "DRAFT", draft.id
   end
 
   test "can load archived status from fixtures" do
-    archived = org_document_statuses(:archived)
+    archived = OrgDocumentStatus.find("ARCHIVED")
 
     assert_not_nil archived
     assert_equal "ARCHIVED", archived.id

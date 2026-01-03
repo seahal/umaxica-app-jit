@@ -19,6 +19,8 @@
 require "test_helper"
 
 class OrgDocumentUpdaterTest < ActiveSupport::TestCase
+  fixtures :org_document_statuses
+
   def base_attrs
     {
       permalink: "Org_1",

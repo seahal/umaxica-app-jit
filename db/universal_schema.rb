@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_30_124000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_02_111602) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -52,8 +52,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_124000) do
   end
 
   create_table "app_document_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "app_document_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
@@ -86,13 +84,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_124000) do
   end
 
   create_table "app_timeline_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "app_timeline_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "app_timeline_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -240,13 +234,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_124000) do
   end
 
   create_table "com_document_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_document_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_document_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -274,13 +264,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_124000) do
   end
 
   create_table "com_timeline_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_timeline_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_timeline_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -542,13 +528,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_124000) do
   end
 
   create_table "org_document_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_document_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_document_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -576,8 +558,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_124000) do
   end
 
   create_table "org_timeline_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_timeline_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
@@ -610,13 +590,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_30_124000) do
   end
 
   create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "staff_identity_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "staff_identity_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|

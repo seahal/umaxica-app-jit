@@ -2,11 +2,11 @@
 
 class EnsureNeyoOrgDocumentStatus < ActiveRecord::Migration[8.2]
   def up
-    insert_status(:org_document_statuses, "NEYO")
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid removing shared reference data.
+    # No-op: data seeding moved to fixtures.
   end
 
   private

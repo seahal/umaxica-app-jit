@@ -35,7 +35,7 @@ class AppDocumentVersionTest < ActiveSupport::TestCase
 
   test "encrypts title, description, and body" do
     record = AppDocumentVersion.create!(
-      app_document: app_documents(:one),
+      app_document: AppDocument.find_by!(public_id: "one_app_document_0001"),
       permalink: "permalink_#{SecureRandom.hex(4)}",
       response_mode: "html",
       published_at: Time.zone.parse("2999-01-01 00:00:00"),

@@ -16,27 +16,22 @@
 #  index_users_on_status_id     (status_id)
 #  index_users_on_withdrawn_at  (withdrawn_at)
 #
-
-
 placeholder:
   id: "00000000-0000-0000-0000-000000000000"
   status_id: "NEYO"
   public_id: "placeholder_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 one:
   status_id: "NEYO"
   public_id: "one_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 none_user:
   status_id: "NEYO"
   public_id: "none_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 two:
   status_id: "NEYO"
   public_id: "two_id"

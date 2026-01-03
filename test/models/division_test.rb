@@ -9,10 +9,12 @@
 #  parent_id          :uuid
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  organization_id    :uuid
 #
 # Indexes
 #
 #  index_divisions_on_division_status_id  (division_status_id)
+#  index_divisions_on_organization_id     (organization_id)
 #  index_divisions_unique                 (parent_id,division_status_id) UNIQUE
 #
 

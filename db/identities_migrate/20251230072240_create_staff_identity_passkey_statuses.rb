@@ -10,13 +10,7 @@ class CreateStaffIdentityPasskeyStatuses < ActiveRecord::Migration[8.2]
     create_table :staff_identity_passkey_statuses, id: :string, limit: 255, primary_key: :id
 
     safety_assured do
-      execute <<~SQL.squish
-        INSERT INTO staff_identity_passkey_statuses (id) VALUES
-        ('ACTIVE'),
-        ('DISABLED'),
-        ('DELETED')
-        ON CONFLICT (id) DO NOTHING
-      SQL
+      # No-op: intentionally left blank.
     end
 
     add_check_constraint(

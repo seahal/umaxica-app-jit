@@ -10,8 +10,10 @@
 require "test_helper"
 
 class StaffIdentityEmailStatusTest < ActiveSupport::TestCase
+  fixtures :staff_identity_email_statuses
+
   test "valid status with id" do
-    status = staff_identity_email_statuses(:unverified)
+    status = StaffIdentityEmailStatus.find("UNVERIFIED")
 
     assert_predicate status, :valid?
   end
@@ -35,7 +37,7 @@ class StaffIdentityEmailStatusTest < ActiveSupport::TestCase
   end
 
   test "validates uniqueness of id" do
-    existing = staff_identity_email_statuses(:unverified)
+    existing = StaffIdentityEmailStatus.find("UNVERIFIED")
     duplicate = StaffIdentityEmailStatus.new(id: existing.id)
 
     assert_predicate duplicate, :invalid?
@@ -53,7 +55,7 @@ class StaffIdentityEmailStatusTest < ActiveSupport::TestCase
   end
 
   test "restrict_with_error prevents deletion when emails exist" do
-    status = staff_identity_email_statuses(:verified)
+    status = StaffIdentityEmailStatus.find("VERIFIED")
     # Create a staff identity email with this status
     staff = Staff.create!(public_id: "test-staff-#{SecureRandom.hex(4)}")
     StaffIdentityEmail.create!(

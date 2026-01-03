@@ -4,37 +4,11 @@ class SeedGuestCategories < ActiveRecord::Migration[7.1]
   disable_ddl_transaction!
 
   def up
-    safety_assured do
-      upsert_table(
-        "app_contact_categories", [
-          { id: "NEYO", description: "None/Default category" },
-          { id: "APPLICATION_INQUIRY", description: "Application inquiry category" },
-          { id: "APPLICATION_SUPPORT", description: "Application support category" },
-          { id: "APPLICATION_FEEDBACK", description: "Application feedback category" },
-        ],
-      )
-
-      upsert_table(
-        "com_contact_categories", [
-          { id: "SECURITY_ISSUE", description: "ROOT" },
-          { id: "OTHERS", description: "Miscellaneous inquiries" },
-          { id: "NEYO", description: "NONE" },
-        ],
-      )
-
-      upsert_table(
-        "org_contact_categories", [
-          { id: "NEYO", description: "None/Default category" },
-          { id: "ORGANIZATION_INQUIRY", description: "Organization inquiry category" },
-          { id: "ORGANIZATION_PARTNERSHIP", description: "Organization partnership category" },
-          { id: "ORGANIZATION_FEEDBACK", description: "Organization feedback category" },
-        ],
-      )
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op
+    # No-op: data seeding moved to fixtures.
   end
 
   private

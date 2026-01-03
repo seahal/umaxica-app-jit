@@ -14,7 +14,7 @@ class OrgTimelineStatusTest < ActiveSupport::TestCase
     @model_class = OrgTimelineStatus
     @valid_id = "ACTIVE"
     @subject = @model_class.new(id: @valid_id)
-    @status = org_timeline_statuses(:active)
+    @status = OrgTimelineStatus.find("ACTIVE")
   end
 
   test "inherits from BusinessesRecord" do
@@ -51,14 +51,14 @@ class OrgTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "can load draft status from fixtures" do
-    draft = org_timeline_statuses(:draft)
+    draft = OrgTimelineStatus.find("DRAFT")
 
     assert_not_nil draft
     assert_equal "DRAFT", draft.id
   end
 
   test "can load archived status from fixtures" do
-    archived = org_timeline_statuses(:archived)
+    archived = OrgTimelineStatus.find("ARCHIVED")
 
     assert_not_nil archived
     assert_equal "ARCHIVED", archived.id

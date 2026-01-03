@@ -26,7 +26,7 @@
 #  index_com_contact_topics_on_public_id       (public_id)
 #
 
-class ComContactTopic < GuestsRecord
+class ComContactTopic < GuestRecord
   include ::PublicId
 
   belongs_to :com_contact, inverse_of: :com_contact_topics

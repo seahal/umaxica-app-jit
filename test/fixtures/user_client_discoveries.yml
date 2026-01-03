@@ -1,0 +1,30 @@
+# == Schema Information
+#
+# Table name: user_client_discoveries
+#
+#  id         :uuid             not null, primary key
+#  user_id    :uuid             not null
+#  client_id  :uuid             not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_user_client_discoveries_on_client_id              (client_id)
+#  index_user_client_discoveries_on_user_id                (user_id)
+#  index_user_client_discoveries_on_user_id_and_client_id  (user_id,client_id) UNIQUE
+#
+
+one:
+  user: one
+  client: one
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+# column: value
+#
+two:
+  user: two
+  client: two
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+# column: value

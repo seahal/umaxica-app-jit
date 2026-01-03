@@ -98,7 +98,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 
 ### 3.5 Help Namespace
 - `Help::Com::ContactsController` handles `new/create/show`.
-- `ServiceSiteContact` (GuestsRecord) encrypts email, phone, title, description; requires either email or telephone plus policy consent.
+- `ServiceSiteContact` (GuestRecord) encrypts email, phone, title, description; requires either email or telephone plus policy consent.
 - Turnstile integration ensures bot mitigation; errors are logged via `Rails.logger`.
 - OTP dispatch uses `Email::App::ContactMailer` and `AwsSmsService`.
 
@@ -179,7 +179,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 |-------|---------|-------|
 | `User`, `Staff` | `IdentitiesRecord` | `has_many :emails`, `:phones`, `webauthn_id` stored |
 | `UserIdentityEmail` | `IdentitiesRecord` | Includes `Email` concern, encrypts `address`, `before_create` sets UUID v7 |
-| `ServiceSiteContact` | `GuestsRecord` | Encrypts email/phone/title/description, validates OTP codes, stores `ip_address` |
+| `ServiceSiteContact` | `GuestRecord` | Encrypts email/phone/title/description, validates OTP codes, stores `ip_address` |
 | `TimeBasedOneTimePassword` | `UniversalRecord` | Encrypts `private_key`, stores `last_otp_at`, `first_token` virtual attr |
 | `UserPasskey` | `ApplicationRecord` | Validates `webauthn_id`, `public_key`, `description`, `sign_count` |
 | `UserToken`, `StaffToken` | `TokensRecord` | Reference tokens for JWT refresh handling |

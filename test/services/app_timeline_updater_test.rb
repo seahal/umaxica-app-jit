@@ -19,6 +19,8 @@
 require "test_helper"
 
 class AppTimelineUpdaterTest < ActiveSupport::TestCase
+  fixtures :app_timeline_statuses
+
   def base_attrs
     {
       response_mode: "html",

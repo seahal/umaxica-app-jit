@@ -10,12 +10,6 @@ class FixIdentityConsistency < ActiveRecord::Migration[7.1]
     # Assuming it exists or was created by 20251222215659
 
     execute <<~SQL.squish
-      INSERT INTO staff_identity_audit_levels (id, created_at, updated_at)
-      VALUES ('NONE', NOW(), NOW())
-      ON CONFLICT (id) DO NOTHING
-    SQL
-
-    execute <<~SQL.squish
       UPDATE staff_identity_audits
       SET level_id = 'NONE'
       WHERE level_id IS NULL
@@ -24,8 +18,6 @@ class FixIdentityConsistency < ActiveRecord::Migration[7.1]
     execute "ALTER TABLE staff_identity_audits ALTER COLUMN level_id SET NOT NULL"
 
     execute "CREATE INDEX IF NOT EXISTS index_staff_identity_audits_on_level_id ON staff_identity_audits (level_id)"
-
-    execute "ALTER TABLE staff_identity_audits ADD CONSTRAINT fk_staff_audits_level FOREIGN KEY (level_id) REFERENCES staff_identity_audit_levels (id) ON DELETE RESTRICT"
 
     # Add missing unique indexes
     # UserIdentityTelephoneStatus lower(id)

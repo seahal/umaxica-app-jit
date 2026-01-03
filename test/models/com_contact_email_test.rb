@@ -33,8 +33,18 @@
 require "test_helper"
 
 class ComContactEmailTest < ActiveSupport::TestCase
-  test "should inherit from GuestsRecord" do
-    assert_operator ComContactEmail, :<, GuestsRecord
+  test "should inherit from GuestRecord" do
+    assert_operator ComContactEmail, :<, GuestRecord
+  end
+
+  setup do
+    # Seed necessary reference data for tests
+    %w(SECURITY_ISSUE NEYO).each do |id|
+      ComContactCategory.create_with(created_at: Time.current, updated_at: Time.current).find_or_create_by(id: id)
+    end
+    %w(NEYO SET_UP CHECKED_EMAIL_ADDRESS CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION).each do |id|
+      ComContactStatus.find_or_create_by(id: id)
+    end
   end
 
   test "should belong to com_contact" do

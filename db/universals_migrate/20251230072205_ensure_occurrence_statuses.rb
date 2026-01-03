@@ -14,22 +14,10 @@ class EnsureOccurrenceStatuses < ActiveRecord::Migration[8.2]
   ).freeze
 
   def up
-    TABLES.each do |table|
-      next unless table_exists?(table)
-
-      STATUS_IDS.each do |id|
-        safety_assured do
-          execute <<~SQL.squish
-            INSERT INTO #{table} (id)
-            VALUES ('#{id}')
-            ON CONFLICT (id) DO NOTHING
-          SQL
-        end
-      end
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid removing shared reference data.
+    # No-op: data seeding moved to fixtures.
   end
 end

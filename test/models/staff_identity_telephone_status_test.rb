@@ -11,7 +11,7 @@ require "test_helper"
 
 class StaffIdentityTelephoneStatusTest < ActiveSupport::TestCase
   test "valid status with id" do
-    status = staff_identity_telephone_statuses(:unverified)
+    status = StaffIdentityTelephoneStatus.find("UNVERIFIED")
 
     assert_predicate status, :valid?
   end
@@ -53,7 +53,7 @@ class StaffIdentityTelephoneStatusTest < ActiveSupport::TestCase
   end
 
   test "restrict_with_error prevents deletion when telephones exist" do
-    status = staff_identity_telephone_statuses(:verified)
+    status = StaffIdentityTelephoneStatus.find("VERIFIED")
     # Create a staff identity telephone with this status
     staff = Staff.create!(public_id: "test-staff-#{SecureRandom.hex(4)}")
     StaffIdentityTelephone.create!(

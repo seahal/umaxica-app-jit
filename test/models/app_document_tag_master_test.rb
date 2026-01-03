@@ -17,6 +17,8 @@
 require "test_helper"
 
 class AppDocumentTagMasterTest < ActiveSupport::TestCase
+  fixtures :app_document_tag_masters
+
   test "validates id presence and uniqueness" do
     master = AppDocumentTagMaster.new(id: nil)
     assert_not master.valid?

@@ -31,7 +31,7 @@ require "test_helper"
 # Covers refresh token behavior and session constraints for staff.
 class StaffTokenTest < ActiveSupport::TestCase
   def setup
-    @staff = staffs(:one)
+    @staff = Staff.find_by!(public_id: "one_staff_id")
     StaffToken.where(staff: @staff).destroy_all
     @token = StaffToken.create!(staff: @staff, staff_token_status_id: "ACTIVE")
   end
@@ -74,14 +74,14 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "can load one fixture" do
-    token_one = staff_tokens(:one)
+    token_one = StaffToken.find_by!(public_id: "one_staff_token_00001")
 
     assert_not_nil token_one
     assert_not_nil token_one.staff_id
   end
 
   test "can load two fixture" do
-    token_two = staff_tokens(:two)
+    token_two = StaffToken.find_by!(public_id: "two_staff_token_00001")
 
     assert_not_nil token_two
     assert_not_nil token_two.staff_id
@@ -104,7 +104,7 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum concurrent sessions per staff" do
-    staff = Staff.create!(staff_identity_status: staff_identity_statuses(:none))
+    staff = Staff.create!(staff_identity_status: StaffIdentityStatus.find("NEYO"))
     StaffToken::MAX_SESSIONS_PER_STAFF.times do
       StaffToken.create!(staff: staff)
     end

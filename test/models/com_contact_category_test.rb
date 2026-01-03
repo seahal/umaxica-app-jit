@@ -20,8 +20,8 @@
 require "test_helper"
 
 class ComContactCategoryTest < ActiveSupport::TestCase
-  test "should inherit from GuestsRecord" do
-    assert_operator ComContactCategory, :<, GuestsRecord
+  test "should inherit from GuestRecord" do
+    assert_operator ComContactCategory, :<, GuestRecord
   end
 
   test "should use id as primary key" do
@@ -117,7 +117,7 @@ class ComContactCategoryTest < ActiveSupport::TestCase
 
   test "destroy is restricted when contacts exist" do
     category = ComContactCategory.create!(id: "CONTACT_PARENT")
-    status = ComContactStatus.create!(id: "ACTIVE")
+    status = ComContactStatus.create!(id: "ACTIVE_TEST")
     ComContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
     assert_not category.destroy

@@ -37,7 +37,7 @@ class AreaOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "public_id uniqueness" do
-    existing = area_occurrences(:one)
+    existing = AreaOccurrence.find_by!(public_id: "one_area_occ_id_00001")
     record = build_occurrence(AreaOccurrence, body: "JP/Osaka/Kita", public_id: existing.public_id)
 
     assert_invalid_attribute(record, :public_id)
@@ -50,7 +50,7 @@ class AreaOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "body uniqueness" do
-    existing = area_occurrences(:one)
+    existing = AreaOccurrence.find_by!(public_id: "one_area_occ_id_00001")
     record = build_occurrence(AreaOccurrence, body: existing.body)
 
     assert_invalid_attribute(record, :body)

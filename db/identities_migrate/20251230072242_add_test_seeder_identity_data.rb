@@ -64,12 +64,6 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
             cols << "expires_at"
             vals << "(CURRENT_TIMESTAMP + INTERVAL '1 day')"
           end
-
-          execute <<~SQL.squish
-            INSERT INTO #{table_name} (#{cols.join(", ")})
-            VALUES (#{vals.join(", ")})
-            ON CONFLICT (id) DO NOTHING
-          SQL
         end
       end
 
@@ -111,12 +105,6 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
             cols << "updated_at"
             vals << "CURRENT_TIMESTAMP"
           end
-
-          execute <<~SQL.squish
-            INSERT INTO #{table_name} (#{cols.join(", ")})
-            VALUES (#{vals.join(", ")})
-            ON CONFLICT (id) DO NOTHING
-          SQL
         end
       end
 
@@ -147,11 +135,6 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
           vals << connection.quote("ALIVE")
         end
 
-        execute <<~SQL.squish
-          INSERT INTO users (#{cols.join(", ")})
-          VALUES (#{vals.join(", ")})
-          ON CONFLICT (id) DO NOTHING
-        SQL
       end
 
       # Insert specific Google Identity seeding with fixed expires_at
@@ -170,11 +153,6 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
               vals << connection.quote("ALIVE")
             end
 
-            execute <<~SQL.squish
-              INSERT INTO users (#{cols.join(", ")})
-              VALUES (#{vals.join(", ")})
-              RETURNING id
-            SQL
             user_id = connection.select_value("SELECT id FROM users WHERE public_id = #{connection.quote(nil_public_id)}")
           else
             user_id = result
@@ -201,11 +179,6 @@ class AddTestSeederIdentityData < ActiveRecord::Migration[8.2]
           vals << connection.quote("ACTIVE")
         end
 
-        execute <<~SQL.squish
-          INSERT INTO user_identity_social_googles (#{cols.join(", ")})
-          VALUES (#{vals.join(", ")})
-          ON CONFLICT (uid, provider) DO NOTHING
-        SQL
       end
     end
   end

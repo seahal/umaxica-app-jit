@@ -9,7 +9,7 @@
 #  description  :string(255)      default(""), not null
 #
 
-class AppContactStatus < GuestsRecord
+class AppContactStatus < GuestRecord
   include UppercaseId
 
   validates :description, length: { maximum: 255 }

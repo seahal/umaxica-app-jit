@@ -35,11 +35,11 @@
 require "test_helper"
 
 class UserIdentityAuditTest < ActiveSupport::TestCase
-  fixtures :users, :staffs, :user_identity_audit_events, :user_identity_audit_levels
+  fixtures :users, :staffs, :user_identity_audit_events, :user_identity_audit_levels, :user_identity_statuses
 
   def setup
     @user = users(:one)
-    @audit_event = user_identity_audit_events(:login_success)
+    @audit_event = UserIdentityAuditEvent.find("LOGIN_SUCCESS")
     @level = UserIdentityAuditLevel.find_or_create_by!(id: "INFO")
     @audit = UserIdentityAudit.create!(
       user: @user,

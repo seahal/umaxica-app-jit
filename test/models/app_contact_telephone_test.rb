@@ -29,7 +29,7 @@ require "test_helper"
 
 class AppContactTelephoneTest < ActiveSupport::TestCase
   def setup
-    @app_contact = app_contacts(:one)
+    @app_contact = AppContact.find_by!(public_id: "one_app_contact_00001")
     @telephone = AppContactTelephone.new(
       app_contact: @app_contact,
       telephone_number: "+819012345678",

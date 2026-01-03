@@ -6,12 +6,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-
-none:
-  id: NONE
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-
 neyo:
   id: NEYO
 info:

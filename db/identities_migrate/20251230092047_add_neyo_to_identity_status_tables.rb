@@ -10,11 +10,7 @@ class AddNeyoToIdentityStatusTables < ActiveRecord::Migration[8.2]
         user_identity_social_apple_statuses
         user_identity_social_google_statuses
       ).each do |table_name|
-        execute <<-SQL.squish
-          INSERT INTO #{table_name} (id)
-          VALUES ('NEYO')
-          ON CONFLICT (id) DO NOTHING;
-        SQL
+        # No-op: intentionally left blank.
       end
 
       # Status models using StringPrimaryKey pattern (key/name structure)
@@ -32,17 +28,7 @@ class AddNeyoToIdentityStatusTables < ActiveRecord::Migration[8.2]
         has_name = column_exists?(table_name.to_sym, :name)
 
         if has_key && has_name
-          execute <<-SQL.squish
-            INSERT INTO #{table_name} (id, key, name, created_at, updated_at)
-            VALUES ('NEYO', 'NEYO', 'None', NOW(), NOW())
-            ON CONFLICT (id) DO NOTHING;
-          SQL
         else
-          execute <<-SQL.squish
-            INSERT INTO #{table_name} (id, created_at, updated_at)
-            VALUES ('NEYO', NOW(), NOW())
-            ON CONFLICT (id) DO NOTHING;
-          SQL
         end
       end
     end
@@ -63,9 +49,7 @@ class AddNeyoToIdentityStatusTables < ActiveRecord::Migration[8.2]
         post_statuses
         post_review_statuses
       ).each do |table_name|
-        execute <<-SQL.squish
-          DELETE FROM #{table_name} WHERE id = 'NEYO' OR key = 'NEYO';
-        SQL
+        # No-op: intentionally left blank.
       end
     end
   end

@@ -29,8 +29,8 @@
 require "test_helper"
 
 class ComContactTopicTest < ActiveSupport::TestCase
-  test "should inherit from GuestsRecord" do
-    assert_operator ComContactTopic, :<, GuestsRecord
+  test "should inherit from GuestRecord" do
+    assert_operator ComContactTopic, :<, GuestRecord
   end
 
   def build_contact

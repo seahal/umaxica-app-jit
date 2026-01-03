@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_03_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -34,11 +34,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
 
   create_table "admins", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.uuid "department_id"
     t.string "moniker"
     t.string "public_id"
     t.uuid "staff_id", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
+    t.index ["department_id"], name: "index_admins_on_department_id"
     t.index ["public_id"], name: "index_admins_on_public_id", unique: true
     t.index ["staff_id"], name: "index_admins_on_staff_id"
     t.index ["status_id"], name: "index_admins_on_status_id"
@@ -216,6 +218,76 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
     t.index ["representing_organization_id"], name: "index_avatars_on_representing_organization_id"
   end
 
+  create_table "client_avatar_accesses", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "avatar_id", null: false
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_client_avatar_accesses_on_avatar_id"
+    t.index ["client_id", "avatar_id"], name: "index_client_avatar_accesses_on_client_id_and_avatar_id", unique: true
+    t.index ["client_id"], name: "index_client_avatar_accesses_on_client_id"
+  end
+
+  create_table "client_avatar_deletions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "avatar_id", null: false
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_client_avatar_deletions_on_avatar_id"
+    t.index ["client_id", "avatar_id"], name: "index_client_avatar_deletions_on_client_and_avatar", unique: true
+    t.index ["client_id"], name: "index_client_avatar_deletions_on_client_id"
+  end
+
+  create_table "client_avatar_extractions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "avatar_id", null: false
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_client_avatar_extractions_on_avatar_id"
+    t.index ["client_id", "avatar_id"], name: "index_client_avatar_extractions_on_client_and_avatar", unique: true
+    t.index ["client_id"], name: "index_client_avatar_extractions_on_client_id"
+  end
+
+  create_table "client_avatar_impersonations", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "avatar_id", null: false
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_client_avatar_impersonations_on_avatar_id"
+    t.index ["client_id", "avatar_id"], name: "index_client_avatar_impersonations_on_client_and_avatar", unique: true
+    t.index ["client_id"], name: "index_client_avatar_impersonations_on_client_id"
+  end
+
+  create_table "client_avatar_oversights", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "avatar_id", null: false
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_client_avatar_oversights_on_avatar_id"
+    t.index ["client_id", "avatar_id"], name: "index_client_avatar_oversights_on_client_and_avatar", unique: true
+    t.index ["client_id"], name: "index_client_avatar_oversights_on_client_id"
+  end
+
+  create_table "client_avatar_suspensions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "avatar_id", null: false
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_client_avatar_suspensions_on_avatar_id"
+    t.index ["client_id", "avatar_id"], name: "index_client_avatar_suspensions_on_client_and_avatar", unique: true
+    t.index ["client_id"], name: "index_client_avatar_suspensions_on_client_id"
+  end
+
+  create_table "client_avatar_visibilities", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.string "avatar_id", null: false
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["avatar_id"], name: "index_client_avatar_visibilities_on_avatar_id"
+    t.index ["client_id", "avatar_id"], name: "index_client_avatar_visibilities_on_client_and_avatar", unique: true
+    t.index ["client_id"], name: "index_client_avatar_visibilities_on_client_id"
+  end
+
   create_table "client_identity_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -224,11 +296,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
 
   create_table "clients", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.uuid "division_id"
     t.string "moniker"
     t.string "public_id"
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id"
+    t.index ["division_id"], name: "index_clients_on_division_id"
     t.index ["public_id"], name: "index_clients_on_public_id", unique: true
     t.index ["status_id"], name: "index_clients_on_status_id"
     t.index ["user_id"], name: "index_clients_on_user_id"
@@ -242,11 +316,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
 
   create_table "departments", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "department_status_id", limit: 255, null: false
-    t.uuid "parent_id"
+    t.string "name", null: false
     t.datetime "updated_at", null: false
-    t.index ["department_status_id"], name: "index_departments_on_department_status_id"
-    t.index ["parent_id", "department_status_id"], name: "index_organizations_unique", unique: true
   end
 
   create_table "division_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -258,9 +329,11 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
   create_table "divisions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "division_status_id", limit: 255, null: false
+    t.uuid "organization_id"
     t.uuid "parent_id"
     t.datetime "updated_at", null: false
     t.index ["division_status_id"], name: "index_divisions_on_division_status_id"
+    t.index ["organization_id"], name: "index_divisions_on_organization_id"
     t.index ["parent_id", "division_status_id"], name: "index_divisions_unique", unique: true
   end
 
@@ -570,6 +643,66 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
     t.check_constraint "status_id IS NULL OR status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staffs_staff_identity_status_id_format"
   end
 
+  create_table "user_client_deletions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["client_id"], name: "index_user_client_deletions_on_client_id"
+    t.index ["user_id", "client_id"], name: "index_user_client_deletions_on_user_id_and_client_id", unique: true
+    t.index ["user_id"], name: "index_user_client_deletions_on_user_id"
+  end
+
+  create_table "user_client_discoveries", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["client_id"], name: "index_user_client_discoveries_on_client_id"
+    t.index ["user_id", "client_id"], name: "index_user_client_discoveries_on_user_id_and_client_id", unique: true
+    t.index ["user_id"], name: "index_user_client_discoveries_on_user_id"
+  end
+
+  create_table "user_client_impersonations", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["client_id"], name: "index_user_client_impersonations_on_client_id"
+    t.index ["user_id", "client_id"], name: "index_user_client_impersonations_on_user_id_and_client_id", unique: true
+    t.index ["user_id"], name: "index_user_client_impersonations_on_user_id"
+  end
+
+  create_table "user_client_observations", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["client_id"], name: "index_user_client_observations_on_client_id"
+    t.index ["user_id", "client_id"], name: "index_user_client_observations_on_user_id_and_client_id", unique: true
+    t.index ["user_id"], name: "index_user_client_observations_on_user_id"
+  end
+
+  create_table "user_client_revocations", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["client_id"], name: "index_user_client_revocations_on_client_id"
+    t.index ["user_id", "client_id"], name: "index_user_client_revocations_on_user_id_and_client_id", unique: true
+    t.index ["user_id"], name: "index_user_client_revocations_on_user_id"
+  end
+
+  create_table "user_client_suspensions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["client_id"], name: "index_user_client_suspensions_on_client_id"
+    t.index ["user_id", "client_id"], name: "index_user_client_suspensions_on_user_id_and_client_id", unique: true
+    t.index ["user_id"], name: "index_user_client_suspensions_on_user_id"
+  end
+
   create_table "user_clients", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.uuid "client_id", null: false
     t.datetime "created_at", null: false
@@ -814,17 +947,30 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
     t.check_constraint "status_id IS NULL OR status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_users_user_identity_status_id_format"
   end
 
-  create_table "workspaces", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "workspace_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "workspaces", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "admin_id"
+    t.datetime "created_at", null: false
+    t.uuid "department_id"
     t.string "domain", default: "", null: false
     t.string "name", default: "", null: false
+    t.uuid "parent_id"
     t.uuid "parent_organization", default: "00000000-0000-0000-0000-000000000000", null: false
     t.datetime "updated_at", null: false
-    t.index ["domain"], name: "index_workspaces_on_domain", unique: true, where: "(domain IS NOT NULL)"
-    t.index ["parent_organization"], name: "index_workspaces_on_parent_organization"
+    t.string "workspace_status_id", limit: 255
+    t.index ["admin_id"], name: "index_workspaces_on_admin_id"
+    t.index ["department_id"], name: "index_workspaces_on_department_id"
+    t.index ["domain"], name: "index_workspaces_on_domain", unique: true
+    t.index ["parent_id"], name: "index_workspaces_on_parent_id"
+    t.index ["workspace_status_id"], name: "index_workspaces_on_workspace_status_id"
   end
 
   add_foreign_key "admins", "admin_identity_statuses", column: "status_id"
+  add_foreign_key "admins", "departments"
   add_foreign_key "admins", "staffs"
   add_foreign_key "apple_auths", "users"
   add_foreign_key "avatar_assignments", "avatars", on_delete: :cascade
@@ -846,10 +992,23 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
   add_foreign_key "avatars", "avatar_capabilities", column: "capability_id"
   add_foreign_key "avatars", "clients", validate: false
   add_foreign_key "avatars", "handles", column: "active_handle_id"
+  add_foreign_key "client_avatar_accesses", "avatars"
+  add_foreign_key "client_avatar_accesses", "clients"
+  add_foreign_key "client_avatar_deletions", "avatars"
+  add_foreign_key "client_avatar_deletions", "clients"
+  add_foreign_key "client_avatar_extractions", "avatars"
+  add_foreign_key "client_avatar_extractions", "clients"
+  add_foreign_key "client_avatar_impersonations", "avatars"
+  add_foreign_key "client_avatar_impersonations", "clients"
+  add_foreign_key "client_avatar_oversights", "avatars"
+  add_foreign_key "client_avatar_oversights", "clients"
+  add_foreign_key "client_avatar_suspensions", "avatars"
+  add_foreign_key "client_avatar_suspensions", "clients"
+  add_foreign_key "client_avatar_visibilities", "avatars"
+  add_foreign_key "client_avatar_visibilities", "clients"
   add_foreign_key "clients", "client_identity_statuses", column: "status_id"
-  add_foreign_key "clients", "users", validate: false
-  add_foreign_key "departments", "department_statuses"
-  add_foreign_key "departments", "departments", column: "parent_id"
+  add_foreign_key "clients", "divisions"
+  add_foreign_key "clients", "users"
   add_foreign_key "divisions", "division_statuses"
   add_foreign_key "divisions", "divisions", column: "parent_id"
   add_foreign_key "google_auths", "users"
@@ -865,10 +1024,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
   add_foreign_key "role_assignments", "roles"
   add_foreign_key "role_assignments", "staffs", on_delete: :cascade
   add_foreign_key "role_assignments", "users", on_delete: :cascade
-  add_foreign_key "roles", "workspaces", column: "organization_id"
+  add_foreign_key "roles", "departments", column: "organization_id"
   add_foreign_key "staff_admins", "admins", on_delete: :cascade
   add_foreign_key "staff_admins", "staffs", on_delete: :cascade
-  add_foreign_key "staff_identity_audits", "staff_identity_audit_levels", column: "level_id", name: "fk_staff_audits_level", on_delete: :restrict
   add_foreign_key "staff_identity_emails", "staff_identity_email_statuses"
   add_foreign_key "staff_identity_emails", "staffs"
   add_foreign_key "staff_identity_passkeys", "staff_identity_passkey_statuses", validate: false
@@ -880,6 +1038,18 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
   add_foreign_key "staff_passkeys", "staffs"
   add_foreign_key "staff_recovery_codes", "staffs"
   add_foreign_key "staffs", "staff_identity_statuses", column: "status_id"
+  add_foreign_key "user_client_deletions", "clients"
+  add_foreign_key "user_client_deletions", "users"
+  add_foreign_key "user_client_discoveries", "clients"
+  add_foreign_key "user_client_discoveries", "users"
+  add_foreign_key "user_client_impersonations", "clients"
+  add_foreign_key "user_client_impersonations", "users"
+  add_foreign_key "user_client_observations", "clients"
+  add_foreign_key "user_client_observations", "users"
+  add_foreign_key "user_client_revocations", "clients"
+  add_foreign_key "user_client_revocations", "users"
+  add_foreign_key "user_client_suspensions", "clients"
+  add_foreign_key "user_client_suspensions", "users"
   add_foreign_key "user_clients", "clients", on_delete: :cascade
   add_foreign_key "user_clients", "users", on_delete: :cascade
   add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
@@ -898,10 +1068,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_035351) do
   add_foreign_key "user_identity_telephones", "user_identity_telephone_statuses"
   add_foreign_key "user_identity_telephones", "users"
   add_foreign_key "user_memberships", "users"
-  add_foreign_key "user_memberships", "workspaces"
+  add_foreign_key "user_memberships", "workspaces", validate: false
   add_foreign_key "user_passkeys", "users"
+  add_foreign_key "user_workspaces", "departments", column: "workspace_id"
   add_foreign_key "user_workspaces", "users"
-  add_foreign_key "user_workspaces", "workspaces"
   add_foreign_key "users", "user_identity_statuses", column: "status_id"
-  add_foreign_key "workspaces", "workspaces", column: "parent_organization"
 end

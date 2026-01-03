@@ -24,7 +24,7 @@
 #  index_org_contact_topics_on_public_id       (public_id)
 #
 
-class OrgContactTopic < GuestsRecord
+class OrgContactTopic < GuestRecord
   include ::PublicId
 
   belongs_to :org_contact, inverse_of: :org_contact_topics

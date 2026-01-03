@@ -26,20 +26,17 @@ class SeedIdentityAuditEventsAndLevels < ActiveRecord::Migration[8.2]
   LEVELS = %w(NONE INFO WARN ERROR).freeze
 
   def up
-    seed_ids(:user_identity_audit_events, USER_EVENTS)
-    seed_ids(:staff_identity_audit_events, STAFF_EVENTS)
-    seed_ids(:user_identity_audit_levels, LEVELS)
-    seed_ids(:staff_identity_audit_levels, LEVELS)
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid removing shared reference data.
+    # No-op: data seeding moved to fixtures.
   end
 
   private
 
   def seed_ids(table_name, ids)
-    return unless table_exists?(table_name)
+    # return unless table_exists?(table_name)
 
     # Check if table has timestamp columns
     has_timestamps = column_exists?(table_name, :created_at)

@@ -1,12 +1,19 @@
+# Auto-generated minimal fixture
 neyo:
   id: NEYO
+active:
+  id: ACTIVE
+inactive:
+  id: INACTIVE
+pending:
+  id: PENDING
+deleted:
+  id: DELETED
+checked_email_address:
+  id: CHECKED_EMAIL_ADDRESS
 set_up:
   id: SET_UP
-checked_email:
-  id: CHECKED_EMAIL_ADDRESS
-checked_phone:
+checked_telephone_number:
   id: CHECKED_TELEPHONE_NUMBER
-completed:
+completed_contact_action:
   id: COMPLETED_CONTACT_ACTION
-null_status:
-  id: NULL_COM_STATUS

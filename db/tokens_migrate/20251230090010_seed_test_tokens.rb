@@ -14,14 +14,11 @@ class SeedTestTokens < ActiveRecord::Migration[8.2]
   ].freeze
 
   def up
-    safety_assured do
-      seed_tokens(:user_tokens, USER_TOKENS, fk_column: :user_id, status_column: :user_token_status_id)
-      seed_tokens(:staff_tokens, STAFF_TOKENS, fk_column: :staff_id, status_column: :staff_token_status_id)
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid deleting shared reference data used in tests.
+    # No-op: data seeding moved to fixtures.
   end
 
   private

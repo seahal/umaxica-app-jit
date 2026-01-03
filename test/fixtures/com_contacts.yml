@@ -23,7 +23,6 @@
 #  index_com_contacts_on_token_digest      (token_digest)
 #  index_com_contacts_on_token_expires_at  (token_expires_at)
 #
-
 one:
   id: "37f7eeff-831b-5c41-984a-254965f58c0f"
   public_id: "97463105827291840535"
@@ -33,7 +32,6 @@ one:
   token_expires_at: <%= 7.days.from_now %>
   token_viewed: false
   ip_address: "192.168.1.1"
-
 two:
   id: "aa67c98c-d81f-5a9c-b0bc-26caa0051aea"
   public_id: "test_contact_id_00002"
@@ -43,7 +41,6 @@ two:
   token_expires_at: <%= 7.days.from_now %>
   token_viewed: false
   ip_address: "192.168.1.2"
-
 verified_email_complete:
   id: "6a9e1d88-2947-4e6f-870f-17855340051e"
   public_id: "verified_email_001"

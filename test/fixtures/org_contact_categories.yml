@@ -1,8 +1,4 @@
 organization_inquiry:
   id: ORGANIZATION_INQUIRY
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
 neyo:
   id: NEYO
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>

@@ -29,17 +29,6 @@ class EnforceNotNullOnIdentityAuthColumns < ActiveRecord::Migration[8.2]
 
     reversible do |dir|
       dir.up do
-        execute "UPDATE workspaces SET parent_organization = '#{NIL_UUID}' WHERE parent_organization IS NULL"
-      end
-    end
-
-    change_table :workspaces, bulk: true do |t|
-      t.change_null :parent_organization, false, NIL_UUID
-      t.change_default :parent_organization, from: nil, to: NIL_UUID
-    end
-
-    reversible do |dir|
-      dir.up do
         execute "UPDATE staff_passkeys SET sign_count = 0 WHERE sign_count IS NULL"
       end
     end

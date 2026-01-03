@@ -10,15 +10,11 @@ class SeedTestDocumentReferenceIds < ActiveRecord::Migration[8.2]
   ).freeze
 
   def up
-    safety_assured do
-      NEYO_STATUS_TABLES.each do |table|
-        seed_status(table, "NEYO", description: "Default")
-      end
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid removing shared reference data.
+    # No-op: data seeding moved to fixtures.
   end
 
   private

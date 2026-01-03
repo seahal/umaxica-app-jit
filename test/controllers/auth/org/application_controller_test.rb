@@ -11,7 +11,12 @@ module Auth::Org
         "rack.session.options" => { id: SecureRandom.hex(16) },
       )
       @controller.response = ActionDispatch::TestResponse.new
-      @staff = staffs(:one)
+      @staff =
+        Staff.find_or_create_by!(id: SecureRandom.uuid) do |s|
+          s.status_id = "NEYO"
+          s.public_id = SecureRandom.alphanumeric(21)
+          s.webauthn_id = SecureRandom.hex(16)
+        end
     end
 
     test "includes expected concerns" do

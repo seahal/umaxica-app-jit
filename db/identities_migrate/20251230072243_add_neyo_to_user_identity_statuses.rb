@@ -5,15 +5,10 @@ class AddNeyoToUserIdentityStatuses < ActiveRecord::Migration[8.2]
 
   def up
     safety_assured do
-      execute <<~SQL.squish
-        INSERT INTO user_identity_statuses (id)
-        VALUES ('NEYO')
-        ON CONFLICT (id) DO NOTHING;
-      SQL
+      # No-op: intentionally left blank.
     end
   end
 
   def down
-    execute "DELETE FROM user_identity_statuses WHERE id = 'NEYO';"
   end
 end

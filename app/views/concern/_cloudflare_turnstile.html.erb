@@ -1,8 +1,15 @@
 <%# Generate unique ID for this widget instance %>
 <% widget_id = "cf-turnstile-#{SecureRandom.hex(4)}" %>
-<div id="<%= widget_id %>"></div>
+<% site_key = Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY) || ENV["CLOUDFLARE_TURNSTILE_SITE_KEY"] %>
 
-<script nonce="<%= content_security_policy_nonce %>">
+<% if site_key.blank? %>
+  <div class="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+    Cloudflare Turnstile site key is missing. Set credentials or CLOUDFLARE_TURNSTILE_SITE_KEY.
+  </div>
+<% else %>
+  <div id="<%= widget_id %>"></div>
+
+  <script nonce="<%= content_security_policy_nonce %>">
     (function () {
         const widgetId = <%= widget_id.to_json %>;
         const container = document.getElementById(widgetId);
@@ -23,7 +30,7 @@
 
             try {
                 turnstile.render('#' + widgetId, {
-                    sitekey: <%= Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY).to_json %>,
+                    sitekey: <%= site_key.to_json %>,
                     callback: function (token) {
                         console.debug('Turnstile verified:', token.substring(0, 20) + '...');
                     },
@@ -72,3 +79,4 @@
         }
     })();
 </script>
+<% end %>

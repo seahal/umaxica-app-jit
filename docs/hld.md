@@ -82,7 +82,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 
 ### 3.3 Layered components
 1. **Presentation**: ActionController namespaces + Turbo/React bundles. Entry file `app/javascript/application.js` imports per-surface view scripts (e.g., `views/sign/app/application.ts`, `views/passkey.js`). Layouts load compiled bundles from `app/assets/builds`.
-2. **Domain Logic**: Concerns handle cross-cutting rules (auth, region, theme, cookie consent, Turnstile, rate limiting, redirect sanitization). Models inherit from base records (`IdentitiesRecord`, `GuestsRecord`, etc.) to target specific DB clusters. Services (e.g., `AwsSmsService`, `AccountService`) encapsulate integration logic.
+2. **Domain Logic**: Concerns handle cross-cutting rules (auth, region, theme, cookie consent, Turnstile, rate limiting, redirect sanitization). Models inherit from base records (`IdentitiesRecord`, `GuestRecord`, etc.) to target specific DB clusters. Services (e.g., `AwsSmsService`, `AccountService`) encapsulate integration logic.
 3. **Integration**: ActionMailer namespaces, Karafka consumer, Sms providers, Active Storage/Shrine, OpenTelemetry instrumentation, Redis/Valkey caching, Kafka messaging, external CDNs/cloud providers.
 
 ---
@@ -106,7 +106,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 - `allow_browser versions: :modern` ensures unsupported browsers fail early.
 
 ### 4.3 Help (contact center)
-- `Help::Com::ContactsController` builds `ServiceSiteContact` records (inherits from `GuestsRecord`). The model encrypts email/phone/title/description, enforces validation, and guarantees either email or phone exists.
+- `Help::Com::ContactsController` builds `ServiceSiteContact` records (inherits from `GuestRecord`). The model encrypts email/phone/title/description, enforces validation, and guarantees either email or phone exists.
 - Turnstile result is logged; failures add model errors and re-render the form.
 - On success, controller redirects to `new` and (future) should enqueue a Kafka message through `Karafka.producer`.
 - Client-side guard (`app/javascript/views/www/app/inquiry/before_submit.js`) prevents submission when policy checkbox unchecked.
@@ -135,7 +135,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 | Base class | Databases | Representative tables |
 |------------|-----------|------------------------|
 | `IdentitiesRecord` | `identity`, `identity_replica` | `users`, `staffs`, `user_passkeys`, `user_sessions` |
-| `GuestsRecord` | `guest`, `guest_replica` | `service_site_contacts`, `corporate_site_contacts` |
+| `GuestRecord` | `guest`, `guest_replica` | `service_site_contacts`, `corporate_site_contacts` |
 | `UniversalRecord` | `universal`, `universal_replica` | `time_based_one_time_passwords`, `universal_*_identifiers` |
 | `TokensRecord` | `token`, `token_replica` | `user_tokens`, `staff_tokens`, `user_sessions` |
 | `BusinessesRecord`, `ProfilesRecord`, `StoragesRecord`, etc. | `business`, `profile`, `storage`, `notification`, etc. | Owners/customers/timeline data (future modules) |

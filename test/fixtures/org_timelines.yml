@@ -19,7 +19,6 @@
 #  index_org_timelines_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_org_timelines_on_status_id                    (status_id)
 #
-
 one:
   status_id: "NEYO"
   public_id: "one_org_timeline_0001"
@@ -28,4 +27,3 @@ one:
   expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-

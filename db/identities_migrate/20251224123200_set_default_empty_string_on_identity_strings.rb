@@ -24,7 +24,6 @@ class SetDefaultEmptyStringOnIdentityStrings < ActiveRecord::Migration[8.2]
       user_identity_telephones: %i(number otp_private_key),
       user_passkeys: %i(external_id name transports user_handle),
       users: %i(public_id webauthn_id),
-      workspaces: %i(domain name),
     }
 
     columns.each do |table, cols|

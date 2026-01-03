@@ -92,9 +92,9 @@ class IdentityEmailTest < ActiveSupport::TestCase
   def assign_owner(record)
     case record
     when UserIdentityEmail
-      record.user = users(:none_user)
+      record.user = User.find_by!(public_id: "none_id")
     when StaffIdentityEmail
-      record.staff = staffs(:none_staff)
+      record.staff = Staff.find_by!(public_id: "none_staff_id")
     end
   end
 end

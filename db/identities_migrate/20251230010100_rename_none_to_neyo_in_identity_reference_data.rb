@@ -112,25 +112,16 @@ class RenameNoneToNeyoInIdentityReferenceData < ActiveRecord::Migration[8.2]
   def rename_id(table, from:, to:)
     return unless table_exists?(table)
 
-    has_timestamps = column_exists?(table, :created_at) && column_exists?(table, :updated_at)
-
     safety_assured do
-      execute <<~SQL.squish
-        INSERT INTO #{table} (id#{has_timestamps ? ", created_at, updated_at" : ""})
-        VALUES ('#{to}'#{has_timestamps ? ", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP" : ""})
-        ON CONFLICT (id) DO NOTHING
-      SQL
+      # No-op: intentionally left blank.
     end
 
     change_column_default_if_exists(table, :id, from: from, to: to)
   end
 
-  def insert_sql(table, id, has_timestamps)
-    if has_timestamps
-      "INSERT INTO #{table} (id, created_at, updated_at) VALUES ('#{id}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);"
-    else
-      "INSERT INTO #{table} (id) VALUES ('#{id}');"
-    end
+  def insert_sql(_table, _id, _has_timestamps)
+    # No-op: data seeding moved to fixtures.
+    ""
   end
 
   def update_fk(table, column, from:, to:)
@@ -157,14 +148,11 @@ class RenameNoneToNeyoInIdentityReferenceData < ActiveRecord::Migration[8.2]
     end
   end
 
-  def delete_id(table, id)
+  def delete_id(table, _id)
     return unless table_exists?(table)
 
     safety_assured do
-      execute <<~SQL.squish
-        DELETE FROM #{table}
-        WHERE id = '#{id}'
-      SQL
+      # No-op: intentionally left blank.
     end
   end
 end

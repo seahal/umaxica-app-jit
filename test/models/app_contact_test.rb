@@ -33,10 +33,18 @@ class AppContactTest < ActiveSupport::TestCase
 
   def build_contact(**attrs)
     # Create contact first
-    contact = AppContact.new(**attrs.except(:app_contact_emails, :app_contact_telephones))
+    contact_attrs = attrs.except(:app_contact_emails, :app_contact_telephones)
+    unless contact_attrs[:category_id]
+      cat_id = sample_category
+      contact_attrs[:app_contact_category] = AppContactCategory.find(cat_id)
+    end
+    unless contact_attrs[:status_id]
+      stat_id = sample_status
+      contact_attrs[:app_contact_status] = AppContactStatus.find(stat_id)
+    end
+
+    contact = AppContact.new(**contact_attrs)
     contact.confirm_policy = "1" unless attrs.key?(:confirm_policy)
-    contact.category_id ||= sample_category
-    contact.status_id ||= sample_status
     contact.save!
 
     # Create email and telephone associated with the contact
@@ -59,24 +67,43 @@ class AppContactTest < ActiveSupport::TestCase
     contact
   end
 
+  setup do
+    create_all_statuses
+    create_all_categories
+  end
+
   def sample_category
-    AppContactCategory.find_by(id: "APPLICATION_INQUIRY")&.id || "NEYO"
+    AppContactCategory.find_or_create_by!(id: "APPLICATION_INQUIRY").id
   end
 
   def sample_status
-    AppContactStatus.find_by(id: "SET_UP")&.id || "NEYO"
+    AppContactStatus.find_or_create_by!(id: "SET_UP").id
   end
 
-  test "should inherit from GuestsRecord" do
-    assert_operator AppContact, :<, GuestsRecord
+  def create_all_statuses
+    ids = %w(NEYO SET_UP CHECKED_EMAIL_ADDRESS CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION)
+    ids.each do |id|
+      AppContactStatus.find_or_create_by!(id: id)
+    end
   end
 
-  test "should have valid fixtures" do
-    contact = app_contacts(:one)
+  def create_all_categories
+    ids = ["NEYO", "APPLICATION_INQUIRY"]
+    ids.each do |id|
+      AppContactCategory.find_or_create_by!(id: id)
+    end
+  end
+
+  test "should inherit from GuestRecord" do
+    assert_operator AppContact, :<, GuestRecord
+  end
+
+  test "should have valid factory" do
+    contact = build_contact
 
     assert_predicate contact, :valid?
-    assert_equal "NEYO", contact.category_id
-    assert_equal "NEYO", contact.status_id
+    assert_equal "APPLICATION_INQUIRY", contact.category_id
+    assert_equal "SET_UP", contact.status_id
   end
 
   test "should create contact with relationship titles" do
@@ -132,7 +159,7 @@ class AppContactTest < ActiveSupport::TestCase
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
-    contact = app_contacts(:one)
+    contact = build_contact
 
     assert_respond_to contact, :created_at
     assert_respond_to contact, :updated_at
@@ -142,14 +169,14 @@ class AppContactTest < ActiveSupport::TestCase
   # rubocop:enable Minitest/MultipleAssertions
 
   test "should use UUID as primary key" do
-    contact = app_contacts(:one)
+    contact = build_contact
 
     assert_kind_of String, contact.id
     assert_equal 36, contact.id.length
   end
 
   test "should expose relationship title attributes" do
-    contact = app_contacts(:one)
+    contact = build_contact
 
     assert_respond_to contact, :category_id
     assert_respond_to contact, :status_id

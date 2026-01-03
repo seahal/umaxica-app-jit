@@ -23,11 +23,9 @@ class User < IdentitiesRecord
   self.implicit_order_column = :created_at
   include ::PublicId
   include ::Accountably
-  include ::Accountable
 
   attribute :status_id, default: UserIdentityStatus::NEYO
   include Withdrawable
-  include HasRoles
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :status_id, length: { maximum: 255 }
@@ -61,14 +59,9 @@ class User < IdentitiesRecord
            dependent: :destroy,
            inverse_of: false
   has_many :user_tokens,
-           dependent: :destroy, # , disable_joins: true
-           inverse_of: :user
-  has_many :user_memberships,
            dependent: :destroy,
            inverse_of: :user
-  has_many :workspaces,
-           through: :user_memberships
-  has_many :user_workspaces,
+  has_many :user_memberships,
            dependent: :destroy,
            inverse_of: :user
   has_many :staff_identity_audits,
@@ -83,14 +76,36 @@ class User < IdentitiesRecord
   has_many :user_clients,
            dependent: :destroy,
            inverse_of: :user
+  has_many :user_client_discoveries,
+           class_name: "UserClientDiscovery",
+           dependent: :destroy,
+           inverse_of: :user
+  has_many :user_client_observations,
+           class_name: "UserClientObservation",
+           dependent: :destroy,
+           inverse_of: :user
+  has_many :user_client_revocations,
+           class_name: "UserClientRevocation",
+           dependent: :destroy,
+           inverse_of: :user
+  has_many :user_client_impersonations,
+           class_name: "UserClientImpersonation",
+           dependent: :destroy,
+           inverse_of: :user
+  has_many :user_client_suspensions,
+           class_name: "UserClientSuspension",
+           dependent: :destroy,
+           inverse_of: :user
+  has_many :user_client_deletions,
+           class_name: "UserClientDeletion",
+           dependent: :destroy,
+           inverse_of: :user
   has_many :clients,
            through: :user_clients
   has_many :owned_clients,
            class_name: "Client",
            dependent: :nullify,
            inverse_of: :user
-
-  # Avatar assignments
   has_many :avatar_assignments, dependent: :destroy
   has_many :assigned_avatars, through: :avatar_assignments, source: :avatar
   has_many :owned_avatars,

@@ -18,7 +18,6 @@
 #  index_domain_occurrences_on_public_id   (public_id) UNIQUE
 #  index_domain_occurrences_on_status_id   (status_id)
 #
-
 one:
   status_id: "NEYO"
   public_id: "one_domain_occ_id_001"
@@ -27,4 +26,3 @@ one:
   updated_at: <%= Time.current %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-

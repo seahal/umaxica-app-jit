@@ -50,7 +50,7 @@ class ZipOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "body uniqueness" do
-    existing = zip_occurrences(:one)
+    existing = ZipOccurrence.find_by!(public_id: "one_zip_occ_id_000001")
     record = build_occurrence(ZipOccurrence, body: existing.body)
 
     assert_invalid_attribute(record, :body)

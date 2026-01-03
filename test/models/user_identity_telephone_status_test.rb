@@ -11,7 +11,7 @@ require "test_helper"
 
 class UserIdentityTelephoneStatusTest < ActiveSupport::TestCase
   test "valid status with id" do
-    status = user_identity_telephone_statuses(:unverified)
+    status = UserIdentityTelephoneStatus.find("UNVERIFIED")
 
     assert_predicate status, :valid?
   end
@@ -35,7 +35,7 @@ class UserIdentityTelephoneStatusTest < ActiveSupport::TestCase
   end
 
   test "validates uniqueness of id" do
-    existing = user_identity_telephone_statuses(:unverified)
+    existing = UserIdentityTelephoneStatus.find("UNVERIFIED")
     duplicate = UserIdentityTelephoneStatus.new(id: existing.id)
 
     assert_predicate duplicate, :invalid?
@@ -53,9 +53,9 @@ class UserIdentityTelephoneStatusTest < ActiveSupport::TestCase
   end
 
   test "restrict_with_error prevents deletion when telephones exist" do
-    status = user_identity_telephone_statuses(:verified)
+    status = UserIdentityTelephoneStatus.find("VERIFIED")
     # Create a user identity telephone with this status
-    user = users(:one)
+    user = User.find_by!(public_id: "one_id")
     UserIdentityTelephone.create!(
       id: SecureRandom.uuid,
       number: "+81901234567",

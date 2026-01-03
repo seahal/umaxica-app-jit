@@ -24,7 +24,7 @@ Honest take: You don't have AASM/state_machine gem. You'll need to:
 - OR add a gem (but I see you avoid dependencies)
 
 Recommendation: Rails enum + validator. Example:
-class CorporateSiteContact < GuestsRecord
+class CorporateSiteContact < GuestRecord
 enum :status, {
 email_pending: "email_pending",
 email_verified: "email_verified",
@@ -174,7 +174,7 @@ Phase 3 (Production hardening - 1-2 days):
 💡 Architecture Suggestions
 
 Use your existing patterns:
-- ✓ Keep using GuestsRecord base class
+- ✓ Keep using GuestRecord base class
 - ✓ Keep using concerns (Email, Telephone)
 - ✓ Keep using class-method services (don't mix with instance-based)
 - ✓ Keep using minitest style

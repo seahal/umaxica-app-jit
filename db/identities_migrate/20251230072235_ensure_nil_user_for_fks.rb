@@ -16,11 +16,7 @@ class EnsureNilUserForFks < ActiveRecord::Migration[8.2]
     attrs[:updated_at] = Time.current if cols.include?("updated_at")
 
     safety_assured do
-      execute <<~SQL.squish
-        INSERT INTO users (#{attrs.keys.join(", ")})
-        VALUES (#{attrs.values.map { |v| connection.quote(v) }.join(", ")})
-        ON CONFLICT (id) DO NOTHING
-      SQL
+      # No-op: intentionally left blank.
     end
   end
 

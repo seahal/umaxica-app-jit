@@ -4,19 +4,17 @@
 #
 # Table name: staff_identity_audit_levels
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 
 require "test_helper"
 
 class StaffIdentityAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = staff_identity_audit_levels(:none)
+    level = StaffIdentityAuditLevel.find("NEYO")
     StaffIdentityAudit.create!(
-      staff: staffs(:one),
-      staff_identity_audit_event: staff_identity_audit_events(:one),
+      staff: Staff.find_by!(public_id: "one_staff_id"),
+      staff_identity_audit_event: StaffIdentityAuditEvent.find("LOGIN_SUCCESS"),
       staff_identity_audit_level: level,
       timestamp: Time.current,
     )

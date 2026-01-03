@@ -25,7 +25,18 @@ class UserTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
-    @user = users(:one)
+    UserIdentityStatus.find_or_create_by!(id: "NEYO")
+    UserTokenStatus.find_or_create_by!(id: "NEYO")
+    UserIdentityTelephoneStatus.find_or_create_by!(id: "NEYO")
+    UserIdentityEmailStatus.find_or_create_by!(id: "NEYO")
+    UserIdentityPasskeyStatus.find_or_create_by!(id: "NEYO")
+    UserIdentitySecretStatus.find_or_create_by!(id: "NEYO")
+    UserIdentitySocialAppleStatus.find_or_create_by!(id: "NEYO")
+    UserIdentitySocialGoogleStatus.find_or_create_by!(id: "NEYO")
+    @user =
+      User.find_or_create_by!(public_id: "one_id") do |u|
+        u.status_id = "NEYO"
+      end
   end
 
   test "should be valid" do
@@ -74,22 +85,6 @@ class UserTest < ActiveSupport::TestCase
   test "should have many user_identity_passkeys association" do
     assert_respond_to @user, :user_identity_passkeys
     assert_equal :has_many, @user.class.reflect_on_association(:user_identity_passkeys).macro
-  end
-
-  test "has_role? should correctly identify assigned roles" do
-    workspace = Workspace.create!(
-      name: "Test Workspace",
-      domain: "test-workspace.example.com",
-      parent_organization: root_workspace.id,
-    )
-    editor_role = Role.create!(key: "editor", name: "Editor", organization: workspace)
-    Role.create!(key: "viewer", name: "Viewer", organization: workspace)
-
-    # Assign editor role to the user
-    RoleAssignment.create!(user: @user, role: editor_role)
-
-    assert @user.has_role?("editor")
-    assert_not @user.has_role?("viewer")
   end
 
   test "boundary values: public_id must be unique" do

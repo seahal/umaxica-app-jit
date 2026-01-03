@@ -31,7 +31,7 @@ require "test_helper"
 # Covers refresh token behavior and session constraints for users.
 class UserTokenTest < ActiveSupport::TestCase
   def setup
-    @user = users(:one)
+    @user = User.find_by!(public_id: "one_id")
     @token = UserToken.create!(user: @user)
   end
 
@@ -73,14 +73,14 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "can load one fixture" do
-    token_one = user_tokens(:one)
+    token_one = UserToken.find_by!(public_id: "one_user_token_000001")
 
     assert_not_nil token_one
     assert_not_nil token_one.user_id
   end
 
   test "can load two fixture" do
-    token_two = user_tokens(:two)
+    token_two = UserToken.find_by!(public_id: "two_user_token_000001")
 
     assert_not_nil token_two
     assert_not_nil token_two.user_id

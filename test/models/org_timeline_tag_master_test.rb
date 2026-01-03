@@ -17,6 +17,8 @@
 require "test_helper"
 
 class OrgTimelineTagMasterTest < ActiveSupport::TestCase
+  fixtures :org_timeline_tag_masters
+
   test "validates id presence and uniqueness" do
     master = OrgTimelineTagMaster.new(id: nil)
     assert_not master.valid?

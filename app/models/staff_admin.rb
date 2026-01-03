@@ -18,8 +18,8 @@
 
 class StaffAdmin < IdentitiesRecord
   self.implicit_order_column = :created_at
-  belongs_to :staff
-  belongs_to :admin
+  belongs_to :staff, inverse_of: :staff_admins
+  belongs_to :admin, inverse_of: :staff_admins
 
   validates :admin_id, uniqueness: { scope: :staff_id }
 end

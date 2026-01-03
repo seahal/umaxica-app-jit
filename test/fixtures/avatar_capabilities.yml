@@ -13,8 +13,6 @@
 #
 #  index_avatar_capabilities_on_key  (key) UNIQUE
 #
-
-
 normal:
   id: NORMAL
   key: "normal"

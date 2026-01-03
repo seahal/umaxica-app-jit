@@ -13,7 +13,7 @@ require "test_helper"
 
 class AppDocumentAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = app_document_audit_levels(:none)
+    level = AppDocumentAuditLevel.find("NEYO")
     doc = AppDocument.create!(
       permalink: "audit_doc",
       response_mode: "html",
@@ -26,7 +26,7 @@ class AppDocumentAuditLevelTest < ActiveSupport::TestCase
 
     AppDocumentAudit.create!(
       app_document: doc,
-      app_document_audit_event: app_document_audit_events(:created),
+      app_document_audit_event: AppDocumentAuditEvent.find("CREATED"),
       app_document_audit_level: level,
     )
 

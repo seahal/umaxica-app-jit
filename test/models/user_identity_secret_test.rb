@@ -27,7 +27,16 @@ require "concurrent"
 
 class UserIdentitySecretTest < ActiveSupport::TestCase
   setup do
-    @user = users(:one)
+    UserIdentityStatus.find_or_create_by!(id: "NEYO")
+    # Also need UserIdentitySecretStatus as 'ACTIVE', 'USED', 'EXPIRED' are used in tests
+    UserIdentitySecretStatus.find_or_create_by!(id: "ACTIVE")
+    UserIdentitySecretStatus.find_or_create_by!(id: "USED")
+    UserIdentitySecretStatus.find_or_create_by!(id: "EXPIRED")
+
+    @user =
+      User.find_or_create_by!(public_id: "one_id") do |u|
+        u.status_id = "NEYO"
+      end
   end
 
   test "allows up to the maximum number of secrets per user" do

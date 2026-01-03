@@ -2,11 +2,8 @@
 #
 # Table name: staff_identity_audit_events
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
-
 neyo:
   id: NEYO
 login_success:
@@ -47,8 +44,5 @@ recovery_codes_generated:
   id: RECOVERY_CODES_GENERATED
 authorization_failed:
   id: AUTHORIZATION_FAILED
-
 one:
   id: ONE
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>

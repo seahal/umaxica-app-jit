@@ -3,29 +3,37 @@
 # Table name: post_review_statuses
 #
 #  id         :string           not null, primary key
+#  created_at :datetime         not null
 #  key        :string           not null
 #  name       :string           not null
-#  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
 # Indexes
 #
 #  index_post_review_statuses_on_key  (key) UNIQUE
 #
-
+# Auto-generated minimal fixture
 neyo:
   id: NEYO
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
   key: NEYO
   name: NEYO
 active:
   id: ACTIVE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
   key: ACTIVE
   name: ACTIVE
 published:
   id: PUBLISHED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
   key: PUBLISHED
   name: PUBLISHED
 draft:
   id: DRAFT
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
   key: DRAFT
   name: DRAFT

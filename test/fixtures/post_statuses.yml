@@ -6,226 +6,447 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-
 neyo:
   id: NEYO
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 active:
   id: ACTIVE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 used:
   id: USED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 revoked:
   id: REVOKED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 unverified:
   id: UNVERIFIED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 verified:
   id: VERIFIED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 unverified_with_sign_up:
   id: UNVERIFIED_WITH_SIGN_UP
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 verified_with_sign_up:
   id: VERIFIED_WITH_SIGN_UP
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 pre_withdrawal_condition:
   id: PRE_WITHDRAWAL_CONDITION
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 withdrawn:
   id: WITHDRAWN
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 recorded:
   id: RECORDED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 locked:
   id: LOCKED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 expired:
   id: EXPIRED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 canceled:
   id: CANCELED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 rejected:
   id: REJECTED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 pending:
   id: PENDING
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 failed:
   id: FAILED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 success:
   id: SUCCESS
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 blocked:
   id: BLOCKED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 whitelisted:
   id: WHITELISTED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 blacklisted:
   id: BLACKLISTED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 unknown:
   id: UNKNOWN
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 warning:
   id: WARNING
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 danger:
   id: DANGER
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 safe:
   id: SAFE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 monitoring:
   id: MONITORING
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 suspended:
   id: SUSPENDED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 deleted:
   id: DELETED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 reported:
   id: REPORTED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 flagged:
   id: FLAGGED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 validated:
   id: VALIDATED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 invalid:
   id: INVALID
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 processing:
   id: PROCESSING
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 completed:
   id: COMPLETED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 approved:
   id: APPROVED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 restricted:
   id: RESTRICTED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 private:
   id: PRIVATE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 public:
   id: PUBLIC
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 internal:
   id: INTERNAL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 external:
   id: EXTERNAL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 confirmed:
   id: CONFIRMED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 unconfirmed:
   id: UNCONFIRMED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 activated:
   id: ACTIVATED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 deactivated:
   id: DEACTIVATED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 enabled:
   id: ENABLED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 disabled:
   id: DISABLED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 available:
   id: AVAILABLE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 unavailable:
   id: UNAVAILABLE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 ready:
   id: READY
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 busy:
   id: BUSY
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 idle:
   id: IDLE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 running:
   id: RUNNING
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 stopped:
   id: STOPPED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 paused:
   id: PAUSED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 started:
   id: STARTED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 finished:
   id: FINISHED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 failure:
   id: FAILURE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 error:
   id: ERROR
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 ok:
   id: OK
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 ng:
   id: NG
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 yes_status:
   id: "YES"
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 no_status:
   id: "NO"
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 on_status:
   id: "ON"
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 off_status:
   id: "OFF"
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 true_status:
   id: "TRUE"
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 false_status:
   id: "FALSE"
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 null_status:
   id: "NULL"
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 undefined:
   id: UNDEFINED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 na:
   id: NA
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 other:
   id: OTHER
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 custom:
   id: CUSTOM
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 test:
   id: TEST
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 none:
   id: NONE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 all:
   id: ALL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 any:
   id: ANY
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 some:
   id: SOME
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 few:
   id: FEW
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 many:
   id: MANY
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 high:
   id: HIGH
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 medium:
   id: MEDIUM
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 low:
   id: LOW
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 critical:
   id: CRITICAL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 urgent:
   id: URGENT
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 normal:
   id: NORMAL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 minor:
   id: MINOR
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 major:
   id: MAJOR
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 info:
   id: INFO
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 debug:
   id: DEBUG
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 trace:
   id: TRACE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 fatal:
   id: FATAL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 alert:
   id: ALERT
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 emergency:
   id: EMERGENCY
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 notice:
   id: NOTICE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 warn:
   id: WARN
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 error_level:
   id: ERROR_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 critical_level:
   id: CRITICAL_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 fatal_level:
   id: FATAL_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 emergency_level:
   id: EMERGENCY_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 alert_level:
   id: ALERT_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 notice_level:
   id: NOTICE_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 info_level:
   id: INFO_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 debug_level:
   id: DEBUG_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 trace_level:
   id: TRACE_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 none_level:
   id: NONE_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 all_level:
   id: ALL_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 any_level:
   id: ANY_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 default_level:
   id: DEFAULT_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 unknown_level:
   id: UNKNOWN_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 other_level:
   id: OTHER_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 custom_level:
   id: CUSTOM_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 test_level:
   id: TEST_LEVEL
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>

@@ -23,7 +23,6 @@ class EnforceNotNullOnIdentityColumns < ActiveRecord::Migration[8.2]
       user_identity_telephones: %i(number otp_counter otp_private_key user_id),
       user_passkeys: %i(external_id name public_key sign_count transports user_handle),
       users: %i(user_identity_status_id webauthn_id),
-      workspaces: %i(domain name parent_organization),
     }
 
     tables.each do |table, columns|

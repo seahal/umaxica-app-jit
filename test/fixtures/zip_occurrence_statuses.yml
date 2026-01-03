@@ -1,20 +1,11 @@
+# Auto-generated minimal fixture
 neyo:
   id: NEYO
 active:
   id: ACTIVE
-used:
-  id: USED
-revoked:
-  id: REVOKED
-unverified:
-  id: UNVERIFIED
-verified:
-  id: VERIFIED
-unverified_with_sign_up:
-  id: UNVERIFIED_WITH_SIGN_UP
-verified_with_sign_up:
-  id: VERIFIED_WITH_SIGN_UP
-pre_withdrawal_condition:
-  id: PRE_WITHDRAWAL_CONDITION
-withdrawn:
-  id: WITHDRAWN
+inactive:
+  id: INACTIVE
+pending:
+  id: PENDING
+deleted:
+  id: DELETED

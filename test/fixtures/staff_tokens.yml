@@ -23,7 +23,6 @@
 #  index_staff_tokens_on_staff_id               (staff_id)
 #  index_staff_tokens_on_staff_token_status_id  (staff_token_status_id)
 #
-
 one:
   staff: one
   staff_token_status_id: "ACTIVE"
@@ -31,7 +30,6 @@ one:
   refresh_expires_at: <%= 1.year.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 two:
   staff: placeholder
   staff_token_status_id: "ACTIVE"

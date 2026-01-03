@@ -8,11 +8,6 @@ class CreateClientIdentityStatuses < ActiveRecord::Migration[8.2]
 
     safety_assured do
       execute "ALTER TABLE client_identity_statuses ALTER COLUMN id SET DEFAULT 'NEYO'"
-      execute <<~SQL.squish
-        INSERT INTO client_identity_statuses (id, created_at, updated_at)
-        VALUES ('NEYO', NOW(), NOW())
-        ON CONFLICT (id) DO NOTHING
-      SQL
     end
   end
 

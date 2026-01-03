@@ -72,16 +72,15 @@ class AvatarServiceTest < ActiveSupport::TestCase
   private
 
   def create_with_system_handle(capability:, handle_status:, assignment_status:)
-    AvatarService.create_with_system_handle!(
+    avatar = AvatarService.create_with_system_handle!(
       moniker: "Test Moniker",
       capability_id: capability.id,
       handle_status_id: handle_status.id,
       handle_assignment_status_id: assignment_status.id,
     )
 
-    avatar = Avatar.last
-    handle = Handle.last
-    assignment = HandleAssignment.last
+    handle = avatar.active_handle
+    assignment = avatar.handle_assignments.last
 
     [avatar, handle, assignment]
   end

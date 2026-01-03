@@ -29,7 +29,7 @@ require "test_helper"
 
 class OrgContactTelephoneTest < ActiveSupport::TestCase
   def setup
-    @org_contact = org_contacts(:one)
+    @org_contact = OrgContact.find_by!(public_id: "test_org_contact_0001")
     @telephone = OrgContactTelephone.new(
       org_contact: @org_contact,
       telephone_number: "+819012345678",

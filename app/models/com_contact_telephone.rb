@@ -27,7 +27,7 @@
 #  index_com_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
 #
 
-class ComContactTelephone < GuestsRecord
+class ComContactTelephone < GuestRecord
   belongs_to :com_contact, inverse_of: :com_contact_telephone
 
   before_create :generate_id

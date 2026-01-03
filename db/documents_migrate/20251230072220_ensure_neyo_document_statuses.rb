@@ -2,13 +2,11 @@
 
 class EnsureNeyoDocumentStatuses < ActiveRecord::Migration[8.2]
   def up
-    %w(app com org).each do |prefix|
-      insert_status("#{prefix}_document_statuses", "NEYO")
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid removing shared reference data.
+    # No-op: data seeding moved to fixtures.
   end
 
   private

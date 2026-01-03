@@ -11,7 +11,7 @@ require "test_helper"
 
 class AppTimelineStatusTest < ActiveSupport::TestCase
   def setup
-    @status = app_timeline_statuses(:active)
+    @status = AppTimelineStatus.find("ACTIVE")
     @model_class = AppTimelineStatus
   end
 
@@ -48,15 +48,15 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
     assert_equal 255, status.id.length
   end
 
-  test "can load draft status from fixtures" do
-    draft = app_timeline_statuses(:draft)
+  test "can load draft status from db" do
+    draft = AppTimelineStatus.find("DRAFT")
 
     assert_not_nil draft
     assert_equal "DRAFT", draft.id
   end
 
-  test "can load archived status from fixtures" do
-    archived = app_timeline_statuses(:archived)
+  test "can load archived status from db" do
+    archived = AppTimelineStatus.find("ARCHIVED")
 
     assert_not_nil archived
     assert_equal "ARCHIVED", archived.id

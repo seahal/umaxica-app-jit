@@ -20,8 +20,8 @@
 require "test_helper"
 
 class AppContactCategoryTest < ActiveSupport::TestCase
-  test "should inherit from GuestsRecord" do
-    assert_operator AppContactCategory, :<, GuestsRecord
+  test "should inherit from GuestRecord" do
+    assert_operator AppContactCategory, :<, GuestRecord
   end
 
   test "should use id as primary key" do

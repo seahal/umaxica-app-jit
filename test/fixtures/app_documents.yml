@@ -22,7 +22,6 @@
 #  index_app_documents_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_app_documents_on_status_id                    (status_id)
 #
-
 one:
   status_id: "NEYO"
   public_id: "one_app_document_0001"
@@ -30,4 +29,3 @@ one:
   permalink: "one-app-document"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-

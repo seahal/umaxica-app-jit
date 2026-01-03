@@ -14,17 +14,11 @@ class SeedStaffIdentityAuditEvents < ActiveRecord::Migration[8.2]
   ).freeze
 
   def up
-    return unless table_exists?(:staff_identity_audit_events)
-
-    safety_assured do
-      staff_events.each do |id|
-        seed_id(:staff_identity_audit_events, id)
-      end
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid removing shared reference data.
+    # No-op: data seeding moved to fixtures.
   end
 
   private

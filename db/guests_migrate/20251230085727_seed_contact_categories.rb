@@ -4,37 +4,11 @@ class SeedContactCategories < ActiveRecord::Migration[8.2]
   disable_ddl_transaction!
 
   def up
-    safety_assured do
-      # Seed com_contact_categories (uses empty string for root parent_id)
-      upsert_categories(
-        "com_contact_categories", [
-          { id: "SECURITY_ISSUE", parent_id: "", position: 0 },
-          { id: "OTHERS", parent_id: "", position: 1 },
-        ],
-      )
-
-      # Seed app_contact_categories (uses NIL_UUID for root parent_id)
-      upsert_categories(
-        "app_contact_categories", [
-          { id: "APPLICATION_INQUIRY", parent_id: "00000000-0000-0000-0000-000000000000", position: 0 },
-          { id: "APPLICATION_SUPPORT", parent_id: "00000000-0000-0000-0000-000000000000", position: 1 },
-          { id: "APPLICATION_FEEDBACK", parent_id: "00000000-0000-0000-0000-000000000000", position: 2 },
-        ],
-      )
-
-      # Seed org_contact_categories (uses empty string for root parent_id)
-      upsert_categories(
-        "org_contact_categories", [
-          { id: "ORGANIZATION_INQUIRY", parent_id: "", position: 0 },
-          { id: "ORGANIZATION_PARTNERSHIP", parent_id: "", position: 1 },
-          { id: "ORGANIZATION_FEEDBACK", parent_id: "", position: 2 },
-        ],
-      )
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to preserve reference data
+    # No-op: data seeding moved to fixtures.
   end
 
   private

@@ -24,7 +24,7 @@
 #  index_app_contact_topics_on_public_id       (public_id)
 #
 
-class AppContactTopic < GuestsRecord
+class AppContactTopic < GuestRecord
   include ::PublicId
 
   belongs_to :app_contact, inverse_of: :app_contact_topics

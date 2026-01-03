@@ -32,9 +32,11 @@ class OrgContactTest < ActiveSupport::TestCase
   # Fixtures are handled lazily via setup_fixtures.rb or loaded via fixtures :all
 
   setup do
-    OrgContactCategory.create!(id: "ORGANIZATION_INQUIRY") unless OrgContactCategory.exists?(id: "ORGANIZATION_INQUIRY")
-    %w(NEYO SET_UP CHECKED_EMAIL_ADDRESS CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION).each do |status_id|
-      OrgContactStatus.create!(id: status_id) unless OrgContactStatus.exists?(id: status_id)
+    # Data is now seeded via migration
+
+    # Ensure required statuses exist
+    %w(SET_UP CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION CHECKED_EMAIL_ADDRESS).each do |id|
+      OrgContactStatus.find_or_create_by!(id: id)
     end
   end
 
@@ -74,16 +76,8 @@ class OrgContactTest < ActiveSupport::TestCase
     OrgContactStatus.find_by(id: "SET_UP")&.id || "NEYO"
   end
 
-  test "should inherit from GuestsRecord" do
-    assert_operator OrgContact, :<, GuestsRecord
-  end
-
-  test "should have valid fixtures" do
-    contact = OrgContact.find("019b6f92-3030-7624-883a-064372edcf28")
-
-    assert_predicate contact, :valid?
-    assert_equal "NEYO", contact.category_id
-    assert_equal "NEYO", contact.status_id
+  test "should inherit from GuestRecord" do
+    assert_operator OrgContact, :<, GuestRecord
   end
 
   test "should create contact with relationship titles" do
@@ -138,7 +132,7 @@ class OrgContactTest < ActiveSupport::TestCase
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
-    contact = org_contacts(:one)
+    contact = build_contact
 
     assert_respond_to contact, :created_at
     assert_respond_to contact, :updated_at
@@ -148,14 +142,14 @@ class OrgContactTest < ActiveSupport::TestCase
   # rubocop:enable Minitest/MultipleAssertions
 
   test "should use UUID as primary key" do
-    contact = org_contacts(:one)
+    contact = build_contact
 
     assert_kind_of String, contact.id
     assert_equal 36, contact.id.length
   end
 
   test "should expose relationship title attributes" do
-    contact = org_contacts(:one)
+    contact = build_contact
 
     assert_respond_to contact, :category_id
     assert_respond_to contact, :status_id

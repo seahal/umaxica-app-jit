@@ -2,7 +2,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 32 } %>
   port: 5432
   timeout: 5000
   username: <%= ENV.fetch("POSTGRESQL_USER", "postgres") %>
@@ -10,7 +10,7 @@ default: &default
 
 test_default: &test_default
   !!merge <<: *default
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 32 } %>
 development:
   guest:
     !!merge <<: *default

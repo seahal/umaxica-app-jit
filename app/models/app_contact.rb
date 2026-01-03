@@ -26,7 +26,7 @@
 #  index_app_contacts_on_token_expires_at  (token_expires_at)
 #
 
-class AppContact < GuestsRecord
+class AppContact < GuestRecord
   include ::PublicId
 
   self.implicit_order_column = :created_at

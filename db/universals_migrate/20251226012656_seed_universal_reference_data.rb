@@ -2,28 +2,11 @@
 
 class SeedUniversalReferenceData < ActiveRecord::Migration[8.2]
   def up
-    # UserOccurrenceStatus
-    seed_ids(:user_occurrence_statuses, %w(NONE ACTIVE INACTIVE BLOCKED))
-
-    # StaffOccurrenceStatus
-    seed_ids(:staff_occurrence_statuses, %w(NONE ACTIVE INACTIVE BLOCKED))
-
-    # UserIdentityAuditLevel (additional levels beyond the ones already seeded)
-    seed_ids(:user_identity_audit_levels, %w(DEBUG FATAL UNKNOWN))
-
-    # Timeline Audit Events
-    seed_ids(:com_timeline_audit_events, %w(NONE CREATED UPDATED DESTROYED))
-    seed_ids(:org_timeline_audit_events, %w(NONE CREATED UPDATED DESTROYED))
-    seed_ids(:app_timeline_audit_events, %w(NONE CREATED UPDATED DESTROYED))
-
-    # Document Audit Events
-    seed_ids(:com_document_audit_events, %w(NONE CREATED UPDATED DESTROYED))
-    seed_ids(:org_document_audit_events, %w(NONE CREATED UPDATED DESTROYED))
-    seed_ids(:app_document_audit_events, %w(NONE CREATED UPDATED DESTROYED))
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid removing shared reference data
+    # No-op: data seeding moved to fixtures.
   end
 
   private

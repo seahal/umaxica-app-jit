@@ -37,7 +37,7 @@ class TelephoneOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "public_id uniqueness" do
-    existing = telephone_occurrences(:one)
+    existing = TelephoneOccurrence.find_by!(public_id: "one_tel_occ_id_000001")
     record = build_occurrence(TelephoneOccurrence, body: "+819011111111", public_id: existing.public_id)
 
     assert_invalid_attribute(record, :public_id)
@@ -50,7 +50,7 @@ class TelephoneOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "body uniqueness" do
-    existing = telephone_occurrences(:one)
+    existing = TelephoneOccurrence.find_by!(public_id: "one_tel_occ_id_000001")
     record = build_occurrence(TelephoneOccurrence, body: existing.body)
 
     assert_invalid_attribute(record, :body)

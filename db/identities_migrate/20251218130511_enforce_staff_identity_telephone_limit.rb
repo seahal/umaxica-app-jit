@@ -26,12 +26,6 @@ class EnforceStaffIdentityTelephoneLimit < ActiveRecord::Migration[8.2]
       END;
       $$ LANGUAGE plpgsql;
     SQL
-
-    execute <<~SQL.squish
-      CREATE TRIGGER #{TRIGGER_NAME}
-      BEFORE INSERT ON staff_identity_telephones
-      FOR EACH ROW EXECUTE FUNCTION #{FUNCTION_NAME}();
-    SQL
   end
 
   def down

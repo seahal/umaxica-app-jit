@@ -25,10 +25,8 @@ class Staff < IdentitiesRecord
   self.ignored_columns += ["admin_id"]
 
   include Withdrawable
-  include HasRoles
   include ::PublicId
   include ::Accountably
-  include ::Accountable
 
   attribute :status_id, default: StaffIdentityStatus::NEYO
 
@@ -67,9 +65,13 @@ class Staff < IdentitiesRecord
   has_many :staff_notifications,
            dependent: :destroy,
            inverse_of: :staff
-  has_many :admins,
+  has_many :staff_admins,
            dependent: :destroy,
            inverse_of: :staff
+  has_many :admins,
+           class_name: "Admin",
+           inverse_of: :staff,
+           dependent: :destroy
 
   def staff?
     true

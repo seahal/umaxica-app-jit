@@ -23,7 +23,6 @@
 #  index_org_contacts_on_token_digest      (token_digest)
 #  index_org_contacts_on_token_expires_at  (token_expires_at)
 #
-
 one:
   id: 019b6f92-3030-7624-883a-064372edcf28
   public_id: test_org_contact_0001

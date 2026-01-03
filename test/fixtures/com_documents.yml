@@ -22,7 +22,6 @@
 #  index_com_documents_on_published_at_and_expires_at  (published_at,expires_at)
 #  index_com_documents_on_status_id                    (status_id)
 #
-
 one:
   permalink: "test-doc-one"
   status_id: "ACTIVE"

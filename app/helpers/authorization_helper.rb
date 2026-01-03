@@ -30,7 +30,9 @@ module AuthorizationHelper
   #     <%= link_to "Admin Panel", admin_path %>
   #   <% end %>
   def has_role?(role_key, organization: nil)
-    current_actor&.has_role?(role_key, organization: organization) || false
+    return false unless current_actor&.respond_to?(:has_role?)
+
+    current_actor.has_role?(role_key, organization: organization)
   end
 
   # Check if current actor has any of the specified roles
@@ -43,7 +45,9 @@ module AuthorizationHelper
   #     <%= render 'management_tools' %>
   #   <% end %>
   def has_any_role?(*role_keys, organization: nil)
-    current_actor&.has_any_role?(*role_keys, organization: organization) || false
+    return false unless current_actor&.respond_to?(:has_any_role?)
+
+    current_actor.has_any_role?(*role_keys, organization: organization)
   end
 
   # Check if current actor is admin
@@ -64,21 +68,27 @@ module AuthorizationHelper
   # @param organization [Organization, nil] Optional organization scope
   # @return [Boolean]
   def can_edit?(organization: nil)
-    current_actor&.can_edit?(organization: organization) || false
+    return false unless current_actor&.respond_to?(:can_edit?)
+
+    current_actor.can_edit?(organization: organization)
   end
 
   # Check if current actor can view resources
   # @param organization [Organization, nil] Optional organization scope
   # @return [Boolean]
   def can_view?(organization: nil)
-    current_actor&.can_view?(organization: organization) || false
+    return false unless current_actor&.respond_to?(:can_view?)
+
+    current_actor.can_view?(organization: organization)
   end
 
   # Check if current actor can contribute (create content)
   # @param organization [Organization, nil] Optional organization scope
   # @return [Boolean]
   def can_contribute?(organization: nil)
-    current_actor&.can_contribute?(organization: organization) || false
+    return false unless current_actor&.respond_to?(:can_contribute?)
+
+    current_actor.can_contribute?(organization: organization)
   end
 
   # Render content only if authorized

@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Help::ContactErrorTest < ActiveSupport::TestCase
+  fixtures []
+
   setup do
     assert Help.const_defined?(:ContactError)
     assert Help.const_defined?(:ContactNotFoundError)

@@ -203,10 +203,8 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     reversible do |dir|
       dir.up do
         execute "ALTER TABLE #{table_name} ALTER COLUMN id SET DEFAULT 'NONE'"
-        execute "INSERT INTO #{table_name} (id, created_at, updated_at) VALUES ('NONE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
       end
       dir.down do
-        execute "DELETE FROM #{table_name} WHERE id = 'NONE'"
         execute "ALTER TABLE #{table_name} ALTER COLUMN id DROP DEFAULT"
       end
     end

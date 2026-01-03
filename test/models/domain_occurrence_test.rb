@@ -24,6 +24,8 @@
 require "test_helper"
 
 class DomainOccurrenceTest < ActiveSupport::TestCase
+  fixtures :domain_occurrences, :domain_occurrence_statuses
+
   test "public_id length" do
     record = build_occurrence(DomainOccurrence, body: "example.co.jp", public_id: "A" * 20)
 

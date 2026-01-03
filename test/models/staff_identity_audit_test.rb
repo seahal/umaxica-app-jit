@@ -38,8 +38,8 @@ class StaffIdentityAuditTest < ActiveSupport::TestCase
   def setup
     @staff = staffs(:one)
     @actor = users(:none_user)
-    @audit_event = staff_identity_audit_events(:one)
-    @audit_level = staff_identity_audit_levels(:none)
+    @audit_event = StaffIdentityAuditEvent.find("LOGIN_SUCCESS")
+    @audit_level = StaffIdentityAuditLevel.find("NEYO")
     @audit = StaffIdentityAudit.create!(
       staff: @staff,
       staff_identity_audit_event: @audit_event,

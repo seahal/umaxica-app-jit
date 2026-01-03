@@ -11,7 +11,7 @@ require "test_helper"
 
 class UserIdentityEmailStatusTest < ActiveSupport::TestCase
   test "valid status with id" do
-    status = user_identity_email_statuses(:unverified)
+    status = UserIdentityEmailStatus.find("UNVERIFIED")
 
     assert_predicate status, :valid?
   end
@@ -35,7 +35,7 @@ class UserIdentityEmailStatusTest < ActiveSupport::TestCase
   end
 
   test "validates uniqueness of id" do
-    existing = user_identity_email_statuses(:unverified)
+    existing = UserIdentityEmailStatus.find("UNVERIFIED")
     duplicate = UserIdentityEmailStatus.new(id: existing.id)
 
     assert_predicate duplicate, :invalid?
@@ -53,9 +53,9 @@ class UserIdentityEmailStatusTest < ActiveSupport::TestCase
   end
 
   test "restrict_with_error prevents deletion when emails exist" do
-    status = user_identity_email_statuses(:verified)
+    status = UserIdentityEmailStatus.find("VERIFIED")
     # Create a user identity email with this status
-    user = users(:one)
+    user = User.find_by!(public_id: "one_id")
     UserIdentityEmail.create!(
       id: SecureRandom.uuid,
       address: "test@example.com",

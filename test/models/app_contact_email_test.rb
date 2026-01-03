@@ -31,8 +31,20 @@
 require "test_helper"
 
 class AppContactEmailTest < ActiveSupport::TestCase
-  def setup
-    @app_contact = app_contacts(:one) # Assuming fixtures exist, otherwise we'll create one
+  setup do
+    # Seed necessary reference data for tests
+    %w(APPLICATION_INQUIRY NEYO).each do |id|
+      AppContactCategory.create_with(created_at: Time.current, updated_at: Time.current).find_or_create_by(id: id)
+    end
+    %w(NEYO SET_UP CHECKED_EMAIL_ADDRESS CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION).each do |id|
+      AppContactStatus.find_or_create_by(id: id)
+    end
+
+    @app_contact = AppContact.create!(
+      public_id: "test_contact_1",
+      confirm_policy: "1",
+    )
+
     @email = AppContactEmail.new(
       app_contact: @app_contact,
       email_address: "test@example.com",

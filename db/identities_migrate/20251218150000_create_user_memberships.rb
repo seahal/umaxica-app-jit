@@ -13,13 +13,6 @@ class CreateUserMemberships < ActiveRecord::Migration[8.2]
     end
 
     add_index :user_memberships, %i(user_id workspace_id), unique: true
-
-    execute <<~SQL.squish
-      INSERT INTO user_memberships (id, user_id, workspace_id, joined_at, created_at, updated_at)
-      SELECT uuidv7(), user_id, organization_id, created_at, created_at, updated_at
-      FROM user_organizations
-      ON CONFLICT (user_id, workspace_id) DO NOTHING
-    SQL
   end
 
   def down

@@ -2,17 +2,11 @@
 
 class SeedRequiredTokenStatuses < ActiveRecord::Migration[8.2]
   def up
-    safety_assured do
-      insert_statuses("user_token_statuses")
-      insert_statuses("staff_token_statuses")
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    safety_assured do
-      delete_statuses("user_token_statuses")
-      delete_statuses("staff_token_statuses")
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   private

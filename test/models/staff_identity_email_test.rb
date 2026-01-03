@@ -28,7 +28,7 @@ require "test_helper"
 
 class StaffIdentityEmailTest < ActiveSupport::TestCase
   setup do
-    @staff = staffs(:none_staff)
+    @staff = Staff.find_by!(public_id: "none_staff_id")
     @valid_attributes = {
       address: "staff@example.com",
       confirm_policy: true,
@@ -113,7 +113,7 @@ class StaffIdentityEmailTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum emails per staff" do
-    staff = Staff.create!(staff_identity_status: staff_identity_statuses(:none))
+    staff = Staff.create!(staff_identity_status: StaffIdentityStatus.find("NEYO"))
     StaffIdentityEmail::MAX_EMAILS_PER_STAFF.times do |i|
       StaffIdentityEmail.create!(
         address: "staff_limit#{i}@example.com",

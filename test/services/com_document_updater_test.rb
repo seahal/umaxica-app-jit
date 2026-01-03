@@ -19,6 +19,8 @@
 require "test_helper"
 
 class ComDocumentUpdaterTest < ActiveSupport::TestCase
+  fixtures :com_document_statuses
+
   def base_attrs
     {
       permalink: "Doc_1",

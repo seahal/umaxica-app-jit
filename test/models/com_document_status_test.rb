@@ -10,13 +10,13 @@
 require "test_helper"
 
 class ComDocumentStatusTest < ActiveSupport::TestCase
-  fixtures :com_document_statuses
+  # fixtures :com_document_statuses
 
   def setup
     @model_class = ComDocumentStatus
     @valid_id = "ACTIVE"
     @subject = @model_class.new(id: @valid_id)
-    @status = com_document_statuses(:active)
+    @status = ComDocumentStatus.find("ACTIVE")
   end
 
   test "inherits from BusinessesRecord" do
@@ -52,15 +52,15 @@ class ComDocumentStatusTest < ActiveSupport::TestCase
     assert_equal 255, status.id.length
   end
 
-  test "can load draft status from fixtures" do
-    draft = com_document_statuses(:draft)
+  test "can load draft status from db" do
+    draft = ComDocumentStatus.find("DRAFT")
 
     assert_not_nil draft
     assert_equal "DRAFT", draft.id
   end
 
-  test "can load archived status from fixtures" do
-    archived = com_document_statuses(:archived)
+  test "can load archived status from db" do
+    archived = ComDocumentStatus.find("ARCHIVED")
 
     assert_not_nil archived
     assert_equal "ARCHIVED", archived.id

@@ -11,42 +11,38 @@ class FixDatabaseConsistencyIdentity < ActiveRecord::Migration[8.2]
     remove_index :departments, :parent_id, if_exists: true
 
     # Add NOT NULL constraint to admins.staff_id using safe approach
-    add_check_constraint :admins, "staff_id IS NOT NULL",
-                         name: "admins_staff_id_null", validate: false
-    validate_check_constraint :admins, name: "admins_staff_id_null"
-    change_column_null :admins, :staff_id, false
-    remove_check_constraint :admins, name: "admins_staff_id_null"
+    unless column_null?(:admins, :staff_id) == false
+      add_check_constraint :admins, "staff_id IS NOT NULL",
+                           name: "admins_staff_id_null", validate: false
+      validate_check_constraint :admins, name: "admins_staff_id_null"
+      change_column_null :admins, :staff_id, false
+      remove_check_constraint :admins, name: "admins_staff_id_null"
+    end
 
     # Add unique indexes for case-insensitive lookups on status tables
-    unless index_exists?(:division_statuses, "lower(id)", name: "index_division_statuses_on_lower_id")
-      add_index :division_statuses, "lower(id)", unique: true,
-                                                 name: "index_division_statuses_on_lower_id",
-                                                 algorithm: :concurrently
-    end
+    add_index_if_not_exists(
+      :division_statuses, "lower(id)",
+      name: "index_division_statuses_on_lower_id",
+      unique: true, algorithm: :concurrently,
+    )
 
-    unless index_exists?(:department_statuses, "lower(id)", name: "index_department_statuses_on_lower_id")
-      add_index :department_statuses, "lower(id)", unique: true,
-                                                   name: "index_department_statuses_on_lower_id",
-                                                   algorithm: :concurrently
-    end
+    add_index_if_not_exists(
+      :department_statuses, "lower(id)",
+      name: "index_department_statuses_on_lower_id",
+      unique: true, algorithm: :concurrently,
+    )
 
-    unless index_exists?(
+    add_index_if_not_exists(
       :client_identity_statuses, "lower(id)",
       name: "index_client_identity_statuses_on_lower_id",
+      unique: true, algorithm: :concurrently,
     )
-      add_index :client_identity_statuses, "lower(id)", unique: true,
-                                                        name: "index_client_identity_statuses_on_lower_id",
-                                                        algorithm: :concurrently
-    end
 
-    unless index_exists?(
+    add_index_if_not_exists(
       :admin_identity_statuses, "lower(id)",
       name: "index_admin_identity_statuses_on_lower_id",
+      unique: true, algorithm: :concurrently,
     )
-      add_index :admin_identity_statuses, "lower(id)", unique: true,
-                                                       name: "index_admin_identity_statuses_on_lower_id",
-                                                       algorithm: :concurrently
-    end
 
     # Add foreign key for post versions
     unless foreign_key_exists?(:post_versions, :posts, column: :post_id)
@@ -74,6 +70,23 @@ class FixDatabaseConsistencyIdentity < ActiveRecord::Migration[8.2]
                       validate: false
       validate_foreign_key :avatars, :clients
     end
+  end
+
+  private
+
+  def add_index_if_not_exists(table, column, **options)
+    index_name = options[:name]
+    return if connection.indexes(table).any? { |idx| idx.name == index_name }
+
+    add_index table, column, **options
+  rescue ActiveRecord::StatementInvalid => e
+    raise unless e.message.include?("already exists")
+  end
+
+  def column_null?(table, column)
+    connection.columns(table).find { |col| col.name == column.to_s }&.null
+  rescue ActiveRecord::StatementInvalid
+    nil
   end
 
   def down

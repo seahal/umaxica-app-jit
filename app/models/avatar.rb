@@ -46,6 +46,14 @@ class Avatar < IdentitiesRecord
   # Avatar assignments (role-based access control)
   has_many :avatar_assignments, dependent: :destroy
 
+  has_many :client_avatar_accesses, dependent: :destroy, inverse_of: :avatar
+  has_many :client_avatar_visibilities, dependent: :destroy, inverse_of: :avatar
+  has_many :client_avatar_oversights, dependent: :destroy, inverse_of: :avatar
+  has_many :client_avatar_extractions, dependent: :destroy, inverse_of: :avatar
+  has_many :client_avatar_impersonations, dependent: :destroy, inverse_of: :avatar
+  has_many :client_avatar_suspensions, dependent: :destroy, inverse_of: :avatar
+  has_many :client_avatar_deletions, dependent: :destroy, inverse_of: :avatar
+
   # Single-user roles (has_one through)
   has_one :owner_assignment,
           -> { where(role: "owner") },

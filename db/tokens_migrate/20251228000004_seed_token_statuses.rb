@@ -4,28 +4,11 @@ class SeedTokenStatuses < ActiveRecord::Migration[7.1]
   disable_ddl_transaction!
 
   def up
-    safety_assured do
-      # StaffTokenStatus
-      upsert_table(
-        'staff_token_statuses', [
-          { id: 'NEYO' },
-        ],
-      )
-
-      # UserTokenStatus
-      upsert_table(
-        'user_token_statuses', [
-          { id: 'NEYO' },
-        ],
-      )
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    safety_assured do
-      execute "DELETE FROM staff_token_statuses"
-      execute "DELETE FROM user_token_statuses"
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   private

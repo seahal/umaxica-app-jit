@@ -30,7 +30,7 @@
 #  index_com_contact_emails_on_verifier_expires_at  (verifier_expires_at)
 #
 
-class ComContactEmail < GuestsRecord
+class ComContactEmail < GuestRecord
   belongs_to :com_contact, inverse_of: :com_contact_email
 
   before_create :generate_id

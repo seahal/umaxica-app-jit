@@ -2,16 +2,11 @@
 
 class AddRequiredDocumentStatuses < ActiveRecord::Migration[8.2]
   def up
-    safety_assured do
-      %w(app com org).each do |prefix|
-        table_name = "#{prefix}_document_statuses"
-        seed_statuses(table_name)
-      end
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid removing reference data used by existing records
+    # No-op: data seeding moved to fixtures.
   end
 
   private

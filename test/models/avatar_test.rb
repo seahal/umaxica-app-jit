@@ -32,6 +32,7 @@ require "test_helper"
 
 class AvatarTest < ActiveSupport::TestCase
   setup do
+    create_user_and_status
     @capability = AvatarCapability.create!(key: "user-#{SecureRandom.hex(4)}", name: "User")
     @handle = Handle.create!(
       handle: "test_handle-#{SecureRandom.hex(4)}",
@@ -119,7 +120,8 @@ class AvatarTest < ActiveSupport::TestCase
   end
 
   test "create_with_owner creates avatar and assigns owner" do
-    user = users(:one)
+    create_user_and_status
+    user = User.find_by!(public_id: "one_id")
     avatar = nil
     assert_difference ["Avatar.count", "AvatarAssignment.count"], 1 do
       avatar = Avatar.create_with_owner(
@@ -136,7 +138,7 @@ class AvatarTest < ActiveSupport::TestCase
   end
 
   test "role associations" do
-    user = users(:one)
+    user = User.find_by!(public_id: "one_id")
     avatar = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Role Test")
 
     # Affiliation
@@ -190,7 +192,7 @@ class AvatarTest < ActiveSupport::TestCase
 
   test "dependent associations" do
     avatar = Avatar.create!(capability: @capability, active_handle: @handle, moniker: "Dependent Test")
-    user = users(:one)
+    user = User.find_by!(public_id: "one_id")
 
     # Assignments
     avatar.avatar_assignments.create!(user: user, role: "viewer")
@@ -211,6 +213,13 @@ class AvatarTest < ActiveSupport::TestCase
           end
         end
       end
+    end
+  end
+
+  def create_user_and_status
+    UserIdentityStatus.find_or_create_by!(id: "NEYO")
+    User.find_or_create_by!(public_id: "one_id") do |u|
+      u.status_id = "NEYO"
     end
   end
 end

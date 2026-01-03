@@ -7,18 +7,16 @@
 #  parent_id          :uuid
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  organization_id    :uuid
 #
 # Indexes
 #
 #  index_divisions_on_division_status_id  (division_status_id)
+#  index_divisions_on_organization_id     (organization_id)
 #  index_divisions_unique                 (parent_id,division_status_id) UNIQUE
 #
 
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  division_status: one
-
+  division_status_id: ACTIVE
 two:
-  parent: two
-  division_status: two
+  division_status_id: INACTIVE

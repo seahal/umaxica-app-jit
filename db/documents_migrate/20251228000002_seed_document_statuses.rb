@@ -4,26 +4,11 @@ class SeedDocumentStatuses < ActiveRecord::Migration[7.1]
   disable_ddl_transaction!
 
   def up
-    safety_assured do
-      statuses = [
-        { id: 'NEYO', description: 'NEYO', active: true, position: 0 },
-        { id: 'ACTIVE', description: 'Active', active: true, position: 1 },
-        { id: 'DRAFT', description: 'Draft', active: true, position: 2 },
-        { id: 'ARCHIVED', description: 'Archived', active: true, position: 3 },
-      ]
-
-      upsert_table('app_document_statuses', statuses)
-      upsert_table('com_document_statuses', statuses)
-      upsert_table('org_document_statuses', statuses)
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    safety_assured do
-      execute "DELETE FROM app_document_statuses"
-      execute "DELETE FROM com_document_statuses"
-      execute "DELETE FROM org_document_statuses"
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   private

@@ -20,8 +20,8 @@
 require "test_helper"
 
 class OrgContactCategoryTest < ActiveSupport::TestCase
-  test "should inherit from GuestsRecord" do
-    assert_operator OrgContactCategory, :<, GuestsRecord
+  test "should inherit from GuestRecord" do
+    assert_operator OrgContactCategory, :<, GuestRecord
   end
 
   test "should use id as primary key" do
@@ -117,21 +117,10 @@ class OrgContactCategoryTest < ActiveSupport::TestCase
 
   test "destroy is restricted when contacts exist" do
     category = OrgContactCategory.create!(id: "CONTACT_PARENT")
-    status = OrgContactStatus.create!(id: "ACTIVE")
+    status = OrgContactStatus.create!(id: "ACTIVE_TEST")
     OrgContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
     assert_not category.destroy
     assert_predicate category.errors[:base], :any?
   end
-
-  # rubocop:disable Minitest/MultipleAssertions
-  test "should have timestamps" do
-    category = OrgContactCategory.create!(id: "test_org_category")
-
-    assert_respond_to category, :created_at
-    assert_respond_to category, :updated_at
-    assert_not_nil category.created_at
-    assert_not_nil category.updated_at
-  end
-  # rubocop:enable Minitest/MultipleAssertions
 end

@@ -16,4 +16,10 @@ class HandleStatusTest < ActiveSupport::TestCase
     status = HandleStatus.new(id: "TEST_STATUS")
     assert_predicate status, :valid?
   end
+
+  test "can load active status from db" do
+    status = HandleStatus.find("ACTIVE")
+    assert_not_nil status
+    assert_equal "ACTIVE", status.id
+  end
 end

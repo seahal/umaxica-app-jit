@@ -7,7 +7,7 @@
 #  id          :string(255)      not null, primary key
 #
 
-class OrgContactStatus < GuestsRecord
+class OrgContactStatus < GuestRecord
   include UppercaseId
 
   validates :description, length: { maximum: 255 }

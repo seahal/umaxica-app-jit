@@ -26,7 +26,7 @@ require "test_helper"
 
 class StaffIdentitySecretTest < ActiveSupport::TestCase
   setup do
-    @staff = staffs(:one)
+    @staff = Staff.find_by!(public_id: "one_staff_id")
   end
 
   test "allows up to the maximum number of secrets per staff" do

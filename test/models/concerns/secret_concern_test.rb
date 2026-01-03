@@ -19,7 +19,7 @@ class SecretConcernTest < ActiveSupport::TestCase
   end
 
   setup do
-    @user = users(:one)
+    @user = User.find_by!(public_id: "one_id")
     # Ensure statuses exist
     UserIdentitySecretStatus.find_or_create_by!(id: "ACTIVE")
     UserIdentitySecretStatus.find_or_create_by!(id: "USED")

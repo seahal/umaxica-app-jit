@@ -16,22 +16,18 @@
 #  index_staffs_on_status_id     (status_id)
 #  index_staffs_on_withdrawn_at  (withdrawn_at)
 #
-
-
 placeholder:
   id: "00000000-0000-0000-0000-000000000000"
   status_id: "NEYO"
   public_id: "placeholder_staff_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 one:
   id: "11111111-1111-1111-1111-111111111111"
   status_id: "NEYO"
   public_id: "one_staff_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
-
 none_staff:
   status_id: "NEYO"
   public_id: "none_staff_id"

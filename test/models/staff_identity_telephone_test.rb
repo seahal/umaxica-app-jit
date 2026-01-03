@@ -115,7 +115,7 @@ class StaffIdentityTelephoneTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum telephones per staff" do
-    staff = Staff.create!(staff_identity_status: staff_identity_statuses(:none))
+    staff = Staff.create!(staff_identity_status: StaffIdentityStatus.find("NEYO"))
     StaffIdentityTelephone::MAX_TELEPHONES_PER_STAFF.times do |i|
       StaffIdentityTelephone.create!(
         number: "+1234567890#{i}",

@@ -25,7 +25,10 @@ class StaffTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
-    @staff = staffs(:one)
+    StaffIdentityTelephoneStatus.find_or_create_by!(id: "UNVERIFIED")
+    StaffIdentityEmailStatus.find_or_create_by!(id: "UNVERIFIED")
+    StaffTokenStatus.find_or_create_by!(id: "ACTIVE")
+    @staff = Staff.find_by!(public_id: "one_staff_id")
   end
 
   test "should be valid" do
@@ -72,21 +75,6 @@ class StaffTest < ActiveSupport::TestCase
     staff = Staff.create!
 
     assert_equal StaffIdentityStatus::NEYO, staff.status_id
-  end
-
-  test "has_role? should correctly identify assigned roles" do
-    workspace = Workspace.create!(
-      name: "Test Workspace",
-      domain: "staff-workspace.example.com",
-      parent_organization: root_workspace.id,
-    )
-    admin_role = Role.create!(key: "admin", name: "Admin", organization: workspace)
-    Role.create!(key: "viewer", name: "Viewer", organization: workspace)
-
-    RoleAssignment.create!(staff: @staff, role: admin_role)
-
-    assert @staff.has_role?("admin")
-    assert_not @staff.has_role?("viewer")
   end
 
   test "boundary values: public_id must be unique" do

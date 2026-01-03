@@ -9,7 +9,7 @@
 #  updated_at  :datetime         not null
 #
 
-class OrgContactCategory < GuestsRecord
+class OrgContactCategory < GuestRecord
   include UppercaseId
 
   has_many :org_contacts,

@@ -19,9 +19,8 @@
 #
 
 class UserMembership < IdentitiesRecord
-  belongs_to :user, class_name: "User", inverse_of: :user_memberships
-  belongs_to :workspace, class_name: "Workspace", inverse_of: :user_memberships
-  validates :user_id, uniqueness: { scope: :workspace_id }
+  self.implicit_order_column = :created_at
 
-  scope :active, -> { where("left_at = '-infinity'::timestamp OR left_at > ?", Time.current) }
+  belongs_to :user, inverse_of: :user_memberships
+  belongs_to :workspace, inverse_of: :user_memberships
 end

@@ -75,7 +75,12 @@ class Authentication::UserTest < ActiveSupport::TestCase
 
   setup do
     @obj = DummyClass.new
-    @user = users(:one)
+    @user =
+      User.find_or_create_by!(id: SecureRandom.uuid) do |u|
+        u.status_id = "NEYO"
+        u.public_id = SecureRandom.alphanumeric(21)
+        u.webauthn_id = SecureRandom.hex(16)
+      end
   end
 
   test "module can be included" do

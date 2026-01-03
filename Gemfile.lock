@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: aa1bee96f565b2f894e4b9eef434990ecfaaa833
+  revision: aacf8a305f304dd88535240d5a97318858c0afb6
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -189,9 +189,9 @@ GEM
     database_consistency (2.1.1)
       activerecord (>= 3.2)
     date (3.5.1)
-    debride (1.14.0)
+    debride (1.15.0)
       path_expander (~> 2.0)
-      prism (~> 1.5)
+      prism (~> 1.7)
       sexp_processor (~> 4.17)
     debug (1.11.1)
       irb (~> 1.10)
@@ -715,7 +715,7 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
-    rubocop-rails (2.34.2)
+    rubocop-rails (2.34.3)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
       rack (>= 1.1)
@@ -777,13 +777,13 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12872)
-      sorbet-static (= 0.6.12872)
-    sorbet-runtime (0.6.12872)
-    sorbet-static (0.6.12872-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12872)
-      sorbet (= 0.6.12872)
-      sorbet-runtime (= 0.6.12872)
+    sorbet (0.6.12873)
+      sorbet-static (= 0.6.12873)
+    sorbet-runtime (0.6.12873)
+    sorbet-static (0.6.12873-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12873)
+      sorbet (= 0.6.12873)
+      sorbet-runtime (= 0.6.12873)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)

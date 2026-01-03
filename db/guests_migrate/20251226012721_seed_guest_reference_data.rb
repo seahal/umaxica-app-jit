@@ -2,73 +2,11 @@
 
 class SeedGuestReferenceData < ActiveRecord::Migration[8.2]
   def up
-    # ComContactCategory
-    seed_with_attributes(
-      :com_contact_categories, [
-        { id: 'SECURITY_ISSUE', description: 'root of corporate site status inquiries', parent_id: 'NULL' },
-        { id: 'OTHERS', description: 'root of corporate site status inquiries', parent_id: 'NULL' },
-      ],
-    )
-
-    # AppContactCategory
-    seed_with_attributes(
-      :app_contact_categories, [
-        { id: 'NULL', description: 'NULL' },
-        { id: 'NULL_CONTACT_STATUS', description: 'NULL' },
-        { id: 'COULD_NOT_SIGN_IN', description: 'user had a problem to sign/log in' },
-        { id: 'SERVICE_SITE_CONTACT', description: 'root of service site status inquiries' },
-      ],
-    )
-
-    # OrgContactCategory
-    seed_with_attributes(
-      :org_contact_categories, [
-        { id: 'COULD_NOT_SIGN_IN', description: 'user had a problem to sign/log in' },
-        { id: 'NULL_CONTACT_STATUS', description: 'NULL' },
-        { id: 'APEX_OF_ORG', description: 'root of org site status inquiries' },
-        { id: 'ORGANIZATION_SITE_CONTACT', description: 'root of org site status inquiries' },
-      ],
-    )
-
-    # ComContactStatus
-    seed_with_attributes(
-      :com_contact_statuses, [
-        { id: 'NEYO', description: 'NEYO' },
-        { id: 'SET_UP', description: 'first step completed' },
-        { id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP' },
-        { id: 'CHECKED_TELEPHONE_NUMBER', description: 'second step completed', parent_id: 'CHECKED_EMAIL_ADDRESS' },
-        { id: 'COMPLETED_CONTACT_ACTION', description: 'second step completed', parent_id: 'CHECKED_TELEPHONE_NUMBER' },
-      ],
-    )
-
-    # AppContactStatus
-    seed_with_attributes(
-      :app_contact_statuses, [
-        { id: 'NEYO', description: 'NEYO' },
-        { id: 'STAFF_SITE_STATUS', description: 'root of staff site status inquiries' },
-      ],
-    )
-
-    # OrgContactStatus
-    seed_with_attributes(
-      :org_contact_statuses, [
-        { id: 'NEYO', description: 'NEYO' },
-        { id: 'ORG_SITE_STATUS', description: 'root of org site status inquiries' },
-        { id: 'SET_UP', description: 'first step completed' },
-        { id: 'CHECKED_EMAIL_ADDRESS', description: 'second step completed', parent_id: 'SET_UP' },
-        { id: 'CHECKED_TELEPHONE_NUMBER', description: 'third step completed', parent_id: 'CHECKED_EMAIL_ADDRESS' },
-        { id: 'COMPLETED_CONTACT_ACTION', description: 'contact action completed', parent_id: 'CHECKED_TELEPHONE_NUMBER' },
-      ],
-    )
-
-    # Contact Audit Events
-    seed_ids(:com_contact_audit_events, %w(NEYO CREATED UPDATED DESTROYED))
-    seed_ids(:app_contact_audit_events, %w(NEYO CREATED UPDATED DESTROYED))
-    seed_ids(:org_contact_audit_events, %w(NEYO CREATED UPDATED DESTROYED))
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    # No-op to avoid removing shared reference data
+    # No-op: data seeding moved to fixtures.
   end
 
   private

@@ -26,7 +26,7 @@
 #  index_com_contacts_on_token_expires_at  (token_expires_at)
 #
 
-class ComContact < GuestsRecord
+class ComContact < GuestRecord
   include ::PublicId
 
   self.implicit_order_column = :created_at

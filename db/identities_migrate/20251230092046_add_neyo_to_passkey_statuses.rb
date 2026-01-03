@@ -37,11 +37,5 @@ class AddNeyoToPasskeyStatuses < ActiveRecord::Migration[8.2]
       cols << "updated_at"
       vals << "CURRENT_TIMESTAMP"
     end
-
-    execute <<~SQL.squish
-      INSERT INTO #{table_name} (#{cols.join(", ")})
-      VALUES (#{vals.join(", ")})
-      ON CONFLICT (id) DO NOTHING
-    SQL
   end
 end

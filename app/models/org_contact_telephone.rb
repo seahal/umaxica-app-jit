@@ -25,7 +25,7 @@
 #  index_org_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
 #
 
-class OrgContactTelephone < GuestsRecord
+class OrgContactTelephone < GuestRecord
   belongs_to :org_contact, inverse_of: :org_contact_telephones
 
   before_create :generate_id

@@ -68,35 +68,6 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
         staff_identity_audits
       ), from: "NONE", to: "NEYO",
     )
-
-    delete_id_tables(
-      %w(
-        user_occurrence_statuses
-        staff_occurrence_statuses
-        app_contact_audit_events
-        app_contact_audit_levels
-        com_contact_audit_events
-        com_contact_audit_levels
-        org_contact_audit_events
-        org_contact_audit_levels
-        app_document_audit_events
-        app_document_audit_levels
-        app_timeline_audit_events
-        app_timeline_audit_levels
-        com_document_audit_events
-        com_document_audit_levels
-        com_timeline_audit_events
-        com_timeline_audit_levels
-        org_document_audit_events
-        org_document_audit_levels
-        org_timeline_audit_events
-        org_timeline_audit_levels
-        user_identity_audit_events
-        user_identity_audit_levels
-        staff_identity_audit_events
-        staff_identity_audit_levels
-      ), id: "NONE",
-    )
   end
 
   def down
@@ -166,35 +137,6 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
         staff_identity_audits
       ), from: "NEYO", to: "NONE",
     )
-
-    delete_id_tables(
-      %w(
-        user_occurrence_statuses
-        staff_occurrence_statuses
-        app_contact_audit_events
-        app_contact_audit_levels
-        com_contact_audit_events
-        com_contact_audit_levels
-        org_contact_audit_events
-        org_contact_audit_levels
-        app_document_audit_events
-        app_document_audit_levels
-        app_timeline_audit_events
-        app_timeline_audit_levels
-        com_document_audit_events
-        com_document_audit_levels
-        com_timeline_audit_events
-        com_timeline_audit_levels
-        org_document_audit_events
-        org_document_audit_levels
-        org_timeline_audit_events
-        org_timeline_audit_levels
-        user_identity_audit_events
-        user_identity_audit_levels
-        staff_identity_audit_events
-        staff_identity_audit_levels
-      ), id: "NEYO",
-    )
   end
 
   private
@@ -208,25 +150,7 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
   def rename_id(table, from:, to:)
     return unless table_exists?(table)
 
-    has_timestamps = column_exists?(table, :created_at) && column_exists?(table, :updated_at)
-
-    safety_assured do
-      execute <<~SQL.squish
-        INSERT INTO #{table} (id#{has_timestamps ? ", created_at, updated_at" : ""})
-        VALUES ('#{to}'#{has_timestamps ? ", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP" : ""})
-        ON CONFLICT (id) DO NOTHING
-      SQL
-    end
-
     change_column_default_if_exists(table, :id, from: from, to: to)
-  end
-
-  def insert_sql(table, id, has_timestamps)
-    if has_timestamps
-      "INSERT INTO #{table} (id, created_at, updated_at) VALUES ('#{id}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);"
-    else
-      "INSERT INTO #{table} (id) VALUES ('#{id}');"
-    end
   end
 
   def update_fk(table, column, from:, to:)
@@ -259,22 +183,5 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
     return unless table_exists?(table) && column_exists?(table, column)
 
     change_column_default table, column, from: from, to: to
-  end
-
-  def delete_id_tables(tables, id:)
-    tables.each do |table|
-      delete_id(table, id)
-    end
-  end
-
-  def delete_id(table, id)
-    return unless table_exists?(table)
-
-    safety_assured do
-      execute <<~SQL.squish
-        DELETE FROM #{table}
-        WHERE id = '#{id}'
-      SQL
-    end
   end
 end

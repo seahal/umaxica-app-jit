@@ -35,7 +35,7 @@ class OrgDocumentVersionTest < ActiveSupport::TestCase
 
   test "encrypts title, description, and body" do
     record = OrgDocumentVersion.create!(
-      org_document: org_documents(:one),
+      org_document: OrgDocument.find_by!(public_id: "org_documents_0000001"),
       permalink: "permalink_#{SecureRandom.hex(4)}",
       response_mode: "html",
       published_at: Time.zone.parse("2999-01-01 00:00:00"),

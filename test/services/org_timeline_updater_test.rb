@@ -19,6 +19,8 @@
 require "test_helper"
 
 class OrgTimelineUpdaterTest < ActiveSupport::TestCase
+  fixtures :org_timeline_statuses
+
   def base_attrs
     {
       response_mode: "html",

@@ -4,10 +4,7 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
   require "simplecov"
 
   SimpleCov.start "rails" do
-    # Reset filters if you want to include files that are filtered by default
     filters.clear
-
-    # Filter out files that should not be measured
     add_filter ".bundle/"
     add_filter "vendor/"
     add_filter "app/views/"
@@ -25,22 +22,25 @@ end
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
-CloudflareTurnstile.test_mode = true
 
-# Rails root glob for support files
 Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 
-module ActiveSupport
-  class TestCase
-    include ActiveJob::TestHelper
+class ActiveSupport::TestCase
+  include ActiveJob::TestHelper
 
-    # Run tests in parallel with specified workers
-    # Use :number_of_processors to automatically detect CPU cores
-    # parallelize(workers: :number_of_processors)
+  # Run tests in parallel with specified workers
+  # parallelize(workers: :number_of_processors)
 
-    # Use transactional tests for speed
-    self.use_transactional_tests = true
+  # Setup all fixtures in test/fixtures/*.yml for all tests
+  # For multi-database setup, fixtures need to be loaded per-test
+  # rather than globally with `fixtures :all`
+  fixtures :all
+  self.use_transactional_tests = true
 
-    fixtures :all
+  # Helper method to load specific fixtures for multi-database tests
+  def self.use_fixtures(*fixture_names)
+    fixtures(*fixture_names)
   end
+
+  # Add more helper methods to be used by all tests here...
 end

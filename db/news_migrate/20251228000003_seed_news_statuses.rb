@@ -4,35 +4,11 @@ class SeedNewsStatuses < ActiveRecord::Migration[7.1]
   disable_ddl_transaction!
 
   def up
-    safety_assured do
-      # AppTimelineStatus
-      app_statuses = [
-        { id: 'ACTIVE' },
-        { id: 'DRAFT' },
-        { id: 'ARCHIVED' },
-        { id: 'NEYO' },
-      ]
-      upsert_table('app_timeline_statuses', app_statuses)
-
-      # ComTimelineStatus and OrgTimelineStatus
-      neyo_statuses = [
-        { id: 'ACTIVE' },
-        { id: 'DRAFT' },
-        { id: 'ARCHIVED' },
-        { id: 'NEYO' },
-      ]
-
-      upsert_table('com_timeline_statuses', neyo_statuses)
-      upsert_table('org_timeline_statuses', neyo_statuses)
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   def down
-    safety_assured do
-      execute "DELETE FROM app_timeline_statuses"
-      execute "DELETE FROM com_timeline_statuses"
-      execute "DELETE FROM org_timeline_statuses"
-    end
+    # No-op: data seeding moved to fixtures.
   end
 
   private

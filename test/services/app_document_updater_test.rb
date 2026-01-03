@@ -19,6 +19,8 @@
 require "test_helper"
 
 class AppDocumentUpdaterTest < ActiveSupport::TestCase
+  fixtures :app_document_statuses
+
   def base_attrs
     {
       permalink: "App_1",

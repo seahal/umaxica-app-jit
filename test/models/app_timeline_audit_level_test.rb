@@ -4,16 +4,15 @@
 #
 # Table name: app_timeline_audit_levels
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 
 require "test_helper"
 
 class AppTimelineAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = app_timeline_audit_levels(:none)
+    level = AppTimelineAuditLevel.find_or_create_by!(id: "TEST_LEVEL")
+    AppTimelineAuditEvent.find_or_create_by!(id: "CREATED")
     timeline = AppTimeline.create!(
       response_mode: "html",
       published_at: 1.hour.ago,
@@ -23,7 +22,7 @@ class AppTimelineAuditLevelTest < ActiveSupport::TestCase
 
     AppTimelineAudit.create!(
       app_timeline: timeline,
-      app_timeline_audit_event: app_timeline_audit_events(:created),
+      app_timeline_audit_event: AppTimelineAuditEvent.find("CREATED"),
       app_timeline_audit_level: level,
     )
 

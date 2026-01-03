@@ -19,6 +19,8 @@
 require "test_helper"
 
 class ComTimelineUpdaterTest < ActiveSupport::TestCase
+  fixtures :com_timeline_statuses
+
   def base_attrs
     {
       response_mode: "html",

@@ -67,8 +67,8 @@ class ComContactTest < ActiveSupport::TestCase
     ComContactStatus.find_by(id: "NEYO")&.id || "NEYO"
   end
 
-  test "should inherit from GuestsRecord" do
-    assert_operator ComContact, :<, GuestsRecord
+  test "should inherit from GuestRecord" do
+    assert_operator ComContact, :<, GuestRecord
   end
 
   test "should have valid fixtures" do

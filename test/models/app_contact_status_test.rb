@@ -16,7 +16,7 @@ require "test_helper"
 class AppContactStatusTest < ActiveSupport::TestCase
   def setup
     @model_class = AppContactStatus
-    @status = AppContactStatus.create!(id: "ACTIVE")
+    @status = AppContactStatus.find_or_create_by!(id: "ACTIVE")
     @contact = AppContact.create!(
       app_contact_status: @status,
     )

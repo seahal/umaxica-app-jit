@@ -30,15 +30,11 @@ class SetPublicIdDefaultsAndSeedNullPublicIds < ActiveRecord::Migration[8.2]
     change_column_default table, :public_id, from: nil, to: ""
   end
 
-  def ensure_null_public_id_row(table, status_column)
+  def ensure_null_public_id_row(table, _status_column)
     return unless table_exists?(table)
 
     safety_assured do
-      execute <<~SQL.squish
-        INSERT INTO #{table} (id, public_id, #{status_column}, created_at, updated_at)
-        VALUES ('#{NULL_UUID}', '#{NULL_PUBLIC_ID}', 'NEYO', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-        ON CONFLICT DO NOTHING
-      SQL
+      # No-op: intentionally left blank.
     end
   end
 
@@ -46,10 +42,7 @@ class SetPublicIdDefaultsAndSeedNullPublicIds < ActiveRecord::Migration[8.2]
     return unless table_exists?(table)
 
     safety_assured do
-      execute <<~SQL.squish
-        DELETE FROM #{table}
-        WHERE public_id = '#{NULL_PUBLIC_ID}' AND id = '#{NULL_UUID}'
-      SQL
+      # No-op: intentionally left blank.
     end
   end
 end

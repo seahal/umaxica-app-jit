@@ -4,16 +4,14 @@
 #
 # Table name: com_document_audit_levels
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 
 require "test_helper"
 
 class ComDocumentAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = com_document_audit_levels(:none)
+    level = ComDocumentAuditLevel.find("NEYO")
     doc = ComDocument.create!(
       permalink: "audit_doc",
       response_mode: "html",
@@ -26,7 +24,7 @@ class ComDocumentAuditLevelTest < ActiveSupport::TestCase
 
     ComDocumentAudit.create!(
       com_document: doc,
-      com_document_audit_event: com_document_audit_events(:created),
+      com_document_audit_event: ComDocumentAuditEvent.find("CREATED"),
       com_document_audit_level: level,
     )
 
