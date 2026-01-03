@@ -20,4 +20,6 @@
 class ClientAvatarExtraction < IdentityRecord
   belongs_to :client, inverse_of: :client_avatar_extractions
   belongs_to :avatar, inverse_of: :client_avatar_extractions
+
+  validates :avatar_id, uniqueness: { scope: :client_id }
 end

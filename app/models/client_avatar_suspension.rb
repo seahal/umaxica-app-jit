@@ -20,4 +20,6 @@
 class ClientAvatarSuspension < IdentityRecord
   belongs_to :client, inverse_of: :client_avatar_suspensions
   belongs_to :avatar, inverse_of: :client_avatar_suspensions
+
+  validates :avatar_id, uniqueness: { scope: :client_id }
 end

@@ -19,8 +19,6 @@
 #
 
 class Division < IdentitiesRecord
-  self.implicit_order_column = :created_at
-
   belongs_to :division_status,
              primary_key: :id,
              inverse_of: :divisions

@@ -20,4 +20,6 @@
 class UserClientDeletion < IdentityRecord
   belongs_to :user, inverse_of: :user_client_deletions
   belongs_to :client, inverse_of: :user_client_deletions
+
+  validates :client_id, uniqueness: { scope: :user_id }
 end

@@ -29,8 +29,6 @@ class OrgDocument < DocumentRecord
   include ::PublicId
   include Document
 
-  self.implicit_order_column = :created_at
-
   belongs_to :org_document_status,
              class_name: "OrgDocumentStatus",
              foreign_key: :status_id,

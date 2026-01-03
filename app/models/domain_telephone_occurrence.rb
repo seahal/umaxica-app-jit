@@ -17,8 +17,6 @@
 #
 
 class DomainTelephoneOccurrence < UniversalRecord
-  self.implicit_order_column = :created_at
-
   belongs_to :domain_occurrence, inverse_of: :domain_telephone_occurrences
   belongs_to :telephone_occurrence, inverse_of: :domain_telephone_occurrences
 end

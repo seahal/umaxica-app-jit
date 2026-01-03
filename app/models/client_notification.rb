@@ -18,7 +18,5 @@
 class ClientNotification < NotificationRecord
   include ::PublicId
 
-  self.implicit_order_column = :created_at
-
   belongs_to :user_notification, optional: true, inverse_of: :client_notifications
 end

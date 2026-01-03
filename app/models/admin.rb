@@ -24,7 +24,6 @@
 class Admin < IdentitiesRecord
   include ::PublicId
 
-  self.implicit_order_column = :created_at
   self.ignored_columns += ["workspace_id"]
 
   attribute :status_id, default: AdminIdentityStatus::NEYO

@@ -27,7 +27,6 @@
 # Organization mirrors Workspace but keeps the legacy name.
 class Organization < IdentitiesRecord
   self.table_name = "workspaces"
-  self.implicit_order_column = :created_at
 
   belongs_to :organization_status,
              class_name: "OrganizationStatus",
@@ -41,4 +40,7 @@ class Organization < IdentitiesRecord
            inverse_of: :organization
   has_many :departments, dependent: :nullify, inverse_of: :workspace
   has_many :user_memberships, dependent: :destroy, inverse_of: :workspace
+
+  validates :domain, uniqueness: true
+  validates :workspace_status_id, length: { maximum: 255 }, allow_nil: true
 end

@@ -19,8 +19,8 @@
 #
 
 class UserMembership < IdentitiesRecord
-  self.implicit_order_column = :created_at
-
   belongs_to :user, inverse_of: :user_memberships
   belongs_to :workspace, inverse_of: :user_memberships
+
+  validates :user_id, uniqueness: { scope: :workspace_id }
 end

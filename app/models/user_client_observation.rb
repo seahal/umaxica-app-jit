@@ -20,4 +20,6 @@
 class UserClientObservation < IdentityRecord
   belongs_to :user, inverse_of: :user_client_observations
   belongs_to :client, inverse_of: :user_client_observations
+
+  validates :client_id, uniqueness: { scope: :user_id }
 end

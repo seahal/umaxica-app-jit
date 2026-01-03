@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_03_120000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_03_133001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -70,7 +70,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_03_120000) do
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_affiliation", unique: true, where: "((role)::text = 'affiliation'::text)"
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_owner", unique: true, where: "((role)::text = 'owner'::text)"
     t.index ["user_id"], name: "index_avatar_assignments_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying::text, 'affiliation'::character varying::text, 'administrator'::character varying::text, 'editor'::character varying::text, 'reviewer'::character varying::text, 'viewer'::character varying::text])", name: "check_avatar_assignment_role"
+    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'affiliation'::character varying, 'administrator'::character varying, 'editor'::character varying, 'reviewer'::character varying, 'viewer'::character varying]::text[])", name: "check_avatar_assignment_role"
   end
 
   create_table "avatar_blocks", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -225,7 +225,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_03_120000) do
     t.datetime "updated_at", null: false
     t.index ["avatar_id"], name: "index_client_avatar_accesses_on_avatar_id"
     t.index ["client_id", "avatar_id"], name: "index_client_avatar_accesses_on_client_id_and_avatar_id", unique: true
-    t.index ["client_id"], name: "index_client_avatar_accesses_on_client_id"
   end
 
   create_table "client_avatar_deletions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -316,8 +315,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_03_120000) do
 
   create_table "departments", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "department_status_id", limit: 255
     t.string "name", null: false
+    t.uuid "parent_id"
     t.datetime "updated_at", null: false
+    t.uuid "workspace_id"
+    t.index ["department_status_id", "parent_id"], name: "index_departments_on_status_and_parent", unique: true
+    t.index ["department_status_id"], name: "index_departments_on_department_status_id"
+    t.index ["parent_id"], name: "index_departments_on_parent_id"
+    t.index ["workspace_id"], name: "index_departments_on_workspace_id"
   end
 
   create_table "division_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -970,7 +976,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_03_120000) do
   end
 
   add_foreign_key "admins", "admin_identity_statuses", column: "status_id"
-  add_foreign_key "admins", "departments"
+  add_foreign_key "admins", "departments", on_delete: :nullify
   add_foreign_key "admins", "staffs"
   add_foreign_key "apple_auths", "users"
   add_foreign_key "avatar_assignments", "avatars", on_delete: :cascade
@@ -1007,10 +1013,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_03_120000) do
   add_foreign_key "client_avatar_visibilities", "avatars"
   add_foreign_key "client_avatar_visibilities", "clients"
   add_foreign_key "clients", "client_identity_statuses", column: "status_id"
-  add_foreign_key "clients", "divisions"
+  add_foreign_key "clients", "divisions", on_delete: :nullify
   add_foreign_key "clients", "users"
+  add_foreign_key "departments", "department_statuses"
+  add_foreign_key "departments", "departments", column: "parent_id"
+  add_foreign_key "departments", "workspaces"
   add_foreign_key "divisions", "division_statuses"
   add_foreign_key "divisions", "divisions", column: "parent_id"
+  add_foreign_key "divisions", "workspaces", column: "organization_id"
   add_foreign_key "google_auths", "users"
   add_foreign_key "handle_assignments", "avatars"
   add_foreign_key "handle_assignments", "handle_assignment_statuses"
@@ -1073,4 +1083,5 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_03_120000) do
   add_foreign_key "user_workspaces", "departments", column: "workspace_id"
   add_foreign_key "user_workspaces", "users"
   add_foreign_key "users", "user_identity_statuses", column: "status_id"
+  add_foreign_key "workspaces", "workspace_statuses"
 end

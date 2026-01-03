@@ -18,7 +18,5 @@
 class ClientMessage < MessageRecord
   include ::PublicId
 
-  self.implicit_order_column = :created_at
-
   belongs_to :user_message, optional: true, inverse_of: :client_messages
 end

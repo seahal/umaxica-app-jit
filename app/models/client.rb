@@ -24,8 +24,6 @@
 class Client < IdentitiesRecord
   include ::PublicId
 
-  self.implicit_order_column = :created_at
-
   attribute :status_id, default: ClientIdentityStatus::NEYO
 
   validates :public_id, uniqueness: true, allow_nil: true

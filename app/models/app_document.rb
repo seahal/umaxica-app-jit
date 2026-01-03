@@ -29,8 +29,6 @@ class AppDocument < DocumentRecord
   include ::PublicId
   include Document
 
-  self.implicit_order_column = :created_at
-
   belongs_to :app_document_status,
              class_name: "AppDocumentStatus",
              foreign_key: :status_id,

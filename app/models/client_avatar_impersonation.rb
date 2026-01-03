@@ -20,4 +20,6 @@
 class ClientAvatarImpersonation < IdentityRecord
   belongs_to :client, inverse_of: :client_avatar_impersonations
   belongs_to :avatar, inverse_of: :client_avatar_impersonations
+
+  validates :avatar_id, uniqueness: { scope: :client_id }
 end

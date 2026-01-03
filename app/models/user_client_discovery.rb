@@ -20,4 +20,6 @@
 class UserClientDiscovery < IdentityRecord
   belongs_to :user, inverse_of: :user_client_discoveries
   belongs_to :client, inverse_of: :user_client_discoveries
+
+  validates :client_id, uniqueness: { scope: :user_id }
 end

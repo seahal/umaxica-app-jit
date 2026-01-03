@@ -17,7 +17,6 @@
 # frozen_string_literal: true
 
 class AvatarFollow < IdentitiesRecord
-  self.implicit_order_column = :created_at
   belongs_to :follower_avatar,
              class_name: "Avatar",
              inverse_of: :outgoing_follows

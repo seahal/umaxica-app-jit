@@ -18,7 +18,5 @@
 class AdminMessage < MessageRecord
   include ::PublicId
 
-  self.implicit_order_column = :created_at
-
   belongs_to :staff_message, optional: true, inverse_of: :admin_messages
 end

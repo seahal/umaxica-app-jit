@@ -319,6 +319,9 @@ DepartmentStatus:
   id:
     PrimaryKeyTypeChecker:
       enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
 DivisionStatus:
   id:
     PrimaryKeyTypeChecker:
@@ -381,6 +384,13 @@ OrgContactTelephone:
 OrgContactTopic:
   id:
     ImplicitOrderingChecker:
+      enabled: false
+OrganizationStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
       enabled: false
 OrgDocument:
   id:
@@ -713,6 +723,13 @@ Workspace:
   id:
     ImplicitOrderingChecker:
       enabled: false
+WorkspaceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
 ZipOccurrence:
   id:
     ImplicitOrderingChecker:
@@ -720,4 +737,244 @@ ZipOccurrence:
 ZipOccurrenceStatus:
   id:
     PrimaryKeyTypeChecker:
+      enabled: false
+Admin:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AdminMessage:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AdminNotification:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppTimelineVersion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AreaDomainOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AreaEmailOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AreaIpOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AreaStaffOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AreaTelephoneOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AreaUserOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AreaZipOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AvatarBlock:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AvatarFollow:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AvatarMute:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ClientAvatarAccess:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ClientAvatarDeletion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ClientAvatarExtraction:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ClientAvatarImpersonation:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ClientAvatarOversight:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ClientAvatarSuspension:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ClientAvatarVisibility:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ClientMessage:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ClientNotification:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComTimelineVersion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+Department:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+Division:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+DomainEmailOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+DomainIpOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+DomainStaffOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+DomainTelephoneOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+DomainUserOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+DomainZipOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+EmailIpOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+EmailStaffOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+EmailTelephoneOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+EmailUserOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+EmailZipOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+IpStaffOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+IpTelephoneOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+IpUserOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+IpZipOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgTimelineVersion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+Organization:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+PostVersion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffAdmin:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffTelephoneOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffToken:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffUserOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffZipOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+TelephoneUserOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+TelephoneZipOccurrence:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserClient:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserClientDeletion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserClientDiscovery:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserClientImpersonation:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserClientObservation:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserClientRevocation:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserClientSuspension:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserToken:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserZipOccurrence:
+  id:
+    ImplicitOrderingChecker:
       enabled: false

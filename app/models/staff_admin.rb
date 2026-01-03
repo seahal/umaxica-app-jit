@@ -17,7 +17,6 @@
 # frozen_string_literal: true
 
 class StaffAdmin < IdentitiesRecord
-  self.implicit_order_column = :created_at
   belongs_to :staff, inverse_of: :staff_admins
   belongs_to :admin, inverse_of: :staff_admins
 

@@ -20,4 +20,6 @@
 class ClientAvatarOversight < IdentityRecord
   belongs_to :client, inverse_of: :client_avatar_oversights
   belongs_to :avatar, inverse_of: :client_avatar_oversights
+
+  validates :avatar_id, uniqueness: { scope: :client_id }
 end

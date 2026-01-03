@@ -20,4 +20,6 @@
 class UserClientSuspension < IdentityRecord
   belongs_to :user, inverse_of: :user_client_suspensions
   belongs_to :client, inverse_of: :user_client_suspensions
+
+  validates :client_id, uniqueness: { scope: :user_id }
 end

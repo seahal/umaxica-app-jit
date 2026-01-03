@@ -29,8 +29,6 @@
 class ComContact < GuestRecord
   include ::PublicId
 
-  self.implicit_order_column = :created_at
-
   # Associations
   has_one :com_contact_email, dependent: :destroy, inverse_of: :com_contact
   has_one :com_contact_telephone, dependent: :destroy, inverse_of: :com_contact

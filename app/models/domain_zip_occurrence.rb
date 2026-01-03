@@ -17,8 +17,6 @@
 #
 
 class DomainZipOccurrence < UniversalRecord
-  self.implicit_order_column = :created_at
-
   belongs_to :domain_occurrence, inverse_of: :domain_zip_occurrences
   belongs_to :zip_occurrence, inverse_of: :domain_zip_occurrences
 end

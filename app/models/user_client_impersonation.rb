@@ -20,4 +20,6 @@
 class UserClientImpersonation < IdentityRecord
   belongs_to :user, inverse_of: :user_client_impersonations
   belongs_to :client, inverse_of: :user_client_impersonations
+
+  validates :client_id, uniqueness: { scope: :user_id }
 end

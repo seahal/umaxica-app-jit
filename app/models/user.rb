@@ -20,7 +20,6 @@
 #
 
 class User < IdentitiesRecord
-  self.implicit_order_column = :created_at
   include ::PublicId
   include ::Accountably
 

@@ -18,7 +18,6 @@
 # frozen_string_literal: true
 
 class AvatarMute < IdentitiesRecord
-  self.implicit_order_column = :created_at
   belongs_to :muter_avatar,
              class_name: "Avatar",
              inverse_of: :outgoing_mutes

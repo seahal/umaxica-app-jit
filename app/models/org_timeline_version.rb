@@ -27,7 +27,6 @@
 #
 
 class OrgTimelineVersion < NewsRecord
-  self.implicit_order_column = :created_at
   include Version
   include ::PublicId
 

@@ -20,4 +20,6 @@
 class ClientAvatarDeletion < IdentityRecord
   belongs_to :client, inverse_of: :client_avatar_deletions
   belongs_to :avatar, inverse_of: :client_avatar_deletions
+
+  validates :avatar_id, uniqueness: { scope: :client_id }
 end

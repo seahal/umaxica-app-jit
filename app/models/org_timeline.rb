@@ -26,8 +26,6 @@ class OrgTimeline < NewsRecord
   include ::PublicId
   include Timeline
 
-  self.implicit_order_column = :created_at
-
   belongs_to :org_timeline_status,
              class_name: "OrgTimelineStatus",
              foreign_key: :status_id,

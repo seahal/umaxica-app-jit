@@ -30,8 +30,6 @@ class PostVersion < IdentitiesRecord
   include ::Version
   include ::PublicId
 
-  self.implicit_order_column = :created_at
-
   belongs_to :post, inverse_of: :post_versions
 
   validates :permalink, presence: true, length: { maximum: 200 }

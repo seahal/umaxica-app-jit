@@ -178,6 +178,7 @@ RUN apt-get update -qq \
     yq \
     lsb-release \
     ncdu \
+    npm \
     openssl \
     ripgrep \
     silversearcher-ag \
@@ -220,9 +221,7 @@ RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     chown -R "${DOCKER_UID}:${DOCKER_GID}" "${HOME}"; \
     fi
 
-USER ${DOCKER_USER}
-
 # Install pnpm for development use only (available by default on PATH).
-ENV PNPM_HOME=${HOME}/.local/share/pnpm
-ENV PATH=${PNPM_HOME}:${PATH}
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="${HOME}/.shrc" SHELL="$(which sh)" sh -
+RUN npm install -g pnpm
+
+USER ${DOCKER_USER}

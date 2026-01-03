@@ -17,8 +17,6 @@
 #
 
 class IpStaffOccurrence < UniversalRecord
-  self.implicit_order_column = :created_at
-
   belongs_to :ip_occurrence, inverse_of: :ip_staff_occurrences
   belongs_to :staff_occurrence, inverse_of: :ip_staff_occurrences
 end

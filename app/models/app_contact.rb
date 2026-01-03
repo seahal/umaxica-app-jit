@@ -29,8 +29,6 @@
 class AppContact < GuestRecord
   include ::PublicId
 
-  self.implicit_order_column = :created_at
-
   # Associations
   belongs_to :app_contact_category,
              class_name: "AppContactCategory",

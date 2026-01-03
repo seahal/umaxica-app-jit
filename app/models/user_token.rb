@@ -29,7 +29,6 @@
 # Refresh tokens are persisted as digests only.
 # The public_id is used as the session identifier (sid).
 class UserToken < TokensRecord
-  self.implicit_order_column = :created_at
   include ::PublicId
   include ::RefreshTokenable
 

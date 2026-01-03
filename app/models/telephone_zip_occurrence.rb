@@ -17,8 +17,6 @@
 #
 
 class TelephoneZipOccurrence < UniversalRecord
-  self.implicit_order_column = :created_at
-
   belongs_to :telephone_occurrence, inverse_of: :telephone_zip_occurrences
   belongs_to :zip_occurrence, inverse_of: :telephone_zip_occurrences
 end
