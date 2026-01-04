@@ -5,7 +5,7 @@ require "test_helper"
 class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
   setup do
     OmniAuth.config.test_mode = true
-    @host = ENV["AUTH_SERVICE_URL"] || "auth.app.localhost"
+    @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @expected_redirect = %r{\Ahttps?://#{Regexp.escape(@host)}/.*}.freeze
   end
 
@@ -31,7 +31,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get auth_app_social_google_callback_url, headers: { "Host" => @host }
+    get sign_app_social_google_callback_url, headers: { "Host" => @host }
     assert_redirected_to @expected_redirect
     follow_redirect!
 
@@ -57,7 +57,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get auth_app_social_apple_callback_url, headers: { "Host" => @host }
+    get sign_app_social_apple_callback_url, headers: { "Host" => @host }
     assert_redirected_to @expected_redirect
     follow_redirect!
 
@@ -96,7 +96,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get auth_app_social_google_callback_url, headers: { "Host" => @host }
+    get sign_app_social_google_callback_url, headers: { "Host" => @host }
     assert_redirected_to @expected_redirect
     follow_redirect!
 

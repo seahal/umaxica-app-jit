@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="<%= get_language %>">
+<head>
+  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (app)" %>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="turbo-refresh-method" content="morph">
+  <meta name="turbo-refresh-scroll" content="preserve">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "sign/main" %>
+  <%= stylesheet_link_tag "sign/app/main" %>
+  <%= javascript_importmap_tags %>
+  <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
+</head>
+
+<body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
+<% edge_host = ENV["EDGE_SERVICE_URL"].presence %>
+
+<div class="min-h-screen">
+  <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
+    <%= render "concern/flash_messages" %>
+
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
+      <div class="flex flex-col">
+        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">Sign</span>
+        <h1 class="text-2xl font-semibold tracking-tight">
+          <% if edge_host.present? %>
+            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>/"><%= code_name %></a>
+          <% else %>
+            <%= code_name %>
+          <% end %>
+          <span class="text-[hsl(var(--muted-foreground))]">(app)</span>
+        </h1>
+      </div>
+      <nav class="flex flex-wrap gap-3 text-sm">
+        <% unless logged_in? %>
+          <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_registration_url,
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+          <%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_authentication_url,
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% else %>
+          <%= link_to t("sign.app.layout.nav.configuration"), sign_app_configuration_url,
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+          <%= link_to t("sign.app.layout.nav.logout"), edit_sign_app_exit_url,
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% end %>
+      </nav>
+    </header>
+
+    <main class="flex-1 py-10">
+      <%= yield %>
+    </main>
+
+    <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
+      <nav class="flex flex-wrap items-center gap-4">
+        <% if edge_host.present? %>
+          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>/">Home</a>
+        <% end %>
+      </nav>
+      <div class="mt-4">
+        <%= render "concern/copyright" %>
+      </div>
+    </footer>
+  </div>
+</div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 7417c481c1d11a867c79314ef8542127c7782f59
+  revision: 0d1b4918594caad1df15aefaa0b8393bbe7e232e
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -610,7 +610,7 @@ GEM
     psych (5.3.1)
       date
       stringio
-    public_suffix (7.0.0)
+    public_suffix (7.0.1)
     puma (7.1.0)
       nio4r (~> 2.0)
     pundit (2.5.2)

@@ -1,0 +1,39 @@
+<% content_for :page_title, t('sign.org.preferences.regions.title') %>
+
+<h1><%= t('sign.org.preferences.regions.title') %></h1>
+
+<%= form_with url: sign_org_preference_region_url, method: :patch do |f| %>
+  <div class="region-section">
+    <h2><%= t('sign.org.preferences.regions.region_section') %></h2>
+
+    <div class="region-selection">
+      <%= f.label :region, t('sign.org.preferences.regions.select_region') %>
+      <%= f.select :region, options_for_select([
+                                                 [t('sign.org.preferences.regions.select_region_selector.USA'), 'US'],
+                                                 [t('sign.org.preferences.regions.select_region_selector.JAPAN'), 'JP'],
+                                               ], @current_region), { prompt: t('sign.org.preferences.regions.select_region_prompt') } %>
+    </div>
+  </div>
+
+  <div class="language-section">
+    <h2><%= t('sign.org.preferences.regions.language_section') %></h2>
+
+    <div class="language-selection">
+      <%= f.label :language, t('sign.org.preferences.regions.select_language') %>
+      <%= f.select :language, options_for_select([[t('sign.org.preferences.regions.select_language_selector.JAPANESE'), 'JA'], [t('sign.org.preferences.regions.select_language_selector.ENGLISH'), 'EN']], @current_language), { prompt: t('sign.org.preferences.regions.select_language_prompt') } %>
+    </div>
+  </div>
+
+  <div class="timezone-section">
+    <h2><%= t('sign.org.preferences.regions.timezone_section') %></h2>
+    <div class="timezone-selection">
+      <%= f.label :timezone, t('sign.org.preferences.regions.select_timezone') %>
+      <%= f.select :timezone, options_for_select([[t('sign.org.preferences.regions.select_timezone_selector.UTC'), "Etc/UTC"], [t('sign.org.preferences.regions.select_timezone_selector.JST'), "Asia/Tokyo"]], @current_timezone.split(' ').last), { prompt: t('sign.org.preferences.regions.select_timezone_prompt') } %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 cursor-pointer' %>
+    <%= link_to t('sign.org.preferences.regions.cancel'), sign_org_preference_url, class: 'inline-block px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-md transition-colors duration-200' %>
+  </div>
+<% end %>

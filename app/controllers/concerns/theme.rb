@@ -33,7 +33,7 @@ module Theme
     resolved_theme = normalize_theme(params[:theme])
 
     if resolved_theme.nil?
-      flash.now[:alert] = I18n.t("preferences.themes.invalid", scope: [:peak, preference_scope])
+      flash.now[:alert] = I18n.t("preferences.themes.invalid", scope: [:apex, preference_scope])
       assign_current_theme
       @theme_query_params = theme_redirect_params
       render :edit, status: :unprocessable_content
@@ -41,7 +41,7 @@ module Theme
       persist_theme!(resolved_theme)
       flash[:notice] = I18n.t(
         "preferences.themes.updated",
-        scope: [:peak, preference_scope],
+        scope: [:apex, preference_scope],
         theme: I18n.t(resolved_theme, scope: :themes),
       )
       redirect_to theme_redirect_url
@@ -102,11 +102,11 @@ module Theme
 
     case preference_scope
     when "app"
-      Rails.application.routes.url_helpers.edit_peak_app_preference_theme_url(**query)
+      Rails.application.routes.url_helpers.edit_apex_app_preference_theme_url(**query)
     when "org"
-      Rails.application.routes.url_helpers.edit_peak_org_preference_theme_url(**query)
+      Rails.application.routes.url_helpers.edit_apex_org_preference_theme_url(**query)
     when "com"
-      Rails.application.routes.url_helpers.edit_peak_com_preference_theme_url(**query)
+      Rails.application.routes.url_helpers.edit_apex_com_preference_theme_url(**query)
     end
   end
 

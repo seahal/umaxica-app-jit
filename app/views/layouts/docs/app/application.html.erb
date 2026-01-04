@@ -7,10 +7,10 @@
   <meta name="turbo-refresh-scroll" content="preserve">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <%= stylesheet_link_tag "docs/app/main" %>
-  <%= javascript_importmap_tags %>
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "docs/app/main" %>
+  <%= javascript_importmap_tags %>
   <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 </head>
 
@@ -35,9 +35,9 @@
         </h1>
       </div>
       <nav class="flex flex-wrap gap-3 text-sm">
-        <%= link_to_if !@user&.active?, "logout?", new_auth_app_registration_path,
+        <%= link_to_if !@user&.active?, "logout?", new_sign_app_registration_path,
                        class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 font-semibold" %>
-        <%= link_to_unless @user&.active?, "login?", new_auth_app_registration_path,
+        <%= link_to_unless @user&.active?, "login?", new_sign_app_registration_path,
                            class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 font-semibold text-[hsl(var(--primary-foreground))]" %>
       </nav>
     </header>

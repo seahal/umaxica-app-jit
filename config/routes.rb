@@ -3,10 +3,9 @@
 Rails.application.routes.draw do
   # global
   # top level pages
-  # TODO: RENAME to root
-  draw :peak
+  draw :apex
   # sign in / up
-  draw :auth
+  draw :sign
   # regional
   ## back end of edge endpoints
   draw :core

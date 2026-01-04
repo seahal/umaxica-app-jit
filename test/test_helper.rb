@@ -20,6 +20,11 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
 end
 
 ENV["RAILS_ENV"] ||= "test"
+ENV["APEX_CORPORATE_URL"] ||= "com.localhost"
+ENV["APEX_SERVICE_URL"] ||= "app.localhost"
+ENV["APEX_STAFF_URL"] ||= "org.localhost"
+ENV["SIGN_SERVICE_URL"] ||= "sign.app.localhost"
+ENV["SIGN_STAFF_URL"] ||= "sign.org.localhost"
 require_relative "../config/environment"
 require "rails/test_help"
 

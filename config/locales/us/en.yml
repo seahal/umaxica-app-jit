@@ -34,7 +34,7 @@ en:
   test_data:
     contact_topic_description: "Details about the topic."
     inquiry_detail: "Detail of inquiry."
-  auth:
+  sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
@@ -51,8 +51,10 @@ en:
         invalid_refresh_token: "Invalid or expired refresh token"
         user_not_found_or_withdrawn: "User not found or withdrawn"
         staff_not_found_or_withdrawn: "Staff not found or withdrawn"
-    app:
-      authentication:
+  controller:
+    sign:
+      app:
+        authentication:
         new:
           page_title: "Choose how to sign in"
           description: "Select the method that fits your current session."
@@ -90,7 +92,7 @@ en:
         new:
           page_title: "Use a recovery code"
           description: "Enter one of your saved recovery codes to regain access to your account."
-      setting:
+      configuration:
         show:
           description: "Manage advanced security controls for your account."
         recovery:
@@ -279,7 +281,7 @@ en:
         nav:
           sign_up: "Sign Up"
           log_in: "Log In"
-          setting: "Settings"
+          configuration: "Settings"
           logout: "Log Out"
       exits:
         edit:
@@ -832,7 +834,7 @@ en:
     precision:
       format:
         delimiter: ''
-  peak:
+  apex:
     app:
       preferences:
         title: "Preferences"
@@ -909,7 +911,7 @@ en:
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
-  auth:
+  sign:
     org:
       withdrawal:
         create:

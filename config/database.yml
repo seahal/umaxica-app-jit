@@ -181,6 +181,28 @@ development:
     database: development_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || default_host %>
     migrations_paths: db/universals_migrate
+  operator:
+    !!merge <<: *default
+    database: development_operator_db
+    host: <%= ENV["POSTGRESQL_OPERATOR_PUB"] || default_host %>
+    migrations_paths: db/operators_migrate
+  operator_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_operator_db
+    host: <%= ENV["POSTGRESQL_OPERATOR_SUB"] || default_host %>
+    migrations_paths: db/operators_migrate
+  avatar:
+    !!merge <<: *default
+    database: development_avatar_db
+    host: <%= ENV["POSTGRESQL_AVATAR_PUB"] || default_host %>
+    migrations_paths: db/avatars_migrate
+  avatar_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_avatar_db
+    host: <%= ENV["POSTGRESQL_AVATAR_SUB"] || default_host %>
+    migrations_paths: db/avatars_migrate
   default:
     !!merge <<: *default
     database: development_default_db
@@ -358,6 +380,28 @@ test:
     database: test_universal_db
     host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || default_host %>
     migrations_paths: db/universals_migrate
+  operator:
+    !!merge <<: *test_default
+    database: test_operator_db
+    host: <%= ENV["POSTGRESQL_OPERATOR_PUB"] || default_host %>
+    migrations_paths: db/operators_migrate
+  operator_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_operator_db
+    host: <%= ENV["POSTGRESQL_OPERATOR_SUB"] || default_host %>
+    migrations_paths: db/operators_migrate
+  avatar:
+    !!merge <<: *test_default
+    database: test_avatar_db
+    host: <%= ENV["POSTGRESQL_AVATAR_PUB"] || default_host %>
+    migrations_paths: db/avatars_migrate
+  avatar_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_avatar_db
+    host: <%= ENV["POSTGRESQL_AVATAR_SUB"] || default_host %>
+    migrations_paths: db/avatars_migrate
   default:
     !!merge <<: *test_default
     database: test_default_db
@@ -586,4 +630,38 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL_REPLICA&.PASSWORD %>
     migrations_paths: db/universals_migrate
+  operator:
+    !!merge <<: *default
+    database: production_operator_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.OPERATOR&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.OPERATOR&.PASSWORD %>
+    migrations_paths: db/operators_migrate
+  operator_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_operator_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.OPERATOR_REPLICA&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.OPERATOR_REPLICA&.PASSWORD %>
+    migrations_paths: db/operators_migrate
+  avatar:
+    !!merge <<: *default
+    database: production_avatar_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.AVATAR&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.AVATAR&.PASSWORD %>
+    migrations_paths: db/avatars_migrate
+  avatar_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_avatar_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.AVATAR_REPLICA&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.AVATAR_REPLICA&.PASSWORD %>
+    migrations_paths: db/avatars_migrate
   # note: I thought that username host should be stored at secret manager.

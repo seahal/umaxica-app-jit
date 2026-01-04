@@ -45,7 +45,7 @@ en:
             cancel: "Cancel"
           create:
             success: "Your inquiry has been received. Please check your email address."
-  auth:
+  sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
@@ -54,7 +54,7 @@ en:
         nav:
           sign_up: "Sign Up"
           log_in: "Log In"
-          setting: "Settings"
+          configuration: "Settings"
           logout: "Log Out"
       root:
         title: "Welcome to Sign"
@@ -116,7 +116,7 @@ en:
         new:
           page_title: "Use a recovery code"
           description: "Enter one of your saved recovery codes to regain access to your account."
-      setting:
+      configuration:
         show:
           description: "Manage advanced security controls for your account."
         recovery:
@@ -292,7 +292,7 @@ en:
         nav:
           sign_up: "Sign Up"
           log_in: "Log In"
-          setting: "Settings"
+          configuration: "Settings"
           logout: "Log Out"
       exits:
         edit:
@@ -842,9 +842,9 @@ en:
       short: "%d %b %H:%M"
     pm: pm
   controller:
-    auth:
+    sign:
       app:
-        setting:
+        configuration:
           show:
             page_title: "Settings"
           index:
@@ -856,7 +856,7 @@ en:
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."
-  peak:
+  apex:
     app:
       preferences:
         footer:
@@ -1052,7 +1052,7 @@ en:
         id_required: "Contact ID is required"
         not_found: "Contact not found"
         invalid_status: "Invalid contact status: expected SET_UP, got %{current_status}"
-  peak:
+  apex:
     app:
       preference:
         resets:
@@ -1061,7 +1061,7 @@ en:
           confirm: "RESET"
           button: "RESET"
           back: "Back???"
-  peak:
+  apex:
     app:
       preferences:
         title: "Preferences"

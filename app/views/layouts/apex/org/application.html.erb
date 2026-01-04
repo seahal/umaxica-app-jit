@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="<%= get_language %>">
+<head>
+  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (org) Apex" %>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="turbo-refresh-method" content="morph">
+  <meta name="turbo-refresh-scroll" content="preserve">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "apex/main" %>
+  <%= stylesheet_link_tag "apex/org/main" %>
+  <%= javascript_importmap_tags %>
+  <link rel="icon" href="https://perm.umaxica.org/favicon.ico" sizes="32x32">
+</head>
+<body class="px-4">
+<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
+<% edge_host = ENV["EDGE_STAFF_URL"].presence %>
+
+<div class="mx-auto max-w-6xl px-6">
+    <%= render "concern/flash_messages" %>
+
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
+  <div class="flex flex-col">
+    <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
+    <h1 class="text-2xl font-semibold tracking-tight">
+      <% if edge_host.present? %>
+        <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/">Umaxica(org)</a>
+      <% else %>
+        Umaxica(org)
+      <% end %>
+    </h1>
+  </div>
+</header>
+
+<hr>
+
+<main class="container mx-auto mt-28 px-5 block">
+  <%= yield %>
+</main>
+
+<nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
+</nav>
+
+<hr>
+
+<footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
+  <nav class="flex flex-wrap items-center gap-4">
+    <a class="font-semibold text-[hsl(var(--foreground))]" href="https://<%= ENV['EDGE_STAFF_URL'] %>"><%= t('apex.org.preferences.footer.home') %></a>
+    <%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+    <%= link_to t('apex.org.preferences.footer.privacy'), apex_org_privacy_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+  </nav>
+  <div class="mt-4">
+    <%= render "concern/copyright" %>
+  </div>
+</footer>
+</div>
+</body>
+</html>

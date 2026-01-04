@@ -59,6 +59,10 @@ POSTGRESQL_STORAGE_PUB=primary
 POSTGRESQL_STORAGE_SUB=replica
 POSTGRESQL_QUEUE_PUB=primary
 POSTGRESQL_QUEUE_SUB=replica
+POSTGRESQL_OPERATOR_PUB=primary
+POSTGRESQL_OPERATOR_SUB=replica
+POSTGRESQL_AVATAR_PUB=primary
+POSTGRESQL_AVATAR_SUB=replica
 # Object Storage Configuration
 MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin
@@ -69,11 +73,11 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
 RESEND_SMTP_ENDPOINT=smtp.resend.com
 RESEND_SMTP_USER_NAME=resend
 # Domain URLs
-PEAK_CORPORATE_URL=com.localhost
-PEAK_SERVICE_URL=app.localhost
-PEAK_STAFF_URL=org.localhost
-AUTH_SERVICE_URL=auth.app.localhost
-AUTH_STAFF_URL=auth.org.localhost
+APEX_CORPORATE_URL=com.localhost
+APEX_SERVICE_URL=app.localhost
+APEX_STAFF_URL=org.localhost
+SIGN_SERVICE_URL=sign.app.localhost
+SIGN_STAFF_URL=sign.org.localhost
 CORE_CORPORATE_URL=www.com.localhost
 CORE_SERVICE_URL=www.app.localhost
 CORE_STAFF_URL=www.org.localhost

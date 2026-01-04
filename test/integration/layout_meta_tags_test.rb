@@ -6,9 +6,9 @@ class LayoutMetaTagsTest < ActionDispatch::IntegrationTest
   def setup
     # Map of Namespace => [Host ENV Name, Path]
     @targets = {
-      "Peak::Com" => ["PEAK_CORPORATE_URL", "/"],
-      "Peak::App" => ["PEAK_SERVICE_URL", "/"],
-      "Peak::Org" => ["PEAK_STAFF_URL", "/"],
+      "Apex::Com" => ["APEX_CORPORATE_URL", "/"],
+      "Apex::App" => ["APEX_SERVICE_URL", "/"],
+      "Apex::Org" => ["APEX_STAFF_URL", "/"],
       "Back::Com" => ["CORE_CORPORATE_URL", "/"],
       "Back::App" => ["CORE_SERVICE_URL", "/"],
       "Back::Org" => ["CORE_STAFF_URL", "/"],
@@ -21,8 +21,8 @@ class LayoutMetaTagsTest < ActionDispatch::IntegrationTest
       "Help::Com" => ["HELP_CORPORATE_URL", "/"],
       "Help::App" => ["HELP_SERVICE_URL", "/"],
       "Help::Org" => ["HELP_STAFF_URL", "/"],
-      "Auth::App" => ["AUTH_SERVICE_URL", "/"],
-      "Auth::Org" => ["AUTH_STAFF_URL", "/"],
+      "Sign::App" => ["SIGN_SERVICE_URL", "/"],
+      "Sign::Org" => ["SIGN_STAFF_URL", "/"],
     }
   end
 

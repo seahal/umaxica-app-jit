@@ -1,0 +1,10 @@
+<div>
+  <h1 class="font-bold text-4xl"><%= t('controller.sign.app.setting.show.page_title') %></h1>
+  <p class="mt-2 text-sm text-slate-600"><%= t('sign.app.setting.show.description') %></p>
+
+  <ul>
+    <li><%= link_to t('controller.sign.app.setting.index.session'), sign_app_configuration_sessions_path %></li>
+    <li><%= link_to t('controller.sign.app.setting.index.passkey'), sign_org_configuration_passkeys_path %></li>
+    <li><%= link_to t('controller.sign.app.setting.index.secret'), sign_org_configuration_secrets_path %></li>
+  </ul>
+</div>

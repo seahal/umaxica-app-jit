@@ -13,7 +13,7 @@ class DefaultUrlOptionsTest < ActiveSupport::TestCase
     end
 
     def controller_path
-      "peak/app/preferences"
+      "apex/app/preferences"
     end
   end
   # rubocop:enable Rails/ApplicationController

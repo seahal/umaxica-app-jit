@@ -18,11 +18,11 @@ module Redirect
   end
 
   def allowed_hosts
-    [ENV["PEAK_CORPORATE_URL"],
-     ENV["PEAK_SERVICE_URL"],
-     ENV["PEAK_STAFF_URL"],
-     ENV["AUTH_SERVICE_URL"],
-     ENV["AUTH_STAFF_URL"],
+    [ENV["APEX_CORPORATE_URL"],
+     ENV["APEX_SERVICE_URL"],
+     ENV["APEX_STAFF_URL"],
+     ENV["SIGN_SERVICE_URL"],
+     ENV["SIGN_STAFF_URL"],
      ENV["DOCS_CORPORATE_URL"],
      ENV["DOCS_SERVICE_URL"],
      ENV["DOCS_STAFF_URL"],

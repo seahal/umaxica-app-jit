@@ -6,22 +6,22 @@ info:
   contact:
     name: API Support
 servers:
-  - url: https://auth.app.localhost
-    description: Auth Service (User)
-  - url: https://auth.org.localhost
-    description: Auth Staff
+  - url: https://sign.app.localhost
+    description: Sign Service (User)
+  - url: https://sign.org.localhost
+    description: Sign Staff
   - url: https://core.com.localhost
     description: Core Corporate
   - url: https://core.app.localhost
     description: Core Service
   - url: https://core.org.localhost
     description: Core Staff
-  - url: https://peak.com.localhost
-    description: Peak Corporate
-  - url: https://peak.app.localhost
-    description: Peak Service
-  - url: https://peak.org.localhost
-    description: Peak Staff
+  - url: https://apex.com.localhost
+    description: Apex Corporate
+  - url: https://apex.app.localhost
+    description: Apex Service
+  - url: https://apex.org.localhost
+    description: Apex Staff
 
 paths:
   /v1/health:

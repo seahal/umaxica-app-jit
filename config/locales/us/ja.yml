@@ -37,7 +37,7 @@ ja:
   test_data:
     contact_topic_description: "トピックの詳細です。"
     inquiry_detail: "問い合わせの詳細です。"
-  auth:
+  sign:
   test:
     support:
       fix_fk_dependency:
@@ -52,9 +52,9 @@ ja:
         user_not_found_or_withdrawn: "User not found or withdrawn"
         staff_not_found_or_withdrawn: "Staff not found or withdrawn"
   controller:
-    auth:
+    sign:
       app:
-        setting:
+        configuration:
           show:
             page_title: 設定
           index:
@@ -113,7 +113,7 @@ ja:
         sessions:
           create:
             success: "%{provider} でアカウントを作成してサインインしました。"
-    peak:
+    apex:
       app:
         preferences:
           themes:
@@ -230,7 +230,7 @@ ja:
     region_settings_updated_successfully: 地域設定が正常に更新されました。
     user_registration_error: ユーザー登録中にエラーが発生しました。
     access_blocked_auth_error: 'アクセスをブロック: 認証エラーです'
-  auth:
+  sign:
     app:
       authentication:
         new:
@@ -268,7 +268,7 @@ ja:
           new:
             page_title: リカバリーコードを利用する
             description: 保存しているリカバリーコードを入力してアカウントへアクセスします。
-      setting:
+      configuration:
         show:
           description: アカウントの高度なセキュリティ設定を管理します。
         recovery:
@@ -436,7 +436,7 @@ ja:
         nav:
           sign_up: "新規登録"
           log_in: "ログイン"
-          setting: "設定"
+          configuration: "設定"
           logout: "ログアウト"
       exits:
         edit:
@@ -499,7 +499,7 @@ ja:
           links:
             sign_in_text: すでにアカウントをお持ちですか？
             sign_in_link: ログインはこちら
-      setting:
+      configuration:
         totp:
           new:
             title: TOTP no shinki
@@ -1027,7 +1027,7 @@ ja:
     precision:
       format:
         delimiter: ''
-  peak:
+  apex:
     app:
       preferences:
         title: 設定

@@ -25,7 +25,7 @@ class EmailDeliveryTest < ActionDispatch::IntegrationTest
     email = "delivery_test_#{SecureRandom.hex(4)}@example.com"
 
     assert_difference -> { SolidQueue::Job.where(class_name: "ActionMailer::MailDeliveryJob").count }, 1 do
-      post auth_app_registration_emails_url,
+      post sign_app_registration_emails_url,
            params: {
              user_identity_email: {
                address: email,
@@ -33,7 +33,7 @@ class EmailDeliveryTest < ActionDispatch::IntegrationTest
              },
              "cf-turnstile-response": "test_token",
            },
-           headers: { "Host" => ENV["AUTH_SERVICE_URL"] || "auth.app.localhost" }
+           headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
 
       assert_response :redirect
     end

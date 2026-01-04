@@ -17,15 +17,15 @@ ja:
         invalid_input: Pass Code の値に問題があります
     identity_audit_event_format_invalid: "イベントIDの形式が無効です。大文字とアンダースコアのみ使用可能です。"
   controller:
-    peak:
+    apex:
       org:
         preferences:
           themes:
             invalid: 無効な管理テーマが選択されました
             updated: 管理テーマを%{theme}に更新しました
-    auth:
+    sign:
       app:
-        setting:
+        configuration:
           show:
             page_title: 設定
           index:
@@ -359,7 +359,7 @@ ja:
     email_successfully_created: メールアドレスの確認コードを送信しました。
     telephone_successfully_created: 電話番号の確認コードを送信しました。
     sample_successfully_updated: 登録が完了しました。
-  auth:
+  sign:
     token_refresh:
       errors:
         missing_refresh_token: "リフレッシュトークンが必要です"
@@ -369,7 +369,7 @@ ja:
         nav:
           sign_up: "新規登録"
           log_in: "ログイン"
-          setting: "設定"
+          configuration: "設定"
           logout: "ログアウト"
       root:
         title: "Sign へようこそ"
@@ -418,7 +418,7 @@ ja:
           new:
             page_title: リカバリーコードを利用する
             description: 保存しているリカバリーコードを入力してアカウントへアクセスします。
-      setting:
+      configuration:
         show:
           description: アカウントの高度なセキュリティ設定を管理します。
         recovery:
@@ -483,7 +483,7 @@ ja:
         nav:
           sign_up: "新規登録"
           log_in: "ログイン"
-          setting: "設定"
+          configuration: "設定"
           logout: "ログアウト"
       exits:
         edit:
@@ -526,7 +526,7 @@ ja:
           links:
             sign_in_text: すでにアカウントをお持ちですか？
             sign_in_link: ログインはこちら
-      setting:
+      configuration:
         totp:
           new:
             title: TOTP no shinki
@@ -745,7 +745,7 @@ ja:
       long: '%Y/%m/%d %H:%M'
       short: '%m/%d %H:%M'
     pm: 午後
-  peak:
+  apex:
     app:
       preferences: &apex_preferences_shared
         title: 設定

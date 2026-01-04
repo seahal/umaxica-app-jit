@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+module Sign::App::Configuration
+  class GooglesControllerTest < ActionDispatch::IntegrationTest
+    test "should get show" do
+      get sign_app_configuration_google_url
+
+      assert_response :success
+    end
+  end
+end

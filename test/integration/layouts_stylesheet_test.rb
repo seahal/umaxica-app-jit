@@ -3,15 +3,15 @@
 require "test_helper"
 
 class StylesheetTagsTest < ActiveSupport::TestCase
-  test "auth layouts include auth main stylesheet" do
+  test "sign layouts include sign main stylesheet" do
     paths = [
-      "app/views/layouts/auth/app/application.html.erb",
-      "app/views/layouts/auth/org/application.html.erb",
+      "app/views/layouts/sign/app/application.html.erb",
+      "app/views/layouts/sign/org/application.html.erb",
     ]
 
     paths.each do |path|
       contents = Rails.root.join(path).read
-      assert_match(/stylesheet_link_tag\s+\"auth\/main\"/, contents, "missing auth/main in #{path}")
+      assert_match(/stylesheet_link_tag\s+\"sign\/main\"/, contents, "missing sign/main in #{path}")
     end
   end
 
@@ -54,16 +54,16 @@ class StylesheetTagsTest < ActiveSupport::TestCase
     end
   end
 
-  test "peak layouts include peak main stylesheet" do
+  test "apex layouts include apex main stylesheet" do
     paths = [
-      "app/views/layouts/peak/app/application.html.erb",
-      "app/views/layouts/peak/com/application.html.erb",
-      "app/views/layouts/peak/org/application.html.erb",
+      "app/views/layouts/apex/app/application.html.erb",
+      "app/views/layouts/apex/com/application.html.erb",
+      "app/views/layouts/apex/org/application.html.erb",
     ]
 
     paths.each do |path|
       contents = Rails.root.join(path).read
-      assert_match(/stylesheet_link_tag\s+\"peak\/main\"/, contents, "missing peak/main in #{path}")
+      assert_match(/stylesheet_link_tag\s+\"apex\/main\"/, contents, "missing apex/main in #{path}")
     end
   end
 end

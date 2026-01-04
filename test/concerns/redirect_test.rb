@@ -7,14 +7,14 @@ class RedirectTest < ActiveSupport::TestCase
 
   setup do
     @original_env = ENV.to_h
-    ENV["PEAK_SERVICE_URL"] = "app.peak.localdomain"
-    ENV["PEAK_CORPORATE_URL"] = "com.peak.localdomain"
-    ENV["PEAK_STAFF_URL"] = "org.peak.localdomain"
+    ENV["APEX_SERVICE_URL"] = "app.apex.localdomain"
+    ENV["APEX_CORPORATE_URL"] = "com.apex.localdomain"
+    ENV["APEX_STAFF_URL"] = "org.apex.localdomain"
     ENV["API_SERVICE_URL"] = "app.api.localdomain"
     ENV["API_CORPORATE_URL"] = "com.api.localdomain"
     ENV["API_STAFF_URL"] = "org.api.localdomain"
-    ENV["AUTH_SERVICE_URL"] = "app.auth.localdomain"
-    ENV["AUTH_STAFF_URL"] = "org.auth.localdomain"
+    ENV["SIGN_SERVICE_URL"] = "app.sign.localdomain"
+    ENV["SIGN_STAFF_URL"] = "org.sign.localdomain"
     ENV["DOCS_CORPORATE_URL"] = "com.docs.localdomain"
     ENV["DOCS_SERVICE_URL"] = "app.docs.localdomain"
     ENV["DOCS_STAFF_URL"] = "org.docs.localdomain"
@@ -65,11 +65,11 @@ class RedirectTest < ActiveSupport::TestCase
   end
 
   test "allowed_host? should accept exact matches" do
-    assert allowed_host?("app.auth.localdomain")
+    assert allowed_host?("app.sign.localdomain")
   end
 
   test "allowed_host? should accept subdomains" do
-    assert allowed_host?("sub.app.auth.localdomain")
+    assert allowed_host?("sub.app.sign.localdomain")
   end
 
   test "allowed_host? should reject other domains" do

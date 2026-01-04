@@ -95,7 +95,7 @@ module Authentication
     end
 
     def refresh_access_token(refresh_token)
-      result = Auth::RefreshTokenService.call(refresh_token: refresh_token)
+      result = Sign::RefreshTokenService.call(refresh_token: refresh_token)
       old_token = result[:token]
 
       unless old_token.is_a?(UserToken)
@@ -140,7 +140,7 @@ module Authentication
         token_type: "Bearer",
         expires_in: ACCESS_TOKEN_EXPIRY.to_i,
       }
-    rescue Auth::InvalidRefreshToken => e
+    rescue Sign::InvalidRefreshToken => e
       Rails.event.notify(
         "user.token.refresh.failed",
         refresh_token_id: refresh_token,
@@ -195,7 +195,7 @@ module Authentication
       else
         rt = Base64.urlsafe_encode64(request.original_url)
         redirect_to(
-          new_auth_app_authentication_url(rt: rt, host: ENV["AUTH_SERVICE_URL"]),
+          new_sign_app_authentication_url(rt: rt, host: ENV["SIGN_SERVICE_URL"]),
           allow_other_host: true,
           alert: I18n.t("errors.messages.login_required"),
         )
