@@ -15,7 +15,7 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
     @model_class = AppTimelineStatus
   end
 
-  test "inherits from BusinessRecord" do
+  test "inherits from NewsRecord" do
     assert_operator AppTimelineStatus, :<, NewsRecord
   end
 

@@ -19,7 +19,7 @@ class OrgDocumentStatusTest < ActiveSupport::TestCase
     @status = OrgDocumentStatus.find("ACTIVE")
   end
 
-  test "inherits from BusinessRecord" do
+  test "inherits from DocumentRecord" do
     assert_operator OrgDocumentStatus, :<, DocumentRecord
   end
 

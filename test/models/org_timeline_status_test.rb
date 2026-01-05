@@ -17,7 +17,7 @@ class OrgTimelineStatusTest < ActiveSupport::TestCase
     @status = OrgTimelineStatus.find("ACTIVE")
   end
 
-  test "inherits from BusinessRecord" do
+  test "inherits from NewsRecord" do
     assert_operator OrgTimelineStatus, :<, NewsRecord
   end
 

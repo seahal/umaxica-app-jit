@@ -283,8 +283,6 @@ jobs:
       POSTGRESQL_PROFILE_SUB: localhost
       POSTGRESQL_TOKEN_PUB: localhost
       POSTGRESQL_TOKEN_SUB: localhost
-      POSTGRESQL_BUSINESS_PUB: localhost
-      POSTGRESQL_BUSINESS_SUB: localhost
       POSTGRESQL_DOCUMENT_PUB: localhost
       POSTGRESQL_DOCUMENT_SUB: localhost
       POSTGRESQL_NEWS_PUB: localhost
@@ -298,8 +296,6 @@ jobs:
       POSTGRESQL_CACHE_SUB: localhost
       POSTGRESQL_QUEUE_PUB: localhost
       POSTGRESQL_QUEUE_SUB: localhost
-      POSTGRESQL_SPECIALITY_PUB: localhost
-      POSTGRESQL_SPECIALITY_SUB: localhost
       POSTGRESQL_STORAGE_PUB: localhost
       POSTGRESQL_STORAGE_SUB: localhost
       POSTGRESQL_OPERATOR_PUB: localhost

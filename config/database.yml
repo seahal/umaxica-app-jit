@@ -148,17 +148,6 @@ development:
     database: development_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_SUB"] || default_host %>
     migrations_paths: db/storages_migrate
-  speciality:
-    !!merge <<: *default
-    database: development_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_PUB"] || default_host %>
-    migrations_paths: db/specialities_migrate
-  speciality_replica:
-    !!merge <<: *default
-    replica: true
-    database: development_speciality_db
-    host: <%= ENV["POSTGRESQL_SPECIALITY_SUB"] || default_host %>
-    migrations_paths: db/specialities_migrate
   universal:
     !!merge <<: *default
     database: development_universal_db
@@ -444,23 +433,6 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.TOKEN_REPLICA&.PASSWORD %>
     migrations_paths: db/tokens_migrate
-  business:
-    !!merge <<: *default
-    database: production_business_db
-    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.BUSINESS&.HOST %>
-    username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.BUSINESS&.PASSWORD %>
-    migrations_paths: db/businesses_migrate
-  business_replica:
-    !!merge <<: *default
-    replica: true
-    database: production_business_db
-    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.BUSINESS_REPLICA&.HOST %>
-    username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.BUSINESS_REPLICA&.PASSWORD %>
-    migrations_paths: db/businesses_migrate
   billing:
     !!merge <<: *default
     database: production_billing_db
