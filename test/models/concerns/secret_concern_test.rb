@@ -3,7 +3,7 @@
 require "test_helper"
 
 class SecretConcernTest < ActiveSupport::TestCase
-  class DummySecret < IdentitiesRecord
+  class DummySecret < PrincipalRecord
     self.table_name = "user_identity_secrets"
     include Secret
 

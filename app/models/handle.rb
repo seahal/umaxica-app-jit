@@ -22,7 +22,7 @@
 #  uniq_handles_handle_non_system     (handle) UNIQUE
 #
 
-class Handle < AvatarsRecord
+class Handle < AvatarRecord
   include StringPrimaryKey
   include PublicId
 

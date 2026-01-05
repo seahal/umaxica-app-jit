@@ -20,7 +20,7 @@
 #  index_post_reviews_on_reviewer_actor_id              (reviewer_actor_id)
 #
 
-class PostReview < AvatarsRecord
+class PostReview < AvatarRecord
   include StringPrimaryKey
 
   belongs_to :post, inverse_of: :post_reviews

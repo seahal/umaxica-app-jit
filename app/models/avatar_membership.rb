@@ -22,7 +22,7 @@
 #  index_avatar_memberships_on_avatar_membership_status_id  (avatar_membership_status_id)
 #
 
-class AvatarMembership < AvatarsRecord
+class AvatarMembership < AvatarRecord
   include StringPrimaryKey
 
   belongs_to :avatar

@@ -25,7 +25,7 @@
 #  index_user_identity_social_apples_on_user_id_unique     (user_id) UNIQUE
 #
 
-class UserIdentitySocialApple < IdentitiesRecord
+class UserIdentitySocialApple < PrincipalRecord
   belongs_to :user, inverse_of: :user_identity_social_apple
   belongs_to :user_identity_social_apple_status, optional: true
 

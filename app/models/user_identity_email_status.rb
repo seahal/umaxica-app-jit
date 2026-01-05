@@ -7,7 +7,7 @@
 #  id :string(255)      default("UNVERIFIED"), not null, primary key
 #
 
-class UserIdentityEmailStatus < IdentitiesRecord
+class UserIdentityEmailStatus < PrincipalRecord
   include UppercaseId
 
   has_many :user_identity_emails, dependent: :restrict_with_error

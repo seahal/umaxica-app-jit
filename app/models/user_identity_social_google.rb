@@ -25,7 +25,7 @@
 #  index_user_identity_social_googles_on_user_id_unique     (user_id) UNIQUE
 #
 
-class UserIdentitySocialGoogle < IdentitiesRecord
+class UserIdentitySocialGoogle < PrincipalRecord
   belongs_to :user, inverse_of: :user_identity_social_google
   belongs_to :user_identity_social_google_status, optional: true
 

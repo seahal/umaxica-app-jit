@@ -28,7 +28,7 @@
 
 # Refresh tokens are persisted as digests only.
 # The public_id is used as the session identifier (sid).
-class StaffToken < TokensRecord
+class StaffToken < TokenRecord
   include ::PublicId
   include ::RefreshTokenable
 

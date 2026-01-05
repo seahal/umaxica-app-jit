@@ -16,7 +16,7 @@
 
 # frozen_string_literal: true
 
-class UserClientDeletion < IdentityRecord
+class UserClientDeletion < PrincipalRecord
   belongs_to :user, inverse_of: :user_client_deletions
   belongs_to :client, inverse_of: :user_client_deletions
 

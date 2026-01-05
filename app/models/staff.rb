@@ -19,7 +19,7 @@
 #  index_staffs_on_withdrawn_at  (withdrawn_at)
 #
 
-class Staff < OperatorsRecord
+class Staff < OperatorRecord
   # Staff represents an operator accountably for the staff/admin console.
   # It mirrors `User` for identity concerns but is used for staff-scoped access.
   self.ignored_columns += ["admin_id"]

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 7db8073e6c8ff1aeb1a2f5c27530e8cbd2503d3d
+  revision: a3445dc98494dd2e70e8e515f0b07e35c7d335b4
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -142,10 +142,6 @@ GEM
     base64 (0.3.0)
     bcrypt (3.1.21)
     benchmark (0.5.0)
-    better_errors (2.10.1)
-      erubi (>= 1.0.0)
-      rack (>= 0.9.0)
-      rouge (>= 1.0.0)
     better_html (2.2.0)
       actionview (>= 7.0)
       activesupport (>= 7.0)
@@ -685,7 +681,6 @@ GEM
       io-console (~> 0.5)
     rexml (3.4.4)
     rotp (6.3.0)
-    rouge (4.7.0)
     rqrcode (3.1.1)
       chunky_png (~> 1.0)
       rqrcode_core (~> 2.0)
@@ -875,7 +870,6 @@ DEPENDENCIES
   aws-sdk-polly
   aws-sdk-sns
   bcrypt
-  better_errors
   bootsnap
   brakeman
   bundler-audit

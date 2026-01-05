@@ -18,7 +18,7 @@
 
 # frozen_string_literal: true
 
-class AvatarBlock < AvatarsRecord
+class AvatarBlock < AvatarRecord
   belongs_to :blocker_avatar,
              class_name: "Avatar",
              inverse_of: :outgoing_blocks

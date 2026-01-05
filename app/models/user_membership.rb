@@ -18,7 +18,7 @@
 #  index_user_memberships_on_workspace_id              (workspace_id)
 #
 
-class UserMembership < IdentitiesRecord
+class UserMembership < PrincipalRecord
   belongs_to :user, inverse_of: :user_memberships
   belongs_to :workspace, inverse_of: :user_memberships
 

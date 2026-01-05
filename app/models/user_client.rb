@@ -17,7 +17,7 @@
 
 # frozen_string_literal: true
 
-class UserClient < IdentitiesRecord
+class UserClient < PrincipalRecord
   belongs_to :user
   belongs_to :client
 

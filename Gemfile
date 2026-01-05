@@ -135,7 +135,6 @@ group :development do
   gem "brakeman", require: false
   # Web console on exception pages
   gem "web-console"
-  gem "better_errors"
   # RuboCop
   gem "rubocop", require: false
   gem "rubocop-performance", require: false

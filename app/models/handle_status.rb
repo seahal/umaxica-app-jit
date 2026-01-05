@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class HandleStatus < AvatarsRecord
+class HandleStatus < AvatarRecord
   include StringPrimaryKey
 
   has_many :handles, dependent: :restrict_with_error

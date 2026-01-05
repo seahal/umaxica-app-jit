@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class AvatarMembershipStatus < AvatarsRecord
+class AvatarMembershipStatus < AvatarRecord
   include StringPrimaryKey
 
   has_many :avatar_memberships, dependent: :restrict_with_error

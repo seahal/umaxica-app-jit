@@ -24,6 +24,8 @@ class Apex::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", text: I18n.t("apex.org.preferences.title")
     # Verify that preference links are present (translations should exist)
+    assert_select "a[href*=?]", edit_apex_org_preference_cookie_path,
+                  text: I18n.t("apex.org.preferences.cookie_settings")
     assert_select "a", minimum: 1
   end
   # rubocop:enable Minitest/MultipleAssertions

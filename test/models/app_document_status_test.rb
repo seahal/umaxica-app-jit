@@ -19,7 +19,7 @@ class AppDocumentStatusTest < ActiveSupport::TestCase
     @status = AppDocumentStatus.find("ACTIVE")
   end
 
-  test "inherits from BusinessesRecord" do
+  test "inherits from BusinessRecord" do
     assert_operator AppDocumentStatus, :<, DocumentRecord
   end
 

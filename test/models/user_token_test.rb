@@ -35,8 +35,8 @@ class UserTokenTest < ActiveSupport::TestCase
     @token = UserToken.create!(user: @user)
   end
 
-  test "inherits from TokensRecord" do
-    assert_operator UserToken, :<, TokensRecord
+  test "inherits from TokenRecord" do
+    assert_operator UserToken, :<, TokenRecord
   end
 
   test "belongs to user" do

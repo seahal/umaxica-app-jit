@@ -63,7 +63,7 @@ module Authentication
       reset_session
 
       token =
-        TokensRecord.connected_to(role: :writing) do
+        TokenRecord.connected_to(role: :writing) do
           UserToken.create!(user_id: user.id)
         end
       refresh_token = token.rotate_refresh_token!
@@ -118,7 +118,7 @@ module Authentication
           reason: "user_inactive",
           ip_address: request_ip_address,
         )
-        TokensRecord.connected_to(role: :writing) { old_token.destroy! }
+        TokenRecord.connected_to(role: :writing) { old_token.destroy! }
         return nil
       end
 

@@ -27,17 +27,17 @@ development:
     database: development_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_SUB"] || default_host %>
     migrations_paths: db/guests_migrate
-  identity:
+  principal:
     !!merge <<: *default
-    database: development_identity_db
-    host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] || default_host %>
-    migrations_paths: db/identities_migrate
-  identity_replica:
+    database: development_principal_db
+    host: <%= ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
+    migrations_paths: db/principals_migrate
+  principal_replica:
     !!merge <<: *default
     replica: true
-    database: development_identity_db
-    host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] || default_host %>
-    migrations_paths: db/identities_migrate
+    database: development_principal_db
+    host: <%= ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
+    migrations_paths: db/principals_migrate
   profile:
     !!merge <<: *default
     database: development_profile_db
@@ -96,13 +96,13 @@ development:
   billing:
     !!merge <<: *default
     database: development_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_IDENTITY_PUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
     migrations_paths: db/billing_migrate
   billing_replica:
     !!merge <<: *default
     replica: true
     database: development_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_IDENTITY_SUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
     migrations_paths: db/billing_migrate
   message:
     !!merge <<: *default
@@ -226,17 +226,17 @@ test:
     database: test_guest_db
     host: <%= ENV["POSTGRESQL_GUEST_SUB"] || default_host %>
     migrations_paths: db/guests_migrate
-  identity:
+  principal:
     !!merge <<: *test_default
-    database: test_identity_db
-    host: <%= ENV["POSTGRESQL_IDENTITY_PUB"] || default_host %>
-    migrations_paths: db/identities_migrate
-  identity_replica:
+    database: test_principal_db
+    host: <%= ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
+    migrations_paths: db/principals_migrate
+  principal_replica:
     !!merge <<: *test_default
     replica: true
-    database: test_identity_db
-    host: <%= ENV["POSTGRESQL_IDENTITY_SUB"] || default_host %>
-    migrations_paths: db/identities_migrate
+    database: test_principal_db
+    host: <%= ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
+    migrations_paths: db/principals_migrate
   profile:
     !!merge <<: *test_default
     database: test_profile_db
@@ -350,13 +350,13 @@ test:
   billing:
     !!merge <<: *test_default
     database: test_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_IDENTITY_PUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
     migrations_paths: db/billing_migrate
   billing_replica:
     !!merge <<: *test_default
     replica: true
     database: test_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_IDENTITY_SUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
     migrations_paths: db/billing_migrate
   message:
     !!merge <<: *test_default
@@ -426,23 +426,23 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.GUEST_REPLICA&.PASSWORD %>
     migrations_paths: db/guests_migrate
-  identity:
+  principal:
     !!merge <<: *default
-    database: production_identity_db
+    database: production_principal_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.identity&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL&.HOST %>
     username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.identity&.PASSWORD %>
-    migrations_paths: db/identities_migrate
-  identity_replica:
+    password: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL&.PASSWORD %>
+    migrations_paths: db/principals_migrate
+  principal_replica:
     !!merge <<: *default
     replica: true
-    database: production_identity_db
+    database: production_principal_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.IDENTITY_REPLICA&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL_REPLICA&.HOST %>
     username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.IDENTITY_REPLICA&.PASSWORD %>
-    migrations_paths: db/identities_migrate
+    password: <%= Rails.application.credentials&.DATABASE&.PRINCIPAL_REPLICA&.PASSWORD %>
+    migrations_paths: db/principals_migrate
   profile:
     !!merge <<: *default
     database: production_profile_db

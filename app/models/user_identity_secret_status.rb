@@ -7,7 +7,7 @@
 #  id :string(255)      not null, primary key
 #
 
-class UserIdentitySecretStatus < IdentitiesRecord
+class UserIdentitySecretStatus < PrincipalRecord
   include UppercaseId
 
   has_many :user_identity_secrets, dependent: :restrict_with_error

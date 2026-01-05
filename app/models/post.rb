@@ -22,7 +22,7 @@
 #  index_posts_on_public_id                        (public_id) UNIQUE
 #
 
-class Post < AvatarsRecord
+class Post < AvatarRecord
   include StringPrimaryKey
   include PublicId
 

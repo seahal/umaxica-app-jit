@@ -21,7 +21,7 @@
 
 # frozen_string_literal: true
 
-class Admin < OperatorsRecord
+class Admin < OperatorRecord
   include ::PublicId
 
   self.ignored_columns += ["workspace_id"]

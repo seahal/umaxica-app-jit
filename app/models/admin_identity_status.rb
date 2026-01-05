@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AdminIdentityStatus < OperatorsRecord
+class AdminIdentityStatus < OperatorRecord
   include UppercaseId
 
   has_many :admins,

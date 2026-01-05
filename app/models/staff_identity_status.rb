@@ -7,7 +7,7 @@
 #  id :string(255)      default("NONE"), not null, primary key
 #
 
-class StaffIdentityStatus < OperatorsRecord
+class StaffIdentityStatus < OperatorRecord
   include UppercaseId
 
   # Use Rails convention `status_id` as the foreign key on `staffs`.

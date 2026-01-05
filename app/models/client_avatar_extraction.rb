@@ -17,7 +17,7 @@
 
 # frozen_string_literal: true
 
-class ClientAvatarExtraction < AvatarsRecord
+class ClientAvatarExtraction < AvatarRecord
   belongs_to :client, inverse_of: :client_avatar_extractions
   belongs_to :avatar, inverse_of: :client_avatar_extractions
 

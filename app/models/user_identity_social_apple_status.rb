@@ -7,7 +7,7 @@
 #  id :string(255)      not null, primary key
 #
 
-class UserIdentitySocialAppleStatus < IdentitiesRecord
+class UserIdentitySocialAppleStatus < PrincipalRecord
   include UppercaseId
 
   has_many :user_identity_social_apples, dependent: :restrict_with_error

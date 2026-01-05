@@ -747,6 +747,13 @@ ja:
     pm: 午後
   apex:
     app:
+      configurations:
+        title: コンフィギュレーション
+        description: サービス設定を確認・調整できます。
+        i18n_settings: 言語・地域の設定
+        i18n_settings_description: 利用する言語や地域の既定値を変更します。
+        email_settings: メール設定
+        email_settings_description: 通知メールの送信元や内容を管理します。
       preferences: &apex_preferences_shared
         title: 設定
         cookie_settings: クッキー設定
@@ -835,6 +842,13 @@ ja:
           confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
           back: 設定一覧に戻る
     org:
+      configurations:
+        title: コンフィギュレーション
+        description: 組織向けの設定を確認・調整できます。
+        i18n_settings: 言語・地域の設定
+        i18n_settings_description: 組織で利用する言語や地域の既定値を変更します。
+        email_settings: メール設定
+        email_settings_description: 通知メールの送信元や内容を管理します。
       preferences:
         !!merge <<: *apex_preferences_shared
         themes:

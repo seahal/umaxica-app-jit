@@ -27,6 +27,8 @@ module Apex::Org
         assert_select "a", text: I18n.t("apex.org.preferences.footer.home")
         assert_select "a[href^=?]", apex_org_preference_path, text: I18n.t("apex.org.preferences.footer.preference")
       end
+
+      assert_select "a[href^=?]", apex_org_configuration_path
     end
     # rubocop:enable Minitest/MultipleAssertions
   end

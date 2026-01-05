@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class DivisionStatus < OperatorsRecord
+class DivisionStatus < OperatorRecord
   include ::UppercaseId
   include ::CatTagMaster
 

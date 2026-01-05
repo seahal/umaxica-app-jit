@@ -19,7 +19,7 @@
 #  index_users_on_withdrawn_at  (withdrawn_at)
 #
 
-class User < IdentitiesRecord
+class User < PrincipalRecord
   include ::PublicId
   include ::Accountably
 

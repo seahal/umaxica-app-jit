@@ -7,7 +7,7 @@
 #  id :string(255)      default("NONE"), not null, primary key
 #
 
-class UserTokenStatus < TokensRecord
+class UserTokenStatus < TokenRecord
   include UppercaseId
 
   has_many :user_tokens, dependent: :restrict_with_error

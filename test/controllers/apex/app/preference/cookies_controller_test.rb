@@ -15,7 +15,7 @@ class Apex::App::Preference::CookiesControllerTest < ActionDispatch::Integration
     patch apex_app_preference_cookie_url, params: {
       accept_functional_cookies: "1",
       accept_performance_cookies: "0",
-      accept_targeting_cookies: "1"
+      accept_targeting_cookies: "1",
     }
 
     assert_redirected_to Regexp.new(Regexp.escape(edit_apex_app_preference_cookie_url))

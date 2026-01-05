@@ -56,8 +56,8 @@ class StaffIdentityPasskeyTest < ActiveSupport::TestCase
     assert_equal "staff_key", passkey.public_key
   end
 
-  test "should inherit from IdentityRecord" do
-    assert_operator StaffIdentityPasskey, :<, OperatorsRecord
+  test "should inherit from OperatorRecord" do
+    assert_operator StaffIdentityPasskey, :<, OperatorRecord
   end
 
   test "should have required database columns" do

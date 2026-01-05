@@ -17,7 +17,7 @@
 
 # frozen_string_literal: true
 
-class ClientAvatarVisibility < AvatarsRecord
+class ClientAvatarVisibility < AvatarRecord
   belongs_to :client, inverse_of: :client_avatar_visibilities
   belongs_to :avatar, inverse_of: :client_avatar_visibilities
 

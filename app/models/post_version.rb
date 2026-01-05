@@ -26,7 +26,7 @@
 
 # frozen_string_literal: true
 
-class PostVersion < AvatarsRecord
+class PostVersion < AvatarRecord
   include ::Version
   include ::PublicId
 

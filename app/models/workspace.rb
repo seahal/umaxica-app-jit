@@ -24,7 +24,7 @@
 
 # frozen_string_literal: true
 
-class Workspace < OperatorsRecord
+class Workspace < OperatorRecord
   belongs_to :workspace_status,
              primary_key: :id,
              optional: true,

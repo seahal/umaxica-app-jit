@@ -9,5 +9,12 @@ module Apex::App
 
       assert_response :success
     end
+
+    test "includes link to new email configuration" do
+      get apex_app_configuration_url
+
+      assert_select "a[href*=?]", new_apex_app_configuration_email_path,
+                    text: I18n.t("apex.app.configurations.email_settings")
+    end
   end
 end

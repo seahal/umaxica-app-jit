@@ -16,7 +16,7 @@
 
 # frozen_string_literal: true
 
-class UserClientSuspension < IdentityRecord
+class UserClientSuspension < PrincipalRecord
   belongs_to :user, inverse_of: :user_client_suspensions
   belongs_to :client, inverse_of: :user_client_suspensions
 

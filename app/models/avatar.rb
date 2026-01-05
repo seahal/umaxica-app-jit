@@ -28,7 +28,7 @@
 #  index_avatars_on_representing_organization_id  (representing_organization_id)
 #
 
-class Avatar < AvatarsRecord
+class Avatar < AvatarRecord
   include StringPrimaryKey
   include PublicId
 

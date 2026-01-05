@@ -15,7 +15,7 @@
 #  index_post_review_statuses_on_key  (key) UNIQUE
 #
 
-class PostReviewStatus < AvatarsRecord
+class PostReviewStatus < AvatarRecord
   include StringPrimaryKey
 
   has_many :post_reviews, dependent: :restrict_with_error

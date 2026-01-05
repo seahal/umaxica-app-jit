@@ -7,7 +7,7 @@
 #  id :string(255)      not null, primary key
 #
 
-class StaffIdentitySecretStatus < OperatorsRecord
+class StaffIdentitySecretStatus < OperatorRecord
   include UppercaseId
 
   has_many :staff_identity_secrets, dependent: :restrict_with_error

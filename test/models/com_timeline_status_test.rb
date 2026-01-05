@@ -17,7 +17,7 @@ class ComTimelineStatusTest < ActiveSupport::TestCase
     @status = ComTimelineStatus.find("ACTIVE")
   end
 
-  test "inherits from BusinessesRecord" do
+  test "inherits from BusinessRecord" do
     assert_operator ComTimelineStatus, :<, NewsRecord
   end
 

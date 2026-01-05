@@ -7,7 +7,7 @@
 #  id :string           not null, primary key
 #
 
-class UserIdentityOneTimePasswordStatus < IdentitiesRecord
+class UserIdentityOneTimePasswordStatus < PrincipalRecord
   include UppercaseId
 
   has_many :user_identity_one_time_passwords, dependent: :restrict_with_error,

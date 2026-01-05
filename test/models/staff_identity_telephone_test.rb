@@ -36,8 +36,8 @@ class StaffIdentityTelephoneTest < ActiveSupport::TestCase
   end
 
   # Basic model structure tests
-  test "should inherit from IdentitiesRecord" do
-    assert_operator StaffIdentityTelephone, :<, OperatorsRecord
+  test "should inherit from PrincipalRecord" do
+    assert_operator StaffIdentityTelephone, :<, OperatorRecord
   end
 
   test "should include Telephone concern" do

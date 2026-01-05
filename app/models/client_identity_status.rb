@@ -9,7 +9,7 @@
 
 # frozen_string_literal: true
 
-class ClientIdentityStatus < IdentitiesRecord
+class ClientIdentityStatus < PrincipalRecord
   include UppercaseId
 
   has_many :clients,

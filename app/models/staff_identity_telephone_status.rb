@@ -7,7 +7,7 @@
 #  id :string(255)      default("UNVERIFIED"), not null, primary key
 #
 
-class StaffIdentityTelephoneStatus < OperatorsRecord
+class StaffIdentityTelephoneStatus < OperatorRecord
   include UppercaseId
 
   has_many :staff_identity_telephones, dependent: :restrict_with_error

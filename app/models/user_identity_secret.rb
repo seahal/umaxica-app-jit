@@ -22,7 +22,7 @@
 #  index_user_identity_secrets_on_user_identity_secret_status_id  (user_identity_secret_status_id)
 #
 
-class UserIdentitySecret < IdentitiesRecord
+class UserIdentitySecret < PrincipalRecord
   include ::Secret
 
   MAX_SECRETS_PER_USER = 10

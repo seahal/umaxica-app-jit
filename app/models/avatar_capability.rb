@@ -16,7 +16,7 @@
 #  index_avatar_capabilities_on_key  (key) UNIQUE
 #
 
-class AvatarCapability < AvatarsRecord
+class AvatarCapability < AvatarRecord
   include StringPrimaryKey
 
   has_many :avatars, foreign_key: :capability_id, inverse_of: :capability, dependent: :restrict_with_error

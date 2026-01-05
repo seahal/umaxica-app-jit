@@ -21,7 +21,7 @@
 
 # frozen_string_literal: true
 
-class Client < IdentitiesRecord
+class Client < PrincipalRecord
   include ::PublicId
 
   attribute :status_id, default: ClientIdentityStatus::NEYO

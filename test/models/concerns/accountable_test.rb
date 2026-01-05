@@ -3,7 +3,7 @@
 require "test_helper"
 
 class AccountableTest < ActiveSupport::TestCase
-  class DummyAccountable < IdentitiesRecord
+  class DummyAccountable < PrincipalRecord
     self.table_name = "users"
     include Accountable
   end

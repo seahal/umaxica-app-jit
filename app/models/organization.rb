@@ -25,7 +25,7 @@
 # frozen_string_literal: true
 
 # Organization mirrors Workspace but keeps the legacy name.
-class Organization < OperatorsRecord
+class Organization < OperatorRecord
   self.table_name = "workspaces"
 
   belongs_to :organization_status,

@@ -16,7 +16,7 @@
 
 # frozen_string_literal: true
 
-class UserClientRevocation < IdentityRecord
+class UserClientRevocation < PrincipalRecord
   belongs_to :user, inverse_of: :user_client_revocations
   belongs_to :client, inverse_of: :user_client_revocations
 

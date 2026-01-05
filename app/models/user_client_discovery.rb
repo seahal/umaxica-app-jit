@@ -16,7 +16,7 @@
 
 # frozen_string_literal: true
 
-class UserClientDiscovery < IdentityRecord
+class UserClientDiscovery < PrincipalRecord
   belongs_to :user, inverse_of: :user_client_discoveries
   belongs_to :client, inverse_of: :user_client_discoveries
 

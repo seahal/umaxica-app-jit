@@ -2,8 +2,17 @@
 
 require "test_helper"
 
-# Note: Configurations have been moved to BFF::Org::PreferencesController
-# These routes no longer exist in the Top namespace
 class Apex::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
-  # Tests removed - functionality moved to bff/org/preferences
+  test "should get show" do
+    get apex_org_configuration_url
+
+    assert_response :success
+  end
+
+  test "includes link to new email configuration" do
+    get apex_org_configuration_url
+
+    assert_select "a[href*=?]", new_apex_org_configuration_email_path,
+                  text: I18n.t("apex.org.configurations.email_settings")
+  end
 end

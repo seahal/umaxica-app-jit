@@ -36,8 +36,8 @@ class StaffTokenTest < ActiveSupport::TestCase
     @token = StaffToken.create!(staff: @staff, staff_token_status_id: "ACTIVE")
   end
 
-  test "inherits from TokensRecord" do
-    assert_operator StaffToken, :<, TokensRecord
+  test "inherits from TokenRecord" do
+    assert_operator StaffToken, :<, TokenRecord
   end
 
   test "belongs to staff" do

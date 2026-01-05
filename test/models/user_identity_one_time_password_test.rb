@@ -33,8 +33,8 @@ class UserIdentityOneTimePasswordTest < ActiveSupport::TestCase
     @last_otp_at = Time.current
   end
 
-  test "inherits from IdentitiesRecord" do
-    assert_operator UserIdentityOneTimePassword, :<, IdentitiesRecord
+  test "inherits from PrincipalRecord" do
+    assert_operator UserIdentityOneTimePassword, :<, PrincipalRecord
   end
 
   test "belongs to user" do

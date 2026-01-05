@@ -858,6 +858,13 @@ en:
           telephone: "registration with telephone."
   apex:
     app:
+      configurations:
+        title: Configuration
+        description: Review and adjust your application settings.
+        i18n_settings: Language & region
+        i18n_settings_description: Change default language and region preferences.
+        email_settings: Email settings
+        email_settings_description: Manage notification email sender and content.
       preferences:
         footer:
           privacy: "Privacy"

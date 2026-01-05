@@ -22,7 +22,7 @@
 #  index_user_identity_telephones_on_user_id            (user_id)
 #
 
-class UserIdentityTelephone < IdentitiesRecord
+class UserIdentityTelephone < PrincipalRecord
   include Telephone
   include SetId
   include Turnstile

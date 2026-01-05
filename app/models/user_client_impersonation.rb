@@ -16,7 +16,7 @@
 
 # frozen_string_literal: true
 
-class UserClientImpersonation < IdentityRecord
+class UserClientImpersonation < PrincipalRecord
   belongs_to :user, inverse_of: :user_client_impersonations
   belongs_to :client, inverse_of: :user_client_impersonations
 

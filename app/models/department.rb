@@ -21,7 +21,7 @@
 #  index_departments_on_workspace_id                        (workspace_id)
 #
 
-class Department < OperatorsRecord
+class Department < OperatorRecord
   belongs_to :parent,
              class_name: "Department",
              inverse_of: :children,

@@ -16,7 +16,7 @@
 
 # frozen_string_literal: true
 
-class UserClientObservation < IdentityRecord
+class UserClientObservation < PrincipalRecord
   belongs_to :user, inverse_of: :user_client_observations
   belongs_to :client, inverse_of: :user_client_observations
 

@@ -25,6 +25,8 @@ class Apex::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: I18n.t("apex.app.preferences.title")
     assert_select "li", text: I18n.t("apex.app.preferences.region_settings")
     assert_select "li", text: I18n.t("apex.app.preferences.theme_settings")
+    assert_select "a[href*=?]", edit_apex_app_preference_cookie_path,
+                  text: I18n.t("apex.app.preferences.cookie_settings")
   end
   # rubocop:enable Minitest/MultipleAssertions
 

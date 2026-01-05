@@ -24,7 +24,7 @@
 #  index_user_identity_emails_on_user_identity_email_status_id  (user_identity_email_status_id)
 #
 
-class UserIdentityEmail < IdentitiesRecord
+class UserIdentityEmail < PrincipalRecord
   include SetId
   include Email
   include Turnstile
