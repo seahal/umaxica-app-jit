@@ -12,7 +12,7 @@ This document expresses the architecture of the Rails-based Umaxica App (JIT) pl
 ### 1.2 Scope
 - Rails application located at `/home/mslo/ghq/github.com/seahal/umaxica-app-jit`
 - Namespaced controllers for `Top`, `Sign`, `Help`, `Docs`, `News`, `Bff`, and `Api` surfaces
-- Bun/Turbo/React front-end bundles (`app/javascript/**`)
+- Turbo/React front-end with pnpm-managed tooling (`app/javascript/**`)
 - Multi-database Active Record setup (identity, guest, universal, token, etc.)
 - Supporting infrastructure: PostgreSQL primary/replica pairs, Valkey, Kafka/Karafka, MinIO, Grafana/Loki/Tempo
 - CI/CD automation (GitHub Actions, Lefthook) and local workflows (Foreman + Docker Compose)
@@ -30,20 +30,20 @@ This document expresses the architecture of the Rails-based Umaxica App (JIT) pl
 ### 2.1 Objectives
 1. Provide a single Rails application that can answer for dozens of hostnames defined by environment variables without code duplication.
 2. Protect user data by routing each data class to its own PostgreSQL cluster and encrypting sensitive columns.
-3. Deliver modern identity experiences (passkeys, OTP, OAuth, JWT) and customer-support tooling while keeping UX cohesive through Bun-built assets.
+3. Deliver modern identity experiences (passkeys, OTP, OAuth, JWT) and customer-support tooling while keeping UX cohesive through pnpm-managed JS tooling.
 4. Operate reliably through strong observability (OpenTelemetry → Tempo, logs → Loki, dashboards → Grafana), rate limiting, and bot mitigation (Cloudflare Turnstile).
-5. Keep developer ergonomics high via Compose-based infrastructure, Foreman-managed processes, and Bun/Tailwind asset builds.
+5. Keep developer ergonomics high via Compose-based infrastructure, Foreman-managed processes, and pnpm + Tailwind-driven assets.
 
 ### 2.2 Principles
 - **Namespace isolation**: Each host maps to a dedicated controller namespace; shared logic lives in concerns (`Authn`, `PreferenceRegions`, `Theme`, `Redirect`, etc.).
 - **Configuration through ENV**: Hosts (e.g., `TOP_CORPORATE_URL`), downstream targets (`EDGE_*`), DB URLs, Kafka brokers, and secrets are injected via ENV to keep the code portable.
 - **Defense in depth**: Signed cookies, JWTs, Turnstile, rate limiting, encryption, and `allow_browser versions: :modern` guard every entry point.
 - **Observability-first**: All HTTP, Redis, Kafka, and ActionMailer operations are instrumented; `/health` + `/v1/health` exist for every host.
-- **Composable tooling**: Bun for JavaScript, Tailwind CLI for CSS, Karafka for Kafka, Foreman + Docker Compose for orchestration, GitHub Actions for CI.
+- **Composable tooling**: pnpm-managed JavaScript tooling (Biome), Tailwind CLI for CSS, Karafka for Kafka, Foreman + Docker Compose for orchestration, GitHub Actions for CI.
 
 ### 2.3 Constraints
 - Ruby 3.4.7 / Rails 8.x
-- Bun 1.3+ (no Vite/Webpacker)
+- pnpm 10+ / Node 20+ for JavaScript tooling (no Vite/Webpacker)
 - PostgreSQL 18 primaries/replicas per logical database
 - Valkey for caching/rate limiting
 - Kafka available (local via Compose or managed)
@@ -154,11 +154,10 @@ Migrations are split into `db/<context>_migrate`. UUID v7 IDs are generated (`Se
 
 ### 6.1 Local development
 - `compose.yml` launches: Postgres primaries/replicas for each logical DB, Valkey, Kafka + Zookeeper, Kafka UI, MinIO, Loki, Tempo, Grafana. Ports default to `5435-5436` (Postgres), `56379` (Valkey), `19092` (Kafka), `18080` (Kafka UI), `9000/9001` (MinIO), `33100/3200/4317` (observability), `8000` (Grafana).
-- `Procfile.dev` runs Rails server, Bun build watcher, and optionally Karafka; `foreman start -f Procfile.dev` orchestrates them.
-- Bun builds JS & Tailwind assets through `bun bun.config.js` (with watch mode).
+- `Procfile.dev` runs Rails server and optionally Karafka; `foreman start -f Procfile.dev` orchestrates them. JavaScript tooling (Biome) runs via pnpm when linting/formatting.
 
 ### 6.2 CI/CD
-- GitHub Actions workflow (`integration.yml`) executes bundler install, `bin/rails test`, `bun test`, `bun run lint/format/typecheck`, RuboCop, ERB lint, Brakeman, Bundler Audit as configured by `lefthook.yml`.
+- GitHub Actions workflow (`integration.yml`) executes bundler install, `bin/rails test`, pnpm-based lint/format (`pnpm run check`), RuboCop, ERB lint, Brakeman, Bundler Audit as configured by `lefthook.yml`.
 - Deployment target (Cloud Run/Cloud Build + Fastly/Cloudflare) consumes container images or build artifacts; secrets injected per environment.
 
 ### 6.3 Production / staging
@@ -206,7 +205,7 @@ Migrations are split into `db/<context>_migrate`. UUID v7 IDs are generated (`Se
 ## 10. Rationale & Future Enhancements
 - **Rails vs. edge micro-apps**: consolidates duplicated auth/contact logic and simplifies compliance (single codebase, single observability stack).  
 - **Multi-database**: isolates PII domains and supports region-specific scaling (read replicas).  
-- **Bun/Turbo**: avoids Webpacker/Vite overhead while keeping JS modern.  
+- **pnpm + Turbo**: avoids Webpacker/Vite overhead while keeping JS modern through lightweight tooling.  
 - **Compose-based infrastructure**: developers get a self-contained environment (Postgres, Valkey, Kafka, observability) without external services.
 
 **Planned enhancements**

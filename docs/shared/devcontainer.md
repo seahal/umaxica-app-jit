@@ -3,7 +3,7 @@
 ## VS Code
 - Install the Dev Containers extension.
 - Open the repository folder and run **Reopen in Container**.
-- The container runs `bundle install` and `bun install`; wait for the `Development environment ready!` message before starting tasks.
+- The container runs `bundle install` and `pnpm install`; wait for the `Development environment ready!` message before starting tasks.
 
 ## IntelliJ IDEA (Gateway)
 - Install JetBrains Gateway and choose **Dev Containers** as the connection method.

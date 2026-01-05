@@ -14,7 +14,7 @@ This DDS translates the high-level design of the Umaxica App (JIT) into implemen
 - Front-end bundles in `app/javascript`
 - Data models spanning the multi-database setup defined in `config/database.yml`
 - Supporting services (`app/services`, `app/consumers`, ActionMailer, Sms providers)
-- Observability, configuration, and deployment mechanisms (Bun, Compose, Foreman, CI)
+- Observability, configuration, and deployment mechanisms (pnpm-managed JS tooling, Compose, Foreman, CI)
 
 ### 1.3 References
 - `docs/srs.md`, `docs/hld.md`
@@ -44,7 +44,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | Presentation | Namespaced controllers and Turbo/React views under `app/javascript` |
 | Domain Logic | Concerns in `app/controllers/concerns`, services in `app/services`, models per DB |
 | Integration | `app/mailers`, `app/consumers`, `AwsSmsService`, `Karafka`, OTEL instrumentation |
-| Infrastructure | Compose services (Postgres, Valkey, Kafka, MinIO, Loki, Tempo, Grafana), Bun/Tailwind build chain |
+| Infrastructure | Compose services (Postgres, Valkey, Kafka, MinIO, Loki, Tempo, Grafana), pnpm/Tailwind toolchain |
 
 ---
 
@@ -120,8 +120,8 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ### 3.9 Front-End Bundles
 - `app/javascript/application.js` imports Turbo and each surface-specific entrypoint.
 - Directory structure: `app/javascript/views/<surface>/<domain>/application.(ts|js)` plus shared scripts (`views/passkey.js`, `views/passkey_helpers.js`, `views/www/app/inquiry/before_submit.js`).
-- Bun build pipeline (`bun bun.config.js`) discovers `application.js/ts` entries and writes compiled files to `app/assets/builds/**`.
-- Tailwind CSS compiled via CLI (`@tailwindcss/cli`) invoked from the same Bun script.
+- JavaScript is served via importmap/Turbo; pnpm manages tooling (Biome) for linting/formatting the sources.
+- Tailwind CSS is compiled through Rails' Tailwind CLI (`bin/rails tailwindcss:watch`).
 
 ### 3.10 Services & Integrations
 - `AwsSmsService` delegates to provider classes under `app/services/sms_providers` (AWS SNS, Infobip, Test). Providers validate parameters and call respective APIs with credentials loaded from Rails credentials.
@@ -218,13 +218,13 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ## 7. Configuration & Environment
 - `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`, `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Kafka brokers (`KAFKA_BROKERS`), Cloudflare Turnstile keys, JWT keys, AWS/Infobip credentials, OTLP endpoint.
 - `compose.yml` launches all infra dependencies with sensible defaults; volumes store data per service.
-- `Procfile.dev` ensures Rails server + Bun watcher (and optionally Karafka) run concurrently.
+- `Procfile.dev` ensures the Rails server (and optionally Karafka) run concurrently; Tailwind watcher runs via `bin/rails tailwindcss:watch`.
 - Build/test commands:
-  - `bundle install`, `bun install`
+  - `bundle install`, `pnpm install`
   - `bin/rails db:prepare`
   - `foreman start -f Procfile.dev`
-  - Tests: `bin/rails test`, `bun test`
-  - Lint: `bundle exec rubocop`, `bundle exec erb_lint .`, `bun run lint`, `bun run format`, `bun run typecheck`
+  - Tests: `bin/rails test`
+  - Lint: `bundle exec rubocop`, `bundle exec erb_lint .`, `pnpm run lint`, `pnpm run format`, `pnpm run check`
 
 ---
 
@@ -252,8 +252,8 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ---
 
 ## 10. Deployment & Operations
-- **Local**: Compose + Foreman; `bun run build --watch` rebuilds assets; `karafka server` can run concurrently.
-- **CI**: GitHub Actions pipeline runs bundler install, database setup, Rails tests, Bun tests, linting, Brakeman, Bundler Audit, Biome (via `lefthook.yml`).
+- **Local**: Compose + Foreman; pnpm handles JS lint/format tasks; `karafka server` can run concurrently.
+- **CI**: GitHub Actions pipeline runs bundler install, database setup, Rails tests, pnpm linting, Brakeman, Bundler Audit, Biome (via `lefthook.yml`).
 - **Staging/Production**:
   - Rails server deployed to Google Cloud Run (per README) or equivalent.
   - Fastly/Cloudflare handle DNS & TLS; `EDGE_*` hostnames define redirect targets.

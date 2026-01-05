@@ -20,7 +20,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 
 ### 1.3 Intended Audience and Use
 - Product and engineering leadership – prioritization, roadmap alignment
-- Domain engineers (Rails/React/Bun) – implementation details and traceable requirements
+- Domain engineers (Rails/React/pnpm toolchain) – implementation details and traceable requirements
 - DevOps/SRE – hosting, observability, security posture
 - QA/Release – acceptance criteria, traceability to tests and documentation
 
@@ -32,17 +32,17 @@ The SRS defines the business goals, functional expectations, and quality attribu
 |------|------------------|-----------------|
 | Product Owner | Defines feature scope, localization priorities, and compliance targets | Roadmap, Notion/Jira |
 | Tech Lead / Architect | Owns multi-surface Rails architecture, multi-DB strategy, and integration points (Valkey, Kafka, SMS, email) | Rails, Karafka, Docker Compose |
-| Front-End Engineer | Builds Bun-bundled React/Turbo views in `app/javascript`, owns theme and preference UX | Bun, Biome, Tailwind, Turbo |
+| Front-End Engineer | Builds Turbo/React views in `app/javascript`, owns theme and preference UX | pnpm, Biome, Tailwind, Turbo |
 | Back-End Engineer | Implements controller logic (e.g., `config/routes/*.rb` namespaces), models, encryption, OTP/passkey workflows | Rails 8, PostgreSQL, Valkey |
 | Platform/DevOps | Manages Compose stack (PostgreSQL shards, Valkey, Kafka, MinIO, Grafana/Loki/Tempo), CI (`integration.yml`), and deployments | Docker, Foreman, GitHub Actions |
-| QA Engineer | Designs Minitest/spec + Bun tests, Rswag/OpenAPI verification, smoke/load tests | `bin/rails test`, `bun test`, Playwright/k6 |
+| QA Engineer | Designs Minitest/spec + JS/TS tests (via pnpm), Rswag/OpenAPI verification, smoke/load tests | `bin/rails test`, `pnpm test` (when added), Playwright/k6 |
 | Security/Compliance | Oversees JWT keys, Cloudflare Turnstile secrets, GDPR/ePrivacy consent storage | Secrets management, monitoring |
 
 ---
 
 ## 3. System Overview
 - **Runtime & language**: Ruby 3.4.7 / Rails 8.x monolith with multi-database (`connects_to`) separation (identity, universal, guest, profile, token, etc.) backed by PostgreSQL 18 (primary + replica).
-- **Frontend toolchain**: Bun 1.3+ builds Tailwind + React/Turbo entrypoints (`app/javascript`). Assets land in `app/assets/builds` via `bun bun.config.js`.
+- **Frontend toolchain**: pnpm-managed JS tooling (Biome) with Turbo/React entrypoints under `app/javascript`; assets are served via importmap and Rails Tailwind CLI for CSS.
 - **Caching & session adjuncts**: Valkey (Redis-compatible) powers request rate limiting, `Memorize` ephemeral storage, signed preference cookies, and Rack session backing for Action Cable.
 - **Messaging & async**: Kafka (via Karafka + WaterDrop) hosts the `email` topic consumed by `EmailConsumer` for OTP and notification fan-out.
 - **Security & identity**: JWT auth cookies (ES256) via the `Authn` concern, WebAuthn passkeys, HOTP/TOTP (ROTP), SMS dispatchers (AWS SNS/Infobip/Test), and Cloudflare Turnstile for bot defense.
@@ -100,8 +100,8 @@ The SRS defines the business goals, functional expectations, and quality attribu
 
 ### 4.7 Observability, CI/CD, and ops readiness
 - **FR-24**: OpenTelemetry instrumentation (`config/initializers/opentelemetry.rb`) must be active in production and optionally in development (when OTLP collector is reachable) to push traces to Tempo; spans must include hostnames to differentiate surfaces.
-- **FR-25**: Compose stack (PostgreSQL primaries/replicas, Valkey, Kafka, MinIO, Grafana/Loki/Tempo) must stay reproducible for local dev; `Procfile.dev` orchestrates Rails, Bun build watcher, and (optionally) Karafka.
-- **FR-26**: GitHub Actions integration pipeline (`integration.yml`) plus Lefthook pre-commit must run `bundle exec rubocop`, `erb_lint`, `bun run lint`, `bun run typecheck`, `bin/rails test`, and `bun test`.
+- **FR-25**: Compose stack (PostgreSQL primaries/replicas, Valkey, Kafka, MinIO, Grafana/Loki/Tempo) must stay reproducible for local dev; `Procfile.dev` orchestrates Rails and (optionally) Karafka, with pnpm handling JS tooling.
+- **FR-26**: GitHub Actions integration pipeline (`integration.yml`) plus Lefthook pre-commit must run `bundle exec rubocop`, `erb_lint`, `pnpm run lint`, `pnpm run check`, and `bin/rails test`.
 - **FR-27**: Health dashboards (Grafana) must visualize request rate, OTP/passkey errors, and Kafka lag for the `email` topic.
 
 ---
@@ -110,7 +110,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 
 | Category | Requirement |
 |----------|-------------|
-| Performance | P95 response time ≤ 300 ms for `/health` endpoints; OTP submissions and preference updates complete within 2 s end-to-end; Bun asset rebuild < 5 s in watch mode. |
+| Performance | P95 response time ≤ 300 ms for `/health` endpoints; OTP submissions and preference updates complete within 2 s end-to-end; pnpm lint/format cycles and Tailwind watch rebuilds complete within 5 s. |
 | Availability | ≥ 99.0 % uptime for top/sign/help hosts, measured monthly; automated failover to replica PostgreSQL instances for read-heavy queries. |
 | Scalability | Support ≥ 1k req/min per host with linear scale-out via additional Rails pods; Karafka consumers must process ≥ 50 msgs/s sustained. |
 | Security | Enforce HTTPS-only traffic, HSTS headers, CSRF protection, signed cookies, JWT validation, Cloudflare Turnstile challenge, rate limiters, and WebAuthn/TOTP options. |
@@ -124,9 +124,9 @@ The SRS defines the business goals, functional expectations, and quality attribu
 ## 6. Constraints and Dependencies
 
 ### 6.1 Technical constraints
-- Ruby 3.4.7, Rails 8.x, Bun 1.3+, Node.js 20+ (if needed for tooling), PostgreSQL 18.
+- Ruby 3.4.7, Rails 8.x, pnpm 10+, Node.js 20+ (for tooling), PostgreSQL 18.
 - Multi-database config defined in `config/database.yml` requires environment variables for each host (e.g., `POSTGRESQL_IDENTITY_PUB`).
-- Asset pipeline relies on Bun + Tailwind CLI; Vite is intentionally not used.
+- Asset pipeline relies on Rails Tailwind CLI and pnpm-managed JS tooling; Vite is intentionally not used.
 - Dependencies include Karafka, ROTP, WebAuthn, OmniAuth (Google/Apple), Rswag, Pundit, Shrine, SolidCache, Fastly gem, AWS SDK.
 
 ### 6.2 Environmental & configuration constraints
@@ -155,7 +155,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 | AC-07 | API inquiry endpoints validate addresses/phones using shared rules (no divergent regex). |
 | AC-08 | Rate limiting, JWT verification, and Cloudflare Turnstile secrets are configurable per environment and validated during smoke tests. |
 | AC-09 | OpenTelemetry traces are visible in Grafana Tempo for at least the top/sign/help flows in staging/production. |
-| AC-10 | CI pipeline executes `bundle exec rails test`, `bun test`, `bun run lint`, `rubocop`, `erb_lint`, and `bun run typecheck` before merging. |
+| AC-10 | CI pipeline executes `bundle exec rails test`, `pnpm run lint`, `pnpm run check`, `rubocop`, and `erb_lint` before merging. |
 
 ---
 

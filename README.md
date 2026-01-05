@@ -7,14 +7,14 @@
 
 - Ruby 4.0+ (see `Gemfile` for the exact version)
   - Bundler 4.0+ (shipped with modern Ruby installations)
-- Bun 1.3.x
+- pnpm 10.x + Node 20+ (for JavaScript tooling)
 - Docker (local infrastructure parity)
   - Access to PostgreSQL, Valkey (Redis-compatible), and Kafka instances
 
 ## Initial Setup
 0. Set up Docker compose and run it: `docker compoe up`
 1. Install Ruby dependencies: `bundle install`
-2. Install JavaScript/TypeScript dependencies: `bun install`
+2. Install JavaScript/TypeScript dependencies: `pnpm install`
 3. Prepare the database (creates, migrates, seeds as`
 4. ... run `bin/dev`
 
@@ -28,7 +28,7 @@
 ## Linting & Formatting
 - Ruby style checks: `bundle exec rubocop`
 - ERB templates: `bundle exec erb_lint .`
-- Frontend formatting and linting: `bun run check`
+- Frontend formatting and linting: `pnpm run check`
 
 ## Logging
 - Rails emits structured logs via `Rails.event` (ActiveSupport::Notifications) rather than `Rails.logger`.

@@ -17,13 +17,13 @@ steps:
         curl -fsSL https://mise.run | sh
         export PATH="$$HOME/.local/bin:$$PATH"
         export PATH="$$HOME/.local/share/mise/shims:$$PATH"
-        # --- Bun install ---
-        npm install -g bun
+        # --- pnpm install ---
+        npm install -g pnpm@10.27.0
         # --- Ruby install ---
         mise install ruby@latest
         mise use -g ruby@latest
         # --- JS deps ---
-        bun install
+        pnpm install --frozen-lockfile
         # --- Ruby deps ---
         gem install --no-document bundler
         bundle config set path vendor/bundle
@@ -35,7 +35,7 @@ steps:
         rm -rf public/assets docs/ tmp/ log/ docker/ dependency/
         # --- Assets build ---
         SECRET_KEY_BASE=dummy RAILS_ENV=asset REGION_CODE=jp APEX_REGION=true bundle exec rails assets:precompile
-    id: Build assets with mise (ruby/node/bun latest)
+    id: Build assets with mise (ruby/node/pnpm)
     entrypoint: bash
   - name: 'public.ecr.aws/aws-cli/aws-cli:latest'
     args:

@@ -4,7 +4,6 @@
 # Shared build arguments
 # ============================================================================
 ARG RUBY_VERSION=4.0
-ARG BUN_VERSION=1.3.5
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
 ARG DOCKER_USER=jit
@@ -156,11 +155,9 @@ ARG DOCKER_UID
 ARG DOCKER_GID
 ARG DOCKER_USER
 ARG DOCKER_GROUP
-ARG BUN_VERSION
 ARG GITHUB_ACTIONS
 ENV COMMIT_HASH="${COMMIT_HASH}"
 ENV HOME=/home/jit
-ENV BUN_INSTALL=/usr/local
 WORKDIR /home/jit/workspace
 
 # hadolint ignore=DL3008
@@ -195,21 +192,7 @@ RUN apt-get update -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
-COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json bun.lock ./
-
-RUN --mount=type=cache,target=/tmp/bun-cache,uid=${DOCKER_UID},gid=${DOCKER_GID} \
-    if curl -fsSL --retry 5 --retry-delay 3 --retry-max-time 120 https://bun.sh/install -o /tmp/bun.sh \
-    && bash /tmp/bun.sh "bun-v${BUN_VERSION}"; then \
-    echo "Bun installed successfully"; \
-    else \
-    echo "Bun installation failed, trying direct download..." \
-    && curl -fsSL --retry 5 --retry-delay 3 --retry-max-time 120 \
-    "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64.zip" -o /tmp/bun.zip \
-    && unzip -q /tmp/bun.zip -d /tmp \
-    && mv /tmp/bun-linux-x64/bun /usr/local/bin/bun \
-    && chmod +x /usr/local/bin/bun \
-    && rm -rf /tmp/bun.zip /tmp/bun-linux-x64; \
-    fi
+COPY --chown=${DOCKER_UID}:${DOCKER_GID} Gemfile Gemfile.lock package.json pnpm-lock.yaml ./
 
 RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     groupadd -g "${DOCKER_GID}" "${DOCKER_GROUP}"; \
@@ -222,6 +205,6 @@ RUN if [ -z "${GITHUB_ACTIONS}" ]; then \
     fi
 
 # Install pnpm for development use only (available by default on PATH).
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10.27.0
 
 USER ${DOCKER_USER}
