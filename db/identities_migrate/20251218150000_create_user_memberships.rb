@@ -4,7 +4,7 @@ class CreateUserMemberships < ActiveRecord::Migration[8.2]
   def up
     create_table :user_memberships, id: :uuid, default: -> { "uuidv7()" } do |t|
       t.references :user, null: false, foreign_key: true, type: :uuid
-      t.references :workspace, null: false, foreign_key: { to_table: :organizations }, type: :uuid
+      t.references :workspace, null: false, type: :uuid # FK to organizations omitted (cross-db)
 
       t.datetime :joined_at, null: false, default: -> { "CURRENT_TIMESTAMP" }
       t.datetime :left_at

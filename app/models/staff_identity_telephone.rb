@@ -22,7 +22,7 @@
 #  index_staff_identity_telephones_on_staff_id           (staff_id)
 #
 
-class StaffIdentityTelephone < IdentitiesRecord
+class StaffIdentityTelephone < OperatorsRecord
   include Telephone
   include SetId
 

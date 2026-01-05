@@ -17,7 +17,7 @@
 
 # frozen_string_literal: true
 
-class ClientAvatarDeletion < IdentityRecord
+class ClientAvatarDeletion < AvatarsRecord
   belongs_to :client, inverse_of: :client_avatar_deletions
   belongs_to :avatar, inverse_of: :client_avatar_deletions
 

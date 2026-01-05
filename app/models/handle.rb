@@ -5,7 +5,7 @@
 # Table name: handles
 #
 #  id               :string           not null, primary key
-#  public_id        :string           default(""), not null
+#  public_id        :string           not null
 #  handle           :string           not null
 #  is_system        :boolean          default(FALSE), not null
 #  cooldown_until   :timestamptz      not null
@@ -22,7 +22,7 @@
 #  uniq_handles_handle_non_system     (handle) UNIQUE
 #
 
-class Handle < IdentitiesRecord
+class Handle < AvatarsRecord
   include StringPrimaryKey
   include PublicId
 

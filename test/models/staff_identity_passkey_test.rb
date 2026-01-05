@@ -57,7 +57,7 @@ class StaffIdentityPasskeyTest < ActiveSupport::TestCase
   end
 
   test "should inherit from IdentityRecord" do
-    assert_includes StaffIdentityPasskey.ancestors, IdentitiesRecord
+    assert_operator StaffIdentityPasskey, :<, OperatorsRecord
   end
 
   test "should have required database columns" do

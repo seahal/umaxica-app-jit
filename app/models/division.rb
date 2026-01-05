@@ -18,7 +18,7 @@
 #  index_divisions_unique                 (parent_id,division_status_id) UNIQUE
 #
 
-class Division < IdentitiesRecord
+class Division < OperatorsRecord
   belongs_to :division_status,
              primary_key: :id,
              inverse_of: :divisions

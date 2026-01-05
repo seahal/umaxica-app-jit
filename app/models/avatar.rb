@@ -5,7 +5,7 @@
 # Table name: avatars
 #
 #  id                           :string           not null, primary key
-#  public_id                    :string           default(""), not null
+#  public_id                    :string           not null
 #  moniker                      :string           not null
 #  image_data                   :jsonb            default("{}"), not null
 #  owner_organization_id        :string
@@ -13,10 +13,10 @@
 #  active_handle_id             :string           not null
 #  capability_id                :string           not null
 #  avatar_status_id             :string
-#  client_id                    :uuid
 #  created_at                   :datetime         not null
 #  updated_at                   :datetime         not null
 #  lock_version                 :integer          default(0), not null
+#  client_id                    :uuid
 #
 # Indexes
 #
@@ -28,7 +28,7 @@
 #  index_avatars_on_representing_organization_id  (representing_organization_id)
 #
 
-class Avatar < IdentitiesRecord
+class Avatar < AvatarsRecord
   include StringPrimaryKey
   include PublicId
 
@@ -62,7 +62,8 @@ class Avatar < IdentitiesRecord
           dependent: :destroy
   has_one :owner,
           through: :owner_assignment,
-          source: :user
+          source: :user,
+          disable_joins: true
 
   has_one :affiliation_assignment,
           -> { where(role: "affiliation") },
@@ -71,7 +72,8 @@ class Avatar < IdentitiesRecord
           dependent: :destroy
   has_one :affiliation_user,
           through: :affiliation_assignment,
-          source: :user
+          source: :user,
+          disable_joins: true
 
   # Multi-user roles (has_many through)
   has_many :administrator_assignments,
@@ -81,7 +83,8 @@ class Avatar < IdentitiesRecord
            dependent: :destroy
   has_many :administrators,
            through: :administrator_assignments,
-           source: :user
+           source: :user,
+           disable_joins: true
 
   has_many :editor_assignments,
            -> { where(role: "editor") },
@@ -90,7 +93,8 @@ class Avatar < IdentitiesRecord
            dependent: :destroy
   has_many :editors,
            through: :editor_assignments,
-           source: :user
+           source: :user,
+           disable_joins: true
 
   has_many :reviewer_assignments,
            -> { where(role: "reviewer") },
@@ -99,7 +103,8 @@ class Avatar < IdentitiesRecord
            dependent: :destroy
   has_many :reviewers,
            through: :reviewer_assignments,
-           source: :user
+           source: :user,
+           disable_joins: true
 
   has_many :viewer_assignments,
            -> { where(role: "viewer") },
@@ -108,7 +113,8 @@ class Avatar < IdentitiesRecord
            dependent: :destroy
   has_many :viewers,
            through: :viewer_assignments,
-           source: :user
+           source: :user,
+           disable_joins: true
 
   # follows
   has_many :outgoing_follows,

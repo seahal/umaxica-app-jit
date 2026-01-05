@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class OrganizationStatus < IdentitiesRecord
+class OrganizationStatus < OperatorsRecord
   self.table_name = "department_statuses"
 
   include ::UppercaseId

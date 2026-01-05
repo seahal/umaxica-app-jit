@@ -2,10 +2,6 @@
 
 class FixIdentitySchemaConsistency < ActiveRecord::Migration[8.2]
   def change
-    # Avatar Assignment - Index
-    remove_index :avatar_assignments, column: :user_id, if_exists: true
-    add_index :avatar_assignments, :user_id
-
     # One Time Passwords FK
     # Ensure user_id is uuid to match users table
     reversible do |dir|

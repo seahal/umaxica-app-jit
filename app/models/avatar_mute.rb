@@ -17,7 +17,7 @@
 
 # frozen_string_literal: true
 
-class AvatarMute < IdentitiesRecord
+class AvatarMute < AvatarsRecord
   belongs_to :muter_avatar,
              class_name: "Avatar",
              inverse_of: :outgoing_mutes

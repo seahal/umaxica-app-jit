@@ -21,7 +21,7 @@
 #  index_avatar_monikers_on_avatar_moniker_status_id  (avatar_moniker_status_id)
 #
 
-class AvatarMoniker < IdentitiesRecord
+class AvatarMoniker < AvatarsRecord
   include StringPrimaryKey
 
   belongs_to :avatar

@@ -16,7 +16,7 @@
 
 # frozen_string_literal: true
 
-class StaffAdmin < IdentitiesRecord
+class StaffAdmin < OperatorsRecord
   belongs_to :staff, inverse_of: :staff_admins
   belongs_to :admin, inverse_of: :staff_admins
 

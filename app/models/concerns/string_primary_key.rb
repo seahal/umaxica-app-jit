@@ -4,7 +4,13 @@ module StringPrimaryKey
   extend ActiveSupport::Concern
 
   included do
-    before_create :assign_string_primary_key
+    before_validation :assign_string_primary_key, on: :create
+
+    if name.match?(/(Status|Event|Level|Category)\z/)
+      validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
+    else
+      validates :id, format: { with: /\A[a-zA-Z0-9_-]+\z/ }
+    end
   end
 
   private

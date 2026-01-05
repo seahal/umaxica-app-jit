@@ -17,7 +17,7 @@
 
 # frozen_string_literal: true
 
-class ClientAvatarOversight < IdentityRecord
+class ClientAvatarOversight < AvatarsRecord
   belongs_to :client, inverse_of: :client_avatar_oversights
   belongs_to :avatar, inverse_of: :client_avatar_oversights
 

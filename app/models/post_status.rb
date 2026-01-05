@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class PostStatus < IdentitiesRecord
+class PostStatus < AvatarsRecord
   include StringPrimaryKey
 
   has_many :posts, dependent: :restrict_with_error

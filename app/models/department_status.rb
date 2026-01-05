@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class DepartmentStatus < IdentitiesRecord
+class DepartmentStatus < OperatorsRecord
   include ::UppercaseId
   include ::CatTagMaster
 

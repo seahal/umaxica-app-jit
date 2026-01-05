@@ -24,7 +24,7 @@
 #  index_staff_identity_emails_on_staff_identity_email_status_id  (staff_identity_email_status_id)
 #
 
-class StaffIdentityEmail < IdentitiesRecord
+class StaffIdentityEmail < OperatorsRecord
   include SetId
   include Email
 

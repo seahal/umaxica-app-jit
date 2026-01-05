@@ -11,7 +11,6 @@
 # Indexes
 #
 #  index_user_client_impersonations_on_client_id              (client_id)
-#  index_user_client_impersonations_on_user_id                (user_id)
 #  index_user_client_impersonations_on_user_id_and_client_id  (user_id,client_id) UNIQUE
 #
 

@@ -21,7 +21,7 @@
 #  index_avatar_ownership_periods_on_owner_organization_id       (owner_organization_id)
 #
 
-class AvatarOwnershipPeriod < IdentitiesRecord
+class AvatarOwnershipPeriod < AvatarsRecord
   include StringPrimaryKey
 
   belongs_to :avatar

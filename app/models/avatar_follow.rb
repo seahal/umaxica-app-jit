@@ -16,7 +16,7 @@
 
 # frozen_string_literal: true
 
-class AvatarFollow < IdentitiesRecord
+class AvatarFollow < AvatarsRecord
   belongs_to :follower_avatar,
              class_name: "Avatar",
              inverse_of: :outgoing_follows

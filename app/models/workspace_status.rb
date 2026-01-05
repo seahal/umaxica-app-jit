@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class WorkspaceStatus < IdentitiesRecord
+class WorkspaceStatus < OperatorsRecord
   include ::UppercaseId
   include ::CatTagMaster
 

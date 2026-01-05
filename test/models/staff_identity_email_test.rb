@@ -38,7 +38,7 @@ class StaffIdentityEmailTest < ActiveSupport::TestCase
 
   # Basic model structure tests
   test "should inherit from IdentitiesRecord" do
-    assert_operator StaffIdentityEmail, :<, IdentitiesRecord
+    assert_operator StaffIdentityEmail, :<, OperatorsRecord
   end
 
   test "should include Email concern" do

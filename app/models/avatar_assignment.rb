@@ -19,7 +19,7 @@
 
 # frozen_string_literal: true
 
-class AvatarAssignment < IdentitiesRecord
+class AvatarAssignment < AvatarsRecord
   ROLES = %w(owner affiliation administrator editor reviewer viewer).freeze
 
   belongs_to :avatar

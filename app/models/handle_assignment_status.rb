@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class HandleAssignmentStatus < IdentitiesRecord
+class HandleAssignmentStatus < AvatarsRecord
   include StringPrimaryKey
 
   has_many :handle_assignments, dependent: :restrict_with_error

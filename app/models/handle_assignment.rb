@@ -23,7 +23,7 @@
 #  index_handle_assignments_on_handle_id_and_valid_from     (handle_id,valid_from)
 #
 
-class HandleAssignment < IdentitiesRecord
+class HandleAssignment < AvatarsRecord
   include StringPrimaryKey
 
   belongs_to :avatar

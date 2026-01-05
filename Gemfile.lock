@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 0d1b4918594caad1df15aefaa0b8393bbe7e232e
+  revision: 7db8073e6c8ff1aeb1a2f5c27530e8cbd2503d3d
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -261,7 +261,7 @@ GEM
       path_expander (~> 2.0)
       prism (~> 1.7)
       sexp_processor (~> 4.0)
-    flog (4.9.1)
+    flog (4.9.2)
       path_expander (~> 2.0)
       prism (~> 1.7)
       sexp_processor (~> 4.8)
@@ -610,7 +610,7 @@ GEM
     psych (5.3.1)
       date
       stringio
-    public_suffix (7.0.1)
+    public_suffix (7.0.2)
     puma (7.1.0)
       nio4r (~> 2.0)
     pundit (2.5.2)

@@ -22,7 +22,7 @@
 #  index_staff_identity_secrets_on_staff_id           (staff_id)
 #
 
-class StaffIdentitySecret < IdentitiesRecord
+class StaffIdentitySecret < OperatorsRecord
   include ::Secret
 
   MAX_SECRETS_PER_STAFF = 10
