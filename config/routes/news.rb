@@ -13,7 +13,7 @@ Rails.application.routes.draw do
         end
         # posts resource
         resources :posts, only: [:index, :show] do
-          resources :versions, only: [:index, :show]
+          resources :versions
         end
       end
     end
@@ -29,7 +29,7 @@ Rails.application.routes.draw do
         end
         # posts resource
         resources :posts, only: [:index, :show] do
-          resources :versions, only: [:index, :show]
+          resources :versions
         end
       end
     end
@@ -46,7 +46,7 @@ Rails.application.routes.draw do
         end
         # posts resource
         resources :posts, only: [:index, :show] do
-          resources :versions, only: [:index, :show]
+          resources :versions
         end
       end
     end

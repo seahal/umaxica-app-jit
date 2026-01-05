@@ -33,6 +33,17 @@
     </h1>
   </div>
 </header>
+ <nav class="flex flex-wrap gap-3 text-sm">
+        <% unless logged_in? %>
+          <%= link_to t("sign.org.layout.nav.log_in"), new_sign_org_authentication_url(host: ENV['SIGN_STAFF_URL']),
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% else %>
+          <%= link_to t("sign.org.layout.nav.configuration"), sign_org_configuration_url(host: ENV['SIGN_STAFF_URL']),
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+          <%= link_to t("sign.org.layout.nav.logout"), edit_sign_org_exit_url(host: ENV['SIGN_STAFF_URL']),
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% end %>
+      </nav>
 
 <hr>
 
@@ -49,7 +60,6 @@
   <nav class="flex flex-wrap items-center gap-4">
     <a class="font-semibold text-[hsl(var(--foreground))]" href="https://<%= ENV['EDGE_STAFF_URL'] %>"><%= t('apex.org.preferences.footer.home') %></a>
     <%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
-    <%= link_to t('apex.org.preferences.footer.privacy'), apex_org_privacy_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
   </nav>
   <div class="mt-4">
     <%= render "concern/copyright" %>

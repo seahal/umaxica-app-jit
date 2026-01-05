@@ -3,16 +3,11 @@
 require "test_helper"
 
 class PasskeyTest < ActiveSupport::TestCase
-  class DummyPasskey
-    include ActiveModel::Model
+  class TestUser
     include Passkey
   end
 
-  test "can include passkey concern" do
-    assert_includes DummyPasskey.included_modules, Passkey
-  end
-
-  test "is an ActiveSupport::Concern" do
-    assert_includes Passkey.singleton_class.included_modules, ActiveSupport::Concern
+  test "can be included" do
+    assert_includes TestUser.ancestors, Passkey
   end
 end

@@ -139,6 +139,8 @@ module Authentication
     # Extract access token from Authorization header (Bearer token) or Cookie
     # Priority: Authorization header > Cookie
     def extract_access_token(cookie_key)
+      return nil unless respond_to?(:request, true) && request
+
       # 1. Check Authorization header (Bearer token)
       auth_header = request.headers["Authorization"]
       if auth_header.present?

@@ -12,11 +12,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
         end
         # preferences
-        resource :privacy, only: [:show]
-        namespace :privacy do
-          # for ePrivacy settings.
-          resource :cookie, only: [:edit, :update]
-        end
         resource :preference, only: [:show]
         namespace :preference do
           # for region settings.
@@ -27,6 +22,8 @@ Rails.application.routes.draw do
           resource :theme, only: [:edit, :update]
           # endpoint of reset preferences.
           resource :reset, only: [:edit, :destroy]
+          # for ePrivacy settings.
+          resource :cookie, only: [:edit, :update]
         end
         resource :configuration, only: [:show]
         namespace :configuration do
@@ -56,9 +53,6 @@ Rails.application.routes.draw do
           resource :locale, only: [:edit, :update]
           # endpoint of reset preferences.
           resource :reset, only: [:edit, :destroy]
-        end
-        resource :privacy, only: [:show]
-        namespace :privacy do
           # for ePrivacy settings.
           resource :cookie, only: [:edit, :update]
         end
@@ -90,9 +84,6 @@ Rails.application.routes.draw do
           resource :locale, only: [:edit, :update]
           # endpoint of reset preferences.
           resource :reset, only: [:edit, :destroy]
-        end
-        resource :privacy, only: [:show]
-        namespace :privacy do
           # for ePrivacy settings.
           resource :cookie, only: [:edit, :update]
         end

@@ -4,18 +4,11 @@ module Apex
   module App
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
-
-      protect_from_forgery with: :exception
       include ::RateLimit
-
-      protect_from_forgery with: :exception
       include ::DefaultUrlOptions
-
-      protect_from_forgery with: :exception
       include ::QueryCanonicalizer
-
-      protect_from_forgery with: :exception
       include ::Apex::Concerns::Regionalization
+      include ::Authentication::User
 
       protect_from_forgery with: :exception
 
@@ -26,13 +19,13 @@ module Apex
       before_action :set_locale
       before_action :set_timezone
 
-      protected
-
-      def logged_in_user?
-        false
-      end
+      helper_method :logged_in_user?, :logged_in? if respond_to?(:helper_method)
 
       private
+
+      def logged_in_user?
+        logged_in?
+      end
 
       def user_not_authorized
         respond_to do |format|

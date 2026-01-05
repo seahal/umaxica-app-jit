@@ -47,7 +47,6 @@ class Apex::Com::PreferencesControllerTest < ActionDispatch::IntegrationTest
       assert_select "a[href=?]", "https://#{ENV["EDGE_CORPORATE_URL"]}",
                     text: I18n.t("apex.com.preferences.footer.home")
       assert_select "a[href^=?]", apex_com_preference_path, text: I18n.t("apex.com.preferences.footer.preference")
-      assert_select "a[href^=?]", apex_com_privacy_path, text: I18n.t("apex.com.preferences.footer.privacy")
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
