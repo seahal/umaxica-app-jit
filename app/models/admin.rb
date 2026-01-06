@@ -26,12 +26,12 @@ class Admin < OperatorRecord
 
   self.ignored_columns += ["workspace_id"]
 
-  attribute :status_id, default: AdminIdentityStatus::NEYO
+  attribute :status_id, default: AdminStatus::NEYO
 
   validates :public_id, uniqueness: true, allow_nil: true
   validates :status_id, length: { maximum: 255 }
 
-  belongs_to :admin_identity_status,
+  belongs_to :admin_status,
              foreign_key: :status_id,
              inverse_of: :admins
   belongs_to :staff, inverse_of: :admins

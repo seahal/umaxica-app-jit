@@ -104,7 +104,7 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum concurrent sessions per staff" do
-    staff = Staff.create!(staff_identity_status: StaffIdentityStatus.find("NEYO"))
+    staff = Staff.create!(staff_status: StaffStatus.find("NEYO"))
     StaffToken::MAX_SESSIONS_PER_STAFF.times do
       StaffToken.create!(staff: staff)
     end

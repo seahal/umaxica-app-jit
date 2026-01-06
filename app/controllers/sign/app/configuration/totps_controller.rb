@@ -5,19 +5,19 @@ module Sign
     module Configuration
       class TotpsController < ApplicationController
         def index
-          @totps = UserIdentityOneTimePassword.where(user_id: session[:user])
+          @totps = UserOneTimePassword.where(user_id: session[:user])
         end
 
         def new
-          @totp = UserIdentityOneTimePassword.new
+          @totp = UserOneTimePassword.new
           generate_totp_session
         end
 
         def create
-          @totp = UserIdentityOneTimePassword.new(totp_params)
+          @totp = UserOneTimePassword.new(totp_params)
           @totp.private_key = session[:private_key]
           @totp.user = current_user
-          @totp.user_identity_one_time_password_status_id = "ACTIVE"
+          @totp.user_one_time_password_status_id = "ACTIVE"
 
           last_otp_at = verify_totp(@totp.private_key, @totp.first_token)
           if last_otp_at
@@ -54,7 +54,7 @@ module Sign
 
         def account_id
           # Use user's email address if available, otherwise use public_id
-          current_user.user_identity_emails.first&.address || current_user.public_id
+          current_user.user_emails.first&.address || current_user.public_id
         end
 
         def totp_params

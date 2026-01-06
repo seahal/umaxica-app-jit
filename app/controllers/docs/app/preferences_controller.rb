@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
-class Docs::App::PreferencesController < ApplicationController
-  def show
+module Docs
+  module App
+    class PreferencesController < ApplicationController
+      def show
+      end
+    end
   end
 end

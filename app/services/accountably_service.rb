@@ -66,8 +66,8 @@ class AccountablyService
   def self.find_by_email(email)
     return nil if email.blank?
 
-    user = User.joins(:user_identity_emails).find_by(user_identity_emails: { address: email })
-    staff = Staff.joins(:staff_identity_emails).find_by(staff_identity_emails: { address: email }) unless user
+    user = User.joins(:user_emails).find_by(user_emails: { address: email })
+    staff = Staff.joins(:staff_emails).find_by(staff_emails: { address: email }) unless user
 
     accountably = user || staff
     new(accountably) if accountably
@@ -80,7 +80,7 @@ class AccountablyService
   def self.find_by_telephone(number)
     return nil if number.blank?
 
-    user = User.joins(:user_identity_telephones).find_by(user_identity_telephones: { number: number })
+    user = User.joins(:user_telephones).find_by(user_telephones: { number: number })
     # Staff doesn't have phone authentication in current implementation
     new(user) if user
   end
@@ -198,8 +198,8 @@ class AccountablyService
   # @return [ActiveRecord::Relation, Array] Collection of email records
   def emails
     return accountably.emails if accountably.respond_to?(:emails)
-    return accountably.user_identity_emails if accountably.respond_to?(:user_identity_emails)
-    return accountably.staff_identity_emails if accountably.respond_to?(:staff_identity_emails)
+    return accountably.user_emails if accountably.respond_to?(:user_emails)
+    return accountably.staff_emails if accountably.respond_to?(:staff_emails)
 
     []
   end
@@ -211,7 +211,7 @@ class AccountablyService
   def phones
     return [] unless user?
     return accountably.phones if accountably.respond_to?(:phones)
-    return accountably.user_identity_telephones if accountably.respond_to?(:user_identity_telephones)
+    return accountably.user_telephones if accountably.respond_to?(:user_telephones)
 
     []
   end
@@ -278,8 +278,8 @@ class AccountablyService
   def oauth_configured?
     return false unless user?
 
-    accountably.user_identity_social_apple.present? ||
-      accountably.user_identity_social_google.present?
+    accountably.user_social_apple.present? ||
+      accountably.user_social_google.present?
   end
 
   # TOTP Support

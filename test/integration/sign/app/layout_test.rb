@@ -13,13 +13,13 @@ class Sign::App::LayoutTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "layout links when not logged in" do
-    get new_sign_app_registration_email_url, headers: default_headers
+    get new_sign_app_up_email_url, headers: default_headers
 
     assert_response :success
 
     assert_select "nav" do
-      assert_select "a[href*=?]", "/registration/new", text: I18n.t("sign.app.layout.nav.sign_up")
-      assert_select "a[href*=?]", "/authentication/new", text: I18n.t("sign.app.layout.nav.log_in")
+      assert_select "a[href*=?]", new_sign_app_up_path, text: I18n.t("sign.app.layout.nav.sign_up")
+      assert_select "a[href*=?]", new_sign_app_in_path, text: I18n.t("sign.app.layout.nav.log_in")
       assert_select "a[href*=?]", "/setting", count: 0
       assert_select "a[href*=?][data-turbo-method='delete']", "/authentication", count: 0
     end
@@ -27,13 +27,13 @@ class Sign::App::LayoutTest < ActionDispatch::IntegrationTest
 
   # test "layout links when logged in" do
   #   user = users(:one)
-  #   get new_sign_app_registration_passkey_url, headers: login_headers(user)
+  #   get new_sign_app_up_passkey_url, headers: login_headers(user)
 
   #   assert_response :success
 
   #   assert_select "nav" do
-  #     assert_select "a[href*=?]", "/registration/new", count: 1
-  #     assert_select "a[href*=?]", "/authentication/new", count: 1
+  #     assert_select "a[href=?]", new_sign_app_up_path
+  #     assert_select "a[href=?]", new_sign_app_in_path
   #     assert_select "a[href*=?]", "/setting", count: 0
   #     assert_select "a[href*=?][data-turbo-method='delete']", "/authentication", count: 0
   #   end

@@ -2,22 +2,22 @@
 
 require "test_helper"
 
-# Test with UserIdentityEmail which includes Email
+# Test with UserEmail which includes Email
 class EmailTest < ActiveSupport::TestCase
   setup do
     @user = users(:none_user)
   end
 
   def build_email(attrs = {})
-    UserIdentityEmail.new({ user: @user }.merge(attrs))
+    UserEmail.new({ user: @user }.merge(attrs))
   end
 
   def create_email(attrs = {})
-    UserIdentityEmail.create!({ user: @user }.merge(attrs))
+    UserEmail.create!({ user: @user }.merge(attrs))
   end
 
   test "concern can be included in a class" do
-    assert_includes UserIdentityEmail.included_modules, Email
+    assert_includes UserEmail.included_modules, Email
   end
 
   test "concern adds confirm_policy accessor" do
@@ -44,14 +44,14 @@ class EmailTest < ActiveSupport::TestCase
   test "encrypts address deterministically" do
     email1 = create_email(address: "test1@example.com", confirm_policy: true)
     email2 = create_email(address: "test2@example.com", confirm_policy: true)
-    sql = "SELECT address FROM user_identity_emails WHERE id = :id"
+    sql = "SELECT address FROM user_emails WHERE id = :id"
 
     # Different emails should have different encrypted values
-    raw1 = UserIdentityEmail.connection.execute(
-      UserIdentityEmail.sanitize_sql_array([sql, { id: email1.id }]),
+    raw1 = UserEmail.connection.execute(
+      UserEmail.sanitize_sql_array([sql, { id: email1.id }]),
     ).first
-    raw2 = UserIdentityEmail.connection.execute(
-      UserIdentityEmail.sanitize_sql_array([sql, { id: email2.id }]),
+    raw2 = UserEmail.connection.execute(
+      UserEmail.sanitize_sql_array([sql, { id: email2.id }]),
     ).first
 
     assert_not_equal raw1["address"], raw2["address"]
@@ -190,7 +190,7 @@ class EmailTest < ActiveSupport::TestCase
           10.times do
             ActiveRecord::Base.connection_pool.with_connection do
               # Use a fresh instance to better simulate concurrent requests
-              UserIdentityEmail.find(email.id).increment_attempts!
+              UserEmail.find(email.id).increment_attempts!
             end
           end
         end

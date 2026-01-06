@@ -179,11 +179,11 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     exception = build_exception(record: users(:two))
     audit = DummyAudit.new(current_user: user)
 
-    assert_difference "UserIdentityAudit.count", 1 do
+    assert_difference "UserAudit.count", 1 do
       audit.send(:log_authorization_failure, exception)
     end
 
-    record = UserIdentityAudit.last
+    record = UserAudit.last
     assert_equal user, record.user
     assert_equal "AUTHORIZATION_FAILED", record.event_id
   end
@@ -193,11 +193,11 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     exception = build_exception(record: staff)
     audit = DummyAudit.new(current_staff: staff)
 
-    assert_difference "StaffIdentityAudit.count", 1 do
+    assert_difference "StaffAudit.count", 1 do
       audit.send(:log_authorization_failure, exception)
     end
 
-    record = StaffIdentityAudit.last
+    record = StaffAudit.last
     assert_equal staff, record.staff
     assert_equal "AUTHORIZATION_FAILED", record.event_id
   end

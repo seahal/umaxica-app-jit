@@ -14,9 +14,9 @@ module Sign
             identity =
               case provider
               when "google_oauth2"
-                UserIdentitySocialGoogle.find_or_create_from_auth_hash(auth)
+                UserSocialGoogle.find_or_create_from_auth_hash(auth)
               when "apple"
-                UserIdentitySocialApple.find_or_create_from_auth_hash(auth)
+                UserSocialApple.find_or_create_from_auth_hash(auth)
               else
                 raise "Unknown provider: #{provider}"
               end
@@ -40,9 +40,9 @@ module Sign
                 user = User.new
                 identity.user = user
                 if provider == "google_oauth2"
-                  user.user_identity_social_google = identity
+                  user.user_social_google = identity
                 elsif provider == "apple"
-                  user.user_identity_social_apple = identity
+                  user.user_social_apple = identity
                 end
 
                 user.save!
@@ -55,9 +55,9 @@ module Sign
               user = User.new
               identity.user = user
               if provider == "google_oauth2"
-                user.user_identity_social_google = identity
+                user.user_social_google = identity
               elsif provider == "apple"
-                user.user_identity_social_apple = identity
+                user.user_social_apple = identity
               end
 
               user.save!
@@ -76,7 +76,7 @@ module Sign
             provider: auth&.provider,
           )
 
-          redirect_to new_sign_app_authentication_path,
+          redirect_to new_sign_app_in_path,
                       alert: I18n.t("sign.app.social.sessions.create.failure")
         end
 

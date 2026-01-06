@@ -27,7 +27,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
       get new_sign_app_configuration_totp_url, headers: @headers
       token = ROTP::TOTP.new(secret).now
 
-      assert_difference("UserIdentityOneTimePassword.count") do
+      assert_difference("UserOneTimePassword.count") do
         post sign_app_configuration_totps_url,
              params: { time_based_one_time_password: { first_token: token } },
              headers: @headers
@@ -46,7 +46,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
            params: { time_based_one_time_password: { first_token: token } },
            headers: @headers
 
-      created_totp = UserIdentityOneTimePassword.order(created_at: :desc).first
+      created_totp = UserOneTimePassword.order(created_at: :desc).first
 
       assert_equal @user, created_totp.user
       assert_not_nil created_totp.last_otp_at
@@ -56,7 +56,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
   test "should not create totp with invalid token" do
     get new_sign_app_configuration_totp_url, headers: @headers
 
-    assert_no_difference("UserIdentityOneTimePassword.count") do
+    assert_no_difference("UserOneTimePassword.count") do
       post sign_app_configuration_totps_url,
            params: { time_based_one_time_password: { first_token: "invalid" } },
            headers: @headers

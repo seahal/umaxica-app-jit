@@ -95,6 +95,7 @@ en:
       configuration:
         show:
           description: "Manage advanced security controls for your account."
+          withdrawal: "Withdrawal"
         recovery:
           index:
             description: "Review existing recovery codes and ensure they stay up to date."
@@ -173,50 +174,51 @@ en:
           update:
             invalid_code: "Invalid verification code"
             locked: "Account is locked due to too many failed attempts"
-      withdrawal:
-        show:
-          title: "Withdrawal Status"
-          withdrawn: "Your account has been withdrawn"
-          withdrawn_date: "Withdrawn at: %{date}"
-          recovery: "Account Recovery"
-          recovery_notice: "Your account can be recovered within the recovery period."
-          recover_button: "Recover Account"
-          recovery_expired: "The recovery period has expired."
-          active: "Your account is active"
-          withdrawal_actions: "Withdrawal Options"
-          temporary_withdrawal: "Temporary Withdrawal"
-          temporary_notice: "Your account will be temporarily withdrawn and can be recovered within the grace period."
-          withdraw_button: "Withdraw Account"
-          confirm_withdrawal: "Are you sure?"
-          permanent_deletion: "Permanent Deletion"
-          permanent_notice: "Your account and all associated data will be permanently deleted. This action cannot be undone."
-          delete_button: "Permanently Delete Account"
-          confirm_deletion: "This cannot be undone. Are you sure?"
-        new:
-          title: "Withdrawal"
-          description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
-          recovery_code_label: "Confirm recovery code"
-          submit: "Withdraw Account"
-        edit:
-          title: "Recover Account"
-          description: "Your account is currently in withdrawal status. Click the button below to recover your account."
-          recovery_code_label: "Confirm recovery code"
-          submit: "Recover Account"
-        create:
-          success: "Withdrawal processed (dummy)"
-          already_withdrawn: "Account is already withdrawn"
-          failed: "Failed to process withdrawal. Please try again later."
-        update:
-          recovered: "Your account has been recovered. You can log in now."
-          cannot_recover: "Recovery period has expired. Please contact support."
-          failed: "Failed to recover account. Please try again later."
-        destroy:
-          deleted: "Account has been permanently deleted."
-          not_withdrawn: "Account is not withdrawn; cannot delete."
-        errors:
-          invalid_state: "Cannot perform this action. Your account is in an invalid state: %{current_status}"
-          recovery_not_available: "Your account cannot be recovered at this time. The recovery period has expired."
-          deletion_failed: "Failed to delete your account. Please try again or contact support."
+      configuration:
+        withdrawal:
+          show:
+            title: "Withdrawal Status"
+            withdrawn: "Your account has been withdrawn"
+            withdrawn_date: "Withdrawn at: %{date}"
+            recovery: "Account Recovery"
+            recovery_notice: "Your account can be recovered within the recovery period."
+            recover_button: "Recover Account"
+            recovery_expired: "The recovery period has expired."
+            active: "Your account is active"
+            withdrawal_actions: "Withdrawal Options"
+            temporary_withdrawal: "Temporary Withdrawal"
+            temporary_notice: "Your account will be temporarily withdrawn and can be recovered within the grace period."
+            withdraw_button: "Withdraw Account"
+            confirm_withdrawal: "Are you sure?"
+            permanent_deletion: "Permanent Deletion"
+            permanent_notice: "Your account and all associated data will be permanently deleted. This action cannot be undone."
+            delete_button: "Permanently Delete Account"
+            confirm_deletion: "This cannot be undone. Are you sure?"
+          new:
+            title: "Withdrawal"
+            description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
+            recovery_code_label: "Confirm recovery code"
+            submit: "Withdraw Account"
+          edit:
+            title: "Recover Account"
+            description: "Your account is currently in withdrawal status. Click the button below to recover your account."
+            recovery_code_label: "Confirm recovery code"
+            submit: "Recover Account"
+          create:
+            success: "Withdrawal processed (dummy)"
+            already_withdrawn: "Account is already withdrawn"
+            failed: "Failed to process withdrawal. Please try again later."
+          update:
+            recovered: "Your account has been recovered. You can log in now."
+            cannot_recover: "Recovery period has expired. Please contact support."
+            failed: "Failed to recover account. Please try again later."
+          destroy:
+            deleted: "Account has been permanently deleted."
+            not_withdrawn: "Account is not withdrawn; cannot delete."
+          errors:
+            invalid_state: "Cannot perform this action. Your account is in an invalid state: %{current_status}"
+            recovery_not_available: "Your account cannot be recovered at this time. The recovery period has expired."
+            deletion_failed: "Failed to delete your account. Please try again or contact support."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -913,6 +915,15 @@ en:
           invalid: "Invalid timezone selected"
   sign:
     org:
+      root:
+        registration: "Sign Up"
+      configuration:
+        show:
+          withdrawal: "Withdrawal"
+        withdrawal:
+          show:
+            title: "Withdrawal"
+            description: "Review your withdrawal status."
       withdrawal:
         create:
           already_withdrawn: "You have already withdrawn."

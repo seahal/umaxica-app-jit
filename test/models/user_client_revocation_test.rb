@@ -20,20 +20,20 @@ require "test_helper"
 
 class UserClientRevocationTest < ActiveSupport::TestCase
   setup do
-    UserIdentityStatus.find_or_create_by!(id: "NEYO")
+    UserStatus.find_or_create_by!(id: "NEYO")
     create_user_and_status
     @user = User.find_by!(public_id: "one_id")
   end
 
   def create_user_and_status
-    UserIdentityStatus.find_or_create_by!(id: "NEYO")
+    UserStatus.find_or_create_by!(id: "NEYO")
     User.find_or_create_by!(public_id: "one_id") do |u|
       u.status_id = "NEYO"
     end
   end
 
   def create_client
-    ClientIdentityStatus.find_or_create_by!(id: "NEYO")
+    ClientStatus.find_or_create_by!(id: "NEYO")
     # Need a division for the client
     DivisionStatus.find_or_create_by!(id: "NEYO")
     # Workspace/Organization (division -> workspace)

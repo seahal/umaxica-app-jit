@@ -58,7 +58,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "should show passkey" do
-    passkey = UserIdentityPasskey.create!(
+    passkey = UserPasskey.create!(
       user: @user,
       description: "Show Me",
       public_key: "pk",
@@ -73,7 +73,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "should get edit" do
-    passkey = UserIdentityPasskey.create!(
+    passkey = UserPasskey.create!(
       user: @user,
       description: "Edit Me",
       public_key: "pk",
@@ -88,7 +88,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "should create passkey" do
-    assert_difference("UserIdentityPasskey.count") do
+    assert_difference("UserPasskey.count") do
       post sign_app_configuration_passkeys_url, params: {
         passkey: {
           description: "My Passkey",
@@ -100,11 +100,11 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       }, headers: @headers
     end
 
-    assert_redirected_to sign_app_configuration_passkey_url(UserIdentityPasskey.last, regional_defaults)
+    assert_redirected_to sign_app_configuration_passkey_url(UserPasskey.last, regional_defaults)
   end
 
   test "should update passkey" do
-    passkey = UserIdentityPasskey.create!(
+    passkey = UserPasskey.create!(
       user: @user,
       description: "Old Name",
       public_key: "pk",
@@ -122,7 +122,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "should destroy passkey" do
-    passkey = UserIdentityPasskey.create!(
+    passkey = UserPasskey.create!(
       user: @user,
       description: "Delete Me",
       public_key: "pk",
@@ -131,7 +131,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       sign_count: 0,
     )
 
-    assert_difference("UserIdentityPasskey.count", -1) do
+    assert_difference("UserPasskey.count", -1) do
       delete sign_app_configuration_passkey_url(passkey), headers: @headers
     end
     assert_redirected_to sign_app_configuration_passkeys_url(regional_defaults)

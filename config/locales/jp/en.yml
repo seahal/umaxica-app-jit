@@ -56,6 +56,11 @@ en:
           log_in: "Log In"
           configuration: "Settings"
           logout: "Log Out"
+      preferences:
+        footer:
+          home: "home"
+          preference: "Preferences"
+          configuration: "Configuration"
       root:
         title: "Welcome to Sign"
         description: "Choose an action to get started"
@@ -71,18 +76,27 @@ en:
           page_title: "Choose how to sign in"
           description: "Select the method that fits your current session."
           back: "Prefer a different method?"
+          back_link: "Back"
           links:
             email: "Email"
             telephone: "Telephone"
             passkey: "Passkey"
             recovery: "Recovery code"
+            secret: "Secret"
             google: "Sign in with Google"
             apple: "Sign in with Apple"
             registration: "Need an account?"
+        secret:
+          new:
+            page_title: "Sign in with a secret"
+            pii_label: "Account identifiable information"
+            secret_label: "Secret"
+            confirm_label: "I have saved the secret"
         passkey:
           new:
-            page_title: "Register a passkey"
-            description: "Use one of your trusted devices to add a passkey for passwordless sign-in."
+            page_title: "Sign in with passkey"
+            description: "Use your passkey to sign in securely."
+            submit: "Sign in with passkey"
         telephone:
           new:
             page_title: "Sign in with your phone number"
@@ -118,7 +132,10 @@ en:
           description: "Enter one of your saved recovery codes to regain access to your account."
       configuration:
         show:
+          page_title: "Configuration"
           description: "Manage advanced security controls for your account."
+          withdrawal: "Withdrawal"
+          back: "Back"
         recovery:
           index:
             description: "Review existing recovery codes and ensure they stay up to date."
@@ -155,6 +172,7 @@ en:
               apple: "Continue with Apple"
             disclaimer: "We will never post or share anything without your permission."
         links:
+          sign_in_prompt: "Already have an account?"
           sign_in_html: "Already registered? %{link}"
           sign_in_text: "Sign in"
         email:
@@ -182,46 +200,47 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
-        withdrawal:
-          show:
-            title: "Withdrawal Status"
-            withdrawn: "Your account has been withdrawn"
-            withdrawn_date: "Withdrawn at: %{date}"
-            recovery: "Account Recovery"
-            recovery_notice: "Your account can be recovered within the recovery period."
-            recover_button: "Recover Account"
-            recovery_expired: "The recovery period has expired."
-            active: "Your account is active"
-            withdrawal_actions: "Withdrawal Options"
-            temporary_withdrawal: "Temporary Withdrawal"
-            temporary_notice: "Your account will be temporarily withdrawn and can be recovered within the grace period."
-            withdraw_button: "Withdraw Account"
-            confirm_withdrawal: "Are you sure?"
-            permanent_deletion: "Permanent Deletion"
-            permanent_notice: "Your account and all associated data will be permanently deleted. This action cannot be undone."
-            delete_button: "Permanently Delete Account"
-            confirm_deletion: "This cannot be undone. Are you sure?"
-          new:
-            title: "Withdrawal"
-            description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
-            recovery_code_label: "Confirm recovery code"
-            submit: "Withdraw Account"
-          edit:
-            title: "Recover Account"
-            description: "Your account is currently in withdrawal status. Click the button below to recover your account."
-            recovery_code_label: "Confirm recovery code"
-            submit: "Recover Account"
-          create:
-            already_withdrawn: "You have already withdrawn your account."
-            success: "Your account has been withdrawn. Thank you for using our service."
-            failed: "Failed to process withdrawal. Please try again later."
-          update:
-            recovered: "Your account has been recovered. You can log in now."
-            cannot_recover: "Recovery period has expired. Please contact support."
-            failed: "Failed to recover account. Please try again later."
-          destroy:
-            deleted: "Account has been permanently deleted."
-            not_withdrawn: "Account is not withdrawn; cannot delete."
+        configuration:
+          withdrawal:
+            show:
+              title: "Withdrawal Status"
+              withdrawn: "Your account has been withdrawn"
+              withdrawn_date: "Withdrawn at: %{date}"
+              recovery: "Account Recovery"
+              recovery_notice: "Your account can be recovered within the recovery period."
+              recover_button: "Recover Account"
+              recovery_expired: "The recovery period has expired."
+              active: "Your account is active"
+              withdrawal_actions: "Withdrawal Options"
+              temporary_withdrawal: "Temporary Withdrawal"
+              temporary_notice: "Your account will be temporarily withdrawn and can be recovered within the grace period."
+              withdraw_button: "Withdraw Account"
+              confirm_withdrawal: "Are you sure?"
+              permanent_deletion: "Permanent Deletion"
+              permanent_notice: "Your account and all associated data will be permanently deleted. This action cannot be undone."
+              delete_button: "Permanently Delete Account"
+              confirm_deletion: "This cannot be undone. Are you sure?"
+            new:
+              title: "Withdrawal"
+              description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
+              recovery_code_label: "Confirm recovery code"
+              submit: "Withdraw Account"
+            edit:
+              title: "Recover Account"
+              description: "Your account is currently in withdrawal status. Click the button below to recover your account."
+              recovery_code_label: "Confirm recovery code"
+              submit: "Recover Account"
+            create:
+              already_withdrawn: "You have already withdrawn your account."
+              success: "Your account has been withdrawn. Thank you for using our service."
+              failed: "Failed to process withdrawal. Please try again later."
+            update:
+              recovered: "Your account has been recovered. You can log in now."
+              cannot_recover: "Recovery period has expired. Please contact support."
+              failed: "Failed to recover account. Please try again later."
+            destroy:
+              deleted: "Account has been permanently deleted."
+              not_withdrawn: "Account is not withdrawn; cannot delete."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -288,6 +307,26 @@ en:
           confirm: "This action deletes saved preference data for this browser. Continue?"
           back: "Back to Preferences"
     org:
+      preferences:
+        footer:
+          preference: "Preferences"
+          configuration: "Configuration"
+          home: "home"
+      configuration:
+        show:
+          page_title: "Configuration"
+          description: "Manage advanced security controls for your account."
+          withdrawal: "Withdrawal"
+          back: "Back"
+        withdrawal:
+          show:
+            title: "Withdrawal"
+            description: "Review your withdrawal status."
+      root:
+        title: "Welcome"
+        description: "Choose an action below"
+        registration: "Sign Up"
+        authentication: "Sign In"
       layout:
         nav:
           sign_up: "Sign Up"
@@ -310,7 +349,19 @@ en:
             google: "Google"
             passkey: "Passkey"
             recovery: "Recovery code"
+            secret: "Secret"
             registration: "Need an account?"
+        passkey:
+          new:
+            page_title: "Sign in with passkey"
+            description: "Use your passkey to sign in securely."
+            submit: "Sign in with passkey"
+        secret:
+          new:
+            page_title: "Sign in with a secret"
+            pii_label: "Account identifiable information"
+            secret_label: "Secret"
+            confirm_label: "I have saved the secret"
       registration:
         new:
           page_title: "Staff Registration"
@@ -1080,11 +1131,19 @@ en:
           back: "Back???"
   apex:
     app:
+      preference:
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference data for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to preferences"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
         region_settings: "Region & Language Settings"
         theme_settings: "Theme Settings"
+        reset_settings: "Reset Settings"
         up_link: "Back to top"
         footer:
           home: "Home"
@@ -1096,11 +1155,19 @@ en:
         timezones:
           invalid: "Invalid timezone selected"
     com:
+      preference:
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference data for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to preferences"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
         region_settings: "Region & Language Settings"
         theme_settings: "Theme Settings"
+        reset_settings: "Reset Settings"
         up_link: "Back to top"
         footer:
           home: "Home"
@@ -1112,11 +1179,19 @@ en:
         timezones:
           invalid: "Invalid timezone selected"
     org:
+      preference:
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference data for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          back: "Back to preferences"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
         region_settings: "Region & Language Settings"
         theme_settings: "Theme Settings"
+        reset_settings: "Reset Settings"
         up_link: "Back to top"
         footer:
           home: "Home"

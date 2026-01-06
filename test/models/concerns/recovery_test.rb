@@ -3,11 +3,12 @@
 require "test_helper"
 
 class RecoveryTest < ActiveSupport::TestCase
-  class TestUser
-    include Recovery
-  end
+  test "can be included as a concern" do
+    klass =
+      Class.new do
+        include Recovery
+      end
 
-  test "can be included" do
-    assert_includes TestUser.ancestors, Recovery
+    assert_includes klass.included_modules, Recovery
   end
 end

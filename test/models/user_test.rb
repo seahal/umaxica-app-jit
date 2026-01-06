@@ -25,14 +25,14 @@ class UserTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
-    UserIdentityStatus.find_or_create_by!(id: "NEYO")
+    UserStatus.find_or_create_by!(id: "NEYO")
     UserTokenStatus.find_or_create_by!(id: "NEYO")
-    UserIdentityTelephoneStatus.find_or_create_by!(id: "NEYO")
-    UserIdentityEmailStatus.find_or_create_by!(id: "NEYO")
-    UserIdentityPasskeyStatus.find_or_create_by!(id: "NEYO")
-    UserIdentitySecretStatus.find_or_create_by!(id: "NEYO")
-    UserIdentitySocialAppleStatus.find_or_create_by!(id: "NEYO")
-    UserIdentitySocialGoogleStatus.find_or_create_by!(id: "NEYO")
+    UserTelephoneStatus.find_or_create_by!(id: "NEYO")
+    UserEmailStatus.find_or_create_by!(id: "NEYO")
+    UserPasskeyStatus.find_or_create_by!(id: "NEYO")
+    UserSecretStatus.find_or_create_by!(id: "NEYO")
+    UserSocialAppleStatus.find_or_create_by!(id: "NEYO")
+    UserSocialGoogleStatus.find_or_create_by!(id: "NEYO")
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
         u.status_id = "NEYO"
@@ -48,14 +48,14 @@ class UserTest < ActiveSupport::TestCase
     assert_not_nil @user.updated_at
   end
 
-  test "should have one user_identity_social_apple association" do
-    assert_respond_to @user, :user_identity_social_apple
-    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_social_apple).macro
+  test "should have one user_social_apple association" do
+    assert_respond_to @user, :user_social_apple
+    assert_equal :has_one, @user.class.reflect_on_association(:user_social_apple).macro
   end
 
-  test "should have one user_identity_social_google association" do
-    assert_respond_to @user, :user_identity_social_google
-    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_social_google).macro
+  test "should have one user_social_google association" do
+    assert_respond_to @user, :user_social_google
+    assert_equal :has_one, @user.class.reflect_on_association(:user_social_google).macro
   end
 
   test "staff? should return false" do
@@ -69,22 +69,22 @@ class UserTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     user = User.create!
 
-    assert_equal UserIdentityStatus::NEYO, user.status_id
+    assert_equal UserStatus::NEYO, user.status_id
   end
 
-  test "should have many user_identity_emails association" do
-    assert_respond_to @user, :user_identity_emails
-    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_emails).macro
+  test "should have many user_emails association" do
+    assert_respond_to @user, :user_emails
+    assert_equal :has_many, @user.class.reflect_on_association(:user_emails).macro
   end
 
-  test "should have many user_identity_secrets association" do
-    assert_respond_to @user, :user_identity_secrets
-    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_secrets).macro
+  test "should have many user_secrets association" do
+    assert_respond_to @user, :user_secrets
+    assert_equal :has_many, @user.class.reflect_on_association(:user_secrets).macro
   end
 
-  test "should have many user_identity_passkeys association" do
-    assert_respond_to @user, :user_identity_passkeys
-    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_passkeys).macro
+  test "should have many user_passkeys association" do
+    assert_respond_to @user, :user_passkeys
+    assert_equal :has_many, @user.class.reflect_on_association(:user_passkeys).macro
   end
 
   test "boundary values: public_id must be unique" do
@@ -102,17 +102,17 @@ class UserTest < ActiveSupport::TestCase
     assert_not_empty @user.errors[:public_id]
   end
 
-  test "association deletion: destroys dependent user_identity_emails" do
-    email = UserIdentityEmail.create!(user: @user, address: "delete_test@example.com")
-    assert_difference("UserIdentityEmail.count", -1) do
+  test "association deletion: destroys dependent user_emails" do
+    email = UserEmail.create!(user: @user, address: "delete_test@example.com")
+    assert_difference("UserEmail.count", -1) do
       @user.destroy
     end
     assert_raise(ActiveRecord::RecordNotFound) { email.reload }
   end
 
-  test "association deletion: destroys dependent user_identity_telephones" do
-    phone = UserIdentityTelephone.create!(user: @user, number: "+15551234567")
-    assert_difference("UserIdentityTelephone.count", -1) do
+  test "association deletion: destroys dependent user_telephones" do
+    phone = UserTelephone.create!(user: @user, number: "+15551234567")
+    assert_difference("UserTelephone.count", -1) do
       @user.destroy
     end
     assert_raise(ActiveRecord::RecordNotFound) { phone.reload }

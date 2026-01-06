@@ -25,8 +25,8 @@ class StaffTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
-    StaffIdentityTelephoneStatus.find_or_create_by!(id: "UNVERIFIED")
-    StaffIdentityEmailStatus.find_or_create_by!(id: "UNVERIFIED")
+    StaffTelephoneStatus.find_or_create_by!(id: "UNVERIFIED")
+    StaffEmailStatus.find_or_create_by!(id: "UNVERIFIED")
     StaffTokenStatus.find_or_create_by!(id: "ACTIVE")
     @staff = Staff.find_by!(public_id: "one_staff_id")
   end
@@ -41,20 +41,20 @@ class StaffTest < ActiveSupport::TestCase
   end
 
   test "should have many telephones association" do
-    assert_equal "staff_id", @staff.class.reflect_on_association(:staff_identity_telephones).foreign_key
+    assert_equal "staff_id", @staff.class.reflect_on_association(:staff_telephones).foreign_key
   end
 
   test "dependent behaviors for staff associations" do
     assert_equal :restrict_with_error,
-                 Staff.reflect_on_association(:staff_identity_emails).options[:dependent]
+                 Staff.reflect_on_association(:staff_emails).options[:dependent]
     assert_equal :restrict_with_error,
-                 Staff.reflect_on_association(:staff_identity_telephones).options[:dependent]
+                 Staff.reflect_on_association(:staff_telephones).options[:dependent]
     assert_equal :nullify,
-                 Staff.reflect_on_association(:staff_identity_audits).options[:dependent]
+                 Staff.reflect_on_association(:staff_audits).options[:dependent]
     assert_equal :nullify,
-                 Staff.reflect_on_association(:user_identity_audits).options[:dependent]
+                 Staff.reflect_on_association(:user_audits).options[:dependent]
     assert_equal :destroy,
-                 Staff.reflect_on_association(:staff_identity_secrets).options[:dependent]
+                 Staff.reflect_on_association(:staff_secrets).options[:dependent]
     assert_equal :destroy,
                  Staff.reflect_on_association(:staff_tokens).options[:dependent]
     assert_equal :destroy,
@@ -74,7 +74,7 @@ class StaffTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     staff = Staff.create!
 
-    assert_equal StaffIdentityStatus::NEYO, staff.status_id
+    assert_equal StaffStatus::NEYO, staff.status_id
   end
 
   test "boundary values: public_id must be unique" do
@@ -95,7 +95,7 @@ class StaffTest < ActiveSupport::TestCase
   # Staff associations are mostly dependent: :restrict_with_error or :nullify
 
   test "association deletion: restriction by dependent emails" do
-    StaffIdentityEmail.create!(staff: @staff, address: "staff_test@example.com")
+    StaffEmail.create!(staff: @staff, address: "staff_test@example.com")
     assert_no_difference("Staff.count") do
       assert_not @staff.destroy
       assert_not_empty @staff.errors[:base]
@@ -103,7 +103,7 @@ class StaffTest < ActiveSupport::TestCase
   end
 
   test "association deletion: restriction by dependent telephones" do
-    StaffIdentityTelephone.create!(staff: @staff, number: "+15559876543")
+    StaffTelephone.create!(staff: @staff, number: "+15559876543")
     assert_no_difference("Staff.count") do
       assert_not @staff.destroy
       assert_not_empty @staff.errors[:base]

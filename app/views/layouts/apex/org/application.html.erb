@@ -14,36 +14,42 @@
   <%= javascript_importmap_tags %>
   <link rel="icon" href="https://perm.umaxica.org/favicon.ico" sizes="32x32">
 </head>
-<body class="px-4">
+<body class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 px-4 text-slate-900">
+<div class="pointer-events-none fixed inset-0 -z-10">
+  <div class="absolute -top-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-slate-200/40 blur-3xl"></div>
+  <div class="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-amber-100/50 blur-3xl"></div>
+</div>
 <% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
 <% edge_host = ENV["EDGE_STAFF_URL"].presence %>
 
 <div class="mx-auto max-w-6xl px-6">
     <%= render "concern/flash_messages" %>
 
-    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
-  <div class="flex flex-col">
-    <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
-    <h1 class="text-2xl font-semibold tracking-tight">
-      <% if edge_host.present? %>
-        <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/">Umaxica(org)</a>
-      <% else %>
-        Umaxica(org)
-      <% end %>
-    </h1>
+    <header class="border-b border-[hsl(var(--border))] py-6">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex flex-col">
+      <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
+      <h1 class="text-3xl font-semibold tracking-tight text-slate-900">
+        <% if edge_host.present? %>
+          <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/">Umaxica(org)</a>
+        <% else %>
+          Umaxica(org)
+        <% end %>
+      </h1>
+    </div>
+    <nav class="flex flex-wrap items-center justify-end gap-3 text-sm">
+          <% unless logged_in? %>
+            <%= link_to t("sign.org.layout.nav.log_in"), new_sign_org_in_url(host: ENV['SIGN_STAFF_URL']),
+                        class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+          <% else %>
+            <%= link_to t("sign.org.layout.nav.configuration"), sign_org_configuration_url(host: ENV['SIGN_STAFF_URL']),
+                        class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+            <%= link_to t("sign.org.layout.nav.logout"), edit_sign_org_out_url(host: ENV['SIGN_STAFF_URL']),
+                        class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+          <% end %>
+    </nav>
   </div>
 </header>
- <nav class="flex flex-wrap gap-3 text-sm">
-        <% unless logged_in? %>
-          <%= link_to t("sign.org.layout.nav.log_in"), new_sign_org_authentication_url(host: ENV['SIGN_STAFF_URL']),
-                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
-        <% else %>
-          <%= link_to t("sign.org.layout.nav.configuration"), sign_org_configuration_url(host: ENV['SIGN_STAFF_URL']),
-                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
-          <%= link_to t("sign.org.layout.nav.logout"), edit_sign_org_exit_url(host: ENV['SIGN_STAFF_URL']),
-                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
-        <% end %>
-      </nav>
 
 <hr>
 
@@ -58,8 +64,9 @@
 
 <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
   <nav class="flex flex-wrap items-center gap-4">
-    <a class="font-semibold text-[hsl(var(--foreground))]" href="https://<%= ENV['EDGE_STAFF_URL'] %>"><%= t('apex.org.preferences.footer.home') %></a>
+    <a class="font-semibold text-[hsl(var(--foreground))]" href="http://org.localhost:3000/"><%= t('apex.org.preferences.footer.home') %></a>
     <%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+    <%= link_to t("apex.org.configurations.title"), apex_org_configuration_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
   </nav>
   <div class="mt-4">
     <%= render "concern/copyright" %>

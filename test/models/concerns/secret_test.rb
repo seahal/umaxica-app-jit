@@ -70,6 +70,17 @@ class SecretTest < ActiveSupport::TestCase
     # but we included it.
   end
 
+  class MissingSecret
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+    include ActiveModel::Validations
+    include ActiveModel::SecurePassword
+
+    attribute :password_digest, :string
+
+    include Secret
+  end
+
   test "defines constants" do
     assert_defined_constant Secret::SECRET_PASSWORD_LENGTH
   end
@@ -103,6 +114,18 @@ class SecretTest < ActiveSupport::TestCase
 
     assert record.expire_if_needed!
     assert_equal DummySecret.status_id_for(:expired), record[:secret_status_id]
+  end
+
+  test "raises when identity secret status class is missing" do
+    error = assert_raises(NotImplementedError) { MissingSecret.identity_secret_status_class }
+
+    assert_match(/define identity_secret_status_class/, error.message)
+  end
+
+  test "raises when identity secret status id column is missing" do
+    error = assert_raises(NotImplementedError) { MissingSecret.identity_secret_status_id_column }
+
+    assert_match(/define identity_secret_status_id_column/, error.message)
   end
 
   private

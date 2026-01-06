@@ -28,32 +28,32 @@ class Staff < OperatorRecord
   include ::PublicId
   include ::Accountably
 
-  attribute :status_id, default: StaffIdentityStatus::NEYO
+  attribute :status_id, default: StaffStatus::NEYO
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :status_id, length: { maximum: 255 }
 
-  belongs_to :staff_identity_status,
+  belongs_to :staff_status,
              foreign_key: :status_id,
              inverse_of: :staffs
-  has_many :staff_identity_emails,
+  has_many :staff_emails,
            dependent: :restrict_with_error,
            inverse_of: :staff
-  has_many :staff_identity_telephones,
+  has_many :staff_telephones,
            dependent: :restrict_with_error,
            inverse_of: :staff
-  has_many :staff_identity_passkeys,
+  has_many :staff_passkeys,
            dependent: :destroy,
            inverse_of: :staff
-  has_many :staff_identity_audits,
+  has_many :staff_audits,
            -> { where(subject_type: "Staff") },
            foreign_key: :subject_id,
            dependent: :nullify,
            inverse_of: false
-  has_many :user_identity_audits,
+  has_many :user_audits,
            as: :actor,
            dependent: :nullify
-  has_many :staff_identity_secrets,
+  has_many :staff_secrets,
            dependent: :destroy,
            inverse_of: :staff
   has_many :staff_tokens,

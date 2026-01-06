@@ -27,7 +27,7 @@ Rails.application.routes.draw do
         end
         resource :configuration, only: [:show]
         namespace :configuration do
-          # non-login user's email settings.
+          # logged in user's email settings.
           resources :emails, only: %i(edit update new create)
         end
       end
@@ -58,7 +58,7 @@ Rails.application.routes.draw do
         end
         resource :configuration, only: [:show]
         namespace :configuration do
-          # non-login user's email settings.
+          # logged in user's email settings.
           resources :emails, only: %i(edit update new create)
         end
       end
@@ -89,7 +89,7 @@ Rails.application.routes.draw do
         end
         resource :configuration, only: [:show]
         namespace :configuration do
-          # non-login user's email settings.
+          # logged in user's email settings.
           resources :emails, only: %i(edit update new create)
         end
       end

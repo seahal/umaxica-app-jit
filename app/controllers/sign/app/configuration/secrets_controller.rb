@@ -4,46 +4,57 @@ module Sign
   module App
     module Configuration
       class SecretsController < ApplicationController
-        include Sign::Setting::Secrets
+        before_action :authenticate_user!
+        before_action :set_secret, only: %i(show edit destroy)
 
         def index
-          super
-          normalize_last_used_at(@secrets)
+          @secrets = current_user.user_secrets.order(created_at: :desc)
         end
 
         def show
-          super
-          normalize_last_used_at(@secret)
+        end
+
+        def new
+          @secret = current_user.user_secrets.new
+          @raw_secret = UserSecret.generate_raw_secret
+          session[:user_secret_raw] = @raw_secret
+          @secret.name = @raw_secret.first(4)
+        end
+
+        def edit
+        end
+
+        def create
+          raw_secret = session.delete(:user_secret_raw)
+          result = UserSecrets::Create.call(
+            actor: current_user,
+            user: current_user,
+            params: secret_params,
+            raw_secret: raw_secret,
+          )
+
+          flash[:raw_secret] = result.raw_secret
+          redirect_to sign_app_configuration_secret_path(result.secret)
+        rescue ActiveRecord::RecordInvalid => e
+          @secret = e.record
+          @raw_secret = raw_secret.presence || UserSecret.generate_raw_secret
+          session[:user_secret_raw] = @raw_secret
+          render :new, status: :unprocessable_content
+        end
+
+        def destroy
+          UserSecrets::Destroy.call(actor: current_user, secret: @secret)
+          redirect_to sign_app_configuration_secrets_path, status: :see_other
         end
 
         private
 
-        def authenticate_identity!
-          authenticate_user!
+        def set_secret
+          @secret = current_user.user_secrets.find(params[:id])
         end
 
-        def secret_scope
-          current_user.user_identity_secrets
-        end
-
-        def secret_param_key
-          :user_identity_secret
-        end
-
-        def secrets_index_path
-          sign_app_configuration_secrets_path
-        end
-
-        def secret_path(secret)
-          sign_app_configuration_secret_path(secret)
-        end
-
-        def normalize_last_used_at(secrets)
-          Array(secrets).each do |secret|
-            next unless secret.last_used_at.is_a?(Float) && secret.last_used_at.infinite? == -1
-
-            secret.last_used_at = nil
-          end
+        def secret_params
+          params.fetch(:user_secret, {}).permit(:name, :enabled)
         end
       end
     end

@@ -3,11 +3,12 @@
 require "test_helper"
 
 class PasskeyTest < ActiveSupport::TestCase
-  class TestUser
-    include Passkey
-  end
+  test "can be included as a concern" do
+    klass =
+      Class.new do
+        include Passkey
+      end
 
-  test "can be included" do
-    assert_includes TestUser.ancestors, Passkey
+    assert_includes klass.included_modules, Passkey
   end
 end

@@ -33,7 +33,7 @@ class Sign::Org::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     get sign_org_configuration_passkeys_url, headers: @host_headers
 
     assert_response :redirect
-    assert_match new_sign_org_authentication_path, response.headers["Location"]
+    assert_match new_sign_org_in_path, response.headers["Location"]
   end
 
   # test "should get edit" do

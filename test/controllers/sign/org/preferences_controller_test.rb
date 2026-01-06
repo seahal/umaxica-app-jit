@@ -10,8 +10,8 @@ class Sign::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
 
   test "footer should contain preference link" do
     get sign_org_root_url
-    assert_response :redirect
-    follow_redirect!
+    assert_response :success
+    # follow_redirect!
     assert_response :success
     assert_match "footer", response.body
     assert_match sign_org_preference_path, response.body
@@ -20,6 +20,8 @@ class Sign::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   test "preference page links to apex preference" do
     get sign_org_preference_url
     assert_response :success
-    assert_select "a[href=?]", apex_org_preference_url, text: I18n.t("shared.links.apex_preference")
+    assert_select "a[href=?]",
+                  apex_org_preference_url(ct: "sy", lx: "ja", ri: "jp", tz: "jst"),
+                  text: I18n.t("shared.links.apex_preference")
   end
 end

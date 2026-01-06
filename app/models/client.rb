@@ -24,13 +24,13 @@
 class Client < PrincipalRecord
   include ::PublicId
 
-  attribute :status_id, default: ClientIdentityStatus::NEYO
+  attribute :status_id, default: ClientStatus::NEYO
 
   validates :public_id, uniqueness: true, allow_nil: true
   validates :status_id, length: { maximum: 255 }
 
   belongs_to :user, optional: true, inverse_of: :owned_clients
-  belongs_to :client_identity_status,
+  belongs_to :client_status,
              foreign_key: :status_id,
              inverse_of: :clients
   belongs_to :division, optional: true, inverse_of: :clients

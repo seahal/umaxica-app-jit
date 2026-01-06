@@ -4,11 +4,11 @@ module Sign
   module Org
     class PasskeysController < ApplicationController
       def new
-        @staff_telephone = StaffIdentityTelephone.new
+        @staff_telephone = StaffTelephone.new
       end
 
       def edit
-        @staff_telephone = StaffIdentityTelephone.new
+        @staff_telephone = StaffTelephone.new
       end
 
       def create

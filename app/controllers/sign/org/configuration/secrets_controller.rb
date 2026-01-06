@@ -13,11 +13,11 @@ module Sign
         end
 
         def secret_scope
-          current_staff.staff_identity_secrets
+          current_staff.staff_secrets
         end
 
         def secret_param_key
-          :staff_identity_secret
+          :staff_secret
         end
 
         def secrets_index_path

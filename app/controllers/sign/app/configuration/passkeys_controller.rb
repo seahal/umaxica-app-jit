@@ -37,7 +37,7 @@ module Sign
           credential = WebAuthn::Credential.from_create(passkey_credential_params.to_h)
           credential.verify(challenge)
 
-          passkey = @webauthn_user.user_identity_passkeys.new(
+          passkey = @webauthn_user.user_passkeys.new(
             description: passkey_description,
             external_id: SecureRandom.uuid,
             webauthn_id: webauthn_id_from_credential(credential),
@@ -57,7 +57,7 @@ module Sign
 
         # GET /passkeys
         def index
-          @passkeys = policy_scope(UserIdentityPasskey).order(created_at: :desc)
+          @passkeys = policy_scope(UserPasskey).order(created_at: :desc)
         end
 
         # GET /passkeys/1
@@ -67,7 +67,7 @@ module Sign
 
         # GET /passkeys/new
         def new
-          @passkey = current_user.user_identity_passkeys.new
+          @passkey = current_user.user_passkeys.new
         end
 
         # GET /passkeys/1/edit
@@ -77,7 +77,7 @@ module Sign
 
         # POST /passkeys or /passkeys.json
         def create
-          @passkey = current_user.user_identity_passkeys.new(passkey_params)
+          @passkey = current_user.user_passkeys.new(passkey_params)
           authorize @passkey
 
           respond_to do |format|
@@ -129,7 +129,7 @@ module Sign
 
         # Use callbacks to share common setup or constraints between actions.
         def set_passkey
-          @passkey = current_user.user_identity_passkeys.find(params[:id])
+          @passkey = current_user.user_passkeys.find(params[:id])
         end
 
         # Only allow a list of trusted parameters through.

@@ -46,8 +46,10 @@ class Apex::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get apex_app_preference_url
 
     assert_select "footer" do
-      assert_select "a[href=?]", "https://#{ENV["EDGE_SERVICE_URL"]}", text: I18n.t("apex.app.preferences.footer.home")
-      assert_select "a[href^=?]", apex_app_preference_path, text: I18n.t("apex.app.preferences.footer.preference")
+      assert_select "a[href=?]", "http://app.localhost:3000/", text: I18n.t("apex.app.preferences.footer.home")
+      assert_select "a[href*=?]", apex_app_preference_path, text: I18n.t("apex.app.preferences.footer.preference")
+      assert_select "a[href*=?]", apex_app_configuration_path, text: I18n.t("apex.app.configurations.title")
+      assert_select "a", count: 3
     end
   end
   # rubocop:enable Minitest/MultipleAssertions

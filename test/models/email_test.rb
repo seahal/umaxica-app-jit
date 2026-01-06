@@ -14,7 +14,7 @@
 require "test_helper"
 
 class IdentityEmailTest < ActiveSupport::TestCase
-  [StaffIdentityEmail, UserIdentityEmail].each do |model|
+  [StaffEmail, UserEmail].each do |model|
     test "#{model} valid with address and confirm_policy" do
       record = model.new(
         address: "eg@example.com",
@@ -91,9 +91,9 @@ class IdentityEmailTest < ActiveSupport::TestCase
 
   def assign_owner(record)
     case record
-    when UserIdentityEmail
+    when UserEmail
       record.user = User.find_by!(public_id: "none_id")
-    when StaffIdentityEmail
+    when StaffEmail
       record.staff = Staff.find_by!(public_id: "none_staff_id")
     end
   end

@@ -1,0 +1,33 @@
+<div class="mx-auto max-w-xl">
+  <h1 class="text-3xl font-semibold text-slate-900"><%= t("sign.app.authentication.new.page_title") %></h1>
+  <p class="mt-2 text-sm text-slate-600"><%= t("sign.app.authentication.new.description") %></p>
+
+  <div class="mt-6 space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <%= link_to t("sign.app.authentication.new.links.email"),
+                new_sign_app_in_email_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("sign.app.authentication.new.links.passkey"),
+                new_sign_app_in_passkey_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("sign.app.authentication.new.links.secret"),
+                new_sign_app_in_secret_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= button_to t("sign.app.authentication.new.links.google"),
+                  "/auth/google_oauth2",
+                  method: :post,
+                  data: { turbo: false },
+                  class: "w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= button_to t("sign.app.authentication.new.links.apple"),
+                  "/auth/apple",
+                  method: :post,
+                  data: { turbo: false },
+                  class: "w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("sign.app.authentication.new.links.registration"),
+                new_sign_app_up_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+
+                    <%= link_to t("sign.app.authentication.new.back_link"),
+                sign_app_root_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+  </div>
+</div>

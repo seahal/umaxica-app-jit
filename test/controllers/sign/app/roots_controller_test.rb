@@ -23,4 +23,16 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_layout_contract
   end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "footer contains navigation links" do
+    get sign_app_root_url
+    assert_response :success
+    assert_select "footer" do
+      assert_select "a"
+      assert_select "a[href*=?]", sign_app_preference_path
+      assert_select "a[href*=?]", sign_app_configuration_path
+    end
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 end

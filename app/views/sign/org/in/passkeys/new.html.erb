@@ -1,0 +1,15 @@
+<div class="mx-auto max-w-xl">
+  <h1 class="text-3xl font-semibold text-slate-900"><%= title t("sign.org.authentication.passkey.new.page_title") %></h1>
+  <p class="mt-2 text-sm text-slate-600"><%= t("sign.org.authentication.passkey.new.description") %></p>
+
+  <%= form_with url: sign_org_in_passkey_path, data: { turbo: false }, class: "mt-6 space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm" do |form| %>
+    <%= render "concern/cloudflare_turnstile" %>
+
+    <div class="flex items-center gap-3">
+      <%= form.submit t("sign.org.authentication.passkey.new.submit", default: "パスキーでログイン"),
+                      class: "inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800" %>
+      <%= link_to t("sign.org.authentication.new.back"), new_sign_org_in_path,
+                  class: "inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    </div>
+  <% end %>
+</div>

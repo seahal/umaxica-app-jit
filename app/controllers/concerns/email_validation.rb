@@ -27,7 +27,7 @@ module EmailValidation
     target_seconds = 0.05
     start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-    result = UserIdentityEmail.find_by(address: email)
+    result = UserEmail.find_by(address: email)
 
     elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
     remaining = target_seconds - elapsed

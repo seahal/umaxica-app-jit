@@ -5,6 +5,14 @@ module Apex
     module Regionalization
       extend ActiveSupport::Concern
 
+      included do
+        helper_method :get_language, :get_timezone, :get_region, :get_colortheme
+      end
+
+      def get_colortheme
+        "sy"
+      end
+
       private
 
       def default_url_options
@@ -20,6 +28,22 @@ module Apex
 
         options
       end
+
+      public
+
+      def get_language
+        I18n.locale
+      end
+
+      def get_timezone
+        Time.zone
+      end
+
+      def get_region
+        params[:ri].presence || params[:region] || "us"
+      end
+
+      private
 
       def set_locale
         I18n.locale = session[:language]&.downcase || I18n.default_locale

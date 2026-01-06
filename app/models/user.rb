@@ -23,37 +23,37 @@ class User < PrincipalRecord
   include ::PublicId
   include ::Accountably
 
-  attribute :status_id, default: UserIdentityStatus::NEYO
+  attribute :status_id, default: UserStatus::NEYO
   include Withdrawable
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :status_id, length: { maximum: 255 }
 
-  belongs_to :user_identity_status,
+  belongs_to :user_status,
              foreign_key: :status_id,
              inverse_of: :users
-  has_one :user_identity_social_apple,
+  has_one :user_social_apple,
           dependent: :destroy,
           inverse_of: :user
-  has_one :user_identity_social_google,
+  has_one :user_social_google,
           dependent: :destroy,
           inverse_of: :user
-  has_many :user_identity_emails,
+  has_many :user_emails,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_identity_telephones,
+  has_many :user_telephones,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_identity_secrets,
+  has_many :user_secrets,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_identity_passkeys,
+  has_many :user_passkeys,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_identity_one_time_passwords,
+  has_many :user_one_time_passwords,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_identity_audits,
+  has_many :user_audits,
            foreign_key: :subject_id,
            dependent: :destroy,
            inverse_of: false
@@ -63,7 +63,7 @@ class User < PrincipalRecord
   has_many :user_memberships,
            dependent: :destroy,
            inverse_of: :user
-  has_many :staff_identity_audits,
+  has_many :staff_audits,
            as: :actor,
            dependent: :destroy
   has_many :user_messages,

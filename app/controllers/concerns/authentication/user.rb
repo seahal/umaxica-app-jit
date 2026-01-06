@@ -83,7 +83,7 @@ module Authentication
         )
       end
 
-      record_user_identity_audit(AUDIT_EVENTS[:logged_in], user: user) if record_login_audit
+      record_user_audit(AUDIT_EVENTS[:logged_in], user: user) if record_login_audit
 
       # Return tokens for JSON API clients
       {
@@ -178,7 +178,7 @@ module Authentication
       end
       cookies.delete ACCESS_COOKIE_KEY, **cookie_deletion_options
       cookies.delete REFRESH_COOKIE_KEY, **cookie_deletion_options
-      record_user_identity_audit(AUDIT_EVENTS[:logged_out], user: user) if user
+      record_user_audit(AUDIT_EVENTS[:logged_out], user: user) if user
       reset_session
       @current_user = nil
     end
@@ -195,7 +195,7 @@ module Authentication
       else
         rt = Base64.urlsafe_encode64(request.original_url)
         redirect_to(
-          new_sign_app_authentication_url(rt: rt, host: ENV["SIGN_SERVICE_URL"]),
+          new_sign_app_in_url(rt: rt, host: ENV["SIGN_SERVICE_URL"]),
           allow_other_host: true,
           alert: I18n.t("errors.messages.login_required"),
         )
@@ -204,15 +204,15 @@ module Authentication
 
     # Add private helper methods here
     def audit_user_login_failed(user)
-      record_user_identity_audit(AUDIT_EVENTS[:login_failed], user: user, actor: nil) if user
+      record_user_audit(AUDIT_EVENTS[:login_failed], user: user, actor: nil) if user
     end
 
     private
 
-    def record_user_identity_audit(event_id, user:, actor: user)
+    def record_user_audit(event_id, user:, actor: user)
       return unless user && event_id
 
-      audit = ::UserIdentityAudit.new(
+      audit = ::UserAudit.new(
         actor: actor,
         event_id: event_id,
         ip_address: request_ip_address,

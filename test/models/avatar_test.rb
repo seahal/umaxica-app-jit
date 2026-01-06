@@ -217,7 +217,7 @@ class AvatarTest < ActiveSupport::TestCase
   end
 
   def create_user_and_status
-    UserIdentityStatus.find_or_create_by!(id: "NEYO")
+    UserStatus.find_or_create_by!(id: "NEYO")
     User.find_or_create_by!(public_id: "one_id") do |u|
       u.status_id = "NEYO"
     end

@@ -89,7 +89,7 @@ module Authentication
         )
       end
 
-      record_staff_identity_audit(AUDIT_EVENTS[:logged_in], staff: staff)
+      record_staff_audit(AUDIT_EVENTS[:logged_in], staff: staff)
 
       # Return tokens for JSON API clients
       {
@@ -184,7 +184,7 @@ module Authentication
       end
       cookies.delete ACCESS_COOKIE_KEY, **cookie_deletion_options
       cookies.delete REFRESH_COOKIE_KEY, **cookie_deletion_options
-      record_staff_identity_audit(AUDIT_EVENTS[:logged_out], staff: staff) if staff
+      record_staff_audit(AUDIT_EVENTS[:logged_out], staff: staff) if staff
       reset_session
       @current_staff = nil
     end
@@ -197,7 +197,7 @@ module Authentication
       else
         rt = Base64.urlsafe_encode64(request.original_url)
         redirect_to(
-          new_sign_org_authentication_url(rt: rt, host: ENV["SIGN_STAFF_URL"]),
+          new_sign_org_in_url(rt: rt, host: ENV["SIGN_STAFF_URL"]),
           allow_other_host: true,
           alert: I18n.t("errors.messages.login_required"),
         )
@@ -206,10 +206,10 @@ module Authentication
 
     private
 
-    def record_staff_identity_audit(event_id, staff:, actor: staff)
+    def record_staff_audit(event_id, staff:, actor: staff)
       return unless staff && event_id
 
-      audit = ::StaffIdentityAudit.new(
+      audit = ::StaffAudit.new(
         actor: actor,
         event_id: event_id,
         ip_address: request_ip_address,

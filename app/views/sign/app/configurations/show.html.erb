@@ -1,12 +1,37 @@
-<div>
-  <h1 class="font-bold text-4xl"><%= t('controller.sign.app.setting.show.page_title') %></h1>
-  <p class="mt-2 text-sm text-slate-600"><%= t('sign.app.setting.show.description') %></p>
+<div class="mx-auto max-w-xl">
+  <h1 class="text-3xl font-semibold text-slate-900"><%= t("sign.app.configuration.show.page_title") %></h1>
+  <p class="mt-2 text-sm text-slate-600"><%= t("sign.app.configuration.show.description") %></p>
 
-  <ul>
-    <li><%= link_to t('controller.sign.app.setting.index.totp'), sign_app_configuration_totps_path %></li>
-    <li><%= link_to t('controller.sign.app.setting.index.passkey'), sign_app_configuration_passkeys_path %></li>
-    <li><%= link_to t('controller.sign.app.setting.index.secret'), sign_app_configuration_secrets_path %></li>
-    <li><%= link_to t('controller.sign.app.setting.index.google'), sign_app_configuration_google_path %></li>
-    <li><%= link_to t('controller.sign.app.setting.index.apple'), sign_app_configuration_apple_path %></li>
-  </ul>
+  <div class="mt-6 space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <%= link_to t("controller.sign.app.setting.index.totp"),
+                sign_app_configuration_totps_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("controller.sign.app.setting.index.passkey"),
+                sign_app_configuration_passkeys_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("controller.sign.app.setting.index.secret"),
+                sign_app_configuration_secrets_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("controller.sign.app.setting.index.session"),
+                sign_app_configuration_sessions_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("controller.sign.app.setting.index.email", default: "Emails"),
+                sign_app_configuration_emails_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("controller.sign.app.setting.index.telephone", default: "Telephones"),
+                sign_app_configuration_telephones_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("controller.sign.app.setting.index.google"),
+                sign_app_configuration_google_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("controller.sign.app.setting.index.apple"),
+                sign_app_configuration_apple_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("sign.app.configuration.show.withdrawal"),
+                sign_app_configuration_withdrawal_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to t("sign.app.configuration.show.back"),
+                sign_app_root_path,
+                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+  </div>
 </div>

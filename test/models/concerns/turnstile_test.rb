@@ -87,6 +87,18 @@ class TurnstileTest < ActiveSupport::TestCase
     ENV.delete("CLOUDFLARE_TURNSTILE_SECRET_KEY")
   end
 
+  test "verify_turnstile returns parsed response on success" do
+    response = Struct.new(:body).new('{"success":true}')
+
+    Rails.application.credentials.stub(:dig, "secret") do
+      Net::HTTP.stub(:post_form, response) do
+        result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
+
+        assert_equal({ "success" => true }, result)
+      end
+    end
+  end
+
   test "turnstile_error_message uses default when none provided" do
     model = DummyTurnstile.new
     assert_equal I18n.t("turnstile_error"), model.turnstile_error_message

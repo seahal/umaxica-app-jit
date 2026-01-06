@@ -13,34 +13,33 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
         end
-        # Sign up pages
-        resource :registration, only: :new
-        namespace :registration do
+        # Sign up
+        resource :up, only: :new
+        namespace :up do
           resources :emails, only: %i(new create edit update)
           resources :passkeys, only: %i(new create edit update)
         end
-        # preferences
-        resource :preference, only: [:show]
-        namespace :preference do
-          resource :cookie, only: [:edit, :update]
-          resource :region, only: [:edit, :update]
-          resource :theme, only: [:edit, :update]
-        end
-        # Sign In/Out pages
-        resource :authentication, only: %i(new edit destroy)
-        namespace :authentication do
+        # Preferences
+        resource :preference, only: :show
+        # Sign in/out
+        resource :in, only: %i(new)
+        namespace :in do
           resource :email, only: %i(new create edit update)
           resource :passkey, only: %i(new create edit update)
-          resource :recovery, only: %i(new create)
+          resource :secret, only: %i(new create)
         end
-        # Social SignUp or LogIn
+        # Social sign-up / log-in
         namespace :social do
           match "apple/callback", to: "sessions#create", defaults: { provider: "apple" }, via: %i(get post)
           get "google/callback", to: "sessions#create", defaults: { provider: "google_oauth2" }
         end
-        # Settings with logined user
-        resource :configuration, only: %i(show)
+        # Settings with logged-in user
+        resource :configuration, only: :show
         namespace :configuration do
+          # TODO: Implement TOTP settings management
+          resources :totps, only: %i(index new create edit)
+          # TODO: Implement telephone settings management
+          # resources :passkeys
           post "passkeys/challenge", to: "passkeys#challenge", as: :sign_app_configuration_passkeys_challenge
           post "passkeys/verify", to: "passkeys#verify", as: :sign_app_configuration_passkeys_verify
           resources :passkeys, only: %i(index show new create edit update destroy) do
@@ -48,14 +47,12 @@ Rails.application.routes.draw do
               post :challenge
               post :verify
             end
+            resources :secrets, only: [:index], controller: "configuration/secrets"
           end
-          # TODO: Implement TOTP settings management
-          resources :totps, only: %i(index new create edit)
-
-          # TODO: Implement telephone settings management
-          # resources :passkeys
           # TODO: Implement email settings management
-          # resources :emails
+          resources :emails
+          # TODO: Implement email settings management
+          resources :telephones
           # sign in with ***
           resource :apple, only: [:show]
           resource :google, only: [:show]
@@ -63,15 +60,15 @@ Rails.application.routes.draw do
           resources :secrets
           # TODO: Implement connected apps management
           resources :sessions
+          # Withdrawal
+          resource :withdrawal
         end
         # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
         namespace :token do
           resource :refresh, only: :create
         end
         # Sign out
-        resource :exit, only: [:edit, :destroy]
-        # Withdrawal
-        resource :withdrawal, except: :show
+        resource :out, only: [:edit, :destroy]
       end
     end
 
@@ -86,21 +83,21 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
         end
+        # Sign up
+        resource :up, only: :new
         # Login
-        resource :authentication, only: [:new, :destroy] do
+        resource :in, only: [:new]
+        namespace :in do
           resource :passkey, only: %i(new create edit update)
-          resource :recovery, only: %i(new create)
+          resource :secret, only: %i(new create)
         end
-        # preferences
-        resource :preference, only: [:show]
-        namespace :preference do
-          resource :cookie, only: [:edit, :update]
-          resource :region, only: [:edit, :update]
-          resource :theme, only: [:edit, :update]
-        end
-        resource :configuration, only: [:show]
+        # Preferences
+        resource :preference, only: :show
+        # Settings
+        resource :configuration, only: :show
         namespace :configuration do
-          # TODO: Implement TOTP settings (index, new, edit, update actions only)
+          # TODO: Implement TOTP settings management
+          resources :totps, only: %i(index new create edit)
           # resources :totp, only: [ :index, :new, :create, :edit, :update ]
           resources :passkeys, only: %i(index edit update new)
           # TODO: Implement email settings index
@@ -108,15 +105,17 @@ Rails.application.routes.draw do
           resources :secrets
           # TODO: Implement connected apps management
           resources :sessions
+          # Withdrawal
+          resource :withdrawal, only: %i(show)
         end
         # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
         namespace :token do
           resource :refresh, only: :create
         end
         # Sign out
-        resource :exit, only: [:edit, :destroy]
-        # TODO: Implement owner management
-        # resources :owner
+        resource :out, only: [:edit, :destroy]
+        # TODO: move to configuration namespace
+        resource :out, only: [:edit, :destroy]
       end
     end
   end

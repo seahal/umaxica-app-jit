@@ -28,6 +28,7 @@ ja:
         configuration:
           show:
             page_title: 設定
+            withdrawal: 退会
           index:
             totp: TOTP
             passkey: パスキー
@@ -85,51 +86,56 @@ ja:
             title: "ログアウトしますか？"
           destroy:
             success: "ログアウトします"
-        withdrawal:
-          show:
-            title: "退会ステータス"
-            withdrawn: "あなたのアカウントは退会済みです"
-            withdrawn_date: "退会日時: %{date}"
-            recovery: "アカウント復旧"
-            recovery_notice: "復旧期間内であればアカウントを復旧できます。"
-            recover_button: "アカウントを復旧する"
-            recovery_expired: "復旧期間が終了しています。"
-            active: "あなたのアカウントはアクティブです"
-            withdrawal_actions: "退会オプション"
-            temporary_withdrawal: "一時退会"
-            temporary_notice: "アカウントが一時的に無効化され、復旧期間内は復帰できます。"
-            withdraw_button: "アカウントを退会する"
-            confirm_withdrawal: "本当に退会してよろしいですか？"
-            permanent_deletion: "永久削除"
-            permanent_notice: "アカウントと関連するすべてのデータが永久に削除されます。この操作は取り消せません。"
-            delete_button: "アカウントを永久削除する"
-            confirm_deletion: "この操作は取り消せません。本当に削除してよろしいですか？"
-          new:
-            title: "退会"
-            description: "アカウントを退会しようとしています。この操作でアカウントが一時的に無効化され、復旧期間中は復帰できます。"
-            recovery_code_label: "リカバリーコード確認"
-            submit: "アカウントを退会する"
-          edit:
-            title: "アカウント復旧"
-            description: "あなたのアカウントは現在退会状態です。下のボタンをクリックしてアカウントを復旧してください。"
-            recovery_code_label: "リカバリーコード確認"
-            submit: "アカウントを復旧する"
-          create:
-            already_withdrawn: "既に退会済みです。"
-            success: "退会が完了しました。ご利用ありがとうございました。"
-            failed: "退会処理に失敗しました。後でもう一度お試しください。"
-          update:
-            recovered: "アカウントを復旧しました。ログインできます。"
-            cannot_recover: "復旧期間が終了しています。サポートにお問い合わせください。"
-            failed: "復旧処理に失敗しました。後でもう一度お試しください。"
-          destroy:
-            success: "アカウントを完全に削除しました。"
-            deleted: "アカウントを完全に削除しました。"
-            not_withdrawn: "退会済みでないため、削除できません。"
-            failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
-          authenticate_error: "認証が必要です。ログインしてください。"
+        configuration:
+          withdrawal:
+            show:
+              title: "退会ステータス"
+              withdrawn: "あなたのアカウントは退会済みです"
+              withdrawn_date: "退会日時: %{date}"
+              recovery: "アカウント復旧"
+              recovery_notice: "復旧期間内であればアカウントを復旧できます。"
+              recover_button: "アカウントを復旧する"
+              recovery_expired: "復旧期間が終了しています。"
+              active: "あなたのアカウントはアクティブです"
+              withdrawal_actions: "退会オプション"
+              temporary_withdrawal: "一時退会"
+              temporary_notice: "アカウントが一時的に無効化され、復旧期間内は復帰できます。"
+              withdraw_button: "アカウントを退会する"
+              confirm_withdrawal: "本当に退会してよろしいですか？"
+              permanent_deletion: "永久削除"
+              permanent_notice: "アカウントと関連するすべてのデータが永久に削除されます。この操作は取り消せません。"
+              delete_button: "アカウントを永久削除する"
+              confirm_deletion: "この操作は取り消せません。本当に削除してよろしいですか？"
+            new:
+              title: "退会"
+              description: "アカウントを退会しようとしています。この操作でアカウントが一時的に無効化され、復旧期間中は復帰できます。"
+              recovery_code_label: "リカバリーコード確認"
+              submit: "アカウントを退会する"
+            edit:
+              title: "アカウント復旧"
+              description: "あなたのアカウントは現在退会状態です。下のボタンをクリックしてアカウントを復旧してください。"
+              recovery_code_label: "リカバリーコード確認"
+              submit: "アカウントを復旧する"
+            create:
+              already_withdrawn: "既に退会済みです。"
+              success: "退会が完了しました。ご利用ありがとうございました。"
+              failed: "退会処理に失敗しました。後でもう一度お試しください。"
+            update:
+              recovered: "アカウントを復旧しました。ログインできます。"
+              cannot_recover: "復旧期間が終了しています。サポートにお問い合わせください。"
+              failed: "復旧処理に失敗しました。後でもう一度お試しください。"
+            destroy:
+              success: "アカウントを完全に削除しました。"
+              deleted: "アカウントを完全に削除しました。"
+              not_withdrawn: "退会済みでないため、削除できません。"
+              failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
+            authenticate_error: "認証が必要です。ログインしてください。"
         authentication:
+          edit:
+            title: "認証情報の編集"
           email:
+            new:
+              page_title: "メールアドレスでログイン"
             edit:
               page_title: "メールアドレスの確認"
               return_page: "戻る"
@@ -202,25 +208,6 @@ ja:
               light: 共有スペースや明るいオフィスでの利用におすすめです。
               dark: 夜間の作業や目の疲れを軽減したいときに最適です。
               system: OS のテーマ変更に連動して切り替わります。
-  sign:
-    app:
-      authentication:
-        email:
-          update:
-            invalid_code: "確認コードが正しくありません"
-      preferences:
-        footer:
-          preference: "設定"
-      social:
-        sessions:
-          create:
-            success: "%{provider} でアカウントを作成してサインインしました。"
-            failure: "認証に失敗しました。再度お試しください。"
-          submit: テーマ設定を保存
-    org:
-      preferences:
-        footer:
-          preference: "設定"
   shared:
     links:
       apex_preference: "Apexの設定"
@@ -389,37 +376,47 @@ ja:
           log_in: "ログイン"
           configuration: "設定"
           logout: "ログアウト"
+      preferences:
+        footer:
+          home: "ホーム"
+          preference: "プリファレンス"
+          configuration: "設定"
       root:
         title: "Sign へようこそ"
         description: "はじめるためのアクションを選択してください"
-        registration: "登録"
+        registration: "新規登録"
         authentication: "ログイン"
       authentication:
+        edit:
+          title: "認証情報の編集"
         new:
           page_title: サインイン方法を選ぶ
           description: 今回のサインインで利用する認証方法を選択してください。
           back: 他の方法を選びますか？
+          back_link: もどる
           links:
             email: メールアドレス
             telephone: 電話番号
             passkey: パスキー
             recovery: リカバリーコード
+            secret: シークレット
             google: Googleでサインイン
             apple: Appleでサインイン
             registration: アカウント登録はこちら
-      social:
-        sessions:
-          create:
-            success: "%{provider} でアカウントを作成してサインインしました。"
-        edit:
-          title: ログアウトしますか？
+        secret:
+          new:
+            page_title: シークレットでサインイン
+            pii_label: 本人確認情報
+            secret_label: シークレット
+            confirm_label: シークレットを保存しました
         passkey:
           new:
-            page_title: パスキーを登録する
-            description: 信頼できる端末を使ってパスキーを追加し、パスワードなしでサインインします。
+            page_title: パスキーでログイン
+            description: パスキーを使って安全にログインします。
+            submit: パスキーでログイン
         email:
           new:
-            page_title: メールでページ登録
+            page_title: メールでログイン
             you_have_already_logged_in: あなたはログインしています
             registration: 登録しますか？
           create:
@@ -436,9 +433,16 @@ ja:
           new:
             page_title: リカバリーコードを利用する
             description: 保存しているリカバリーコードを入力してアカウントへアクセスします。
+      social:
+        sessions:
+          create:
+            success: "%{provider} でアカウントを作成してサインインしました。"
       configuration:
         show:
+          page_title: 設定
           description: アカウントの高度なセキュリティ設定を管理します。
+          withdrawal: 退会
+          back: もどる
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
@@ -475,6 +479,7 @@ ja:
               apple: Appleで続行
             disclaimer: 許可なく投稿や共有を行うことはありません。
           links:
+            sign_in_prompt: すでにアカウントをお持ちですか？
             sign_in_html: すでにアカウントをお持ちですか？%{link}
             sign_in_text: ログインする
         email:
@@ -504,6 +509,26 @@ ja:
           update:
             success: "電話番号の確認が完了しました。"
     org:
+      preferences:
+        footer:
+          preference: "プリファレンス"
+          configuration: "設定"
+          home: "ホーム"
+      configuration:
+        show:
+          page_title: 設定
+          description: アカウントの高度なセキュリティ設定を管理します。
+          withdrawal: 退会
+          back: もどる
+        withdrawal:
+          show:
+            title: 退会
+            description: 退会状況を確認します。
+      root:
+        title: "サイン へようこそ"
+        description: "はじめるためのアクションを選択してください"
+        registration: "新規登録"
+        authentication: "ログイン"
       layout:
         nav:
           sign_up: "新規登録"
@@ -526,7 +551,19 @@ ja:
             google: Google
             passkey: パスキー
             recovery: リカバリーコード
+            secret: シークレット
             registration: アカウント登録はこちら
+        passkey:
+          new:
+            page_title: パスキーでログイン
+            description: パスキーを使って安全にログインします。
+            submit: パスキーでログイン
+        secret:
+          new:
+            page_title: シークレットでサインイン
+            pii_label: 本人確認情報
+            secret_label: シークレット
+            confirm_label: シークレットを保存しました
         email:
           new:
             page_title: email で登録します
@@ -785,6 +822,7 @@ ja:
         region_settings: 地域と言語の設定
         locale_settings: 言語とタイムゾーンの設定
         theme_settings: テーマ設定
+        reset_settings: 設定のリセット
         themes:
           updated: テーマを%{theme}に更新しました
           invalid: 無効なテーマが選択されました
