@@ -116,14 +116,23 @@ class SeedIdentityReferenceData < ActiveRecord::Migration[8.2]
       columns = existing_columns
       values = existing_columns.map { |col| "'#{record[col].to_s.gsub("'", "''")}'" }
 
-      if has_timestamps
-        columns += [:created_at, :updated_at]
-        values += ['CURRENT_TIMESTAMP', 'CURRENT_TIMESTAMP']
-      end
-
       # Determine conflict column - use id if it exists in both record and table, otherwise skip
       conflict_col = (record.key?(:id) && column_exists?(table_name, :id)) ? "id" : nil
       next unless conflict_col
+
+      if has_timestamps
+        columns_with_timestamps = columns + [:created_at, :updated_at]
+        values_with_timestamps = values + ["CURRENT_TIMESTAMP", "CURRENT_TIMESTAMP"]
+      else
+        columns_with_timestamps = columns
+        values_with_timestamps = values
+      end
+
+      execute <<~SQL.squish
+        INSERT INTO #{table_name} (#{columns_with_timestamps.join(", ")})
+        VALUES (#{values_with_timestamps.join(", ")})
+        ON CONFLICT (#{conflict_col}) DO NOTHING
+      SQL
     end
   end
 end

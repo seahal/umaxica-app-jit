@@ -22,10 +22,9 @@ class AwsSmsServiceTest < ActiveSupport::TestCase
     Aws::SNS::Client.stub :new, Object.new do
       service = AwsSmsService.new
 
-      error =
-        assert_raises(ArgumentError) do
-          service.send_message(to: "", message: "Test message")
-        end
+      assert_raises(ArgumentError) do
+        service.send_message(to: "", message: "Test message")
+      end
 
       error =
         assert_raises(ArgumentError) do

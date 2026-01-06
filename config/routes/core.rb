@@ -13,6 +13,10 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
         end
+        # preferences
+        resource :preference, only: [:show]
+        # configuration
+        resource :configuration, only: [:show]
       end
     end
 
@@ -27,6 +31,10 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
         end
+        # preferences
+        resource :preference, only: [:show]
+        # configuration
+        resource :configuration, only: [:show]
       end
     end
 
@@ -42,7 +50,11 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
         end
-
+        # preferences
+        resource :preference, only: [:show]
+        # configuration
+        resource :configuration, only: [:show]
+        # for docs
         namespace :docs do
           namespace :com do
             resources :posts do
@@ -60,6 +72,7 @@ Rails.application.routes.draw do
             end
           end
         end
+        # for news
         namespace :news do
           namespace :com do
             resources :posts do
@@ -77,6 +90,7 @@ Rails.application.routes.draw do
             end
           end
         end
+        # for help contacts
         namespace :help do
           namespace :com do
             resources :contacts

@@ -130,7 +130,11 @@ ja:
           authenticate_error: "認証が必要です。ログインしてください。"
         authentication:
           email:
+            edit:
+              page_title: "メールアドレスの確認"
+              return_page: "戻る"
             update:
+              invalid_code: "Invalid verification code"
               success: "ログインしました。"
           destroy:
             jump_obj: sign in with email
@@ -200,12 +204,26 @@ ja:
               system: OS のテーマ変更に連動して切り替わります。
   sign:
     app:
+      authentication:
+        email:
+          update:
+            invalid_code: "確認コードが正しくありません"
+      preferences:
+        footer:
+          preference: "設定"
       social:
         sessions:
           create:
             success: "%{provider} でアカウントを作成してサインインしました。"
             failure: "認証に失敗しました。再度お試しください。"
           submit: テーマ設定を保存
+    org:
+      preferences:
+        footer:
+          preference: "設定"
+  shared:
+    links:
+      apex_preference: "Apexの設定"
   root:
     app:
       preference:
@@ -466,6 +484,7 @@ ja:
             link_to_sign_in: "ログインしますか？"
           create:
             verification_code_sent: 確認コードをメールアドレスに送信しました。
+            turnstile_validation_failed: "セキュリティ検証に失敗しました。もう一度お試しください。"
           edit:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
@@ -478,6 +497,12 @@ ja:
             page_title: "電話番号で登録"
             link_to_other_methods: "他の方法で登録しますか？"
             link_to_sign_in: "ログインしますか？"
+          create:
+            verification_code_sent: "確認コードをSMSで送信しました。"
+          edit:
+            session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
+          update:
+            success: "電話番号の確認が完了しました。"
     org:
       layout:
         nav:
@@ -960,6 +985,10 @@ ja:
         token_invalid: "リンクの有効期限が切れています。新しくリクエストしてください。"
         turnstile_error: "Turnstileの検証に失敗しました。ページを更新して再試行してください。"
         update_failure: "設定を保存できませんでした。もう一度お試しください。"
+    com:
+      preferences:
+        footer:
+          preference: "設定"
     app:
       preferences:
         title: "メール設定"
@@ -968,6 +997,8 @@ ja:
         email_settings_description: "メールアドレスを入力すると安全なリンクをお送りします。"
         token_guidance: "届いたメールのリンクで2時間以内に設定を変更してください。"
         back_to_settings: "設定に戻る"
+        footer:
+          preference: "設定"
       preference:
         emails:
           new:
@@ -997,6 +1028,8 @@ ja:
         email_settings_description: "スタッフ用のワンタイムトークンリンクを送信します。"
         token_guidance: "届いたリンクで有効期限内に設定を変更してください。"
         back_to_settings: "設定に戻る"
+        footer:
+          preference: "設定"
       preference:
         emails:
           new:
@@ -1055,6 +1088,9 @@ ja:
           confirm_policy_error: "続行するには、プライバシーポリシーに同意する必要があります。"
         update:
           success: "お問い合わせを受け付けました"
+      preferences:
+        footer:
+          preference: "設定"
       contact:
         emails:
           new:
@@ -1130,11 +1166,18 @@ ja:
           confirm_policy_error: "続行するには、プライバシーポリシーに同意する必要があります。"
         update:
           success: "お問い合わせを受け付けました"
+      preferences:
+        footer:
+          preference: "設定"
     contact:
       errors:
         id_required: "お問い合わせIDは必須です"
         not_found: "お問い合わせが見つかりません"
         invalid_status: "無効なお問い合わせステータス: SET_UPが予想されていますが、%{current_status}です"
+    app:
+      preferences:
+        footer:
+          preference: "設定"
   description: "退会"
   org_document_tags:
     technology: "技術"
@@ -1256,3 +1299,29 @@ ja:
     announcement: "お知らせ"
     release_note: "リリースノート"
     faq: "よくある質問"
+  docs:
+    com:
+      preferences:
+        footer:
+          preference: "設定"
+    app:
+      preferences:
+        footer:
+          preference: "設定"
+    org:
+      preferences:
+        footer:
+          preference: "設定"
+  news:
+    com:
+      preferences:
+        footer:
+          preference: "設定"
+    app:
+      preferences:
+        footer:
+          preference: "設定"
+    org:
+      preferences:
+        footer:
+          preference: "設定"

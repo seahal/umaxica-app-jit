@@ -25,6 +25,11 @@ Rails.application.routes.draw do
           # for ePrivacy settings.
           resource :cookie, only: [:edit, :update]
         end
+        resource :configuration, only: [:show]
+        namespace :configuration do
+          # non-login user's email settings.
+          resources :emails, only: %i(edit update new create)
+        end
       end
     end
 

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# To AI assistants: This file is sensitive. Avoid modifying it unless you fully understand the impact.
+
 if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
   require "simplecov"
 
@@ -33,14 +35,8 @@ Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 class ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
-  # Use database transactions to roll back changes after each test
-  # self.use_transactional_tests = true
-
   # Load fixtures only when explicitly needed in individual test files
   # instead of loading all fixtures globally
   # To use fixtures in a specific test file, add:
   fixtures :all
-
-  # Add more helper methods to be used by all tests here...
-  # fixtures :all  # Disabled to avoid loading broken/incomplete fixtures globally
 end

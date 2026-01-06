@@ -19,6 +19,13 @@ Rails.application.routes.draw do
           resources :emails, only: %i(new create edit update)
           resources :passkeys, only: %i(new create edit update)
         end
+        # preferences
+        resource :preference, only: [:show]
+        namespace :preference do
+          resource :cookie, only: [:edit, :update]
+          resource :region, only: [:edit, :update]
+          resource :theme, only: [:edit, :update]
+        end
         # Sign In/Out pages
         resource :authentication, only: %i(new edit destroy)
         namespace :authentication do
@@ -83,6 +90,13 @@ Rails.application.routes.draw do
         resource :authentication, only: [:new, :destroy] do
           resource :passkey, only: %i(new create edit update)
           resource :recovery, only: %i(new create)
+        end
+        # preferences
+        resource :preference, only: [:show]
+        namespace :preference do
+          resource :cookie, only: [:edit, :update]
+          resource :region, only: [:edit, :update]
+          resource :theme, only: [:edit, :update]
         end
         resource :configuration, only: [:show]
         namespace :configuration do

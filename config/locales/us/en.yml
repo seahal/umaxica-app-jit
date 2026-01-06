@@ -1149,3 +1149,6 @@ en:
           intro: "Use the link below to manage staff email preferences."
           cta: "Update staff preferences"
           expiration_notice: "This link is single-use and expires in two hours."
+  shared:
+    links:
+      apex_preference: "Apex preferences"

@@ -980,6 +980,9 @@ en:
           confirm_policy_error: "You must agree to the privacy policy to continue."
         update:
           success: "Your inquiry has been received."
+      preferences:
+        footer:
+          preference: "Preferences"
       contact:
         emails:
           new:
@@ -1054,11 +1057,18 @@ en:
           confirm_policy_error: "You must agree to the privacy policy to continue."
         update:
           success: "Your inquiry has been received."
+      preferences:
+        footer:
+          preference: "Preferences"
     contact:
       errors:
         id_required: "Contact ID is required"
         not_found: "Contact not found"
         invalid_status: "Invalid contact status: expected SET_UP, got %{current_status}"
+    app:
+      preferences:
+        footer:
+          preference: "Preferences"
   apex:
     app:
       preference:
@@ -1238,3 +1248,54 @@ en:
     announcement: "Announcement"
     release_note: "Release Note"
     faq: "FAQ"
+  core:
+    com:
+      preferences:
+        footer:
+          preference: "Preferences"
+    app:
+      preferences:
+        footer:
+          preference: "Preferences"
+    org:
+      preferences:
+        footer:
+          preference: "Preferences"
+  shared:
+    links:
+      apex_preference: "Apex preferences"
+  sign:
+    app:
+      preferences:
+        footer:
+          preference: "Preferences"
+    org:
+      preferences:
+        footer:
+          preference: "Preferences"
+  docs:
+    com:
+      preferences:
+        footer:
+          preference: "Preferences"
+    app:
+      preferences:
+        footer:
+          preference: "Preferences"
+    org:
+      preferences:
+        footer:
+          preference: "Preferences"
+  news:
+    com:
+      preferences:
+        footer:
+          preference: "Preferences"
+    app:
+      preferences:
+        footer:
+          preference: "Preferences"
+    org:
+      preferences:
+        footer:
+          preference: "Preferences"

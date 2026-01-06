@@ -59,6 +59,7 @@
         <% if edge_host.present? %>
           <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>/">Home</a>
         <% end %>
+        <%= link_to t("core.app.preferences.footer.preference"), core_app_preference_path, class: "transition hover:text-[hsl(var(--primary))]" %>
         <% if defined?(edit_www_app_preference_cookie_path) %>
           <%= link_to "Cookie", edit_www_app_preference_cookie_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
         <% end %>

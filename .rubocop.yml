@@ -481,6 +481,9 @@ Lint/ShadowingOuterLocalVariable:
 Lint/SuppressedException:
   Enabled: true
 
+Lint/UselessAssignment:
+  Enabled: true
+
 Lint/UnusedBlockArgument:
   Enabled: true
   AllowUnusedKeywordArguments: false
@@ -525,6 +528,9 @@ Lint/TripleQuotes:
   Enabled: true
 
 Lint/UnexpectedBlockArity:
+  Enabled: true
+
+Lint/UnreachableCode:
   Enabled: true
 
 Lint/UnmodifiedReduceAccumulator:

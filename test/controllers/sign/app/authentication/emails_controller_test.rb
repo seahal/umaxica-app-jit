@@ -305,7 +305,7 @@ class Sign::App::Authentication::EmailsControllerTest < ActionDispatch::Integrat
 
     # Should render edit page with error
     assert_response :unprocessable_content
-    assert_includes @response.body, "Invalid verification code"
+    assert_includes @response.body, I18n.t("sign.app.authentication.email.update.invalid_code", locale: :ja)
   end
 
   # rubocop:disable Minitest/MultipleAssertions

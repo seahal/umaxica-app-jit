@@ -42,12 +42,13 @@
     <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
       <nav class="flex flex-wrap items-center gap-4">
         <% if edge_host.present? %>
-          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>:4444/">home</a>
+          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>:4444/">Umaxica</a>
         <% end %>
-        <span>Security</span>
+        <%= link_to t("docs.org.preferences.footer.preference"), docs_org_preference_path, class: "transition hover:text-[hsl(var(--primary))]" %>
         <span>Support</span>
         <span>Terms</span>
         <span>Privacy</span>
+        <span>Security</span>
         <span>Accessibility</span>
       </nav>
       <div class="mt-4">
