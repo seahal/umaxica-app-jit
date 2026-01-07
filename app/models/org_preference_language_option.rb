@@ -2,12 +2,14 @@
 #
 # Table name: org_preference_language_options
 #
-#  id :uuid             not null, primary key
+#  id :string           not null, primary key
 #
 
 # frozen_string_literal: true
 
 class OrgPreferenceLanguageOption < PreferenceRecord
+  self.primary_key = :id
+
   has_many :org_preference_languages,
            class_name: "OrgPreferenceLanguage",
            foreign_key: :option_id,

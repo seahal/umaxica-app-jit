@@ -6,7 +6,7 @@
 #  preference_id :uuid             not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  option_id     :uuid
+#  option_id     :string
 #
 # Indexes
 #
@@ -36,7 +36,7 @@ class ComPreferenceTimezoneTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = ComPreferenceTimezoneOption.create!
+    option = ComPreferenceTimezoneOption.create!(id: "TEST_Com_Timezone")
     timezone = ComPreferenceTimezone.create!(preference: @preference, option: option)
     assert_equal option, timezone.option
   end

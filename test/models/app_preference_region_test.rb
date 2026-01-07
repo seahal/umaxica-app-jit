@@ -6,7 +6,7 @@
 #  preference_id :uuid             not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  option_id     :uuid
+#  option_id     :string
 #
 # Indexes
 #
@@ -36,7 +36,7 @@ class AppPreferenceRegionTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = AppPreferenceRegionOption.create!
+    option = AppPreferenceRegionOption.create!(id: "TEST_App_Region")
     region = AppPreferenceRegion.create!(preference: @preference, option: option)
     assert_equal option, region.option
   end

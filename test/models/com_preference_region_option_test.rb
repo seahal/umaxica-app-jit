@@ -2,7 +2,7 @@
 #
 # Table name: com_preference_region_options
 #
-#  id :uuid             not null, primary key
+#  id :string           not null, primary key
 #
 
 # frozen_string_literal: true
@@ -11,19 +11,19 @@ require "test_helper"
 
 class ComPreferenceRegionOptionTest < ActiveSupport::TestCase
   test "can be created" do
-    option = ComPreferenceRegionOption.create!
+    option = ComPreferenceRegionOption.create!(id: "TEST_Com_Region")
     assert_not_nil option.id
   end
 
   test "has many com_preference_regions" do
-    option = ComPreferenceRegionOption.create!
+    option = ComPreferenceRegionOption.create!(id: "TEST_Com_Region")
     preference = ComPreference.create!
     region = ComPreferenceRegion.create!(preference: preference, option: option)
     assert_includes option.com_preference_regions, region
   end
 
   test "restricts deletion when associated records exist" do
-    option = ComPreferenceRegionOption.create!
+    option = ComPreferenceRegionOption.create!(id: "TEST_Com_Region")
     preference = ComPreference.create!
     ComPreferenceRegion.create!(preference: preference, option: option)
 

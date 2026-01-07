@@ -2,7 +2,7 @@
 
 class CreateAppPreferenceLanguageOptions < ActiveRecord::Migration[8.2]
   def change
-    create_table :app_preference_language_options, id: :uuid do |t|
+    create_table :app_preference_language_options, id: :string do |t|
     end
   end
 end

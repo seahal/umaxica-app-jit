@@ -14,12 +14,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_085320) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "app_preference_colortheme_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "app_preference_colortheme_options", id: :string, force: :cascade do |t|
   end
 
   create_table "app_preference_colorthemes", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_app_preference_colorthemes_on_option_id"
@@ -36,38 +36,38 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_085320) do
     t.index ["preference_id"], name: "index_app_preference_cookies_on_preference_id"
   end
 
-  create_table "app_preference_language_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "app_preference_language_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "app_preference_languages", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_app_preference_languages_on_option_id"
     t.index ["preference_id"], name: "index_app_preference_languages_on_preference_id"
   end
 
-  create_table "app_preference_region_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "app_preference_region_options", id: :string, force: :cascade do |t|
   end
 
   create_table "app_preference_regions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_app_preference_regions_on_option_id"
     t.index ["preference_id"], name: "index_app_preference_regions_on_preference_id"
   end
 
-  create_table "app_preference_timezone_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "app_preference_timezone_options", id: :string, force: :cascade do |t|
   end
 
   create_table "app_preference_timezones", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_app_preference_timezones_on_option_id"
@@ -82,12 +82,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_085320) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "com_preference_colortheme_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "com_preference_colortheme_options", id: :string, force: :cascade do |t|
   end
 
   create_table "com_preference_colorthemes", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_com_preference_colorthemes_on_option_id"
@@ -104,36 +104,36 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_085320) do
     t.index ["preference_id"], name: "index_com_preference_cookies_on_preference_id"
   end
 
-  create_table "com_preference_language_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "com_preference_language_options", id: :string, force: :cascade do |t|
   end
 
   create_table "com_preference_languages", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_com_preference_languages_on_option_id"
     t.index ["preference_id"], name: "index_com_preference_languages_on_preference_id"
   end
 
-  create_table "com_preference_region_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "com_preference_region_options", id: :string, force: :cascade do |t|
   end
 
   create_table "com_preference_regions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_com_preference_regions_on_option_id"
     t.index ["preference_id"], name: "index_com_preference_regions_on_preference_id"
   end
 
-  create_table "com_preference_timezone_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "com_preference_timezone_options", id: :string, force: :cascade do |t|
   end
 
   create_table "com_preference_timezones", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_com_preference_timezones_on_option_id"
@@ -148,12 +148,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_085320) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "org_preference_colortheme_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "org_preference_colortheme_options", id: :string, force: :cascade do |t|
   end
 
   create_table "org_preference_colorthemes", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_org_preference_colorthemes_on_option_id"
@@ -170,36 +170,36 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_085320) do
     t.index ["preference_id"], name: "index_org_preference_cookies_on_preference_id"
   end
 
-  create_table "org_preference_language_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "org_preference_language_options", id: :string, force: :cascade do |t|
   end
 
   create_table "org_preference_languages", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_org_preference_languages_on_option_id"
     t.index ["preference_id"], name: "index_org_preference_languages_on_preference_id"
   end
 
-  create_table "org_preference_region_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "org_preference_region_options", id: :string, force: :cascade do |t|
   end
 
   create_table "org_preference_regions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_org_preference_regions_on_option_id"
     t.index ["preference_id"], name: "index_org_preference_regions_on_preference_id"
   end
 
-  create_table "org_preference_timezone_options", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+  create_table "org_preference_timezone_options", id: :string, force: :cascade do |t|
   end
 
   create_table "org_preference_timezones", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "option_id"
+    t.string "option_id"
     t.uuid "preference_id", null: false
     t.datetime "updated_at", null: false
     t.index ["option_id"], name: "index_org_preference_timezones_on_option_id"

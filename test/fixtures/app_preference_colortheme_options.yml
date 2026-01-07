@@ -1,0 +1,8 @@
+light:
+  id: "light"
+
+dark:
+  id: "dark"
+
+system:
+  id: "system"

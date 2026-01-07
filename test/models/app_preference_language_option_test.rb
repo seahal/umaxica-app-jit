@@ -2,7 +2,7 @@
 #
 # Table name: app_preference_language_options
 #
-#  id         :uuid             not null, primary key
+#  id         :string           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
@@ -13,19 +13,19 @@ require "test_helper"
 
 class AppPreferenceLanguageOptionTest < ActiveSupport::TestCase
   test "can be created" do
-    option = AppPreferenceLanguageOption.create!
+    option = AppPreferenceLanguageOption.create!(id: "TEST_App_Language")
     assert_not_nil option.id
   end
 
   test "has many app_preference_languages" do
-    option = AppPreferenceLanguageOption.create!
+    option = AppPreferenceLanguageOption.create!(id: "TEST_App_Language")
     preference = AppPreference.create!
     language = AppPreferenceLanguage.create!(preference: preference, option: option)
     assert_includes option.app_preference_languages, language
   end
 
   test "restricts deletion when associated records exist" do
-    option = AppPreferenceLanguageOption.create!
+    option = AppPreferenceLanguageOption.create!(id: "TEST_App_Language")
     preference = AppPreference.create!
     AppPreferenceLanguage.create!(preference: preference, option: option)
 
