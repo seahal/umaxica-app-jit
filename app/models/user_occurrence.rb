@@ -21,7 +21,7 @@
 #  index_user_occurrences_on_status_id   (status_id)
 #
 
-class UserOccurrence < UniversalRecord
+class UserOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 

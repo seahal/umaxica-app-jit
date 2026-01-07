@@ -98,13 +98,13 @@ development:
   billing:
     !!merge <<: *default
     database: development_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_OCCURRENCE_PUB"] || ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
     migrations_paths: db/billing_migrate
   billing_replica:
     !!merge <<: *default
     replica: true
     database: development_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_OCCURRENCE_SUB"] || ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
     migrations_paths: db/billing_migrate
   message:
     !!merge <<: *default
@@ -161,17 +161,28 @@ development:
     database: development_storage_db
     host: <%= ENV["POSTGRESQL_STORAGE_SUB"] || default_host %>
     migrations_paths: db/storages_migrate
-  universal:
+  occurrence:
     !!merge <<: *default
-    database: development_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] || default_host %>
-    migrations_paths: db/universals_migrate
-  universal_replica:
+    database: development_occurrence_db
+    host: <%= ENV["POSTGRESQL_OCCURRENCE_PUB"] || default_host %>
+    migrations_paths: db/occurrences_migrate
+  occurrence_replica:
     !!merge <<: *default
     replica: true
-    database: development_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || default_host %>
-    migrations_paths: db/universals_migrate
+    database: development_occurrence_db
+    host: <%= ENV["POSTGRESQL_OCCURRENCE_SUB"] || default_host %>
+    migrations_paths: db/occurrences_migrate
+  audit:
+    !!merge <<: *default
+    database: development_audit_db
+    host: <%= ENV["POSTGRESQL_AUDIT_PUB"] || default_host %>
+    migrations_paths: db/audits_migrate
+  audit_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_audit_db
+    host: <%= ENV["POSTGRESQL_AUDIT_SUB"] || default_host %>
+    migrations_paths: db/audits_migrate
   operator:
     !!merge <<: *default
     database: development_operator_db
@@ -330,13 +341,13 @@ test:
   billing:
     !!merge <<: *test_default
     database: test_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_UNIVERSAL_PUB"] || ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_PUB"] || ENV["POSTGRESQL_OCCURRENCE_PUB"] || ENV["POSTGRESQL_PRINCIPAL_PUB"] || default_host %>
     migrations_paths: db/billing_migrate
   billing_replica:
     !!merge <<: *test_default
     replica: true
     database: test_billing_db
-    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_UNIVERSAL_SUB"] || ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
+    host: <%= ENV["POSTGRESQL_BILLING_SUB"] || ENV["POSTGRESQL_OCCURRENCE_SUB"] || ENV["POSTGRESQL_PRINCIPAL_SUB"] || default_host %>
     migrations_paths: db/billing_migrate
   message:
     !!merge <<: *test_default
@@ -349,17 +360,28 @@ test:
     database: test_message_db
     host: <%= ENV["POSTGRESQL_MESSAGE_SUB"] || default_host %>
     migrations_paths: db/messages_migrate
-  universal:
+  occurrence:
     !!merge <<: *test_default
-    database: test_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_PUB"] || default_host %>
-    migrations_paths: db/universals_migrate
-  universal_replica:
+    database: test_occurrence_db
+    host: <%= ENV["POSTGRESQL_OCCURRENCE_PUB"] || default_host %>
+    migrations_paths: db/occurrences_migrate
+  occurrence_replica:
     !!merge <<: *test_default
     replica: true
-    database: test_universal_db
-    host: <%= ENV["POSTGRESQL_UNIVERSAL_SUB"] || default_host %>
-    migrations_paths: db/universals_migrate
+    database: test_occurrence_db
+    host: <%= ENV["POSTGRESQL_OCCURRENCE_SUB"] || default_host %>
+    migrations_paths: db/occurrences_migrate
+  audit:
+    !!merge <<: *test_default
+    database: test_audit_db
+    host: <%= ENV["POSTGRESQL_AUDIT_PUB"] || default_host %>
+    migrations_paths: db/audits_migrate
+  audit_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_audit_db
+    host: <%= ENV["POSTGRESQL_AUDIT_SUB"] || default_host %>
+    migrations_paths: db/audits_migrate
   operator:
     !!merge <<: *test_default
     database: test_operator_db
@@ -457,6 +479,23 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.PREFERENCE_REPLICA&.PASSWORD %>
     migrations_paths: db/preferences_migrate
+  audit:
+    !!merge <<: *default
+    database: production_audit_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.AUDIT&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.AUDIT&.PASSWORD %>
+    migrations_paths: db/audits_migrate
+  audit_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_audit_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.AUDIT_REPLICA&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.AUDIT_REPLICA&.PASSWORD %>
+    migrations_paths: db/audits_migrate
   token:
     !!merge <<: *default
     database: production_token_db
@@ -576,23 +615,23 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.QUEUE_REPLICA&.PASSWORD %>
     migrations_paths: db/queues_migrate
-  universal:
+  occurrence:
     !!merge <<: *default
-    database: production_universal_db
+    database: production_occurrence_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.OCCURRENCE&.HOST %>
     username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL&.PASSWORD %>
-    migrations_paths: db/universals_migrate
-  universal_replica:
+    password: <%= Rails.application.credentials&.DATABASE&.OCCURRENCE&.PASSWORD %>
+    migrations_paths: db/occurrences_migrate
+  occurrence_replica:
     !!merge <<: *default
     replica: true
-    database: production_universal_db
+    database: production_occurrence_db
     port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
-    host: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL_REPLICA&.HOST %>
+    host: <%= Rails.application.credentials&.DATABASE&.OCCURRENCE_REPLICA&.HOST %>
     username: 'neondb_owner'
-    password: <%= Rails.application.credentials&.DATABASE&.UNIVERSAL_REPLICA&.PASSWORD %>
-    migrations_paths: db/universals_migrate
+    password: <%= Rails.application.credentials&.DATABASE&.OCCURRENCE_REPLICA&.PASSWORD %>
+    migrations_paths: db/occurrences_migrate
   operator:
     !!merge <<: *default
     database: production_operator_db

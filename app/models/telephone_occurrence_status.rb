@@ -12,7 +12,7 @@
 #  index_telephone_occurrence_statuses_on_expires_at  (expires_at)
 #
 
-class TelephoneOccurrenceStatus < UniversalRecord
+class TelephoneOccurrenceStatus < OccurrenceRecord
   include UppercaseId
   include OccurrenceStatus
 

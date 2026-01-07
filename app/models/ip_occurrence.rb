@@ -21,7 +21,7 @@
 #  index_ip_occurrences_on_status_id   (status_id)
 #
 
-class IpOccurrence < UniversalRecord
+class IpOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 

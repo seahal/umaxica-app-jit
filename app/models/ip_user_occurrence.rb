@@ -16,7 +16,7 @@
 #  index_ip_user_occurrences_on_user_occurrence_id  (user_occurrence_id)
 #
 
-class IpUserOccurrence < UniversalRecord
+class IpUserOccurrence < OccurrenceRecord
   belongs_to :ip_occurrence, inverse_of: :ip_user_occurrences
   belongs_to :user_occurrence, inverse_of: :ip_user_occurrences
 end

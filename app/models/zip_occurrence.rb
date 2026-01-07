@@ -21,7 +21,7 @@
 #  index_zip_occurrences_on_status_id   (status_id)
 #
 
-class ZipOccurrence < UniversalRecord
+class ZipOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 

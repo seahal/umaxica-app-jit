@@ -7,7 +7,7 @@
 #  id :string(255)      default("NEYO"), not null, primary key
 #
 
-class ComTimelineAuditEvent < UniversalRecord
+class ComTimelineAuditEvent < OccurrenceRecord
   include UppercaseId
 
   self.table_name = "com_timeline_audit_events"

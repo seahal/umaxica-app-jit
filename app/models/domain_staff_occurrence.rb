@@ -16,7 +16,7 @@
 #  index_domain_staff_occurrences_on_staff_occurrence_id   (staff_occurrence_id)
 #
 
-class DomainStaffOccurrence < UniversalRecord
+class DomainStaffOccurrence < OccurrenceRecord
   belongs_to :domain_occurrence, inverse_of: :domain_staff_occurrences
   belongs_to :staff_occurrence, inverse_of: :domain_staff_occurrences
 end

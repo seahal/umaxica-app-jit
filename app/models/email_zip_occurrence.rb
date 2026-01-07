@@ -16,7 +16,7 @@
 #  index_email_zip_occurrences_on_zip_occurrence_id    (zip_occurrence_id)
 #
 
-class EmailZipOccurrence < UniversalRecord
+class EmailZipOccurrence < OccurrenceRecord
   belongs_to :email_occurrence, inverse_of: :email_zip_occurrences
   belongs_to :zip_occurrence, inverse_of: :email_zip_occurrences
 end

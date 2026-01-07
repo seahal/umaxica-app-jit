@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# INFO: This service is powered by a universal, globally unique database.
+# INFO: This service is powered by the occurrence database.
 
 class UniversalService
   def call

@@ -21,7 +21,7 @@
 #  index_staff_occurrences_on_status_id   (status_id)
 #
 
-class StaffOccurrence < UniversalRecord
+class StaffOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 

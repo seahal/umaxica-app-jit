@@ -21,7 +21,7 @@
 #  index_email_occurrences_on_status_id   (status_id)
 #
 
-class EmailOccurrence < UniversalRecord
+class EmailOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 

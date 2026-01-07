@@ -7,7 +7,7 @@
 #  id :string(255)      default("NEYO"), not null, primary key
 #
 
-class AppDocumentAuditEvent < UniversalRecord
+class AppDocumentAuditEvent < OccurrenceRecord
   include UppercaseId
 
   self.table_name = "app_document_audit_events"

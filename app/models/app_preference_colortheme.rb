@@ -11,7 +11,7 @@
 # Indexes
 #
 #  index_app_preference_colorthemes_on_option_id      (option_id)
-#  index_app_preference_colorthemes_on_preference_id  (preference_id)
+#  index_app_preference_colorthemes_on_preference_id  (preference_id) UNIQUE
 #
 
 # frozen_string_literal: true

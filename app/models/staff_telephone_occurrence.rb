@@ -16,7 +16,7 @@
 #  index_staff_telephone_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #
 
-class StaffTelephoneOccurrence < UniversalRecord
+class StaffTelephoneOccurrence < OccurrenceRecord
   belongs_to :staff_occurrence, inverse_of: :staff_telephone_occurrences
   belongs_to :telephone_occurrence, inverse_of: :staff_telephone_occurrences
 end

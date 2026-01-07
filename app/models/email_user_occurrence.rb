@@ -16,7 +16,7 @@
 #  index_email_user_occurrences_on_user_occurrence_id   (user_occurrence_id)
 #
 
-class EmailUserOccurrence < UniversalRecord
+class EmailUserOccurrence < OccurrenceRecord
   belongs_to :email_occurrence, inverse_of: :email_user_occurrences
   belongs_to :user_occurrence, inverse_of: :email_user_occurrences
 end

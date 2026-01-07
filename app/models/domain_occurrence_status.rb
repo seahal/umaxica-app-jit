@@ -12,7 +12,7 @@
 #  index_domain_occurrence_statuses_on_expires_at  (expires_at)
 #
 
-class DomainOccurrenceStatus < UniversalRecord
+class DomainOccurrenceStatus < OccurrenceRecord
   include UppercaseId
   include OccurrenceStatus
 

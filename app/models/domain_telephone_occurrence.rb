@@ -16,7 +16,7 @@
 #  index_domain_telephone_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #
 
-class DomainTelephoneOccurrence < UniversalRecord
+class DomainTelephoneOccurrence < OccurrenceRecord
   belongs_to :domain_occurrence, inverse_of: :domain_telephone_occurrences
   belongs_to :telephone_occurrence, inverse_of: :domain_telephone_occurrences
 end

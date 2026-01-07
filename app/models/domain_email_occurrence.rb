@@ -16,7 +16,7 @@
 #  index_domain_email_occurrences_on_email_occurrence_id   (email_occurrence_id)
 #
 
-class DomainEmailOccurrence < UniversalRecord
+class DomainEmailOccurrence < OccurrenceRecord
   belongs_to :domain_occurrence, inverse_of: :domain_email_occurrences
   belongs_to :email_occurrence, inverse_of: :domain_email_occurrences
 end

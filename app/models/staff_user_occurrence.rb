@@ -16,7 +16,7 @@
 #  index_staff_user_occurrences_on_user_occurrence_id   (user_occurrence_id)
 #
 
-class StaffUserOccurrence < UniversalRecord
+class StaffUserOccurrence < OccurrenceRecord
   belongs_to :staff_occurrence, inverse_of: :staff_user_occurrences
   belongs_to :user_occurrence, inverse_of: :staff_user_occurrences
 end

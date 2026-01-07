@@ -16,7 +16,7 @@
 #  index_staff_zip_occurrences_on_zip_occurrence_id    (zip_occurrence_id)
 #
 
-class StaffZipOccurrence < UniversalRecord
+class StaffZipOccurrence < OccurrenceRecord
   belongs_to :staff_occurrence, inverse_of: :staff_zip_occurrences
   belongs_to :zip_occurrence, inverse_of: :staff_zip_occurrences
 end

@@ -75,7 +75,7 @@ class UniversalServiceTest < ActiveSupport::TestCase
   # test "should integrate with multi-database architecture (placeholder)" do
   #   # Future implementation should test:
   #   # - Integration with PrincipalRecord
-  #   # - Integration with UniversalRecord
+  #   # - Integration with OccurrenceRecord
   #   # - Database transaction coordination
   #   # - Data consistency across databases
   #

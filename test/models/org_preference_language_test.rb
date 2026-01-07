@@ -11,7 +11,7 @@
 # Indexes
 #
 #  index_org_preference_languages_on_option_id      (option_id)
-#  index_org_preference_languages_on_preference_id  (preference_id)
+#  index_org_preference_languages_on_preference_id  (preference_id) UNIQUE
 #
 
 # frozen_string_literal: true

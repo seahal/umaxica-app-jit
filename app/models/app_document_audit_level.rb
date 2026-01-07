@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class AppDocumentAuditLevel < UniversalRecord
+class AppDocumentAuditLevel < OccurrenceRecord
   include UppercaseId
 
   has_many :app_document_audits, dependent: :restrict_with_error, inverse_of: :app_document_audit_level

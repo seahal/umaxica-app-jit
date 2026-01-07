@@ -16,7 +16,7 @@
 #  index_area_user_occurrences_on_user_occurrence_id  (user_occurrence_id)
 #
 
-class AreaUserOccurrence < UniversalRecord
+class AreaUserOccurrence < OccurrenceRecord
   belongs_to :area_occurrence, inverse_of: :area_user_occurrences
   belongs_to :user_occurrence, inverse_of: :area_user_occurrences
 end

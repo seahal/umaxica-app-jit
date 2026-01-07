@@ -11,7 +11,7 @@
 # Indexes
 #
 #  index_app_preference_timezones_on_option_id      (option_id)
-#  index_app_preference_timezones_on_preference_id  (preference_id)
+#  index_app_preference_timezones_on_preference_id  (preference_id) UNIQUE
 #
 
 _fixture:

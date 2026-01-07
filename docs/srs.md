@@ -93,7 +93,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 - **FR-20**: API/BFF responses must include structured error payloads and standard headers (CORS via `rack-cors`) to enable SPA and mobile clients.
 
 ### 4.6 Data protection and compliance
-- **FR-21**: Personally identifiable records must reside in their designated database clusters (`IdentitiesRecord`, `GuestRecord`, `UniversalRecord`, etc.) with `connects_to` wiring honoring read replicas for reporting workloads.
+- **FR-21**: Personally identifiable records must reside in their designated database clusters (`IdentitiesRecord`, `GuestRecord`, `OccurrenceRecord`, etc.) with `connects_to` wiring honoring read replicas for reporting workloads.
 - **FR-22**: Sensitive columns (emails, telephone numbers, OTP secrets) must use Active Record encryption with deterministic mode for lookups where required.
 - **FR-23**: Preference cookies (`__Secure-root_app_preferences`) must be signed/HTTP-only/Lax by default, with same-site exceptions documented if a downstream domain (e.g., `help` forms) legitimately reads them.
 - **FR-24**: All database operations (create, update, delete) involving `User` and `Staff` entities must be recorded in the Audit log (`UserIdentityAudit`, `StaffIdentityAudit`) to ensure traceability and accountability.
@@ -125,7 +125,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 
 ### 6.1 Technical constraints
 - Ruby 3.4.7, Rails 8.x, pnpm 10+, Node.js 20+ (for tooling), PostgreSQL 18.
-- Multi-database config defined in `config/database.yml` requires environment variables for each host (e.g., `POSTGRESQL_IDENTITY_PUB`).
+- Multi-database config defined in `config/database.yml` requires environment variables for each host (e.g., `POSTGRESQL_IDENTITY_PUB` and the new `POSTGRESQL_AUDIT_PUB`/`POSTGRESQL_AUDIT_SUB` pair).
 - Asset pipeline relies on Rails Tailwind CLI and pnpm-managed JS tooling; Vite is intentionally not used.
 - Dependencies include Karafka, ROTP, WebAuthn, OmniAuth (Google/Apple), Rswag, Pundit, Shrine, SolidCache, Fastly gem, AWS SDK.
 

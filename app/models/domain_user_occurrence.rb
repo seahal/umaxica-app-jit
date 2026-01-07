@@ -16,7 +16,7 @@
 #  index_domain_user_occurrences_on_user_occurrence_id    (user_occurrence_id)
 #
 
-class DomainUserOccurrence < UniversalRecord
+class DomainUserOccurrence < OccurrenceRecord
   belongs_to :domain_occurrence, inverse_of: :domain_user_occurrences
   belongs_to :user_occurrence, inverse_of: :domain_user_occurrences
 end

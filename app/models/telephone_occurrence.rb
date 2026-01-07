@@ -21,7 +21,7 @@
 #  index_telephone_occurrences_on_status_id   (status_id)
 #
 
-class TelephoneOccurrence < UniversalRecord
+class TelephoneOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 

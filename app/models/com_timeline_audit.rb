@@ -31,7 +31,7 @@
 #  index_com_timeline_audits_on_subject_id                (subject_id)
 #
 
-class ComTimelineAudit < UniversalRecord
+class ComTimelineAudit < OccurrenceRecord
   self.table_name = "com_timeline_audits"
 
   validates :subject_id, presence: true

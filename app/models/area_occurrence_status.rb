@@ -12,7 +12,7 @@
 #  index_area_occurrence_statuses_on_expires_at  (expires_at)
 #
 
-class AreaOccurrenceStatus < UniversalRecord
+class AreaOccurrenceStatus < OccurrenceRecord
   include UppercaseId
   include OccurrenceStatus
 

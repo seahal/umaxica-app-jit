@@ -16,7 +16,7 @@
 #  index_domain_ip_occurrences_on_ip_occurrence_id      (ip_occurrence_id)
 #
 
-class DomainIpOccurrence < UniversalRecord
+class DomainIpOccurrence < OccurrenceRecord
   belongs_to :domain_occurrence, inverse_of: :domain_ip_occurrences
   belongs_to :ip_occurrence, inverse_of: :domain_ip_occurrences
 end

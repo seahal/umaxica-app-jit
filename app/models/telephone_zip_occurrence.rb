@@ -16,7 +16,7 @@
 #  index_telephone_zip_occurrences_on_zip_occurrence_id        (zip_occurrence_id)
 #
 
-class TelephoneZipOccurrence < UniversalRecord
+class TelephoneZipOccurrence < OccurrenceRecord
   belongs_to :telephone_occurrence, inverse_of: :telephone_zip_occurrences
   belongs_to :zip_occurrence, inverse_of: :telephone_zip_occurrences
 end

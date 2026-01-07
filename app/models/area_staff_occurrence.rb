@@ -16,7 +16,7 @@
 #  index_area_staff_occurrences_on_staff_occurrence_id  (staff_occurrence_id)
 #
 
-class AreaStaffOccurrence < UniversalRecord
+class AreaStaffOccurrence < OccurrenceRecord
   belongs_to :area_occurrence, inverse_of: :area_staff_occurrences
   belongs_to :staff_occurrence, inverse_of: :area_staff_occurrences
 end

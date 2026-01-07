@@ -274,6 +274,8 @@ jobs:
       # PostgreSQL - Primary/Replica Hosts
       POSTGRESQL_UNIVERSAL_PUB: localhost
       POSTGRESQL_UNIVERSAL_SUB: localhost
+      POSTGRESQL_AUDIT_PUB: localhost
+      POSTGRESQL_AUDIT_SUB: localhost
       POSTGRESQL_DEFAULT_PUB: localhost
       POSTGRESQL_GUEST_PUB: localhost
       POSTGRESQL_GUEST_SUB: localhost

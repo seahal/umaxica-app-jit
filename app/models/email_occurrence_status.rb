@@ -12,7 +12,7 @@
 #  index_email_occurrence_statuses_on_expires_at  (expires_at)
 #
 
-class EmailOccurrenceStatus < UniversalRecord
+class EmailOccurrenceStatus < OccurrenceRecord
   include UppercaseId
   include OccurrenceStatus
 

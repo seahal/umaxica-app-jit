@@ -17,9 +17,9 @@ class ConsolidateOneTimePassword < ActiveRecord::Migration[8.2]
       dir.up do
         UserIdentityOneTimePassword.reset_column_information
         UserIdentityOneTimePassword.find_each do |record|
-          # Query the universal database for the hmac record
-          universal_conn = ActiveRecord::Base.connection_handler.retrieve_connection("universal")
-          hmac = universal_conn.execute(
+          # Query the occurrence database for the hmac record
+          occurrence_conn = ActiveRecord::Base.connection_handler.retrieve_connection("occurrence")
+          hmac = occurrence_conn.execute(
             "SELECT private_key, last_otp_at FROM hmac_based_one_time_passwords WHERE id = $1",
             [record.hmac_based_one_time_password_id],
           ).first

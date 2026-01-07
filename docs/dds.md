@@ -180,10 +180,10 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | `User`, `Staff` | `IdentitiesRecord` | `has_many :emails`, `:phones`, `webauthn_id` stored |
 | `UserIdentityEmail` | `IdentitiesRecord` | Includes `Email` concern, encrypts `address`, `before_create` sets UUID v7 |
 | `ServiceSiteContact` | `GuestRecord` | Encrypts email/phone/title/description, validates OTP codes, stores `ip_address` |
-| `TimeBasedOneTimePassword` | `UniversalRecord` | Encrypts `private_key`, stores `last_otp_at`, `first_token` virtual attr |
+| `TimeBasedOneTimePassword` | `OccurrenceRecord` | Encrypts `private_key`, stores `last_otp_at`, `first_token` virtual attr |
 | `UserPasskey` | `ApplicationRecord` | Validates `webauthn_id`, `public_key`, `description`, `sign_count` |
 | `UserToken`, `StaffToken` | `TokensRecord` | Reference tokens for JWT refresh handling |
-| `IdentifierRegionCode` and join tables | `UniversalRecord` | Future mapping for personas/staff region codes |
+| `IdentifierRegionCode` and join tables | `OccurrenceRecord` | Future mapping for personas/staff region codes |
 
 ### 5.2 Cookies & Sessions
 - Preference cookie: `__Secure-root_app_preferences` (JSON: `lx`, `ri`, `tz`, `ct`).
@@ -216,7 +216,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ---
 
 ## 7. Configuration & Environment
-- `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`, `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Kafka brokers (`KAFKA_BROKERS`), Cloudflare Turnstile keys, JWT keys, AWS/Infobip credentials, OTLP endpoint.
+- `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`, `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`, including the new `POSTGRESQL_AUDIT_PUB/SUB` pair), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Kafka brokers (`KAFKA_BROKERS`), Cloudflare Turnstile keys, JWT keys, AWS/Infobip credentials, OTLP endpoint.
 - `compose.yml` launches all infra dependencies with sensible defaults; volumes store data per service.
 - `Procfile.dev` ensures the Rails server (and optionally Karafka) run concurrently; Tailwind watcher runs via `bin/rails tailwindcss:watch`.
 - Build/test commands:

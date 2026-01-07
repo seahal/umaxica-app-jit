@@ -21,7 +21,7 @@
 #  index_area_occurrences_on_status_id   (status_id)
 #
 
-class AreaOccurrence < UniversalRecord
+class AreaOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 

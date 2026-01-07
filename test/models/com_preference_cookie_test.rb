@@ -12,7 +12,7 @@
 #
 # Indexes
 #
-#  index_com_preference_cookies_on_preference_id  (preference_id)
+#  index_com_preference_cookies_on_preference_id  (preference_id) UNIQUE
 #
 
 # frozen_string_literal: true

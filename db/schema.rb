@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_02_111601) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_07_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -298,17 +298,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_111601) do
   add_foreign_key "app_contact_emails", "app_contacts"
   add_foreign_key "app_contact_telephones", "app_contacts"
   add_foreign_key "app_contact_topics", "app_contacts"
-  add_foreign_key "app_contacts", "app_contact_categories", column: "category_id", on_delete: :nullify
-  add_foreign_key "app_contacts", "app_contact_statuses", column: "status_id", on_delete: :nullify
+  add_foreign_key "app_contacts", "app_contact_categories", column: "category_id", on_delete: :cascade
+  add_foreign_key "app_contacts", "app_contact_statuses", column: "status_id", on_delete: :cascade
   add_foreign_key "com_contact_audits", "com_contacts"
   add_foreign_key "com_contact_emails", "com_contacts"
   add_foreign_key "com_contact_telephones", "com_contacts"
   add_foreign_key "com_contact_topics", "com_contacts"
-  add_foreign_key "com_contacts", "com_contact_categories", column: "category_id", on_delete: :nullify
-  add_foreign_key "com_contacts", "com_contact_statuses", column: "status_id", on_delete: :nullify
+  add_foreign_key "com_contacts", "com_contact_categories", column: "category_id", on_delete: :cascade
+  add_foreign_key "com_contacts", "com_contact_statuses", column: "status_id", on_delete: :cascade
   add_foreign_key "org_contact_emails", "org_contacts"
   add_foreign_key "org_contact_telephones", "org_contacts"
   add_foreign_key "org_contact_topics", "org_contacts"
-  add_foreign_key "org_contacts", "org_contact_categories", column: "category_id", on_delete: :nullify
-  add_foreign_key "org_contacts", "org_contact_statuses", column: "status_id", on_delete: :nullify
+  add_foreign_key "org_contacts", "org_contact_categories", column: "category_id", on_delete: :cascade
+  add_foreign_key "org_contacts", "org_contact_statuses", column: "status_id", on_delete: :cascade
 end

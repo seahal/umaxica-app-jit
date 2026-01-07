@@ -16,7 +16,7 @@
 #  index_area_domain_occurrences_on_domain_occurrence_id  (domain_occurrence_id)
 #
 
-class AreaDomainOccurrence < UniversalRecord
+class AreaDomainOccurrence < OccurrenceRecord
   belongs_to :area_occurrence, inverse_of: :area_domain_occurrences
   belongs_to :domain_occurrence, inverse_of: :area_domain_occurrences
 end

@@ -12,7 +12,7 @@
 #  index_user_occurrence_statuses_on_expires_at  (expires_at)
 #
 
-class UserOccurrenceStatus < UniversalRecord
+class UserOccurrenceStatus < OccurrenceRecord
   include UppercaseId
   include OccurrenceStatus
 

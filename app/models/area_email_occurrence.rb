@@ -16,7 +16,7 @@
 #  index_area_email_occurrences_on_email_occurrence_id  (email_occurrence_id)
 #
 
-class AreaEmailOccurrence < UniversalRecord
+class AreaEmailOccurrence < OccurrenceRecord
   belongs_to :area_occurrence, inverse_of: :area_email_occurrences
   belongs_to :email_occurrence, inverse_of: :area_email_occurrences
 end

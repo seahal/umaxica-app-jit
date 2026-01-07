@@ -11,7 +11,7 @@
 # Indexes
 #
 #  index_app_preference_timezones_on_option_id      (option_id)
-#  index_app_preference_timezones_on_preference_id  (preference_id)
+#  index_app_preference_timezones_on_preference_id  (preference_id) UNIQUE
 #
 
 # frozen_string_literal: true
@@ -22,6 +22,5 @@ class AppPreferenceTimezone < PreferenceRecord
              class_name: "AppPreferenceTimezoneOption",
              inverse_of: :app_preference_timezones,
              optional: true
-
   validates :preference_id, uniqueness: true
 end

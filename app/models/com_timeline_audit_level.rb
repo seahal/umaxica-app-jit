@@ -7,7 +7,7 @@
 #  id :string(255)      default("NEYO"), not null, primary key
 #
 
-class ComTimelineAuditLevel < UniversalRecord
+class ComTimelineAuditLevel < OccurrenceRecord
   include UppercaseId
 
   has_many :com_timeline_audits, dependent: :restrict_with_error, inverse_of: :com_timeline_audit_level

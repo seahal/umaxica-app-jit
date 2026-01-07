@@ -136,7 +136,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 |------------|-----------|------------------------|
 | `IdentitiesRecord` | `identity`, `identity_replica` | `users`, `staffs`, `user_passkeys`, `user_sessions` |
 | `GuestRecord` | `guest`, `guest_replica` | `service_site_contacts`, `corporate_site_contacts` |
-| `UniversalRecord` | `universal`, `universal_replica` | `time_based_one_time_passwords`, `universal_*_identifiers` |
+| `OccurrenceRecord` | `occurrence`, `occurrence_replica` | `time_based_one_time_passwords`, `occurrence_*_identifiers` |
 | `TokensRecord` | `token`, `token_replica` | `user_tokens`, `staff_tokens`, `user_sessions` |
 | `BusinessesRecord`, `ProfilesRecord`, `StoragesRecord`, etc. | `business`, `profile`, `storage`, `notification`, etc. | Owners/customers/timeline data (future modules) |
 

@@ -21,7 +21,7 @@
 #  index_domain_occurrences_on_status_id   (status_id)
 #
 
-class DomainOccurrence < UniversalRecord
+class DomainOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
 

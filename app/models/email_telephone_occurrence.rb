@@ -16,7 +16,7 @@
 #  index_email_telephone_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #
 
-class EmailTelephoneOccurrence < UniversalRecord
+class EmailTelephoneOccurrence < OccurrenceRecord
   belongs_to :email_occurrence, inverse_of: :email_telephone_occurrences
   belongs_to :telephone_occurrence, inverse_of: :email_telephone_occurrences
 end

@@ -12,7 +12,7 @@
 #  index_zip_occurrence_statuses_on_expires_at  (expires_at)
 #
 
-class ZipOccurrenceStatus < UniversalRecord
+class ZipOccurrenceStatus < OccurrenceRecord
   include UppercaseId
   include OccurrenceStatus
 

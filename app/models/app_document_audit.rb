@@ -31,7 +31,7 @@
 #  index_app_document_audits_on_subject_id                (subject_id)
 #
 
-class AppDocumentAudit < UniversalRecord
+class AppDocumentAudit < OccurrenceRecord
   self.table_name = "app_document_audits"
 
   # subject_id/subject_type for cross-DB compatibility (no FK)

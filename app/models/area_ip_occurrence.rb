@@ -16,7 +16,7 @@
 #  index_area_ip_occurrences_on_ip_occurrence_id    (ip_occurrence_id)
 #
 
-class AreaIpOccurrence < UniversalRecord
+class AreaIpOccurrence < OccurrenceRecord
   belongs_to :area_occurrence, inverse_of: :area_ip_occurrences
   belongs_to :ip_occurrence, inverse_of: :area_ip_occurrences
 end
