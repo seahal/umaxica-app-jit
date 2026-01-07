@@ -29,6 +29,7 @@
 #  index_com_contact_emails_on_expires_at           (expires_at)
 #  index_com_contact_emails_on_verifier_expires_at  (verifier_expires_at)
 #
+#
 
 require "test_helper"
 
@@ -477,5 +478,73 @@ class ComContactEmailTest < ActiveSupport::TestCase
     email.update!(activated: true)
 
     assert_not email.can_resend_verifier?
+  end
+
+  # HOTP tests
+  test "should generate hotp secret and code" do
+    contact = ComContact.create!(
+      public_id: "unique_contact_hotp",
+      created_at: Time.current,
+      updated_at: Time.current,
+    )
+    email = ComContactEmail.create!(
+      com_contact: contact,
+      email_address: "hotp@example.com",
+      expires_at: 1.day.from_now,
+    )
+
+    code = email.generate_hotp!
+
+    assert_not_nil code
+    assert_not_nil email.hotp_secret
+    assert_not_nil email.hotp_counter
+    assert_not_nil email.verifier_expires_at
+    assert_equal 3, email.verifier_attempts_left
+  end
+
+  test "should verify hotp code" do
+    contact = ComContact.create!(
+      public_id: "uc_hotp_verify",
+      created_at: Time.current,
+      updated_at: Time.current,
+    )
+    email = ComContactEmail.create!(
+      com_contact: contact,
+      email_address: "hotp_verify@example.com",
+      expires_at: 1.day.from_now,
+    )
+
+    code = email.generate_hotp!
+
+    assert email.verify_hotp_code(code)
+    assert email.reload.activated
+    assert_equal 0, email.verifier_attempts_left
+  end
+
+  test "should reject incorrect hotp code" do
+    contact = ComContact.create!(
+      public_id: "uc_hotp_wrong",
+      created_at: Time.current,
+      updated_at: Time.current,
+    )
+    email = ComContactEmail.create!(
+      com_contact: contact,
+      email_address: "hotp_wrong@example.com",
+      expires_at: 1.day.from_now,
+    )
+
+    email.generate_hotp!
+    initial_attempts = email.verifier_attempts_left
+
+    assert_not email.verify_hotp_code("000000")
+    assert_not email.reload.activated
+    assert_equal initial_attempts - 1, email.verifier_attempts_left
+  end
+
+  test "generate_id generates nanoid" do
+    email = ComContactEmail.new
+    email.send(:generate_id)
+    assert_not_nil email.id
+    assert_equal 21, email.id.length
   end
 end

@@ -25,10 +25,14 @@
 #
 one:
   com_document: one
-  permalink: "test-doc-one"
-  response_mode: "html"
-  title: "Test Document One"
-  body: "This is a test document."
+  permalink: test-doc-one
+  response_mode: html
+  title: Test Document
+  description: Test description
+  body: Test body
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>
-  created_at: <%= 1.hour.ago %>
+  edited_by_type: Staff
+  public_id: one_com_doc_ver_000001
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

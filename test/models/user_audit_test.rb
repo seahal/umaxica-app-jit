@@ -26,6 +26,7 @@
 #  index_user_identity_audits_on_subject_id  (subject_id)
 #  index_user_identity_audits_on_user_id     (user_id)
 #
+#
 
 require "test_helper"
 
@@ -141,5 +142,37 @@ class UserAuditTest < ActiveSupport::TestCase
 
     assert_not_empty user_actors
     assert_not_empty staff_actors
+  end
+
+  # Additional tests for helper methods
+  test "user helper method returns user" do
+    assert_equal @user, @audit.user
+  end
+
+  test "user_id helper method returns user id" do
+    assert_equal @user.id.to_s, @audit.user_id
+  end
+
+  test "occurred_at alias works" do
+    assert_equal @audit.timestamp, @audit.occurred_at
+  end
+
+  test "set_timestamp defaults to current time" do
+    audit = UserAudit.new(user_audit_event: @audit_event)
+    audit.user = @user
+    audit.save!
+    assert_not_nil audit.timestamp
+  end
+
+  test "actor defaults to null user if blank" do
+    # When creating without actor
+    audit = UserAudit.create!(
+      user: @user,
+      user_audit_event: @audit_event,
+      actor: nil,
+    )
+
+    assert_equal "00000000-0000-0000-0000-000000000000", audit.actor_id
+    assert_equal "User", audit.actor_type
   end
 end

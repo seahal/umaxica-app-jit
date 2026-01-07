@@ -1,15 +1,11 @@
 # Auto-generated minimal fixture
 neyo:
   id: NEYO
-active:
-  id: ACTIVE
-inactive:
-  id: INACTIVE
-pending:
-  id: PENDING
-deleted:
-  id: DELETED
 unverified:
   id: UNVERIFIED
 verified:
   id: VERIFIED
+suspended:
+  id: SUSPENDED
+deleted:
+  id: DELETED

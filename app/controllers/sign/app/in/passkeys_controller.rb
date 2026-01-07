@@ -4,6 +4,8 @@ module Sign
   module App
     module In
       class PasskeysController < ApplicationController
+        include Sign::PreAuthenticationGuards
+
         def new
           @user_telephone = UserTelephone.new
         end
@@ -13,15 +15,13 @@ module Sign
         end
 
         def create
-          render plain: t("sign.app.authentication.telephone.create.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
+          return if reject_if_logged_in("sign.app.authentication.telephone.create.you_have_already_logged_in")
 
           head :ok
         end
 
         def update
-          render plain: t("sign.app.authentication.telephone.create.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
+          return if reject_if_logged_in("sign.app.authentication.telephone.create.you_have_already_logged_in")
 
           head :ok
         end

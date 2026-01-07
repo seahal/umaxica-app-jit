@@ -7,8 +7,10 @@ module Sign
         include ::CloudflareTurnstile
         include ::Redirect
         include Sign::OtpAuthentication
+        include Sign::RedirectParameterHandling
+        include Sign::PreAuthenticationGuards
 
-        before_action :ensure_not_logged_in
+        before_action :ensure_not_logged_in_for_registration
 
         def new
           # make user email
@@ -20,8 +22,7 @@ module Sign
           if @user_email.blank? ||
               @user_email.otp_expired? ||
               @user_email.user_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
-            redirect_params = { notice: t("sign.app.registration.email.edit.session_expired") }
-            redirect_params[:rd] = params[:rd] if params[:rd].present?
+            redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
             redirect_to new_sign_app_up_email_path(redirect_params)
           end
         end
@@ -69,8 +70,7 @@ module Sign
           ).create.deliver_later
 
           # Preserve rd parameter if provided
-          redirect_params = { notice: t("sign.app.registration.email.create.verification_code_sent") }
-          redirect_params[:rd] = params[:rd] if params[:rd].present?
+          redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
 
           redirect_to edit_sign_app_up_email_path(@user_email.id, redirect_params)
         end
@@ -82,8 +82,7 @@ module Sign
           if @user_email.blank? ||
               @user_email.otp_expired? ||
               @user_email.user_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
-            redirect_params = { alert: t("sign.app.registration.email.update.session_expired") }
-            redirect_params[:rd] = params[:rd] if params[:rd].present?
+            redirect_params = build_alert_params(t("sign.app.registration.email.update.session_expired"))
             redirect_to new_sign_app_up_email_path(redirect_params) and return
           end
 
@@ -95,8 +94,7 @@ module Sign
             increment_otp_attempts!(@user_email)
             if @user_email.locked?
               @user_email.destroy!
-              redirect_params = { alert: t("sign.app.registration.email.update.attempts_exceeded") }
-              redirect_params[:rd] = params[:rd] if params[:rd].present?
+              redirect_params = build_alert_params(t("sign.app.registration.email.update.attempts_exceeded"))
               redirect_to new_sign_app_up_email_path(redirect_params) and return
             end
             @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.invalid_code"))
@@ -128,21 +126,10 @@ module Sign
           log_in(@user, record_login_audit: false)
 
           # Redirect to rd parameter if provided, otherwise to root
-          if params[:rd].present?
-            flash[:notice] = t("sign.app.registration.email.update.success")
-            jump_to_generated_url(params[:rd])
-          else
-            redirect_to "/", notice: t("sign.app.registration.email.update.success")
-          end
+          redirect_with_notice("/", t("sign.app.registration.email.update.success"))
         end
 
         private
-
-        def ensure_not_logged_in
-          if logged_in?
-            redirect_to "/", alert: t("sign.app.registration.email.already_logged_in")
-          end
-        end
       end
     end
   end

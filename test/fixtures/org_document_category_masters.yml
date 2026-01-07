@@ -14,3 +14,5 @@
 neyo:
   id: NEYO
   parent_id: NEYO
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

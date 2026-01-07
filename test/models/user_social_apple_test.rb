@@ -79,4 +79,52 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { identity.reload }
   end
+
+  test "find_or_create_from_auth_hash initializes new record" do
+    auth = MockAuth.new(
+      uid: "new-uid",
+      provider: "apple",
+      info: OpenStruct.new(email: "test@example.com"),
+      credentials: OpenStruct.new(token: "new-token", expires_at: 123),
+    )
+
+    identity = UserSocialApple.find_or_create_from_auth_hash(auth)
+
+    assert_predicate identity, :new_record?
+    assert_equal "new-uid", identity.uid
+    assert_equal "apple", identity.provider
+    assert_equal "test@example.com", identity.email
+    assert_equal "new-token", identity.token
+    assert_equal 123, identity.expires_at
+  end
+
+  test "find_or_create_from_auth_hash returns existing record with updated attributes" do
+    user = users(:one)
+    UserSocialApple.create!(
+      user: user,
+      uid: "existing-uid",
+      token: "old-token",
+      expires_at: 123,
+      user_social_apple_status: UserSocialAppleStatus.find("ACTIVE"),
+    )
+
+    auth = MockAuth.new(
+      uid: "existing-uid",
+      provider: "apple",
+      info: OpenStruct.new(email: "updated@example.com"),
+      credentials: OpenStruct.new(token: "updated-token", expires_at: 456),
+    )
+
+    identity = UserSocialApple.find_or_create_from_auth_hash(auth)
+
+    assert_predicate identity, :persisted?
+    assert_equal "updated-token", identity.token
+    assert_equal 456, identity.expires_at
+    # Ensure it didn't save yet if that's the behavior, or did it?
+    # find_or_initialize returns the object. It modifies it but doesn't save.
+    assert_equal "updated-token", identity.token
+    assert identity.changes.key?("token") # Confirms it has unsaved changes
+  end
+
+  class MockAuth < OpenStruct; end
 end

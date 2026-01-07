@@ -1,0 +1,23 @@
+# == Schema Information
+#
+# Table name: org_preferences
+#
+#  id           :uuid             not null, primary key
+#  public_id    :string
+#  expires_at   :datetime
+#  token_digest :binary
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  public_id: MyString
+  expires_at: 2026-01-07 06:04:39
+  token_digest: 
+
+two:
+  public_id: yourString
+  expires_at: 2026-01-07 06:04:39
+  token_digest: 

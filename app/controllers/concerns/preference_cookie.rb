@@ -71,8 +71,8 @@ module PreferenceCookie
     return {} unless parsed.is_a?(Hash)
 
     parsed.slice(*PREFERENCE_KEYS)
-  rescue JSON::ParserError, TypeError => error
-    Rails.event.notify("preference_cookie.legacy_parse_failed", error_message: error.message)
+  rescue JSON::ParserError, TypeError
+    # Rails.event.notify("preference_cookie.legacy_parse_failed", error_message: error.message)
     {}
   end
 end

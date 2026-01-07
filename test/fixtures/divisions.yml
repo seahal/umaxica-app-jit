@@ -15,8 +15,3 @@
 #  index_divisions_on_organization_id     (organization_id)
 #  index_divisions_unique                 (parent_id,division_status_id) UNIQUE
 #
-
-one:
-  division_status_id: ACTIVE
-two:
-  division_status_id: INACTIVE

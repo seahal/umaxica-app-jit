@@ -47,9 +47,9 @@ gem "aws-sdk-polly"
 # Asset pipeline
 gem "propshaft"
 # OpenTelemetry
-gem "opentelemetry-sdk"
-gem "opentelemetry-exporter-otlp"
-gem "opentelemetry-instrumentation-all"
+gem "opentelemetry-sdk", require: false
+gem "opentelemetry-exporter-otlp", require: false
+gem "opentelemetry-instrumentation-all", require: false
 # Sitemap
 gem "sitemap_generator"
 # WebAuthn (FIDO2)

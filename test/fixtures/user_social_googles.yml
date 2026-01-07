@@ -22,5 +22,3 @@
 #  index_user_identity_social_googles_on_uid_and_provider   (uid,provider) UNIQUE
 #  index_user_identity_social_googles_on_user_id_unique     (user_id) UNIQUE
 #
-
-# Empty fixture - no test data needed yet

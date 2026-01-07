@@ -8,6 +8,9 @@ module Sign
         include EmailValidation
         include ::Redirect
         include Sign::OtpAuthentication
+        include Sign::SessionAuthentication
+        include Sign::RedirectParameterHandling
+        include Sign::PreAuthenticationGuards
 
         before_action :ensure_not_logged_in
         before_action :load_user_email, only: %i(edit update)
@@ -38,9 +41,8 @@ module Sign
           process_email_authentication(normalized_address)
 
           # Preserve rd parameter if provided
-          redirect_params = { notice: t("sign.app.authentication.email.create.verification_code_sent") }
-          redirect_params[:rd] = params[:rd] if params[:rd].present?
-          session[:user_email_authentication_rd] = params[:rd] if params[:rd].present?
+          preserve_redirect_parameter
+          redirect_params = build_notice_params(t("sign.app.authentication.email.create.verification_code_sent"))
 
           redirect_to edit_sign_app_in_email_path(redirect_params)
         end
@@ -68,15 +70,7 @@ module Sign
             respond_to do |format|
               format.html do
                 # Redirect to rd parameter if provided, otherwise to root
-                rd_param = params[:rd].presence || session[:user_email_authentication_rd]
-                session[:user_email_authentication_rd] = nil
-
-                if rd_param.present?
-                  flash[:notice] = t("sign.app.authentication.email.update.success")
-                  jump_to_generated_url(rd_param)
-                else
-                  redirect_to "/", notice: t("sign.app.authentication.email.update.success")
-                end
+                redirect_with_notice("/", t("sign.app.authentication.email.update.success"))
               end
               format.json do
                 # Return tokens for JSON API clients
@@ -94,29 +88,23 @@ module Sign
 
         private
 
-        def ensure_not_logged_in
-          if logged_in?
-            render plain: t("sign.app.authentication.email.new.you_have_already_logged_in"),
-                   status: :bad_request
-            nil
-          end
-        end
-
         def load_user_email
           if session[:user_email_authentication_id].present?
-            @user_email = UserEmail.find_by(id: session[:user_email_authentication_id])
-            return if @user_email.present? && !@user_email.otp_expired?
+            @user_email = load_session_record(
+              :user_email_authentication_id,
+              UserEmail,
+              check_otp_expiry: false,
+              custom: ->(email) { email.present? && !email.otp_expired? },
+            )
 
-            redirect_params = { notice: t("sign.app.authentication.email.edit.session_expired") }
-            redirect_params[:rd] =
-              session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
-            redirect_to new_sign_app_in_email_path(redirect_params)
+            unless @user_email
+              redirect_params = build_notice_params(t("sign.app.authentication.email.edit.session_expired"))
+              redirect_to new_sign_app_in_email_path(redirect_params)
+            end
           elsif session[:user_email_authentication_address].present?
             @user_email = UserEmail.new(address: session[:user_email_authentication_address])
           else
-            redirect_params = { notice: t("sign.app.authentication.email.edit.session_expired") }
-            redirect_params[:rd] =
-              session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
+            redirect_params = build_notice_params(t("sign.app.authentication.email.edit.session_expired"))
             redirect_to new_sign_app_in_email_path(redirect_params)
           end
         end

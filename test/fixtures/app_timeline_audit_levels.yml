@@ -4,15 +4,3 @@
 #
 #  id :string(255)      default("NEYO"), not null, primary key
 #
-none:
-  id: NONE
-neyo:
-  id: NEYO
-info:
-  id: INFO
-debug:
-  id: DEBUG
-warn:
-  id: WARN
-error:
-  id: ERROR

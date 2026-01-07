@@ -3,6 +3,8 @@
 module Sign
   module App
     class OutsController < ApplicationController
+      include Sign::SessionVerification
+
       before_action :verify_session_user
 
       def edit
@@ -11,12 +13,6 @@ module Sign
       def destroy
         session.delete(:user)
         redirect_to sign_app_root_path, notice: t(".destroy.success")
-      end
-
-      private
-
-      def verify_session_user
-        raise ActionController::RoutingError, "Not Found" if session[:user].blank?
       end
     end
   end

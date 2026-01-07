@@ -3,9 +3,3 @@ neyo:
   id: NEYO
 active:
   id: ACTIVE
-inactive:
-  id: INACTIVE
-pending:
-  id: PENDING
-deleted:
-  id: DELETED

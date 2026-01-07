@@ -13,12 +13,8 @@
 #  index_user_client_suspensions_on_client_id              (client_id)
 #  index_user_client_suspensions_on_user_id_and_client_id  (user_id,client_id) UNIQUE
 #
-
 one:
   user: one
   client: one
-# column: value
-#
-two:
-  user: two
-  client: two
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

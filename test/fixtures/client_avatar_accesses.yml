@@ -14,17 +14,3 @@
 #  index_client_avatar_accesses_on_client_id                (client_id)
 #  index_client_avatar_accesses_on_client_id_and_avatar_id  (client_id,avatar_id) UNIQUE
 #
-
-one:
-  client: one
-  avatar_id: AVATAR_ONE
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-# column: value
-#
-two:
-  client: two
-  avatar_id: AVATAR_TWO
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-# column: value

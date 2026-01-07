@@ -25,15 +25,15 @@
 #
 one:
   staff: one
-  staff_token_status_id: "ACTIVE"
-  public_id: "one_staff_token_00001"
-  refresh_expires_at: <%= 1.year.from_now %>
+  staff_token_status_id: ACTIVE
+  public_id: one_staff_token_00001
+  refresh_expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
-  staff: placeholder
-  staff_token_status_id: "ACTIVE"
-  public_id: "two_staff_token_00001"
-  refresh_expires_at: <%= 1.year.from_now %>
+  staff: one
+  staff_token_status_id: ACTIVE
+  public_id: two_staff_token_00001
+  refresh_expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

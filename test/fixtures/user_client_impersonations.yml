@@ -13,17 +13,3 @@
 #  index_user_client_impersonations_on_client_id              (client_id)
 #  index_user_client_impersonations_on_user_id_and_client_id  (user_id,client_id) UNIQUE
 #
-
-one:
-  user: one
-  client: one
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-# column: value
-#
-two:
-  user: two
-  client: two
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-# column: value

@@ -77,4 +77,50 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { identity.reload }
   end
+
+  test "find_or_create_from_auth_hash initializes new record" do
+    auth = MockAuth.new(
+      uid: "new-google-uid",
+      provider: "google_oauth2",
+      info: OpenStruct.new(email: "google@example.com", image: "http://image.com"),
+      credentials: OpenStruct.new(token: "google-token", expires_at: 123),
+    )
+
+    identity = UserSocialGoogle.find_or_create_from_auth_hash(auth)
+
+    assert_predicate identity, :new_record?
+    assert_equal "new-google-uid", identity.uid
+    assert_equal "google_oauth2", identity.provider
+    assert_equal "google@example.com", identity.email
+    assert_equal "http://image.com", identity.image
+    assert_equal "google-token", identity.token
+    assert_equal 123, identity.expires_at
+  end
+
+  test "find_or_create_from_auth_hash returns existing record with updated attributes" do
+    user = users(:one)
+    UserSocialGoogle.create!(
+      user: user,
+      uid: "existing-google-uid",
+      token: "old-token",
+      expires_at: 123,
+      user_social_google_status: UserSocialGoogleStatus.find("ACTIVE"),
+    )
+
+    auth = MockAuth.new(
+      uid: "existing-google-uid",
+      provider: "google_oauth2",
+      info: OpenStruct.new(email: "updated-google@example.com", image: "http://new-image.com"),
+      credentials: OpenStruct.new(token: "updated-token", expires_at: 456),
+    )
+
+    identity = UserSocialGoogle.find_or_create_from_auth_hash(auth)
+
+    assert_predicate identity, :persisted?
+    assert_equal "updated-token", identity.token
+    assert_equal "http://new-image.com", identity.image
+    assert identity.changes.key?("token")
+  end
+
+  class MockAuth < OpenStruct; end
 end

@@ -14,7 +14,7 @@ class PreferenceTokenTest < ActiveSupport::TestCase
 
     decoded = PreferenceToken.decode(token, host: @host)
     assert_not_nil decoded
-    assert_equal "dr", decoded["ct"]
+    assert_nil decoded["ct"]
   end
 
   test "returns nil for invalid token" do

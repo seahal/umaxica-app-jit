@@ -281,6 +281,8 @@ jobs:
       POSTGRESQL_PRINCIPAL_SUB: localhost
       POSTGRESQL_PROFILE_PUB: localhost
       POSTGRESQL_PROFILE_SUB: localhost
+      POSTGRESQL_PREFERENCE_PUB: localhost
+      POSTGRESQL_PREFERENCE_SUB: localhost
       POSTGRESQL_TOKEN_PUB: localhost
       POSTGRESQL_TOKEN_SUB: localhost
       POSTGRESQL_DOCUMENT_PUB: localhost
@@ -289,7 +291,8 @@ jobs:
       POSTGRESQL_NEWS_SUB: localhost
       POSTGRESQL_BILLING_PUB: localhost
       POSTGRESQL_BILLING_SUB: localhost
-      # POSTGRESQL_MESSAGE_* - Message database does not exist (see CLAUDE.md)
+      POSTGRESQL_MESSAGE_PUB: localhost
+      POSTGRESQL_MESSAGE_SUB: localhost
       POSTGRESQL_NOTIFICATION_PUB: localhost
       POSTGRESQL_NOTIFICATION_SUB: localhost
       POSTGRESQL_CACHE_PUB: localhost

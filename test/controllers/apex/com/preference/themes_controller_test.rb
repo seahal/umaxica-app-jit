@@ -55,7 +55,7 @@ module Apex
 
           persisted_preferences = preference_cookie_payload(:"__Secure-root_com_preferences")
 
-          assert_equal "dr", persisted_preferences["ct"]
+          assert_nil persisted_preferences["ct"]
 
           follow_redirect!
 

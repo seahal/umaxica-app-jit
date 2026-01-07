@@ -1,0 +1,16 @@
+# == Schema Information
+#
+# Table name: com_preference_colortheme_options
+#
+#  id :uuid             not null, primary key
+#
+
+# frozen_string_literal: true
+
+class ComPreferenceColorthemeOption < PreferenceRecord
+  has_many :com_preference_colorthemes,
+           class_name: "ComPreferenceColortheme",
+           foreign_key: :option_id,
+           inverse_of: :option,
+           dependent: :restrict_with_error
+end

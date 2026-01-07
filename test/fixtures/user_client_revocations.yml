@@ -13,13 +13,3 @@
 #  index_user_client_revocations_on_client_id              (client_id)
 #  index_user_client_revocations_on_user_id_and_client_id  (user_id,client_id) UNIQUE
 #
-
-one:
-  user: one
-  client: one
-# column: value
-#
-two:
-  user: two
-  client: two
-# column: value

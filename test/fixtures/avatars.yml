@@ -25,22 +25,3 @@
 #  index_avatars_on_public_id                     (public_id) UNIQUE
 #  index_avatars_on_representing_organization_id  (representing_organization_id)
 #
-
-one:
-  id: AVATAR_ONE
-  public_id: "avatar_one"
-  moniker: "Avatar One"
-  image_data: {}
-  active_handle_id: HANDLE_ONE
-  capability_id: NORMAL
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-two:
-  id: AVATAR_TWO
-  public_id: "avatar_two"
-  moniker: "Avatar Two"
-  image_data: {}
-  active_handle_id: HANDLE_TWO
-  capability_id: NORMAL
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>

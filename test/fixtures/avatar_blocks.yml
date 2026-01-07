@@ -15,7 +15,3 @@
 #  index_avatar_blocks_on_blocked_avatar_id  (blocked_avatar_id)
 #  index_avatar_blocks_on_blocker_avatar_id  (blocker_avatar_id)
 #
-
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# Empty fixture - no test data needed yet

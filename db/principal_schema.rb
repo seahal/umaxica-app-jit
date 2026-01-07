@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_06_120000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -364,7 +364,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_120000) do
   end
 
   add_foreign_key "apple_auths", "users"
-  add_foreign_key "clients", "client_statuses", column: "status_id"
+  add_foreign_key "clients", "client_statuses", column: "status_id", name: "fk_rails_clients_client_statuses_cascade", on_delete: :cascade
   add_foreign_key "clients", "users"
   add_foreign_key "google_auths", "users"
   add_foreign_key "user_audits", "user_audit_events", column: "event_id"

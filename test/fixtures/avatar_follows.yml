@@ -13,7 +13,3 @@
 #  index_avatar_follows_on_followed_avatar_id  (followed_avatar_id)
 #  index_avatar_follows_on_follower_avatar_id  (follower_avatar_id)
 #
-
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# Empty fixture - no test data needed yet

@@ -19,18 +19,3 @@
 #  index_handles_on_public_id         (public_id) UNIQUE
 #  uniq_handles_handle_non_system     (handle) UNIQUE
 #
-
-one:
-  id: HANDLE_ONE
-  public_id: "handle_one"
-  handle: "handle_one"
-  cooldown_until: <%= Time.current %>
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-two:
-  id: HANDLE_TWO
-  public_id: "handle_two"
-  handle: "handle_two"
-  cooldown_until: <%= Time.current %>
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>

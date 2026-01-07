@@ -1,13 +1,3 @@
-# Auto-generated minimal fixture
-neyo:
+# Minimal fixture for app_contact_statuses
+NEYO:
   id: NEYO
-active:
-  id: ACTIVE
-inactive:
-  id: INACTIVE
-pending:
-  id: PENDING
-deleted:
-  id: DELETED
-checked_email_address:
-  id: CHECKED_EMAIL_ADDRESS

@@ -1,0 +1,29 @@
+# == Schema Information
+#
+# Table name: app_preference_languages
+#
+#  id            :uuid             not null, primary key
+#  preference_id :uuid             not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  option_id     :uuid
+#
+# Indexes
+#
+#  index_app_preference_languages_on_option_id      (option_id)
+#  index_app_preference_languages_on_preference_id  (preference_id)
+#
+
+_fixture:
+  model_class: AppPreferenceLanguage
+
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# This fixture is for the preference database
+# Load explicitly in tests that need it
+
+# one:
+#   preference: one
+#
+# two:
+#   preference: two

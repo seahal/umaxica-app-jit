@@ -7,14 +7,16 @@ default: &default
   timeout: 30000
   username: <%= ENV.fetch("POSTGRESQL_USER", "postgres") %>
   password: <%= ENV["POSTGRESQL_PASSWORD"] %>
-
+  lock_timeout: 2s
+  statement_timeout: 2s
 test_default: &test_default
   !!merge <<: *default
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 16 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 32 } %>
   timeout: 30000
-  # Test optimizations
   prepared_statements: false
   advisory_locks: false
+  lock_timeout: 2s
+  statement_timeout: 2s
 development:
   guest:
     !!merge <<: *default
@@ -49,6 +51,17 @@ development:
     database: development_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_SUB"] || default_host %>
     migrations_paths: db/profiles_migrate
+  preference:
+    !!merge <<: *default
+    database: development_preference_db
+    host: <%= ENV["POSTGRESQL_PREFERENCE_PUB"] || default_host %>
+    migrations_paths: db/preferences_migrate
+  preference_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_preference_db
+    host: <%= ENV["POSTGRESQL_PREFERENCE_SUB"] || default_host %>
+    migrations_paths: db/preferences_migrate
   token:
     !!merge <<: *default
     database: development_token_db
@@ -226,6 +239,17 @@ test:
     database: test_profile_db
     host: <%= ENV["POSTGRESQL_PROFILE_SUB"] || default_host %>
     migrations_paths: db/profiles_migrate
+  preference:
+    !!merge <<: *test_default
+    database: test_preference_db
+    host: <%= ENV["POSTGRESQL_PREFERENCE_PUB"] || default_host %>
+    migrations_paths: db/preferences_migrate
+  preference_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_preference_db
+    host: <%= ENV["POSTGRESQL_PREFERENCE_SUB"] || default_host %>
+    migrations_paths: db/preferences_migrate
   token:
     !!merge <<: *test_default
     database: test_token_db
@@ -416,6 +440,23 @@ production:
     username: 'neondb_owner'
     password: <%= Rails.application.credentials&.DATABASE&.PROFILE_REPLICA&.PASSWORD %>
     migrations_paths: db/profiles_migrate
+  preference:
+    !!merge <<: *default
+    database: production_preference_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.PREFERENCE&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.PREFERENCE&.PASSWORD %>
+    migrations_paths: db/preferences_migrate
+  preference_replica:
+    !!merge <<: *default
+    replica: true
+    database: production_preference_db
+    port: <%= ENV.fetch('POSTGRESQL_PORT', 5432) %>
+    host: <%= Rails.application.credentials&.DATABASE&.PREFERENCE_REPLICA&.HOST %>
+    username: 'neondb_owner'
+    password: <%= Rails.application.credentials&.DATABASE&.PREFERENCE_REPLICA&.PASSWORD %>
+    migrations_paths: db/preferences_migrate
   token:
     !!merge <<: *default
     database: production_token_db

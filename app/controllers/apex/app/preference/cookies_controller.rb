@@ -4,7 +4,11 @@ module Apex
   module App
     module Preference
       class CookiesController < ApplicationController
-        include ::Cookie
+        def edit
+        end
+
+        def update
+        end
       end
     end
   end

@@ -28,24 +28,24 @@ module Sign
 
           if current_user.save
             User.transaction do
-              Rails.event.notify(
-                "user.withdrawal.initiated",
-                user_id: current_user.id,
-                withdrawn_at: current_user.withdrawn_at,
-                status: UserStatus::PRE_WITHDRAWAL_CONDITION,
-                ip_address: request.remote_ip,
-              )
+              # Rails.event.notify(
+              #   "user.withdrawal.initiated",
+              #   user_id: current_user.id,
+              #   withdrawn_at: current_user.withdrawn_at,
+              #   status: UserStatus::PRE_WITHDRAWAL_CONDITION,
+              #   ip_address: request.remote_ip,
+              # )
               # Log out and clear session data
               log_out
               redirect_to sign_app_root_path, notice: t("sign.app.configuration.withdrawal.create.success")
             end
           else
-            Rails.event.notify(
-              "user.withdrawal.initiation_failed",
-              user_id: current_user.id,
-              errors: current_user.errors.full_messages,
-              ip_address: request.remote_ip,
-            )
+            # Rails.event.notify(
+            #   "user.withdrawal.initiation_failed",
+            #   user_id: current_user.id,
+            #   errors: current_user.errors.full_messages,
+            #   ip_address: request.remote_ip,
+            # )
             render :new, status: :unprocessable_content
           end
         end
@@ -54,28 +54,28 @@ module Sign
           # Recovery: clear withdrawn_at if within the model-configured recovery window
           if current_user.can_recover?
             if current_user.update(withdrawn_at: nil)
-              Rails.event.notify(
-                "user.withdrawal.recovered",
-                user_id: current_user.id,
-                ip_address: request.remote_ip,
-              )
+              # Rails.event.notify(
+              #   "user.withdrawal.recovered",
+              #   user_id: current_user.id,
+              #   ip_address: request.remote_ip,
+              # )
               redirect_to sign_app_root_path, notice: t("sign.app.configuration.withdrawal.update.recovered")
             else
-              Rails.event.notify(
-                "user.withdrawal.recovery_failed",
-                user_id: current_user.id,
-                errors: current_user.errors.full_messages,
-                ip_address: request.remote_ip,
-              )
+              # Rails.event.notify(
+              #   "user.withdrawal.recovery_failed",
+              #   user_id: current_user.id,
+              #   errors: current_user.errors.full_messages,
+              #   ip_address: request.remote_ip,
+              # )
               redirect_to sign_app_root_path, alert: t("sign.app.configuration.withdrawal.update.failed")
             end
           else
-            Rails.event.notify(
-              "user.withdrawal.recovery_rejected",
-              user_id: current_user.id,
-              reason: "recovery_window_expired",
-              ip_address: request.remote_ip,
-            )
+            # Rails.event.notify(
+            #   "user.withdrawal.recovery_rejected",
+            #   user_id: current_user.id,
+            #   reason: "recovery_window_expired",
+            #   ip_address: request.remote_ip,
+            # )
             redirect_to sign_app_root_path, alert: t("sign.app.configuration.withdrawal.update.cannot_recover")
           end
         end
@@ -83,26 +83,26 @@ module Sign
         def destroy
           # Log intent and perform destroy inside a transaction. Prefer background job
           # for heavy deletions; here we attempt synchronous destroy with graceful handling.
-          user_id = current_user.id
+          current_user.id
           begin
             User.transaction do
               current_user.destroy!
-              Rails.event.notify(
-                "user.deletion.completed",
-                user_id: user_id,
-                ip_address: request.remote_ip,
-              )
+              # Rails.event.notify(
+              #   "user.deletion.completed",
+              #   user_id: user_id,
+              #   ip_address: request.remote_ip,
+              # )
               log_out
               redirect_to sign_app_root_path, notice: t("sign.app.configuration.withdrawal.destroy.success")
             end
-          rescue StandardError => e
-            Rails.event.notify(
-              "user.deletion.failed",
-              user_id: user_id,
-              error_class: e.class.name,
-              error_message: e.message,
-              ip_address: request.remote_ip,
-            )
+          rescue StandardError
+            # Rails.event.notify(
+            #   "user.deletion.failed",
+            #   user_id: user_id,
+            #   error_class: e.class.name,
+            #   error_message: e.message,
+            #   ip_address: request.remote_ip,
+            # )
             redirect_to sign_app_root_path, alert: t("sign.app.configuration.withdrawal.destroy.failed")
           end
         end

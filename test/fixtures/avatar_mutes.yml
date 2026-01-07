@@ -14,7 +14,3 @@
 #  index_avatar_mutes_on_muted_avatar_id  (muted_avatar_id)
 #  index_avatar_mutes_on_muter_avatar_id  (muter_avatar_id)
 #
-
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# Empty fixture - no test data needed yet

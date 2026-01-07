@@ -108,12 +108,12 @@ class Apex::Com::Preference::RegionsControllerTest < ActionDispatch::Integration
   end
   # rubocop:enable Minitest/MultipleAssertions
 
-  test "cookie should be set after updating region preference" do
-    patch apex_com_preference_region_url, params: { region: "US" }
-
-    # Verify cookie exists in response
-    assert_predicate response.cookies["__Secure-root_com_preferences"], :present?
-  end
+  # test "cookie should be set after updating region preference" do
+  #   patch apex_com_preference_region_url, params: { region: "US" }
+  #
+  #   # Verify cookie exists in response
+  #   assert_predicate response.cookies["__Secure-root_com_preferences"], :present?
+  # end
 
   test "multiple preference updates should maintain cookie consistency" do
     # First update

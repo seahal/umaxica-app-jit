@@ -1,0 +1,30 @@
+# == Schema Information
+#
+# Table name: app_preference_cookies
+#
+#  id            :uuid             not null, primary key
+#  preference_id :uuid             not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  targetable    :boolean          default(FALSE), not null
+#  performant    :boolean          default(FALSE), not null
+#  functional    :boolean          default(FALSE), not null
+#
+# Indexes
+#
+#  index_app_preference_cookies_on_preference_id  (preference_id)
+#
+
+_fixture:
+  model_class: AppPreferenceCookie
+
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# This fixture is for the preference database
+# Load explicitly in tests that need it
+
+# one:
+#   preference: one
+#
+# two:
+#   preference: two

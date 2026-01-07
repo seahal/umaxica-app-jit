@@ -21,8 +21,3 @@
 #  index_workspaces_on_parent_id            (parent_id)
 #  index_workspaces_on_workspace_status_id  (workspace_status_id)
 #
-
-one:
-  name: MyString
-  domain: MyString
-  parent_organization: "00000000-0000-0000-0000-000000000000"

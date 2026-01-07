@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+class CreateOrgPreferences < ActiveRecord::Migration[8.2]
+  def change
+    create_table :org_preferences, id: :uuid do |t|
+      t.string :public_id
+      t.datetime :expires_at
+      t.binary :token_digest
+
+      t.timestamps
+    end
+  end
+end
