@@ -114,3 +114,4 @@ node_modules
 erd.pdf
 .pnpm-store/
 .claudeignore
+test_output*.txt

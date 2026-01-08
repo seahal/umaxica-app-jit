@@ -8,7 +8,7 @@
 #
 
 class StaffStatus < OperatorRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   # Use Rails convention `status_id` as the foreign key on `staffs`.
   has_many :staffs,

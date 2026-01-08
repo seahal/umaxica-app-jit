@@ -8,9 +8,9 @@
 #
 
 class UserSocialGoogleStatus < PrincipalRecord
-  include UppercaseId
+  include StringPrimaryKey
 
-  has_many :user_social_googles, dependent: :restrict_with_error
+  has_many :user_social_googles, inverse_of: :user_social_google_status, dependent: :restrict_with_error
 
   # Status constants
   ACTIVE = "ACTIVE"

@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: workspaces
+# Table name: organizations
 #
 #  id                  :uuid             not null, primary key
 #  name                :string           default(""), not null
@@ -15,19 +15,17 @@
 #
 # Indexes
 #
-#  index_workspaces_on_admin_id             (admin_id)
-#  index_workspaces_on_department_id        (department_id)
-#  index_workspaces_on_domain               (domain) UNIQUE
-#  index_workspaces_on_parent_id            (parent_id)
-#  index_workspaces_on_workspace_status_id  (workspace_status_id)
+#  index_organizations_on_admin_id             (admin_id)
+#  index_organizations_on_department_id        (department_id)
+#  index_organizations_on_domain               (domain) UNIQUE
+#  index_organizations_on_parent_id            (parent_id)
+#  index_organizations_on_workspace_status_id  (workspace_status_id)
 #
 
 # frozen_string_literal: true
 
 # Organization mirrors Workspace but keeps the legacy name.
 class Organization < OperatorRecord
-  self.table_name = "workspaces"
-
   belongs_to :organization_status,
              class_name: "OrganizationStatus",
              foreign_key: :workspace_status_id,

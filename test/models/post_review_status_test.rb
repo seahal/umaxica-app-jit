@@ -22,4 +22,10 @@ class PostReviewStatusTest < ActiveSupport::TestCase
     status = PostReviewStatus.new
     assert_not status.valid?
   end
+
+  test "validates length of id" do
+    record = PostReviewStatus.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

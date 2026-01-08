@@ -7,10 +7,8 @@
 #  id :string(255)      default("NEYO"), not null, primary key
 #
 
-class AppDocumentAuditEvent < OccurrenceRecord
-  include UppercaseId
-
-  self.table_name = "app_document_audit_events"
+class AppDocumentAuditEvent < AuditRecord
+  include StringPrimaryKey
 
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')
   has_many :app_document_audits,

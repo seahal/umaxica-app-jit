@@ -29,7 +29,7 @@
 #
 
 class Avatar < AvatarRecord
-  include StringPrimaryKey
+  include UuidV7PrimaryKey
   include PublicId
 
   belongs_to :client, optional: true, inverse_of: :avatars

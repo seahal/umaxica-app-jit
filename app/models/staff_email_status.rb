@@ -8,9 +8,9 @@
 #
 
 class StaffEmailStatus < OperatorRecord
-  include UppercaseId
+  include StringPrimaryKey
 
-  has_many :staff_emails, dependent: :restrict_with_error
+  has_many :staff_emails, inverse_of: :staff_email_status, dependent: :restrict_with_error
 
   # Status constants
   UNVERIFIED = "UNVERIFIED"

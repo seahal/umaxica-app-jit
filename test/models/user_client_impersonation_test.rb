@@ -35,7 +35,7 @@ class UserClientImpersonationTest < ActiveSupport::TestCase
   def create_client
     ClientStatus.find_or_create_by!(id: "NEYO")
     DivisionStatus.find_or_create_by!(id: "NEYO")
-    Workspace.find_or_create_by!(id: "00000000-0000-0000-0000-000000000000") do |w|
+    Organization.find_or_create_by!(id: "00000000-0000-0000-0000-000000000000") do |w|
       w.name = "Root"
       w.domain = "root.local"
       w.parent_organization = "00000000-0000-0000-0000-000000000000"

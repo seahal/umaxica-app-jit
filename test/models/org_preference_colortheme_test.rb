@@ -36,7 +36,7 @@ class OrgPreferenceColorthemeTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = OrgPreferenceColorthemeOption.create!(id: "TEST_Org_Colortheme")
+    option = OrgPreferenceColorthemeOption.create!(id: "TEST_ORG_COLORTHEME")
     colortheme = OrgPreferenceColortheme.create!(preference: @preference, option: option)
     assert_equal option, colortheme.option
   end

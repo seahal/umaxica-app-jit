@@ -10,7 +10,7 @@
 # frozen_string_literal: true
 
 class ClientStatus < PrincipalRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :clients,
            foreign_key: :status_id,

@@ -8,7 +8,7 @@
 #
 
 class StaffTokenStatus < TokenRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :staff_tokens, dependent: :restrict_with_error
 

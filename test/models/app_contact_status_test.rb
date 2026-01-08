@@ -31,4 +31,10 @@ class AppContactStatusTest < ActiveSupport::TestCase
       @status.destroy
     end
   end
+
+  test "validates length of id" do
+    record = AppContactStatus.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

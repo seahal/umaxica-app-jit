@@ -23,7 +23,7 @@
 #
 
 class Handle < AvatarRecord
-  include StringPrimaryKey
+  include UuidV7PrimaryKey
   include PublicId
 
   belongs_to :handle_status, optional: true

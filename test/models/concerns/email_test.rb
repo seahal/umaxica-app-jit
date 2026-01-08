@@ -44,7 +44,7 @@ class EmailTest < ActiveSupport::TestCase
   test "encrypts address deterministically" do
     email1 = create_email(address: "test1@example.com", confirm_policy: true)
     email2 = create_email(address: "test2@example.com", confirm_policy: true)
-    sql = "SELECT address FROM user_emails WHERE id = :id"
+    sql = "SELECT address FROM #{UserEmail.table_name} WHERE id = :id"
 
     # Different emails should have different encrypted values
     raw1 = UserEmail.connection.execute(

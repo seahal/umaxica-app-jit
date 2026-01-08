@@ -61,4 +61,10 @@ class AvatarCapabilityTest < ActiveSupport::TestCase
     assert_not @capability.destroy
     assert_includes @capability.errors[:base], "avatarsが存在しているので削除できません"
   end
+
+  test "validates length of id" do
+    record = AvatarCapability.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

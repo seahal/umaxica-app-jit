@@ -8,9 +8,9 @@
 #
 
 class UserEmailStatus < PrincipalRecord
-  include UppercaseId
+  include StringPrimaryKey
 
-  has_many :user_emails, dependent: :restrict_with_error
+  has_many :user_emails, inverse_of: :user_email_status, dependent: :restrict_with_error
 
   # Status constants
   UNVERIFIED = "UNVERIFIED"

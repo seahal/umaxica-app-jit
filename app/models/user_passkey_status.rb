@@ -8,7 +8,7 @@
 #
 
 class UserPasskeyStatus < PrincipalRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :user_passkeys, dependent: :restrict_with_error
 

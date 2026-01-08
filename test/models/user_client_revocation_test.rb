@@ -38,7 +38,7 @@ class UserClientRevocationTest < ActiveSupport::TestCase
     DivisionStatus.find_or_create_by!(id: "NEYO")
     # Workspace/Organization (division -> workspace)
     # Check Division model if needed, but assuming optional or simple setup
-    Workspace.find_or_create_by!(id: "00000000-0000-0000-0000-000000000000") do |w|
+    Organization.find_or_create_by!(id: "00000000-0000-0000-0000-000000000000") do |w|
       w.name = "Root"
       w.domain = "root.local"
     end

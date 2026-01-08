@@ -7,8 +7,8 @@
 #  id :string(255)      default("NEYO"), not null, primary key
 #
 
-class ComDocumentAuditLevel < OccurrenceRecord
-  include UppercaseId
+class ComDocumentAuditLevel < AuditRecord
+  include StringPrimaryKey
 
   has_many :com_document_audits, dependent: :restrict_with_error, inverse_of: :com_document_audit_level
 end

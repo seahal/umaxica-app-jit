@@ -16,4 +16,10 @@ class AvatarMembershipStatusTest < ActiveSupport::TestCase
     status = AvatarMembershipStatus.new(id: "TEST_STATUS")
     assert_predicate status, :valid?
   end
+
+  test "validates length of id" do
+    record = AvatarMembershipStatus.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

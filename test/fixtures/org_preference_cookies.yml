@@ -1,0 +1,32 @@
+# == Schema Information
+#
+# Table name: org_preference_cookies
+#
+#  id            :uuid             not null, primary key
+#  created_at    :datetime         not null
+#  functional    :boolean          default(FALSE), not null
+#  performant    :boolean          default(FALSE), not null
+#  preference_id :uuid             not null
+#  targetable    :boolean          default(FALSE), not null
+#  updated_at    :datetime         not null
+#
+# Indexes
+#
+#  index_org_preference_cookies_on_preference_id  (preference_id) UNIQUE
+#
+
+
+_fixture:
+  model_class: OrgPreferenceCookie
+
+one:
+  preference: one
+  functional: false
+  performant: false
+  targetable: false
+
+two:
+  preference: two
+  functional: false
+  performant: false
+  targetable: false

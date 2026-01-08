@@ -10,7 +10,7 @@
 #
 
 class OrgContactCategory < GuestRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :org_contacts,
            foreign_key: :category_id,

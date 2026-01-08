@@ -7,9 +7,7 @@
 #  id :string(255)      default("NEYO"), not null, primary key
 #
 
-class OrgDocumentAuditEvent < OccurrenceRecord
-  self.table_name = "org_document_audit_events"
-
+class OrgDocumentAuditEvent < AuditRecord
   has_many :org_document_audits,
            class_name: "OrgDocumentAudit",
            foreign_key: "event_id",

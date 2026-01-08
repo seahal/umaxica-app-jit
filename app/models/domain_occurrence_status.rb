@@ -13,7 +13,7 @@
 #
 
 class DomainOccurrenceStatus < OccurrenceRecord
-  include UppercaseId
+  include StringPrimaryKey
   include OccurrenceStatus
 
   has_many :domain_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,

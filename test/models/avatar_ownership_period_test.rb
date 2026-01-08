@@ -28,4 +28,10 @@ class AvatarOwnershipPeriodTest < ActiveSupport::TestCase
     period = AvatarOwnershipPeriod.new
     assert_not period.valid?
   end
+
+  test "validates length of id" do
+    record = AvatarOwnershipPeriod.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

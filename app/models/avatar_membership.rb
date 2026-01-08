@@ -23,7 +23,7 @@
 #
 
 class AvatarMembership < AvatarRecord
-  include StringPrimaryKey
+  include UuidV7PrimaryKey
 
   belongs_to :avatar
   belongs_to :avatar_membership_status, optional: true

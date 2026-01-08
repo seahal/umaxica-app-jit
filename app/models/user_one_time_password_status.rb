@@ -8,7 +8,7 @@
 #
 
 class UserOneTimePasswordStatus < PrincipalRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :user_one_time_passwords, dependent: :restrict_with_error,
                                      inverse_of: :user_one_time_password_status

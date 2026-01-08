@@ -36,7 +36,7 @@ class AppPreferenceLanguageTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = AppPreferenceLanguageOption.create!(id: "TEST_App_Language")
+    option = AppPreferenceLanguageOption.create!(id: "TEST_APP_LANGUAGE")
     language = AppPreferenceLanguage.create!(preference: @preference, option: option)
     assert_equal option, language.option
   end

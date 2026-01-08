@@ -23,4 +23,10 @@ class OrgContactStatusTest < ActiveSupport::TestCase
     @valid_id = "ACTIVE".freeze
     @subject = @model_class.new(id: @valid_id)
   end
+
+  test "validates length of id" do
+    record = OrgContactStatus.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

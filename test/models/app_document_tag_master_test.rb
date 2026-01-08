@@ -64,4 +64,10 @@ class AppDocumentTagMasterTest < ActiveSupport::TestCase
     # but the method should at least return a string.
     assert_kind_of String, master.name
   end
+
+  test "validates length of id" do
+    record = AppDocumentTagMaster.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

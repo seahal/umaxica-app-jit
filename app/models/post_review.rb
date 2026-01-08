@@ -21,7 +21,7 @@
 #
 
 class PostReview < AvatarRecord
-  include StringPrimaryKey
+  include UuidV7PrimaryKey
 
   belongs_to :post, inverse_of: :post_reviews
   belongs_to :post_review_status

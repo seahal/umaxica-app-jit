@@ -41,7 +41,11 @@ class OrgPreferenceCookieTest < ActiveSupport::TestCase
     test "raises when #{flag} is nil" do
       cookie = OrgPreferenceCookie.new(preference: @preference)
       cookie.assign_attributes(flag => nil)
-      assert_raises(ActiveRecord::NotNullViolation) { cookie.save!(validate: false) }
+      assert_raises(ActiveRecord::NotNullViolation) do
+        ActiveRecord::Base.logger.silence do
+          cookie.save!(validate: false)
+        end
+      end
     end
   end
 

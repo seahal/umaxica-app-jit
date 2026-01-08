@@ -22,7 +22,7 @@
 #
 
 class AvatarOwnershipPeriod < AvatarRecord
-  include StringPrimaryKey
+  include UuidV7PrimaryKey
 
   belongs_to :avatar
   belongs_to :avatar_ownership_status, optional: true

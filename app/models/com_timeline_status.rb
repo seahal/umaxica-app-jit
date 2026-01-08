@@ -8,7 +8,7 @@
 #
 
 class ComTimelineStatus < NewsRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   validates :description, length: { maximum: 255 }
 

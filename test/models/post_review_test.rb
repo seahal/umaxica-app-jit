@@ -27,4 +27,10 @@ class PostReviewTest < ActiveSupport::TestCase
     review = PostReview.new
     assert_not review.valid?
   end
+
+  test "validates length of id" do
+    record = PostReview.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

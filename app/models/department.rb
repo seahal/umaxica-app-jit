@@ -33,10 +33,11 @@ class Department < OperatorRecord
            dependent: :restrict_with_error
 
   belongs_to :department_status,
+             class_name: "OrganizationStatus",
              primary_key: :id,
              inverse_of: :departments
 
-  belongs_to :workspace, optional: true, inverse_of: :departments
+  belongs_to :workspace, class_name: "Organization", optional: true, inverse_of: :departments
   has_many :admins, dependent: :nullify, inverse_of: :department
 
   validates :name, presence: true

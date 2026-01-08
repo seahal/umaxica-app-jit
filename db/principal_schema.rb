@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_08_100600) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -84,36 +84,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
     t.uuid "organization_id", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_roles_on_organization_id"
-  end
-
-  create_table "user_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "user_audit_levels", id: :string, default: "NEYO", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "user_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
-    t.string "actor_type", default: "", null: false
-    t.jsonb "context", default: {}, null: false
-    t.datetime "created_at", null: false
-    t.string "event_id", limit: 255, default: "NEYO", null: false
-    t.string "ip_address", default: "", null: false
-    t.string "level_id", default: "NEYO", null: false
-    t.text "previous_value"
-    t.string "subject_id"
-    t.string "subject_type", default: "", null: false
-    t.datetime "timestamp", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "user_id", null: false
-    t.index ["event_id"], name: "index_user_identity_audits_on_event_id"
-    t.index ["level_id"], name: "index_user_identity_audits_on_level_id"
-    t.index ["subject_id"], name: "index_user_identity_audits_on_subject_id"
-    t.index ["user_id"], name: "index_user_identity_audits_on_user_id"
   end
 
   create_table "user_client_deletions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -195,13 +165,42 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
     t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", default: "", null: false
     t.datetime "updated_at", null: false
-    t.string "user_email_status_id", limit: 255, default: "NEYO", null: false
     t.uuid "user_id", null: false
+    t.string "user_identity_email_status_id", limit: 255, default: "NEYO", null: false
     t.index "lower((address)::text)", name: "index_user_identity_emails_on_lower_address", unique: true
-    t.index ["otp_last_sent_at"], name: "index_user_identity_emails_on_otp_last_sent_at"
-    t.index ["user_email_status_id"], name: "index_user_identity_emails_on_user_identity_email_status_id"
-    t.index ["user_id"], name: "index_user_identity_emails_on_user_id"
-    t.check_constraint "user_email_status_id IS NULL OR user_email_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_emails_user_identity_email_status_id_format"
+    t.index ["otp_last_sent_at"], name: "index_user_emails_on_otp_last_sent_at"
+    t.index ["user_id"], name: "index_user_emails_on_user_id"
+    t.index ["user_identity_email_status_id"], name: "index_user_emails_on_user_identity_email_status_id"
+    t.check_constraint "user_identity_email_status_id IS NULL OR user_identity_email_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_emails_user_identity_email_status_id_format"
+  end
+
+  create_table "user_identity_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_identity_audit_levels", id: :string, default: "NEYO", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_identity_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "actor_type", default: "", null: false
+    t.datetime "created_at", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
+    t.string "ip_address", default: "", null: false
+    t.string "level_id", default: "NEYO", null: false
+    t.text "previous_value"
+    t.string "subject_id"
+    t.string "subject_type", default: "", null: false
+    t.datetime "timestamp", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["event_id"], name: "index_user_identity_audits_on_event_id"
+    t.index ["level_id"], name: "index_user_identity_audits_on_level_id"
+    t.index ["subject_id"], name: "index_user_identity_audits_on_subject_id"
+    t.index ["user_id"], name: "index_user_identity_audits_on_user_id"
   end
 
   create_table "user_memberships", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -226,10 +225,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
     t.string "private_key", limit: 1024, default: "", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_one_time_password_status_id", default: "NEYO", null: false
-    t.index ["user_id"], name: "index_user_identity_one_time_passwords_on_user_id"
-    t.index ["user_one_time_password_status_id"], name: "idx_on_user_identity_one_time_password_status_id_01264db86c"
-    t.check_constraint "user_one_time_password_status_id IS NULL OR user_one_time_password_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_one_time_passwords_user_identity_one_time_pas"
+    t.string "user_identity_one_time_password_status_id", default: "NEYO", null: false
+    t.index ["user_id"], name: "index_user_one_time_passwords_on_user_id"
+    t.index ["user_identity_one_time_password_status_id"], name: "idx_on_user_identity_one_time_password_status_id_c03cdf0b39"
+    t.check_constraint "user_identity_one_time_password_status_id IS NULL OR user_identity_one_time_password_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_one_time_passwords_user_identity_one_time_pas"
   end
 
   create_table "user_passkey_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -266,12 +265,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
     t.string "password_digest", default: "", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_secret_status_id", limit: 255, default: "ACTIVE", null: false
+    t.string "user_identity_secret_status_id", limit: 255, default: "ACTIVE", null: false
     t.integer "uses_remaining", default: 1, null: false
-    t.index ["expires_at"], name: "index_user_identity_secrets_on_expires_at"
-    t.index ["user_id"], name: "index_user_identity_secrets_on_user_id"
-    t.index ["user_secret_status_id"], name: "index_user_identity_secrets_on_user_identity_secret_status_id"
-    t.check_constraint "user_secret_status_id IS NULL OR user_secret_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_secrets_user_identity_secret_status_id_format"
+    t.index ["expires_at"], name: "index_user_secrets_on_expires_at"
+    t.index ["user_id"], name: "index_user_secrets_on_user_id"
+    t.index ["user_identity_secret_status_id"], name: "index_user_secrets_on_user_identity_secret_status_id"
+    t.check_constraint "user_identity_secret_status_id IS NULL OR user_identity_secret_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_secrets_user_identity_secret_status_id_format"
     t.check_constraint "uses_remaining >= 0", name: "chk_user_identity_secrets_uses_remaining_non_negative"
   end
 
@@ -291,12 +290,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
     t.string "uid", default: "", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_social_apple_status_id", limit: 255, default: "ACTIVE", null: false
-    t.index ["expires_at"], name: "index_user_identity_social_apples_on_expires_at"
-    t.index ["uid", "provider"], name: "index_user_identity_social_apples_on_uid_and_provider", unique: true
+    t.string "user_identity_social_apple_status_id", limit: 255, default: "ACTIVE", null: false
+    t.index ["expires_at"], name: "index_user_social_apples_on_expires_at"
+    t.index ["uid", "provider"], name: "index_user_social_apples_on_uid_and_provider", unique: true
     t.index ["user_id"], name: "index_user_identity_social_apples_on_user_id_unique", unique: true, where: "(user_id IS NOT NULL)"
-    t.index ["user_social_apple_status_id"], name: "idx_on_user_identity_social_apple_status_id_d1764af59f"
-    t.check_constraint "user_social_apple_status_id IS NULL OR user_social_apple_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_social_apples_user_identity_social_apple_stat"
+    t.index ["user_identity_social_apple_status_id"], name: "idx_on_user_identity_social_apple_status_id_93441f369d"
+    t.check_constraint "user_identity_social_apple_status_id IS NULL OR user_identity_social_apple_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_social_apples_user_identity_social_apple_stat"
   end
 
   create_table "user_social_google_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -315,12 +314,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
     t.string "uid", default: "", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_social_google_status_id", limit: 255, default: "ACTIVE", null: false
-    t.index ["expires_at"], name: "index_user_identity_social_googles_on_expires_at"
-    t.index ["uid", "provider"], name: "index_user_identity_social_googles_on_uid_and_provider", unique: true
+    t.string "user_identity_social_google_status_id", limit: 255, default: "ACTIVE", null: false
+    t.index ["expires_at"], name: "index_user_social_googles_on_expires_at"
+    t.index ["uid", "provider"], name: "index_user_social_googles_on_uid_and_provider", unique: true
     t.index ["user_id"], name: "index_user_identity_social_googles_on_user_id_unique", unique: true, where: "(user_id IS NOT NULL)"
-    t.index ["user_social_google_status_id"], name: "idx_on_user_identity_social_google_status_id_7bdb8753df"
-    t.check_constraint "user_social_google_status_id IS NULL OR user_social_google_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_social_googles_user_identity_social_google_st"
+    t.index ["user_identity_social_google_status_id"], name: "idx_on_user_identity_social_google_status_id_f4bfb6ffdd"
+    t.check_constraint "user_identity_social_google_status_id IS NULL OR user_identity_social_google_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_social_googles_user_identity_social_google_st"
   end
 
   create_table "user_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
@@ -343,11 +342,11 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
     t.string "otp_private_key", default: "", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_telephone_status_id", limit: 255, default: "NEYO", null: false
+    t.string "user_identity_telephone_status_id", limit: 255, default: "NEYO", null: false
     t.index "lower((number)::text)", name: "index_user_identity_telephones_on_lower_number"
-    t.index ["user_id"], name: "index_user_identity_telephones_on_user_id"
-    t.index ["user_telephone_status_id"], name: "idx_on_user_identity_telephone_status_id_a15207191e"
-    t.check_constraint "user_telephone_status_id IS NULL OR user_telephone_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_telephones_user_identity_telephone_status_id_"
+    t.index ["user_id"], name: "index_user_telephones_on_user_id"
+    t.index ["user_identity_telephone_status_id"], name: "index_user_telephones_on_user_identity_telephone_status_id"
+    t.check_constraint "user_identity_telephone_status_id IS NULL OR user_identity_telephone_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_telephones_user_identity_telephone_status_id_"
   end
 
   create_table "users", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -364,10 +363,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
   end
 
   add_foreign_key "apple_auths", "users"
-  add_foreign_key "clients", "client_statuses", column: "status_id", name: "fk_rails_clients_client_statuses_cascade", on_delete: :cascade
+  add_foreign_key "clients", "client_statuses", column: "status_id"
   add_foreign_key "clients", "users"
   add_foreign_key "google_auths", "users"
-  add_foreign_key "user_audits", "user_audit_events", column: "event_id"
   add_foreign_key "user_client_deletions", "clients"
   add_foreign_key "user_client_deletions", "users"
   add_foreign_key "user_client_discoveries", "clients"
@@ -382,20 +380,21 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_122100) do
   add_foreign_key "user_client_suspensions", "users"
   add_foreign_key "user_clients", "clients", on_delete: :cascade
   add_foreign_key "user_clients", "users", on_delete: :cascade
-  add_foreign_key "user_emails", "user_email_statuses"
+  add_foreign_key "user_emails", "user_email_statuses", column: "user_identity_email_status_id"
   add_foreign_key "user_emails", "users"
+  add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_memberships", "users"
-  add_foreign_key "user_one_time_passwords", "user_one_time_password_statuses"
+  add_foreign_key "user_one_time_passwords", "user_one_time_password_statuses", column: "user_identity_one_time_password_status_id"
   add_foreign_key "user_one_time_passwords", "users", validate: false
   add_foreign_key "user_passkeys", "user_passkey_statuses"
   add_foreign_key "user_passkeys", "users"
-  add_foreign_key "user_secrets", "user_secret_statuses"
+  add_foreign_key "user_secrets", "user_secret_statuses", column: "user_identity_secret_status_id"
   add_foreign_key "user_secrets", "users"
-  add_foreign_key "user_social_apples", "user_social_apple_statuses"
+  add_foreign_key "user_social_apples", "user_social_apple_statuses", column: "user_identity_social_apple_status_id"
   add_foreign_key "user_social_apples", "users"
-  add_foreign_key "user_social_googles", "user_social_google_statuses"
+  add_foreign_key "user_social_googles", "user_social_google_statuses", column: "user_identity_social_google_status_id"
   add_foreign_key "user_social_googles", "users"
-  add_foreign_key "user_telephones", "user_telephone_statuses"
+  add_foreign_key "user_telephones", "user_telephone_statuses", column: "user_identity_telephone_status_id"
   add_foreign_key "user_telephones", "users"
   add_foreign_key "users", "user_statuses", column: "status_id"
 end

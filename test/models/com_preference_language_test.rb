@@ -36,7 +36,7 @@ class ComPreferenceLanguageTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = ComPreferenceLanguageOption.create!(id: "TEST_Com_Language")
+    option = ComPreferenceLanguageOption.create!(id: "TEST_COM_LANGUAGE")
     language = ComPreferenceLanguage.create!(preference: @preference, option: option)
     assert_equal option, language.option
   end

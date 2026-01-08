@@ -31,9 +31,7 @@
 #  index_org_document_audits_on_subject_id                (subject_id)
 #
 
-class OrgDocumentAudit < OccurrenceRecord
-  self.table_name = "org_document_audits"
-
+class OrgDocumentAudit < AuditRecord
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 

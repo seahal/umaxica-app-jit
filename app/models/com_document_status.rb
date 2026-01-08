@@ -8,7 +8,7 @@
 #
 
 class ComDocumentStatus < DocumentRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :com_documents,
            foreign_key: :status_id,

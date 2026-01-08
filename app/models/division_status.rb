@@ -10,8 +10,7 @@
 #
 
 class DivisionStatus < OperatorRecord
-  include ::UppercaseId
-  include ::CatTagMaster
+  include StringPrimaryKey
 
   self.primary_key = "id"
 

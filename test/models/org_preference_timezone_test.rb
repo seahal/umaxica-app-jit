@@ -36,7 +36,7 @@ class OrgPreferenceTimezoneTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = OrgPreferenceTimezoneOption.create!(id: "TEST_Org_Timezone")
+    option = OrgPreferenceTimezoneOption.create!(id: "TEST_ORG_TIMEZONE")
     timezone = OrgPreferenceTimezone.create!(preference: @preference, option: option)
     assert_equal option, timezone.option
   end

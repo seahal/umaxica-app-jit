@@ -8,7 +8,7 @@
 #
 
 class StaffPasskeyStatus < OperatorRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :staff_passkeys, dependent: :restrict_with_error
 

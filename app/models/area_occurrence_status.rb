@@ -13,7 +13,7 @@
 #
 
 class AreaOccurrenceStatus < OccurrenceRecord
-  include UppercaseId
+  include StringPrimaryKey
   include OccurrenceStatus
 
   has_many :area_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,

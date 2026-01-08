@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_06_120001) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_08_100600) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,12 +32,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_120001) do
     t.index ["public_id"], name: "index_admins_on_public_id", unique: true
     t.index ["staff_id"], name: "index_admins_on_staff_id"
     t.index ["status_id"], name: "index_admins_on_status_id"
-  end
-
-  create_table "department_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index "lower((id)::text)", name: "index_department_statuses_on_lower_id", unique: true
   end
 
   create_table "departments", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -71,6 +65,29 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_120001) do
     t.index ["parent_id", "division_status_id"], name: "index_divisions_unique", unique: true
   end
 
+  create_table "organization_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((id)::text)", name: "index_department_statuses_on_lower_id", unique: true
+  end
+
+  create_table "organizations", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "admin_id"
+    t.datetime "created_at", null: false
+    t.uuid "department_id"
+    t.string "domain", default: "", null: false
+    t.string "name", default: "", null: false
+    t.uuid "parent_id"
+    t.uuid "parent_organization", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.datetime "updated_at", null: false
+    t.string "workspace_status_id", limit: 255
+    t.index ["admin_id"], name: "index_organizations_on_admin_id"
+    t.index ["department_id"], name: "index_organizations_on_department_id"
+    t.index ["domain"], name: "index_organizations_on_domain", unique: true
+    t.index ["parent_id"], name: "index_organizations_on_parent_id"
+    t.index ["workspace_status_id"], name: "index_organizations_on_workspace_status_id"
+  end
+
   create_table "role_assignments", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "role_id", null: false
@@ -92,36 +109,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_120001) do
     t.index ["staff_id", "admin_id"], name: "index_staff_admins_on_staff_id_and_admin_id", unique: true
   end
 
-  create_table "staff_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "staff_audit_levels", id: :string, default: "NEYO", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "staff_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
-    t.string "actor_type", default: "", null: false
-    t.jsonb "context", default: {}, null: false
-    t.datetime "created_at", null: false
-    t.string "event_id", limit: 255, default: "NEYO", null: false
-    t.string "ip_address", default: "", null: false
-    t.string "level_id", default: "NEYO", null: false
-    t.text "previous_value"
-    t.uuid "staff_id", null: false
-    t.string "subject_id"
-    t.string "subject_type", default: "", null: false
-    t.datetime "timestamp", null: false
-    t.datetime "updated_at", null: false
-    t.index ["event_id"], name: "index_staff_identity_audits_on_event_id"
-    t.index ["level_id"], name: "index_staff_identity_audits_on_level_id"
-    t.index ["staff_id"], name: "index_staff_identity_audits_on_staff_id"
-    t.index ["subject_id"], name: "index_staff_identity_audits_on_subject_id"
-  end
-
   create_table "staff_email_statuses", id: { type: :string, limit: 255, default: "UNVERIFIED" }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_staff_identity_email_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_email_statuses_id_format"
@@ -136,14 +123,43 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_120001) do
     t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
     t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", default: "", null: false
-    t.string "staff_email_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.uuid "staff_id", null: false
+    t.string "staff_identity_email_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.datetime "updated_at", null: false
     t.index "lower((address)::text)", name: "index_staff_identity_emails_on_lower_address"
-    t.index ["otp_last_sent_at"], name: "index_staff_identity_emails_on_otp_last_sent_at"
-    t.index ["staff_email_status_id"], name: "index_staff_identity_emails_on_staff_identity_email_status_id"
-    t.index ["staff_id"], name: "index_staff_identity_emails_on_staff_id"
-    t.check_constraint "staff_email_status_id IS NULL OR staff_email_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_emails_staff_identity_email_status_id_format"
+    t.index ["otp_last_sent_at"], name: "index_staff_emails_on_otp_last_sent_at"
+    t.index ["staff_id"], name: "index_staff_emails_on_staff_id"
+    t.index ["staff_identity_email_status_id"], name: "index_staff_emails_on_staff_identity_email_status_id"
+    t.check_constraint "staff_identity_email_status_id IS NULL OR staff_identity_email_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_emails_staff_identity_email_status_id_format"
+  end
+
+  create_table "staff_identity_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_identity_audit_levels", id: :string, default: "NEYO", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_identity_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "actor_type", default: "", null: false
+    t.datetime "created_at", null: false
+    t.string "event_id", limit: 255, default: "NEYO", null: false
+    t.string "ip_address", default: "", null: false
+    t.string "level_id", default: "NEYO", null: false
+    t.text "previous_value"
+    t.uuid "staff_id", null: false
+    t.string "subject_id"
+    t.string "subject_type", default: "", null: false
+    t.datetime "timestamp", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_staff_identity_audits_on_event_id"
+    t.index ["level_id"], name: "index_staff_identity_audits_on_level_id"
+    t.index ["staff_id"], name: "index_staff_identity_audits_on_staff_id"
+    t.index ["subject_id"], name: "index_staff_identity_audits_on_subject_id"
   end
 
   create_table "staff_passkey_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -187,13 +203,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_120001) do
     t.string "name", default: "", null: false
     t.string "password_digest", default: "", null: false
     t.uuid "staff_id", null: false
-    t.string "staff_secret_status_id", limit: 255, default: "ACTIVE", null: false
+    t.string "staff_identity_secret_status_id", limit: 255, default: "ACTIVE", null: false
     t.datetime "updated_at", null: false
     t.integer "uses_remaining", default: 1, null: false
-    t.index ["expires_at"], name: "index_staff_identity_secrets_on_expires_at"
-    t.index ["staff_id"], name: "index_staff_identity_secrets_on_staff_id"
-    t.index ["staff_secret_status_id"], name: "idx_on_staff_identity_secret_status_id_0999b0c4ae"
-    t.check_constraint "staff_secret_status_id IS NULL OR staff_secret_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_secrets_staff_identity_secret_status_id_94c4"
+    t.index ["expires_at"], name: "index_staff_secrets_on_expires_at"
+    t.index ["staff_id"], name: "index_staff_secrets_on_staff_id"
+    t.index ["staff_identity_secret_status_id"], name: "index_staff_secrets_on_staff_identity_secret_status_id"
+    t.check_constraint "staff_identity_secret_status_id IS NULL OR staff_identity_secret_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_secrets_staff_identity_secret_status_id_94c4"
     t.check_constraint "uses_remaining >= 0", name: "chk_staff_identity_secrets_uses_remaining_non_negative"
   end
 
@@ -216,12 +232,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_120001) do
     t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", default: "", null: false
     t.uuid "staff_id", null: false
-    t.string "staff_telephone_status_id", limit: 255, default: "UNVERIFIED", null: false
+    t.string "staff_identity_telephone_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.datetime "updated_at", null: false
     t.index "lower((number)::text)", name: "index_staff_identity_telephones_on_lower_number"
-    t.index ["staff_id"], name: "index_staff_identity_telephones_on_staff_id"
-    t.index ["staff_telephone_status_id"], name: "idx_on_staff_identity_telephone_status_id_f2b1a32f7a"
-    t.check_constraint "staff_telephone_status_id IS NULL OR staff_telephone_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_telephones_staff_identity_telephone_status_i"
+    t.index ["staff_id"], name: "index_staff_telephones_on_staff_id"
+    t.index ["staff_identity_telephone_status_id"], name: "index_staff_telephones_on_staff_identity_telephone_status_id"
+    t.check_constraint "staff_identity_telephone_status_id IS NULL OR staff_identity_telephone_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_telephones_staff_identity_telephone_status_i"
   end
 
   create_table "staffs", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -251,45 +267,28 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_120001) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "workspaces", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
-    t.uuid "admin_id"
-    t.datetime "created_at", null: false
-    t.uuid "department_id"
-    t.string "domain", default: "", null: false
-    t.string "name", default: "", null: false
-    t.uuid "parent_id"
-    t.uuid "parent_organization", default: "00000000-0000-0000-0000-000000000000", null: false
-    t.datetime "updated_at", null: false
-    t.string "workspace_status_id", limit: 255
-    t.index ["admin_id"], name: "index_workspaces_on_admin_id"
-    t.index ["department_id"], name: "index_workspaces_on_department_id"
-    t.index ["domain"], name: "index_workspaces_on_domain", unique: true
-    t.index ["parent_id"], name: "index_workspaces_on_parent_id"
-    t.index ["workspace_status_id"], name: "index_workspaces_on_workspace_status_id"
-  end
-
   add_foreign_key "admins", "admin_statuses", column: "status_id"
   add_foreign_key "admins", "departments", on_delete: :nullify
   add_foreign_key "admins", "staffs"
-  add_foreign_key "departments", "department_statuses", on_delete: :restrict
   add_foreign_key "departments", "departments", column: "parent_id", on_delete: :restrict
-  add_foreign_key "departments", "workspaces", on_delete: :restrict
+  add_foreign_key "departments", "organization_statuses", column: "department_status_id", on_delete: :restrict
+  add_foreign_key "departments", "organizations", column: "workspace_id", on_delete: :restrict
   add_foreign_key "divisions", "division_statuses"
   add_foreign_key "divisions", "divisions", column: "parent_id"
-  add_foreign_key "divisions", "workspaces", column: "organization_id"
+  add_foreign_key "divisions", "organizations"
+  add_foreign_key "organizations", "workspace_statuses", on_delete: :restrict
   add_foreign_key "role_assignments", "staffs", on_delete: :cascade
   add_foreign_key "staff_admins", "admins", on_delete: :cascade
   add_foreign_key "staff_admins", "staffs", on_delete: :cascade
-  add_foreign_key "staff_emails", "staff_email_statuses"
+  add_foreign_key "staff_emails", "staff_email_statuses", column: "staff_identity_email_status_id"
   add_foreign_key "staff_emails", "staffs"
   add_foreign_key "staff_passkeys", "staff_passkey_statuses", validate: false
   add_foreign_key "staff_passkeys", "staffs"
   add_foreign_key "staff_recovery_codes", "staffs"
-  add_foreign_key "staff_secrets", "staff_secret_statuses"
+  add_foreign_key "staff_secrets", "staff_secret_statuses", column: "staff_identity_secret_status_id"
   add_foreign_key "staff_secrets", "staffs"
-  add_foreign_key "staff_telephones", "staff_telephone_statuses"
+  add_foreign_key "staff_telephones", "staff_telephone_statuses", column: "staff_identity_telephone_status_id"
   add_foreign_key "staff_telephones", "staffs"
   add_foreign_key "staffs", "staff_statuses", column: "status_id"
   add_foreign_key "user_workspaces", "departments", column: "workspace_id"
-  add_foreign_key "workspaces", "workspace_statuses", on_delete: :restrict
 end

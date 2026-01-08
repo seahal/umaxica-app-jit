@@ -31,9 +31,7 @@
 #  index_app_document_audits_on_subject_id                (subject_id)
 #
 
-class AppDocumentAudit < OccurrenceRecord
-  self.table_name = "app_document_audits"
-
+class AppDocumentAudit < AuditRecord
   # subject_id/subject_type for cross-DB compatibility (no FK)
   validates :subject_id, presence: true
   validates :subject_type, presence: true

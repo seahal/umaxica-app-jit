@@ -4,36 +4,40 @@
 #
 # Table name: user_social_apples
 #
-#  id                          :uuid             not null, primary key
-#  token                       :string           default(""), not null
-#  created_at                  :datetime         not null
-#  updated_at                  :datetime         not null
-#  user_social_apple_status_id :string(255)      default("ACTIVE"), not null
-#  user_id                     :uuid             not null
-#  uid                         :string           default(""), not null
-#  email                       :string           default(""), not null
-#  image                       :string           default(""), not null
-#  refresh_token               :string           default(""), not null
-#  expires_at                  :integer          not null
-#  provider                    :string           default("apple"), not null
+#  id                                   :uuid             not null, primary key
+#  token                                :string           default(""), not null
+#  created_at                           :datetime         not null
+#  updated_at                           :datetime         not null
+#  user_identity_social_apple_status_id :string(255)      default("ACTIVE"), not null
+#  user_id                              :uuid             not null
+#  uid                                  :string           default(""), not null
+#  email                                :string           default(""), not null
+#  image                                :string           default(""), not null
+#  refresh_token                        :string           default(""), not null
+#  expires_at                           :integer          not null
+#  provider                             :string           default("apple"), not null
 #
 # Indexes
 #
-#  idx_on_user_identity_social_apple_status_id_d1764af59f  (user_social_apple_status_id)
-#  index_user_identity_social_apples_on_expires_at         (expires_at)
-#  index_user_identity_social_apples_on_uid_and_provider   (uid,provider) UNIQUE
+#  idx_on_user_identity_social_apple_status_id_93441f369d  (user_identity_social_apple_status_id)
 #  index_user_identity_social_apples_on_user_id_unique     (user_id) UNIQUE
+#  index_user_social_apples_on_expires_at                  (expires_at)
+#  index_user_social_apples_on_uid_and_provider            (uid,provider) UNIQUE
 #
 
 class UserSocialApple < PrincipalRecord
+  alias_attribute :user_social_apple_status_id, :user_identity_social_apple_status_id
   belongs_to :user, inverse_of: :user_social_apple
-  belongs_to :user_social_apple_status, optional: true
+  belongs_to :user_social_apple_status,
+             inverse_of: :user_social_apples,
+             optional: true,
+             foreign_key: :user_identity_social_apple_status_id
 
   validates :token, presence: true
   validates :user_id, uniqueness: true
   validates :uid, presence: true, uniqueness: { scope: :provider }
   validates :expires_at, presence: true
-  validates :user_social_apple_status_id, length: { maximum: 255 }
+  validates :user_identity_social_apple_status_id, length: { maximum: 255 }
 
   def self.find_or_create_from_auth_hash(auth)
     # Find existing identity

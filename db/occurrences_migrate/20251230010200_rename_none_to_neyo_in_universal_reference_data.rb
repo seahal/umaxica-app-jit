@@ -6,68 +6,14 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
       %w(
         user_occurrence_statuses
         staff_occurrence_statuses
-        app_contact_audit_events
-        app_contact_audit_levels
-        com_contact_audit_events
-        com_contact_audit_levels
-        org_contact_audit_events
-        org_contact_audit_levels
-        app_document_audit_events
-        app_document_audit_levels
-        app_timeline_audit_events
-        app_timeline_audit_levels
-        com_document_audit_events
-        com_document_audit_levels
-        com_timeline_audit_events
-        com_timeline_audit_levels
-        org_document_audit_events
-        org_document_audit_levels
-        org_timeline_audit_events
-        org_timeline_audit_levels
-        user_identity_audit_events
-        user_identity_audit_levels
-        staff_identity_audit_events
-        staff_identity_audit_levels
       ), from: "NONE", to: "NEYO",
     )
 
     update_fk(:user_occurrences, :status_id, from: "NONE", to: "NEYO")
     update_fk(:staff_occurrences, :status_id, from: "NONE", to: "NEYO")
 
-    update_audit_fks(
-      %i(
-        app_contact_histories
-        com_contact_audits
-        org_contact_histories
-        app_document_audits
-        app_timeline_audits
-        com_document_audits
-        com_timeline_audits
-        org_document_audits
-        org_timeline_audits
-        user_identity_audits
-        staff_identity_audits
-      ), from: "NONE", to: "NEYO",
-    )
-
     change_column_default_if_exists(:user_occurrences, :status_id, from: "NONE", to: "NEYO")
     change_column_default_if_exists(:staff_occurrences, :status_id, from: "NONE", to: "NEYO")
-
-    change_audit_defaults(
-      %i(
-        app_contact_histories
-        com_contact_audits
-        org_contact_histories
-        app_document_audits
-        app_timeline_audits
-        com_document_audits
-        com_timeline_audits
-        org_document_audits
-        org_timeline_audits
-        user_identity_audits
-        staff_identity_audits
-      ), from: "NONE", to: "NEYO",
-    )
   end
 
   def down
@@ -75,68 +21,14 @@ class RenameNoneToNeyoInUniversalReferenceData < ActiveRecord::Migration[8.2]
       %w(
         user_occurrence_statuses
         staff_occurrence_statuses
-        app_contact_audit_events
-        app_contact_audit_levels
-        com_contact_audit_events
-        com_contact_audit_levels
-        org_contact_audit_events
-        org_contact_audit_levels
-        app_document_audit_events
-        app_document_audit_levels
-        app_timeline_audit_events
-        app_timeline_audit_levels
-        com_document_audit_events
-        com_document_audit_levels
-        com_timeline_audit_events
-        com_timeline_audit_levels
-        org_document_audit_events
-        org_document_audit_levels
-        org_timeline_audit_events
-        org_timeline_audit_levels
-        user_identity_audit_events
-        user_identity_audit_levels
-        staff_identity_audit_events
-        staff_identity_audit_levels
       ), from: "NEYO", to: "NONE",
     )
 
     update_fk(:user_occurrences, :status_id, from: "NEYO", to: "NONE")
     update_fk(:staff_occurrences, :status_id, from: "NEYO", to: "NONE")
 
-    update_audit_fks(
-      %i(
-        app_contact_histories
-        com_contact_audits
-        org_contact_histories
-        app_document_audits
-        app_timeline_audits
-        com_document_audits
-        com_timeline_audits
-        org_document_audits
-        org_timeline_audits
-        user_identity_audits
-        staff_identity_audits
-      ), from: "NEYO", to: "NONE",
-    )
-
     change_column_default_if_exists(:user_occurrences, :status_id, from: "NEYO", to: "NONE")
     change_column_default_if_exists(:staff_occurrences, :status_id, from: "NEYO", to: "NONE")
-
-    change_audit_defaults(
-      %i(
-        app_contact_histories
-        com_contact_audits
-        org_contact_histories
-        app_document_audits
-        app_timeline_audits
-        com_document_audits
-        com_timeline_audits
-        org_document_audits
-        org_timeline_audits
-        user_identity_audits
-        staff_identity_audits
-      ), from: "NEYO", to: "NONE",
-    )
   end
 
   private

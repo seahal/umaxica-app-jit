@@ -4,13 +4,13 @@
 #
 # Table name: user_audit_levels
 #
-#  id         :string           default("NEYO"), not null, primary key
+#  id         :string(255)      default("NEYO"), not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
 
-class UserAuditLevel < PrincipalRecord
-  include UppercaseId
+class UserAuditLevel < AuditRecord
+  include StringPrimaryKey
 
   has_many :user_audits,
            foreign_key: :level_id,

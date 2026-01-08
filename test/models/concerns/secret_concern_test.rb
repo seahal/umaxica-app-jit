@@ -8,13 +8,14 @@ class SecretConcernTest < ActiveSupport::TestCase
     include Secret
 
     belongs_to :user
+    alias_attribute :user_secret_status_id, :user_identity_secret_status_id
 
     def self.identity_secret_status_class
       UserSecretStatus
     end
 
     def self.identity_secret_status_id_column
-      :user_secret_status_id
+      :user_identity_secret_status_id
     end
   end
 

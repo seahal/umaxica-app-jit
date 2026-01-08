@@ -20,4 +20,10 @@ class UserOccurrenceStatusTest < ActiveSupport::TestCase
   #
   #     assert_expires_at_default(record)
   #   end
+
+  test "validates length of id" do
+    record = UserOccurrenceStatus.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

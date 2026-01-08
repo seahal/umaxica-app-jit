@@ -151,7 +151,7 @@ class UserEmailTest < ActiveSupport::TestCase
   test "should encrypt email address" do
     user_email = UserEmail.create!(@valid_attributes)
     # The address should be encrypted in the database
-    query = "SELECT address FROM user_emails WHERE id = '#{user_email.id}'"
+    query = "SELECT address FROM #{UserEmail.table_name} WHERE id = '#{user_email.id}'"
     raw_data = UserEmail.connection.execute(query).first
     assert_not_equal @valid_attributes[:address], raw_data["address"] if raw_data
   end

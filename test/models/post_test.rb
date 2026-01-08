@@ -142,4 +142,10 @@ class PostTest < ActiveSupport::TestCase
     assert_equal latest, post.latest_version
     assert_equal "Latest version", post.latest_version.body
   end
+
+  test "validates length of id" do
+    record = Post.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

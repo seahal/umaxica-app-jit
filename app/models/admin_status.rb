@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AdminStatus < OperatorRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :admins,
            foreign_key: :status_id,

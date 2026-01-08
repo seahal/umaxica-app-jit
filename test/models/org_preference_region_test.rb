@@ -36,7 +36,7 @@ class OrgPreferenceRegionTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = OrgPreferenceRegionOption.create!(id: "TEST_Org_Region")
+    option = OrgPreferenceRegionOption.create!(id: "TEST_ORG_REGION")
     region = OrgPreferenceRegion.create!(preference: @preference, option: option)
     assert_equal option, region.option
   end

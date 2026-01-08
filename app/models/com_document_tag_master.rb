@@ -15,8 +15,7 @@
 # frozen_string_literal: true
 
 class ComDocumentTagMaster < DocumentRecord
-  include UppercaseId
-  include ::CatTagMaster
+  include StringPrimaryKey
 
   self.primary_key = "id"
 

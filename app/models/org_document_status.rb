@@ -8,7 +8,7 @@
 #
 
 class OrgDocumentStatus < DocumentRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :org_documents,
            foreign_key: :status_id,

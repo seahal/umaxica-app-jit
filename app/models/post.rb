@@ -23,7 +23,7 @@
 #
 
 class Post < AvatarRecord
-  include StringPrimaryKey
+  include UuidV7PrimaryKey
   include PublicId
 
   belongs_to :author_avatar, class_name: "Avatar", inverse_of: :posts

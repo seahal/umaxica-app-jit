@@ -25,12 +25,13 @@
 #
 
 class StaffEmail < OperatorRecord
+  alias_attribute :staff_email_status_id, :staff_identity_email_status_id
   include SetId
   include Email
 
   MAX_EMAILS_PER_STAFF = 4
 
-  belongs_to :staff_email_status
+  belongs_to :staff_email_status, inverse_of: :staff_emails, foreign_key: :staff_identity_email_status_id
   belongs_to :staff
 
   before_validation do
@@ -47,7 +48,7 @@ class StaffEmail < OperatorRecord
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
-  validates :staff_email_status_id, length: { maximum: 255 }
+  validates :staff_identity_email_status_id, length: { maximum: 255 }
 
   validate :enforce_staff_email_limit, on: :create
 

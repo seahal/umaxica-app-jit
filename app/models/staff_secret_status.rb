@@ -8,9 +8,9 @@
 #
 
 class StaffSecretStatus < OperatorRecord
-  include UppercaseId
+  include StringPrimaryKey
 
-  has_many :staff_secrets, dependent: :restrict_with_error
+  has_many :staff_secrets, inverse_of: :staff_secret_status, dependent: :restrict_with_error
 
   # Status constants
   ACTIVE = "ACTIVE"

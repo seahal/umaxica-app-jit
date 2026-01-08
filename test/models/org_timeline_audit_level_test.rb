@@ -43,4 +43,10 @@ class OrgTimelineAuditLevelTest < ActiveSupport::TestCase
       assert level.destroy
     end
   end
+
+  test "validates length of id" do
+    record = OrgTimelineAuditLevel.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

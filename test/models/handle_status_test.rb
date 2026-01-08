@@ -22,4 +22,10 @@ class HandleStatusTest < ActiveSupport::TestCase
     assert_not_nil status
     assert_equal "ACTIVE", status.id
   end
+
+  test "validates length of id" do
+    record = HandleStatus.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

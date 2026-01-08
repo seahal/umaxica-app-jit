@@ -10,7 +10,7 @@
 # frozen_string_literal: true
 
 class ComPreferenceAuditLevel < AuditRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :com_preference_audits, dependent: :restrict_with_error, inverse_of: :com_preference_audit_level
 end

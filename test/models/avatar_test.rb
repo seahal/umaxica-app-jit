@@ -222,4 +222,10 @@ class AvatarTest < ActiveSupport::TestCase
       u.status_id = "NEYO"
     end
   end
+
+  test "validates length of id" do
+    record = Avatar.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

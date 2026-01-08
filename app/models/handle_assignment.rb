@@ -24,7 +24,7 @@
 #
 
 class HandleAssignment < AvatarRecord
-  include StringPrimaryKey
+  include UuidV7PrimaryKey
 
   belongs_to :avatar
   belongs_to :handle

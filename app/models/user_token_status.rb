@@ -8,7 +8,7 @@
 #
 
 class UserTokenStatus < TokenRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :user_tokens, dependent: :restrict_with_error
 

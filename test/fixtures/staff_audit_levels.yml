@@ -2,11 +2,9 @@
 #
 # Table name: staff_audit_levels
 #
-#  id         :string           default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
+
 neyo:
   id: NEYO
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+

@@ -7,9 +7,7 @@
 #  id :string(255)      default("NEYO"), not null, primary key
 #
 
-class ComDocumentAuditEvent < OccurrenceRecord
-  self.table_name = "com_document_audit_events"
-
+class ComDocumentAuditEvent < AuditRecord
   has_many :com_document_audits,
            class_name: "ComDocumentAudit",
            foreign_key: "event_id",

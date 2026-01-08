@@ -15,4 +15,10 @@ class UserPasskeyStatusTest < ActiveSupport::TestCase
     status.valid?
     assert_equal "LOWER", status.id
   end
+
+  test "validates length of id" do
+    record = UserPasskeyStatus.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

@@ -91,4 +91,10 @@ class HandleTest < ActiveSupport::TestCase
     assert_not @handle.destroy
     assert_includes @handle.errors[:base], "active avatarsが存在しているので削除できません"
   end
+
+  test "validates length of id" do
+    record = Handle.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

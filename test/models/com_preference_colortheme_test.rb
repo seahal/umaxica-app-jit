@@ -36,7 +36,7 @@ class ComPreferenceColorthemeTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = ComPreferenceColorthemeOption.create!(id: "TEST_Com_Colortheme")
+    option = ComPreferenceColorthemeOption.create!(id: "TEST_COM_COLORTHEME")
     colortheme = ComPreferenceColortheme.create!(preference: @preference, option: option)
     assert_equal option, colortheme.option
   end

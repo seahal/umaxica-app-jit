@@ -15,8 +15,7 @@
 # frozen_string_literal: true
 
 class AppTimelineTagMaster < NewsRecord
-  include UppercaseId
-  include ::CatTagMaster
+  include StringPrimaryKey
 
   self.primary_key = "id"
 

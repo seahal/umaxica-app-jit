@@ -32,8 +32,6 @@
 # frozen_string_literal: true
 
 class ComPreferenceAudit < AuditRecord
-  self.table_name = "com_preference_audits"
-
   # subject_id/subject_type for cross-DB compatibility (no FK)
   validates :subject_id, presence: true
   validates :subject_type, presence: true

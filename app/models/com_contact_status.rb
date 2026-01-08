@@ -8,7 +8,7 @@
 #
 
 class ComContactStatus < GuestRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   validates :description, length: { maximum: 255 }
 

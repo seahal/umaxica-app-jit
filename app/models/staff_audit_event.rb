@@ -4,13 +4,11 @@
 #
 # Table name: staff_audit_events
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 
-class StaffAuditEvent < OperatorRecord
-  include UppercaseId
+class StaffAuditEvent < AuditRecord
+  include StringPrimaryKey
 
   # Association with staff_audits
   has_many :staff_audits,

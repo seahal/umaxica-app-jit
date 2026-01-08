@@ -10,9 +10,7 @@
 # frozen_string_literal: true
 
 class AppPreferenceAuditEvent < AuditRecord
-  include UppercaseId
-
-  self.table_name = "app_preference_audit_events"
+  include StringPrimaryKey
 
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')
   has_many :app_preference_audits,

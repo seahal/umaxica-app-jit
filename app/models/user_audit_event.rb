@@ -9,8 +9,8 @@
 #  updated_at :datetime         not null
 #
 
-class UserAuditEvent < PrincipalRecord
-  include UppercaseId
+class UserAuditEvent < AuditRecord
+  include StringPrimaryKey
 
   # Association with user_audits
   has_many :user_audits,

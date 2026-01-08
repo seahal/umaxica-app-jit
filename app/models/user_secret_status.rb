@@ -8,9 +8,9 @@
 #
 
 class UserSecretStatus < PrincipalRecord
-  include UppercaseId
+  include StringPrimaryKey
 
-  has_many :user_secrets, dependent: :restrict_with_error
+  has_many :user_secrets, inverse_of: :user_secret_status, dependent: :restrict_with_error
 
   # Status constants
   ACTIVE = "ACTIVE"

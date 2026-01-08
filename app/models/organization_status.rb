@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 class OrganizationStatus < OperatorRecord
-  self.table_name = "department_statuses"
-
-  include ::UppercaseId
-  include ::CatTagMaster
+  include StringPrimaryKey
 
   self.primary_key = "id"
 
@@ -13,6 +10,11 @@ class OrganizationStatus < OperatorRecord
            foreign_key: :workspace_status_id,
            dependent: :restrict_with_error,
            inverse_of: :organization_status
+
+  has_many :departments,
+           class_name: "Department",
+           dependent: :restrict_with_error,
+           inverse_of: :department_status
 
   validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
 end

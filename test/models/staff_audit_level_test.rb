@@ -4,9 +4,7 @@
 #
 # Table name: staff_audit_levels
 #
-#  id         :string           default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 
 require "test_helper"
@@ -34,5 +32,11 @@ class StaffAuditLevelTest < ActiveSupport::TestCase
     assert_difference "StaffAuditLevel.count", -1 do
       assert level.destroy
     end
+  end
+
+  test "validates length of id" do
+    record = StaffAuditLevel.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
   end
 end

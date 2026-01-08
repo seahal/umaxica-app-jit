@@ -8,9 +8,9 @@
 #
 
 class UserTelephoneStatus < PrincipalRecord
-  include UppercaseId
+  include StringPrimaryKey
 
-  has_many :user_telephones, dependent: :restrict_with_error
+  has_many :user_telephones, inverse_of: :user_telephone_status, dependent: :restrict_with_error
 
   # Status constants
   UNVERIFIED = "UNVERIFIED"

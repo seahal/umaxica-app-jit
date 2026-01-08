@@ -3,5 +3,5 @@
 class PreferenceRecord < ApplicationRecord
   self.abstract_class = true
 
-  connects_to database: { writing: :preference }
+  connects_to database: { writing: :preference, reading: :preference_replica }
 end

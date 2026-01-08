@@ -8,7 +8,7 @@
 #
 
 class UserStatus < PrincipalRecord
-  include UppercaseId
+  include StringPrimaryKey
 
   has_many :users,
            foreign_key: :status_id,

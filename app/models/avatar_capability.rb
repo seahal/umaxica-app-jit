@@ -17,7 +17,7 @@
 #
 
 class AvatarCapability < AvatarRecord
-  include StringPrimaryKey
+  include UuidV7PrimaryKey
 
   has_many :avatars, foreign_key: :capability_id, inverse_of: :capability, dependent: :restrict_with_error
 

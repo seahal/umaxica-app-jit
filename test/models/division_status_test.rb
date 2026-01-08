@@ -15,4 +15,10 @@ class DivisionStatusTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
+
+  test "validates length of id" do
+    record = DivisionStatus.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

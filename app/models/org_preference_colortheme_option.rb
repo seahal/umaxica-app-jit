@@ -12,6 +12,9 @@
 class OrgPreferenceColorthemeOption < PreferenceRecord
   self.primary_key = :id
 
+  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
+                 format: { with: /\A[A-Z0-9_]+\z/ }
+
   has_many :org_preference_colorthemes,
            class_name: "OrgPreferenceColortheme",
            foreign_key: :option_id,

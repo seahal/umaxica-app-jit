@@ -17,4 +17,10 @@ class UserAuditEventTest < ActiveSupport::TestCase
     @valid_id = "LOGIN".freeze
     @subject = @model_class.new(id: @valid_id)
   end
+
+  test "validates length of id" do
+    record = UserAuditEvent.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

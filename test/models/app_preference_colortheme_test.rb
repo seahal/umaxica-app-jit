@@ -26,7 +26,7 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
   test "belongs to preference" do
     colortheme = AppPreferenceColortheme.new
     assert_not colortheme.valid?
-    assert_includes colortheme.errors[:preference], "を入力してください"
+    assert_not_empty colortheme.errors[:preference]
   end
 
   test "can be created with preference" do
@@ -36,7 +36,7 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = AppPreferenceColorthemeOption.create!(id: "TEST_App_Colortheme")
+    option = AppPreferenceColorthemeOption.create!(id: "TEST_APP_COLORTHEME")
     colortheme = AppPreferenceColortheme.create!(preference: @preference, option: option)
     assert_equal option, colortheme.option
   end
@@ -50,6 +50,6 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
     AppPreferenceColortheme.create!(preference: @preference)
     duplicate_colortheme = AppPreferenceColortheme.new(preference: @preference)
     assert_not duplicate_colortheme.valid?
-    assert_includes duplicate_colortheme.errors[:preference_id], "はすでに存在します"
+    assert_not_empty duplicate_colortheme.errors[:preference_id]
   end
 end

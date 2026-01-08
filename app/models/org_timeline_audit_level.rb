@@ -9,8 +9,8 @@
 #  updated_at :datetime         not null
 #
 
-class OrgTimelineAuditLevel < OccurrenceRecord
-  include UppercaseId
+class OrgTimelineAuditLevel < AuditRecord
+  include StringPrimaryKey
 
   has_many :org_timeline_audits, dependent: :restrict_with_error, inverse_of: :org_timeline_audit_level
 end

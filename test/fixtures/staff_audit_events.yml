@@ -2,31 +2,24 @@
 #
 # Table name: staff_audit_events
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
+
 login_success:
   id: LOGIN_SUCCESS
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+
 neyo:
   id: NEYO
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+
 authorization_failed:
   id: AUTHORIZATION_FAILED
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+
 logged_in:
   id: LOGGED_IN
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+
 logged_out:
   id: LOGGED_OUT
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+
 login_failed:
   id: LOGIN_FAILED
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
+

@@ -34,4 +34,10 @@ class AvatarMembershipTest < ActiveSupport::TestCase
     # not null, model validation says presence.
     # But usually creating empty object checks presence.
   end
+
+  test "validates length of id" do
+    record = AvatarMembership.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

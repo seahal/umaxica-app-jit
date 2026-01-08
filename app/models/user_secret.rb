@@ -4,25 +4,26 @@
 #
 # Table name: user_secrets
 #
-#  id                    :uuid             not null, primary key
-#  user_id               :uuid             not null
-#  password_digest       :string           default(""), not null
-#  last_used_at          :datetime         default("-infinity"), not null
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#  user_secret_status_id :string(255)      default("ACTIVE"), not null
-#  name                  :string           default(""), not null
-#  expires_at            :datetime         default("infinity"), not null
-#  uses_remaining        :integer          default(1), not null
+#  id                             :uuid             not null, primary key
+#  user_id                        :uuid             not null
+#  password_digest                :string           default(""), not null
+#  last_used_at                   :datetime         default("-infinity"), not null
+#  created_at                     :datetime         not null
+#  updated_at                     :datetime         not null
+#  user_identity_secret_status_id :string(255)      default("ACTIVE"), not null
+#  name                           :string           default(""), not null
+#  expires_at                     :datetime         default("infinity"), not null
+#  uses_remaining                 :integer          default(1), not null
 #
 # Indexes
 #
-#  index_user_identity_secrets_on_expires_at                      (expires_at)
-#  index_user_identity_secrets_on_user_id                         (user_id)
-#  index_user_identity_secrets_on_user_identity_secret_status_id  (user_secret_status_id)
+#  index_user_secrets_on_expires_at                      (expires_at)
+#  index_user_secrets_on_user_id                         (user_id)
+#  index_user_secrets_on_user_identity_secret_status_id  (user_identity_secret_status_id)
 #
 
 class UserSecret < PrincipalRecord
+  alias_attribute :user_secret_status_id, :user_identity_secret_status_id
   include ::Secret
 
   attr_accessor :raw_secret
@@ -30,11 +31,11 @@ class UserSecret < PrincipalRecord
   MAX_SECRETS_PER_USER = 10
 
   belongs_to :user, inverse_of: :user_secrets
-  belongs_to :user_secret_status
+  belongs_to :user_secret_status, inverse_of: :user_secrets, foreign_key: :user_identity_secret_status_id
 
   validates :name, length: { maximum: 255 }
   validates :password_digest, presence: true, length: { maximum: 255 }
-  validates :user_secret_status_id, length: { maximum: 255 }
+  validates :user_identity_secret_status_id, length: { maximum: 255 }
 
   validate :enforce_secret_limit, on: :create
 
@@ -43,7 +44,7 @@ class UserSecret < PrincipalRecord
   end
 
   def self.identity_secret_status_id_column
-    :user_secret_status_id
+    :user_identity_secret_status_id
   end
 
   def self.generate_raw_secret(length: SECRET_PASSWORD_LENGTH)

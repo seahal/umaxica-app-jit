@@ -15,4 +15,10 @@ class OrgTimelineAuditEventTest < ActiveSupport::TestCase
     @valid_id = "CREATED".freeze
     @subject = @model_class.new(id: @valid_id)
   end
+
+  test "validates length of id" do
+    record = OrgTimelineAuditEvent.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
+  end
 end

@@ -36,7 +36,7 @@ class ComPreferenceRegionTest < ActiveSupport::TestCase
   end
 
   test "can be created with option" do
-    option = ComPreferenceRegionOption.create!(id: "TEST_Com_Region")
+    option = ComPreferenceRegionOption.create!(id: "TEST_COM_REGION")
     region = ComPreferenceRegion.create!(preference: @preference, option: option)
     assert_equal option, region.option
   end

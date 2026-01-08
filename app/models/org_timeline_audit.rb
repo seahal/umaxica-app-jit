@@ -31,9 +31,7 @@
 #  index_org_timeline_audits_on_subject_id                (subject_id)
 #
 
-class OrgTimelineAudit < OccurrenceRecord
-  self.table_name = "org_timeline_audits"
-
+class OrgTimelineAudit < AuditRecord
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 

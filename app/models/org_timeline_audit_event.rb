@@ -7,10 +7,8 @@
 #  id :string(255)      default("NEYO"), not null, primary key
 #
 
-class OrgTimelineAuditEvent < OccurrenceRecord
-  include UppercaseId
-
-  self.table_name = "org_timeline_audit_events"
+class OrgTimelineAuditEvent < AuditRecord
+  include StringPrimaryKey
 
   has_many :org_timeline_audits,
            class_name: "OrgTimelineAudit",
