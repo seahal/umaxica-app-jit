@@ -5,6 +5,7 @@ module Apex
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
       include ::RateLimit
+      include ::Preference::Base
       include ::DefaultUrlOptions
       include ::QueryCanonicalizer
       include ::Apex::Concerns::Regionalization

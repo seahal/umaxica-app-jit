@@ -6,6 +6,7 @@ module Sign
       include Pundit::Authorization
       include ::DefaultUrlOptions
       include ::RateLimit
+      include ::Preference::Base
       include ::Authentication::Staff
       include ::Authorization::Staff
       include Sign::ErrorResponses

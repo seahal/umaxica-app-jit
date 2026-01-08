@@ -12,6 +12,7 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
           resource :csrf, only: :show
+          resource :preference, only: :show
         end
         # preferences
         resource :preference, only: [:show]
@@ -30,6 +31,7 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
           resource :csrf, only: :show
+          resource :preference, only: :show
         end
         # preferences
         resource :preference, only: [:show]
@@ -49,6 +51,7 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
           resource :csrf, only: :show
+          resource :preference, only: :show
         end
         # preferences
         resource :preference, only: [:show]

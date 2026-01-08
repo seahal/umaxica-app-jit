@@ -4,6 +4,7 @@ module Sign
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Preference::Base
       include ::DefaultUrlOptions
       include ::Authentication::User
       include ::Authorization::User

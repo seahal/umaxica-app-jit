@@ -29,5 +29,11 @@ module Apex::Com
       end
     end
     # rubocop:enable Minitest/MultipleAssertions
+
+    test "generates sha3-384 token digest on root" do
+      get apex_com_root_url
+      assert_response :success
+      assert_equal 48, ComPreference.order(:created_at).last.token_digest.bytesize
+    end
   end
 end

@@ -36,6 +36,12 @@ class Docs::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   end
   # rubocop:enable Minitest/MultipleAssertions
 
+  test "generates sha3-384 token digest on root" do
+    get docs_com_root_url
+    assert_response :success
+    assert_equal 48, ComPreference.order(:created_at).last.token_digest.bytesize
+  end
+
   private
 
   def brand_name

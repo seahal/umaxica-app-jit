@@ -6,6 +6,7 @@ module Core
       include Pundit::Authorization
       include ::Authentication::User
       include ::AuthorizationAudit
+      include ::Preference::Base
 
       protect_from_forgery with: :exception
 

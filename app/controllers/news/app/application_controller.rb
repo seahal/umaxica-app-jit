@@ -4,6 +4,7 @@ module News
   module App
     class ApplicationController < ActionController::Base
       include ::DefaultUrlOptions
+      include ::Preference::Base
 
       protect_from_forgery with: :exception
       include ::RateLimit

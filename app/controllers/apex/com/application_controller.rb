@@ -4,6 +4,7 @@ module Apex
   module Com
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
+      include ::Preference::Base
 
       protect_from_forgery with: :exception
       include ::RateLimit

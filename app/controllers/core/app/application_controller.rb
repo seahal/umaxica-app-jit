@@ -10,6 +10,7 @@ module Core
       include ::RateLimit
       include ::DefaultUrlOptions
       include Core::Concerns::Regionalization
+      include ::Preference::Base
 
       protect_from_forgery with: :exception
 

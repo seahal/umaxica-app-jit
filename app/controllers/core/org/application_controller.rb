@@ -7,6 +7,7 @@ module Core
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::AuthorizationAudit
+      include ::Preference::Base
 
       protect_from_forgery with: :exception
 
