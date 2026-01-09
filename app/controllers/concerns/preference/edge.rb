@@ -2,13 +2,14 @@
 
 module Preference::Edge
   extend ActiveSupport::Concern
+  include Preference::Base
 
   def show
     # Raise error if preference cookie is not set
     raise PreferenceOperationError if @preferences.blank?
 
-    # Determine prefix (App, Com, or Org)
-    prefix = preference_class.name.gsub("Preference", "").downcase
+    # Determine prefix (app, com, or org)
+    prefix = preference_prefix.downcase
 
     # Fetch preference with all associated options
     preference = preference_class
@@ -29,10 +30,10 @@ module Preference::Edge
     render json: {
       preference: {
         public_id: preference.public_id,
-        language: language&.option_id || "",
-        color_theme: colortheme&.option_id || "",
-        region: region&.option_id || "",
-        timezone: timezone&.option_id || "",
+        lx: language&.option_id || "JA",
+        ct: colortheme&.option_id || "SYSTEM",
+        ri: region&.option_id || "JP",
+        tz: timezone&.option_id || "ASIA/TOKYO",
       },
     }
   end

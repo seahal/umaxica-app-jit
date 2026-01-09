@@ -1275,6 +1275,7 @@ en:
           description: "Remove saved preference data for this browser."
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
+          destroyed: "Preferences have been reset"
           back: "Back to preferences"
       preferences:
         title: "Preferences"
@@ -1299,6 +1300,7 @@ en:
           description: "Remove saved preference data for this browser."
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
+          destroyed: "Preferences have been reset"
           back: "Back to preferences"
       preferences:
         title: "Preferences"
@@ -1323,6 +1325,7 @@ en:
           description: "Remove saved preference data for this browser."
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
+          destroyed: "Preferences have been reset"
           back: "Back to preferences"
       preferences:
         title: "Preferences"

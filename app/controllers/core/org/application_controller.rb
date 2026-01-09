@@ -7,8 +7,8 @@ module Core
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::AuthorizationAudit
-      include ::Preference::Base
-      include ::Preference::Locale
+      include ::Preference::Main
+      include ::Preference::Regional
 
       protect_from_forgery with: :exception
 

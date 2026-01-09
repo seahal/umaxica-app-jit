@@ -57,6 +57,10 @@
 
 <main class="container mx-auto mt-28 px-5 block">
   <%= yield %>
+      <div class="mt-2 text-xs text-slate-500" id="js-theme-cookie">
+      <span>theme cookie:</span>
+      <span id="js-theme-cookie-value" class="ml-1 font-semibold">loading…</span>
+    </div>
 </main>
 
 <nav>
@@ -76,6 +80,6 @@
   </div>
 </footer>
 </div>
-
+  <%= javascript_import_module_tag "theme_cookie" %>
 </body>
 </html>

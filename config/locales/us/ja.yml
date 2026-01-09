@@ -1319,6 +1319,7 @@ ja:
           description: このブラウザに保存された設定データを削除します。
           button: 設定をリセットする
           confirm: このブラウザに保存済みの設定データを削除します。よろしいですか？
+          destroyed: 設定をリセットしました
           back: 設定一覧に戻る
     com:
       preferences:

@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
+  include RootThemeCookieHelper
+
   test "GET / redirects to new registration path" do
     get sign_app_root_url
 
@@ -40,5 +42,9 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get sign_app_root_url
     assert_response :success
     assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
+  end
+
+  test "sets theme cookie" do
+    assert_theme_cookie_for(host: "sign.app.localhost", path: :sign_app_root_path, label: "sign app root")
   end
 end

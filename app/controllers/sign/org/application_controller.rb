@@ -4,15 +4,15 @@ module Sign
   module Org
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
-      include ::DefaultUrlOptions
       include ::RateLimit
-      include ::Preference::Base
+      include ::Preference::Main
       include ::Authentication::Staff
       include ::Authorization::Staff
-      include Sign::ErrorResponses
+      include ::Sign::ErrorResponses
       include ::Preference::Global
 
       protect_from_forgery with: :exception
+
       allow_browser versions: :modern
 
       helper_method :logged_in?, :logged_in_staff?, :logged_in_user?

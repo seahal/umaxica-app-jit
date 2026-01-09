@@ -8,10 +8,9 @@ module Core
       include ::Authorization::User
       include ::AuthorizationAudit
       include ::RateLimit
-      include ::DefaultUrlOptions
       include Core::Concerns::Regionalization
-      include ::Preference::Base
-      include ::Preference::Locale
+      include ::Preference::Main
+      include ::Preference::Regional
 
       protect_from_forgery with: :exception
 

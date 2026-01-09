@@ -3,6 +3,8 @@
 require "test_helper"
 
 class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
+  include RootThemeCookieHelper
+
   def setup
     @prev_env = {
       "NEWS_STAFF_URL" => ENV["NEWS_STAFF_URL"],
@@ -109,6 +111,14 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get news_org_root_url
     assert_response :success
     assert_equal 48, OrgPreference.order(:created_at).last.token_digest.bytesize
+  end
+
+  test "sets theme cookie" do
+    assert_theme_cookie_for(
+      host: (ENV["NEWS_STAFF_URL"] || "news.org.localdomain"),
+      path: :news_org_root_path,
+      label: "news org root",
+    )
   end
 
   private

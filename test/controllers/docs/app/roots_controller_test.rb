@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
+  include RootThemeCookieHelper
+
   test "should get show" do
     get docs_app_root_url
 
@@ -42,6 +44,10 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get docs_app_root_url
     assert_response :success
     assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
+  end
+
+  test "sets theme cookie" do
+    assert_theme_cookie_for(host: "app.localhost", path: :docs_app_root_path, label: "docs app root")
   end
 
   private

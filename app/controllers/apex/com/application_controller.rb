@@ -5,16 +5,9 @@ module Apex
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
       include Sign::ErrorResponses
-      include ::Preference::Base
+      include ::Preference::Main
       include ::Preference::Global
-
-      protect_from_forgery with: :exception
       include ::RateLimit
-
-      protect_from_forgery with: :exception
-      include ::DefaultUrlOptions
-
-      protect_from_forgery with: :exception
       include ::Apex::Concerns::Regionalization
 
       protect_from_forgery with: :exception

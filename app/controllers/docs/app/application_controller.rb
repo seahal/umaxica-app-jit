@@ -3,14 +3,12 @@
 module Docs
   module App
     class ApplicationController < ActionController::Base
-      include ::DefaultUrlOptions
-      include ::Preference::Base
-      include ::Preference::Locale
-
-      protect_from_forgery with: :exception
+      include ::Preference::Main
+      include ::Preference::Regional
       include ::RateLimit
 
       protect_from_forgery with: :exception
+
       allow_browser versions: :modern
     end
   end

@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
+  include RootThemeCookieHelper
+
   test "GET / renders root page" do
     get sign_org_root_url
 
@@ -35,5 +37,9 @@ class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get sign_org_root_url
     assert_response :success
     assert_equal 48, OrgPreference.order(:created_at).last.token_digest.bytesize
+  end
+
+  test "sets theme cookie" do
+    assert_theme_cookie_for(host: "sign.org.localhost", path: :sign_org_root_path, label: "sign org root")
   end
 end

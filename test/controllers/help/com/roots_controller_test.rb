@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
+  include RootThemeCookieHelper
+
   test "should get show" do
     get help_com_root_url
 
@@ -46,6 +48,10 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_com_root_url
     assert_response :success
     assert_equal 48, ComPreference.order(:created_at).last.token_digest.bytesize
+  end
+
+  test "sets theme cookie" do
+    assert_theme_cookie_for(host: "com.localhost", path: :help_com_root_path, label: "help com root")
   end
 
   private

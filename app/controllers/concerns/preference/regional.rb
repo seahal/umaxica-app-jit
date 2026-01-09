@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Preference::Global
+module Preference::Regional
   extend ActiveSupport::Concern
   include Preference::Base
 

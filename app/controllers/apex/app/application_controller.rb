@@ -5,12 +5,10 @@ module Apex
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
       include ::RateLimit
-      include ::Preference::Base
+      include ::Preference::Main
       include ::Preference::Global
-      include ::DefaultUrlOptions
-      include ::QueryCanonicalizer
       include ::Apex::Concerns::Regionalization
-      include Sign::ErrorResponses
+      include ::Sign::ErrorResponses
       include ::Authentication::User
 
       protect_from_forgery with: :exception

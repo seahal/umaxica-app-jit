@@ -4,13 +4,8 @@ module Help
   module Org
     class ApplicationController < ActionController::Base
       include ::RateLimit
-      include ::Preference::Base
-      include ::Preference::Locale
-
-      protect_from_forgery with: :exception
-      include ::DefaultUrlOptions
-
-      protect_from_forgery with: :exception
+      include ::Preference::Main
+      include ::Preference::Regional
       include Pundit::Authorization
 
       protect_from_forgery with: :exception

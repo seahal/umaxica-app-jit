@@ -23,10 +23,10 @@ module Core
           second_json = response.parsed_body
           assert_equal first_public_id, second_json["preference"]["public_id"]
 
-          assert_equal "JA", second_json["preference"]["language"]
-          assert_equal "system", second_json["preference"]["color_theme"]
-          assert_equal "JP", second_json["preference"]["region"]
-          assert_equal "Asia/Tokyo", second_json["preference"]["timezone"]
+          assert_equal "JA", second_json["preference"]["lx"]
+          assert_equal "system", second_json["preference"]["ct"]
+          assert_equal "JP", second_json["preference"]["ri"]
+          assert_equal "Asia/Tokyo", second_json["preference"]["tz"]
         end
 
         test "should create new preference when cookie is missing" do
@@ -39,10 +39,10 @@ module Core
 
           json = response.parsed_body
           assert_predicate json["preference"]["public_id"], :present?
-          assert_equal "JA", json["preference"]["language"]
-          assert_equal "system", json["preference"]["color_theme"]
-          assert_equal "JP", json["preference"]["region"]
-          assert_equal "Asia/Tokyo", json["preference"]["timezone"]
+          assert_equal "JA", json["preference"]["lx"]
+          assert_equal "system", json["preference"]["ct"]
+          assert_equal "JP", json["preference"]["ri"]
+          assert_equal "Asia/Tokyo", json["preference"]["tz"]
         end
 
         test "should create audit log with CREATE_NEW_PREFERENCE_TOKEN event" do
@@ -70,10 +70,10 @@ module Core
           assert json.key?("preference")
           assert_equal 5, json["preference"].keys.size
           assert json["preference"].key?("public_id")
-          assert json["preference"].key?("language")
-          assert json["preference"].key?("color_theme")
-          assert json["preference"].key?("region")
-          assert json["preference"].key?("timezone")
+          assert json["preference"].key?("lx")
+          assert json["preference"].key?("ct")
+          assert json["preference"].key?("ri")
+          assert json["preference"].key?("tz")
         end
 
         test "should not create duplicate preference for same cookie" do

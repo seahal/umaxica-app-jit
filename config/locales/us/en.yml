@@ -924,6 +924,7 @@ en:
           description: "Remove saved preference cookies for this browser."
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
+          destroyed: "Preferences have been reset"
           back: "Back to Preferences"
         timezone:
           edit:
@@ -1054,6 +1055,7 @@ en:
           description: "Remove saved preference cookies for this browser."
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
+          destroyed: "Preferences have been reset"
           back: "Back to Preferences"
     com:
       preferences:

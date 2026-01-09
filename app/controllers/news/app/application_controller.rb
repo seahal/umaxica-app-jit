@@ -3,9 +3,8 @@
 module News
   module App
     class ApplicationController < ActionController::Base
-      include ::DefaultUrlOptions
-      include ::Preference::Base
-      include ::Preference::Locale
+      include ::Preference::Main
+      include ::Preference::Regional
 
       protect_from_forgery with: :exception
       include ::RateLimit
