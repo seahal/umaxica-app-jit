@@ -47,7 +47,6 @@ class AppPreferenceAudit < AuditRecord
   end
 
   belongs_to :app_preference,
-             -> { where(subject_type: "AppPreference") },
              class_name: "AppPreference",
              foreign_key: :subject_id,
              primary_key: :id,

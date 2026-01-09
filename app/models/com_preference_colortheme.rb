@@ -17,6 +17,8 @@
 # frozen_string_literal: true
 
 class ComPreferenceColortheme < PreferenceRecord
+  before_validation :set_option_id
+
   belongs_to :preference, class_name: "ComPreference", inverse_of: :com_preference_colortheme
   belongs_to :option,
              class_name: "ComPreferenceColorthemeOption",
@@ -24,4 +26,13 @@ class ComPreferenceColortheme < PreferenceRecord
              optional: true
 
   validates :preference_id, uniqueness: true
+  validates :option_id, presence: true
+
+  private
+
+  def set_option_id
+    return if option_id.present?
+
+    self.option_id = ComPreferenceColorthemeOption.find_by(id: "system")&.id || "system"
+  end
 end

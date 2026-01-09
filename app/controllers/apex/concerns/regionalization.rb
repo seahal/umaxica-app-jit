@@ -21,10 +21,12 @@ module Apex
         tz = params[:tz].presence || params[:timezone]
         lx = params[:lx].presence || params[:lang]
         ri = params[:ri].presence || params[:region]
+        ct = params[:ct].presence || params[:colortheme]
 
         options[:tz] = tz.to_s.downcase if tz.present?
         options[:lx] = lx.to_s.downcase if lx.present?
         options[:ri] = ri.to_s.downcase if ri.present?
+        options[:ct] = ct.to_s.downcase if ct.present?
 
         options
       end

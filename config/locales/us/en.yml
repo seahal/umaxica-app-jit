@@ -38,6 +38,23 @@ en:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
+    app:
+      preferences:
+        title: "Preference settings"
+    org:
+      layout:
+        nav:
+          sign_up: "Sign Up"
+          log_in: "Log In"
+          configuration: "Settings"
+          logout: "Log Out"
+      ups:
+        new:
+          heading: "Create your org account"
+          description: "Start using organizational tools by registering a new account."
+          recruit_prompt_html: "Interested in joining the team? %{link}"
+          recruit_link_text: "Contact recruiting"
+          back_to_root: "up"
   test:
     support:
       fix_fk_dependency:
@@ -224,6 +241,7 @@ en:
         cookie_settings: "Cookie Settings"
         region_settings: "Region Settings"
         theme_settings: "Theme Settings"
+        submitting: "Submitting..."
         back_to_settings: "Back to Preferences"
         regions:
           title: "Regional & Language Settings"
@@ -241,6 +259,8 @@ en:
           select_region_selector:
             USA: "United States"
             JAPAN: "Japan"
+            US: "United States"
+            JP: "Japan"
           select_language_selector:
             JAPANESE: "Japanese"
             ENGLISH: "English"
@@ -839,11 +859,17 @@ en:
   apex:
     app:
       preferences:
+        update_success: "Preferences updated successfully"
         title: "Preferences"
         cookie_settings: "Cookie Settings"
-        region_settings: "Region & Language Settings"
+        region_settings: "Region Settings"
+        languages:
+          unsupported: "Unsupported language selected"
+        language_settings: "Language Settings"
+        timezone_settings: "Timezone Settings"
         theme_settings: "Theme Settings"
         back_to_settings: "Back to Preferences"
+        timezones: "Timezones"
         regions:
           title: "Region & Language Settings"
           region_section: "Region Settings"
@@ -899,8 +925,22 @@ en:
           button: "Clear preference data"
           confirm: "This action deletes saved preference data for this browser. Continue?"
           back: "Back to Preferences"
+        timezone:
+          edit:
+            heading: "Timezone Settings"
+            description: "Update the timezone stored for this browser."
+            timezone_label: "Timezone"
     com:
       preferences:
+        update_success: "Preferences updated successfully"
+        language_settings: "Language Settings"
+        timezone_settings: "Timezone Settings"
+        submitting: "Submitting..."
+        timezone:
+          edit:
+            heading: "Timezone Settings"
+            description: "Update the timezone stored for this browser."
+            timezone_label: "Timezone"
         themes:
           updated: "Corporate theme updated to %{theme}"
           invalid: "Invalid theme selected"
@@ -908,6 +948,20 @@ en:
           invalid: "Invalid timezone selected"
     org:
       preferences:
+        update_success: "Preferences updated successfully"
+        language_settings: "Language Settings"
+        timezone_settings: "Timezone Settings"
+        submitting: "Submitting..."
+        timezone:
+          edit:
+            heading: "Timezone Settings"
+            description: "Update the timezone stored for this browser."
+            timezone_label: "Timezone"
+        timezone:
+          edit:
+            heading: "Timezone Settings"
+            description: "Update the timezone stored for this browser."
+            timezone_label: "Timezone"
         themes:
           updated: "Theme updated to %{theme}"
           invalid: "Invalid theme selected"
@@ -949,7 +1003,7 @@ en:
     org:
       preferences:
         title: "Preferences"
-        locale_settings: "Locale Settings"
+        locale_settings: "Language Settings"
         back_to_settings: "Back to Preferences"
         regions:
           title: "Region & Language Settings"

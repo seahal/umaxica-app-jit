@@ -18,6 +18,4 @@ class StaffSecretStatus < OperatorRecord
   EXPIRED = "EXPIRED"
   REVOKED = "REVOKED"
   DELETED = "DELETED"
-
-  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

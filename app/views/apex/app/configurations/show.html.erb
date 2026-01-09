@@ -1,11 +1,25 @@
-<h1><%= title t('apex.app.configurations.title') %></h1>
+<% content_for :page_title, t("apex.app.configurations.title") %>
 
-<p><%= t('apex.app.configurations.description') %></p>
-<div class="configuration-list">
-  <ul>
+<section class="mx-auto mb-10 max-w-2xl rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-sm">
+  <h1 class="text-2xl font-semibold text-slate-900">
+    <%= title t("apex.app.configurations.title") %>
+  </h1>
+  <p class="mt-2 text-sm text-slate-600">
+    <%= t("apex.app.configurations.description") %>
+  </p>
+
+  <ul class="mt-6 space-y-2 text-sm">
     <li>
-      <%= link_to t('apex.app.configurations.email_settings'), new_apex_app_configuration_email_path, class: 'configuration-link' %>
-      <p class="text-sm text-gray-600"><%= t('apex.app.configurations.email_settings_description') %></p>
+      <%= link_to t("apex.app.configurations.email_settings"), new_apex_app_configuration_email_path,
+                  class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
     </li>
   </ul>
-</div>
+
+  <p class="mt-10 text-right">
+    <%= link_to apex_app_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst"),
+                class: "inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" do %>
+      <span>↑</span>
+      <span><%= t("apex.app.preferences.up_link") %></span>
+    <% end %>
+  </p>
+</section>

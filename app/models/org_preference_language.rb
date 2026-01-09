@@ -24,4 +24,13 @@ class OrgPreferenceLanguage < PreferenceRecord
              optional: true
 
   validates :preference_id, uniqueness: true
+  validates :option_id, presence: true
+
+  before_validation :set_option_id
+
+  private
+
+  def set_option_id
+    self.option_id ||= "JA"
+  end
 end

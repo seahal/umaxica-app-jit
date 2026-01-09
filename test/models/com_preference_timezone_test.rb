@@ -29,20 +29,16 @@ class ComPreferenceTimezoneTest < ActiveSupport::TestCase
     assert_includes timezone.errors[:preference], "を入力してください"
   end
 
-  test "can be created with preference" do
-    timezone = ComPreferenceTimezone.create!(preference: @preference)
+  test "can be created with preference and option" do
+    option = com_preference_timezone_options(:asia_tokyo)
+    timezone = ComPreferenceTimezone.create!(preference: @preference, option: option)
     assert_not_nil timezone.id
     assert_equal @preference, timezone.preference
-  end
-
-  test "can be created with option" do
-    option = ComPreferenceTimezoneOption.create!(id: "TEST_COM_TIMEZONE")
-    timezone = ComPreferenceTimezone.create!(preference: @preference, option: option)
     assert_equal option, timezone.option
   end
 
-  test "can be created without option" do
+  test "sets default option_id on create" do
     timezone = ComPreferenceTimezone.create!(preference: @preference)
-    assert_nil timezone.option
+    assert_equal "Asia/Tokyo", timezone.option_id
   end
 end

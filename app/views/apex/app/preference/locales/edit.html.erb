@@ -54,6 +54,7 @@
 
     <div class="flex gap-3">
       <%= f.submit t("apex.#{scope}.preference.locale.edit.submit"),
+                   data: { turbo_submits_with: t("apex.app.preferences.submitting") },
                    class: "px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 cursor-pointer" %>
     </div>
   <% end %>

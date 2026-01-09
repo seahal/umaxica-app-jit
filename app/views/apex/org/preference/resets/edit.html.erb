@@ -1,13 +1,23 @@
 <% content_for :page_title, t('apex.org.preference.resets.title') %>
 
-<h1><%= t('apex.org.preference.resets.title') %></h1>
+<section class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-sm mb-10">
+  <h1 class="text-2xl font-semibold text-slate-900">
+    <%= t("apex.org.preference.resets.title") %>
+  </h1>
 
-<p><%= t('apex.org.preference.resets.description') %></p>
+  <p class="mt-2 text-sm text-slate-600">
+    <%= t("apex.org.preference.resets.description") %>
+  </p>
 
-<%= button_to t('apex.org.preference.resets.button'),
-              apex_org_preference_reset_path,
-              method: :delete,
-              data: { confirm: t('apex.org.preference.resets.confirm') },
-              class: "btn btn-danger" %>
-
-<p><%= link_to t('apex.org.preference.resets.back'), apex_org_preference_path %></p>
+  <%= form_with url: apex_org_preference_reset_path, method: :delete, class: "mt-6" do |f| %>
+    <div class="flex items-center gap-3">
+      <%= f.submit t("apex.org.preference.resets.button"),
+                   data: { turbo_confirm: t("apex.org.preference.resets.confirm"),
+                           turbo_submits_with: t("apex.org.preferences.submitting") },
+                   class: "inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500" %>
+      <%= link_to t("apex.org.preference.resets.back"),
+                  apex_org_preference_path,
+                  class: "inline-flex items-center rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    </div>
+  <% end %>
+</section>

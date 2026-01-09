@@ -13,6 +13,4 @@ class AvatarMonikerStatus < AvatarRecord
   include StringPrimaryKey
 
   has_many :avatar_monikers, dependent: :restrict_with_error
-
-  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

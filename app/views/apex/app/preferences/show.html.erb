@@ -3,7 +3,7 @@
     <%= title t("apex.app.preferences.title") %>
   </h1>
   <p class="mt-2 text-sm text-slate-600">
-    言語やテーマなどの設定をまとめて変更できます。
+    <%= t("apex.app.preferences.description") %>
   </p>
 
   <ul class="mt-6 space-y-2 text-sm">
@@ -12,7 +12,11 @@
                   class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
     </li>
     <li>
-      <%= link_to t("apex.app.preferences.locale_settings"), edit_apex_app_preference_locale_url,
+      <%= link_to t("apex.app.preferences.timezone_settings"), edit_apex_app_preference_timezone_url,
+                  class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
+    </li>
+    <li>
+      <%= link_to t("apex.app.preferences.language_settings"), edit_apex_app_preference_language_url,
                   class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
     </li>
     <li>

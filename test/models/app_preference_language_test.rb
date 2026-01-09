@@ -29,26 +29,23 @@ class AppPreferenceLanguageTest < ActiveSupport::TestCase
     assert_includes language.errors[:preference], "を入力してください"
   end
 
-  test "can be created with preference" do
-    language = AppPreferenceLanguage.create!(preference: @preference)
+  test "can be created with preference and option" do
+    option = app_preference_language_options(:ja)
+    language = AppPreferenceLanguage.create!(preference: @preference, option: option)
     assert_not_nil language.id
     assert_equal @preference, language.preference
-  end
-
-  test "can be created with option" do
-    option = AppPreferenceLanguageOption.create!(id: "TEST_APP_LANGUAGE")
-    language = AppPreferenceLanguage.create!(preference: @preference, option: option)
     assert_equal option, language.option
   end
 
-  test "can be created without option" do
+  test "sets default option_id on create" do
     language = AppPreferenceLanguage.create!(preference: @preference)
-    assert_nil language.option
+    assert_equal "JA", language.option_id
   end
 
   test "validates uniqueness of preference" do
-    AppPreferenceLanguage.create!(preference: @preference)
-    duplicate_language = AppPreferenceLanguage.new(preference: @preference)
+    option = app_preference_language_options(:ja)
+    AppPreferenceLanguage.create!(preference: @preference, option: option)
+    duplicate_language = AppPreferenceLanguage.new(preference: @preference, option: option)
     assert_not duplicate_language.valid?
     assert_includes duplicate_language.errors[:preference_id], "はすでに存在します"
   end

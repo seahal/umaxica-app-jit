@@ -29,20 +29,16 @@ class OrgPreferenceLanguageTest < ActiveSupport::TestCase
     assert_includes language.errors[:preference], "を入力してください"
   end
 
-  test "can be created with preference" do
-    language = OrgPreferenceLanguage.create!(preference: @preference)
+  test "can be created with preference and option" do
+    option = org_preference_language_options(:ja)
+    language = OrgPreferenceLanguage.create!(preference: @preference, option: option)
     assert_not_nil language.id
     assert_equal @preference, language.preference
-  end
-
-  test "can be created with option" do
-    option = OrgPreferenceLanguageOption.create!(id: "TEST_ORG_LANGUAGE")
-    language = OrgPreferenceLanguage.create!(preference: @preference, option: option)
     assert_equal option, language.option
   end
 
-  test "can be created without option" do
+  test "sets default option_id on create" do
     language = OrgPreferenceLanguage.create!(preference: @preference)
-    assert_nil language.option
+    assert_equal "JA", language.option_id
   end
 end

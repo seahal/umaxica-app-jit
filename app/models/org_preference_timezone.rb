@@ -17,6 +17,8 @@
 # frozen_string_literal: true
 
 class OrgPreferenceTimezone < PreferenceRecord
+  before_validation :set_option_id
+
   belongs_to :preference, class_name: "OrgPreference", inverse_of: :org_preference_timezone
   belongs_to :option,
              class_name: "OrgPreferenceTimezoneOption",
@@ -24,4 +26,11 @@ class OrgPreferenceTimezone < PreferenceRecord
              optional: true
 
   validates :preference_id, uniqueness: true
+  validates :option_id, presence: true
+
+  private
+
+  def set_option_id
+    self.option_id ||= "Asia/Tokyo"
+  end
 end

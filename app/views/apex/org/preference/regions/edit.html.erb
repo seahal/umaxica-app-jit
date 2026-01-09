@@ -6,24 +6,21 @@
     <%= t("apex.org.preferences.regions.select_region_prompt") %>
   </p>
 
-  <%= form_with url: apex_org_preference_region_url, method: :patch,
+  <%= form_with model: @preference_region, scope: :preference_region, url: apex_org_preference_region_url, method: :patch,
                 class: "mt-6 space-y-6",
                 data: { controller: "unsaved-changes",
-                        unsaved_changes_message_value: "変更は保存されていません。移動しますか？" } do |f| %>
+                        unsaved_changes_message_value: t("common.unsaved_changes") } do |f| %>
     <div class="region-section space-y-3">
       <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">
         <%= t("apex.org.preferences.regions.region_section") %>
       </h2>
 
       <div class="space-y-2">
-        <%= f.label :region, t("apex.org.preferences.regions.select_region"), class: "text-sm font-medium text-slate-700" %>
-        <%= f.select :region,
+        <%= f.label :option_id, t("apex.org.preferences.regions.select_region"), class: "text-sm font-medium text-slate-700" %>
+        <%= f.select :option_id,
                      options_for_select(
-                       [
-                         [t("apex.org.preferences.regions.select_region_selector.USA"), "US"],
-                         [t("apex.org.preferences.regions.select_region_selector.JAPAN"), "JP"]
-                       ],
-                       @current_region
+                       OrgPreferenceRegionOption.all.order(:id).map { |o| [t("apex.org.preferences.regions.select_region_selector.#{o.id}", default: o.id), o.id] },
+                       @preference_region.option_id
                      ),
                      { prompt: t("apex.org.preferences.regions.select_region_prompt") },
                      class: "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200" %>
@@ -32,6 +29,7 @@
 
     <div class="form-actions flex items-center gap-3">
       <%= f.submit t("apex.org.preferences.update_settings"),
+                   data: { turbo_submits_with: t("apex.org.preferences.submitting") },
                    class: "inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800" %>
       <%= link_to t("apex.org.preferences.back_to_settings"),
                   apex_org_preference_path,

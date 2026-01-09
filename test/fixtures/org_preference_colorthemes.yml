@@ -1,0 +1,31 @@
+# == Schema Information
+#
+# Table name: org_preference_colorthemes
+#
+#  id            :uuid             not null, primary key
+#  preference_id :uuid             not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  option_id     :string
+#
+# Indexes
+#
+#  index_org_preference_colorthemes_on_option_id      (option_id)
+#  index_org_preference_colorthemes_on_preference_id  (preference_id) UNIQUE
+#
+
+_fixture:
+  model_class: OrgPreferenceColortheme
+
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# This fixture is for the preference database
+# Load explicitly in tests that need it
+
+# one:
+#   preference: one
+#   option_id: light
+#
+# two:
+#   preference: two
+#   option_id: dark

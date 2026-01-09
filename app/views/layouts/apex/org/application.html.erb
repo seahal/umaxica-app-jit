@@ -39,6 +39,8 @@
     </div>
     <nav class="flex flex-wrap items-center justify-end gap-3 text-sm">
           <% unless logged_in? %>
+            <%= link_to t("sign.org.layout.nav.sign_up"), new_sign_org_up_url(host: ENV['SIGN_STAFF_URL']),
+                        class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
             <%= link_to t("sign.org.layout.nav.log_in"), new_sign_org_in_url(host: ENV['SIGN_STAFF_URL']),
                         class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
           <% else %>

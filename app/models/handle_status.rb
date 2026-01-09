@@ -13,6 +13,4 @@ class HandleStatus < AvatarRecord
   include StringPrimaryKey
 
   has_many :handles, dependent: :restrict_with_error
-
-  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

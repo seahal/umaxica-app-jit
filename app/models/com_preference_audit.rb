@@ -47,7 +47,6 @@ class ComPreferenceAudit < AuditRecord
   end
 
   belongs_to :com_preference,
-             -> { where(subject_type: "ComPreference") },
              class_name: "ComPreference",
              foreign_key: :subject_id,
              primary_key: :id,

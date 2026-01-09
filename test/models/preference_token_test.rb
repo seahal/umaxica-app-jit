@@ -58,12 +58,22 @@ class PreferenceTokenTest < ActiveSupport::TestCase
   end
 
   test "handle invalid signature gracefully" do
-    # Create a token and tamper with it
     token = PreferenceToken.encode(@preferences, host: @host)
-    # This is a basic way to tamper; might need more sophistication if it's not just base64
-    # But since it's MessageVerifier, changing any char should fail signature
     tampered_token = token.reverse
 
     assert_nil PreferenceToken.decode(tampered_token, host: @host)
+  end
+
+  test "encode returns nil and logs error on StandardError" do
+    PreferenceToken.stub :verifier, -> { raise StandardError, "forced error" } do
+      assert_nil PreferenceToken.encode(@preferences, host: @host)
+    end
+  end
+
+  test "decode returns nil and logs error on StandardError" do
+    token = PreferenceToken.encode(@preferences, host: @host)
+    PreferenceToken.stub :verifier, -> { raise StandardError, "forced error" } do
+      assert_nil PreferenceToken.decode(token, host: @host)
+    end
   end
 end

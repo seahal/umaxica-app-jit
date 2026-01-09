@@ -35,7 +35,6 @@ class AppDocumentTagMaster < DocumentRecord
   has_many :app_document_tags, dependent: :restrict_with_error
   has_many :app_documents, through: :app_document_tags
 
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
   validates :parent_id, presence: true, length: { maximum: 255 }
 
   def name

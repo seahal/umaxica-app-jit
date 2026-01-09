@@ -8,12 +8,25 @@
 #  token_digest :binary
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  status_id    :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_app_preferences_on_status_id  (status_id)
 #
 
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  public_id: MyString
-  expires_at: 2026-01-07 06:03:43
-  token_digest: 
+  id: 018eb260-e1c0-7000-8000-000000000001
+  public_id: app_pref_001
+  status_id: NEYO
+  expires_at: <%= 20.years.from_now %>
+  token_digest: <%= Digest::SHA256.hexdigest("test_token_001") %>
 
+two:
+  id: 018eb260-e1c0-7000-8000-000000000002
+  public_id: app_pref_002
+  status_id: NEYO
+  expires_at: <%= 20.years.from_now %>
+  token_digest: <%= Digest::SHA256.hexdigest("test_token_002") %>

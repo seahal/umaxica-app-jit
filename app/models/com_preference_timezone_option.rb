@@ -19,5 +19,5 @@ class ComPreferenceTimezoneOption < PreferenceRecord
            dependent: :restrict_with_error
 
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
-                 format: { with: /\A[A-Z0-9_]+\z/ }
+                 format: { with: /\A[A-Za-z0-9_\/\-\+]+\z/ }
 end

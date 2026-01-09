@@ -16,6 +16,9 @@ Rails.application.routes.draw do
         end
         # preferences
         resource :preference, only: [:show]
+        namespace :preference do
+          resources :timezones, only: :index
+        end
         # configuration
         resource :configuration, only: [:show]
       end
@@ -35,6 +38,9 @@ Rails.application.routes.draw do
         end
         # preferences
         resource :preference, only: [:show]
+        namespace :preference do
+          resources :timezones, only: :index
+        end
         # configuration
         resource :configuration, only: [:show]
       end
@@ -55,6 +61,9 @@ Rails.application.routes.draw do
         end
         # preferences
         resource :preference, only: [:show]
+        namespace :preference do
+          resources :timezones, only: :index
+        end
         # configuration
         resource :configuration, only: [:show]
         # for docs

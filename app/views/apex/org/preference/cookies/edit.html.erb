@@ -1,33 +1,37 @@
 <% content_for :page_title, t('apex.org.preferences.cookie_settings') %>
 
-<h1><%= t 'apex.org.preference.cookie.edit.h1' %></h1>
+<section class="mx-auto mt-8 max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" data-controller="cookie-toggle">
+  <h1 class="text-2xl font-semibold text-slate-900">
+    <%= t('apex.org.preference.cookie.edit.h1') %>
+  </h1>
+  <p class="mt-2 text-sm text-slate-600">
+    <%= t('apex.org.preference.cookie.edit.description', default: '') %>
+  </p>
 
-<%= form_with url: apex_org_preference_cookie_url, method: :patch do |f| %>
-  <div class="interests-selection">
-    <%= check_box_tag :accept_necessary_cookies, "1", true, disabled: true %>
-    <%= label_tag :accept_necessary_cookies, t('apex.org.preference.cookie.edit.accept_necessary_cookies') %>
+  <div data-cookie-toggle-target="status" class="mt-4 rounded-lg bg-blue-50 p-4 text-center font-bold text-blue-700">
+    <!-- Stimulus renders the status here. -->
   </div>
 
-  <div class="interests-selection">
-    <%= f.check_box :accept_functional_cookies, { checked: @accept_functional_cookies } %>
-    <%= f.label :accept_functional_cookies, t('apex.org.preference.cookie.edit.accept_functional_cookies') %>
-  </div>
+  <%= form_with scope: :preference_cookie, url: apex_org_preference_cookie_url, method: :patch, class: "mt-6 space-y-6" do |f| %>
+    <div class="space-y-3">
+      <div class="flex items-center gap-3">
+        <%= check_box_tag :accept_necessary_cookies, "1", true, disabled: true, class: "h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" %>
+        <%= label_tag :accept_necessary_cookies, t('apex.org.preference.cookie.edit.accept_necessary_cookies'), class: "text-sm font-medium text-slate-700" %>
+      </div>
 
-  <div class="interests-selection">
-    <%= f.check_box :accept_performance_cookies, { checked: @accept_performance_cookies } %>
-    <%= f.label :accept_performance_cookies, t('apex.org.preference.cookie.edit.accept_performance_cookies') %>
-  </div>
+      <% { functional: 'accept_functional_cookies', performant: 'accept_performance_cookies', targetable: 'accept_targeting_cookies' }.each do |field, label_key| %>
+        <div class="flex items-center gap-3">
+          <%= f.check_box field, { checked: @preference_cookie.public_send(field), data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" }, class: "h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" } %>
+          <%= f.label field, t("apex.org.preference.cookie.edit.#{label_key}"), class: "text-sm font-medium text-slate-700" %>
+        </div>
+      <% end %>
+    </div>
 
-  <div class="interests-selection">
-    <%= f.check_box :accept_targeting_cookies, { checked: @accept_targeting_cookies } %>
-    <%= f.label :accept_targeting_cookies, t('apex.org.preference.cookie.edit.accept_targeting_cookies') %>
-  </div>
-
-  <div>
-    <%= f.submit %>
-  </div>
-
-  <div>
-    <%= link_to t('apex.org.preferences.back_to_settings'), apex_org_preference_path, class: 'inline-block px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-md transition-colors duration-200' %>
-  </div>
-<% end %>
+    <div class="flex flex-wrap items-center gap-3">
+      <%= f.submit t('apex.org.preferences.update_settings'),
+            data: { turbo_submits_with: t("apex.org.preferences.submitting") },
+            class: "inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900/60" %>
+      <%= link_to t('apex.org.preferences.back_to_settings'), apex_org_preference_path, class: "text-sm font-semibold text-slate-700 transition hover:text-slate-900" %>
+    </div>
+  <% end %>
+</section>

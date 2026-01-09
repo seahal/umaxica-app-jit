@@ -11,6 +11,7 @@ module Core
       include ::DefaultUrlOptions
       include Core::Concerns::Regionalization
       include ::Preference::Base
+      include ::Preference::Locale
 
       protect_from_forgery with: :exception
 

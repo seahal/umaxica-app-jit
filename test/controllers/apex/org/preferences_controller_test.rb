@@ -62,4 +62,15 @@ class Apex::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
                     text: /\A↑\s*#{Regexp.escape(I18n.t("apex.org.preferences.up_link"))}\z/
     end
   end
+
+  test "header nav shows sign up and log in links when not logged in" do
+    get apex_org_preference_url
+
+    assert_select "header nav" do
+      assert_select "a[href=?]", new_sign_org_up_url(host: ENV["SIGN_STAFF_URL"]),
+                    text: I18n.t("sign.org.layout.nav.sign_up")
+      assert_select "a[href=?]", new_sign_org_in_url(host: ENV["SIGN_STAFF_URL"]),
+                    text: I18n.t("sign.org.layout.nav.log_in")
+    end
+  end
 end

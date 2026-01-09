@@ -13,6 +13,4 @@ class HandleAssignmentStatus < AvatarRecord
   include StringPrimaryKey
 
   has_many :handle_assignments, dependent: :restrict_with_error
-
-  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

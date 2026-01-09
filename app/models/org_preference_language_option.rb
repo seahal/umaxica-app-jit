@@ -10,6 +10,8 @@
 # frozen_string_literal: true
 
 class OrgPreferenceLanguageOption < PreferenceRecord
+  include StringPrimaryKey
+
   self.primary_key = :id
 
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },

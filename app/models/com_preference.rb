@@ -8,12 +8,21 @@
 #  token_digest :binary
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  status_id    :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_com_preferences_on_status_id  (status_id)
 #
 
 # frozen_string_literal: true
 
 class ComPreference < PreferenceRecord
   include ::PublicId
+
+  belongs_to :com_preference_status,
+             foreign_key: :status_id,
+             inverse_of: :com_preferences
 
   has_one :com_preference_cookie,
           foreign_key: :preference_id,

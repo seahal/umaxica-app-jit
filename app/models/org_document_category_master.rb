@@ -37,7 +37,6 @@ class OrgDocumentCategoryMaster < DocumentRecord
            inverse_of: :org_document_category_master
   has_many :org_documents, through: :org_document_categories
 
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
   validates :parent_id, presence: true, length: { maximum: 255 }
 
   def name

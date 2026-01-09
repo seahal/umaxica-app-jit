@@ -53,6 +53,7 @@ end %>
 
     <div class="flex items-center gap-3">
       <%= f.submit t("apex.#{scope}.preference.locale.edit.submit"),
+                   data: { turbo_submits_with: t("apex.com.preferences.submitting") },
                    class: "inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800" %>
       <%= link_to t("apex.#{scope}.preferences.back_to_settings"),
                   public_send("apex_#{scope}_preference_path"),

@@ -20,13 +20,13 @@ _fixture:
   model_class: ComPreferenceCookie
 
 one:
-  preference: one
+  preference_id: 018eb260-e1c0-7000-8000-000000000001
   functional: false
   performant: false
   targetable: false
 
 two:
-  preference: two
+  preference_id: 018eb260-e1c0-7000-8000-000000000002
   functional: false
   performant: false
   targetable: false

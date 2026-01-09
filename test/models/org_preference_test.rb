@@ -8,6 +8,11 @@
 #  token_digest :binary
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  status_id    :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_org_preferences_on_status_id  (status_id)
 #
 
 # frozen_string_literal: true

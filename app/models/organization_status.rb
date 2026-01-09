@@ -15,6 +15,4 @@ class OrganizationStatus < OperatorRecord
            class_name: "Department",
            dependent: :restrict_with_error,
            inverse_of: :department_status
-
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
 end

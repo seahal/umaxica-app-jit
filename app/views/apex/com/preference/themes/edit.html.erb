@@ -1,59 +1,33 @@
-<% content_for :page_title, t("apex.com.preferences.theme_settings") %>
+<% content_for :page_title, t("apex.com.preferences.theme_settings", default: "Theme Settings") %>
 
-<section class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-sm mb-10">
+<section class="mx-auto mt-8 max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
   <h1 class="text-2xl font-semibold text-slate-900">
-    <%= t("apex.com.preference.theme.edit.title") %>
+    <%= t("apex.com.preference.theme.edit.title", default: "Theme Settings") %>
   </h1>
-  <p class="theme-description mt-2 text-sm text-slate-600">
-    <%= t("apex.com.preference.theme.edit.description") %>
+  <p class="mt-2 text-sm text-slate-600">
+    <%= t("apex.com.preference.theme.edit.description", default: "Choose your preferred color theme.") %>
   </p>
 
-  <%= form_with url: apex_com_preference_theme_path, method: :patch, class: "mt-6 space-y-6" do %>
-    <% (@theme_query_params || {}).each do |key, value| %>
-      <%= hidden_field_tag key, value %>
-    <% end %>
-    <fieldset class="space-y-3">
-      <legend class="text-sm font-semibold uppercase tracking-wide text-slate-500">
-        <%= t("apex.com.preference.theme.edit.legend") %>
-      </legend>
-
-      <div class="rounded-lg border border-slate-200 px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50">
-        <div class="flex items-start gap-3">
-          <%= radio_button_tag :theme, Theme::THEME_CODES["light"], @theme == "light", id: "theme_light_com", class: "mt-1" %>
-          <div>
-            <%= label_tag "theme_light_com", t("apex.com.preference.theme.edit.options.light"), class: "text-sm font-semibold text-slate-900" %>
-            <p class="hint mt-1 text-xs text-slate-600"><%= t("apex.com.preference.theme.edit.hints.light") %></p>
-          </div>
-        </div>
+  <%= form_with model: @preference_colortheme, scope: :preference_colortheme, url: apex_com_preference_theme_path, method: :patch, class: "mt-6 space-y-5" do |f| %>
+    <div>
+      <%= f.label :option_id, t("apex.com.preferences.theme.select_theme", default: "Theme"), class: "block text-sm font-semibold text-slate-700" %>
+      <div class="mt-1">
+        <%= f.select :option_id,
+              options_for_select([
+                [t("apex.com.preference.theme.edit.options.light", default: "Light"), "light"],
+                [t("apex.com.preference.theme.edit.options.dark", default: "Dark"), "dark"],
+                [t("apex.com.preference.theme.edit.options.system", default: "System"), "system"]
+              ], @preference_colortheme.option_id),
+              { include_blank: true },
+              { class: "block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary" } %>
       </div>
-
-      <div class="rounded-lg border border-slate-200 px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50">
-        <div class="flex items-start gap-3">
-          <%= radio_button_tag :theme, Theme::THEME_CODES["dark"], @theme == "dark", id: "theme_dark_com", class: "mt-1" %>
-          <div>
-            <%= label_tag "theme_dark_com", t("apex.com.preference.theme.edit.options.dark"), class: "text-sm font-semibold text-slate-900" %>
-            <p class="hint mt-1 text-xs text-slate-600"><%= t("apex.com.preference.theme.edit.hints.dark") %></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-lg border border-slate-200 px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50">
-        <div class="flex items-start gap-3">
-          <%= radio_button_tag :theme, Theme::THEME_CODES["system"], @theme == "system", id: "theme_system_com", class: "mt-1" %>
-          <div>
-            <%= label_tag "theme_system_com", t("apex.com.preference.theme.edit.options.system"), class: "text-sm font-semibold text-slate-900" %>
-            <p class="hint mt-1 text-xs text-slate-600"><%= t("apex.com.preference.theme.edit.hints.system") %></p>
-          </div>
-        </div>
-      </div>
-    </fieldset>
+    </div>
 
     <div class="flex items-center gap-3">
-      <%= submit_tag t("apex.com.preference.theme.edit.submit"),
-                     class: "inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800" %>
-      <%= link_to t("apex.com.preferences.back_to_settings"),
-                  apex_com_preference_path,
-                  class: "inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+      <%= f.submit t("apex.com.preferences.update_settings", default: "Update Settings"),
+            data: { turbo_submits_with: t("apex.com.preferences.submitting") },
+            class: "inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900/60" %>
+      <%= link_to t("apex.com.preferences.back_to_settings", default: "Back"), apex_com_preference_path, class: "text-sm font-semibold text-slate-700 transition hover:text-slate-900" %>
     </div>
   <% end %>
 </section>

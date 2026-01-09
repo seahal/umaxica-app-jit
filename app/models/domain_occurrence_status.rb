@@ -24,6 +24,4 @@ class DomainOccurrenceStatus < OccurrenceRecord
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"
-
-  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

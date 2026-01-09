@@ -15,6 +15,4 @@ class DivisionStatus < OperatorRecord
   self.primary_key = "id"
 
   has_many :divisions, dependent: :restrict_with_error
-
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
 end

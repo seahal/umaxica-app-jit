@@ -10,6 +10,8 @@
 # frozen_string_literal: true
 
 class AppPreferenceRegionOption < PreferenceRecord
+  include StringPrimaryKey
+
   self.primary_key = :id
 
   has_many :app_preference_regions,

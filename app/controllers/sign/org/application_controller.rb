@@ -10,6 +10,7 @@ module Sign
       include ::Authentication::Staff
       include ::Authorization::Staff
       include Sign::ErrorResponses
+      include ::Preference::Global
 
       protect_from_forgery with: :exception
       allow_browser versions: :modern

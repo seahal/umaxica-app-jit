@@ -69,7 +69,13 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
       assert_select "a"
     end
   end
-  # rubocop:enable Minitest/MultipleAssertions
+  test "renders specific cta text" do
+    get new_sign_app_up_url(format: :html)
+    assert_response :success
+    Rails.logger.debug response.body # DEBUG
+    # Check for Japanese text (since previous test asserted lang=ja)
+    assert_select "a", text: "メールで登録する"
+  end
 
   private
 

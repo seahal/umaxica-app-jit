@@ -38,7 +38,6 @@ class OrgPreferenceAudit < AuditRecord
 
   # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
   belongs_to :org_preference,
-             -> { where(subject_type: "OrgPreference") },
              class_name: "OrgPreference",
              foreign_key: :subject_id,
              primary_key: :id,

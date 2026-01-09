@@ -37,7 +37,6 @@ class OrgTimelineCategoryMaster < NewsRecord
            inverse_of: :org_timeline_category_master
   has_many :org_timelines, through: :org_timeline_categories
 
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
   validates :parent_id, presence: true, length: { maximum: 255 }
 
   def name

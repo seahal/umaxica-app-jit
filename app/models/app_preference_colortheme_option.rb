@@ -10,7 +10,7 @@
 # frozen_string_literal: true
 
 class AppPreferenceColorthemeOption < PreferenceRecord
-  self.primary_key = :id
+  include StringPrimaryKey
 
   has_many :app_preference_colorthemes,
            class_name: "AppPreferenceColortheme",
@@ -19,5 +19,5 @@ class AppPreferenceColorthemeOption < PreferenceRecord
            dependent: :restrict_with_error
 
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
-                 format: { with: /\A[A-Z0-9_]+\z/ }
+                 format: { with: /\A[A-Za-z0-9_]+\z/ }
 end

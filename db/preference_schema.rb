@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_07_093835) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_09_141225) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +66,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_093835) do
     t.index ["preference_id"], name: "index_app_preference_regions_on_preference_id", unique: true
   end
 
+  create_table "app_preference_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "app_preference_statuses_id_format_check"
+  end
+
   create_table "app_preference_timezone_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -84,8 +90,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_093835) do
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.string "public_id"
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
+    t.index ["status_id"], name: "index_app_preferences_on_status_id"
   end
 
   create_table "com_preference_colortheme_options", id: :string, force: :cascade do |t|
@@ -140,6 +148,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_093835) do
     t.index ["preference_id"], name: "index_com_preference_regions_on_preference_id", unique: true
   end
 
+  create_table "com_preference_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "com_preference_statuses_id_format_check"
+  end
+
   create_table "com_preference_timezone_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -158,8 +172,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_093835) do
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.string "public_id"
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
+    t.index ["status_id"], name: "index_com_preferences_on_status_id"
   end
 
   create_table "org_preference_colortheme_options", id: :string, force: :cascade do |t|
@@ -214,6 +230,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_093835) do
     t.index ["preference_id"], name: "index_org_preference_regions_on_preference_id", unique: true
   end
 
+  create_table "org_preference_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "org_preference_statuses_id_format_check"
+  end
+
   create_table "org_preference_timezone_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -232,14 +254,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_093835) do
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.string "public_id"
+    t.string "status_id", limit: 255, default: "NEYO", null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
+    t.index ["status_id"], name: "index_org_preferences_on_status_id"
   end
 
   add_foreign_key "app_preference_colorthemes", "app_preference_colortheme_options", column: "option_id"
   add_foreign_key "app_preference_colorthemes", "app_preferences", column: "preference_id"
   add_foreign_key "app_preference_cookies", "app_preferences", column: "preference_id"
-  add_foreign_key "app_preference_languages", "app_preference_language_options", column: "option_id", validate: false
+  add_foreign_key "app_preference_languages", "app_preference_language_options", column: "option_id"
   add_foreign_key "app_preference_languages", "app_preferences", column: "preference_id"
   add_foreign_key "app_preference_regions", "app_preference_region_options", column: "option_id"
   add_foreign_key "app_preference_regions", "app_preferences", column: "preference_id"

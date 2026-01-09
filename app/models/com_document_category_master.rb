@@ -37,7 +37,6 @@ class ComDocumentCategoryMaster < DocumentRecord
            inverse_of: :com_document_category_master
   has_many :com_documents, through: :com_document_categories
 
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
   validates :parent_id, presence: true, length: { maximum: 255 }
 
   def name

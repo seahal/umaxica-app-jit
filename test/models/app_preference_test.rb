@@ -8,6 +8,11 @@
 #  token_digest :binary
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  status_id    :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_app_preferences_on_status_id  (status_id)
 #
 
 # frozen_string_literal: true
@@ -49,13 +54,15 @@ class AppPreferenceTest < ActiveSupport::TestCase
 
   test "has one app_preference_region" do
     preference = AppPreference.create!
-    region = preference.create_app_preference_region!
+    option = app_preference_region_options(:jp)
+    region = preference.create_app_preference_region!(option: option)
     assert_equal region, preference.app_preference_region
   end
 
   test "destroys app_preference_region when destroyed" do
     preference = AppPreference.create!
-    region = preference.create_app_preference_region!
+    option = app_preference_region_options(:jp)
+    region = preference.create_app_preference_region!(option: option)
     region_id = region.id
     preference.destroy!
     assert_nil AppPreferenceRegion.find_by(id: region_id)
@@ -63,13 +70,15 @@ class AppPreferenceTest < ActiveSupport::TestCase
 
   test "has one app_preference_timezone" do
     preference = AppPreference.create!
-    timezone = preference.create_app_preference_timezone!
+    option = app_preference_timezone_options(:asia_tokyo)
+    timezone = preference.create_app_preference_timezone!(option: option)
     assert_equal timezone, preference.app_preference_timezone
   end
 
   test "destroys app_preference_timezone when destroyed" do
     preference = AppPreference.create!
-    timezone = preference.create_app_preference_timezone!
+    option = app_preference_timezone_options(:asia_tokyo)
+    timezone = preference.create_app_preference_timezone!(option: option)
     timezone_id = timezone.id
     preference.destroy!
     assert_nil AppPreferenceTimezone.find_by(id: timezone_id)
@@ -77,13 +86,15 @@ class AppPreferenceTest < ActiveSupport::TestCase
 
   test "has one app_preference_language" do
     preference = AppPreference.create!
-    language = preference.create_app_preference_language!
+    option = app_preference_language_options(:ja)
+    language = preference.create_app_preference_language!(option: option)
     assert_equal language, preference.app_preference_language
   end
 
   test "destroys app_preference_language when destroyed" do
     preference = AppPreference.create!
-    language = preference.create_app_preference_language!
+    option = app_preference_language_options(:ja)
+    language = preference.create_app_preference_language!(option: option)
     language_id = language.id
     preference.destroy!
     assert_nil AppPreferenceLanguage.find_by(id: language_id)
@@ -91,13 +102,15 @@ class AppPreferenceTest < ActiveSupport::TestCase
 
   test "has one app_preference_colortheme" do
     preference = AppPreference.create!
-    colortheme = preference.create_app_preference_colortheme!
+    option = app_preference_colortheme_options(:light)
+    colortheme = preference.create_app_preference_colortheme!(option: option)
     assert_equal colortheme, preference.app_preference_colortheme
   end
 
   test "destroys app_preference_colortheme when destroyed" do
     preference = AppPreference.create!
-    colortheme = preference.create_app_preference_colortheme!
+    option = app_preference_colortheme_options(:light)
+    colortheme = preference.create_app_preference_colortheme!(option: option)
     colortheme_id = colortheme.id
     preference.destroy!
     assert_nil AppPreferenceColortheme.find_by(id: colortheme_id)

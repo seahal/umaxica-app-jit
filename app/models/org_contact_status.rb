@@ -16,6 +16,4 @@ class OrgContactStatus < GuestRecord
            foreign_key: :status_id,
            inverse_of: :org_contact_status,
            dependent: :nullify
-
-  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

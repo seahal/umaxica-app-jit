@@ -37,7 +37,6 @@ class ComTimelineCategoryMaster < NewsRecord
            inverse_of: :com_timeline_category_master
   has_many :com_timelines, through: :com_timeline_categories
 
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
   validates :parent_id, presence: true, length: { maximum: 255 }
 
   def name

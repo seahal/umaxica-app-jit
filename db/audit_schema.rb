@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_08_123603) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_09_141236) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,11 +85,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_08_123603) do
   create_table "app_preference_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "app_preference_audit_events_id_format_check"
   end
 
   create_table "app_preference_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "app_preference_audit_levels_id_format_check"
   end
 
   create_table "app_preference_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -215,11 +217,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_08_123603) do
   create_table "com_preference_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "com_preference_audit_events_id_format_check"
   end
 
   create_table "com_preference_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "com_preference_audit_levels_id_format_check"
   end
 
   create_table "com_preference_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -345,11 +349,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_08_123603) do
   create_table "org_preference_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "org_preference_audit_events_id_format_check"
   end
 
   create_table "org_preference_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "org_preference_audit_levels_id_format_check"
   end
 
   create_table "org_preference_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|

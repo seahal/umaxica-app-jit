@@ -22,5 +22,4 @@ class PostReviewStatus < AvatarRecord
 
   validates :key, presence: true, uniqueness: true
   validates :name, presence: true
-  validates :id, format: { with: /\A[A-Z0-9_]+\z/ }
 end

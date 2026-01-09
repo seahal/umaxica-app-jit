@@ -29,20 +29,16 @@ class OrgPreferenceColorthemeTest < ActiveSupport::TestCase
     assert_includes colortheme.errors[:preference], "を入力してください"
   end
 
-  test "can be created with preference" do
-    colortheme = OrgPreferenceColortheme.create!(preference: @preference)
+  test "can be created with preference and option" do
+    option = org_preference_colortheme_options(:light)
+    colortheme = OrgPreferenceColortheme.create!(preference: @preference, option: option)
     assert_not_nil colortheme.id
     assert_equal @preference, colortheme.preference
-  end
-
-  test "can be created with option" do
-    option = OrgPreferenceColorthemeOption.create!(id: "TEST_ORG_COLORTHEME")
-    colortheme = OrgPreferenceColortheme.create!(preference: @preference, option: option)
     assert_equal option, colortheme.option
   end
 
-  test "can be created without option" do
+  test "sets default option_id on create" do
     colortheme = OrgPreferenceColortheme.create!(preference: @preference)
-    assert_nil colortheme.option
+    assert_equal "system", colortheme.option_id
   end
 end

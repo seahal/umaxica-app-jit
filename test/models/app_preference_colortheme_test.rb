@@ -29,27 +29,42 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
     assert_not_empty colortheme.errors[:preference]
   end
 
-  test "can be created with preference" do
-    colortheme = AppPreferenceColortheme.create!(preference: @preference)
+  test "can be created with preference and option" do
+    option = app_preference_colortheme_options(:light)
+    colortheme = AppPreferenceColortheme.create!(preference: @preference, option: option)
     assert_not_nil colortheme.id
     assert_equal @preference, colortheme.preference
-  end
-
-  test "can be created with option" do
-    option = AppPreferenceColorthemeOption.create!(id: "TEST_APP_COLORTHEME")
-    colortheme = AppPreferenceColortheme.create!(preference: @preference, option: option)
     assert_equal option, colortheme.option
   end
 
-  test "can be created without option" do
+  test "sets default option_id on create" do
     colortheme = AppPreferenceColortheme.create!(preference: @preference)
-    assert_nil colortheme.option
+    assert_equal "system", colortheme.option_id
   end
 
   test "validates uniqueness of preference" do
-    AppPreferenceColortheme.create!(preference: @preference)
-    duplicate_colortheme = AppPreferenceColortheme.new(preference: @preference)
+    option = app_preference_colortheme_options(:light)
+    AppPreferenceColortheme.create!(preference: @preference, option: option)
+    duplicate_colortheme = AppPreferenceColortheme.new(preference: @preference, option: option)
     assert_not duplicate_colortheme.valid?
     assert_not_empty duplicate_colortheme.errors[:preference_id]
+  end
+
+  test "permits lowercase theme string as option_id and associates with valid option" do
+    colortheme = AppPreferenceColortheme.create!(preference: @preference, option_id: "light")
+    assert_equal "light", colortheme.option_id
+    # "light" exists in fixtures and matches relaxed regex
+    assert_equal app_preference_colortheme_options(:light), colortheme.option
+  end
+
+  test "AppPreferenceColorthemeOption accepts lowercase with relaxed regex" do
+    option = AppPreferenceColorthemeOption.new(id: "dim")
+    assert_predicate option, :valid?
+  end
+
+  test "AppPreferenceColorthemeOption rejects invalid characters" do
+    option = AppPreferenceColorthemeOption.new(id: "Bad-Theme")
+    assert_not option.valid?
+    assert_includes option.errors[:id], "は不正な値です"
   end
 end

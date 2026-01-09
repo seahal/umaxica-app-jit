@@ -35,7 +35,6 @@ class OrgDocumentTagMaster < DocumentRecord
   has_many :org_document_tags, dependent: :restrict_with_error
   has_many :org_documents, through: :org_document_tags
 
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
   validates :parent_id, presence: true, length: { maximum: 255 }
 
   def name

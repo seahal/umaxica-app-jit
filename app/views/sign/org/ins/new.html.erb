@@ -3,12 +3,16 @@
   <p class="mt-2 text-sm text-slate-600"><%= t("sign.org.authentication.new.description") %></p>
 
   <div class="mt-6 space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-    <%= render "concern/cloudflare_turnstile" %>
     <%= link_to t("sign.org.authentication.new.links.passkey"),
                 new_sign_org_in_passkey_path,
                 class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
     <%= link_to t("sign.org.authentication.new.links.secret"),
                 new_sign_org_in_secret_path,
                 class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    <%= link_to apex_org_root_path(ct: "sy", lx: "ja", ri: "jp", tz: "jst"),
+                class: "mt-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.4em] text-slate-500" do %>
+      <span aria-hidden="true">↑</span>
+      <span><%= t("sign.org.authentication.new.back_to_root", default: "うえへ") %></span>
+    <% end %>
   </div>
 </div>

@@ -5,28 +5,33 @@
     <%= t("apex.org.preferences.title") %>
   </h1>
   <p class="mt-2 text-sm text-slate-600">
-    言語やテーマなどの設定をまとめて変更できます。
+    <%= t("apex.org.preferences.description") %>
   </p>
 
   <ul class="mt-6 space-y-2 text-sm">
     <li>
-      <%= link_to t("apex.org.preferences.region_settings"), edit_apex_org_preference_region_url,
+      <%= link_to t("apex.org.preferences.region_settings"), edit_apex_org_preference_region_path,
                   class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
     </li>
     <li>
-      <%= link_to t("apex.org.preferences.locale_settings"), edit_apex_org_preference_locale_url,
+      <%= link_to t("apex.org.preferences.timezone_settings"), edit_apex_org_preference_timezone_path,
                   class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
     </li>
     <li>
-      <%= link_to t("apex.org.preferences.theme_settings"), edit_apex_org_preference_theme_url,
+      <%= link_to t("apex.org.preferences.language_settings"),
+                  edit_apex_org_preference_language_path,
                   class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
     </li>
     <li>
-      <%= link_to t("apex.org.preferences.cookie_settings"), edit_apex_org_preference_cookie_url,
+      <%= link_to t("apex.org.preferences.theme_settings"), edit_apex_org_preference_theme_path,
                   class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
     </li>
     <li>
-      <%= link_to t("apex.org.preferences.reset_settings"), edit_apex_org_preference_reset_url,
+      <%= link_to t("apex.org.preferences.cookie_settings"), edit_apex_org_preference_cookie_path,
+                  class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
+    </li>
+    <li>
+      <%= link_to t("apex.org.preferences.reset_settings"), edit_apex_org_preference_reset_path,
                   class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
     </li>
   </ul>

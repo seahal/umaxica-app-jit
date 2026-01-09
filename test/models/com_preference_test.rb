@@ -8,6 +8,11 @@
 #  token_digest :binary
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  status_id    :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_com_preferences_on_status_id  (status_id)
 #
 
 # frozen_string_literal: true
@@ -49,13 +54,15 @@ class ComPreferenceTest < ActiveSupport::TestCase
 
   test "has one com_preference_region" do
     preference = ComPreference.create!
-    region = preference.create_com_preference_region!
+    option = com_preference_region_options(:jp)
+    region = preference.create_com_preference_region!(option: option)
     assert_equal region, preference.com_preference_region
   end
 
   test "destroys com_preference_region when destroyed" do
     preference = ComPreference.create!
-    region = preference.create_com_preference_region!
+    option = com_preference_region_options(:jp)
+    region = preference.create_com_preference_region!(option: option)
     region_id = region.id
     preference.destroy!
     assert_nil ComPreferenceRegion.find_by(id: region_id)
@@ -63,13 +70,15 @@ class ComPreferenceTest < ActiveSupport::TestCase
 
   test "has one com_preference_timezone" do
     preference = ComPreference.create!
-    timezone = preference.create_com_preference_timezone!
+    option = com_preference_timezone_options(:asia_tokyo)
+    timezone = preference.create_com_preference_timezone!(option: option)
     assert_equal timezone, preference.com_preference_timezone
   end
 
   test "destroys com_preference_timezone when destroyed" do
     preference = ComPreference.create!
-    timezone = preference.create_com_preference_timezone!
+    option = com_preference_timezone_options(:asia_tokyo)
+    timezone = preference.create_com_preference_timezone!(option: option)
     timezone_id = timezone.id
     preference.destroy!
     assert_nil ComPreferenceTimezone.find_by(id: timezone_id)
@@ -77,13 +86,15 @@ class ComPreferenceTest < ActiveSupport::TestCase
 
   test "has one com_preference_language" do
     preference = ComPreference.create!
-    language = preference.create_com_preference_language!
+    option = com_preference_language_options(:ja)
+    language = preference.create_com_preference_language!(option: option)
     assert_equal language, preference.com_preference_language
   end
 
   test "destroys com_preference_language when destroyed" do
     preference = ComPreference.create!
-    language = preference.create_com_preference_language!
+    option = com_preference_language_options(:ja)
+    language = preference.create_com_preference_language!(option: option)
     language_id = language.id
     preference.destroy!
     assert_nil ComPreferenceLanguage.find_by(id: language_id)
@@ -91,13 +102,15 @@ class ComPreferenceTest < ActiveSupport::TestCase
 
   test "has one com_preference_colortheme" do
     preference = ComPreference.create!
-    colortheme = preference.create_com_preference_colortheme!
+    option = com_preference_colortheme_options(:light)
+    colortheme = preference.create_com_preference_colortheme!(option: option)
     assert_equal colortheme, preference.com_preference_colortheme
   end
 
   test "destroys com_preference_colortheme when destroyed" do
     preference = ComPreference.create!
-    colortheme = preference.create_com_preference_colortheme!
+    option = com_preference_colortheme_options(:light)
+    colortheme = preference.create_com_preference_colortheme!(option: option)
     colortheme_id = colortheme.id
     preference.destroy!
     assert_nil ComPreferenceColortheme.find_by(id: colortheme_id)

@@ -11,7 +11,7 @@
 
   <script nonce="<%= content_security_policy_nonce %>">
     (function () {
-        const widgetId = <%= widget_id.to_json %>;
+        const widgetId = <%== widget_id.to_json %>;
         const container = document.getElementById(widgetId);
 
         if (!container) {
@@ -30,7 +30,7 @@
 
             try {
                 turnstile.render('#' + widgetId, {
-                    sitekey: <%= site_key.to_json %>,
+                    sitekey: <%== site_key.to_json %>,
                     callback: function (token) {
                         console.debug('Turnstile verified:', token.substring(0, 20) + '...');
                     },
@@ -53,6 +53,7 @@
 
             const script = document.createElement('script');
             script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+            script.nonce = '<%= content_security_policy_nonce %>';
             script.async = true;
             script.onload = function () {
                 console.debug('Turnstile script loaded');

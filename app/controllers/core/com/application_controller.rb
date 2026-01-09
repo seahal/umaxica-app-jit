@@ -7,6 +7,7 @@ module Core
       include ::Authentication::User
       include ::AuthorizationAudit
       include ::Preference::Base
+      include ::Preference::Locale
 
       protect_from_forgery with: :exception
 

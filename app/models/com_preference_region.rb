@@ -17,6 +17,8 @@
 # frozen_string_literal: true
 
 class ComPreferenceRegion < PreferenceRecord
+  before_validation :set_option_id
+
   belongs_to :preference, class_name: "ComPreference", inverse_of: :com_preference_region
   belongs_to :option,
              class_name: "ComPreferenceRegionOption",
@@ -24,4 +26,11 @@ class ComPreferenceRegion < PreferenceRecord
              optional: true
 
   validates :preference_id, uniqueness: true
+  validates :option_id, presence: true
+
+  private
+
+  def set_option_id
+    self.option_id ||= "JP"
+  end
 end

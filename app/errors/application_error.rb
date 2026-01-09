@@ -8,7 +8,12 @@ class ApplicationError < StandardError
     @context = context
 
     if i18n_key
-      message = I18n.t(i18n_key, **context)
+      message =
+        if i18n_key.is_a?(String) && i18n_key.match?(/[^\x00-\x7F]/)
+          i18n_key
+        else
+          I18n.t(i18n_key, **context)
+        end
       super(message)
     else
       super()

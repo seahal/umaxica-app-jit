@@ -17,7 +17,11 @@ Rails.application.routes.draw do
           # for region settings.
           resource :region, only: [:edit, :update]
           # for lx and tz settings.
-          resource :locale, only: [:edit, :update]
+          # todo: nest needs.
+          resource :timezone, only: [:edit, :update]
+          # for timezone list
+          # todo: nest needs.
+          resource :language, only: [:edit, :update]
           # for dark/light mode
           resource :theme, only: [:edit, :update]
           # endpoint of reset preferences.
@@ -47,14 +51,18 @@ Rails.application.routes.draw do
         namespace :preference do
           # for region settings.
           resource :region, only: [:edit, :update]
+          # todo: nest needs.
+          # for lx and tz settings.
+          resource :language, only: [:edit, :update]
+          # todo: nest needs.
+          # for timezone list
+          resource :timezone, only: [:edit, :update]
           # for dark/light mode
           resource :theme, only: [:edit, :update]
-          # for lx and tz settings.
-          resource :locale, only: [:edit, :update]
-          # endpoint of reset preferences.
-          resource :reset, only: [:edit, :destroy]
           # for ePrivacy settings.
           resource :cookie, only: [:edit, :update]
+          # endpoint of reset preferences.
+          resource :reset, only: [:edit, :destroy]
         end
         resource :configuration, only: [:show]
         namespace :configuration do
@@ -81,7 +89,11 @@ Rails.application.routes.draw do
           # for dark/light mode
           resource :theme, only: [:edit, :update]
           # for lx and tz settings.
-          resource :locale, only: [:edit, :update]
+          # todo: nest needs.
+          resource :timezone, only: [:edit, :update]
+          # for timezone list
+          # todo: nest needs.
+          resource :language, only: [:edit, :update]
           # endpoint of reset preferences.
           resource :reset, only: [:edit, :destroy]
           # for ePrivacy settings.

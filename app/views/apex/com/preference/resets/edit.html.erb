@@ -9,14 +9,15 @@
     <%= t("apex.com.preference.resets.description") %>
   </p>
 
-  <div class="mt-6 flex items-center gap-3">
-    <%= button_to t("apex.com.preference.resets.button"),
-                  apex_com_preference_reset_path,
-                  method: :delete,
-                  data: { confirm: t("apex.com.preference.resets.confirm") },
-                  class: "inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500" %>
-    <%= link_to t("apex.com.preference.resets.back"),
-                apex_com_preference_path,
-                class: "inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-  </div>
+  <%= form_with url: apex_com_preference_reset_path, method: :delete, class: "mt-6" do |f| %>
+    <div class="flex items-center gap-3">
+      <%= f.submit t("apex.com.preference.resets.button"),
+                   data: { turbo_confirm: t("apex.com.preference.resets.confirm"),
+                           turbo_submits_with: t("apex.com.preferences.submitting") },
+                   class: "inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500" %>
+      <%= link_to t("apex.com.preference.resets.back"),
+                  apex_com_preference_path,
+                  class: "inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+    </div>
+  <% end %>
 </section>

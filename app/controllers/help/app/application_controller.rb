@@ -5,6 +5,7 @@ module Help
     class ApplicationController < ActionController::Base
       include ::RateLimit
       include ::Preference::Base
+      include ::Preference::Locale
 
       protect_from_forgery with: :exception
       include ::DefaultUrlOptions

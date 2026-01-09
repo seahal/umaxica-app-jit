@@ -56,6 +56,121 @@ en:
           log_in: "Log In"
           configuration: "Settings"
           logout: "Log Out"
+      authentication:
+        new:
+          page_title: "Choose how to sign in"
+          description: "Select the method that fits your current session."
+          back: "Prefer a different method?"
+          back_link: "Back"
+          links:
+            email: "Email"
+            telephone: "Telephone"
+            passkey: "Passkey"
+            recovery: "Recovery code"
+            secret: "Secret"
+            google: "Sign in with Google"
+            apple: "Sign in with Apple"
+            registration: "Need an account?"
+        secret:
+          new:
+            page_title: "Sign in with a secret"
+            pii_label: "Identification"
+            secret_label: "Secret"
+            confirm_label: "I have saved my secret"
+        passkey:
+          new:
+            page_title: "Sign in with a passkey"
+            description: "Use your device's security features for a faster and safer login."
+            submit: "Sign in using passkey"
+        email:
+          new:
+            page_title: "Sign in with email"
+            you_have_already_logged_in: "You are already signed in."
+            registration: "Need an account?"
+          create:
+            you_have_already_logged_in: "You are already signed in."
+            email_not_found: "We couldn't find an account matching that email address."
+            verification_code_sent: "Verification code has been sent to your email address."
+            turnstile_error: "Security verification failed. Please refresh and try again."
+        telephone:
+          new:
+            page_title: "Sign in with telephone"
+            description: "This feature is coming soon."
+            you_have_already_logged_in: "You are already signed in."
+        recovery:
+          new:
+            page_title: "Use a recovery code"
+            description: "Enter one of your saved recovery codes to regain access to your account."
+      registration:
+        new:
+          page_title: "Create your account"
+          page_description: "Choose the sign-up method that works best for your %{product} account."
+          methods:
+            title: "Choose how to get started"
+            email:
+              title: "Email address"
+              description: "Receive a verification link by email and finish registration in a few minutes."
+              cta: "Sign up with email"
+            telephone:
+              title: "Mobile phone number"
+              description: "Verify your phone with a one-time SMS code before creating your account."
+              cta: "Sign up with telephone"
+          social:
+            title: "Use an existing account"
+            description: "Link a new %{product} account with the provider you already trust."
+            buttons:
+              google: "Continue with Google"
+              apple: "Continue with Apple"
+            disclaimer: "We will never post or share anything without your permission."
+        links:
+          sign_in_prompt: "Already have an account?"
+          sign_in_html: "Already registered? %{link}"
+          sign_in_text: "Sign in"
+        email:
+          new:
+            page_title: "UMAXICA (sign, app)"
+          already_logged_in: "You are already logged in."
+          create:
+            verification_code_sent: "Verification code has been sent to your email address."
+            turnstile_validation_failed: "Security verification failed. Please try again."
+          edit:
+            return_page: "Back"
+            session_expired: "Your session has expired. Please start over."
+          update:
+            success: "Email address has been verified."
+            failed: "Registration failed. Please try again."
+            invalid_code: "Invalid verification code."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
+            session_expired: "Your session has expired. Please start over."
+        telephone:
+          create:
+            verification_code_sent: "Verification code has been sent via SMS."
+            locked: "Your account is locked. Please try again later."
+          edit:
+            return_page: "Back"
+            session_expired: "Your session has expired. Please start over."
+          update:
+            success: "Phone number has been verified."
+      configuration:
+        show:
+          page_title: "Configuration"
+          description: "Manage advanced security controls for your account."
+          withdrawal: "Withdrawal"
+          back: "Back"
+        recovery:
+          index:
+            description: "Review existing recovery codes and ensure they stay up to date."
+            edit_link: "Edit"
+            new_link: "Create a new recovery code"
+          new:
+            page_title: "Generate a recovery code"
+            description: "Create a fresh recovery code to regain access if you lose your primary factors."
+            confirm_label: "I understand a new recovery code will be generated"
+            submit: "Generate recovery code"
+        totp:
+          index:
+            description: "Manage time-based one-time passwords linked to your account."
+            new_link: "Create a new TOTP credential"
       preferences:
         footer:
           home: "home"
@@ -71,6 +186,20 @@ en:
           create:
             success: "Account created and signed in with %{provider}."
             failure: "Authentication failed. Please try again."
+    org:
+      layout:
+        nav:
+          sign_up: "Sign Up"
+          log_in: "Log In"
+          configuration: "Settings"
+          logout: "Log Out"
+      ups:
+        new:
+          heading: "Create your org account"
+          description: "Get started with team workflows by creating an organization account."
+          recruit_prompt_html: "Interested in joining the team? %{link}"
+          recruit_link_text: "Contact recruiting"
+          back_to_root: "up"
       authentication:
         new:
           page_title: "Choose how to sign in"
@@ -907,7 +1036,7 @@ en:
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."
-  apex:
+    apex:
     app:
       configurations:
         title: Configuration
@@ -919,17 +1048,26 @@ en:
       preferences:
         footer:
           privacy: "Privacy"
+        languages:
+          unsupported: "Unsupported language selected"
+        language_settings: "Language Settings"
+        update_success: "Preferences updated successfully"
+        submitting: "Submitting..."
     com:
       preferences:
         footer:
           privacy: "Privacy"
+        update_success: "Preferences updated successfully"
+        submitting: "Submitting..."
       preference:
         up_link: "up to"
     org:
       preferences:
         footer:
           privacy: "Privacy"
+        update_success: "Preferences updated successfully"
         reset_settings: "Reset Settings"
+        submitting: "Submitting..."
   core:
     shared:
       preference_emails:
@@ -1342,6 +1480,7 @@ en:
   sign:
     app:
       preferences:
+        title: "Preference settings"
         footer:
           preference: "Preferences"
     org:

@@ -29,27 +29,37 @@ class AppPreferenceRegionTest < ActiveSupport::TestCase
     assert_includes region.errors[:preference], "を入力してください"
   end
 
-  test "can be created with preference" do
-    region = AppPreferenceRegion.create!(preference: @preference)
+  test "can be created with preference and option" do
+    option = app_preference_region_options(:jp)
+    region = AppPreferenceRegion.create!(preference: @preference, option: option)
     assert_not_nil region.id
     assert_equal @preference, region.preference
-  end
-
-  test "can be created with option" do
-    option = AppPreferenceRegionOption.create!(id: "TEST_APP_REGION")
-    region = AppPreferenceRegion.create!(preference: @preference, option: option)
     assert_equal option, region.option
   end
 
-  test "can be created without option" do
+  test "sets default option_id on create" do
     region = AppPreferenceRegion.create!(preference: @preference)
-    assert_nil region.option
+    assert_equal "JP", region.option_id
   end
 
   test "validates uniqueness of preference" do
-    AppPreferenceRegion.create!(preference: @preference)
-    duplicate_region = AppPreferenceRegion.new(preference: @preference)
+    option = app_preference_region_options(:jp)
+    AppPreferenceRegion.create!(preference: @preference, option: option)
+    duplicate_region = AppPreferenceRegion.new(preference: @preference, option: option)
     assert_not duplicate_region.valid?
     assert_includes duplicate_region.errors[:preference_id], "はすでに存在します"
+  end
+
+  test "raises InvalidForeignKey for non-existent arbitrary option_id" do
+    assert_raises(ActiveRecord::InvalidForeignKey) do
+      AppPreferenceRegion.create!(preference: @preference, option_id: "Mars")
+    end
+  end
+
+  test "AppPreferenceRegionOption accepts valid uppercase code" do
+    option = AppPreferenceRegionOption.create!(id: "XX")
+    assert_predicate option, :persisted?
+    region = AppPreferenceRegion.create!(preference: @preference, option_id: "XX")
+    assert_equal option, region.option
   end
 end

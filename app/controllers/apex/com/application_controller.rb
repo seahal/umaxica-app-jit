@@ -4,7 +4,9 @@ module Apex
   module Com
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
+      include Sign::ErrorResponses
       include ::Preference::Base
+      include ::Preference::Global
 
       protect_from_forgery with: :exception
       include ::RateLimit

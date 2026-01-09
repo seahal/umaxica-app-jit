@@ -15,6 +15,18 @@ module Sign
     included do
       # Automatically set up rescue_from if Pundit is included
       rescue_from Pundit::NotAuthorizedError, with: :handle_not_authorized if defined?(Pundit)
+      rescue_from ApplicationError, with: :handle_application_error
+    end
+
+    def handle_application_error(exception)
+      respond_to do |format|
+        format.html do
+          flash[:alert] = exception.message
+          redirect_back_or_to("/")
+        end
+        format.json { render json: { error: exception.message }, status: exception.status_code }
+        format.any { head exception.status_code }
+      end
     end
 
     # Handles Pundit authorization failures

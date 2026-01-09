@@ -35,7 +35,6 @@ class AppTimelineTagMaster < NewsRecord
   has_many :app_timeline_tags, dependent: :restrict_with_error
   has_many :app_timelines, through: :app_timeline_tags
 
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
   validates :parent_id, presence: true, length: { maximum: 255 }
 
   def name

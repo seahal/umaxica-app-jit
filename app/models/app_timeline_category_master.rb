@@ -37,7 +37,6 @@ class AppTimelineCategoryMaster < NewsRecord
            inverse_of: :app_timeline_category_master
   has_many :app_timelines, through: :app_timeline_categories
 
-  validates :id, presence: true, uniqueness: true, length: { maximum: 255 }
   validates :parent_id, presence: true, length: { maximum: 255 }
 
   def name

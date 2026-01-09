@@ -2,90 +2,65 @@
 
 require "test_helper"
 
-require "json"
-require_relative "../../../../support/cookie_helper"
-
 module Apex
   module Org
     module Preference
       class ThemesControllerTest < ActionDispatch::IntegrationTest
-        # rubocop:disable Minitest/MultipleAssertions
-        test "renders theme edit page with system selected by default" do
-          get edit_apex_org_preference_theme_url
+        setup do
+          host! ENV.fetch("APEX_ORGANIZATION_URL", "org.localhost")
+          https!
 
+          @preference = org_preferences(:one)
+          # Ensure colortheme preference exists
+          @preference_colortheme = OrgPreferenceColortheme.find_by(preference_id: @preference.id) ||
+            OrgPreferenceColortheme.create!(preference_id: @preference.id, option_id: "system")
+
+          # Set the cookie
+          @token = SecureRandom.urlsafe_base64(48)
+          token_digest = SHA3::Digest::SHA3_384.digest(@token)
+          @preference.update!(token_digest: token_digest)
+        end
+
+        test "should get edit" do
+          cookie_name = Rails.env.production? ? "__Secure-Jit-Preference" : "Jit-Preference"
+          get edit_apex_org_preference_theme_url, headers: { "Cookie" => "#{cookie_name}=#{@token}" }
           assert_response :success
-
-          assert_select "h1", text: I18n.t("apex.org.preference.theme.edit.title")
-          assert_select "p.theme-description", text: I18n.t("apex.org.preference.theme.edit.description")
-
-          assert_select "form" do
-            assert_select "legend", text: I18n.t("apex.org.preference.theme.edit.legend")
-            assert_select "input[type='hidden'][name='_method'][value='patch']", count: 1
-            assert_select "input[type='radio'][name='theme'][value='li'][checked]", count: 0
-            assert_select "input[type='radio'][name='theme'][value='dr'][checked]", count: 0
-            assert_select "input[type='radio'][name='theme'][value='sy'][checked]", count: 1
-            assert_select "label[for='theme_light_org']", text: I18n.t("apex.org.preference.theme.edit.options.light")
-            assert_select "label[for='theme_dark_org']", text: I18n.t("apex.org.preference.theme.edit.options.dark")
-            assert_select "label[for='theme_system_org']", text: I18n.t("apex.org.preference.theme.edit.options.system")
-            assert_select ".hint", text: I18n.t("apex.org.preference.theme.edit.hints.light")
-            assert_select ".hint", text: I18n.t("apex.org.preference.theme.edit.hints.dark")
-            assert_select ".hint", text: I18n.t("apex.org.preference.theme.edit.hints.system")
-            assert_select "input[type='submit'][value=?]", I18n.t("apex.org.preference.theme.edit.submit")
-          end
-
-          # Verify back link exists (may not have specific CSS classes)
-          assert_select "a[href^='#{apex_org_preference_path}']", minimum: 1
+          assert_select "select[name='preference_colortheme[option_id]']"
+          assert_select "input[type='submit'][data-turbo-submits-with='送信中...']"
         end
-        # rubocop:enable Minitest/MultipleAssertions
 
-        # rubocop:disable Minitest/MultipleAssertions
-        test "updates theme preference and persists to cookies" do
-          patch apex_org_preference_theme_url, params: { theme: "dr", lx: "ja", ri: "jp", tz: "jst" }
+        test "should update theme preference and create audit log" do
+          cookie_name = Rails.env.production? ? "__Secure-Jit-Preference" : "Jit-Preference"
 
-          assert_response :redirect
-          assert_equal "管理テーマをダークテーマに更新しました", flash[:notice]
-          assert_equal "dark", session[:theme]
-          assert_equal "dark", signed_cookie(:root_org_theme)
+          # Change option_id to ensure we're updating from a known state
+          @preference_colortheme.update!(option_id: "light")
 
-          # org doesn't use __Secure-root_app_preferences cookie
-          # persisted_preferences = JSON.parse(signed_cookie(:__Secure-root_app_preferences))
-          # assert_equal "dr", persisted_preferences["ct"]
+          # Make a GET request first to ensure all setup is complete
+          get edit_apex_org_preference_theme_url, headers: { "Cookie" => "#{cookie_name}=#{@token}" }
 
-          follow_redirect!
+          # Now count audits after all initialization
+          initial_count = OrgPreferenceAudit.count
 
-          # QueryCanonicalizer may cause another redirect to normalize query params
-          follow_redirect! if response.redirect?
+          patch apex_org_preference_theme_url,
+                params: {
+                  preference_colortheme: {
+                    option_id: "dark",
+                  },
+                },
+                headers: { "Cookie" => "#{cookie_name}=#{@token}" }
 
-          assert_response :success
-          assert_select "input[type='radio'][name='theme'][value='dr'][checked]", count: 1
-          assert_select "a[href^='#{apex_org_preference_path}']", minimum: 1
+          assert_equal 1, OrgPreferenceAudit.count - initial_count
+
+          assert_redirected_to %r{/preference/theme/edit}
+
+          @preference_colortheme.reload
+          assert_equal "dark", @preference_colortheme.option_id
+
+          audit = OrgPreferenceAudit.order(:created_at).last
+          assert_equal "UPDATE_PREFERENCE_COLORTHEME", audit.event_id
+          assert_equal "INFO", audit.level_id
+          assert_equal "OrgPreference", audit.subject_type
         end
-        # rubocop:enable Minitest/MultipleAssertions
-
-        # rubocop:disable Minitest/MultipleAssertions
-        test "re-renders edit on invalid theme selection" do
-          patch apex_org_preference_theme_url, params: { theme: "li", lx: "ja", ri: "jp", tz: "jst" }
-
-          assert_response :redirect
-          follow_redirect!
-
-          # QueryCanonicalizer may cause another redirect to normalize query params
-          follow_redirect! if response.redirect?
-
-          assert_equal "light", session[:theme]
-          assert_equal "light", signed_cookie(:root_org_theme)
-          assert_select "a[href^='#{apex_org_preference_path}']", minimum: 1
-
-          patch apex_org_preference_theme_url, params: { theme: "neon", lx: "ja", ri: "jp", tz: "jst" }
-
-          assert_response :unprocessable_content
-          assert_equal "無効な管理テーマが選択されました", flash[:alert]
-          assert_equal "light", session[:theme]
-          assert_equal "light", signed_cookie(:root_org_theme)
-          assert_select "input[type='radio'][name='theme'][value='li'][checked]", count: 1
-          assert_select "a[href^='#{apex_org_preference_path}']", minimum: 1
-        end
-        # rubocop:enable Minitest/MultipleAssertions
       end
     end
   end

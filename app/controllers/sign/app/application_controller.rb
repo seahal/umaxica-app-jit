@@ -10,6 +10,7 @@ module Sign
       include ::Authorization::User
       include Pundit::Authorization
       include Sign::ErrorResponses
+      include ::Preference::Global
 
       protect_from_forgery with: :exception
 

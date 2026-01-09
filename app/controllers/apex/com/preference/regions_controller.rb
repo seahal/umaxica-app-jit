@@ -4,16 +4,16 @@ module Apex
   module Com
     module Preference
       class RegionsController < ApplicationController
-        include PreferenceRegions
+        include ::Preference::Core
 
-        private
-
-        def translation_scope
-          "apex.com.preferences"
+        def edit
+          set_region_preferences_edit
         end
 
-        def preference_region_edit_url(params = {})
-          edit_apex_com_preference_region_url(params)
+        def update
+          set_region_preferences_update
+          redirect_to edit_apex_com_preference_region_url(ri: @preference_region.option_id.downcase),
+                      notice: t("apex.com.preferences.update_success")
         end
       end
     end

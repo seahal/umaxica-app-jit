@@ -35,7 +35,7 @@ class AppPreferenceTimezoneOptionTest < ActiveSupport::TestCase
   end
 
   test "validates id format" do
-    option = AppPreferenceTimezoneOption.new(id: "invalid-id")
+    option = AppPreferenceTimezoneOption.new(id: "invalid id")
     assert_not option.valid?
     assert_not_empty option.errors[:id]
 
