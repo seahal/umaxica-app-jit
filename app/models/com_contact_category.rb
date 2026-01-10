@@ -12,6 +12,8 @@
 class ComContactCategory < GuestRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   has_many :com_contacts,
            foreign_key: :category_id,
            primary_key: :id,

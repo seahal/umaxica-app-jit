@@ -20,6 +20,8 @@
 class OrgPreferenceCookie < PreferenceRecord
   belongs_to :preference, class_name: "OrgPreference", inverse_of: :org_preference_cookie
 
+  validates :preference_id, uniqueness: true
+
   after_initialize :set_defaults
 
   validates :targetable, inclusion: { in: [true, false] }

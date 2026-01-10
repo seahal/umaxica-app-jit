@@ -12,6 +12,8 @@
 class ClientStatus < PrincipalRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   has_many :clients,
            foreign_key: :status_id,
            dependent: :restrict_with_error,

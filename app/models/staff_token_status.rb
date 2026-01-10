@@ -10,6 +10,8 @@
 class StaffTokenStatus < TokenRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   has_many :staff_tokens, dependent: :restrict_with_error
 
   # Status constants

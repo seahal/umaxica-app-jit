@@ -10,6 +10,8 @@
 class ComDocumentStatus < DocumentRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   has_many :com_documents,
            foreign_key: :status_id,
            inverse_of: :com_document_status,

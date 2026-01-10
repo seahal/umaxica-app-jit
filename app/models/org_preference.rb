@@ -24,6 +24,8 @@ class OrgPreference < PreferenceRecord
              foreign_key: :status_id,
              inverse_of: :org_preferences
 
+  validates :status_id, length: { maximum: 255 }
+
   has_one :org_preference_cookie,
           foreign_key: :preference_id,
           inverse_of: :preference,

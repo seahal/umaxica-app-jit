@@ -10,6 +10,8 @@
 class OrgContactStatus < GuestRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   validates :description, length: { maximum: 255 }
 
   has_many :org_contacts,

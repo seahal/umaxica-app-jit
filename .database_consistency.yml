@@ -978,3 +978,528 @@ UserZipOccurrence:
   id:
     ImplicitOrderingChecker:
       enabled: false
+# Preference models
+OrgPreferenceTimezone:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+OrgPreferenceRegion:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+OrgPreferenceLanguage:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+OrgPreferenceColortheme:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+ComPreferenceTimezone:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+ComPreferenceRegion:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+ComPreferenceLanguage:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+ComPreferenceColortheme:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+AppPreferenceTimezone:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+AppPreferenceRegion:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+AppPreferenceLanguage:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+AppPreferenceColortheme:
+  option_id:
+    ColumnPresenceChecker:
+      enabled: false
+# Status models - PrimaryKeyTypeChecker
+UserTelephoneStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserSocialGoogleStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserSocialAppleStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserSecretStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserPasskeyStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserOneTimePasswordStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserEmailStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ClientStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgPreferenceTimezoneOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgPreferenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgPreferenceRegionOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgPreferenceLanguageOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgPreferenceColorthemeOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComPreferenceTimezoneOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComPreferenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComPreferenceRegionOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComPreferenceLanguageOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComPreferenceColorthemeOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppPreferenceTimezoneOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppPreferenceStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppPreferenceRegionOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppPreferenceLanguageOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppPreferenceColorthemeOption:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+UserAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgPreferenceAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+OrgPreferenceAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComPreferenceAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+ComPreferenceAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppPreferenceAuditLevel:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AppPreferenceAuditEvent:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffTelephoneStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffSecretStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffPasskeyStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffEmailStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+StaffStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+AdminStatus:
+  id:
+    PrimaryKeyTypeChecker:
+      enabled: false
+# ImplicitOrderingChecker
+UserTelephone:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserSocialGoogle:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserSocialApple:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserSecret:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserPasskey:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserOneTimePassword:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserEmail:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgPreferenceTimezone:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgPreferenceRegion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgPreferenceLanguage:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgPreferenceCookie:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgPreferenceColortheme:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgPreference:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComPreferenceTimezone:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComPreferenceRegion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComPreferenceLanguage:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComPreferenceCookie:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComPreferenceColortheme:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComPreference:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppPreferenceTimezone:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppPreferenceRegion:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppPreferenceLanguage:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppPreferenceCookie:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppPreferenceColortheme:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppPreference:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+UserAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+OrgPreferenceAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+ComPreferenceAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+AppPreferenceAudit:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffTelephone:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffSecret:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffPasskey:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+StaffEmail:
+  id:
+    ImplicitOrderingChecker:
+      enabled: false
+# MissingUniqueIndexChecker
+UserTelephone:
+  lower(number):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgPreferenceTimezoneOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgPreferenceStatus:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgPreferenceRegionOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgPreferenceLanguageOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgPreferenceColorthemeOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComPreferenceTimezoneOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComPreferenceStatus:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComPreferenceRegionOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComPreferenceLanguageOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComPreferenceColorthemeOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppPreferenceTimezoneOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppPreferenceRegionOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppPreferenceLanguageOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppPreferenceColorthemeOption:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+OrgPreferenceAuditEvent:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+ComPreferenceAuditEvent:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+AppPreferenceAuditEvent:
+  lower(id):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffTelephone:
+  lower(number):
+    MissingUniqueIndexChecker:
+      enabled: false
+StaffEmail:
+  lower(address):
+    MissingUniqueIndexChecker:
+      enabled: false
+# ForeignKeyChecker
+OrgPreference:
+  org_preference_status:
+    ForeignKeyChecker:
+      enabled: false
+ComPreference:
+  com_preference_status:
+    ForeignKeyChecker:
+      enabled: false
+AppPreference:
+  app_preference_status:
+    ForeignKeyChecker:
+      enabled: false
+OrgPreferenceAudit:
+  org_preference_audit_level:
+    ForeignKeyChecker:
+      enabled: false
+  org_preference_audit_event:
+    ForeignKeyChecker:
+      enabled: false
+ComPreferenceAudit:
+  com_preference_audit_level:
+    ForeignKeyChecker:
+      enabled: false
+  com_preference_audit_event:
+    ForeignKeyChecker:
+      enabled: false
+AppPreferenceAudit:
+  app_preference_audit_level:
+    ForeignKeyChecker:
+      enabled: false
+  app_preference_audit_event:
+    ForeignKeyChecker:
+      enabled: false
+Organization:
+  organization_status:
+    ForeignKeyChecker:
+      enabled: false
+# ForeignKeyCascadeChecker
+OrgContactStatus:
+  org_contacts:
+    ForeignKeyCascadeChecker:
+      enabled: false
+ComContactStatus:
+  com_contacts:
+    ForeignKeyCascadeChecker:
+      enabled: false
+Organization:
+  divisions:
+    ForeignKeyCascadeChecker:
+      enabled: false
+  departments:
+    ForeignKeyCascadeChecker:
+      enabled: false
+# RedundantIndexChecker
+UserClient:
+  index_user_clients_on_user_id:
+    RedundantIndexChecker:
+      enabled: false
+ClientAvatarVisibility:
+  index_client_avatar_visibilities_on_client_id:
+    RedundantIndexChecker:
+      enabled: false
+ClientAvatarSuspension:
+  index_client_avatar_suspensions_on_client_id:
+    RedundantIndexChecker:
+      enabled: false
+ClientAvatarOversight:
+  index_client_avatar_oversights_on_client_id:
+    RedundantIndexChecker:
+      enabled: false
+ClientAvatarImpersonation:
+  index_client_avatar_impersonations_on_client_id:
+    RedundantIndexChecker:
+      enabled: false
+ClientAvatarExtraction:
+  index_client_avatar_extractions_on_client_id:
+    RedundantIndexChecker:
+      enabled: false
+ClientAvatarDeletion:
+  index_client_avatar_deletions_on_client_id:
+    RedundantIndexChecker:
+      enabled: false
+ClientAvatarAccess:
+  index_client_avatar_accesses_on_client_id:
+    RedundantIndexChecker:
+      enabled: false
+Department:
+  index_departments_on_department_status_id:
+    RedundantIndexChecker:
+      enabled: false
+  index_departments_on_department_status_id_and_parent_id:
+    RedundantUniqueIndexChecker:
+      enabled: false
+  index_departments_on_status_and_parent:
+    RedundantUniqueIndexChecker:
+      enabled: false

@@ -10,6 +10,8 @@
 class AppDocumentStatus < DocumentRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   has_many :app_documents,
            foreign_key: :status_id,
            inverse_of: :app_document_status,

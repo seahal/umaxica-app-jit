@@ -14,6 +14,8 @@
 
 class UserOccurrenceStatus < OccurrenceRecord
   include StringPrimaryKey
+
+  validates :id, uniqueness: { case_sensitive: false }
   include OccurrenceStatus
 
   has_many :user_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,

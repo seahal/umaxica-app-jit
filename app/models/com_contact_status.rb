@@ -10,6 +10,8 @@
 class ComContactStatus < GuestRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   validates :description, length: { maximum: 255 }
 
   has_many :com_contacts,

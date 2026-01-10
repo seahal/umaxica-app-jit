@@ -18,6 +18,7 @@ class Core::Com::PreferencesControllerTest < ActionDispatch::IntegrationTest
   test "preference page links to apex preference" do
     get core_com_preference_url
     assert_response :success
-    assert_select "a[href=?]", apex_com_preference_url(ct: "sy", lx: "ja", ri: "jp", tz: "jst"), text: I18n.t("shared.links.apex_preference")
+    assert_select "a[href=?]", apex_com_preference_url(ct: "sy", lx: "ja", ri: "jp", tz: "jst"),
+                  text: I18n.t("shared.links.apex_preference")
   end
 end

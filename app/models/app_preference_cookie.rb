@@ -22,6 +22,8 @@ class AppPreferenceCookie < PreferenceRecord
              class_name: "AppPreference",
              inverse_of: :app_preference_cookie
 
+  validates :preference_id, uniqueness: true
+
   after_initialize :set_defaults
 
   validates :targetable, inclusion: { in: [true, false] }

@@ -10,6 +10,8 @@
 class UserSecretStatus < PrincipalRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   has_many :user_secrets, inverse_of: :user_secret_status, dependent: :restrict_with_error
 
   # Status constants

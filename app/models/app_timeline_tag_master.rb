@@ -17,6 +17,8 @@
 class AppTimelineTagMaster < NewsRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   self.primary_key = "id"
 
   attribute :parent_id, default: "NEYO"

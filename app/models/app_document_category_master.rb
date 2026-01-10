@@ -17,6 +17,8 @@
 class AppDocumentCategoryMaster < DocumentRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   self.primary_key = "id"
 
   belongs_to :parent,

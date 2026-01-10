@@ -10,6 +10,8 @@
 class UserEmailStatus < PrincipalRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   has_many :user_emails, inverse_of: :user_email_status, dependent: :restrict_with_error
 
   # Status constants

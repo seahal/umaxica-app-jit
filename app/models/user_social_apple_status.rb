@@ -10,6 +10,8 @@
 class UserSocialAppleStatus < PrincipalRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   has_many :user_social_apples, inverse_of: :user_social_apple_status, dependent: :restrict_with_error
 
   # Status constants

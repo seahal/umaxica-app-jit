@@ -20,6 +20,8 @@
 class ComPreferenceCookie < PreferenceRecord
   belongs_to :preference, class_name: "ComPreference", inverse_of: :com_preference_cookie
 
+  validates :preference_id, uniqueness: true
+
   after_initialize :set_defaults
 
   validates :targetable, inclusion: { in: [true, false] }

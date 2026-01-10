@@ -24,6 +24,8 @@ class AppPreference < PreferenceRecord
              foreign_key: :status_id,
              inverse_of: :app_preferences
 
+  validates :status_id, length: { maximum: 255 }
+
   has_one :app_preference_cookie,
           foreign_key: :preference_id,
           inverse_of: :preference,

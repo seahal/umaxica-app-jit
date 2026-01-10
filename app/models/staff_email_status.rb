@@ -10,6 +10,8 @@
 class StaffEmailStatus < OperatorRecord
   include StringPrimaryKey
 
+  validates :id, uniqueness: { case_sensitive: false }
+
   has_many :staff_emails, inverse_of: :staff_email_status, dependent: :restrict_with_error
 
   # Status constants
