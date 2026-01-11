@@ -6,7 +6,6 @@ module Apex
       include Pundit::Authorization
       include ::RateLimit
       include ::Preference::Main # TODO: remove this line.
-      include ::Regionalization
       include ::Preference::Global
       include ::Authentication::Staff
 

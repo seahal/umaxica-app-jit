@@ -5,7 +5,6 @@ module News
     class ApplicationController < ActionController::Base
       include ::Preference::Main
       include ::Preference::Regional
-      include ::Regionalization
 
       protect_from_forgery with: :exception
       include ::RateLimit

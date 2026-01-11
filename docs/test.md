@@ -122,7 +122,7 @@ This TS defines how the Rails-based Umaxica App (JIT) will be verified across ev
 - **TC-API-401** Email validation endpoint: GET `/api/app/v1/inquiry/valid_email_addresses/:id` with Base64 email; expect JSON body with `valid`.
 - **TC-API-402** Telephone validation: POST JSON to `/api/app/v1/inquiry/valid_telephone_numbers`; expects `valid` key and proper status codes.
 - **TC-API-403** Health JSON: `/api/*/v1/health` returns `{ status: "OK" }`.
-- **TC-BFF-404** Preference email edit: hitting `/bff/app/preference/emails` retains locale/timezone query params normalized by `Regionalization` concern.
+- **TC-BFF-404** Preference email edit: hitting `/bff/app/preference/emails` retains locale/timezone query params normalized by the preference concerns.
 
 ### 7.6 Docs/News/Help health
 - **TC-DOC-501** GET `/` on docs/news hosts returns 200 with placeholder markup and hydration dataset.

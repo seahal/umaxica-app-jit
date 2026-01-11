@@ -7,7 +7,6 @@ module Core
       include ::Authentication::User
       include ::AuthorizationAudit
       include ::Preference::Main
-      include ::Regionalization
       include ::Preference::Regional
 
       protect_from_forgery with: :exception

@@ -6,6 +6,8 @@ module Preference::Global
 
   included do
     helper_method :get_language, :get_timezone, :get_region, :get_colortheme
+    before_action :set_locale
+    before_action :set_timezone
   end
 
   def get_colortheme
@@ -13,7 +15,7 @@ module Preference::Global
   end
 
   def get_language
-    "ja"
+    I18n.locale.to_s
   end
 
   def get_region
@@ -25,18 +27,26 @@ module Preference::Global
   end
 
   def default_url_options
-    options = {}
+    base_options = super || {}
+    options = normalized_locale_options
 
-    # Extract options from loaded preferences if available
     if @preferences.present?
       region_association = association_name_for_region
       options[:ri] = @preferences.public_send(region_association)&.option_id&.downcase
     end
 
-    # Fallback to defaults
     options[:ri] ||= "jp"
 
-    base_options = super || {}
     base_options.merge(options.compact)
+  end
+
+  private
+
+  def set_locale
+    set_locale_from_params
+  end
+
+  def set_timezone
+    set_timezone_from_session
   end
 end

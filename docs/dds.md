@@ -114,7 +114,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 
 ### 3.8 BFF Namespace
 - Targets non-authenticated clients needing preference/email operations without hitting the full Rails views.
-- `Bff::Regionalization` overrides `default_url_options`, `set_locale`, and `set_timezone` using session or query params.
+- The preference concerns override `default_url_options`, `set_locale`, and `set_timezone` using session or query params.
 - Email preference controllers share translation scopes: e.g., `Bff::App::Preference::EmailsController#translation_scope => "bff.app.preferences"`.
 
 ### 3.9 Front-End Bundles

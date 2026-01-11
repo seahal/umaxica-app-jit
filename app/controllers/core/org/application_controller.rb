@@ -7,7 +7,6 @@ module Core
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::Preference::Main
-      include ::Regionalization
       include ::Preference::Regional
       include ::AuthorizationAudit
 

@@ -6,7 +6,6 @@ module Sign
       include Pundit::Authorization
       include ::RateLimit
       include ::Preference::Main
-      include ::Regionalization
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::Sign::ErrorResponses

@@ -1,18 +1,34 @@
 # frozen_string_literal: true
 
-# TODO: i think this code merge to global or regional files.
 module Preference::Base
   extend ActiveSupport::Concern
 
-  # todo: remove this in futire
-  def set_locale
-  end
-
-  # todo: remove this in futire
-  def set_timezone
-  end
-
   private
+
+  def normalized_locale_options
+    tz = params[:tz].presence || params[:timezone] || "jst"
+    lx = params[:lx].presence || "ja"
+    ri = params[:ri].presence || params[:region] || "jp"
+    ct = params[:ct].presence || params[:colortheme] || "sy"
+
+    options = {
+      tz: tz.to_s.downcase,
+      lx: lx.to_s.downcase,
+      ct: ct.to_s.downcase,
+    }
+    options[:ri] = ri.to_s.downcase if ri.present?
+    options
+  end
+
+  def set_locale_from_params
+    locale_param = params[:lx].presence
+    locale = locale_param || session[:language]&.downcase || I18n.default_locale
+    I18n.locale = locale.to_s.downcase
+  end
+
+  def set_timezone_from_session
+    Time.zone = session[:timezone] if session[:timezone].present?
+  end
 
   # Get the preference class based on controller path
   # e.g., "core/app/v1/preferences" -> AppPreference
@@ -64,6 +80,14 @@ module Preference::Base
 
   def association_name_for_region
     @association_name_for_region ||= :"#{preference_class.name.underscore}_region"
+  end
+
+  def association_name_for_language
+    @association_name_for_language ||= :"#{preference_class.name.underscore}_language"
+  end
+
+  def preference_associations_to_preload
+    [association_name_for_region, association_name_for_language]
   end
 
   # Load or create a preference child record (cookie, language, region, etc.)

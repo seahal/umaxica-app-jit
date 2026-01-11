@@ -6,7 +6,6 @@ module Apex
       include Pundit::Authorization
       include Sign::ErrorResponses
       include ::Preference::Main
-      include ::Regionalization
       include ::Preference::Global
       include ::RateLimit
 

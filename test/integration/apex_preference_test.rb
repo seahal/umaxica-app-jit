@@ -71,6 +71,45 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal "EN", pref.try("#{domain[:name]}_preference_language").option_id
     end
 
+    test "#{domain[:name]} domain applies language setting to locale" do
+      host!(domain[:host])
+      assert_preference_created(domain)
+
+      # Update language to English
+      state = default_state.merge(lx: "en")
+      patch public_send("apex_#{domain[:name]}_preference_region_language_url", state),
+            params: { preference_language: { option_id: "EN" } }
+
+      # Visit a page without language param to verify DB preference is applied
+      get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
+      assert_response :success
+
+      # Check that the locale was set to English
+      assert_equal :en, I18n.locale
+      # Verify the page content is in English
+      translation_key = "apex.#{domain[:name]}.preferences.title"
+      english_title = I18n.t(translation_key, locale: :en)
+      assert_select "h1", text: english_title
+
+      # Update language to Japanese
+      state = default_state.merge(lx: "ja")
+      patch public_send("apex_#{domain[:name]}_preference_region_language_url", state),
+            params: { preference_language: { option_id: "JA" } }
+
+      # Visit a page without language param to verify DB preference is applied
+      get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
+      assert_response :success
+
+      # Check that the locale was set to Japanese
+      assert_equal :ja, I18n.locale
+      # Verify the page content is in Japanese
+      japanese_title = I18n.t(translation_key, locale: :ja)
+      assert_select "h1", text: japanese_title
+
+      # Verify the translations are actually different
+      assert_not_equal english_title, japanese_title
+    end
+
     test "#{domain[:name]} domain updates theme" do
       host!(domain[:host])
       pref, = assert_preference_created(domain)
