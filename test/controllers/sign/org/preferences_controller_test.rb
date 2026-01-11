@@ -21,7 +21,7 @@ class Sign::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get sign_org_preference_url
     assert_response :success
     assert_select "a[href=?]",
-                  apex_org_preference_url(ct: "sy", lx: "ja", ri: "jp", tz: "jst"),
+                  apex_org_preference_url(ri: "jp"),
                   text: I18n.t("shared.links.apex_preference")
   end
 end

@@ -22,7 +22,7 @@ module Preference::Main
 
     cookie_options = {
       value: theme,
-      expires: Preference::Base::COOKIE_EXPIRY.from_now,
+      expires: Preference::Core::COOKIE_EXPIRY.from_now,
       secure: Rails.env.production?,
       same_site: :lax,
     }
@@ -35,7 +35,7 @@ module Preference::Main
     cookie_name = Rails.env.production? ? "__Secure-Jit-Preference" : "Jit-Preference"
     if cookies[cookie_name].present?
       token_digest = SHA3::Digest::SHA3_384.digest(cookies[cookie_name])
-      @preferences = preference_class.find_by(token_digest: token_digest)
+      @preferences = preference_class.includes(association_name_for_region).find_by(token_digest: token_digest)
 
       # Return if valid preference found (not deleted and not expired)
       valid_preference = @preferences.present? &&

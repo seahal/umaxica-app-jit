@@ -392,6 +392,8 @@ en:
           select_region_selector:
             USA: "United States"
             JAPAN: "Japan"
+            US: "United States"
+            JP: "Japan"
           select_language_selector:
             JAPANESE: "Japanese"
             ENGLISH: "English"
@@ -520,6 +522,8 @@ en:
           select_region_selector:
             USA: "United States"
             JAPAN: "Japan"
+            US: "United States"
+            JP: "Japan"
           select_language_selector:
             JAPANESE: "Japanese"
             ENGLISH: "English"
@@ -592,6 +596,8 @@ en:
           select_region_selector:
             USA: "United States"
             JAPAN: "Japan"
+            US: "United States"
+            JP: "Japan"
           select_language_selector:
             JAPANESE: "Japanese"
             ENGLISH: "English"
@@ -670,6 +676,8 @@ en:
           select_region_selector:
             USA: "United States"
             JAPAN: "Japan"
+            US: "United States"
+            JP: "Japan"
           select_language_selector:
             JAPANESE: "Japanese"
             ENGLISH: "English"
@@ -1267,6 +1275,12 @@ en:
           confirm: "RESET"
           button: "RESET"
           back: "Back???"
+    com:
+      preference:
+        language:
+          edit:
+            language_label: "Language Select"
+            h1: "Language Select"
   apex:
     app:
       preference:

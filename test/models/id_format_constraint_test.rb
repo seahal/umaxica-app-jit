@@ -7,6 +7,12 @@ require "test_helper"
 # Note: Option/Master/Category tables are excluded as they may contain timezone IDs, language codes, etc.
 # These models should only allow uppercase letters, numbers, and underscores in their IDs
 class IdFormatConstraintTest < ActiveSupport::TestCase
+  # This test creates every record manually, so skip fixture setup/teardown.
+  def setup_fixtures
+  end
+
+  def teardown_fixtures
+  end
   setup do
     # Initialize to empty array in case of errors
     @target_models = [].freeze
@@ -30,16 +36,21 @@ class IdFormatConstraintTest < ActiveSupport::TestCase
   test "models with string IDs should enforce uppercase alphanumeric and underscore format" do
     skip "No target models found" if @target_models.empty?
 
-    # Print all target models for debugging
+    print_target_models
+
+    @target_models.each do |model|
+      test_model_id_format(model)
+    end
+  end
+
+  def print_target_models
+    return unless ENV["ID_FORMAT_CONSTRAINT_VERBOSE"]
+
     puts "\n=== Target Models (#{@target_models.count}) ==="
     @target_models.each do |model|
       puts "  - #{model.name} (table: #{model.table_name})"
     end
     puts "===\n"
-
-    @target_models.each do |model|
-      test_model_id_format(model)
-    end
   end
 
   private
@@ -68,8 +79,8 @@ class IdFormatConstraintTest < ActiveSupport::TestCase
     invalid_ids = [
       "invalid-id", # hyphen not allowed
       # "lower_case",    # lowercase is valid if the model normalizes (upcases) it before validation
-      "with space",      # space not allowed
-      "special!char",    # special character not allowed
+      "with space", # space not allowed
+      "special!char", # special character not allowed
     ]
 
     # Test valid IDs - these should be accepted

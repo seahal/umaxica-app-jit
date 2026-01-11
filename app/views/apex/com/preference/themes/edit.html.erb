@@ -13,20 +13,19 @@
       <%= f.label :option_id, t("apex.com.preferences.theme.select_theme", default: "Theme"), class: "block text-sm font-semibold text-slate-700" %>
       <div class="mt-1">
         <%= f.select :option_id,
-              options_for_select([
-                [t("apex.com.preference.theme.edit.options.light", default: "Light"), "light"],
-                [t("apex.com.preference.theme.edit.options.dark", default: "Dark"), "dark"],
-                [t("apex.com.preference.theme.edit.options.system", default: "System"), "system"]
-              ], @preference_colortheme.option_id),
-              { include_blank: false },
-              { class: "block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary" } %>
+                     options_for_select([
+                                          [t("apex.com.preference.theme.edit.options.light", default: "Light"), "light"],
+                                          [t("apex.com.preference.theme.edit.options.dark", default: "Dark"), "dark"],
+                                          [t("apex.com.preference.theme.edit.options.system", default: "System"), "system"]
+                                        ], @preference_colortheme.option_id),
+                     { class: "block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary" } %>
       </div>
     </div>
 
     <div class="flex items-center gap-3">
       <%= f.submit t("apex.com.preferences.update_settings", default: "Update Settings"),
-            data: { turbo_submits_with: t("apex.com.preferences.submitting") },
-            class: "inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900/60" %>
+                   data: { turbo_submits_with: t("apex.com.preferences.submitting") },
+                   class: "inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900/60" %>
       <%= link_to t("apex.com.preferences.back_to_settings", default: "Back"), apex_com_preference_path, class: "text-sm font-semibold text-slate-700 transition hover:text-slate-900" %>
     </div>
   <% end %>

@@ -175,8 +175,8 @@ class EmailTest < ActiveSupport::TestCase
     # Fixed expectation for locked_at
     assert(
       email.locked_at.is_a?(Time) ||
-        email.locked_at.to_s == "-infinity" ||
-        (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
+      email.locked_at.to_s == "-infinity" ||
+      (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
     )
   end
 
@@ -218,8 +218,8 @@ class EmailTest < ActiveSupport::TestCase
     # Expect -infinity
     assert(
       email.locked_at.is_a?(Time) ||
-        email.locked_at.to_s == "-infinity" ||
-        (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
+      email.locked_at.to_s == "-infinity" ||
+      (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
     )
   end
   # rubocop:enable Minitest/MultipleAssertions
@@ -348,14 +348,14 @@ class EmailTest < ActiveSupport::TestCase
     # I should assert UNLOCKED (locked_at: -infinity) and EXPIRED (expires_at: -infinity).
     assert(
       email.otp_expires_at.is_a?(Time) ||
-        email.otp_expires_at.to_s == "-infinity" ||
-        (email.otp_expires_at.is_a?(Float) && email.otp_expires_at == -Float::INFINITY),
+      email.otp_expires_at.to_s == "-infinity" ||
+      (email.otp_expires_at.is_a?(Float) && email.otp_expires_at == -Float::INFINITY),
     )
     assert_equal 0, email.otp_attempts_count
     assert(
       email.locked_at.is_a?(Time) ||
-        email.locked_at.to_s == "-infinity" ||
-        (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
+      email.locked_at.to_s == "-infinity" ||
+      (email.locked_at.is_a?(Float) && email.locked_at == -Float::INFINITY),
     )
   end
   # rubocop:enable Minitest/MultipleAssertions

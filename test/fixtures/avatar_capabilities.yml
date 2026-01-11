@@ -13,7 +13,7 @@
 #
 #  index_avatar_capabilities_on_key  (key) UNIQUE
 #
-<% I18n.locale = :ja %>
+  <% I18n.locale = :ja %>
 
 normal:
   id: NORMAL

@@ -6,9 +6,9 @@ module Apex
       include Pundit::Authorization
       include Sign::ErrorResponses
       include ::Preference::Main
+      include ::Regionalization
       include ::Preference::Global
       include ::RateLimit
-      include ::Apex::Concerns::Regionalization
 
       protect_from_forgery with: :exception
 

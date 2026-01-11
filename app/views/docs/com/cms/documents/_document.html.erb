@@ -31,27 +31,27 @@
     <td class="py-3 px-4">
       <div class="flex gap-2">
         <%= link_to "View", docs_com_cms_document_path(document),
-            class: "text-blue-600 hover:underline text-sm" %>
+                    class: "text-blue-600 hover:underline text-sm" %>
         <%= link_to "Edit", edit_docs_com_cms_document_path(document),
-            class: "text-green-600 hover:underline text-sm",
-            data: { turbo_frame: "modal" } %>
+                    class: "text-green-600 hover:underline text-sm",
+                    data: { turbo_frame: "modal" } %>
 
         <% if document.status_id == "DRAFT" %>
           <%= button_to "Publish", publish_docs_com_cms_document_path(document),
-              method: :post,
-              class: "text-purple-600 hover:underline text-sm",
-              data: { turbo_stream: true } %>
+                        method: :post,
+                        class: "text-purple-600 hover:underline text-sm",
+                        data: { turbo_stream: true } %>
         <% elsif document.status_id == "PUBLISHED" %>
           <%= button_to "Unpublish", unpublish_docs_com_cms_document_path(document),
-              method: :post,
-              class: "text-orange-600 hover:underline text-sm",
-              data: { turbo_stream: true } %>
+                        method: :post,
+                        class: "text-orange-600 hover:underline text-sm",
+                        data: { turbo_stream: true } %>
         <% end %>
 
         <%= button_to "Delete", docs_com_cms_document_path(document),
-            method: :delete,
-            class: "text-red-600 hover:underline text-sm",
-            data: { turbo_confirm: "Are you sure?", turbo_stream: true } %>
+                      method: :delete,
+                      class: "text-red-600 hover:underline text-sm",
+                      data: { turbo_confirm: "Are you sure?", turbo_stream: true } %>
       </div>
     </td>
   </tr>

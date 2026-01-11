@@ -14,29 +14,30 @@
               <span class="text-gray-400 italic">Untitled Document</span>
             <% end %>
           </h1>
-          <p class="text-gray-600">Permalink: <code class="bg-gray-100 px-2 py-1 rounded"><%= @document.permalink %></code></p>
+          <p class="text-gray-600">Permalink:
+            <code class="bg-gray-100 px-2 py-1 rounded"><%= @document.permalink %></code></p>
         </div>
         <div class="flex gap-2">
           <%= link_to "Edit", edit_docs_com_cms_document_path(@document),
-              class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded",
-              data: { turbo_frame: "modal" } %>
+                      class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded",
+                      data: { turbo_frame: "modal" } %>
 
           <% if @document.status_id == "DRAFT" %>
             <%= button_to "Publish", publish_docs_com_cms_document_path(@document),
-                method: :post,
-                class: "bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded",
-                data: { turbo_stream: true } %>
+                          method: :post,
+                          class: "bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded",
+                          data: { turbo_stream: true } %>
           <% elsif @document.status_id == "PUBLISHED" %>
             <%= button_to "Unpublish", unpublish_docs_com_cms_document_path(@document),
-                method: :post,
-                class: "bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded",
-                data: { turbo_stream: true } %>
+                          method: :post,
+                          class: "bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded",
+                          data: { turbo_stream: true } %>
           <% end %>
 
           <%= button_to "Delete", docs_com_cms_document_path(@document),
-              method: :delete,
-              class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded",
-              data: { turbo_confirm: "Are you sure?", turbo_method: :delete } %>
+                        method: :delete,
+                        class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded",
+                        data: { turbo_confirm: "Are you sure?", turbo_method: :delete } %>
         </div>
       </div>
 
@@ -109,30 +110,31 @@
         <div class="border rounded overflow-hidden">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
-              <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Response Mode</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edited By</th>
-              </tr>
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Response Mode
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edited By</th>
+            </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <% @versions.each do |version| %>
-                <tr>
-                  <td class="px-4 py-3 text-sm text-gray-900">
-                    <%= version.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
-                  </td>
-                  <td class="px-4 py-3 text-sm text-gray-900">
-                    <%= version.title %>
-                  </td>
-                  <td class="px-4 py-3 text-sm text-gray-900">
-                    <%= version.response_mode %>
-                  </td>
-                  <td class="px-4 py-3 text-sm text-gray-900">
-                    <%= version.edited_by_type %>
-                  </td>
-                </tr>
-              <% end %>
+            <% @versions.each do |version| %>
+              <tr>
+                <td class="px-4 py-3 text-sm text-gray-900">
+                  <%= version.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900">
+                  <%= version.title %>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900">
+                  <%= version.response_mode %>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900">
+                  <%= version.edited_by_type %>
+                </td>
+              </tr>
+            <% end %>
             </tbody>
           </table>
         </div>

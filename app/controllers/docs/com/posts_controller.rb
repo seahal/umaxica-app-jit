@@ -34,7 +34,8 @@ module Docs
           render plain: "PDF rendering not implemented yet", status: :not_implemented
         when "text"
           render plain: @document.latest_version.body, content_type: "text/plain"
-        else # html
+        else
+          # html
           @version = @document.latest_version
           render "show"
         end

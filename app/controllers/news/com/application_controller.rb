@@ -6,10 +6,14 @@ module News
       include ::RateLimit
       include ::Preference::Main
       include ::Preference::Regional
+      include ::Regionalization
 
       protect_from_forgery with: :exception
       protect_from_forgery with: :exception
       allow_browser versions: :modern
+
+      before_action :set_locale
+      before_action :set_timezone
     end
   end
 end

@@ -6,6 +6,7 @@ module Sign
       include ::RateLimit
       include ::Preference::Main
       include ::Preference::Regional
+      include ::Regionalization
       include ::Authentication::User
       include ::Authorization::User
       include Pundit::Authorization
@@ -15,6 +16,9 @@ module Sign
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
+
+      before_action :set_locale
+      before_action :set_timezone
     end
   end
 end

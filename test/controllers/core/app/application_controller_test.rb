@@ -10,7 +10,6 @@ module Core::App
       assert_includes controller.class, RateLimit
       assert_includes controller.class, Preference::Main
       assert_includes controller.class, Preference::Regional
-      assert_includes controller.class, Core::Concerns::Regionalization
     end
   end
 end

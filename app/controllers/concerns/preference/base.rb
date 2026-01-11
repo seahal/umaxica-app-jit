@@ -1,9 +1,16 @@
 # frozen_string_literal: true
 
+# TODO: i think this code merge to global or regional files.
 module Preference::Base
   extend ActiveSupport::Concern
 
-  COOKIE_EXPIRY = 400.days
+  # todo: remove this in futire
+  def set_locale
+  end
+
+  # todo: remove this in futire
+  def set_timezone
+  end
 
   private
 
@@ -25,7 +32,7 @@ module Preference::Base
 
   # Create an audit log entry
   def create_audit_log(event_id:, context:, expires_at: nil)
-    expires_at_value = expires_at || COOKIE_EXPIRY.from_now
+    expires_at_value = expires_at || Preference::Core::COOKIE_EXPIRY.from_now
 
     AuditRecord.connected_to(role: :writing) do
       audit_class.create!(
@@ -53,6 +60,10 @@ module Preference::Base
 
   def preference_colortheme_association
     @preference_colortheme_association ||= "#{preference_prefix_underscore}_colortheme"
+  end
+
+  def association_name_for_region
+    @association_name_for_region ||= :"#{preference_class.name.underscore}_region"
   end
 
   # Load or create a preference child record (cookie, language, region, etc.)

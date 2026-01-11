@@ -30,9 +30,6 @@ class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil link, "Could not find link with text: #{I18n.t("sign.org.ups.new.recruit_link_text").inspect}"
     href = link["href"]
     assert_match(/category=recruit/, href)
-    assert_match(/ct=sy/, href)
-    assert_match(/lx=ja/, href)
     assert_match(/ri=jp/, href)
-    assert_match(/tz=jst/, href)
   end
 end

@@ -11,5 +11,6 @@ class ComDocumentUpdater
   def self.document_attributes(attrs)
     attrs.slice(:permalink, :response_mode, :redirect_url, :published_at, :expires_at, :position)
   end
+
   private_class_method :document_attributes
 end

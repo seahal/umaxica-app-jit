@@ -4,12 +4,12 @@ module Core
   module App
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
-      include ::Authentication::User
-      include ::Authorization::User
       include ::AuthorizationAudit
       include ::RateLimit
-      include Core::Concerns::Regionalization
+      include ::Authentication::User
+      include ::Authorization::User
       include ::Preference::Main
+      include ::Regionalization
       include ::Preference::Regional
 
       protect_from_forgery with: :exception

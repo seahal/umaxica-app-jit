@@ -10,7 +10,8 @@
 
     <% if @user_email.errors.any? %>
       <div id="error_explanation" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-        <h2 class="font-semibold"><%= pluralize(@user_email.errors.count, "error") %> prohibited this sample from being saved:</h2>
+        <h2 class="font-semibold"><%= pluralize(@user_email.errors.count, "error") %> prohibited this sample from being
+          saved:</h2>
         <ul class="mt-2 list-disc pl-5">
           <% @user_email.errors.each do |error| %>
             <li><%= error.full_message %></li>

@@ -6,6 +6,7 @@ module Sign
       include Pundit::Authorization
       include ::RateLimit
       include ::Preference::Main
+      include ::Regionalization
       include ::Authentication::Staff
       include ::Authorization::Staff
       include ::Sign::ErrorResponses
@@ -14,6 +15,9 @@ module Sign
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
+
+      before_action :set_locale
+      before_action :set_timezone
 
       helper_method :logged_in?, :logged_in_staff?, :logged_in_user?
 

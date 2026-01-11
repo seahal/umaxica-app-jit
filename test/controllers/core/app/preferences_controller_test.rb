@@ -25,7 +25,7 @@ class Core::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get core_app_preference_url
     assert_response :success
     assert_select "a[href=?]",
-                  apex_app_preference_url(ct: "sy", lx: "ja", ri: "jp", tz: "jst"),
+                  apex_app_preference_url(ri: "jp"),
                   text: I18n.t("shared.links.apex_preference")
   end
 end

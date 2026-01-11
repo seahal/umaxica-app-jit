@@ -173,6 +173,8 @@ ja:
           select_region_selector:
             USA: アメリカ
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -320,6 +322,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -1010,6 +1014,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -1072,6 +1078,10 @@ ja:
           updated: "%{theme} にテーマを更新しました"
       preference:
         <<: *apex_preference_shared
+        language:
+          edit:
+            language_label: "言語洗濯"
+            h1: "言語選択"
     org:
       configurations:
         title: コンフィギュレーション

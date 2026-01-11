@@ -25,8 +25,8 @@
 
     <div class="flex flex-wrap items-center gap-3">
       <%= f.submit t('apex.com.preferences.update_settings'),
-            data: { turbo_submits_with: t("apex.com.preferences.submitting") },
-            class: "inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900/60" %>
+                   data: { turbo_submits_with: t("apex.com.preferences.submitting") },
+                   class: "inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900/60" %>
       <%= link_to t('apex.com.preferences.back_to_settings'), apex_com_preference_path, class: "text-sm font-semibold text-slate-700 transition hover:text-slate-900" %>
     </div>
   <% end %>

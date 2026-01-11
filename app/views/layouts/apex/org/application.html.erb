@@ -23,57 +23,57 @@
 <% edge_host = ENV["EDGE_STAFF_URL"].presence %>
 
 <div class="mx-auto max-w-6xl px-6">
-    <%= render "concern/flash_messages" %>
+  <%= render "concern/flash_messages" %>
 
-    <header class="border-b border-[hsl(var(--border))] py-6">
-  <div class="flex flex-wrap items-center justify-between gap-4">
-    <div class="flex flex-col">
-      <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
-      <h1 class="text-3xl font-semibold tracking-tight text-slate-900">
-        <% if edge_host.present? %>
-          <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/">Umaxica(org)</a>
-        <% else %>
-          Umaxica(org)
-        <% end %>
-      </h1>
-    </div>
-    <nav class="flex flex-wrap items-center justify-end gap-3 text-sm">
-          <% unless logged_in? %>
-            <%= link_to t("sign.org.layout.nav.sign_up"), new_sign_org_up_url(host: ENV['SIGN_STAFF_URL']),
-                        class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-            <%= link_to t("sign.org.layout.nav.log_in"), new_sign_org_in_url(host: ENV['SIGN_STAFF_URL']),
-                        class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+  <header class="border-b border-[hsl(var(--border))] py-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="flex flex-col">
+        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
+        <h1 class="text-3xl font-semibold tracking-tight text-slate-900">
+          <% if edge_host.present? %>
+            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/">Umaxica(org)</a>
           <% else %>
-            <%= link_to t("sign.org.layout.nav.configuration"), sign_org_configuration_url(host: ENV['SIGN_STAFF_URL']),
-                        class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
-            <%= link_to t("sign.org.layout.nav.logout"), edit_sign_org_out_url(host: ENV['SIGN_STAFF_URL']),
-                        class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+            Umaxica(org)
           <% end %>
-    </nav>
-  </div>
-</header>
+        </h1>
+      </div>
+      <nav class="flex flex-wrap items-center justify-end gap-3 text-sm">
+        <% unless logged_in? %>
+          <%= link_to t("sign.org.layout.nav.sign_up"), new_sign_org_up_url(host: ENV['SIGN_STAFF_URL']),
+                      class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+          <%= link_to t("sign.org.layout.nav.log_in"), new_sign_org_in_url(host: ENV['SIGN_STAFF_URL']),
+                      class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+        <% else %>
+          <%= link_to t("sign.org.layout.nav.configuration"), sign_org_configuration_url(host: ENV['SIGN_STAFF_URL']),
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+          <%= link_to t("sign.org.layout.nav.logout"), edit_sign_org_out_url(host: ENV['SIGN_STAFF_URL']),
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% end %>
+      </nav>
+    </div>
+  </header>
 
-<hr>
+  <hr>
 
-<main class="container mx-auto mt-28 px-5 block">
-  <%= yield %>
-</main>
+  <main class="container mx-auto mt-28 px-5 block">
+    <%= yield %>
+  </main>
 
-<nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
-</nav>
-
-<hr>
-
-<footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
-  <nav class="flex flex-wrap items-center gap-4">
-    <a class="font-semibold text-[hsl(var(--foreground))]" href="http://org.localhost:3000/"><%= t('apex.org.preferences.footer.home') %></a>
-    <%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
-    <%= link_to t("apex.org.configurations.title"), apex_org_configuration_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+  <nav id="app" class="mt-4 bg-white bg-opacity-50 hover:font-black hover:text-blue-500">
   </nav>
-  <div class="mt-4">
-    <%= render "concern/copyright" %>
-  </div>
-</footer>
+
+  <hr>
+
+  <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
+    <nav class="flex flex-wrap items-center gap-4">
+      <a class="font-semibold text-[hsl(var(--foreground))]" href="http://org.localhost:3000/"><%= t('apex.org.preferences.footer.home') %></a>
+      <%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+      <%= link_to t("apex.org.configurations.title"), apex_org_configuration_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+    </nav>
+    <div class="mt-4">
+      <%= render "concern/copyright" %>
+    </div>
+  </footer>
 </div>
 </body>
 </html>

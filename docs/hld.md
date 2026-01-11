@@ -116,7 +116,7 @@ Routes live in `config/routes/*.rb`; the main `config/routes.rb` `draw`s each fr
 
 ### 4.5 API & BFF
 - APIs provide JSON health plus inquiry validation. `ValidEmailAddressesController` decodes Base64 `id`, reuses `ServiceSiteContact` validations, and responds with `{valid: true|false}`. `ValidTelephoneNumbersController` takes JSON POST.
-- BFF controllers inherit `Bff::Concerns::Regionalization` to normalize query params and set locale/timezone before rendering preference views.
+- BFF controllers inherit `Bff::Regionalization` to normalize query params and set locale/timezone before rendering preference views.
 - All API/BFF routes use `ActionController::API` base classes for lean responses.
 - 認証モデルは責務を分離する。BFF経由の通常WebはCSRF対策と運用容易性を優先してCookieセッションを採用し、iOSなどネイティブはBearer(JWT)を採用する。両方式の同居は可能だが、同一クライアントで二重管理しない。
 

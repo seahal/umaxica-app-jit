@@ -5,9 +5,9 @@ module Apex
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
       include ::RateLimit
-      include ::Preference::Main
+      include ::Preference::Main # TODO: remove this line.
+      include ::Regionalization
       include ::Preference::Global
-      include ::Apex::Concerns::Regionalization
       include ::Authentication::Staff
 
       protect_from_forgery with: :exception

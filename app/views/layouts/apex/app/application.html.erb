@@ -31,55 +31,55 @@
       <div class="flex flex-col">
         <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
         <h1 class="text-3xl font-semibold tracking-tight text-slate-900">
-        <% if edge_host.present? %>
-          <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>/">Umaxica(app)</a>
-        <% else %>
-          Umaxica(app)
-        <% end %>
+          <% if edge_host.present? %>
+            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>/">Umaxica(app)</a>
+          <% else %>
+            Umaxica(app)
+          <% end %>
         </h1>
       </div>
       <nav class="flex flex-wrap items-center justify-end gap-3 text-sm">
-          <% unless logged_in? %>
-            <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_up_url(host: ENV['SIGN_SERVICE_URL']),
-                        class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-            <%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_in_url(host: ENV['SIGN_SERVICE_URL']),
-                        class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-          <% else %>
-            <%= link_to t("sign.app.layout.nav.configuration"), sign_app_configuration_url(host: ENV['SIGN_SERVICE_URL']),
-                        class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
-            <%= link_to t("sign.app.layout.nav.logout"), edit_sign_app_out_url(host: ENV['SIGN_SERVICE_URL']),
-                        class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
-          <% end %>
+        <% unless logged_in? %>
+          <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_up_url(host: ENV['SIGN_SERVICE_URL']),
+                      class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+          <%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_in_url(host: ENV['SIGN_SERVICE_URL']),
+                      class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+        <% else %>
+          <%= link_to t("sign.app.layout.nav.configuration"), sign_app_configuration_url(host: ENV['SIGN_SERVICE_URL']),
+                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
+          <%= link_to t("sign.app.layout.nav.logout"), edit_sign_app_out_url(host: ENV['SIGN_SERVICE_URL']),
+                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <% end %>
       </nav>
     </div>
   </header>
   <hr>
 
-<main class="container mx-auto mt-28 px-5 block">
-  <%= yield %>
-      <div class="mt-2 text-xs text-slate-500" id="js-theme-cookie">
+  <main class="container mx-auto mt-28 px-5 block">
+    <%= yield %>
+    <div class="mt-2 text-xs text-slate-500" id="js-theme-cookie">
       <span>theme cookie:</span>
       <span id="js-theme-cookie-value" class="ml-1 font-semibold">loading…</span>
     </div>
-</main>
+  </main>
 
-<nav>
+  <nav>
 
-</nav>
-
-<hr>
-
-<footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
-  <nav class="flex flex-wrap items-center gap-4">
-    <a class="font-semibold text-[hsl(var(--foreground))]" href="http://app.localhost:3000/"><%= t('apex.app.preferences.footer.home') %></a>
-    <%= link_to t('apex.app.preferences.footer.preference'), apex_app_preference_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
-    <%= link_to t("apex.app.configurations.title"), apex_app_configuration_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
   </nav>
-  <div class="mt-4">
-    <%= render "concern/copyright" %>
-  </div>
-</footer>
+
+  <hr>
+
+  <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
+    <nav class="flex flex-wrap items-center gap-4">
+      <a class="font-semibold text-[hsl(var(--foreground))]" href="http://app.localhost:3000/"><%= t('apex.app.preferences.footer.home') %></a>
+      <%= link_to t('apex.app.preferences.footer.preference'), apex_app_preference_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+      <%= link_to t("apex.app.configurations.title"), apex_app_configuration_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+    </nav>
+    <div class="mt-4">
+      <%= render "concern/copyright" %>
+    </div>
+  </footer>
 </div>
-  <%= javascript_import_module_tag "theme_cookie" %>
+<%= javascript_import_module_tag "theme_cookie" %>
 </body>
 </html>

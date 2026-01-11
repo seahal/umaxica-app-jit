@@ -210,9 +210,15 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     # We need to stub respond_to to only execute html block to simulate html request
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
-      def format.html; yield; end
 
-      def format.json; end # Do nothing for json
+      def format.html
+        yield
+      end
+
+      def format.json
+      end
+
+      # Do nothing for json
       block.call(format)
     end
 
@@ -230,9 +236,16 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     # We need to stub respond_to to only execute json block to simulate json request
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
-      def format.html; end # Do nothing for html
 
-      def format.json; yield; end
+      def format.html
+      end
+
+      # Do nothing for html
+
+      def format.json
+        yield
+      end
+
       block.call(format)
     end
 

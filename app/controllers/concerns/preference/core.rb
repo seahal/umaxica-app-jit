@@ -4,6 +4,8 @@ module Preference::Core
   extend ActiveSupport::Concern
   include Preference::Base
 
+  COOKIE_EXPIRY = 400.days
+
   def set_region_preferences_edit
     PreferenceRecord.connected_to(role: :writing) do
       @preference_region = load_or_create_preference_child("Region", option_id: nil)

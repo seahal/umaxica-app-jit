@@ -11,5 +11,6 @@ class AppTimelineUpdater
   def self.timeline_attributes(attrs)
     attrs.slice(:response_mode, :redirect_url, :published_at, :expires_at, :position)
   end
+
   private_class_method :timeline_attributes
 end

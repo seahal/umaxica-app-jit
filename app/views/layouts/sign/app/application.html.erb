@@ -57,7 +57,7 @@
     <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
       <nav class="flex flex-wrap items-center gap-4">
         <% if edge_host.present? %>
-         <%= link_to t("sign.app.preferences.footer.home"), sign_app_root_path, class: "transition hover:text-[hsl(var(--primary))]" %>
+          <%= link_to t("sign.app.preferences.footer.home"), sign_app_root_path, class: "transition hover:text-[hsl(var(--primary))]" %>
         <% end %>
         <%= link_to t("sign.app.preferences.footer.preference"), sign_app_preference_path, class: "transition hover:text-[hsl(var(--primary))]" %>
         <%= link_to t("sign.app.preferences.footer.configuration"), sign_app_configuration_path, class: "transition hover:text-[hsl(var(--primary))]" %>

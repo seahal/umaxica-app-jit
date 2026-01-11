@@ -17,7 +17,7 @@ module Sign
               id: @webauthn_user.webauthn_id,
               name: (@webauthn_user.try(:email) || "user@example.com").to_s,
               display_name: (@webauthn_user.try(:name) || @webauthn_user.try(:email) ||
-                             I18n.t("sign.default_user_name")).to_s,
+                I18n.t("sign.default_user_name")).to_s,
             },
             authenticator_selection: { user_verification: "preferred" },
             attestation: "none",

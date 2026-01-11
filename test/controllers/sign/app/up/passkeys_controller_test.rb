@@ -86,7 +86,7 @@ module Sign::App::Up
     private
 
     def regional_defaults
-      PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
+      { ri: "jp" }
     end
 
     def registration_telephone

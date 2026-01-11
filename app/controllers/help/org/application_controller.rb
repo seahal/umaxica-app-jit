@@ -6,11 +6,15 @@ module Help
       include ::RateLimit
       include ::Preference::Main
       include ::Preference::Regional
+      include ::Regionalization
       include Pundit::Authorization
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
+
+      before_action :set_locale
+      before_action :set_timezone
 
       rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 

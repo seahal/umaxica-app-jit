@@ -87,6 +87,12 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal "dark", pref.try("#{domain[:name]}_preference_colortheme").option_id
     end
 
+    test "#{domain[:name]} domain timezone select omits blank option" do
+      host!(domain[:host])
+      get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", default_state)
+      assert_select "select[name='preference_timezone[option_id]'] option[value='']", count: 0
+    end
+
     test "#{domain[:name]} domain updates cookie" do
       host!(domain[:host])
       pref, = assert_preference_created(domain)
@@ -143,12 +149,12 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
     test "#{domain[:name]} domain surfaces localized timezone errors" do
       host!(domain[:host])
-      state = { ct: "sy", lx: "ja", ri: "jp", tz: "jst" }
-      patch public_send("apex_#{domain[:name]}_preference_timezone_url", state),
+      state = { ri: "jp" }
+      patch public_send("apex_#{domain[:name]}_preference_region_timezone_url", state),
             params: { preference_timezone: { option_id: "Invalid/Zone" } }
 
       # Expect redirect back to edit with current params
-      assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_timezone_url", state)
+      assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", state)
       assert_equal I18n.t("errors.messages.preference_operation_failed"), flash[:alert]
     end
   end
@@ -156,7 +162,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
   private
 
   def default_state
-    { ct: "sy", lx: "ja", ri: "jp", tz: "jst" }
+    { ri: "jp" }
   end
 
   def assert_preference_created(domain)
@@ -173,13 +179,18 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
   end
 
   def assert_preference_update(domain, kind, params, state)
-    get public_send("edit_apex_#{domain[:name]}_preference_#{kind}_url", state)
+    suffix = preference_route_suffix(kind)
+    get public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state)
     assert_response :success
 
-    patch public_send("apex_#{domain[:name]}_preference_#{kind}_url", state), params: params
-    assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_#{kind}_url", state)
+    patch public_send("apex_#{domain[:name]}_preference_#{suffix}_url", state), params: params
+    assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state)
     follow_redirect!
 
     assert_equal I18n.t(domain[:scope] + ".update_success"), flash[:notice]
+  end
+
+  def preference_route_suffix(kind)
+    %i(language timezone).include?(kind) ? "region_#{kind}" : kind.to_s
   end
 end

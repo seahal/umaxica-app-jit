@@ -32,6 +32,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
     # Now verify
     credential = OpenStruct.new(id: "credential-id", public_key: "pk", sign_count: 0)
+
     def credential.verify(_challenge)
       true
     end
@@ -140,6 +141,6 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   private
 
   def regional_defaults
-    PreferenceConstants::DEFAULT_PREFERENCES.transform_keys(&:to_sym)
+    { ri: "jp" }
   end
 end

@@ -473,6 +473,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -656,6 +658,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -720,6 +724,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -821,6 +827,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -902,6 +910,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -1189,6 +1199,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -1284,6 +1296,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
@@ -1345,6 +1359,8 @@ ja:
           select_region_selector:
             USA: アメリカ合衆国
             JAPAN: 日本
+            US: US — あめりかがっしゅうこく
+            JP: JP — にほん
           select_language_selector:
             JAPANESE: 日本語
             ENGLISH: 英語
