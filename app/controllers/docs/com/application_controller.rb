@@ -4,7 +4,6 @@ module Docs
   module Com
     class ApplicationController < ActionController::Base
       include ::RateLimit
-      include ::Preference::Main
       include ::Preference::Regional
 
       protect_from_forgery with: :exception

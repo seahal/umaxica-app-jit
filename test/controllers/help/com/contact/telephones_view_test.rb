@@ -29,7 +29,7 @@ class Help::Com::Contact::TelephonesViewTest < ActionDispatch::IntegrationTest
   # test "should redirect edit without valid session" do
   #   get edit_help_com_contact_telephone_url(contact_id: @contact.id)
   #
-  #   assert_redirected_to help_com_root_path
+  #   assert_redirected_to help_com_root_path()
   #   assert_equal I18n.t("help.com.contact.telephones.edit.session_expired"), flash[:alert]
   # end
   # rubocop:enable Minitest/MultipleAssertions

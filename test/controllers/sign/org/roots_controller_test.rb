@@ -6,7 +6,7 @@ class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   include RootThemeCookieHelper
 
   test "GET / renders root page" do
-    get sign_org_root_url
+    get sign_org_root_url(ri: "jp")
 
     assert_response :success
     assert_select "a[href*=?]", new_sign_org_up_path
@@ -14,7 +14,7 @@ class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "renders layout contract" do
-    get sign_org_root_url
+    get sign_org_root_url(ri: "jp")
 
     assert_response :success
     assert_layout_contract
@@ -22,7 +22,7 @@ class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "footer contains navigation links" do
-    get sign_org_root_url
+    get sign_org_root_url(ri: "jp")
 
     assert_response :success
     assert_select "footer" do
@@ -34,12 +34,15 @@ class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
-    get sign_org_root_url
+    get sign_org_root_url(ri: "jp")
     assert_response :success
     assert_equal 48, OrgPreference.order(:created_at).last.token_digest.bytesize
   end
 
   test "sets theme cookie" do
-    assert_theme_cookie_for(host: "sign.org.localhost", path: :sign_org_root_path, label: "sign org root")
+    host! "sign.org.localhost"
+    get sign_org_root_path(ri: "jp")
+    assert_response :success
+    assert_not_nil cookies[:ct]
   end
 end

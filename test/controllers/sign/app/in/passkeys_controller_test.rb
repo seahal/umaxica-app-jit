@@ -5,39 +5,39 @@ require "test_helper"
 module Sign::App::In
   class PasskeysControllerTest < ActionDispatch::IntegrationTest
     test "should get new" do
-      get new_sign_app_in_passkey_url
+      get new_sign_app_in_passkey_url(ri: "jp")
 
       assert_response :success
     end
 
     test "should initialize user_telephone in new action" do
-      get new_sign_app_in_passkey_url
+      get new_sign_app_in_passkey_url(ri: "jp")
 
       assert_response :success
       # Verify the page loads without errors
     end
 
     test "should get edit" do
-      get edit_sign_app_in_passkey_url
+      get edit_sign_app_in_passkey_url(ri: "jp")
 
       assert_response :success
     end
 
     test "should return ok on create when not logged in" do
-      post sign_app_in_passkey_url
+      post sign_app_in_passkey_url(ri: "jp")
 
       assert_response :ok
     end
 
     test "should return ok on update when not logged in" do
-      patch sign_app_in_passkey_url
+      patch sign_app_in_passkey_url(ri: "jp")
 
       assert_response :ok
     end
 
     # Turnstile Widget Verification Tests
     test "new authentication telephone page renders Turnstile widget" do
-      get new_sign_app_in_passkey_url,
+      get new_sign_app_in_passkey_url(ri: "jp"),
           headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
 
       assert_response :success

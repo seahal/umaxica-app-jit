@@ -5,10 +5,25 @@ require "test_helper"
 class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   include RootThemeCookieHelper
 
+  setup do
+    @prev_env = { "NEWS_CORPORATE_URL" => ENV["NEWS_CORPORATE_URL"] }.freeze
+    ENV["NEWS_CORPORATE_URL"] = "com.localhost"
+  end
+
+  teardown do
+    @prev_env.each { |k, v| v.nil? ? ENV.delete(k) : ENV[k] = v }
+  end
+
   test "should get show" do
-    get news_com_root_url
+    get news_com_root_url()
 
     assert_response :success
+  end
+
+  test "redirects to canonical path by stripping ri=jp" do
+    get news_com_root_url(ri: "jp")
+    assert_redirected_to news_com_root_url
+    assert_nil request.path_parameters[:ri]
   end
 
   test "sets lang attribute on html element" do
@@ -21,7 +36,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
-    get news_com_root_url
+    get news_com_root_url()
 
     assert_layout_contract
     assert_select "head", count: 1 do
@@ -41,13 +56,16 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
-    get news_com_root_url
+    get news_com_root_url()
     assert_response :success
     assert_equal 48, ComPreference.order(:created_at).last.token_digest.bytesize
   end
 
   test "sets theme cookie" do
-    assert_theme_cookie_for(host: "com.localhost", path: :news_com_root_path, label: "news com root")
+    host! "com.localhost"
+    get news_com_root_path
+    assert_redirected_to news_com_root_url(ri: "jp", host: "com.localhost")
+    assert_not_nil cookies[:ct]
   end
 
   private

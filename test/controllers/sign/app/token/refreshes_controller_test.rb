@@ -16,7 +16,7 @@ module Sign
 
         # rubocop:disable Minitest/MultipleAssertions
         test "POST create with valid refresh token returns new access token" do
-          post sign_app_token_refresh_url(host: @host),
+          post sign_app_token_refresh_url(host: @host, ri: "jp"),
                params: { refresh_token: @refresh_token },
                as: :json
 
@@ -30,7 +30,7 @@ module Sign
         # rubocop:enable Minitest/MultipleAssertions
 
         test "POST create with invalid (non-existent) refresh token returns unauthorized" do
-          post sign_app_token_refresh_url(host: @host),
+          post sign_app_token_refresh_url(host: @host, ri: "jp"),
                params: { refresh_token: "missing.public_id" },
                as: :json
 
@@ -41,7 +41,7 @@ module Sign
         end
 
         test "POST create with malformed refresh token returns unauthorized" do
-          post sign_app_token_refresh_url(host: @host),
+          post sign_app_token_refresh_url(host: @host, ri: "jp"),
                params: { refresh_token: "invalid-token-format" },
                as: :json
 
@@ -52,7 +52,7 @@ module Sign
         end
 
         test "POST create without refresh token returns bad request" do
-          post sign_app_token_refresh_url(host: @host),
+          post sign_app_token_refresh_url(host: @host, ri: "jp"),
                params: {},
                as: :json
 
@@ -66,7 +66,7 @@ module Sign
           @user.update!(withdrawn_at: Time.current)
 
           assert_difference("UserToken.count", -1) do
-            post sign_app_token_refresh_url(host: @host),
+            post sign_app_token_refresh_url(host: @host, ri: "jp"),
                  params: { refresh_token: @refresh_token },
                  as: :json
           end
@@ -83,7 +83,7 @@ module Sign
           # rubocop:enable Rails/SkipsModelValidations
 
           assert_difference("UserToken.count", -1) do
-            post sign_app_token_refresh_url(host: @host),
+            post sign_app_token_refresh_url(host: @host, ri: "jp"),
                  params: { refresh_token: @refresh_token },
                  as: :json
           end

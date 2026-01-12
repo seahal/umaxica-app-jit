@@ -5,7 +5,6 @@ module Apex
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
       include ::RateLimit
-      include ::Preference::Main # TODO: remove this line.
       include ::Preference::Global
       include ::Authentication::Staff
 

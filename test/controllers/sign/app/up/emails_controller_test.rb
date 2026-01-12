@@ -17,13 +17,13 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new" do
-    get new_sign_app_up_email_url, headers: default_headers
+    get new_sign_app_up_email_url(ri: "jp"), headers: default_headers
 
     assert_response :success
   end
 
   test "renders email registration form structure" do
-    get new_sign_app_up_email_url, headers: default_headers
+    get new_sign_app_up_email_url(ri: "jp"), headers: default_headers
 
     assert_response :success
 
@@ -31,19 +31,21 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "includes navigation links to other registration flows" do
-    get new_sign_app_up_email_url, headers: default_headers
+    get new_sign_app_up_email_url(ri: "jp"), headers: default_headers
 
     assert_response :success
 
-    assert_select "a[href=?]", new_sign_app_up_path, count: 0
-    assert_select "a[href=?]", new_sign_app_in_email_path, count: 0
+    assert_select "a[href=?]", new_sign_app_up_path(ri: "jp"), count: 1
+    assert_select "a[href=?]", new_sign_app_in_email_path(ri: "jp"), count: 1
   end
 
   test "edit redirects to new when email record not found" do
-    get edit_sign_app_up_email_url(id: "non-existent-id"), headers: default_headers
+    get edit_sign_app_up_email_url(id: "non-existent-id", ri: "jp"), headers: default_headers
 
     assert_response :redirect
-    assert_includes response.location, new_sign_app_up_email_path
+    assert_includes response.location, "/up/emails/new"
+    assert_includes response.location, "notice="
+    assert_includes response.location, "ri=jp"
   end
 
   test "i18n flash messages for email registration flow exist" do
@@ -62,7 +64,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     email = "test@example.com"
 
     # First registration attempt
-    post sign_app_up_emails_url,
+    post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
              address: email,
@@ -83,7 +85,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Second registration attempt immediately after
     # This should delete the previous unverified record and create a new one
-    post sign_app_up_emails_url,
+    post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
              address: email,
@@ -112,7 +114,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Create registration record
     perform_enqueued_jobs do
-      post sign_app_up_emails_url,
+      post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
                address: email,
@@ -129,7 +131,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     user_email = UserEmail.find(email_id)
 
     # Attempt wrong code
-    patch sign_app_up_email_url(user_email.id),
+    patch sign_app_up_email_url(user_email.id, ri: "jp"),
           params: {
             id: user_email.id,
             user_email: {
@@ -147,7 +149,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Create registration record
     perform_enqueued_jobs do
-      post sign_app_up_emails_url,
+      post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
                address: email,
@@ -165,7 +167,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Make 3 failed attempts
     3.times do
-      patch sign_app_up_email_url(user_email.id),
+      patch sign_app_up_email_url(user_email.id, ri: "jp"),
             params: {
               id: user_email.id,
               user_email: {
@@ -177,7 +179,9 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Verify redirect and record deletion
     assert_response :redirect
-    assert_includes response.location, new_sign_app_up_email_path
+    assert_includes response.location, "/up/emails/new"
+    assert_includes response.location, "alert="
+    assert_includes response.location, "ri=jp"
     assert_nil UserEmail.find_by(id: user_email.id)
   end
 
@@ -194,7 +198,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
   # Turnstile Widget Verification Tests
   test "new registration email page renders Turnstile widget" do
-    get new_sign_app_up_email_url, headers: default_headers
+    get new_sign_app_up_email_url(ri: "jp"), headers: default_headers
 
     assert_response :success
     assert_select "div[id^='cf-turnstile-']", count: 1
@@ -211,7 +215,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     user = User.create!(status_id: "VERIFIED_WITH_SIGN_UP")
 
     # Try to access registration page while logged in (using test header to inject current user)
-    get new_sign_app_up_email_url,
+    get new_sign_app_up_email_url(ri: "jp"),
         headers: default_headers.merge({ "X-TEST-CURRENT-USER" => user.id })
 
     assert_redirected_to "/"
@@ -225,7 +229,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     encoded_rd = Base64.urlsafe_encode64(redirect_url)
 
     # Create registration record with rd parameter
-    post sign_app_up_emails_url,
+    post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
              address: email,
@@ -250,7 +254,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     correct_code = hotp.at(otp_data[:otp_counter]).to_s
 
     # Submit correct OTP with rd parameter
-    patch sign_app_up_email_url(user_email.id),
+    patch sign_app_up_email_url(user_email.id, ri: "jp"),
           params: {
             id: user_email.id,
             user_email: {
@@ -272,7 +276,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Create registration record
     perform_enqueued_jobs do
-      post sign_app_up_emails_url,
+      post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
                address: email,
@@ -295,7 +299,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     initial_audit_count = UserAudit.count
 
     # Submit correct OTP
-    patch sign_app_up_email_url(user_email.id),
+    patch sign_app_up_email_url(user_email.id, ri: "jp"),
           params: {
             id: user_email.id,
             user_email: {
@@ -338,7 +342,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Create registration record
     perform_enqueued_jobs do
-      post sign_app_up_emails_url,
+      post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
                address: email,
@@ -358,7 +362,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     correct_code = hotp.at(otp_data[:otp_counter]).to_s
 
     # Submit correct OTP
-    patch sign_app_up_email_url(user_email.id),
+    patch sign_app_up_email_url(user_email.id, ri: "jp"),
           params: {
             id: user_email.id,
             user_email: {
@@ -384,7 +388,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     # Create registration record
     perform_enqueued_jobs do
-      post sign_app_up_emails_url,
+      post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
                address: email,
@@ -407,7 +411,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil user_email.get_otp
 
     # Submit correct OTP
-    patch sign_app_up_email_url(user_email.id),
+    patch sign_app_up_email_url(user_email.id, ri: "jp"),
           params: {
             id: user_email.id,
             user_email: {

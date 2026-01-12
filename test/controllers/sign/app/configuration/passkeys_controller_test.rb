@@ -15,7 +15,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     stub_options = OpenStruct.new(challenge: "mock_challenge")
 
     WebAuthn::Credential.stub :options_for_create, stub_options do
-      post challenge_sign_app_configuration_passkeys_url, headers: @headers
+      post challenge_sign_app_configuration_passkeys_url(ri: "jp"), headers: @headers
     end
 
     assert_response :ok
@@ -27,7 +27,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     # First set the session challenge
     stub_options = OpenStruct.new(challenge: "mock_challenge")
     WebAuthn::Credential.stub :options_for_create, stub_options do
-      post challenge_sign_app_configuration_passkeys_url, headers: @headers
+      post challenge_sign_app_configuration_passkeys_url(ri: "jp"), headers: @headers
     end
 
     # Now verify
@@ -38,7 +38,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     end
 
     WebAuthn::Credential.stub :from_create, credential do
-      post verify_sign_app_configuration_passkeys_url,
+      post verify_sign_app_configuration_passkeys_url(ri: "jp"),
            params: { credential: { id: "credential-id", rawId: "credential-id" }, description: "Test" },
            headers: @headers
     end
@@ -47,13 +47,13 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "should get index" do
-    get sign_app_configuration_passkeys_url, headers: @headers
+    get sign_app_configuration_passkeys_url(ri: "jp"), headers: @headers
 
     assert_response :ok
   end
 
   test "should get new" do
-    get new_sign_app_configuration_passkey_url, headers: @headers
+    get new_sign_app_configuration_passkey_url(ri: "jp"), headers: @headers
 
     assert_response :ok
   end
@@ -68,7 +68,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       sign_count: 0,
     )
 
-    get sign_app_configuration_passkey_url(passkey), headers: @headers
+    get sign_app_configuration_passkey_url(passkey, ri: "jp"), headers: @headers
 
     assert_response :ok
   end
@@ -83,14 +83,14 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       sign_count: 0,
     )
 
-    get edit_sign_app_configuration_passkey_url(passkey), headers: @headers
+    get edit_sign_app_configuration_passkey_url(passkey, ri: "jp"), headers: @headers
 
     assert_response :ok
   end
 
   test "should create passkey" do
     assert_difference("UserPasskey.count") do
-      post sign_app_configuration_passkeys_url, params: {
+      post sign_app_configuration_passkeys_url(ri: "jp"), params: {
         passkey: {
           description: "My Passkey",
           public_key: "dummy_public_key",
@@ -114,7 +114,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       sign_count: 0,
     )
 
-    patch sign_app_configuration_passkey_url(passkey), params: {
+    patch sign_app_configuration_passkey_url(passkey, ri: "jp"), params: {
       passkey: { description: "New Name" },
     }, headers: @headers
 
@@ -133,7 +133,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     )
 
     assert_difference("UserPasskey.count", -1) do
-      delete sign_app_configuration_passkey_url(passkey), headers: @headers
+      delete sign_app_configuration_passkey_url(passkey, ri: "jp"), headers: @headers
     end
     assert_redirected_to sign_app_configuration_passkeys_url(regional_defaults)
   end

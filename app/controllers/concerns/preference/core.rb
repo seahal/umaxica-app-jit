@@ -178,8 +178,8 @@ module Preference::Core
       secure: Rails.env.production?,
       same_site: :lax,
     }
-    # Only set domain in production (avoid .localhost issues in development)
-    delete_options[:domain] = :all unless Rails.env.development?
+    domain = cookie_domain
+    delete_options[:domain] = domain if domain.present?
 
     cookies.delete(cookie_name, **delete_options)
 

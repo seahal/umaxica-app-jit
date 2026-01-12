@@ -6,8 +6,20 @@ module Help
   module Com
     module V1
       class HealthsControllerTest < ActionDispatch::IntegrationTest
+        setup do
+          Help::Com::ApplicationController.define_method(:canonicalize_regional_params) { nil }
+        end
+
+        teardown do
+          begin
+            Help::Com::ApplicationController.remove_method(:canonicalize_regional_params)
+          rescue NameError
+            # Ignore
+          end
+        end
+
         test "returns success for default format" do
-          get help_com_v1_health_url
+          get help_com_v1_health_url()
 
           assert_response :success
           assert_includes response.body, "OK"

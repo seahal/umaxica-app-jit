@@ -5,7 +5,7 @@ require "test_helper"
 module Sign::App::Configuration
   class GooglesControllerTest < ActionDispatch::IntegrationTest
     test "should get show" do
-      get sign_app_configuration_google_url
+      get sign_app_configuration_google_url(ri: "jp")
 
       assert_response :success
     end

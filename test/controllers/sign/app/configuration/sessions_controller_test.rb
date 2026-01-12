@@ -11,36 +11,36 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
   end
 
   test "index returns empty collection" do
-    get sign_app_configuration_sessions_url, headers: @headers
+    get sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
 
     assert_response :success
     assert_empty response.parsed_body["sessions"]
   end
 
   test "lifecycle: create, show, update, destroy" do
-    post sign_app_configuration_sessions_url, params: { session: { name: "My Session" } }, headers: @headers
+    post sign_app_configuration_sessions_url(ri: "jp"), params: { session: { name: "My Session" } }, headers: @headers
     assert_response :created
     created = response.parsed_body.fetch("session")
     assert_equal "My Session", created["name"]
 
-    get sign_app_configuration_session_url(created["id"]), headers: @headers
+    get sign_app_configuration_session_url(created["id"], ri: "jp"), headers: @headers
     assert_response :success
 
-    patch sign_app_configuration_session_url(created["id"]),
+    patch sign_app_configuration_session_url(created["id"], ri: "jp"),
           params: { session: { status: "revoked" } },
           headers: @headers
     assert_response :success
     assert_equal "revoked", response.parsed_body.dig("session", "status")
 
-    delete sign_app_configuration_session_url(created["id"]), headers: @headers
+    delete sign_app_configuration_session_url(created["id"], ri: "jp"), headers: @headers
     assert_response :see_other
 
-    get sign_app_configuration_session_url(created["id"]), headers: @headers
+    get sign_app_configuration_session_url(created["id"], ri: "jp"), headers: @headers
     assert_response :not_found
   end
 
   test "requires authentication" do
-    get sign_app_configuration_sessions_url, headers: { "Host" => @host }
+    get sign_app_configuration_sessions_url(ri: "jp"), headers: { "Host" => @host }
 
     assert_response :redirect
   end

@@ -67,6 +67,29 @@ class AppTimelineAuditTest < ActiveSupport::TestCase
     audit.app_timeline = timeline
 
     assert_equal test_uuid, audit.subject_id
+    assert_equal test_uuid, audit.subject_id
     assert_equal "AppTimeline", audit.subject_type
+  end
+
+  test "app_timeline helper method returns timeline when subject_type is AppTimeline" do
+    AppTimelineAuditEvent.find_or_create_by!(id: "NEYO")
+    AppTimelineAuditLevel.find_or_create_by!(id: "NEYO")
+    # Ensure status exists
+    AppTimelineStatus.find_or_create_by!(id: "NEYO")
+
+    timeline = AppTimeline.create!(
+      status_id: "NEYO",
+      public_id: "tl_#{SecureRandom.hex(4)}",
+      published_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    audit = AppTimelineAudit.create!(
+      subject_id: timeline.id,
+      subject_type: "AppTimeline",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+
+    assert_equal timeline, audit.app_timeline
   end
 end

@@ -3,27 +3,139 @@
 module Preference::Base
   extend ActiveSupport::Concern
 
+  require "sha3"
+
   private
 
-  def normalized_locale_options
-    tz = params[:tz].presence || params[:timezone] || "jst"
-    lx = params[:lx].presence || "ja"
-    ri = params[:ri].presence || params[:region] || "jp"
-    ct = params[:ct].presence || params[:colortheme] || "sy"
+  def set_preferences_cookie
+    # Return if preference already exists in database
+    cookie_name = Rails.env.production? ? "__Secure-Jit-Preference" : "Jit-Preference"
+    if cookies[cookie_name].present?
+      token_digest = SHA3::Digest::SHA3_384.digest(cookies[cookie_name])
+      @preferences = preference_class.includes(preference_associations_to_preload).find_by(token_digest: token_digest)
 
-    options = {
-      tz: tz.to_s.downcase,
-      lx: lx.to_s.downcase,
-      ct: ct.to_s.downcase,
+      # Return if valid preference found (not deleted and not expired)
+      valid_preference = @preferences.present? &&
+        @preferences.status_id != "DELETED" &&
+        (@preferences.expires_at.nil? || @preferences.expires_at > Time.current)
+
+      return if valid_preference
+    end
+
+    # Generate new token
+    token = SecureRandom.urlsafe_base64(48)
+    token_digest = SHA3::Digest::SHA3_384.digest(token)
+
+    # Create preference and audit log in transaction
+    ActiveRecord::Base.connected_to(role: :writing) do
+      ActiveRecord::Base.transaction do
+        @preferences = preference_class.create!(
+          token_digest: token_digest,
+          expires_at: 1.year.from_now,
+        )
+
+        # Create associated preference options
+        create_preference_options(@preferences)
+
+        # Register audit log using Base method
+        create_audit_log(
+          event_id: "CREATE_NEW_PREFERENCE_TOKEN",
+          context: { token_created: true },
+          expires_at: 1.year.from_now,
+        )
+      rescue ActiveRecord::RecordInvalid => e
+        # Delete preference if audit registration fails
+        @preferences&.destroy
+        raise e
+      end
+    end
+
+    # Store token in cookie (valid for 1 year)
+    cookie_options = {
+      value: token,
+      expires: 1.year.from_now,
+      httponly: true,
+      secure: Rails.env.production?,
+      same_site: :lax,
     }
-    options[:ri] = ri.to_s.downcase if ri.present?
-    options
+
+    domain = cookie_domain
+    cookie_options[:domain] = domain if domain.present?
+
+    cookies[cookie_name] = cookie_options
+
+    nil
+  end
+
+  def set_color_theme
+    return if @preferences.blank?
+
+    colortheme = @preferences.public_send(preference_colortheme_association)
+    theme = colortheme&.option_id.presence || "system"
+    session[:theme] = theme
+
+    cookie_options = {
+      value: theme,
+      expires: Preference::Core::COOKIE_EXPIRY.from_now,
+      secure: Rails.env.production?,
+      same_site: :lax,
+    }
+    domain = cookie_domain
+    cookie_options[:domain] = domain if domain.present?
+    cookies[:ct] = cookie_options # NOTE: DO NOT READ at Ruby on Rails. THIS CODE FOR Frontend JavaScript ENV.
+  end
+
+  def create_preference_options(preference)
+    prefix = preference.class.name.gsub("Preference", "")
+
+    # Create cookie preference with default values
+    "#{prefix}PreferenceCookie".constantize.create!(
+      preference_id: preference.id,
+      targetable: false,
+      performant: false,
+      functional: false,
+    )
+
+    # Create timezone preference (optional option_id)
+    "#{prefix}PreferenceTimezone".constantize.create!(
+      preference_id: preference.id,
+      option_id: "Asia/Tokyo",
+    )
+
+    # Create language preference (optional option_id)
+    "#{prefix}PreferenceLanguage".constantize.create!(
+      preference_id: preference.id,
+      option_id: "JA",
+    )
+
+    # Create region preference (optional option_id)
+    "#{prefix}PreferenceRegion".constantize.create!(
+      preference_id: preference.id,
+      option_id: "JP", # TODO: Refactor this.
+    )
+
+    # Create colortheme preference (optional option_id)
+    "#{prefix}PreferenceColortheme".constantize.create!(
+      preference_id: preference.id,
+      option_id: "system",
+    )
   end
 
   def set_locale_from_params
     locale_param = params[:lx].presence
-    locale = locale_param || session[:language]&.downcase || I18n.default_locale
+    locale_from_region = locale_from_region_param(params[:ri])
+    locale = locale_param || locale_from_region || session[:language]&.downcase || I18n.default_locale
     I18n.locale = locale.to_s.downcase
+  end
+
+  def locale_from_region_param(region_param)
+    region = region_param.to_s.downcase
+    return if region.blank?
+
+    {
+      "jp" => "ja",
+      "us" => "en",
+    }[region]
   end
 
   def set_timezone_from_session
@@ -139,5 +251,12 @@ module Preference::Base
   def sanitize_option_id(params)
     params[:option_id] = nil if params[:option_id].blank?
     params
+  end
+
+  def cookie_domain
+    return :all unless Rails.env.development?
+
+    # localhost does not support domain sharing in browsers
+    nil
   end
 end

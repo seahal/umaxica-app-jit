@@ -4,13 +4,13 @@ require "test_helper"
 
 class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
-    get new_sign_app_up_url(format: :html), headers: { "Host" => host }
+    get new_sign_app_up_url(format: :html, ri: "jp"), headers: { "Host" => host }
 
     assert_response :success
   end
 
   test "sets lang attribute on html element" do
-    get new_sign_app_up_url(format: :html)
+    get new_sign_app_up_url(format: :html, ri: "jp")
 
     assert_response :success
     assert_select("html[lang=?]", "ja")
@@ -19,7 +19,7 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "shows registration methods and social providers" do
-    get new_sign_app_up_url(format: :html), headers: { "Host" => host }
+    get new_sign_app_up_url(format: :html, ri: "jp"), headers: { "Host" => host }
 
     assert_response :success
 
@@ -29,7 +29,7 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "renders registration layout structure" do
-    get new_sign_app_up_url(format: :html)
+    get new_sign_app_up_url(format: :html, ri: "jp")
 
     expected_brand = brand_name
     escaped_brand = Regexp.escape(expected_brand)
@@ -50,7 +50,7 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "header contains authentication links" do
-    get new_sign_app_up_url(format: :html)
+    get new_sign_app_up_url(format: :html, ri: "jp")
 
     assert_response :success
     assert_select "header", minimum: 1 do
@@ -61,7 +61,7 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "footer contains navigation links" do
-    get new_sign_app_up_url(format: :html)
+    get new_sign_app_up_url(format: :html, ri: "jp")
 
     assert_response :success
     assert_select "footer" do
@@ -70,7 +70,7 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
     end
   end
   test "renders specific cta text" do
-    get new_sign_app_up_url(format: :html)
+    get new_sign_app_up_url(format: :html, ri: "jp")
     assert_response :success
     Rails.logger.debug response.body # DEBUG
     # Check for Japanese text (since previous test asserted lang=ja)

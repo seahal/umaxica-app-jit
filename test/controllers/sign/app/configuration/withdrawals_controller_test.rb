@@ -49,7 +49,8 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
   test "should get new withdrawal page" do
     @user.update!(status_id: "NEYO")
-    get new_sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    get new_sign_app_configuration_withdrawal_url(ri: "jp"),
+        headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_response :success
   end
@@ -57,9 +58,10 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   test "should create withdrawal and set withdrawn_at" do
     @user.update!(status_id: "NEYO")
 
-    post sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    post sign_app_configuration_withdrawal_url(ri: "jp"),
+         headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
     assert_operator @user.withdrawn_at, :<=, Time.current
   end
@@ -68,16 +70,20 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   #   @user.update!(withdrawn_at: 1.day.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
   #   assert_raises(Sign::InvalidWithdrawalStateError) do
-  #     post sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+  #     post sign_app_configuration_withdrawal_url(ri: "jp"),
+  #          headers: request_headers.merge(
+  #            "X-TEST-CURRENT-USER" => @user.id,
+  #          )
   #   end
   # end
 
   test "should allow recovery within 1 month" do
     @user.update!(withdrawn_at: 15.days.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
-    patch sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    patch sign_app_configuration_withdrawal_url(ri: "jp"),
+          headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_nil @user.reload.withdrawn_at
     assert_equal I18n.t("sign.app.configuration.withdrawal.update.recovered"), flash[:notice]
   end
@@ -85,9 +91,10 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   test "should prevent recovery after 1 month" do
     @user.update!(withdrawn_at: 45.days.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
-    patch sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    patch sign_app_configuration_withdrawal_url(ri: "jp"),
+          headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
     assert_equal I18n.t("sign.app.configuration.withdrawal.update.cannot_recover"), flash[:alert]
   end
@@ -95,7 +102,8 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   test "withdrawn user can access withdrawal show page" do
     @user.update!(withdrawn_at: 1.day.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
-    get sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    get sign_app_configuration_withdrawal_url(ri: "jp"),
+        headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_response :success
   end
@@ -110,7 +118,8 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
     assert_raises(InvalidUserStatusError) do
-      get new_sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+      get new_sign_app_configuration_withdrawal_url(ri: "jp"),
+          headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
     end
   end
 
@@ -118,7 +127,10 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   #   @user.update!(status_id: UserStatus::ALIVE)
   #
   #   assert_raises(ActionController::RoutingError) do
-  #     get sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+  #     get sign_app_configuration_withdrawal_url(ri: "jp"),
+  #         headers: request_headers.merge(
+  #           "X-TEST-CURRENT-USER" => @user.id,
+  #         )
   #   end
   # end
 
@@ -126,7 +138,10 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   #   @user.update!(status_id: UserStatus::ALIVE)
 
   #   assert_raises(InvalidUserStatusError) do
-  #     patch sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+  #     patch sign_app_configuration_withdrawal_url(ri: "jp"),
+  #           headers: request_headers.merge(
+  #             "X-TEST-CURRENT-USER" => @user.id,
+  #           )
   #   end
   # end
 
@@ -134,7 +149,10 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   #   @user.update!(status_id: UserStatus::ALIVE)
   #
   #   assert_raises(InvalidUserStatusError) do
-  #     delete sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+  #     delete sign_app_configuration_withdrawal_url(ri: "jp"),
+  #            headers: request_headers.merge(
+  #              "X-TEST-CURRENT-USER" => @user.id,
+  #            )
   #   end
   # end
 
@@ -142,7 +160,8 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   test "new withdrawal page renders Turnstile widget" do
     @user.update!(status_id: "NEYO")
 
-    get new_sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    get new_sign_app_configuration_withdrawal_url(ri: "jp"),
+        headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
 
     assert_response :success
     assert_select "div[id^='cf-turnstile-']", count: 1
@@ -152,7 +171,10 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   # test "new withdrawal page renders confirm_create_recovery_code checkbox" do
   #   @user.update!(status_id: "NEYO")
 
-  #   get new_sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+  #   get new_sign_app_configuration_withdrawal_url(ri: "jp"),
+  #       headers: request_headers.merge(
+  #         "X-TEST-CURRENT-USER" => @user.id,
+  #       )
 
   #   assert_response :success
   #   assert_select "input[type='text'][name='confirm_withdrawal']"
@@ -164,7 +186,10 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   test "edit withdrawal page renders confirm_create_recovery_code checkbox" do
     @user.update!(withdrawn_at: 1.day.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
-    get edit_sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    get edit_sign_app_configuration_withdrawal_url(ri: "jp"),
+        headers: request_headers.merge(
+          "X-TEST-CURRENT-USER" => @user.id,
+        )
 
     assert_response :success
     assert_select "input[type='checkbox'][name='confirm_create_recovery_code']"
@@ -176,20 +201,24 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   test "create accepts confirm_create_recovery_code parameter" do
     @user.update!(status_id: "NEYO")
 
-    post sign_app_configuration_withdrawal_url, params: { confirm_create_recovery_code: "1" },
-                                                headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    post sign_app_configuration_withdrawal_url(ri: "jp"), params: { confirm_create_recovery_code: "1" },
+                                                          headers: request_headers.merge(
+                                                            "X-TEST-CURRENT-USER" => @user.id,
+                                                          )
 
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
   end
 
   test "update accepts confirm_create_recovery_code parameter" do
     @user.update!(withdrawn_at: 15.days.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
-    patch sign_app_configuration_withdrawal_url, params: { confirm_create_recovery_code: "1" },
-                                                 headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+    patch sign_app_configuration_withdrawal_url(ri: "jp"), params: { confirm_create_recovery_code: "1" },
+                                                           headers: request_headers.merge(
+                                                             "X-TEST-CURRENT-USER" => @user.id,
+                                                           )
 
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_nil @user.reload.withdrawn_at
   end
 
@@ -200,13 +229,16 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
     User.stub(:find, user_mock) do
       User.stub(:find_by, user_mock) do
-        delete sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+        delete sign_app_configuration_withdrawal_url(ri: "jp"),
+               headers: request_headers.merge(
+                 "X-TEST-CURRENT-USER" => @user.id,
+               )
       end
     end
 
     assert_response :redirect
     # Match path ignoring query params
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_equal I18n.t("sign.app.configuration.withdrawal.destroy.success"), flash[:notice]
   end
 
@@ -215,12 +247,13 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     # We stub transaction on User class.
     User.stub(:transaction, -> { raise StandardError.new("Boom") }) do
       assert_no_difference("User.count") do
-        delete sign_app_configuration_withdrawal_url, headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+        delete sign_app_configuration_withdrawal_url(ri: "jp"),
+               headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
       end
     end
 
     assert_response :redirect
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_equal I18n.t("sign.app.configuration.withdrawal.destroy.failed"), flash[:alert]
   end
 
@@ -259,7 +292,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     # Stub finding methods likely used by authentication
     User.stub(:find, user_mock) do
       User.stub(:find_by, user_mock) do
-        post sign_app_configuration_withdrawal_url,
+        post sign_app_configuration_withdrawal_url(ri: "jp"),
              headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
       end
     end
@@ -276,13 +309,13 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
     User.stub(:find, user_mock) do
       User.stub(:find_by, user_mock) do
-        patch sign_app_configuration_withdrawal_url,
+        patch sign_app_configuration_withdrawal_url(ri: "jp"),
               headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
       end
     end
 
     assert_response :redirect
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url)}}, @response.location
+    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_equal I18n.t("sign.app.configuration.withdrawal.update.failed"), flash[:alert]
   end
 end

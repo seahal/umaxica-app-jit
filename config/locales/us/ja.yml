@@ -78,6 +78,49 @@ ja:
       done: "連絡先ステータスとカテゴリの更新が完了しました。"
     token_refresh:
       errors:
+  help:
+    org:
+      contacts:
+        new:
+          page_title: "お問い合わせ"
+          badge: "お問い合わせ"
+          description: "必要事項をご入力のうえ送信してください。担当者からご連絡します。"
+          confirm_policy: "プライバシーポリシーに同意します"
+          confirm_policy_note: "ポリシーに同意いただけない場合は送信できません。"
+          category_id: "お問い合わせ種別"
+          email_address: "メールアドレス"
+          telephone_number: "電話番号"
+          submit: "送信"
+          cancel: "キャンセル"
+          error_heading: "%{count}件のエラーがあるため送信できません。"
+    com:
+      contacts:
+        new:
+          page_title: "お問い合わせ"
+          badge: "お問い合わせ"
+          description: "必要事項をご入力のうえ送信してください。担当者からご連絡します。"
+          confirm_policy: "プライバシーポリシーに同意します"
+          confirm_policy_note: "ポリシーに同意いただけない場合は送信できません。"
+          category_id: "お問い合わせ種別"
+          email_address: "メールアドレス"
+          telephone_number: "電話番号"
+          submit: "送信"
+          cancel: "キャンセル"
+          error_heading: "%{count}件のエラーがあるため送信できません。"
+    app:
+      contacts:
+        new:
+          page_title: "お問い合わせ"
+          badge: "お問い合わせ"
+          description: "必要事項をご入力のうえ送信してください。担当者からご連絡します。"
+          confirm_policy: "プライバシーポリシーに同意します"
+          confirm_policy_note: "ポリシーに同意いただけない場合は送信できません。"
+          category_id: "お問い合わせ種別"
+          email_address: "メールアドレス"
+          telephone_number: "電話番号"
+          submit: "送信"
+          cancel: "キャンセル"
+          error_heading: "%{count}件のエラーがあるため送信できません。"
         missing_refresh_token: "リフレッシュトークンは必須です"
         invalid_refresh_token: "リフレッシュトークンが無効または有効期限切れです"
         user_not_found_or_withdrawn: "User not found or withdrawn"

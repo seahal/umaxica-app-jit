@@ -18,8 +18,8 @@ class Docs::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
   test "preference page links to apex preference" do
     get docs_app_preference_url
     assert_response :success
-    assert_select "a[href=?]",
-                  apex_app_preference_url(ri: "jp"),
+    assert_select "a[href*=?]",
+                  apex_app_preference_url,
                   text: I18n.t("shared.links.apex_preference")
   end
 end

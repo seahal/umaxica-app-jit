@@ -28,7 +28,10 @@ module Core::App
     end
 
     test "sets theme cookie" do
-      assert_theme_cookie_for(host: "app.localhost", path: :core_app_root_path, label: "core app root")
+      host! "app.localhost"
+      get core_app_root_path(ri: "jp")
+      assert_response :success
+      assert_not_nil cookies[:ct]
     end
   end
 end

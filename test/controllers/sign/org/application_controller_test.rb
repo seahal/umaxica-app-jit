@@ -21,7 +21,6 @@ module Sign::Org
     end
 
     test "includes expected concerns" do
-      assert_includes @controller.class, Preference::Main
       assert_includes @controller.class, Preference::Global
       assert_includes @controller.class, RateLimit
     end

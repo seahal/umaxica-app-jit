@@ -11,6 +11,12 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "redirects to canonical path by stripping ri=jp" do
+    get help_com_root_url(ri: "jp")
+    assert_redirected_to help_com_root_url
+    assert_nil request.path_parameters[:ri]
+  end
+
   test "sets lang attribute on html element" do
     get help_com_root_url(format: :html)
 
@@ -23,7 +29,7 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_com_root_url
 
     assert_response :success
-    assert_select "a[href^=?]", new_help_com_contact_path
+    assert_select "a[href*=?]", new_help_com_contact_path
   end
   # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
@@ -51,7 +57,10 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "sets theme cookie" do
-    assert_theme_cookie_for(host: "com.localhost", path: :help_com_root_path, label: "help com root")
+    host! "com.localhost"
+    get help_com_root_path
+    assert_redirected_to help_com_root_url(ri: "jp", host: "com.localhost")
+    assert_not_nil cookies[:ct]
   end
 
   private

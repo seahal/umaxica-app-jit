@@ -16,7 +16,7 @@ module Sign
 
         # rubocop:disable Minitest/MultipleAssertions
         test "POST create with valid refresh token returns new access token" do
-          post sign_org_token_refresh_url(host: @host),
+          post sign_org_token_refresh_url(host: @host, ri: "jp"),
                params: { refresh_token: @refresh_token },
                as: :json
 
@@ -30,7 +30,7 @@ module Sign
         # rubocop:enable Minitest/MultipleAssertions
 
         test "POST create with invalid refresh token returns unauthorized" do
-          post sign_org_token_refresh_url(host: @host),
+          post sign_org_token_refresh_url(host: @host, ri: "jp"),
                params: { refresh_token: "invalid-token-id" },
                as: :json
 
@@ -41,7 +41,7 @@ module Sign
         end
 
         test "POST create without refresh token returns bad request" do
-          post sign_org_token_refresh_url(host: @host),
+          post sign_org_token_refresh_url(host: @host, ri: "jp"),
                params: {},
                as: :json
 
@@ -55,7 +55,7 @@ module Sign
           @staff.update!(withdrawn_at: Time.current)
 
           assert_difference("StaffToken.count", -1) do
-            post sign_org_token_refresh_url(host: @host),
+            post sign_org_token_refresh_url(host: @host, ri: "jp"),
                  params: { refresh_token: @refresh_token },
                  as: :json
           end
@@ -72,7 +72,7 @@ module Sign
           # rubocop:enable Rails/SkipsModelValidations
 
           assert_difference("StaffToken.count", -1) do
-            post sign_org_token_refresh_url(host: @host),
+            post sign_org_token_refresh_url(host: @host, ri: "jp"),
                  params: { refresh_token: @refresh_token },
                  as: :json
           end

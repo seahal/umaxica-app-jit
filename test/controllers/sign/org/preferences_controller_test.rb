@@ -4,12 +4,12 @@ require "test_helper"
 
 class Sign::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
-    get sign_org_preference_url
+    get sign_org_preference_url(ri: "jp")
     assert_response :success
   end
 
   test "footer should contain preference link" do
-    get sign_org_root_url
+    get sign_org_root_url(ri: "jp")
     assert_response :success
     # follow_redirect!
     assert_response :success
@@ -18,7 +18,7 @@ class Sign::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "preference page links to apex preference" do
-    get sign_org_preference_url
+    get sign_org_preference_url(ri: "jp")
     assert_response :success
     assert_select "a[href=?]",
                   apex_org_preference_url(ri: "jp"),

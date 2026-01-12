@@ -8,7 +8,6 @@ module Core::App
       controller = ApplicationController.new
 
       assert_includes controller.class, RateLimit
-      assert_includes controller.class, Preference::Main
       assert_includes controller.class, Preference::Regional
     end
   end

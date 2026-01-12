@@ -4,7 +4,6 @@ module Help
   module Org
     class ApplicationController < ActionController::Base
       include ::RateLimit
-      include ::Preference::Main
       include ::Preference::Regional
       include Pundit::Authorization
 

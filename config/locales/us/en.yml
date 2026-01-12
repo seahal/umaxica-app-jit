@@ -39,6 +39,12 @@ en:
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
     app:
+      layout:
+        nav:
+          sign_up: "Sign Up"
+          log_in: "Log In"
+          configuration: "Settings"
+          logout: "Log Out"
       preferences:
         title: "Preference settings"
     org:
@@ -52,6 +58,55 @@ en:
         new:
           heading: "Create your org account"
           description: "Start using organizational tools by registering a new account."
+  help:
+    org:
+      contacts:
+        new:
+          page_title: "Contact Us"
+          badge: "Contact"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          category_id: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          confirm_policy_note: "You must agree to the privacy policy before submitting."
+          error_heading:
+            one: "1 error prohibited this contact from being saved."
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: "Continue"
+          cancel: "Cancel"
+    com:
+      contacts:
+        new:
+          page_title: "Contact Us"
+          badge: "Contact"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          category_id: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          confirm_policy_note: "You must agree to the privacy policy before submitting."
+          error_heading:
+            one: "1 error prohibited this contact from being saved."
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: "Continue"
+          cancel: "Cancel"
+    app:
+      contacts:
+        new:
+          page_title: "Contact Us"
+          badge: "Contact"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          category_id: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          confirm_policy_note: "You must agree to the privacy policy before submitting."
+          error_heading:
+            one: "1 error prohibited this contact from being saved."
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: "Continue"
+          cancel: "Cancel"
           recruit_prompt_html: "Interested in joining the team? %{link}"
           recruit_link_text: "Contact recruiting"
           back_to_root: "up"
@@ -358,6 +413,7 @@ en:
         region_settings: "Region Settings"
         theme_settings: "Theme Settings"
         back_to_settings: "Back to Preferences"
+        up_link: "Back to top"
         regions:
           title: "Regional & Language Settings"
           region_section: "Regional Settings"
@@ -864,6 +920,13 @@ en:
         delimiter: ''
   apex:
     app:
+      configurations:
+        title: "Configuration"
+        description: "Review and adjust your service settings."
+        i18n_settings: "Locale settings"
+        i18n_settings_description: "Update the default language and region for this browser."
+        email_settings: "Email settings"
+        email_settings_description: "Manage notification senders and descriptions."
       preferences:
         update_success: "Preferences updated successfully"
         title: "Preferences"
@@ -905,6 +968,11 @@ en:
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
+        footer:
+          home: "Home"
+          cookie: "Cookies"
+          preference: "Preferences"
+          privacy: "Privacy"
       preference:
         cookie:
           edit:

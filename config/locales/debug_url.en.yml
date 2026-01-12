@@ -1,5 +1,0 @@
-en:
-  debug_url:
-    generating: "Generating URL..."
-    generated: "URL generated: %{url}"
-    error: "Error: %{class} - %{message}"

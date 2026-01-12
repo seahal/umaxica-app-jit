@@ -107,3 +107,4 @@
 - This is a work in progress.
 - The public availability of this repository is not guaranteed permanently.
 - No warranty is provided, and the authors shall not be held liable for any damages arising from the use of this repository.
+- **Development Environment Cookie Limitation**: In the development environment using `localhost`, cookies cannot be shared across subdomains (e.g., between `app.localhost:3000` and `help.app.localhost:3000`) due to browser security restrictions. This limitation does not affect test or production environments. If subdomain cookie sharing is required during development, consider using a `.test` domain with `/etc/hosts` configuration.

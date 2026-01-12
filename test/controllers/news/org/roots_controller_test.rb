@@ -30,6 +30,12 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "redirects to canonical path by stripping ri=jp" do
+    get news_org_root_url(ri: "jp"), headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
+    assert_redirected_to news_org_root_url
+    assert_nil request.path_parameters[:ri]
+  end
+
   test "renders HTML by default" do
     get news_org_root_path, headers: { "HTTP_HOST" => ENV["NEWS_STAFF_URL"] }
 

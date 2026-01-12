@@ -22,6 +22,37 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal "NEYO", pref.status_id
     end
 
+    test "#{domain[:name]} domain redirects to add ri param when missing" do
+      host!(domain[:host])
+
+      # Visit URL without ri parameter
+      get public_send("apex_#{domain[:name]}_preference_url")
+
+      # Should redirect to include ri=jp
+      assert_redirected_to public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
+    end
+
+    test "#{domain[:name]} domain does not redirect when ri param present" do
+      host!(domain[:host])
+
+      # Visit URL with ri parameter
+      get public_send("apex_#{domain[:name]}_preference_url", ri: "us")
+
+      # Should not redirect
+      assert_response :success
+    end
+
+    test "#{domain[:name]} domain respects lx param for locale" do
+      host!(domain[:host])
+
+      # Visit URL with lx=en and ri=us
+      get public_send("edit_apex_#{domain[:name]}_preference_cookie_url", lx: "en", ri: "us")
+
+      # Should not redirect and locale should be set to English
+      assert_response :success
+      assert_equal :en, I18n.locale
+    end
+
     test "#{domain[:name]} domain updates region" do
       host!(domain[:host])
       pref, = assert_preference_created(domain)
@@ -110,6 +141,42 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_not_equal english_title, japanese_title
     end
 
+    test "#{domain[:name]} domain applies timezone setting to Time.zone" do
+      host!(domain[:host])
+      assert_preference_created(domain)
+
+      # Update timezone to UTC
+      state = default_state.merge(tz: "etc/utc")
+      patch public_send("apex_#{domain[:name]}_preference_region_timezone_url", state),
+            params: { preference_timezone: { option_id: "Etc/UTC" } }
+
+      # Visit a page to verify DB preference is applied to Time.zone
+      get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", default_state)
+      assert_response :success
+      assert_equal "Etc/UTC", Time.zone.name
+
+      # Update timezone to Asia/Tokyo
+      state = default_state.merge(tz: "asia/tokyo")
+      patch public_send("apex_#{domain[:name]}_preference_region_timezone_url", state),
+            params: { preference_timezone: { option_id: "Asia/Tokyo" } }
+
+      # Visit a page to verify DB preference is applied to Time.zone
+      get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", default_state)
+      assert_response :success
+      assert_equal "Asia/Tokyo", Time.zone.name
+    end
+
+    test "#{domain[:name]} domain language select uses localized options" do
+      host!(domain[:host])
+      get public_send("edit_apex_#{domain[:name]}_preference_region_language_url", default_state)
+
+      # We expect the native names for Japanese and English to appear in both locales
+      assert_select "select[name='preference_language[option_id]']" do
+        assert_select "option[value='JA']", text: "日本語"
+        assert_select "option[value='EN']", text: "English"
+      end
+    end
+
     test "#{domain[:name]} domain updates theme" do
       host!(domain[:host])
       pref, = assert_preference_created(domain)
@@ -154,7 +221,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       get public_send("edit_apex_#{domain[:name]}_preference_reset_url", default_state)
       assert_response :success
 
-      delete public_send("apex_#{domain[:name]}_preference_reset_url")
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp")
       assert_redirected_to public_send(
         "edit_apex_#{domain[:name]}_preference_reset_url",
         default_state,
@@ -172,9 +239,9 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
       pref, token, cookie_name = assert_preference_created(domain)
 
-      delete public_send("apex_#{domain[:name]}_preference_reset_url")
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp")
 
-      get public_send("apex_#{domain[:name]}_preference_url")
+      get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
       assert_response :success
 
       new_token = cookies[cookie_name]
@@ -196,6 +263,24 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", state)
       assert_equal I18n.t("errors.messages.preference_operation_failed"), flash[:alert]
     end
+
+    test "#{domain[:name]} domain timezone edit links to region edit" do
+      host!(domain[:host])
+
+      get public_send("edit_apex_#{domain[:name]}_preference_region_timezone_url", default_state)
+      assert_response :success
+
+      assert_select "a[href^=?]", public_send("edit_apex_#{domain[:name]}_preference_region_path")
+    end
+
+    test "#{domain[:name]} domain language edit links to region edit" do
+      host!(domain[:host])
+
+      get public_send("edit_apex_#{domain[:name]}_preference_region_language_url", default_state)
+      assert_response :success
+
+      assert_select "a[href^=?]", public_send("edit_apex_#{domain[:name]}_preference_region_path")
+    end
   end
 
   private
@@ -205,7 +290,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
   end
 
   def assert_preference_created(domain)
-    get public_send("apex_#{domain[:name]}_preference_url")
+    get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
     assert_response :success
 
     cookie_name = "Jit-Preference"

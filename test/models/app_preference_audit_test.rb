@@ -82,4 +82,9 @@ class AppPreferenceAuditTest < ActiveSupport::TestCase
     assert_not @audit.valid?
     assert_includes @audit.errors[:level_id], I18n.t("errors.messages.too_long", count: 255)
   end
+
+  test "app_preference helper method returns nil when subject_type is not AppPreference" do
+    @audit.subject_type = "SomeOtherType"
+    assert_nil @audit.app_preference
+  end
 end

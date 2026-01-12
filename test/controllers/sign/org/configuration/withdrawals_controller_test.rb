@@ -9,7 +9,8 @@ class Sign::Org::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   end
 
   test "should get show" do
-    get sign_org_configuration_withdrawal_url, headers: { "Host" => @host, "X-TEST-CURRENT-STAFF" => @staff.id }
+    get sign_org_configuration_withdrawal_url(ri: "jp"),
+        headers: { "Host" => @host, "X-TEST-CURRENT-STAFF" => @staff.id }
     assert_response :success
   end
 end

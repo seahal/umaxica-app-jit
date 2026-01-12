@@ -70,4 +70,23 @@ class AppDocumentAuditTest < ActiveSupport::TestCase
     assert_equal test_uuid, audit.subject_id
     assert_equal "AppDocument", audit.subject_type
   end
+  test "app_document helper method returns document when subject_type is AppDocument" do
+    AppDocumentAuditEvent.find_or_create_by!(id: "NEYO")
+    doc = AppDocument.create!(
+      status_id: "NEYO",
+      public_id: "test_doc_#{SecureRandom.hex(4)}",
+      permalink: "test_perm_#{SecureRandom.hex(4)}",
+      revision_key: "rev_#{SecureRandom.hex(4)}",
+      published_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+    audit = AppDocumentAudit.create!(
+      subject_id: doc.id,
+      subject_type: "AppDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+    )
+
+    assert_equal doc, audit.app_document
+  end
 end

@@ -8,18 +8,25 @@ class Sign::App::InsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new with authentication links" do
-    get new_sign_app_in_url, headers: { "Host" => @host }
+    get new_sign_app_in_url(ri: "jp"), headers: { "Host" => @host }
 
     assert_response :success
 
-    query = { lx: "ja", ri: "jp", tz: "jst", ct: "sy" }
-    assert_select "a[href=?]", new_sign_app_in_email_path(query),
+    query = {}
+    assert_select "a[href=?]", new_sign_app_in_email_path(query, ri: "jp"),
                   I18n.t("sign.app.authentication.new.links.email")
-    assert_select "a[href=?]", new_sign_app_in_passkey_path(query),
+    assert_select "a[href=?]", new_sign_app_in_passkey_path(query, ri: "jp"),
                   I18n.t("sign.app.authentication.new.links.passkey")
-    assert_select "a[href=?]", new_sign_app_in_secret_path(query),
+    assert_select "a[href=?]", new_sign_app_in_secret_path(query, ri: "jp"),
                   I18n.t("sign.app.authentication.new.links.secret")
-    assert_select "a[href=?]", sign_app_root_path(query),
+    assert_select "a[href=?]", sign_app_root_path(query, ri: "jp"),
                   I18n.t("sign.app.authentication.new.back_link")
+  end
+
+  test "should render in english when lx=en" do
+    get new_sign_app_in_url(lx: "en", ri: "jp"), headers: { "Host" => @host }
+    assert_response :success
+    assert_select "html[lang=en]"
+    assert_select "a", text: "Sign Up"
   end
 end

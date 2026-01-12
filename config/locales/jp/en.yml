@@ -172,10 +172,11 @@ en:
             description: "Manage time-based one-time passwords linked to your account."
             new_link: "Create a new TOTP credential"
       preferences:
+        title: "Preference settings"
         footer:
           home: "home"
           preference: "Preferences"
-          configuration: "Configuration"
+          configuration: "Settings"
       root:
         title: "Welcome to Sign"
         description: "Choose an action to get started"
@@ -187,6 +188,9 @@ en:
             success: "Account created and signed in with %{provider}."
             failure: "Authentication failed. Please try again."
     org:
+      preferences:
+        footer:
+          preference: "Preferences"
       layout:
         nav:
           sign_up: "Sign Up"
@@ -441,7 +445,7 @@ en:
       preferences:
         footer:
           preference: "Preferences"
-          configuration: "Configuration"
+          configuration: "Settings"
           home: "home"
       configuration:
         show:
@@ -1162,12 +1166,18 @@ en:
       contacts:
         new:
           page_title: "Contact Us"
+          badge: "Contact"
           heading: "Send us a message"
           description: "Please fill out the form below to contact us."
           email_address: "Email Address"
           telephone_number: "Telephone Number"
           contact_category_title: "Inquiry Category"
+          category_id: "Inquiry Category"
           confirm_policy: "I agree to the privacy policy"
+          confirm_policy_note: "You must agree to the privacy policy before submitting."
+          error_heading:
+            one: "1 error prohibited this contact from being saved."
+            other: "%{count} errors prohibited this contact from being saved."
           submit: "Continue"
           cancel: "Cancel"
         create:
@@ -1210,6 +1220,38 @@ en:
             invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
             max_attempts: "Maximum verification attempts exceeded. Please request a new code."
             expired: "Verification code has expired. Please request a new code."
+    org:
+      contacts:
+        new:
+          page_title: "Contact Us"
+          badge: "Contact"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          category_id: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          confirm_policy_note: "You must agree to the privacy policy before submitting."
+          error_heading:
+            one: "1 error prohibited this contact from being saved."
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: "Continue"
+          cancel: "Cancel"
+    app:
+      contacts:
+        new:
+          page_title: "Contact Us"
+          badge: "Contact"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          category_id: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          confirm_policy_note: "You must agree to the privacy policy before submitting."
+          error_heading:
+            one: "1 error prohibited this contact from being saved."
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: "Continue"
+          cancel: "Cancel"
         telephones:
           new:
             page_title: "Verify Phone Number"
@@ -1268,21 +1310,13 @@ en:
           preference: "Preferences"
   apex:
     app:
-      preference:
-        resets:
-          title: "設定のリセット"
-          description: "reset your preference setting."
-          confirm: "RESET"
-          button: "RESET"
-          back: "Back???"
-    com:
-      preference:
-        language:
-          edit:
-            language_label: "Language Select"
-            h1: "Language Select"
-  apex:
-    app:
+      configurations:
+        title: "Configuration"
+        description: "Review and adjust your service settings."
+        i18n_settings: "Locale settings"
+        i18n_settings_description: "Update the default language and region for this browser."
+        email_settings: "Email settings"
+        email_settings_description: "Manage notification senders and descriptions."
       preference:
         resets:
           title: "Reset Preferences"
@@ -1302,13 +1336,25 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+          privacy: "Privacy"
         themes:
           updated: "Theme updated to %{theme}"
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
     com:
+      configurations:
+        title: "Configuration"
+        description: "Review and adjust your service settings."
+        i18n_settings: "Locale settings"
+        i18n_settings_description: "Update the default language and region for this browser."
+        email_settings: "Email settings"
+        email_settings_description: "Manage notification senders and descriptions."
       preference:
+        language:
+          edit:
+            language_label: "Language Select"
+            h1: "Language Select"
         resets:
           title: "Reset Preferences"
           description: "Remove saved preference data for this browser."
@@ -1327,12 +1373,20 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+          privacy: "Privacy"
         themes:
           updated: "Corporate theme updated to %{theme}"
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
     org:
+      configurations:
+        title: "Configuration"
+        description: "Review and adjust your organization settings."
+        i18n_settings: "Locale settings"
+        i18n_settings_description: "Update the default language and region for this organization."
+        email_settings: "Email settings"
+        email_settings_description: "Manage notification senders and descriptions."
       preference:
         resets:
           title: "Reset Preferences"
@@ -1352,6 +1406,7 @@ en:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+          privacy: "Privacy"
         themes:
           updated: "Theme updated to %{theme}"
           invalid: "Invalid theme selected"
@@ -1494,16 +1549,7 @@ en:
   shared:
     links:
       apex_preference: "Apex preferences"
-  sign:
-    app:
-      preferences:
-        title: "Preference settings"
-        footer:
-          preference: "Preferences"
-    org:
-      preferences:
-        footer:
-          preference: "Preferences"
+
   docs:
     com:
       preferences:

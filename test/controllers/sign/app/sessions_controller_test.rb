@@ -11,7 +11,7 @@ module Sign
             post "/sign/app/sessions", to: "sign/app/sessions#create"
           end
 
-          post "/sign/app/sessions"
+          post "/sign/app/sessions", params: { ri: "jp" }
 
           assert_response :success
           assert_equal I18n.t("common.ok"), response.body

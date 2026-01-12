@@ -4,21 +4,21 @@ require "test_helper"
 
 class Sign::App::HealthsControllerTest < ActionDispatch::IntegrationTest
   test "GET /health returns OK response" do
-    get sign_app_health_url
+    get sign_app_health_url(ri: "jp")
 
     assert_response :success
     assert_includes response.body, "OK"
   end
 
   test "GET /health returns OK html response" do
-    get sign_app_health_url(format: :html)
+    get sign_app_health_url(format: :html, ri: "jp")
 
     assert_response :success
     assert_includes response.body, "OK"
   end
 
   test "GET /health returns OK json response" do
-    get sign_app_health_url(format: :json)
+    get sign_app_health_url(format: :json, ri: "jp")
 
     assert_response :success
     assert_includes response.body, "OK"

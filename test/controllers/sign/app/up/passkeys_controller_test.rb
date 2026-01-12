@@ -30,14 +30,14 @@ module Sign::App::Up
     end
 
     test "should get new" do
-      get new_sign_app_up_passkey_url
+      get new_sign_app_up_passkey_url(ri: "jp")
 
       assert_response :success
     end
 
     test "should create telephone and redirect to edit" do
       assert_difference("UserTelephone.count") do
-        post sign_app_up_passkeys_url, params: {
+        post sign_app_up_passkeys_url(ri: "jp"), params: {
           user_telephone: {
             number: "+1234567890",
             confirm_policy: "1",
@@ -54,7 +54,7 @@ module Sign::App::Up
 
     test "should update telephone with valid otp" do
       # 1. Create telephone via request to set up session
-      post sign_app_up_passkeys_url, params: {
+      post sign_app_up_passkeys_url(ri: "jp"), params: {
         user_telephone: {
           number: "+1234567890",
           confirm_policy: "1",
@@ -69,7 +69,7 @@ module Sign::App::Up
       code = hotp.at(otp_data[:otp_counter])
 
       # 3. Submit OTP
-      patch sign_app_up_passkey_url(telephone), params: {
+      patch sign_app_up_passkey_url(telephone, ri: "jp"), params: {
         user_telephone: { pass_code: code },
       }
 

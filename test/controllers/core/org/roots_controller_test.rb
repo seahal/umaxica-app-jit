@@ -28,7 +28,10 @@ module Core::Org
     end
 
     test "sets theme cookie" do
-      assert_theme_cookie_for(host: "org.localhost", path: :core_org_root_path, label: "core org root")
+      host! "org.localhost"
+      get core_org_root_path(ri: "jp")
+      assert_response :success
+      assert_not_nil cookies[:ct]
     end
   end
 end

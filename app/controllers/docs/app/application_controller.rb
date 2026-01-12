@@ -3,7 +3,6 @@
 module Docs
   module App
     class ApplicationController < ActionController::Base
-      include ::Preference::Main
       include ::Preference::Regional
       include ::RateLimit
 

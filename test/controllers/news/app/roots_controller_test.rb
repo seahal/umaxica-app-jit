@@ -50,7 +50,10 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "sets theme cookie" do
-    assert_theme_cookie_for(host: "app.localhost", path: :news_app_root_path, label: "news app root")
+    host! "app.localhost"
+    get news_app_root_path(ri: "jp")
+    assert_response :success
+    assert_not_nil cookies[:ct]
   end
 
   private

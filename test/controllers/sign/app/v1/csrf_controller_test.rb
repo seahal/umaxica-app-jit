@@ -7,7 +7,7 @@ class Sign::App::V1::CsrfControllerTest < ActionDispatch::IntegrationTest
   include CommitteeHelper
 
   test "returns csrf token payload with no-store" do
-    get sign_app_v1_csrf_url
+    get sign_app_v1_csrf_url(ri: "jp")
 
     assert_response :success
     assert_not response.parsed_body["csrf_token"].to_s.empty?
@@ -18,7 +18,7 @@ class Sign::App::V1::CsrfControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "csrf response conforms to OpenAPI schema" do
-    get sign_app_v1_csrf_url
+    get sign_app_v1_csrf_url(ri: "jp")
 
     assert_response :success
     assert_response_schema_confirm

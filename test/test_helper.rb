@@ -6,6 +6,7 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
   require "simplecov"
 
   SimpleCov.start "rails" do
+    enable_coverage :branch
     filters.clear
     add_filter ".bundle/"
     add_filter "vendor/"

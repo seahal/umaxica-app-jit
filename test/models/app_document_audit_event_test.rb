@@ -21,4 +21,17 @@ class AppDocumentAuditEventTest < ActiveSupport::TestCase
     assert_predicate record, :invalid?
     assert_predicate record.errors[:id], :any?
   end
+
+  test "upcases id before validation" do
+    record = AppDocumentAuditEvent.new(id: "lower_case")
+    record.valid?
+    assert_equal "LOWER_CASE", record.id
+  end
+
+  test "handles nil id gracefully" do
+    record = AppDocumentAuditEvent.new(id: nil)
+    record.valid?
+    assert_nil record.id
+    assert_predicate record.errors[:id], :any?
+  end
 end

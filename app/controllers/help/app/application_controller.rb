@@ -4,7 +4,6 @@ module Help
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
-      include ::Preference::Main
       include ::Preference::Regional
       include Pundit::Authorization
 
@@ -12,14 +11,7 @@ module Help
 
       allow_browser versions: :modern
 
-      before_action :set_locale
-      before_action :set_timezone
-
       rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
-      def get_language
-        "ja"
-      end
 
       private
 

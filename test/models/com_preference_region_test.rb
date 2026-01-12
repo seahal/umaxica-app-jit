@@ -24,9 +24,11 @@ class ComPreferenceRegionTest < ActiveSupport::TestCase
   end
 
   test "belongs to preference" do
-    region = ComPreferenceRegion.new
-    assert_not region.valid?
-    assert_includes region.errors[:preference], "を入力してください"
+    I18n.with_locale(:ja) do
+      region = ComPreferenceRegion.new
+      assert_not region.valid?
+      assert_includes region.errors[:preference], "を入力してください"
+    end
   end
 
   test "can be created with preference and option" do

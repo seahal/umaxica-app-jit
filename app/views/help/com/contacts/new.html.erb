@@ -1,13 +1,13 @@
 <div class="mx-auto max-w-2xl px-6 py-10">
   <div class="mb-6">
     <span class="inline-flex items-center rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">
-      Contact
+      <%= t('help.com.contacts.new.badge') %>
     </span>
     <h1 class="mt-3 text-2xl font-semibold tracking-tight text-[hsl(var(--foreground))]">
       <%= title t('help.com.contacts.new.page_title') %>
     </h1>
     <p class="mt-2 text-sm text-[hsl(var(--muted-foreground))]">
-      必要事項をご入力のうえ送信してください。担当者からご連絡します。
+      <%= t('help.com.contacts.new.description') %>
     </p>
   </div>
 
@@ -19,7 +19,7 @@
     <% if @contact&.errors&.any? %>
       <div id="error_explanation" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         <h2 class="font-semibold">
-          <%= pluralize(@contact.errors.count, "error") %> prohibited this contact from being saved:
+          <%= t('help.com.contacts.new.error_heading', count: @contact.errors.count) %>
         </h2>
 
         <ul class="mt-2 list-disc space-y-1 pl-5">
@@ -39,7 +39,7 @@
           <%= form.label :confirm_policy, t('help.com.contacts.new.confirm_policy'),
                          class: "text-sm font-semibold text-[hsl(var(--foreground))]" %>
           <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-            ポリシーに同意いただけない場合は送信できません。
+            <%= t('help.com.contacts.new.confirm_policy_note') %>
           </p>
         </div>
       </div>
@@ -72,16 +72,16 @@
       </div>
     </div>
 
+    <div class="mt-6">
+      <%= render "concern/cloudflare_turnstile" %>
+    </div>
+
     <div class="mt-6 flex flex-wrap items-center gap-3">
       <%= link_to t('help.com.contacts.new.cancel'),
                   help_com_root_path,
                   class: "text-sm font-semibold text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]" %>
       <%= form.submit t('help.com.contacts.new.submit', default: t('helpers.submit.create')),
                       class: "rounded-full bg-[hsl(var(--primary))] px-6 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))] shadow-[0_10px_30px_-18px_hsl(var(--primary))] transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[hsl(var(--primary))]" %>
-    </div>
-
-    <div class="mt-6">
-      <%= render "concern/cloudflare_turnstile" %>
     </div>
   <% end %>
 </div>

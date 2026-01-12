@@ -8,7 +8,7 @@ class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new" do
-    get new_sign_org_up_url, headers: { "Host" => @host }
+    get new_sign_org_up_url(ri: "jp"), headers: { "Host" => @host }
     assert_response :success
     if ENV["DEBUG"]
       puts "BODY: #{response.body}"
@@ -18,7 +18,7 @@ class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "renders recruit contact and home links" do
-    get new_sign_org_up_url, headers: { "Host" => @host }
+    get new_sign_org_up_url(ri: "jp"), headers: { "Host" => @host }
 
     help_host = ENV["HELP_STAFF_URL"].presence || "help.org.localhost"
     # Match the URL while allowing any order of query parameters

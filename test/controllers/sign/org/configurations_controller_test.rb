@@ -4,7 +4,7 @@ require "test_helper"
 
 class Sign::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
-    get sign_org_configuration_url
+    get sign_org_configuration_url(ri: "jp")
 
     assert_response :success
     assert_select "a[href^=?]", sign_org_configuration_sessions_path, count: 1

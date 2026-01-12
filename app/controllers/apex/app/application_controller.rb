@@ -5,7 +5,6 @@ module Apex
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
       include ::RateLimit
-      include ::Preference::Main
       include ::Preference::Global
       include ::Sign::ErrorResponses
       include ::Authentication::User

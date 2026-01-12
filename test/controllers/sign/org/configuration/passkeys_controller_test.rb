@@ -11,7 +11,7 @@ class Sign::Org::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "should get index" do
-    get sign_org_configuration_passkeys_url, headers: @headers
+    get sign_org_configuration_passkeys_url(ri: "jp"), headers: @headers
 
     assert_response :success
     assert_equal I18n.t("errors.not_implemented"), response.body
@@ -23,14 +23,14 @@ class Sign::Org::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   # end
 
   test "should get new" do
-    get new_sign_org_configuration_passkey_url, headers: @headers
+    get new_sign_org_configuration_passkey_url(ri: "jp"), headers: @headers
 
     assert_response :success
     assert_equal I18n.t("errors.not_implemented"), response.body
   end
 
   test "redirects unauthenticated staff to login" do
-    get sign_org_configuration_passkeys_url, headers: @host_headers
+    get sign_org_configuration_passkeys_url(ri: "jp"), headers: @host_headers
 
     assert_response :redirect
     assert_match new_sign_org_in_path, response.headers["Location"]

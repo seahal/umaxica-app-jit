@@ -34,12 +34,12 @@
             <dd class="font-medium text-[hsl(var(--foreground))]"><%= I18n.t "hello" %></dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt>Tokyo time</dt>
-            <dd class="font-medium text-[hsl(var(--foreground))]"><%= Time.current.in_time_zone("Tokyo") %></dd>
-          </div>
-          <div class="flex items-center justify-between">
             <dt>Local time</dt>
             <dd class="font-medium text-[hsl(var(--foreground))]"><%= to_localetime Time.current, "jst" %></dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt>UTC time</dt>
+            <dd class="font-medium text-[hsl(var(--foreground))]"><%= Time.current.in_time_zone("UTC") %></dd>
           </div>
         </dl>
       </div>

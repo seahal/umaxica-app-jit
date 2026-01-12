@@ -6,9 +6,15 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
   include RootThemeCookieHelper
 
   test "should get show" do
-    get help_app_root_url
+    get help_app_root_url()
 
     assert_response :success
+  end
+
+  test "redirects to canonical path by stripping ri=jp" do
+    get help_app_root_url(ri: "jp")
+    assert_redirected_to help_app_root_url
+    assert_nil request.path_parameters[:ri]
   end
 
   test "sets lang attribute on html element" do
@@ -20,7 +26,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "renders contact link" do
-    get help_app_root_url
+    get help_app_root_url()
 
     assert_response :success
     assert_select "a[href^=?]", new_help_app_contact_path
@@ -28,7 +34,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
-    get help_app_root_url
+    get help_app_root_url()
 
     assert_layout_contract
     assert_select "head", count: 1 do
@@ -44,13 +50,16 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:enable Minitest/MultipleAssertions
 
   test "generates sha3-384 token digest on root" do
-    get help_app_root_url
+    get help_app_root_url()
     assert_response :success
     assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
   end
 
   test "sets theme cookie" do
-    assert_theme_cookie_for(host: "app.localhost", path: :help_app_root_path, label: "help app root")
+    host! "app.localhost"
+    get help_app_root_path
+    assert_redirected_to help_app_root_url(ri: "jp", host: "app.localhost")
+    assert_not_nil cookies[:ct]
   end
 
   private

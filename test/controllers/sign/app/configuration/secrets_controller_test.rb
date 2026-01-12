@@ -19,31 +19,31 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "should get index" do
-    get sign_app_configuration_secrets_url, headers: authenticated_headers
+    get sign_app_configuration_secrets_url(ri: "jp"), headers: authenticated_headers
 
     assert_response :success
   end
 
   test "should get show" do
-    get sign_app_configuration_secret_url(@user_secret), headers: authenticated_headers
+    get sign_app_configuration_secret_url(@user_secret, ri: "jp"), headers: authenticated_headers
 
     assert_response :success
   end
 
   test "should get new" do
-    get new_sign_app_configuration_secret_url, headers: authenticated_headers
+    get new_sign_app_configuration_secret_url(ri: "jp"), headers: authenticated_headers
 
     assert_response :success
   end
 
   test "should get edit" do
-    get edit_sign_app_configuration_secret_url(@user_secret), headers: authenticated_headers
+    get edit_sign_app_configuration_secret_url(@user_secret, ri: "jp"), headers: authenticated_headers
 
     assert_response :success
   end
 
   test "should get destroy" do
-    delete sign_app_configuration_secret_url(@user_secret), headers: authenticated_headers
+    delete sign_app_configuration_secret_url(@user_secret, ri: "jp"), headers: authenticated_headers
 
     assert_response :unprocessable_content
   end

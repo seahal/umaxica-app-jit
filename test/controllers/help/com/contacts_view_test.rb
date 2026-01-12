@@ -10,7 +10,7 @@ module Help::Com
     end
 
     test "should get new" do
-      get new_help_com_contact_url
+      get new_help_com_contact_url()
 
       assert_response :success
       # form_with doesn't set action attribute explicitly, so just check for form existence
@@ -23,7 +23,7 @@ module Help::Com
     #   assert_difference(
     #     [ "ComContact.count", "ComContactEmail.count", "ComContactTelephone.count" ], 1
     #   ) do
-    #     post help_com_contacts_url, params: {
+    #     post help_com_contacts_url(), params: {
     #       com_contact: {
     #         category_id: @category.id,
     #         confirm_policy: "1",
@@ -55,7 +55,7 @@ module Help::Com
     test "should require valid category" do
       # Test with invalid/nil category
       assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
-        post help_com_contacts_url, params: {
+        post help_com_contacts_url(), params: {
           com_contact: {
             category_id: "", # Invalid: empty category
             confirm_policy: "1",
@@ -72,7 +72,7 @@ module Help::Com
 
     test "should render new when validation fails" do
       assert_no_difference(["ComContact.count", "ComContactEmail.count", "ComContactTelephone.count"]) do
-        post help_com_contacts_url, params: {
+        post help_com_contacts_url(), params: {
           com_contact: {
             category_id: @category.id,
             confirm_policy: "0", # Invalid: not accepted
@@ -88,7 +88,7 @@ module Help::Com
     end
 
     test "should preserve input values on validation error" do
-      post help_com_contacts_url, params: {
+      post help_com_contacts_url(), params: {
         com_contact: {
           category_id: @category.id,
           confirm_policy: "0",
@@ -105,7 +105,7 @@ module Help::Com
     end
 
     test "should preserve unchecked confirm_policy on validation error" do
-      post help_com_contacts_url, params: {
+      post help_com_contacts_url(), params: {
         com_contact: {
           category_id: @category.id,
           confirm_policy: "0", # Unchecked
@@ -121,7 +121,7 @@ module Help::Com
     end
 
     test "should preserve checked confirm_policy on validation error" do
-      post help_com_contacts_url, params: {
+      post help_com_contacts_url(), params: {
         com_contact: {
           category_id: "", # Invalid: empty category to trigger validation error
           confirm_policy: "1", # Checked

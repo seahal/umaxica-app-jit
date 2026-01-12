@@ -19,7 +19,7 @@ module Help
       end
 
       test "should get new" do
-        get new_help_com_contact_url, headers: { "Host" => @host }
+        get new_help_com_contact_url(), headers: { "Host" => @host }
 
         assert_response :success
       end
@@ -86,7 +86,7 @@ module Help
         CloudflareTurnstile.test_validation_response = { "success" => false }
 
         assert_no_difference("ComContact.count") do
-          post help_com_contacts_url, params: {
+          post help_com_contacts_url(), params: {
             com_contact: {
               category_id: "SECURITY_ISSUE",
               email_address: "test@example.com",
@@ -101,7 +101,7 @@ module Help
 
       test "should not create contact with invalid params" do
         assert_no_difference("ComContact.count") do
-          post help_com_contacts_url, params: {
+          post help_com_contacts_url(), params: {
             com_contact: {
               category_id: "",
               email_address: "test@example.com",
@@ -183,7 +183,7 @@ module Help
       private
 
       def post_valid_contact
-        post help_com_contacts_url, params: {
+        post help_com_contacts_url(), params: {
           com_contact: {
             category_id: "SECURITY_ISSUE",
             email_address: "test@example.com",
