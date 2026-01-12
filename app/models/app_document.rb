@@ -37,6 +37,7 @@ class AppDocument < DocumentRecord
   validates :status_id, length: { maximum: 255 }
 
   has_many :app_document_versions, dependent: :delete_all, inverse_of: :app_document
+  has_many :app_document_revisions, dependent: :delete_all, inverse_of: :app_document
   has_many :app_document_audits,
            #           -> { where(subject_type: "AppDocument") },
            class_name: "AppDocumentAudit",

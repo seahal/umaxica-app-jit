@@ -2,31 +2,34 @@
 #
 # Table name: com_preference_cookies
 #
-#  id            :uuid             not null, primary key
-#  created_at    :datetime         not null
-#  functional    :boolean          default(FALSE), not null
-#  performant    :boolean          default(FALSE), not null
-#  preference_id :uuid             not null
-#  targetable    :boolean          default(FALSE), not null
-#  updated_at    :datetime         not null
+#  id                 :uuid             not null, primary key
+#  preference_id      :uuid             not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  targetable         :boolean          default(FALSE), not null
+#  performant         :boolean          default(FALSE), not null
+#  functional         :boolean          default(FALSE), not null
+#  consented          :boolean          default(FALSE), not null
+#  consented_at       :datetime
+#  consent_version_id :uuid
 #
 # Indexes
 #
-#  index_com_preference_cookies_on_preference_id  (preference_id) UNIQUE
+#  index_com_preference_cookies_on_consent_version_id  (consent_version_id)
+#  index_com_preference_cookies_on_preference_id       (preference_id) UNIQUE
 #
-
 
 _fixture:
   model_class: ComPreferenceCookie
 
 one:
-  preference_id: 018eb260-e1c0-7000-8000-000000000001
+  preference_id: 6b24d11d-27f2-4210-96ff-5b6fdb8a663c
   functional: false
   performant: false
   targetable: false
 
 two:
-  preference_id: 018eb260-e1c0-7000-8000-000000000002
+  preference_id: c48be6b9-c06c-49a0-8fa5-d8bb2b4069dc
   functional: false
   performant: false
   targetable: false

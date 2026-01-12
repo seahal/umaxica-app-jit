@@ -29,3 +29,11 @@ one:
   permalink: "one-app-document"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
+
+two:
+  status_id: "NEYO"
+  public_id: "two_app_document_0002"
+  revision_key: "rev_app_document_two"
+  permalink: "two-app-document"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

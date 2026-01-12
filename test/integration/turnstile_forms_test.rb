@@ -12,8 +12,8 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
       { name: "Sign::App authentication email", env_key: "SIGN_SERVICE_URL", path: "/in/email/new" },
       # { name: "Sign::Org registration emails", env_key: "SIGN_STAFF_URL", path: "/registration/emails/new" },
       # { name: "Sign::Org registration passkeys", env_key: "SIGN_STAFF_URL", path: "/registration/passkeys/new" },
-      { name: "Help::App contacts", env_key: "HELP_SERVICE_URL", path: "/contacts/new" },
-      { name: "Help::Com contacts", env_key: "HELP_CORPORATE_URL", path: "/contacts/new" },
+      { name: "Core::App contacts", env_key: "CORE_SERVICE_URL", path: "/contacts/new" },
+      { name: "Core::Com contacts", env_key: "CORE_CORPORATE_URL", path: "/contacts/new" },
     ]
   end
 

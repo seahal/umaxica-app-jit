@@ -39,45 +39,80 @@ module Redirect
 
   private
 
-  def generate_redirect_url(url)
-    return nil if url.blank?
-    return nil if url.match?(/[[:cntrl:]]/)
+  def safe_internal_path(target)
+    return nil if target.blank?
+    return nil if target.match?(/[[:cntrl:]]/)
 
     begin
-      parsed_uri = URI.parse(url)
+      parsed_uri = URI.parse(target)
     rescue URI::InvalidURIError
       return nil
     end
 
+    return nil if parsed_uri.scheme.present? || parsed_uri.host.present?
     return nil if parsed_uri.user.present? || parsed_uri.password.present?
 
-    # Only allow specific hosts and schemes
-    if allowed_host?(parsed_uri.host) && %w(http https).include?(parsed_uri.scheme)
+    path = parsed_uri.path.presence || "/"
+    return nil unless path.start_with?("/")
+
+    query = parsed_uri.query
+    query.present? ? "#{path}?#{query}" : path
+  end
+
+  def safe_external_url?(url)
+    return false if url.blank?
+    return false if url.match?(/[[:cntrl:]]/)
+
+    begin
+      parsed_uri = URI.parse(url)
+    rescue URI::InvalidURIError
+      return false
+    end
+
+    return false unless ["http", "https"].include?(parsed_uri.scheme)
+    return false if parsed_uri.user.present? || parsed_uri.password.present?
+
+    allowed_host?(parsed_uri.host)
+  end
+
+  def safe_redirect_to(target, fallback: "/", **)
+    safe_path = safe_internal_path(target)
+
+    if safe_path
+      redirect_to(safe_path, allow_other_host: false, **)
+    elsif safe_external_url?(target)
+      redirect_to(target, allow_other_host: true, **)
+    else
+      redirect_to(fallback, allow_other_host: false, **)
+    end
+  end
+
+  def safe_redirect_back_or_to(fallback, **)
+    safe_path = safe_internal_path(request.referer)
+    redirect_to(safe_path || fallback, allow_other_host: false, **)
+  end
+
+  def generate_redirect_url(url)
+    safe_path = safe_internal_path(url)
+
+    if safe_path
+      Base64.urlsafe_encode64(safe_path)
+    elsif safe_external_url?(url)
       Base64.urlsafe_encode64(url)
     else
       nil
     end
   end
 
-  def jump_to_generated_url(encoded_url)
-    return redirect_to "/" if encoded_url.blank?
+  def jump_to_generated_url(encoded_url, fallback: "/")
+    return redirect_to fallback if encoded_url.blank?
 
     begin
       decoded_url = Base64.urlsafe_decode64(encoded_url)
-      return head :not_found if decoded_url.match?(/[[:cntrl:]]/)
-
-      parsed_uri = URI.parse(decoded_url)
-      return head :not_found if parsed_uri.user.present? || parsed_uri.password.present?
-
-      # Double-check the URL is still safe after decoding
-      if allowed_host?(parsed_uri.host) && %w(http https).include?(parsed_uri.scheme)
-        redirect_to parsed_uri.to_s, allow_other_host: true
-      else
-        head :not_found
-      end
+      safe_redirect_to(decoded_url, fallback: fallback)
     rescue ArgumentError, URI::InvalidURIError => e
       Rails.event.notify("redirect.invalid_url", error_message: e.message)
-      head :not_found
+      redirect_to fallback
     end
   end
 

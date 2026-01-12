@@ -13,13 +13,6 @@ Rails.application.routes.draw do
         end
         # preferences
         resource :preference, only: [:show]
-        # contact page
-        resources :contacts, only: %i(new create show edit update) do
-          scope module: :contact do
-            resource :email, only: [:new, :create]
-            resource :telephone, only: [:new, :create]
-          end
-        end
       end
     end
 
@@ -34,13 +27,6 @@ Rails.application.routes.draw do
         namespace :v1 do
           resource :health, only: :show
         end
-        # contact page
-        resources :contacts, only: %i(new create edit create show) do
-          scope module: :contact do
-            resource :email, only: [:new, :create]
-            resource :telephone, only: [:new, :create]
-          end
-        end
       end
     end
 
@@ -54,13 +40,6 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
-        end
-        # contact page
-        resources :contacts, only: %i(new create edit update show) do
-          scope module: :contact do
-            resource :email, only: [:new, :create]
-            resource :telephone, only: [:new, :create]
-          end
         end
       end
     end

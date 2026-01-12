@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_02_100019) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_12_180517) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,6 +29,26 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100019) do
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_app_timeline_category_masters_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_app_timeline_category_masters_on_parent_id"
+  end
+
+  create_table "app_timeline_revisions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "app_timeline_id", null: false
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.bigint "edited_by_id"
+    t.string "edited_by_type"
+    t.datetime "expires_at", null: false
+    t.string "permalink", limit: 200, null: false
+    t.string "public_id", limit: 255, default: "", null: false
+    t.datetime "published_at", null: false
+    t.string "redirect_url"
+    t.string "response_mode", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["app_timeline_id", "created_at"], name: "index_app_timeline_revisions_on_app_timeline_id_and_created_at"
+    t.index ["app_timeline_id"], name: "index_app_timeline_revisions_on_app_timeline_id"
+    t.index ["public_id"], name: "index_app_timeline_revisions_on_public_id", unique: true
   end
 
   create_table "app_timeline_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -106,6 +126,26 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100019) do
     t.index ["parent_id"], name: "index_com_timeline_category_masters_on_parent_id"
   end
 
+  create_table "com_timeline_revisions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.text "body"
+    t.uuid "com_timeline_id", null: false
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.bigint "edited_by_id"
+    t.string "edited_by_type"
+    t.datetime "expires_at", null: false
+    t.string "permalink", limit: 200, null: false
+    t.string "public_id", limit: 255, default: "", null: false
+    t.datetime "published_at", null: false
+    t.string "redirect_url"
+    t.string "response_mode", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["com_timeline_id", "created_at"], name: "index_com_timeline_revisions_on_com_timeline_id_and_created_at"
+    t.index ["com_timeline_id"], name: "index_com_timeline_revisions_on_com_timeline_id"
+    t.index ["public_id"], name: "index_com_timeline_revisions_on_public_id", unique: true
+  end
+
   create_table "com_timeline_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -181,6 +221,26 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100019) do
     t.index ["parent_id"], name: "index_org_timeline_category_masters_on_parent_id"
   end
 
+  create_table "org_timeline_revisions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.bigint "edited_by_id"
+    t.string "edited_by_type"
+    t.datetime "expires_at", null: false
+    t.uuid "org_timeline_id", null: false
+    t.string "permalink", limit: 200, null: false
+    t.string "public_id", limit: 255, default: "", null: false
+    t.datetime "published_at", null: false
+    t.string "redirect_url"
+    t.string "response_mode", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["org_timeline_id", "created_at"], name: "index_org_timeline_revisions_on_org_timeline_id_and_created_at"
+    t.index ["org_timeline_id"], name: "index_org_timeline_revisions_on_org_timeline_id"
+    t.index ["public_id"], name: "index_org_timeline_revisions_on_public_id", unique: true
+  end
+
   create_table "org_timeline_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -242,6 +302,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100019) do
   add_foreign_key "app_timeline_categories", "app_timeline_category_masters"
   add_foreign_key "app_timeline_categories", "app_timelines", on_delete: :cascade
   add_foreign_key "app_timeline_category_masters", "app_timeline_category_masters", column: "parent_id"
+  add_foreign_key "app_timeline_revisions", "app_timelines"
   add_foreign_key "app_timeline_tag_masters", "app_timeline_tag_masters", column: "parent_id"
   add_foreign_key "app_timeline_tags", "app_timeline_tag_masters"
   add_foreign_key "app_timeline_tags", "app_timelines", on_delete: :cascade
@@ -250,6 +311,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100019) do
   add_foreign_key "com_timeline_categories", "com_timeline_category_masters"
   add_foreign_key "com_timeline_categories", "com_timelines", on_delete: :cascade
   add_foreign_key "com_timeline_category_masters", "com_timeline_category_masters", column: "parent_id"
+  add_foreign_key "com_timeline_revisions", "com_timelines"
   add_foreign_key "com_timeline_tag_masters", "com_timeline_tag_masters", column: "parent_id"
   add_foreign_key "com_timeline_tags", "com_timeline_tag_masters"
   add_foreign_key "com_timeline_tags", "com_timelines", on_delete: :cascade
@@ -258,6 +320,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100019) do
   add_foreign_key "org_timeline_categories", "org_timeline_category_masters"
   add_foreign_key "org_timeline_categories", "org_timelines", on_delete: :cascade
   add_foreign_key "org_timeline_category_masters", "org_timeline_category_masters", column: "parent_id"
+  add_foreign_key "org_timeline_revisions", "org_timelines"
   add_foreign_key "org_timeline_tag_masters", "org_timeline_tag_masters", column: "parent_id"
   add_foreign_key "org_timeline_tags", "org_timeline_tag_masters"
   add_foreign_key "org_timeline_tags", "org_timelines", on_delete: :cascade

@@ -12,8 +12,10 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "redirects to canonical path by stripping ri=jp" do
-    get help_app_root_url(ri: "jp")
-    assert_redirected_to help_app_root_url
+    get help_app_root_url(ri: "jp", lx: "en", foo: "bar")
+
+    assert_response :moved_permanently
+    assert_redirected_to help_app_root_url(lx: "en", foo: "bar")
     assert_nil request.path_parameters[:ri]
   end
 
@@ -29,7 +31,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_app_root_url()
 
     assert_response :success
-    assert_select "a[href^=?]", new_help_app_contact_path
+    assert_select "a[href*=?]", "/contacts/new"
   end
 
   # rubocop:disable Minitest/MultipleAssertions

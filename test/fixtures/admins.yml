@@ -21,7 +21,7 @@
 
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 admin_one:
-  staff_id: "11111111-1111-1111-1111-111111111111"
+  staff_id: "9bc9480f-36cf-4c3a-ac81-7ed2f68867e9"
   public_id: ADM001
   moniker: Admin One
   status_id: ACTIVE

@@ -33,6 +33,7 @@ class ComTimeline < NewsRecord
 
   validates :status_id, length: { maximum: 255 }
   has_many :com_timeline_versions, dependent: :delete_all, inverse_of: :com_timeline
+  has_many :com_timeline_revisions, dependent: :delete_all, inverse_of: :com_timeline
   has_many :com_timeline_audits,
            -> { where(subject_type: "ComTimeline") },
            class_name: "ComTimelineAudit",

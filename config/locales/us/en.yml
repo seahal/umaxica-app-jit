@@ -981,6 +981,7 @@ en:
             accept_functional_cookies: "Allow functional cookies"
             accept_performance_cookies: "Allow performance cookies"
             accept_targeting_cookies: "Allow targeting cookies"
+            accept_consent_cookies: "Allow consent cookies"
         theme:
           edit:
             title: "Choose Dark or Light Theme"
@@ -1013,6 +1014,9 @@ en:
         language_settings: "Language Settings"
         timezone_settings: "Timezone Settings"
         submitting: "Submitting..."
+        update_settings: "Update Settings"
+        back_to_settings: "Back to Preferences"
+        cookie_settings: "Cookie Settings"
         timezone:
           edit:
             heading: "Timezone Settings"
@@ -1023,12 +1027,24 @@ en:
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+            accept_consent_cookies: "Allow consent cookies"
     org:
       preferences:
         update_success: "Preferences updated successfully"
         language_settings: "Language Settings"
         timezone_settings: "Timezone Settings"
         submitting: "Submitting..."
+        update_settings: "Update Settings"
+        back_to_settings: "Back to Preferences"
+        cookie_settings: "Cookie Settings"
         timezone:
           edit:
             heading: "Timezone Settings"
@@ -1044,6 +1060,15 @@ en:
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+            accept_consent_cookies: "Allow consent cookies"
   sign:
     org:
       root:
@@ -1299,3 +1324,37 @@ en:
   shared:
     links:
       apex_preference: "Apex preferences"
+  docs:
+    posts:
+      index:
+        title: "Documents"
+        count: "%{count} documents"
+        search_placeholder: "Search..."
+        search_button: "Search"
+        search_found: "%{count} found"
+        search_all: "All"
+        empty: "No documents found"
+        select_title: "Select a document"
+        select_description: "Click on a document from the list to view its details"
+    versions:
+      index:
+        title: "Versions"
+        description: "Document versions list"
+      show:
+        title: "Version"
+        description: "Document version details"
+  news:
+    posts:
+      index:
+        title: "News"
+        count: "%{count} posts"
+        empty: "No posts found"
+        select_title: "Select a post"
+        select_description: "Click on a post from the list to view its details"
+    versions:
+      index:
+        title: "Versions"
+        description: "News versions list"
+      show:
+        title: "Version"
+        description: "News version details"

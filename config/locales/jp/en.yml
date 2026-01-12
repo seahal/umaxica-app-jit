@@ -1318,6 +1318,14 @@ en:
         email_settings: "Email settings"
         email_settings_description: "Manage notification senders and descriptions."
       preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+            accept_consent_cookies: "Allow consent cookies"
         resets:
           title: "Reset Preferences"
           description: "Remove saved preference data for this browser."
@@ -1351,6 +1359,14 @@ en:
         email_settings: "Email settings"
         email_settings_description: "Manage notification senders and descriptions."
       preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+            accept_consent_cookies: "Allow consent cookies"
         language:
           edit:
             language_label: "Language Select"
@@ -1388,6 +1404,14 @@ en:
         email_settings: "Email settings"
         email_settings_description: "Manage notification senders and descriptions."
       preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+            accept_consent_cookies: "Allow consent cookies"
         resets:
           title: "Reset Preferences"
           description: "Remove saved preference data for this browser."
@@ -1551,6 +1575,24 @@ en:
       apex_preference: "Apex preferences"
 
   docs:
+    posts:
+      index:
+        title: "Documents"
+        count: "%{count} documents"
+        search_placeholder: "Search..."
+        search_button: "Search"
+        search_found: "%{count} found"
+        search_all: "All"
+        empty: "No documents found"
+        select_title: "Select a document"
+        select_description: "Click on a document from the list to view its details"
+    versions:
+      index:
+        title: "Versions"
+        description: "Document versions list"
+      show:
+        title: "Version"
+        description: "Document version details"
     com:
       preferences:
         footer:
@@ -1564,6 +1606,20 @@ en:
         footer:
           preference: "Preferences"
   news:
+    posts:
+      index:
+        title: "News"
+        count: "%{count} posts"
+        empty: "No posts found"
+        select_title: "Select a post"
+        select_description: "Click on a post from the list to view its details"
+    versions:
+      index:
+        title: "Versions"
+        description: "News versions list"
+      show:
+        title: "Version"
+        description: "News version details"
     com:
       preferences:
         footer:

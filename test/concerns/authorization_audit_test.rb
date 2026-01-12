@@ -35,6 +35,10 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
       @redirected_to = path
     end
 
+    def redirect_to(path, **_options)
+      @redirected_to = path
+    end
+
     def root_path
       "/"
     end

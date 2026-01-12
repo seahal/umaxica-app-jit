@@ -23,6 +23,7 @@ placeholder:
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 one:
+  id: "e7a2f1e2-4a54-4ca8-826f-b60117925854"
   status_id: "NEYO"
   public_id: "one_id"
   created_at: <%= Time.current %>
@@ -33,6 +34,7 @@ none_user:
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
+  id: "fac3e5c2-b101-4fe6-9af1-b0f8bc5f4210"
   status_id: "NEYO"
   public_id: "two_id"
   created_at: <%= Time.current %>

@@ -11,7 +11,9 @@
           スタッフ向けのサポート窓口です。社内の問い合わせフローや日次の対応手順を確認できます。
         </p>
         <div class="mt-5 flex flex-wrap gap-3">
-          <%= link_to "Contact Support", new_help_org_contact_path,
+          <% contact_params = request.query_parameters.slice("ct", "lx", "ri", "tz").compact %>
+          <% contact_host = ENV.fetch("CORE_STAFF_URL", request.host) %>
+          <%= link_to "Contact Support", new_core_org_contact_url(contact_params.merge(host: contact_host)),
                       class: "rounded-full bg-[hsl(var(--primary))] px-6 py-3 text-sm font-semibold text-[hsl(var(--primary-foreground))] shadow-[0_10px_30px_-18px_hsl(var(--primary))] transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[hsl(var(--primary))]" %>
         </div>
       </div>

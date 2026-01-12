@@ -3,7 +3,7 @@
 Rails.application.routes.draw do
   scope module: :core, as: :core do
     # for client site
-    constraints host: (ENV["CORE_CORPORATE_URL"] || ENV["BACK_CORPORATE_URL"]) do
+    constraints host: (ENV["CORE_CORPORATE_URL"]) do
       scope module: :com, as: :com do
         root to: "roots#index"
         # health check for html
@@ -21,11 +21,18 @@ Rails.application.routes.draw do
         end
         # configuration
         resource :configuration, only: [:show]
+        # contact page
+        resources :contacts, only: %i(new create show edit update) do
+          scope module: :contact do
+            resource :email, only: [:new, :create]
+            resource :telephone, only: [:new, :create]
+          end
+        end
       end
     end
 
     # service page
-    constraints host: (ENV["CORE_SERVICE_URL"] || ENV["BACK_SERVICE_URL"]) do
+    constraints host: (ENV["CORE_SERVICE_URL"]) do
       scope module: :app, as: :app do
         root to: "roots#index"
         # endpoint of health check
@@ -43,11 +50,18 @@ Rails.application.routes.draw do
         end
         # configuration
         resource :configuration, only: [:show]
+        # contact page
+        resources :contacts, only: %i(new create show edit update) do
+          scope module: :contact do
+            resource :email, only: [:new, :create]
+            resource :telephone, only: [:new, :create]
+          end
+        end
       end
     end
 
     # For Staff's webpages
-    constraints host: (ENV["CORE_STAFF_URL"] || ENV["BACK_STAFF_URL"]) do
+    constraints host: (ENV["CORE_STAFF_URL"]) do
       # mount Karafka::Web::App, at: "/karafka"
       scope module: :org, as: :org do
         root to: "roots#index"
@@ -66,6 +80,13 @@ Rails.application.routes.draw do
         end
         # configuration
         resource :configuration, only: [:show]
+        # contact page
+        resources :contacts, only: %i(new create show edit) do
+          scope module: :contact do
+            resource :email, only: [:new, :create]
+            resource :telephone, only: [:new, :create]
+          end
+        end
         # for docs
         namespace :docs do
           namespace :com do

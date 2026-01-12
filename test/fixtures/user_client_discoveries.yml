@@ -15,14 +15,14 @@
 #
 
 one:
-  user: one
+  user_id: "e7a2f1e2-4a54-4ca8-826f-b60117925854"
   client: one
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 # column: value
 #
 two:
-  user: two
+  user_id: "fac3e5c2-b101-4fe6-9af1-b0f8bc5f4210"
   client: two
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

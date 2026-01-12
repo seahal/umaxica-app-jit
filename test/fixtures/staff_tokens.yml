@@ -24,14 +24,14 @@
 #  index_staff_tokens_on_staff_token_status_id  (staff_token_status_id)
 #
 one:
-  staff: one
+  staff_id: "9bc9480f-36cf-4c3a-ac81-7ed2f68867e9"
   staff_token_status_id: ACTIVE
   public_id: one_staff_token_00001
   refresh_expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
-  staff: one
+  staff_id: "8ddacb1b-a68b-4f5f-a570-055b0e8260fc"
   staff_token_status_id: ACTIVE
   public_id: two_staff_token_00001
   refresh_expires_at: <%= 1.day.from_now %>

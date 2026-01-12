@@ -15,11 +15,11 @@
 #
 
 one:
-  user: one
+  user_id: "e7a2f1e2-4a54-4ca8-826f-b60117925854"
   client: one
 # column: value
 #
 two:
-  user: two
+  user_id: "fac3e5c2-b101-4fe6-9af1-b0f8bc5f4210"
   client: two
 # column: value

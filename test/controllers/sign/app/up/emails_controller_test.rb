@@ -225,7 +225,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:disable Minitest/MultipleAssertions
   test "redirects to encoded URL after successful registration when rd parameter is provided" do
     email = "redirect_test@example.com"
-    redirect_url = "https://#{ENV.fetch("APEX_SERVICE_URL", "apex.app.localhost")}/dashboard"
+    redirect_url = "/dashboard"
     encoded_rd = Base64.urlsafe_encode64(redirect_url)
 
     # Create registration record with rd parameter

@@ -27,3 +27,12 @@ one:
   expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
+
+two:
+  status_id: "NEYO"
+  public_id: "two_org_timeline_0002"
+  response_mode: "html"
+  published_at: <%= Time.current %>
+  expires_at: <%= 1.day.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

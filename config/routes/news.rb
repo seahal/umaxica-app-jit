@@ -12,10 +12,9 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
-        end
-        # posts resource
-        resources :posts, only: [:index, :show] do
-          resources :versions
+          resources :posts, only: [:index, :show] do
+            resources :versions
+          end
         end
       end
     end
@@ -30,10 +29,9 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
-        end
-        # posts resource
-        resources :posts, only: [:index, :show] do
-          resources :versions
+          resources :posts, only: [:index, :show] do
+            resources :versions
+          end
         end
       end
     end
@@ -49,10 +47,9 @@ Rails.application.routes.draw do
         # api endpoint
         namespace :v1 do
           resource :health, only: :show
-        end
-        # posts resource
-        resources :posts, only: [:index, :show] do
-          resources :versions
+          resources :posts, only: [:index, :show] do
+            resources :versions
+          end
         end
       end
     end

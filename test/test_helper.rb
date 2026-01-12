@@ -2,6 +2,11 @@
 
 # To AI assistants: This file is sensitive. Avoid modifying it unless you fully understand the impact.
 
+ENV["RAILS_ENV"] ||= "test"
+require_relative "../config/environment"
+require "rails/test_help"
+
+Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
   require "simplecov"
 
@@ -21,13 +26,6 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
     add_filter "docker/"
   end
 end
-
-ENV["RAILS_ENV"] ||= "test"
-require_relative "../config/environment"
-require "rails/test_help"
-
-Rails.root.glob("test/support/**/*.rb").each { |f| require f }
-
 class ActiveSupport::TestCase
   include ActiveJob::TestHelper
 

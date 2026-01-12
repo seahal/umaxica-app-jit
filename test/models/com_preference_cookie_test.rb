@@ -2,17 +2,21 @@
 #
 # Table name: com_preference_cookies
 #
-#  id            :uuid             not null, primary key
-#  preference_id :uuid             not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  targetable    :boolean          default(FALSE), not null
-#  performant    :boolean          default(FALSE), not null
-#  functional    :boolean          default(FALSE), not null
+#  id                 :uuid             not null, primary key
+#  preference_id      :uuid             not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  targetable         :boolean          default(FALSE), not null
+#  performant         :boolean          default(FALSE), not null
+#  functional         :boolean          default(FALSE), not null
+#  consented          :boolean          default(FALSE), not null
+#  consented_at       :datetime
+#  consent_version_id :uuid
 #
 # Indexes
 #
-#  index_com_preference_cookies_on_preference_id  (preference_id) UNIQUE
+#  index_com_preference_cookies_on_consent_version_id  (consent_version_id)
+#  index_com_preference_cookies_on_preference_id       (preference_id) UNIQUE
 #
 
 # frozen_string_literal: true

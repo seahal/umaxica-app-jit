@@ -36,6 +36,7 @@ class OrgDocument < DocumentRecord
 
   validates :status_id, length: { maximum: 255 }
   has_many :org_document_versions, dependent: :delete_all, inverse_of: :org_document
+  has_many :org_document_revisions, dependent: :delete_all, inverse_of: :org_document
   has_many :org_document_audits,
            #         -> { where(subject_type: "OrgDocument") },
            class_name: "OrgDocumentAudit",

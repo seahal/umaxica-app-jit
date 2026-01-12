@@ -100,9 +100,11 @@ module Preference::Core
         targetable: false, performant: false, functional: false,
       )
 
+      update_params = build_cookie_update_params(@preference_cookie, preference_cookie_params)
+
       update_preference_child_with_audit(
         @preference_cookie,
-        preference_cookie_params,
+        update_params,
         "UPDATE_PREFERENCE_COOKIE",
       )
     end
@@ -111,7 +113,19 @@ module Preference::Core
   private
 
   def preference_cookie_params
-    params.expect(preference_cookie: %i(functional performant targetable))
+    params.expect(preference_cookie: %i(functional performant targetable consented))
+  end
+
+  def build_cookie_update_params(cookie, params)
+    consent_value = ActiveModel::Type::Boolean.new.cast(params[:consented])
+
+    if consent_value && !cookie.consented?
+      params.merge(consented_at: Time.current)
+    elsif !consent_value && cookie.consented?
+      params.merge(consented_at: nil)
+    else
+      params
+    end
   end
 
   def preference_language_params

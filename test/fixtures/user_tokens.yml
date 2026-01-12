@@ -24,14 +24,14 @@
 #  index_user_tokens_on_user_token_status_id  (user_token_status_id)
 #
 one:
-  user: one
+  user_id: "e7a2f1e2-4a54-4ca8-826f-b60117925854"
   user_token_status_id: NEYO
   public_id: one_user_token_000001
   refresh_expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
-  user: two
+  user_id: "fac3e5c2-b101-4fe6-9af1-b0f8bc5f4210"
   user_token_status_id: NEYO
   public_id: two_user_token_000001
   refresh_expires_at: <%= 1.day.from_now %>

@@ -23,7 +23,7 @@ class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_org_root_url
 
     assert_response :success
-    assert_select "a[href^=?]", new_help_org_contact_path
+    assert_select "a[href*=?]", "/contacts/new"
   end
 
   # rubocop:disable Minitest/MultipleAssertions

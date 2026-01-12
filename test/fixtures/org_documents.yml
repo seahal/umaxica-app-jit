@@ -28,3 +28,9 @@ one:
   status_id: "NEYO"
   permalink: "org_document_one"
   revision_key: "rev_org_document_one"
+
+two:
+  public_id: "org_documents_0000002"
+  status_id: "NEYO"
+  permalink: "org_document_two"
+  revision_key: "rev_org_document_two"

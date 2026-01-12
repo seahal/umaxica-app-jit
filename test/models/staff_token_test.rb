@@ -32,7 +32,7 @@ require "test_helper"
 class StaffTokenTest < ActiveSupport::TestCase
   def setup
     @staff = Staff.find_by!(public_id: "one_staff_id")
-    StaffToken.where(staff: @staff).destroy_all
+
     @token = StaffToken.create!(staff: @staff, staff_token_status_id: "ACTIVE")
   end
 
@@ -88,11 +88,9 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "timestamp is set on creation" do
-    token = StaffToken.create!(staff: @staff)
-
-    assert_not_nil token.created_at
-    assert_not_nil token.updated_at
-    assert_operator token.created_at, :<=, token.updated_at
+    assert_not_nil @token.created_at
+    assert_not_nil @token.updated_at
+    assert_operator @token.created_at, :<=, @token.updated_at
   end
 
   test "timestamp updates on save" do
@@ -116,60 +114,53 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "refresh token digest updates and authenticates" do
-    token = StaffToken.create!(staff: @staff)
+    @token.refresh_token = "verifier-value"
+    @token.save!
 
-    token.refresh_token = "verifier-value"
-    token.save!
-
-    assert_predicate token.refresh_token_digest, :present?
-    assert token.authenticate_refresh_token("verifier-value")
-    assert_not token.authenticate_refresh_token("wrong-value")
+    assert_predicate @token.refresh_token_digest, :present?
+    assert @token.authenticate_refresh_token("verifier-value")
+    assert_not @token.authenticate_refresh_token("wrong-value")
   end
 
   test "active state reflects revoked and expired refresh tokens" do
-    token = StaffToken.create!(staff: @staff)
+    assert_predicate @token, :active?
 
-    assert_predicate token, :active?
+    @token.update!(revoked_at: Time.current)
+    assert_predicate @token, :revoked?
+    assert_not @token.active?
 
-    token.update!(revoked_at: Time.current)
-    assert_predicate token, :revoked?
-    assert_not token.active?
-
-    token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
-    assert_predicate token, :expired_refresh?
-    assert_not token.active?
+    @token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
+    assert_predicate @token, :expired_refresh?
+    assert_not @token.active?
   end
 
   test "rotate_refresh_token! updates digest and timestamps" do
-    token = StaffToken.create!(staff: @staff)
-    old_digest = token.refresh_token_digest
+    old_digest = @token.refresh_token_digest
 
-    new_token = token.rotate_refresh_token!
+    new_token = @token.rotate_refresh_token!
 
-    assert_match(/\A#{token.public_id}\./, new_token)
-    assert_not_equal old_digest, token.refresh_token_digest
-    assert_predicate token.rotated_at, :present?
-    assert_predicate token.last_used_at, :present?
+    assert_match(/\A#{@token.public_id}\./, new_token)
+    assert_not_equal old_digest, @token.refresh_token_digest
+    assert_predicate @token.rotated_at, :present?
+    assert_predicate @token.last_used_at, :present?
   end
 
   test "rotate_refresh_token! generates token that authenticates" do
-    token = StaffToken.create!(staff: @staff)
-    raw = token.rotate_refresh_token!
+    raw = @token.rotate_refresh_token!
 
     public_id, verifier = StaffToken.parse_refresh_token(raw)
 
-    assert_equal token.public_id, public_id
-    assert token.authenticate_refresh_token(verifier)
-    assert_not token.authenticate_refresh_token("wrong-value")
+    assert_equal @token.public_id, public_id
+    assert @token.authenticate_refresh_token(verifier)
+    assert_not @token.authenticate_refresh_token("wrong-value")
   end
 
   test "parse_refresh_token splits public_id and verifier" do
-    token = StaffToken.create!(staff: @staff)
-    raw = token.rotate_refresh_token!
+    raw = @token.rotate_refresh_token!
 
     public_id, verifier = StaffToken.parse_refresh_token(raw)
 
-    assert_equal token.public_id, public_id
+    assert_equal @token.public_id, public_id
     assert_predicate verifier, :present?
   end
   test "sha3 digest matches hexdigest packed bytes" do

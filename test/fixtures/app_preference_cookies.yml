@@ -2,17 +2,21 @@
 #
 # Table name: app_preference_cookies
 #
-#  id            :uuid             not null, primary key
-#  preference_id :uuid             not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  targetable    :boolean          default(FALSE), not null
-#  performant    :boolean          default(FALSE), not null
-#  functional    :boolean          default(FALSE), not null
+#  id                 :uuid             not null, primary key
+#  preference_id      :uuid             not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  targetable         :boolean          default(FALSE), not null
+#  performant         :boolean          default(FALSE), not null
+#  functional         :boolean          default(FALSE), not null
+#  consented          :boolean          default(FALSE), not null
+#  consented_at       :datetime
+#  consent_version_id :uuid
 #
 # Indexes
 #
-#  index_app_preference_cookies_on_preference_id  (preference_id) UNIQUE
+#  index_app_preference_cookies_on_consent_version_id  (consent_version_id)
+#  index_app_preference_cookies_on_preference_id       (preference_id) UNIQUE
 #
 
 _fixture:
@@ -24,13 +28,13 @@ _fixture:
 # Load explicitly in tests that need it
 
 one:
-  preference_id: 018eb260-e1c0-7000-8000-000000000001
+  preference_id: a2a399f6-15dd-4ae0-9d3a-69acef9cab56
   functional: false
   performant: false
   targetable: false
 
 two:
-  preference_id: 018eb260-e1c0-7000-8000-000000000002
+  preference_id: be741a2a-5b6c-496a-877a-3068441d9eae
   functional: false
   performant: false
   targetable: false

@@ -15,7 +15,7 @@
         <%= label_tag :accept_necessary_cookies, t('apex.com.preference.cookie.edit.accept_necessary_cookies'), class: "text-sm font-medium text-slate-700" %>
       </div>
 
-      <% { functional: 'accept_functional_cookies', performant: 'accept_performance_cookies', targetable: 'accept_targeting_cookies' }.each do |field, label_key| %>
+      <% { functional: 'accept_functional_cookies', performant: 'accept_performance_cookies', targetable: 'accept_targeting_cookies', consented: 'accept_consent_cookies' }.each do |field, label_key| %>
         <div class="flex items-center gap-3">
           <%= f.check_box field, { checked: @preference_cookie.public_send(field), data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" }, class: "h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" } %>
           <%= f.label field, t("apex.com.preference.cookie.edit.#{label_key}"), class: "text-sm font-medium text-slate-700" %>

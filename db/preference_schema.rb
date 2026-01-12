@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_09_141225) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,12 +29,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_09_141225) do
   end
 
   create_table "app_preference_cookies", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "consent_version_id"
+    t.boolean "consented", default: false, null: false
+    t.datetime "consented_at"
     t.datetime "created_at", null: false
     t.boolean "functional", default: false, null: false
     t.boolean "performant", default: false, null: false
     t.uuid "preference_id", null: false
     t.boolean "targetable", default: false, null: false
     t.datetime "updated_at", null: false
+    t.index ["consent_version_id"], name: "index_app_preference_cookies_on_consent_version_id"
     t.index ["preference_id"], name: "index_app_preference_cookies_on_preference_id", unique: true
   end
 
@@ -111,12 +115,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_09_141225) do
   end
 
   create_table "com_preference_cookies", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "consent_version_id"
+    t.boolean "consented", default: false, null: false
+    t.datetime "consented_at"
     t.datetime "created_at", null: false
     t.boolean "functional", default: false, null: false
     t.boolean "performant", default: false, null: false
     t.uuid "preference_id", null: false
     t.boolean "targetable", default: false, null: false
     t.datetime "updated_at", null: false
+    t.index ["consent_version_id"], name: "index_com_preference_cookies_on_consent_version_id"
     t.index ["preference_id"], name: "index_com_preference_cookies_on_preference_id", unique: true
   end
 
@@ -193,12 +201,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_09_141225) do
   end
 
   create_table "org_preference_cookies", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "consent_version_id"
+    t.boolean "consented", default: false, null: false
+    t.datetime "consented_at"
     t.datetime "created_at", null: false
     t.boolean "functional", default: false, null: false
     t.boolean "performant", default: false, null: false
     t.uuid "preference_id", null: false
     t.boolean "targetable", default: false, null: false
     t.datetime "updated_at", null: false
+    t.index ["consent_version_id"], name: "index_org_preference_cookies_on_consent_version_id"
     t.index ["preference_id"], name: "index_org_preference_cookies_on_preference_id", unique: true
   end
 

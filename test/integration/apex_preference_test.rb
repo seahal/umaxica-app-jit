@@ -281,6 +281,17 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       assert_select "a[href^=?]", public_send("edit_apex_#{domain[:name]}_preference_region_path")
     end
+
+    test "#{domain[:name]} domain region edit links to timezone and language with params" do
+      host!(domain[:host])
+      state = { ri: "jp", lx: "ja" }
+
+      get public_send("edit_apex_#{domain[:name]}_preference_region_url", state)
+      assert_response :success
+
+      assert_select "a[href=?]", public_send("edit_apex_#{domain[:name]}_preference_region_timezone_path", state)
+      assert_select "a[href=?]", public_send("edit_apex_#{domain[:name]}_preference_region_language_path", state)
+    end
   end
 
   private

@@ -28,3 +28,10 @@ one:
   response_mode: "html"
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>
+
+two:
+  permalink: "test-doc-two"
+  status_id: "ACTIVE"
+  response_mode: "html"
+  published_at: <%= 1.day.ago %>
+  expires_at: <%= 1.year.from_now %>

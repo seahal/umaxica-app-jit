@@ -428,6 +428,21 @@ ja:
             not_withdrawn: "退会済みでないため、削除できません。"
             failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
           authenticate_error: "認証が必要です。ログインしてください。"
+  news:
+    posts:
+      index:
+        title: "ニュース"
+        count: "%{count} 件"
+        empty: "投稿がありません"
+        select_title: "投稿を選択"
+        select_description: "一覧から投稿を選択すると詳細が表示されます"
+    versions:
+      index:
+        title: "バージョン"
+        description: "ニュースのバージョン一覧"
+      show:
+        title: "バージョン"
+        description: "ニュースのバージョン詳細"
         telephone:
           new:
             page_title: 電話番号でサインイン
@@ -726,6 +741,7 @@ ja:
             accept_functional_cookies: 機能性クッキーの許可について
             accept_performance_cookies: パフォーマンスクッキーの許可について
             accept_targeting_cookies: ターゲティングクッキーの許可について
+            accept_consent_cookies: クッキー同意の許可について
         theme:
           edit:
             title: テーマ設定（ライト／ダークの切り替え）
@@ -1028,6 +1044,24 @@ ja:
     email_successfully_created: Email was successfully created.
     auth_error_occurred: 認証エラーが発生しました。もう一度お試しください。
   docs:
+    posts:
+      index:
+        title: "ドキュメント"
+        count: "%{count} 件"
+        search_placeholder: "検索..."
+        search_button: "検索"
+        search_found: "%{count} 件見つかりました"
+        search_all: "すべて"
+        empty: "ドキュメントがありません"
+        select_title: "ドキュメントを選択"
+        select_description: "一覧からドキュメントを選択すると詳細が表示されます"
+    versions:
+      index:
+        title: "バージョン"
+        description: "ドキュメントのバージョン一覧"
+      show:
+        title: "バージョン"
+        description: "ドキュメントのバージョン詳細"
     com:
       cms:
         documents:
@@ -1270,6 +1304,7 @@ ja:
             accept_functional_cookies: 機能性クッキーを許可
             accept_performance_cookies: パフォーマンスクッキーを許可
             accept_targeting_cookies: ターゲティングクッキーを許可
+            accept_consent_cookies: クッキー同意を許可
         theme:
           edit:
             title: テーマ設定（ライト／ダークの切り替え）
@@ -1298,6 +1333,14 @@ ja:
             timezone_label: "タイムゾーン"
     com:
       preference:
+        cookie:
+          edit:
+            h1: クッキー設定
+            accept_necessary_cookies: 必須クッキーを許可 (必須)
+            accept_functional_cookies: 機能性クッキーを許可
+            accept_performance_cookies: パフォーマンスクッキーを許可
+            accept_targeting_cookies: ターゲティングクッキーを許可
+            accept_consent_cookies: クッキー同意を許可
         resets:
           destroyed: 設定をリセットしました
       preferences:
@@ -1317,6 +1360,14 @@ ja:
           invalid: "無効なタイムゾーンが選択されました"
     org:
       preference:
+        cookie:
+          edit:
+            h1: クッキー設定
+            accept_necessary_cookies: 必須クッキーを許可 (必須)
+            accept_functional_cookies: 機能性クッキーを許可
+            accept_performance_cookies: パフォーマンスクッキーを許可
+            accept_targeting_cookies: ターゲティングクッキーを許可
+            accept_consent_cookies: クッキー同意を許可
         resets:
           destroyed: 設定をリセットしました
       preferences:

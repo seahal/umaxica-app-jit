@@ -18,14 +18,14 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  id: 018eb260-e1c0-7000-8000-000000000001
+  id: "a2a399f6-15dd-4ae0-9d3a-69acef9cab56"
   public_id: app_pref_001
   status_id: NEYO
   expires_at: <%= 20.years.from_now %>
   token_digest: <%= Digest::SHA256.hexdigest("test_token_001") %>
 
 two:
-  id: 018eb260-e1c0-7000-8000-000000000002
+  id: "be741a2a-5b6c-496a-877a-3068441d9eae"
   public_id: app_pref_002
   status_id: NEYO
   expires_at: <%= 20.years.from_now %>

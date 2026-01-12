@@ -33,6 +33,7 @@ class OrgTimeline < NewsRecord
 
   validates :status_id, length: { maximum: 255 }
   has_many :org_timeline_versions, dependent: :delete_all, inverse_of: :org_timeline
+  has_many :org_timeline_revisions, dependent: :delete_all, inverse_of: :org_timeline
   has_many :org_timeline_audits,
            -> { where(subject_type: "OrgTimeline") },
            class_name: "OrgTimelineAudit",

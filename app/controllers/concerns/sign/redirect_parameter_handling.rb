@@ -113,7 +113,7 @@ module Sign
 
       if rd_param.present?
         flash[message_key] = message_value
-        jump_to_generated_url(rd_param)
+        jump_to_generated_url(rd_param, fallback: default_path)
       else
         redirect_to default_path, message_key => message_value
       end

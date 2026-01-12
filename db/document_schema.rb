@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_02_100018) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_12_175715) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,6 +29,26 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100018) do
     t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_app_document_category_masters_on_lower_id", unique: true
     t.index ["parent_id"], name: "index_app_document_category_masters_on_parent_id"
+  end
+
+  create_table "app_document_revisions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "app_document_id", null: false
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.bigint "edited_by_id"
+    t.string "edited_by_type"
+    t.datetime "expires_at", null: false
+    t.string "permalink", limit: 200, null: false
+    t.string "public_id", limit: 255, default: "", null: false
+    t.datetime "published_at", null: false
+    t.string "redirect_url"
+    t.string "response_mode", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["app_document_id", "created_at"], name: "index_app_document_revisions_on_app_document_id_and_created_at"
+    t.index ["app_document_id"], name: "index_app_document_revisions_on_app_document_id"
+    t.index ["public_id"], name: "index_app_document_revisions_on_public_id", unique: true
   end
 
   create_table "app_document_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
@@ -109,6 +129,26 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100018) do
     t.index ["parent_id"], name: "index_com_document_category_masters_on_parent_id"
   end
 
+  create_table "com_document_revisions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.text "body"
+    t.uuid "com_document_id", null: false
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.bigint "edited_by_id"
+    t.string "edited_by_type"
+    t.datetime "expires_at", null: false
+    t.string "permalink", limit: 200, null: false
+    t.string "public_id", limit: 255, default: "", null: false
+    t.datetime "published_at", null: false
+    t.string "redirect_url"
+    t.string "response_mode", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["com_document_id", "created_at"], name: "index_com_document_revisions_on_com_document_id_and_created_at"
+    t.index ["com_document_id"], name: "index_com_document_revisions_on_com_document_id"
+    t.index ["public_id"], name: "index_com_document_revisions_on_public_id", unique: true
+  end
+
   create_table "com_document_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -187,6 +227,26 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100018) do
     t.index ["parent_id"], name: "index_org_document_category_masters_on_parent_id"
   end
 
+  create_table "org_document_revisions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.bigint "edited_by_id"
+    t.string "edited_by_type"
+    t.datetime "expires_at", null: false
+    t.uuid "org_document_id", null: false
+    t.string "permalink", limit: 200, null: false
+    t.string "public_id", limit: 255, default: "", null: false
+    t.datetime "published_at", null: false
+    t.string "redirect_url"
+    t.string "response_mode", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["org_document_id", "created_at"], name: "index_org_document_revisions_on_org_document_id_and_created_at"
+    t.index ["org_document_id"], name: "index_org_document_revisions_on_org_document_id"
+    t.index ["public_id"], name: "index_org_document_revisions_on_public_id", unique: true
+  end
+
   create_table "org_document_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -251,6 +311,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100018) do
   add_foreign_key "app_document_categories", "app_document_category_masters"
   add_foreign_key "app_document_categories", "app_documents", on_delete: :cascade, validate: false
   add_foreign_key "app_document_category_masters", "app_document_category_masters", column: "parent_id", validate: false
+  add_foreign_key "app_document_revisions", "app_documents"
   add_foreign_key "app_document_tag_masters", "app_document_tag_masters", column: "parent_id", validate: false
   add_foreign_key "app_document_tags", "app_document_tag_masters"
   add_foreign_key "app_document_tags", "app_documents", on_delete: :cascade, validate: false
@@ -259,6 +320,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100018) do
   add_foreign_key "com_document_categories", "com_document_category_masters"
   add_foreign_key "com_document_categories", "com_documents", on_delete: :cascade, validate: false
   add_foreign_key "com_document_category_masters", "com_document_category_masters", column: "parent_id", validate: false
+  add_foreign_key "com_document_revisions", "com_documents"
   add_foreign_key "com_document_tag_masters", "com_document_tag_masters", column: "parent_id", validate: false
   add_foreign_key "com_document_tags", "com_document_tag_masters"
   add_foreign_key "com_document_tags", "com_documents", on_delete: :cascade, validate: false
@@ -267,6 +329,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100018) do
   add_foreign_key "org_document_categories", "org_document_category_masters"
   add_foreign_key "org_document_categories", "org_documents", on_delete: :cascade, validate: false
   add_foreign_key "org_document_category_masters", "org_document_category_masters", column: "parent_id", validate: false
+  add_foreign_key "org_document_revisions", "org_documents"
   add_foreign_key "org_document_tag_masters", "org_document_tag_masters", column: "parent_id", validate: false
   add_foreign_key "org_document_tags", "org_document_tag_masters"
   add_foreign_key "org_document_tags", "org_documents", on_delete: :cascade, validate: false

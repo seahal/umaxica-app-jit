@@ -6,6 +6,8 @@ module AuthorizationAudit
   extend ActiveSupport::Concern
 
   included do
+    include Redirect
+
     # Log authorization failures for audit purposes
     rescue_from Pundit::NotAuthorizedError, with: :handle_authorization_error
   end
@@ -20,7 +22,7 @@ module AuthorizationAudit
     respond_to do |format|
       format.html do
         flash[:alert] = I18n.t("errors.messages.not_authorized")
-        redirect_back_or_to(root_path)
+        safe_redirect_back_or_to(root_path)
       end
       format.json do
         render json: { error: "Unauthorized" }, status: :forbidden

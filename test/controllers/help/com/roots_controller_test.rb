@@ -29,7 +29,7 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_com_root_url
 
     assert_response :success
-    assert_select "a[href*=?]", new_help_com_contact_path
+    assert_select "a[href*=?]", "/contacts/new"
   end
   # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do

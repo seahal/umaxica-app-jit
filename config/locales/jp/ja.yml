@@ -249,6 +249,7 @@ ja:
             accept_functional_cookies: 機能性クッキーの許可について
             accept_performance_cookies: パフォーマンスクッキーの許可について
             accept_targeting_cookies: ターゲティングクッキーの許可について
+            accept_consent_cookies: クッキー同意の許可について
         theme:
           edit:
             title: テーマ設定（ライト／ダークの切り替え）
@@ -1094,6 +1095,7 @@ ja:
             accept_functional_cookies: 機能性クッキーを許可
             accept_performance_cookies: パフォーマンスクッキーを許可
             accept_targeting_cookies: ターゲティングクッキーを許可
+            accept_consent_cookies: クッキー同意を許可
         locale:
           edit:
             title: ロケール設定
@@ -1521,6 +1523,24 @@ ja:
     release_note: "リリースノート"
     faq: "よくある質問"
   docs:
+    posts:
+      index:
+        title: "ドキュメント"
+        count: "%{count} 件"
+        search_placeholder: "検索..."
+        search_button: "検索"
+        search_found: "%{count} 件見つかりました"
+        search_all: "すべて"
+        empty: "ドキュメントがありません"
+        select_title: "ドキュメントを選択"
+        select_description: "一覧からドキュメントを選択すると詳細が表示されます"
+    versions:
+      index:
+        title: "バージョン"
+        description: "ドキュメントのバージョン一覧"
+      show:
+        title: "バージョン"
+        description: "ドキュメントのバージョン詳細"
     com:
       preferences:
         footer:
@@ -1534,6 +1554,20 @@ ja:
         footer:
           preference: "設定"
   news:
+    posts:
+      index:
+        title: "ニュース"
+        count: "%{count} 件"
+        empty: "投稿がありません"
+        select_title: "投稿を選択"
+        select_description: "一覧から投稿を選択すると詳細が表示されます"
+    versions:
+      index:
+        title: "バージョン"
+        description: "ニュースのバージョン一覧"
+      show:
+        title: "バージョン"
+        description: "ニュースのバージョン詳細"
     com:
       preferences:
         footer:

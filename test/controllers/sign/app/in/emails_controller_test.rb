@@ -358,7 +358,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
       address: "redirect_login_test_#{SecureRandom.hex(4)}@example.com",
     )
 
-    redirect_url = "https://#{ENV.fetch("APEX_SERVICE_URL", "apex.app.localhost")}/dashboard"
+    redirect_url = "/dashboard"
     encoded_rd = Base64.urlsafe_encode64(redirect_url)
 
     # Start authentication with rd parameter
@@ -396,6 +396,45 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :found
     assert_redirected_to redirect_url
     assert_nil session[:user_email_authentication_rd]
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "rejects external rd parameter after successful login" do
+    user = users(:one)
+    test_email = user.user_emails.create!(
+      address: "redirect_external_test_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    encoded_rd = Base64.urlsafe_encode64("https://example.com/evil")
+
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+           :rd => encoded_rd,
+         },
+         headers: { "Host" => @host }
+
+    assert_response :found
+    assert_includes response.location, "rd=#{CGI.escape(encoded_rd)}"
+
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 12_345
+    hotp = ROTP::HOTP.new(otp_private_key)
+    valid_pass_code = hotp.at(otp_counter).to_s
+
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    patch sign_app_in_email_url(ri: "jp"),
+          params: {
+            user_email: { pass_code: valid_pass_code },
+            rd: encoded_rd,
+          },
+          headers: { "Host" => @host }
+
+    assert_response :found
+    assert_redirected_to "/"
   end
   # rubocop:enable Minitest/MultipleAssertions
 end
