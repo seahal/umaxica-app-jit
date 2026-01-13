@@ -31,6 +31,17 @@ class OrgTimeline < NewsRecord
              foreign_key: :status_id,
              inverse_of: :org_timelines
 
+  belongs_to :latest_version_record,
+             class_name: "OrgTimelineVersion",
+             foreign_key: :latest_version_id,
+             inverse_of: :latest_timeline,
+             optional: true
+  belongs_to :latest_revision_record,
+             class_name: "OrgTimelineRevision",
+             foreign_key: :latest_revision_id,
+             inverse_of: :latest_timeline,
+             optional: true
+
   validates :status_id, length: { maximum: 255 }
   has_many :org_timeline_versions, dependent: :delete_all, inverse_of: :org_timeline
   has_many :org_timeline_revisions, dependent: :delete_all, inverse_of: :org_timeline

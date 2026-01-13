@@ -59,7 +59,7 @@
         <% if edge_host.present? %>
           <%= link_to t("sign.app.preferences.footer.home"), sign_app_root_path, class: "transition hover:text-[hsl(var(--primary))]" %>
         <% end %>
-        <%= link_to t("sign.app.preferences.footer.preference"), sign_app_preference_path, class: "transition hover:text-[hsl(var(--primary))]" %>
+        <%= link_to t("sign.app.preferences.footer.preference"), apex_app_preference_url, class: "transition hover:text-[hsl(var(--primary))]" %>
         <%= link_to t("sign.app.preferences.footer.configuration"), sign_app_configuration_path, class: "transition hover:text-[hsl(var(--primary))]" %>
       </nav>
       <div class="mt-4">

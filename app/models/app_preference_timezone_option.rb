@@ -10,6 +10,8 @@
 # frozen_string_literal: true
 
 class AppPreferenceTimezoneOption < PreferenceRecord
+  scope :ordered, -> { order(:position, :id) }
+
   self.primary_key = :id
 
   has_many :app_preference_timezones,
@@ -19,4 +21,9 @@ class AppPreferenceTimezoneOption < PreferenceRecord
            dependent: :restrict_with_error
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Za-z0-9_\/\-\+]+\z/ }
+
+  validates :position,
+            presence: true,
+            numericality: { only_integer: true, greater_than: 0 },
+            uniqueness: true
 end

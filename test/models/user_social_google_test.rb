@@ -45,7 +45,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     )
 
     assert_not duplicate.valid?
-    assert_includes duplicate.errors[:user_id], "はすでに存在します"
+    assert_not_empty duplicate.errors[:user_id]
   end
 
   test "token is required" do

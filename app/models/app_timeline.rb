@@ -31,6 +31,17 @@ class AppTimeline < NewsRecord
              foreign_key: :status_id,
              inverse_of: :app_timelines
 
+  belongs_to :latest_version_record,
+             class_name: "AppTimelineVersion",
+             foreign_key: :latest_version_id,
+             inverse_of: :latest_timeline,
+             optional: true
+  belongs_to :latest_revision_record,
+             class_name: "AppTimelineRevision",
+             foreign_key: :latest_revision_id,
+             inverse_of: :latest_timeline,
+             optional: true
+
   validates :status_id, length: { maximum: 255 }
   has_many :app_timeline_versions, dependent: :delete_all, inverse_of: :app_timeline
   has_many :app_timeline_revisions, dependent: :delete_all, inverse_of: :app_timeline

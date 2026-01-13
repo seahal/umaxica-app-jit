@@ -34,6 +34,17 @@ class ComDocument < DocumentRecord
              foreign_key: :status_id,
              inverse_of: :com_documents
 
+  belongs_to :latest_version_record,
+             class_name: "ComDocumentVersion",
+             foreign_key: :latest_version_id,
+             inverse_of: :latest_document,
+             optional: true
+  belongs_to :latest_revision_record,
+             class_name: "ComDocumentRevision",
+             foreign_key: :latest_revision_id,
+             inverse_of: :latest_document,
+             optional: true
+
   validates :status_id, length: { maximum: 255 }
   has_many :com_document_versions, dependent: :delete_all, inverse_of: :com_document
   has_many :com_document_revisions, dependent: :delete_all, inverse_of: :com_document

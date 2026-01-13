@@ -1,4 +1,11 @@
 ja:
+  reproduce_issue:
+    missing_position: "AppPreferenceStatusをpositionなしで作成しようとしています..."
+    duplicate_position: "\n重複したpositionでAppPreferenceStatusを作成しようとしています..."
+    success_created: "作成に成功しました。ID: %{id}、position: %{position}"
+    expected_error: "想定されるエラー: %{message}"
+    expected_db_error: "想定されるDBエラー: %{message}"
+    check_positions: "\n既存のpositionを確認しています:"
   turnstile_error: "セキュリティ検証に失敗しました。もう一度お試しください。"
   common:
     ok: OK

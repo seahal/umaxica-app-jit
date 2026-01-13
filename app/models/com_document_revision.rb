@@ -32,6 +32,11 @@ class ComDocumentRevision < DocumentRecord
   include ::PublicId
 
   belongs_to :com_document, inverse_of: :com_document_revisions
+  has_one :latest_document,
+          class_name: "ComDocument",
+          foreign_key: :latest_revision_id,
+          dependent: :nullify,
+          inverse_of: :latest_revision_record
 
   validates :permalink, presence: true, length: { maximum: 200 }
   validates :response_mode, presence: true

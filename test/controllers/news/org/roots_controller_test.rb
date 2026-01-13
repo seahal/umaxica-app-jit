@@ -105,7 +105,7 @@ class News::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
         assert_select "nav", count: 1 do
-          assert_select "span", minimum: 1
+          assert_select "span", count: 0
         end
         assert_select "small", text: /^©/
       end

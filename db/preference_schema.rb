@@ -10,13 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_12_235825) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "app_preference_colortheme_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "app_preference_colortheme_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "app_preference_colortheme_options_position_positive"
   end
 
   create_table "app_preference_colorthemes", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -44,7 +47,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "app_preference_language_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "app_preference_language_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "app_preference_language_options_position_positive"
   end
 
   create_table "app_preference_languages", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -58,7 +64,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "app_preference_region_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "app_preference_region_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "app_preference_region_options_position_positive"
   end
 
   create_table "app_preference_regions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -72,13 +81,19 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "app_preference_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "app_preference_statuses_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "app_preference_statuses_position_positive"
     t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "app_preference_statuses_id_format_check"
   end
 
   create_table "app_preference_timezone_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "app_preference_timezone_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "app_preference_timezone_options_position_positive"
   end
 
   create_table "app_preference_timezones", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -102,7 +117,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "com_preference_colortheme_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "com_preference_colortheme_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "com_preference_colortheme_options_position_positive"
   end
 
   create_table "com_preference_colorthemes", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -130,7 +148,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "com_preference_language_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "com_preference_language_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "com_preference_language_options_position_positive"
   end
 
   create_table "com_preference_languages", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -144,7 +165,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "com_preference_region_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "com_preference_region_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "com_preference_region_options_position_positive"
   end
 
   create_table "com_preference_regions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -158,13 +182,19 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "com_preference_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "com_preference_statuses_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "com_preference_statuses_position_positive"
     t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "com_preference_statuses_id_format_check"
   end
 
   create_table "com_preference_timezone_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "com_preference_timezone_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "com_preference_timezone_options_position_positive"
   end
 
   create_table "com_preference_timezones", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -188,7 +218,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "org_preference_colortheme_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "org_preference_colortheme_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "org_preference_colortheme_options_position_positive"
   end
 
   create_table "org_preference_colorthemes", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -216,7 +249,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "org_preference_language_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "org_preference_language_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "org_preference_language_options_position_positive"
   end
 
   create_table "org_preference_languages", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -230,7 +266,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "org_preference_region_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "org_preference_region_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "org_preference_region_options_position_positive"
   end
 
   create_table "org_preference_regions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -244,13 +283,19 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_025448) do
 
   create_table "org_preference_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "org_preference_statuses_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "org_preference_statuses_position_positive"
     t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "org_preference_statuses_id_format_check"
   end
 
   create_table "org_preference_timezone_options", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "position", null: false
     t.datetime "updated_at", null: false
+    t.index ["position"], name: "org_preference_timezone_options_position_unique", unique: true
+    t.check_constraint "\"position\" > 0", name: "org_preference_timezone_options_position_positive"
   end
 
   create_table "org_preference_timezones", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|

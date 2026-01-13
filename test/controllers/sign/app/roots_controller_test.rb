@@ -32,7 +32,7 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "footer" do
       assert_select "a"
-      assert_select "a[href*=?]", sign_app_preference_path(ri: "jp")
+      assert_select "a[href*=?]", apex_app_preference_url
       assert_select "a[href*=?]", sign_app_configuration_path(ri: "jp")
     end
   end

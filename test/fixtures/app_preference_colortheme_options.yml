@@ -9,9 +9,12 @@
 
 light:
   id: "light"
+  position: 1
 
 dark:
   id: "dark"
+  position: 2
 
 system:
   id: "system"
+  position: 3

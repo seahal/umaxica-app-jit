@@ -46,7 +46,7 @@
         <% if edge_host.present? %>
           <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>/">Umaxica</a>
         <% end %>
-        <%= link_to t("help.com.preferences.footer.preference"), help_com_preference_path, class: "transition hover:text-[hsl(var(--primary))]" %>
+        <%= link_to t("help.com.preferences.footer.preference"), apex_com_preference_url, class: "transition hover:text-[hsl(var(--primary))]" %>
         <%= link_to "NewsRoom", news_com_root_url, class: "font-semibold text-[hsl(var(--foreground))]" %>
         <%= link_to "Document", docs_com_root_url, class: "font-semibold text-[hsl(var(--foreground))]" %>
         <%= link_to "Help Center", help_com_root_url, class: "font-semibold text-[hsl(var(--foreground))]" %>

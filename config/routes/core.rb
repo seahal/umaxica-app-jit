@@ -14,11 +14,6 @@ Rails.application.routes.draw do
           resource :csrf, only: :show
           resource :preference, only: :show
         end
-        # preferences
-        resource :preference, only: [:show]
-        namespace :preference do
-          resources :timezones, only: :index
-        end
         # configuration
         resource :configuration, only: [:show]
         # contact page
@@ -42,11 +37,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
           resource :preference, only: :show
-        end
-        # preferences
-        resource :preference, only: [:show]
-        namespace :preference do
-          resources :timezones, only: :index
         end
         # configuration
         resource :configuration, only: [:show]
@@ -72,11 +62,6 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
           resource :preference, only: :show
-        end
-        # preferences
-        resource :preference, only: [:show]
-        namespace :preference do
-          resources :timezones, only: :index
         end
         # configuration
         resource :configuration, only: [:show]

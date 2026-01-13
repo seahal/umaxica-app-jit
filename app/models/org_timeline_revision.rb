@@ -32,6 +32,11 @@ class OrgTimelineRevision < NewsRecord
   include ::PublicId
 
   belongs_to :org_timeline, inverse_of: :org_timeline_revisions
+  has_one :latest_timeline,
+          class_name: "OrgTimeline",
+          foreign_key: :latest_revision_id,
+          dependent: :nullify,
+          inverse_of: :latest_revision_record
 
   validates :permalink, presence: true, length: { maximum: 200 }
   validates :response_mode, presence: true

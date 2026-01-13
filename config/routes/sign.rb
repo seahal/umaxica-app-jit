@@ -19,8 +19,6 @@ Rails.application.routes.draw do
           resources :emails, only: %i(new create edit update)
           resources :passkeys, only: %i(new create edit update)
         end
-        # Preferences
-        resource :preference, only: :show
         # Sign in/out
         resource :in, only: %i(new)
         namespace :in do
@@ -91,8 +89,6 @@ Rails.application.routes.draw do
           resource :passkey, only: %i(new create edit update)
           resource :secret, only: %i(new create)
         end
-        # Preferences
-        resource :preference, only: :show
         # Settings
         resource :configuration, only: :show
         namespace :configuration do

@@ -66,26 +66,24 @@
 
 ## Environments & Endpoints
   - Corporate site:
-    - `www.umaxica.app`
-    - `[jp|us].news.umaxica.com`
-    - `[jp|us].help.umaxica.com`
-    - `[jp|us].docs.umaxica.com`
+    - `umaxica.com`
+    - `www.[jp|us].news.umaxica.com`
+    - `www.[jp|us].help.umaxica.com`
+    - `www.[jp|us].docs.umaxica.com`
   - Service endpoints:
-    - `www.umaxica.app`
+    - `umaxica.app`
     - `sign.umaxica.app`
-    - `[jp|us].docs.umaxica.app`
-    - `[jp|us].help.umaxica.app`
-    - `[jp|us].news.umaxica.app`
+    - `www.[jp|us].docs.umaxica.app`
+    - `www.[jp|us].help.umaxica.app`
+    - `www.[jp|us].news.umaxica.app`
   - Staff site:
-    - `www.umaxica.org`
+    - `umaxica.org`
     - `sign.umaxica.org`
-    - `[jp|us].docs.umaxica.org`
-    - `[jp|us].help.umaxica.org`
-    - `[jp|us].news.umaxica.org`
+    - `www.[jp|us].docs.umaxica.org`
+    - `www.[jp|us].help.umaxica.org`
+    - `www.[jp|us].news.umaxica.org`
   - Network endpoints:
-    - `asset-[jp|us].umaxica.net`
-    - `css.umaxica.net`
-      - NOTE: This endopoints are not run on Ruby on Rails
+    - `a[jp|us].umaxica.net`
 
 ## Secrets & Credentials
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.

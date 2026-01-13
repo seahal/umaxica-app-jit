@@ -29,9 +29,11 @@ class OrgPreferenceCookieTest < ActiveSupport::TestCase
   end
 
   test "belongs to preference" do
-    cookie = OrgPreferenceCookie.new(targetable: true)
-    assert_not cookie.valid?
-    assert_includes cookie.errors[:preference], "を入力してください"
+    I18n.with_locale(:ja) do
+      cookie = OrgPreferenceCookie.new(targetable: true)
+      assert_not cookie.valid?
+      assert_includes cookie.errors[:preference], "を入力してください"
+    end
   end
 
   test "has false as default for all flags" do

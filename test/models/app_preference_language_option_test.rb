@@ -5,6 +5,11 @@
 #  id         :string           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  position   :integer          not null
+#
+# Indexes
+#
+#  app_preference_language_options_position_unique  (position) UNIQUE
 #
 
 # frozen_string_literal: true

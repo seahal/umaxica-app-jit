@@ -10,13 +10,28 @@
   </p>
 
   <%= form_with url: apex_app_preference_reset_path, method: :delete, class: "mt-6" do |f| %>
+    <% if @preference&.errors&.any? %>
+      <div class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mb-4">
+        <ul class="list-disc ml-6">
+          <% @preference.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="flex items-center gap-3 mb-4">
+      <%= check_box_tag :confirm_reset, "1", @preference&.confirm_reset == "1", required: true, class: "h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" %>
+      <%= label_tag :confirm_reset, t("apex.app.preference.resets.confirm"), class: "text-sm font-medium text-slate-700" %>
+    </div>
+
     <div class="flex items-center gap-3">
       <%= f.submit t("apex.app.preference.resets.button"),
-                   data: { turbo_confirm: t("apex.app.preference.resets.confirm"),
+                   data: {
                            turbo_submits_with: t("apex.app.preferences.submitting") },
                    class: "inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500" %>
       <%= link_to t("apex.app.preference.resets.back"),
-                  apex_app_preference_path,
+                  apex_app_preference_url,
                   class: "inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
     </div>
   <% end %>

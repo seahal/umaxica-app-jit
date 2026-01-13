@@ -5,14 +5,21 @@
 #  id         :string           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  position   :integer          not null
+#
+# Indexes
+#
+#  app_preference_language_options_position_unique  (position) UNIQUE
 #
 
 ja:
   id: "JA"
+  position: 1
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 
 en:
   id: "EN"
+  position: 2
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

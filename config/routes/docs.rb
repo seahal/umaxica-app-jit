@@ -7,10 +7,8 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # preferences
-        resource :preference, only: [:show], controller: :preferences
         # api endpoint
-        namespace :v1 do
+        namespace :v1, defaults: { format: :json } do
           resource :health, only: :show
           resources :posts, only: [:index, :show] do
             resources :versions, only: [:index, :show]
@@ -24,10 +22,8 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # preferences
-        resource :preference, only: [:show], controller: :preferences
         # api endpoint
-        namespace :v1 do
+        namespace :v1, defaults: { format: :json } do
           resource :health, only: :show
           resources :posts, only: [:index, :show] do
             resources :versions, only: [:index, :show]
@@ -42,10 +38,8 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # preferences
-        resource :preference, only: [:show], controller: :preferences
         # api endpoint
-        namespace :v1 do
+        namespace :v1, defaults: { format: :json } do
           resource :health, only: :show
           resources :posts, only: [:index, :show] do
             resources :versions, only: [:index, :show]

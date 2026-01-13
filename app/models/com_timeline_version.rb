@@ -36,4 +36,9 @@ class ComTimelineVersion < NewsRecord
   validates :expires_at, presence: true
 
   belongs_to :com_timeline, inverse_of: :com_timeline_versions
+  has_one :latest_timeline,
+          class_name: "ComTimeline",
+          foreign_key: :latest_version_id,
+          dependent: :nullify,
+          inverse_of: :latest_version_record
 end

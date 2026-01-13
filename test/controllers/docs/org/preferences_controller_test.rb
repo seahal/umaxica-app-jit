@@ -2,9 +2,9 @@
 
 require "test_helper"
 
-class Docs::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
+class Docs::Org::PreferenceControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
-    get docs_org_preference_url
+    get apex_org_preference_url(lx: "ja", ri: "jp")
     assert_response :success
   end
 
@@ -12,14 +12,14 @@ class Docs::Org::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get docs_org_root_url
     assert_response :success
     assert_match "footer", response.body
-    assert_match docs_org_preference_path, response.body
+    assert_match apex_org_preference_url, response.body
   end
 
-  test "preference page includes link to apex preference" do
-    get docs_org_preference_url
+  test "preference page links to apex preference" do
+    get apex_org_preference_url(lx: "ja", ri: "jp")
     assert_response :success
     assert_select "a[href*=?]",
                   apex_org_preference_url,
-                  text: I18n.t("shared.links.apex_preference")
+                  text: "プリファレンス"
   end
 end

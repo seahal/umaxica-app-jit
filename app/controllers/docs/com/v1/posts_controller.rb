@@ -19,6 +19,7 @@ module Docs
         def show_document
           permalink = params[:id]
           @document = ComDocument.available.find_by!(permalink: permalink)
+          @version = @document.latest_version
 
           Rails.event.notify(
             "docs.post.viewed",
@@ -26,75 +27,13 @@ module Docs
             permalink: @document.permalink,
           )
 
-          # Handle different response modes
-          case @document.response_mode
-          when "redirect"
-            handle_redirect_mode
-          when "pdf"
-            # TODO: Implement PDF rendering
-            render plain: "PDF rendering not implemented yet", status: :not_implemented
-          when "text"
-            render plain: @document.latest_version.body, content_type: "text/plain"
-          else
-            # html
-            @version = @document.latest_version
-            render "show"
-          end
+          render json: { document: @document, version: @version }
         rescue ActiveRecord::RecordNotFound
           Rails.event.notify(
             "docs.post.not_found",
             permalink: permalink,
           )
           raise
-        end
-
-        # Handle redirect response mode with security validation
-        # brakeman:skip-check Redirect - URL is validated by safe_redirect_url?
-        def handle_redirect_mode
-          redirect_url = @document.redirect_url
-
-          if redirect_url.blank?
-            Rails.event.notify(
-              "docs.post.empty_redirect",
-              document_id: @document.id,
-            )
-            render plain: "Redirect URL is not configured", status: :bad_request
-            return
-          end
-
-          unless safe_redirect_url?(redirect_url)
-            Rails.event.notify(
-              "docs.post.invalid_redirect",
-              document_id: @document.id,
-              redirect_url: redirect_url,
-            )
-            render plain: "Invalid redirect URL", status: :bad_request
-            return
-          end
-
-          # URL has been validated - safe to redirect
-          redirect_to redirect_url, allow_other_host: true
-        end
-
-        def safe_redirect_url?(url)
-          return false if url.blank?
-
-          begin
-            uri = URI.parse(url)
-            # Only allow http and https schemes
-            return false unless %w(http https).include?(uri.scheme)
-
-            # Check against allowlist if configured
-            allowed_hosts = ENV["DOCS_ALLOWED_REDIRECT_HOSTS"]&.split(",")
-            if allowed_hosts.present?
-              return allowed_hosts.any? { |host| uri.host&.end_with?(host.strip) }
-            end
-
-            # If no allowlist, allow all valid http/https URLs
-            true
-          rescue URI::InvalidURIError
-            false
-          end
         end
 
         def list_documents
@@ -140,7 +79,16 @@ module Docs
             results_count: @total_count,
           )
 
-          render "index"
+          render json: {
+            data: @documents,
+            meta: {
+              query: @query,
+              page: @page,
+              per_page: @per_page,
+              total_count: @total_count,
+              total_pages: @total_pages,
+            },
+          }
         end
       end
     end

@@ -12,6 +12,8 @@
 class ComPreferenceColorthemeOption < PreferenceRecord
   include StringPrimaryKey
 
+  scope :ordered, -> { order(:position, :id) }
+
   has_many :com_preference_colorthemes,
            class_name: "ComPreferenceColortheme",
            foreign_key: :option_id,
@@ -20,4 +22,9 @@ class ComPreferenceColorthemeOption < PreferenceRecord
 
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Za-z0-9_]+\z/ }
+
+  validates :position,
+            presence: true,
+            numericality: { only_integer: true, greater_than: 0 },
+            uniqueness: true
 end

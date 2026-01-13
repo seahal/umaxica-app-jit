@@ -5,7 +5,7 @@ require "test_helper"
 module Core
   module Org
     module V1
-      class PreferencesControllerTest < ActionDispatch::IntegrationTest
+      class PreferenceControllerTest < ActionDispatch::IntegrationTest
         setup do
           @preference = org_preferences(:one)
         end

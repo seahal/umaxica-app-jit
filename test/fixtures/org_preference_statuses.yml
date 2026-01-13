@@ -5,10 +5,17 @@
 #  id         :string(255)      default("NEYO"), not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  position   :integer          not null
+#
+# Indexes
+#
+#  org_preference_statuses_position_unique  (position) UNIQUE
 #
 
 neyo:
   id: NEYO
+  position: 1
 
 deleted:
   id: DELETED
+  position: 2

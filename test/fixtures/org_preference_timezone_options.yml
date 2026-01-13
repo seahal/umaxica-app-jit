@@ -9,6 +9,8 @@
 
 utc:
   id: "Etc/UTC"
+  position: 1
 
 asia_tokyo:
   id: "Asia/Tokyo"
+  position: 2

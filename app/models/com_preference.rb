@@ -19,6 +19,7 @@
 
 class ComPreference < PreferenceRecord
   include ::PublicId
+  include ::Preference::Resettable
 
   belongs_to :com_preference_status,
              foreign_key: :status_id,

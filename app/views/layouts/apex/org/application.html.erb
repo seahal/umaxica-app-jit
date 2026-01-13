@@ -67,7 +67,7 @@
   <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
     <nav class="flex flex-wrap items-center gap-4">
       <a class="font-semibold text-[hsl(var(--foreground))]" href="http://org.localhost:3000/"><%= t('apex.org.preferences.footer.home') %></a>
-      <%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+      <%= link_to t('apex.org.preferences.footer.preference'), apex_org_preference_url, class: "font-semibold text-[hsl(var(--foreground))]" %>
       <%= link_to t("apex.org.configurations.title"), apex_org_configuration_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
     </nav>
     <div class="mt-4">

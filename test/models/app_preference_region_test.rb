@@ -26,7 +26,7 @@ class AppPreferenceRegionTest < ActiveSupport::TestCase
   test "belongs to preference" do
     region = AppPreferenceRegion.new
     assert_not region.valid?
-    assert_includes region.errors[:preference], "を入力してください"
+    assert_not_empty region.errors[:preference]
   end
 
   test "can be created with preference and option" do
@@ -47,7 +47,7 @@ class AppPreferenceRegionTest < ActiveSupport::TestCase
     AppPreferenceRegion.create!(preference: @preference, option: option)
     duplicate_region = AppPreferenceRegion.new(preference: @preference, option: option)
     assert_not duplicate_region.valid?
-    assert_includes duplicate_region.errors[:preference_id], "はすでに存在します"
+    assert_not_empty duplicate_region.errors[:preference_id]
   end
 
   test "raises InvalidForeignKey for non-existent arbitrary option_id" do

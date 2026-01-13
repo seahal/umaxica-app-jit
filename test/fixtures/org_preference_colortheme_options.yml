@@ -5,13 +5,21 @@
 #  id         :string           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  position   :integer          not null
+#
+# Indexes
+#
+#  org_preference_colortheme_options_position_unique  (position) UNIQUE
 #
 
 light:
   id: "light"
+  position: 1
 
 dark:
   id: "dark"
+  position: 2
 
 system:
   id: "system"
+  position: 3

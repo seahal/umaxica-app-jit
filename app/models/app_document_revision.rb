@@ -32,6 +32,11 @@ class AppDocumentRevision < DocumentRecord
   include ::PublicId
 
   belongs_to :app_document, inverse_of: :app_document_revisions
+  has_one :latest_document,
+          class_name: "AppDocument",
+          foreign_key: :latest_revision_id,
+          dependent: :nullify,
+          inverse_of: :latest_revision_record
 
   validates :permalink, presence: true, length: { maximum: 200 }
   validates :response_mode, presence: true

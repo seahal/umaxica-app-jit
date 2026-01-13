@@ -36,4 +36,9 @@ class OrgTimelineVersion < NewsRecord
   validates :expires_at, presence: true
 
   belongs_to :org_timeline, inverse_of: :org_timeline_versions
+  has_one :latest_timeline,
+          class_name: "OrgTimeline",
+          foreign_key: :latest_version_id,
+          dependent: :nullify,
+          inverse_of: :latest_version_record
 end

@@ -221,7 +221,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       get public_send("edit_apex_#{domain[:name]}_preference_reset_url", default_state)
       assert_response :success
 
-      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp")
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"), params: { confirm_reset: "1" }
       assert_redirected_to public_send(
         "edit_apex_#{domain[:name]}_preference_reset_url",
         default_state,
@@ -235,11 +235,28 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_not_nil pref.expires_at
     end
 
+    test "#{domain[:name]} domain reset without confirmation returns error" do
+      host!(domain[:host])
+      pref, = assert_preference_created(domain)
+      original_expires_at = pref.expires_at
+
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp")
+      assert_response :unprocessable_content
+
+      assert_select ".bg-red-50" do
+        assert_select "li"
+      end
+
+      pref.reload
+      assert_equal "NEYO", pref.status_id
+      assert_equal original_expires_at, pref.expires_at
+    end
+
     test "#{domain[:name]} domain creates new preference after reset" do
       host!(domain[:host])
       pref, token, cookie_name = assert_preference_created(domain)
 
-      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp")
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"), params: { confirm_reset: "1" }
 
       get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
       assert_response :success
@@ -291,6 +308,19 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       assert_select "a[href=?]", public_send("edit_apex_#{domain[:name]}_preference_region_timezone_path", state)
       assert_select "a[href=?]", public_send("edit_apex_#{domain[:name]}_preference_region_language_path", state)
+    end
+  end
+
+  DOMAINS.each do |domain|
+    test "#{domain[:name]} domain reset edit page has confirmation checkbox" do
+      host!(domain[:host])
+      assert_preference_created(domain)
+
+      get public_send("edit_apex_#{domain[:name]}_preference_reset_url", ri: "jp")
+      assert_response :success
+
+      assert_select "input[type='checkbox'][name='confirm_reset'][required]"
+      assert_select "label[for='confirm_reset']"
     end
   end
 

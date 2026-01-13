@@ -9,6 +9,8 @@
 
 ja:
   id: "JA"
+  position: 1
 
 en:
   id: "EN"
+  position: 2

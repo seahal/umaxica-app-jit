@@ -19,10 +19,7 @@ module Docs
             versions_count: @versions.size,
           )
 
-          respond_to do |format|
-            format.html
-            format.json { render json: @versions }
-          end
+          render json: @versions
         end
 
         # GET /posts/:post_id/versions/:id
@@ -43,70 +40,7 @@ module Docs
             version_id: @version_id,
           )
 
-          respond_to do |format|
-            format.html
-            format.json { render json: @version }
-          end
-        end
-
-        # GET /posts/:post_id/versions/new
-        def new
-          @post_id = params[:post_id]
-          @version = { version: "", body: "" }
-        end
-
-        # GET /posts/:post_id/versions/:id/edit
-        def edit
-          @post_id = params[:post_id]
-          @version_id = params[:id]
-          @version = { id: @version_id, version: "1.0.0", body: "" }
-        end
-
-        # POST /posts/:post_id/versions
-        def create
-          @post_id = params[:post_id]
-          Rails.event.notify(
-            "docs.version.created",
-            post_id: @post_id,
-          )
-
-          safe_post_id = safe_segment(@post_id)
-          redirect_to docs_com_v1_post_versions_path(safe_post_id), allow_other_host: false
-        end
-
-        # PATCH/PUT /posts/:post_id/versions/:id
-        def update
-          @post_id = params[:post_id]
-          @version_id = params[:id]
-          Rails.event.notify(
-            "docs.version.updated",
-            post_id: @post_id,
-            version_id: @version_id,
-          )
-
-          safe_post_id = safe_segment(@post_id)
-          safe_version_id = safe_segment(@version_id)
-          redirect_to docs_com_v1_post_version_path(safe_post_id, safe_version_id), allow_other_host: false
-        end
-
-        # DELETE /posts/:post_id/versions/:id
-        def destroy
-          @post_id = params[:post_id]
-          @version_id = params[:id]
-          Rails.event.notify(
-            "docs.version.deleted",
-            post_id: @post_id,
-            version_id: @version_id,
-          )
-
-          safe_post_id = safe_segment(@post_id)
-          redirect_to docs_com_v1_post_versions_path(safe_post_id), allow_other_host: false
-        end
-
-        private
-
-        def safe_segment(value)
-          value.to_s.gsub(/[^0-9A-Za-z_-]/, "")
+          render json: @version
         end
       end
     end

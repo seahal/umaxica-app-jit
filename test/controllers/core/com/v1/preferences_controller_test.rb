@@ -5,7 +5,7 @@ require "test_helper"
 module Core
   module Com
     module V1
-      class PreferencesControllerTest < ActionDispatch::IntegrationTest
+      class PreferenceControllerTest < ActionDispatch::IntegrationTest
         setup do
           @preference = com_preferences(:one)
         end

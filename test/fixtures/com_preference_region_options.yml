@@ -9,6 +9,8 @@
 
 us:
   id: "US"
+  position: 1
 
 jp:
   id: "JP"
+  position: 2

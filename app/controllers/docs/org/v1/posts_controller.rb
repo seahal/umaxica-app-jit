@@ -15,6 +15,8 @@ module Docs
             "docs.posts.listed",
             posts_count: @posts.size,
           )
+
+          render json: @posts
         end
 
         def show
@@ -30,6 +32,8 @@ module Docs
             "docs.post.viewed",
             post_id: @post_id,
           )
+
+          render json: @post
         end
       end
     end

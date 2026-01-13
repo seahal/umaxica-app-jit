@@ -19,6 +19,7 @@
 
 class AppPreference < PreferenceRecord
   include ::PublicId
+  include ::Preference::Resettable
 
   belongs_to :app_preference_status,
              foreign_key: :status_id,

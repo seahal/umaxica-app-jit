@@ -1,4 +1,11 @@
 en:
+  reproduce_issue:
+    missing_position: "Attempting to create AppPreferenceStatus without position..."
+    duplicate_position: "\nAttempting to create AppPreferenceStatus with duplicate position..."
+    success_created: "Success: Created with id %{id}, position: %{position}"
+    expected_error: "Expected Error: %{message}"
+    expected_db_error: "Expected DB Error: %{message}"
+    check_positions: "\nChecking existing positions:"
   turnstile_error: "Security verification failed. Please try again."
   hello: "Hello world 2"
   messages:

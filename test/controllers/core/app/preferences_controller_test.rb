@@ -2,9 +2,9 @@
 
 require "test_helper"
 
-class Core::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
+class Core::App::PreferenceControllerTest < ActionDispatch::IntegrationTest
   test "should get show" do
-    get core_app_preference_url
+    get apex_app_preference_url(lx: "ja", ri: "jp")
     assert_response :success
   end
 
@@ -12,20 +12,20 @@ class Core::App::PreferencesControllerTest < ActionDispatch::IntegrationTest
     get core_app_root_url
     assert_response :success
     assert_match "footer", response.body
-    assert_match core_app_preference_path, response.body
+    assert_match apex_app_preference_url, response.body
   end
 
   test "preference page includes app.localhost link" do
-    get core_app_preference_url
+    get apex_app_preference_url(lx: "ja", ri: "jp")
     assert_response :success
-    assert_select "a[href=?]", core_app_preference_url(host: "app.localhost")
+    assert_select "a[href=?]", apex_app_preference_url(host: "app.localhost", lx: "ja", ri: "jp")
   end
 
   test "preference page links to apex preference" do
-    get core_app_preference_url
+    get apex_app_preference_url(lx: "ja", ri: "jp")
     assert_response :success
     assert_select "a[href*=?]",
                   apex_app_preference_url,
-                  text: I18n.t("shared.links.apex_preference")
+                  text: "プリファレンス"
   end
 end
