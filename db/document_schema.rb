@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_12_175715) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_13_030000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -99,16 +99,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_175715) do
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
     t.string "permalink", limit: 200, default: "", null: false
     t.integer "position", default: 0, null: false
-    t.string "public_id", limit: 21, default: "", null: false
     t.datetime "published_at", default: ::Float::INFINITY, null: false
     t.string "redirect_url"
     t.string "response_mode", default: "html", null: false
     t.string "revision_key", default: "", null: false
+    t.string "slug_id", limit: 32, default: "", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["permalink"], name: "index_app_documents_on_permalink", unique: true
-    t.index ["public_id"], name: "index_app_documents_on_public_id"
     t.index ["published_at", "expires_at"], name: "index_app_documents_on_published_at_and_expires_at"
+    t.index ["slug_id"], name: "index_app_documents_on_slug_id"
     t.index ["status_id"], name: "index_app_documents_on_status_id"
   end
 
@@ -197,16 +197,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_175715) do
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
     t.string "permalink", limit: 200, default: "", null: false
     t.integer "position", default: 0, null: false
-    t.string "public_id", limit: 21, default: "", null: false
     t.datetime "published_at", default: ::Float::INFINITY, null: false
     t.string "redirect_url"
     t.string "response_mode", default: "html", null: false
     t.string "revision_key", default: "", null: false
+    t.string "slug_id", limit: 32, default: "", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["permalink"], name: "index_com_documents_on_permalink", unique: true
-    t.index ["public_id"], name: "index_com_documents_on_public_id"
     t.index ["published_at", "expires_at"], name: "index_com_documents_on_published_at_and_expires_at"
+    t.index ["slug_id"], name: "index_com_documents_on_slug_id"
     t.index ["status_id"], name: "index_com_documents_on_status_id"
   end
 
@@ -295,16 +295,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_12_175715) do
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
     t.string "permalink", limit: 200, default: "", null: false
     t.integer "position", default: 0, null: false
-    t.string "public_id", limit: 21, default: "", null: false
     t.datetime "published_at", default: ::Float::INFINITY, null: false
     t.string "redirect_url"
     t.string "response_mode", default: "html", null: false
     t.string "revision_key", default: "", null: false
+    t.string "slug_id", limit: 32, default: "", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.index ["permalink"], name: "index_org_documents_on_permalink", unique: true
-    t.index ["public_id"], name: "index_org_documents_on_public_id"
     t.index ["published_at", "expires_at"], name: "index_org_documents_on_published_at_and_expires_at"
+    t.index ["slug_id"], name: "index_org_documents_on_slug_id"
     t.index ["status_id"], name: "index_org_documents_on_status_id"
   end
 

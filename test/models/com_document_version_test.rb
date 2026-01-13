@@ -95,7 +95,7 @@ class ComDocumentVersionTest < ActiveSupport::TestCase
     )
 
     assert_not version2.valid?
-    assert_includes version2.errors[:public_id], "はすでに存在します"
+    assert_includes version2.errors[:public_id], I18n.t("errors.messages.taken")
   end
 
   test "validates public_id length" do
@@ -112,6 +112,6 @@ class ComDocumentVersionTest < ActiveSupport::TestCase
     )
 
     assert_not version.valid?
-    assert_includes version.errors[:public_id], "は21文字以内で入力してください"
+    assert_includes version.errors[:public_id], I18n.t("errors.messages.too_long", count: 21)
   end
 end

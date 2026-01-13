@@ -11,26 +11,26 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  status_id     :string(255)      default("NEYO"), not null
-#  public_id     :string(21)       default(""), not null
+#  slug_id       :string(32)       default(""), not null
 #  permalink     :string(200)      default(""), not null
 #  revision_key  :string           default(""), not null
 #
 # Indexes
 #
 #  index_org_documents_on_permalink                    (permalink) UNIQUE
-#  index_org_documents_on_public_id                    (public_id)
 #  index_org_documents_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_org_documents_on_slug_id                      (slug_id)
 #  index_org_documents_on_status_id                    (status_id)
 #
 
 one:
-  public_id: "org_documents_0000001"
+  slug_id: "org-documents-0000001"
   status_id: "NEYO"
   permalink: "org_document_one"
   revision_key: "rev_org_document_one"
 
 two:
-  public_id: "org_documents_0000002"
+  slug_id: "org-documents-0000002"
   status_id: "NEYO"
   permalink: "org_document_two"
   revision_key: "rev_org_document_two"

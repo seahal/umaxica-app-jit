@@ -13,12 +13,12 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  status_id     :string(255)      default("NEYO"), not null
-#  public_id     :string(21)       default(""), not null
+#  slug_id       :string(32)       default(""), not null
 #
 # Indexes
 #
-#  index_org_timelines_on_public_id                    (public_id)
 #  index_org_timelines_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_org_timelines_on_slug_id                      (slug_id)
 #  index_org_timelines_on_status_id                    (status_id)
 #
 

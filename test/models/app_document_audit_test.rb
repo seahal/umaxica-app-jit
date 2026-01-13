@@ -74,7 +74,7 @@ class AppDocumentAuditTest < ActiveSupport::TestCase
     AppDocumentAuditEvent.find_or_create_by!(id: "NEYO")
     doc = AppDocument.create!(
       status_id: "NEYO",
-      public_id: "test_doc_#{SecureRandom.hex(4)}",
+      slug_id: "test-doc-#{SecureRandom.hex(4)}",
       permalink: "test_perm_#{SecureRandom.hex(4)}",
       revision_key: "rev_#{SecureRandom.hex(4)}",
       published_at: Time.current,

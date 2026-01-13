@@ -79,7 +79,7 @@ class AppTimelineAuditTest < ActiveSupport::TestCase
 
     timeline = AppTimeline.create!(
       status_id: "NEYO",
-      public_id: "tl_#{SecureRandom.hex(4)}",
+      slug_id: "tl-#{SecureRandom.hex(4)}",
       published_at: Time.current,
       expires_at: 1.year.from_now,
     )
