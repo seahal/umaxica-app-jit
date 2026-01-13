@@ -1358,10 +1358,20 @@ en:
         empty: "No posts found"
         select_title: "Select a post"
         select_description: "Click on a post from the list to view its details"
-    versions:
-      index:
-        title: "Versions"
-        description: "News versions list"
+      versions:
+        index:
+          title: "Versions"
+          description: "News versions list"
       show:
         title: "Version"
         description: "News version details"
+
+core:
+  app:
+    layout:
+      nav:
+        contact: "Contact"
+  com:
+    layout:
+      nav:
+        contact: "Contact"

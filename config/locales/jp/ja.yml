@@ -1216,10 +1216,16 @@ ja:
         turnstile_error: "Turnstileの検証に失敗しました。ページを更新して再試行してください。"
         update_failure: "設定を保存できませんでした。もう一度お試しください。"
     com:
+      layout:
+        nav:
+          contact: "お問い合わせ"
       preferences:
         footer:
           preference: "設定"
     app:
+      layout:
+        nav:
+          contact: "お問い合わせ"
       preferences:
         title: "メール設定"
         description: "ログイン不要ですぐに通知設定を変更できるリンクをリクエストします。"

@@ -15,9 +15,6 @@ module Apex
 
       rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
-      before_action :set_locale
-      before_action :set_timezone
-
       helper_method :logged_in_user?, :logged_in? if respond_to?(:helper_method)
 
       private

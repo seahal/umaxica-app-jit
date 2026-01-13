@@ -428,6 +428,16 @@ ja:
             not_withdrawn: "退会済みでないため、削除できません。"
             failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
           authenticate_error: "認証が必要です。ログインしてください。"
+
+core:
+  app:
+    layout:
+      nav:
+        contact: "お問い合わせ"
+  com:
+    layout:
+      nav:
+        contact: "お問い合わせ"
   news:
     posts:
       index:

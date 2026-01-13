@@ -582,6 +582,9 @@ en:
     system: "System Theme"
   root:
     app:
+      layout:
+        nav:
+          contact: "Contact"
       preferences:
         up_link: "Back to top"
         title: "Preferences"
@@ -1094,6 +1097,9 @@ en:
         turnstile_error: "Turnstile verification failed. Please refresh and try again."
         update_failure: "We could not save your preferences. Please try again."
     app:
+      layout:
+        nav:
+          contact: "Contact"
       preferences:
         title: "Email Preferences"
         description: "Request a secure link to manage your email notifications without signing in."
@@ -1566,6 +1572,9 @@ en:
     faq: "FAQ"
   core:
     com:
+      layout:
+        nav:
+          contact: "Contact"
       preferences:
         footer:
           preference: "Preferences"
