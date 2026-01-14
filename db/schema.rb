@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_07_140000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_14_115955) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -85,6 +85,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_140000) do
     t.string "category_id", limit: 255, default: "NEYO", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "public_id", limit: 21, default: "", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.string "token", limit: 32, default: "", null: false
@@ -193,6 +194,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_140000) do
     t.string "category_id", limit: 255, default: "NEYO", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "public_id", limit: 21, default: "", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.string "token", limit: 32, default: "", null: false
@@ -279,6 +281,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_07_140000) do
     t.string "category_id", limit: 255, default: "NEYO", null: false
     t.datetime "created_at", null: false
     t.inet "ip_address", default: "0.0.0.0", null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "public_id", limit: 21, default: "", null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.string "token", limit: 32, default: "", null: false

@@ -15,7 +15,7 @@ module CookieHelper
     token = cookies[key]
     return nil if token.blank?
 
-    PreferenceToken.decode(token, host: host.to_s.presence || "unknown")
+    Preference::Token.decode(token, host: host.to_s.presence || "unknown")
   end
 
   def response_cookie_expiry(name)

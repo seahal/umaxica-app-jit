@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_13_030000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_14_115821) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -97,6 +97,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_13_030000) do
   create_table "app_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "permalink", limit: 200, default: "", null: false
     t.integer "position", default: 0, null: false
     t.datetime "published_at", default: ::Float::INFINITY, null: false
@@ -195,6 +196,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_13_030000) do
   create_table "com_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "permalink", limit: 200, default: "", null: false
     t.integer "position", default: 0, null: false
     t.datetime "published_at", default: ::Float::INFINITY, null: false
@@ -293,6 +295,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_13_030000) do
   create_table "org_documents", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "permalink", limit: 200, default: "", null: false
     t.integer "position", default: 0, null: false
     t.datetime "published_at", default: ::Float::INFINITY, null: false

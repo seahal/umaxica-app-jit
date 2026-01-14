@@ -19,8 +19,6 @@
   <div class="absolute -top-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-slate-200/40 blur-3xl"></div>
   <div class="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-amber-100/50 blur-3xl"></div>
 </div>
-<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
-<% edge_host = ENV["EDGE_STAFF_URL"].presence %>
 
 <div class="mx-auto max-w-6xl px-6">
   <%= render "concern/flash_messages" %>
@@ -30,11 +28,8 @@
       <div class="flex flex-col">
         <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
         <h1 class="text-3xl font-semibold tracking-tight text-slate-900">
-          <% if edge_host.present? %>
-            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/">Umaxica(org)</a>
-          <% else %>
-            Umaxica(org)
-          <% end %>
+
+            <a class="transition hover:text-[hsl(var(--primary))]" href="http://org.localhost:3000/">Umaxica (org)</a>
         </h1>
       </div>
       <nav class="flex flex-wrap items-center justify-end gap-3 text-sm">

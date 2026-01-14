@@ -13,6 +13,7 @@ Rails.application.routes.draw do
           resource :health, only: :show
           resource :csrf, only: :show
           resource :preference, only: :show
+          # TODO: Add preference refresh endpoint (CSRF-protected) for React Router 401/419 recovery.
         end
         # configuration
         resource :configuration, only: [:show]
@@ -77,16 +78,19 @@ Rails.application.routes.draw do
           namespace :com do
             resources :posts do
               resources :versions
+              resources :revisions
             end
           end
           namespace :org do
             resources :posts do
               resources :versions
+              resources :revisions
             end
           end
           namespace :app do
             resources :posts do
               resources :versions
+              resources :revisions
             end
           end
         end
@@ -95,16 +99,19 @@ Rails.application.routes.draw do
           namespace :com do
             resources :posts do
               resources :versions
+              resources :revisions
             end
           end
           namespace :org do
             resources :posts do
               resources :versions
+              resources :revisions
             end
           end
           namespace :app do
             resources :posts do
               resources :versions
+              resources :revisions
             end
           end
         end
@@ -112,12 +119,15 @@ Rails.application.routes.draw do
         namespace :help do
           namespace :com do
             resources :contacts
+            resources :revisions
           end
           namespace :org do
             resources :contacts
+            resources :revisions
           end
           namespace :app do
             resources :contacts
+            resources :revisions
           end
         end
       end

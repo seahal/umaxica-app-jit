@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "openssl"
+require_relative "../../app/controllers/concerns/preference/jwt_configuration"
 
-class PreferenceTokenTest < ActiveSupport::TestCase
+class PreferenceTokenModelTest < ActiveSupport::TestCase
   setup do
     @host = "example.com".freeze
     @preferences = {
@@ -11,69 +13,197 @@ class PreferenceTokenTest < ActiveSupport::TestCase
       "tz" => "utc",
       "ct" => "dark",
     }.freeze
+    @preference_type = "AppPreference".freeze
+    @public_id = "pref_public_id".freeze
+    @private_key = OpenSSL::PKey::EC.generate("prime256v1")
+    @public_key = @private_key
+    @issuer = "jit-preference".freeze
+    @audiences = ["example.com"].freeze
   end
 
   test "encode returns a token string" do
-    token = PreferenceToken.encode(@preferences, host: @host)
-    assert_not_nil token
-    assert_kind_of String, token
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+      assert_not_nil token
+      assert_kind_of String, token
+    end
   end
 
   test "encode returns nil for blank preferences or host" do
-    assert_nil PreferenceToken.encode({}, host: @host)
-    assert_nil PreferenceToken.encode(@preferences, host: nil)
+    with_jwt_keys do
+      assert_nil Preference::Token.encode(
+        {},
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+      assert_nil Preference::Token.encode(
+        @preferences,
+        host: nil,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+    end
   end
 
   test "decode returns payload for valid token and host" do
-    token = PreferenceToken.encode(@preferences, host: @host)
-    payload = PreferenceToken.decode(token, host: @host)
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+      payload = Preference::Token.decode(token, host: @host)
 
-    assert_kind_of Hash, payload
-    assert_equal @host, payload["host"]
-    assert_equal @preferences, payload["preferences"]
+      assert_kind_of Hash, payload
+      assert_equal @host, payload["host"]
+      assert_equal @preferences, payload["preferences"]
+      assert_equal @preference_type, payload["preference_type"]
+      assert_equal @public_id, payload["public_id"]
+    end
   end
 
   test "decode returns nil for mismatched host" do
-    token = PreferenceToken.encode(@preferences, host: @host)
-    assert_nil PreferenceToken.decode(token, host: "other.com")
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+      assert_nil Preference::Token.decode(token, host: "other.com")
+    end
+  end
+
+  test "decode accepts subdomain host for audience" do
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+
+      payload = Preference::Token.decode(token, host: "app.example.com")
+      assert_kind_of Hash, payload
+    end
   end
 
   test "decode returns nil for invalid token" do
-    assert_nil PreferenceToken.decode("invalid.token", host: @host)
+    with_jwt_keys do
+      assert_nil Preference::Token.decode("invalid.token", host: @host)
+    end
   end
 
   test "decode returns nil for blank inputs" do
-    assert_nil PreferenceToken.decode(nil, host: @host)
-    assert_nil PreferenceToken.decode("token", host: nil)
+    with_jwt_keys do
+      assert_nil Preference::Token.decode(nil, host: @host)
+      assert_nil Preference::Token.decode("token", host: nil)
+    end
   end
 
   test "extract_preferences returns preferences hash from payload" do
     payload = { "preferences" => @preferences }
-    assert_equal @preferences, PreferenceToken.extract_preferences(payload)
+    assert_equal @preferences, Preference::Token.extract_preferences(payload)
   end
 
   test "extract_preferences returns empty hash for invalid payload" do
-    assert_empty(PreferenceToken.extract_preferences(nil))
-    assert_empty(PreferenceToken.extract_preferences({}))
+    assert_empty(Preference::Token.extract_preferences(nil))
+    assert_empty(Preference::Token.extract_preferences({}))
   end
 
   test "handle invalid signature gracefully" do
-    token = PreferenceToken.encode(@preferences, host: @host)
-    tampered_token = token.reverse
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+      tampered_token = token.reverse
 
-    assert_nil PreferenceToken.decode(tampered_token, host: @host)
+      assert_nil Preference::Token.decode(tampered_token, host: @host)
+    end
   end
 
   test "encode returns nil and logs error on StandardError" do
-    PreferenceToken.stub :verifier, -> { raise StandardError, "forced error" } do
-      assert_nil PreferenceToken.encode(@preferences, host: @host)
+    # Temporarily override with faulty implementation
+    original = Preference::JwtConfiguration.method(:private_key)
+    Preference::JwtConfiguration.define_singleton_method(:private_key) { raise StandardError, "forced error" }
+    begin
+      assert_nil Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+    ensure
+      Preference::JwtConfiguration.define_singleton_method(:private_key, &original)
     end
   end
 
   test "decode returns nil and logs error on StandardError" do
-    token = PreferenceToken.encode(@preferences, host: @host)
-    PreferenceToken.stub :verifier, -> { raise StandardError, "forced error" } do
-      assert_nil PreferenceToken.decode(token, host: @host)
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+
+      original = Preference::JwtConfiguration.method(:public_key)
+      Preference::JwtConfiguration.define_singleton_method(:public_key) { raise StandardError, "forced error" }
+      begin
+        assert_nil Preference::Token.decode(token, host: @host)
+      ensure
+        Preference::JwtConfiguration.define_singleton_method(:public_key, &original)
+      end
+    end
+  end
+
+  private
+
+  def with_jwt_keys
+    # Manually stub using define_singleton_method to avoid Minitest stub issues with modules
+    # if methods are missing or weirdly defined.
+
+    methods = %i(private_key public_key issuer audiences)
+    originals = {}
+
+    methods.each do |m|
+      originals[m] =
+        if Preference::JwtConfiguration.respond_to?(m)
+          Preference::JwtConfiguration.method(m)
+        else
+          proc { raise "Method #{m} was missing!" }
+        end
+    end
+
+    # Capture values in local variables for block closure
+    priv_key = @private_key
+    pub_key = @public_key
+    iss = @issuer
+    auds = @audiences
+
+    # Define stubs
+    Preference::JwtConfiguration.define_singleton_method(:private_key) { priv_key }
+    Preference::JwtConfiguration.define_singleton_method(:public_key) { pub_key }
+    Preference::JwtConfiguration.define_singleton_method(:issuer) { iss }
+    Preference::JwtConfiguration.define_singleton_method(:audiences) { auds }
+
+    yield
+  ensure
+    # Restore originals
+    methods.each do |m|
+      if originals[m]
+        Preference::JwtConfiguration.define_singleton_method(m, &originals[m])
+      end
     end
   end
 end

@@ -4,6 +4,10 @@ module Preference::Core
   extend ActiveSupport::Concern
   include Preference::Base
 
+  included do
+    before_action :ensure_preferences_record
+  end
+
   COOKIE_EXPIRY = 400.days
 
   def set_region_preferences_edit
@@ -147,23 +151,20 @@ module Preference::Core
   def delete_preference_cookie
     raise PreferenceOperationError if @preferences.blank?
 
-    # Return early if no preference cookie exists
-    cookie_name = Rails.env.production? ? "__Secure-Jit-Preference" : "Jit-Preference"
-    return if cookies[cookie_name].blank?
+    token_value = refresh_token_value
+    return if token_value.blank?
 
-    # Find existing preference
-    require "sha3"
-    token_digest = SHA3::Digest::SHA3_384.digest(cookies[cookie_name])
+    token_digest = refresh_token_digest(token_value)
     preference = preference_class.find_by(token_digest: token_digest)
     return if preference.blank?
 
     # Store original values for rollback
-    original_status_id = preference.status_id
-    original_expires_at = preference.expires_at
+    preference.status_id
+    preference.expires_at
 
     # Update preference status and create audit log in transaction
-    ActiveRecord::Base.connected_to(role: :writing) do
-      ActiveRecord::Base.transaction do
+    PreferenceRecord.connected_to(role: :writing) do
+      PreferenceRecord.transaction do
         # Update preference to deleted status
         preference.update!(
           status_id: "DELETED",
@@ -176,12 +177,9 @@ module Preference::Core
           event_id: "RESET_BY_USER_DECISION",
           context: { preference_deleted: true },
         )
-      rescue ActiveRecord::RecordInvalid
-        # Rollback preference update if audit registration fails
-        preference.update!(
-          status_id: original_status_id,
-          expires_at: original_expires_at,
-        )
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::InvalidForeignKey => e
+        # Log the error for debugging
+        Rails.logger.error("delete_preference_cookie failed: #{e.class} - #{e.message}")
         raise PreferenceOperationError
       end
     end
@@ -195,7 +193,11 @@ module Preference::Core
     domain = cookie_domain
     delete_options[:domain] = domain if domain.present?
 
-    cookies.delete(cookie_name, **delete_options)
+    cookies.delete(refresh_token_cookie_name, **delete_options)
+    cookies.delete(access_token_cookie_name, **delete_options)
+    @preferences = nil
+    @preference_payload = nil
+    @refresh_token_value = nil
 
     nil
   end

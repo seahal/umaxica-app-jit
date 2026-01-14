@@ -58,14 +58,13 @@ module Preference::Regional
   end
 
   def set_timezone
-    if @preferences.present?
+    timezone = preference_payload_value("tz")
+    if timezone.blank? && @preferences.present?
       timezone_association = "#{@preferences.class.name.underscore}_timezone"
       timezone = @preferences.public_send(timezone_association)&.option_id
-
-      if timezone.present?
-        session[:timezone] = timezone
-      end
     end
+
+    session[:timezone] = timezone if timezone.present?
 
     set_timezone_from_session
   end

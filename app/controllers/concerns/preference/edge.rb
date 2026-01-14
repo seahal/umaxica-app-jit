@@ -5,35 +5,45 @@ module Preference::Edge
   include Preference::Base
 
   def show
-    # Raise error if preference cookie is not set
-    raise PreferenceOperationError if @preferences.blank?
+    preferences = preference_payload_preferences
+    public_id = preference_payload_public_id
 
-    # Determine prefix (app, com, or org)
-    prefix = preference_prefix.downcase
+    if preferences.blank?
+      raise PreferenceOperationError if @preferences.blank?
 
-    # Fetch preference with all associated options
-    preference = preference_class
-      .includes(
-        :"#{prefix}_preference_colortheme",
-        :"#{prefix}_preference_language",
-        :"#{prefix}_preference_timezone",
-        :"#{prefix}_preference_region",
-      )
-      .find(@preferences.id)
+      # Determine prefix (app, com, or org)
+      prefix = preference_prefix.downcase
 
-    # Extract option_id values from each preference option
-    colortheme = preference.send("#{prefix}_preference_colortheme")
-    language = preference.send("#{prefix}_preference_language")
-    timezone = preference.send("#{prefix}_preference_timezone")
-    region = preference.send("#{prefix}_preference_region")
+      preference = preference_class
+        .includes(
+          :"#{prefix}_preference_colortheme",
+          :"#{prefix}_preference_language",
+          :"#{prefix}_preference_timezone",
+          :"#{prefix}_preference_region",
+        )
+        .find(@preferences.id)
+
+      colortheme = preference.send("#{prefix}_preference_colortheme")
+      language = preference.send("#{prefix}_preference_language")
+      timezone = preference.send("#{prefix}_preference_timezone")
+      region = preference.send("#{prefix}_preference_region")
+
+      preferences = {
+        "lx" => language&.option_id || "JA",
+        "ct" => colortheme&.option_id || "system",
+        "ri" => region&.option_id || "JP",
+        "tz" => timezone&.option_id || "Asia/Tokyo",
+      }
+      public_id ||= preference.public_id
+    end
 
     render json: {
       preference: {
-        public_id: preference.public_id,
-        lx: language&.option_id || "JA",
-        ct: colortheme&.option_id || "SYSTEM",
-        ri: region&.option_id || "JP",
-        tz: timezone&.option_id || "ASIA/TOKYO",
+        public_id: public_id,
+        lx: preferences["lx"] || "JA",
+        ct: preferences["ct"] || "system",
+        ri: preferences["ri"] || "JP",
+        tz: preferences["tz"] || "Asia/Tokyo",
       },
     }
   end

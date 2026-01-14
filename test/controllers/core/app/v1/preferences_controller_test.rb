@@ -55,11 +55,30 @@ module Core
           assert_equal "AppPreference", audit.subject_type
         end
 
-        test "should store encrypted token in cookie" do
+        test "should store encrypted token in cookies" do
           get core_app_v1_preference_url
           assert_response :success
 
-          assert_predicate cookies["Jit-Preference"], :present?, "Cookie should be set"
+          assert_predicate cookies["Jit-Preference"], :present?, "Refresh cookie should be set"
+          assert_predicate cookies[:root_app_preferences], :present?, "Access cookie should be set"
+        end
+
+        test "should rotate refresh token when access token is missing" do
+          get core_app_v1_preference_url
+          assert_response :success
+
+          old_refresh = cookies["Jit-Preference"]
+          assert_predicate old_refresh, :present?
+
+          cookies.delete(:root_app_preferences)
+
+          get core_app_v1_preference_url
+          assert_response :success
+
+          new_refresh = cookies["Jit-Preference"]
+          assert_predicate new_refresh, :present?
+          assert_not_equal old_refresh, new_refresh
+          assert_predicate cookies[:root_app_preferences], :present?, "Access cookie should be set"
         end
 
         test "should return JSON with correct structure" do

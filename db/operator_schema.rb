@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_08_100600) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_14_120236) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,6 +23,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_08_100600) do
   create_table "admins", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "department_id"
+    t.integer "lock_version", default: 0, null: false
     t.string "moniker"
     t.string "public_id"
     t.uuid "staff_id", null: false
@@ -242,6 +243,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_08_100600) do
 
   create_table "staffs", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "public_id", limit: 255, default: ""
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false

@@ -60,14 +60,25 @@ module Preference::Global
   end
 
   def cookie_context
-    return {} if @preferences.blank?
-
-    context = {
-      ri: preference_option_value(association_name_for_region),
-      lx: preference_option_value(association_name_for_language),
-      tz: preference_option_value(association_name_for_timezone),
-      ct: preference_option_value(preference_colortheme_association),
-    }
+    preferences = preference_payload_preferences
+    context =
+      if preferences.present?
+        {
+          ri: preferences["ri"]&.to_s&.downcase,
+          lx: preferences["lx"]&.to_s&.downcase,
+          tz: preferences["tz"],
+          ct: preferences["ct"]&.to_s&.downcase,
+        }
+      elsif @preferences.present?
+        {
+          ri: preference_option_value(association_name_for_region),
+          lx: preference_option_value(association_name_for_language),
+          tz: preference_option_value(association_name_for_timezone),
+          ct: preference_option_value(preference_colortheme_association),
+        }
+      else
+        {}
+      end
     context.compact
   end
 
@@ -176,14 +187,13 @@ module Preference::Global
   end
 
   def set_timezone
-    if @preferences.present?
+    timezone = preference_payload_value("tz")
+    if timezone.blank? && @preferences.present?
       timezone_association = "#{@preferences.class.name.underscore}_timezone"
       timezone = @preferences.public_send(timezone_association)&.option_id
-
-      if timezone.present?
-        session[:timezone] = timezone
-      end
     end
+
+    session[:timezone] = timezone if timezone.present?
 
     set_timezone_from_session
   end

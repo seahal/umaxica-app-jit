@@ -3,13 +3,14 @@
 # Table name: admins
 #
 #  id            :uuid             not null, primary key
-#  public_id     :string
-#  moniker       :string
 #  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  status_id     :string(255)      default("NEYO"), not null
-#  staff_id      :uuid             not null
 #  department_id :uuid
+#  moniker       :string
+#  public_id     :string
+#  staff_id      :uuid             not null
+#  status_id     :string(255)      default("NEYO"), not null
+#  updated_at    :datetime         not null
+#  lock_version  :integer          default(0), not null
 #
 # Indexes
 #

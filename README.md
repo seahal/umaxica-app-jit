@@ -66,18 +66,18 @@
 
 ## Environments & Endpoints
   - Corporate site:
-    - `umaxica.com`
+    - `www.umaxica.com`
     - `www.[jp|us].news.umaxica.com`
     - `www.[jp|us].help.umaxica.com`
     - `www.[jp|us].docs.umaxica.com`
   - Service endpoints:
-    - `umaxica.app`
+    - `www.umaxica.app`
     - `sign.umaxica.app`
     - `www.[jp|us].docs.umaxica.app`
     - `www.[jp|us].help.umaxica.app`
     - `www.[jp|us].news.umaxica.app`
   - Staff site:
-    - `umaxica.org`
+    - `www.umaxica.org`
     - `sign.umaxica.org`
     - `www.[jp|us].docs.umaxica.org`
     - `www.[jp|us].help.umaxica.org`

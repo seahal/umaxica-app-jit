@@ -16,22 +16,18 @@
 </head>
 
 <body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
-<% edge_host = ENV["EDGE_CORPORATE_URL"].presence %>
 
-<div class="min-h-screen">
+<div class="min-h-screen">    <%= render "concern/flash_messages" %>
   <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
-    <%= render "concern/flash_messages" %>
+
 
     <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
       <div class="flex flex-col">
         <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">Core</span>
         <h1 class="text-2xl font-semibold tracking-tight">
-          <% if edge_host.present? %>
-            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/"><%= code_name %></a>
-          <% else %>
-            <%= code_name %>
-          <% end %>
+
+            <a class="transition hover:text-[hsl(var(--primary))]" href="http://localhost:4444/">edge</a>
+
           <span class="text-[hsl(var(--muted-foreground))]">(com)</span>
         </h1>
       </div>
@@ -43,16 +39,9 @@
 
     <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
       <nav class="flex flex-wrap items-center gap-4">
-        <% if edge_host.present? %>
-          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>:4444/">Umaxica</a>
-        <% end %>
+
         <%= link_to t("core.com.preferences.footer.preference"), apex_com_preference_url, class: "transition hover:text-[hsl(var(--primary))]" %>
         <%= link_to t("core.com.layout.nav.contact"), new_core_com_contact_path, class: "transition hover:text-[hsl(var(--primary))]" %>
-        <span>Support</span>
-        <span>Terms</span>
-        <span>Privacy</span>
-        <span>Security</span>
-        <span>Accessibility</span>
       </nav>
       <div class="mt-4">
         <%= render "concern/copyright" %>

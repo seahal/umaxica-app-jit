@@ -2,14 +2,15 @@
 #
 # Table name: clients
 #
-#  id          :uuid             not null, primary key
-#  public_id   :string
-#  moniker     :string
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  status_id   :string(255)      default("NEYO"), not null
-#  user_id     :uuid
-#  division_id :uuid
+#  id           :uuid             not null, primary key
+#  created_at   :datetime         not null
+#  division_id  :uuid
+#  moniker      :string
+#  public_id    :string
+#  status_id    :string(255)      default("NEYO"), not null
+#  updated_at   :datetime         not null
+#  user_id      :uuid
+#  lock_version :integer          default(0), not null
 #
 # Indexes
 #

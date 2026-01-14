@@ -9,6 +9,7 @@ Rails.application.routes.draw do
         resource :health, only: :show, format: :html
         # api endpoint
         namespace :v1 do
+          resource :csrf, only: :show
           resource :health, only: :show
         end
         # preferences
@@ -43,6 +44,7 @@ Rails.application.routes.draw do
         resource :health, only: :show
         # api endpoint
         namespace :v1 do
+          resource :csrf, only: :show
           resource :health, only: :show
         end
         # preferences
@@ -74,6 +76,7 @@ Rails.application.routes.draw do
       scope module: :org, as: :org do
         root to: "roots#index"
         # health check for html
+        resource :csrf, only: :show
         resource :health, only: :show, format: :html
         # api endpoint
         namespace :v1 do

@@ -5,15 +5,16 @@
 # Table name: org_timelines
 #
 #  id            :uuid             not null, primary key
-#  response_mode :string           default("html"), not null
-#  redirect_url  :string
-#  published_at  :datetime         default("infinity"), not null
+#  created_at    :datetime         not null
 #  expires_at    :datetime         default("infinity"), not null
 #  position      :integer          default(0), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  status_id     :string(255)      default("NEYO"), not null
+#  published_at  :datetime         default("infinity"), not null
+#  redirect_url  :string
+#  response_mode :string           default("html"), not null
 #  slug_id       :string(32)       default(""), not null
+#  status_id     :string(255)      default("NEYO"), not null
+#  updated_at    :datetime         not null
+#  lock_version  :integer          default(0), not null
 #
 # Indexes
 #

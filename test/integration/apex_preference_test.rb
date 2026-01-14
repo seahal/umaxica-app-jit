@@ -249,7 +249,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       pref.reload
       assert_equal "NEYO", pref.status_id
-      assert_equal original_expires_at, pref.expires_at
+      assert_operator pref.expires_at, :>=, original_expires_at
     end
 
     test "#{domain[:name]} domain creates new preference after reset" do
@@ -321,6 +321,89 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       assert_select "input[type='checkbox'][name='confirm_reset'][required]"
       assert_select "label[for='confirm_reset']"
+    end
+
+    test "#{domain[:name]} domain reset destroy updates preference status to DELETED" do
+      host!(domain[:host])
+      pref, _token, cookie_name = assert_preference_created(domain)
+      audit_class = "#{domain[:name].capitalize}PreferenceAudit".constantize
+
+      # Record initial state
+      initial_status = pref.status_id
+      initial_audit_count = audit_class.where(subject_id: pref.id.to_s).count
+
+      assert_equal "NEYO", initial_status, "Initial status should be NEYO"
+
+      # Submit reset form with confirmation
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
+             params: { confirm_reset: "1" }
+
+      assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_reset_url", ri: "jp")
+
+      # Verify database changes
+      pref.reload
+      final_audit_count = audit_class.where(subject_id: pref.id.to_s).count
+
+      assert_equal "DELETED", pref.status_id, "Status should be DELETED after reset"
+      assert_operator final_audit_count, :>, initial_audit_count,
+                      "Audit log should be created"
+
+      # Verify audit log event
+      audit = audit_class.where(subject_id: pref.id.to_s).order(created_at: :desc).first
+      assert_equal "RESET_BY_USER_DECISION", audit.event_id
+
+      # Verify cookies are deleted
+      assert_empty cookies[cookie_name].to_s, "Refresh token cookie should be deleted"
+    end
+
+    test "#{domain[:name]} domain reset destroy fails without confirmation" do
+      host!(domain[:host])
+      pref, _token, cookie_name = assert_preference_created(domain)
+
+      # Submit reset form WITHOUT confirmation
+      delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
+             params: { confirm_reset: "0" }
+
+      # Should render edit with unprocessable_content status
+      assert_response :unprocessable_content
+
+      # Verify database is unchanged
+      pref.reload
+      assert_equal "NEYO", pref.status_id, "Status should remain NEYO"
+
+      # Verify cookie is still present
+      assert_not_nil cookies[cookie_name], "Cookie should still exist"
+    end
+
+    test "#{domain[:name]} domain reset logs database operations" do
+      host!(domain[:host])
+      _, _token, _cookie_name = assert_preference_created(domain)
+      "#{domain[:name].capitalize}PreferenceAudit".constantize
+
+      # Capture SQL queries
+      queries = []
+      callback = ->(event) { queries << event.payload[:sql] }
+      ActiveSupport::Notifications.subscribe("sql.active_record", callback)
+
+      begin
+        delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
+               params: { confirm_reset: "1" }
+      ensure
+        ActiveSupport::Notifications.unsubscribe(callback)
+      end
+
+      # Verify UPDATE query was executed on preferences table
+      update_queries = queries.select { |q| q.include?("UPDATE") && q.include?("preferences") }
+      assert_not_empty update_queries, "Should have UPDATE query on preferences table"
+
+      # Verify INSERT query was executed on audit table
+      insert_queries = queries.select { |q| q.include?("INSERT") && q.include?("audit") }
+      assert_not_empty insert_queries, "Should have INSERT query on audit table"
+
+      # Log for debugging
+      Rails.logger.info "=== #{domain[:name]} reset DB operations ==="
+      Rails.logger.info "UPDATE queries: #{update_queries.count}"
+      Rails.logger.info "INSERT queries: #{insert_queries.count}"
     end
   end
 

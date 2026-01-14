@@ -1,28 +1,66 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "openssl"
+require_relative "../../app/controllers/concerns/preference/jwt_configuration"
 
-class PreferenceTokenTest < ActiveSupport::TestCase
+class PreferenceTokenServiceTest < ActiveSupport::TestCase
   setup do
     @prefs = { "ct" => "dr" }.freeze
     @host = "example.com".freeze
+    @preference_type = "AppPreference".freeze
+    @public_id = "pref_public_id".freeze
+    @private_key = OpenSSL::PKey::EC.generate("prime256v1")
+    @public_key = @private_key
+    @issuer = "jit-preference".freeze
+    @audiences = ["example.com"].freeze
   end
 
   test "encodes and decodes token" do
-    token = PreferenceToken.encode(@prefs, host: @host)
-    assert_not_nil token
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @prefs,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+      assert_not_nil token
 
-    decoded = PreferenceToken.decode(token, host: @host)
-    assert_not_nil decoded
-    assert_nil decoded["ct"]
+      decoded = Preference::Token.decode(token, host: @host)
+      assert_not_nil decoded
+      assert_equal "dr", decoded.dig("preferences", "ct")
+    end
   end
 
   test "returns nil for invalid token" do
-    assert_nil PreferenceToken.decode("invalid", host: @host)
+    with_jwt_keys do
+      assert_nil Preference::Token.decode("invalid", host: @host)
+    end
   end
 
   test "returns nil for wrong host" do
-    token = PreferenceToken.encode(@prefs, host: @host)
-    assert_nil PreferenceToken.decode(token, host: "wrong.com")
+    with_jwt_keys do
+      token = Preference::Token.encode(
+        @prefs,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+      )
+      assert_nil Preference::Token.decode(token, host: "wrong.com")
+    end
+  end
+
+  private
+
+  def with_jwt_keys
+    Preference::JwtConfiguration.stub(:private_key, @private_key) do
+      Preference::JwtConfiguration.stub(:public_key, @public_key) do
+        Preference::JwtConfiguration.stub(:issuer, @issuer) do
+          Preference::JwtConfiguration.stub(:audiences, @audiences) do
+            yield
+          end
+        end
+      end
+    end
   end
 end
