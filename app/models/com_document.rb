@@ -50,7 +50,6 @@ class ComDocument < DocumentRecord
   has_many :com_document_versions, dependent: :delete_all, inverse_of: :com_document
   has_many :com_document_revisions, dependent: :delete_all, inverse_of: :com_document
   has_many :com_document_audits,
-           #           -> { where(subject_type: "ComDocument") },
            class_name: "ComDocumentAudit",
            foreign_key: :subject_id,
            inverse_of: :com_document,

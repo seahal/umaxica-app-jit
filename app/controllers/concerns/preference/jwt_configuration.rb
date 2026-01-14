@@ -9,7 +9,9 @@ module Preference
     def self.audiences
       raw = ENV["PREFERENCE_JWT_AUDIENCES"].to_s
       # TODO: Require PREFERENCE_JWT_AUDIENCES to be set and fail fast in production.
-      raw.split(",").map(&:strip).reject(&:empty?)
+      audiences = raw.split(",").map(&:strip)
+      audiences.reject!(&:empty?)
+      audiences
     end
 
     def self.private_key

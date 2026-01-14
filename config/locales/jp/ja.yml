@@ -32,6 +32,10 @@ ja:
       otp:
         invalid_input: Pass Code の値に問題があります
     identity_audit_event_format_invalid: "イベントIDの形式が無効です。大文字とアンダースコアのみ使用可能です。"
+  seeds:
+    preference_statuses:
+      start: "PreferenceStatus をシードしています..."
+      complete: "シードが完了しました。"
   controller:
     apex:
       org:

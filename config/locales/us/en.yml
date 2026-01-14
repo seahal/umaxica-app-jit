@@ -38,6 +38,10 @@ en:
         description: "Can create content and edit own posts only."
       viewer:
         description: "Read-only access to content. Cannot create or modify anything."
+  seeds:
+    preference_statuses:
+      start: "Seeding Preference Statuses..."
+      complete: "Seeding complete."
   test_data:
     contact_topic_description: "Details about the topic."
     inquiry_detail: "Detail of inquiry."

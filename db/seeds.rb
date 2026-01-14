@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Rails.logger.debug "Seeding Preference Statuses..."
+Rails.logger.debug I18n.t("seeds.preference_statuses.start")
 
 %w(app org com).each do |prefix|
   status_class = "#{prefix.capitalize}PreferenceStatus".constantize
@@ -20,4 +20,4 @@ Rails.logger.debug "Seeding Preference Statuses..."
   end
 end
 
-Rails.logger.debug "Seeding complete."
+Rails.logger.debug I18n.t("seeds.preference_statuses.complete")
