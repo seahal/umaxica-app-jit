@@ -4,7 +4,7 @@ module Core
   module Com
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
-      include ::Authentication::User
+      include ::Auth::User
       include ::AuthorizationAudit
       include ::Preference::Regional
 

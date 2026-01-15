@@ -4,8 +4,11 @@ module Sign
   module Org
     module Token
       class RefreshesController < ApplicationController
+        skip_before_action :set_preferences_cookie
+
+
         def create
-          refresh_token_id = params[:refresh_token] || cookies.encrypted[::Authentication::Staff::REFRESH_COOKIE_KEY]
+          refresh_token_id = params[:refresh_token] || cookies.encrypted[::Auth::Staff::REFRESH_COOKIE_KEY]
 
           if refresh_token_id.blank?
             render json: {
@@ -20,11 +23,11 @@ module Sign
           if credentials
             # Update cookies for browser clients
             unless request.format.json?
-              cookies[::Authentication::Staff::ACCESS_COOKIE_KEY] = cookie_options.merge(
+              cookies[::Auth::Staff::ACCESS_COOKIE_KEY] = cookie_options.merge(
                 value: credentials[:access_token],
-                expires: ::Authentication::Base::ACCESS_TOKEN_EXPIRY.from_now,
+                expires: ::Auth::Base::Token::ACCESS_TOKEN_TTL.from_now,
               )
-              cookies.encrypted[::Authentication::Staff::REFRESH_COOKIE_KEY] = cookie_options.merge(
+              cookies.encrypted[::Auth::Staff::REFRESH_COOKIE_KEY] = cookie_options.merge(
                 value: credentials[:refresh_token],
                 expires: 1.year.from_now,
               )

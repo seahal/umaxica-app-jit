@@ -2,7 +2,7 @@
 
 require "test_helper"
 require "openssl"
-require_relative "../../app/controllers/concerns/preference/jwt_configuration"
+require_relative "../../app/controllers/concerns/preference/base"
 
 class PreferenceTokenServiceTest < ActiveSupport::TestCase
   setup do
@@ -10,7 +10,8 @@ class PreferenceTokenServiceTest < ActiveSupport::TestCase
     @host = "example.com".freeze
     @preference_type = "AppPreference".freeze
     @public_id = "pref_public_id".freeze
-    @private_key = OpenSSL::PKey::EC.generate("prime256v1")
+    @jti = "test-jti-#{SecureRandom.uuid}".freeze
+    @private_key = OpenSSL::PKey::EC.generate("secp384r1")
     @public_key = @private_key
     @issuer = "jit-preference".freeze
     @audiences = ["example.com"].freeze
@@ -23,12 +24,14 @@ class PreferenceTokenServiceTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
       assert_not_nil token
 
       decoded = Preference::Token.decode(token, host: @host)
       assert_not_nil decoded
       assert_equal "dr", decoded.dig("preferences", "ct")
+      assert_equal @jti, decoded["jti"]
     end
   end
 
@@ -45,6 +48,7 @@ class PreferenceTokenServiceTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
       assert_nil Preference::Token.decode(token, host: "wrong.com")
     end

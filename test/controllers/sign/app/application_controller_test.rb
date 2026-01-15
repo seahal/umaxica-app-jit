@@ -7,8 +7,7 @@ module Sign::App
     test "includes expected concerns" do
       controller = ApplicationController.new
 
-      assert_includes controller.class, ::Authentication::User
-      assert_includes controller.class, ::Authorization::User
+      assert_includes controller.class, ::Auth::User
     end
 
     test "includes expected concerns 2nd" do

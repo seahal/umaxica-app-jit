@@ -25,7 +25,7 @@ module Sign
 
           assert json_response["access_token"]
           assert_equal "Bearer", json_response["token_type"]
-          assert_equal ::Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i, json_response["expires_in"]
+          assert_equal ::Auth::Base::Token::ACCESS_TOKEN_TTL.to_i, json_response["expires_in"]
         end
         # rubocop:enable Minitest/MultipleAssertions
 

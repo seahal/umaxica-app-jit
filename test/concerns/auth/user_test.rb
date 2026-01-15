@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class Authentication::UserTest < ActiveSupport::TestCase
+class Auth::UserTest < ActiveSupport::TestCase
   class FormatMock
     attr_accessor :format_type
 
@@ -16,7 +16,7 @@ class Authentication::UserTest < ActiveSupport::TestCase
   end
 
   class DummyClass
-    include Authentication::User
+    include Auth::User
 
     attr_accessor :session, :cookies, :request
 
@@ -29,15 +29,6 @@ class Authentication::UserTest < ActiveSupport::TestCase
 
     def reset_session
       @session = {}
-    end
-
-    # Mock jwt_private_key to avoid needing actual keys
-    def jwt_private_key
-      @jwt_private_key ||= OpenSSL::PKey::EC.generate("prime256v1")
-    end
-
-    def jwt_public_key
-      @jwt_public_key ||= jwt_private_key
     end
   end
 
@@ -84,16 +75,15 @@ class Authentication::UserTest < ActiveSupport::TestCase
   end
 
   test "module can be included" do
-    assert_kind_of Authentication::User, @obj
+    assert_kind_of Auth::User, @obj
   end
 
   test "log_in sets access token in cookie" do
-    # Stub request_ip_address to avoid needing request object
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
 
     @obj.send(:log_in, @user)
 
-    assert @obj.cookies[Authentication::User::ACCESS_COOKIE_KEY]
+    assert @obj.cookies[Auth::User::ACCESS_COOKIE_KEY]
     assert_predicate @obj, :logged_in?
     assert_equal @user, @obj.current_user
   end
@@ -103,8 +93,8 @@ class Authentication::UserTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @user)
 
-    access_opts = @obj.cookies.options_for(Authentication::User::ACCESS_COOKIE_KEY)
-    refresh_opts = @obj.cookies.options_for(Authentication::User::REFRESH_COOKIE_KEY)
+    access_opts = @obj.cookies.options_for(Auth::User::ACCESS_COOKIE_KEY)
+    refresh_opts = @obj.cookies.options_for(Auth::User::REFRESH_COOKIE_KEY)
 
     assert_operator access_opts[:expires], :>, 10.minutes.from_now
     assert_operator access_opts[:expires], :<, 20.minutes.from_now
@@ -113,7 +103,6 @@ class Authentication::UserTest < ActiveSupport::TestCase
   end
 
   test "log_out clears session and current_user" do
-    # Stub request_ip_address to avoid needing request object
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
 
     @obj.send(:log_in, @user)
@@ -129,8 +118,8 @@ class Authentication::UserTest < ActiveSupport::TestCase
     @obj.send(:log_in, @user)
     assert_difference("UserToken.count", -1) { @obj.send(:log_out) }
 
-    assert_nil @obj.cookies[Authentication::User::ACCESS_COOKIE_KEY]
-    assert_nil @obj.cookies.encrypted[Authentication::User::REFRESH_COOKIE_KEY]
+    assert_nil @obj.cookies[Auth::User::ACCESS_COOKIE_KEY]
+    assert_nil @obj.cookies.encrypted[Auth::User::REFRESH_COOKIE_KEY]
   end
 
   test "log_in derives shared cookie domain from host" do
@@ -139,11 +128,10 @@ class Authentication::UserTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @user)
 
-    assert_equal ".app.localhost", @obj.cookies.options_for(Authentication::User::ACCESS_COOKIE_KEY)[:domain]
-    assert_equal ".app.localhost", @obj.cookies.options_for(Authentication::User::REFRESH_COOKIE_KEY)[:domain]
+    assert_equal ".app.localhost", @obj.cookies.options_for(Auth::User::ACCESS_COOKIE_KEY)[:domain]
+    assert_equal ".app.localhost", @obj.cookies.options_for(Auth::User::REFRESH_COOKIE_KEY)[:domain]
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
   test "log_in returns tokens hash" do
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
 
@@ -153,9 +141,8 @@ class Authentication::UserTest < ActiveSupport::TestCase
     assert tokens[:access_token]
     assert tokens[:refresh_token]
     assert_equal "Bearer", tokens[:token_type]
-    assert_equal Authentication::Base::ACCESS_TOKEN_EXPIRY.to_i, tokens[:expires_in]
+    assert_equal Auth::Base::Token::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
   end
-  # rubocop:enable Minitest/MultipleAssertions
 
   test "log_in skips cookies for JSON format" do
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
@@ -163,24 +150,24 @@ class Authentication::UserTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @user)
 
-    assert_nil @obj.cookies[Authentication::User::ACCESS_COOKIE_KEY]
-    assert_nil @obj.cookies.encrypted[Authentication::User::REFRESH_COOKIE_KEY]
+    assert_nil @obj.cookies[Auth::User::ACCESS_COOKIE_KEY]
+    assert_nil @obj.cookies.encrypted[Auth::User::REFRESH_COOKIE_KEY]
   end
 
   test "extract_access_token from Authorization header" do
     token = "sample_jwt_token"
     @obj.request.headers["Authorization"] = "Bearer #{token}"
 
-    extracted = @obj.send(:extract_access_token, Authentication::User::ACCESS_COOKIE_KEY)
+    extracted = @obj.send(:extract_access_token, Auth::User::ACCESS_COOKIE_KEY)
 
     assert_equal token, extracted
   end
 
   test "extract_access_token from Cookie when no Authorization header" do
     token = "cookie_jwt_token"
-    @obj.cookies[Authentication::User::ACCESS_COOKIE_KEY] = token
+    @obj.cookies[Auth::User::ACCESS_COOKIE_KEY] = token
 
-    extracted = @obj.send(:extract_access_token, Authentication::User::ACCESS_COOKIE_KEY)
+    extracted = @obj.send(:extract_access_token, Auth::User::ACCESS_COOKIE_KEY)
 
     assert_equal token, extracted
   end
@@ -189,9 +176,9 @@ class Authentication::UserTest < ActiveSupport::TestCase
     header_token = "header_jwt_token"
     cookie_token = "cookie_jwt_token"
     @obj.request.headers["Authorization"] = "Bearer #{header_token}"
-    @obj.cookies[Authentication::User::ACCESS_COOKIE_KEY] = cookie_token
+    @obj.cookies[Auth::User::ACCESS_COOKIE_KEY] = cookie_token
 
-    extracted = @obj.send(:extract_access_token, Authentication::User::ACCESS_COOKIE_KEY)
+    extracted = @obj.send(:extract_access_token, Auth::User::ACCESS_COOKIE_KEY)
 
     assert_equal header_token, extracted
   end
@@ -199,8 +186,8 @@ class Authentication::UserTest < ActiveSupport::TestCase
   test "current_user works with Bearer token" do
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
 
-    # Generate access token
-    access_token = @obj.send(:generate_access_token, @user)
+    # Generate access token using Auth::Base::Token
+    access_token = Auth::Base::Token.encode(@user, host: @obj.request.host)
     @obj.request.headers["Authorization"] = "Bearer #{access_token}"
 
     assert_equal @user, @obj.current_user

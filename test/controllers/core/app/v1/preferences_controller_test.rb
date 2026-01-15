@@ -59,26 +59,26 @@ module Core
           get core_app_v1_preference_url
           assert_response :success
 
-          assert_predicate cookies["Jit-Preference"], :present?, "Refresh cookie should be set"
-          assert_predicate cookies[:root_app_preferences], :present?, "Access cookie should be set"
+          assert_predicate cookies[preference_refresh_cookie_name], :present?, "Refresh cookie should be set"
+          assert_predicate cookies[preference_access_cookie_name], :present?, "Access cookie should be set"
         end
 
         test "should rotate refresh token when access token is missing" do
           get core_app_v1_preference_url
           assert_response :success
 
-          old_refresh = cookies["Jit-Preference"]
+          old_refresh = cookies[preference_refresh_cookie_name]
           assert_predicate old_refresh, :present?
 
-          cookies.delete(:root_app_preferences)
+          cookies.delete(preference_access_cookie_name)
 
           get core_app_v1_preference_url
           assert_response :success
 
-          new_refresh = cookies["Jit-Preference"]
+          new_refresh = cookies[preference_refresh_cookie_name]
           assert_predicate new_refresh, :present?
           assert_not_equal old_refresh, new_refresh
-          assert_predicate cookies[:root_app_preferences], :present?, "Access cookie should be set"
+          assert_predicate cookies[preference_access_cookie_name], :present?, "Access cookie should be set"
         end
 
         test "should return JSON with correct structure" do
@@ -141,6 +141,28 @@ module Core
           assert_not cookie.targetable
           assert_not cookie.performant
           assert_not cookie.functional
+        end
+
+        test "should create preference with jti for token revocation" do
+          get core_app_v1_preference_url
+          assert_response :success
+
+          preference = AppPreference.order(:created_at).last
+          assert_predicate preference.jti, :present?, "jti should be set for new preferences"
+          assert_match(/\A[0-9a-f-]{36}\z/i, preference.jti, "jti should be a valid UUID")
+        end
+
+        test "should set access token cookie after creating preference" do
+          get core_app_v1_preference_url
+          assert_response :success
+
+          # Verify access token cookie is set (JWT decoding tested in token tests)
+          access_token = cookies[preference_access_cookie_name]
+          assert_predicate access_token, :present?, "Access token cookie should be set"
+
+          # Verify the preference has jti set
+          preference = AppPreference.order(:created_at).last
+          assert_predicate preference.jti, :present?, "Preference should have jti for token revocation"
         end
       end
     end

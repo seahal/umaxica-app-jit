@@ -65,7 +65,7 @@ class News::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     host! "com.localhost"
     get news_com_root_path
     assert_redirected_to news_com_root_url(ri: "jp", host: "com.localhost")
-    assert_not_nil cookies[:ct]
+    assert_not_nil cookies["jit_preference_access"]
   end
 
   private

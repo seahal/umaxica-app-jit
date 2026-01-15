@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_14_161922) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_14_174717) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -108,11 +108,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_161922) do
   create_table "app_preferences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at"
+    t.string "jti"
     t.integer "lock_version", default: 0, null: false
     t.string "public_id"
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
+    t.index ["jti"], name: "index_app_preferences_on_jti", unique: true
     t.index ["status_id"], name: "index_app_preferences_on_status_id"
   end
 
@@ -210,11 +212,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_161922) do
   create_table "com_preferences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at"
+    t.string "jti"
     t.integer "lock_version", default: 0, null: false
     t.string "public_id"
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
+    t.index ["jti"], name: "index_com_preferences_on_jti", unique: true
     t.index ["status_id"], name: "index_com_preferences_on_status_id"
   end
 
@@ -312,11 +316,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_161922) do
   create_table "org_preferences", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at"
+    t.string "jti"
     t.integer "lock_version", default: 0, null: false
     t.string "public_id"
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
+    t.index ["jti"], name: "index_org_preferences_on_jti", unique: true
     t.index ["status_id"], name: "index_org_preferences_on_status_id"
   end
 

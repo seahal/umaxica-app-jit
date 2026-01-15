@@ -6,8 +6,7 @@ module Sign
       include Pundit::Authorization
       include ::RateLimit
       include ::Preference::Global
-      include ::Authentication::Staff
-      include ::Authorization::Staff
+      include ::Auth::Staff
       include ::Sign::ErrorResponses
 
       protect_from_forgery with: :exception

@@ -2,7 +2,7 @@
 
 require "test_helper"
 require "openssl"
-require_relative "../../app/controllers/concerns/preference/jwt_configuration"
+require_relative "../../app/controllers/concerns/preference/base"
 
 class PreferenceTokenModelTest < ActiveSupport::TestCase
   setup do
@@ -15,7 +15,8 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
     }.freeze
     @preference_type = "AppPreference".freeze
     @public_id = "pref_public_id".freeze
-    @private_key = OpenSSL::PKey::EC.generate("prime256v1")
+    @jti = "test-jti-#{SecureRandom.uuid}".freeze
+    @private_key = OpenSSL::PKey::EC.generate("secp384r1")
     @public_key = @private_key
     @issuer = "jit-preference".freeze
     @audiences = ["example.com"].freeze
@@ -28,6 +29,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
       assert_not_nil token
       assert_kind_of String, token
@@ -41,12 +43,14 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
       assert_nil Preference::Token.encode(
         @preferences,
         host: nil,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
     end
   end
@@ -58,6 +62,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
       payload = Preference::Token.decode(token, host: @host)
 
@@ -66,6 +71,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
       assert_equal @preferences, payload["preferences"]
       assert_equal @preference_type, payload["preference_type"]
       assert_equal @public_id, payload["public_id"]
+      assert_equal @jti, payload["jti"]
     end
   end
 
@@ -76,6 +82,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
       assert_nil Preference::Token.decode(token, host: "other.com")
     end
@@ -88,6 +95,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
 
       payload = Preference::Token.decode(token, host: "app.example.com")
@@ -118,6 +126,35 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
     assert_empty(Preference::Token.extract_preferences({}))
   end
 
+  test "encode returns nil for blank jti" do
+    with_jwt_keys do
+      assert_nil Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: nil,
+      )
+      assert_nil Preference::Token.encode(
+        @preferences,
+        host: @host,
+        preference_type: @preference_type,
+        public_id: @public_id,
+        jti: "",
+      )
+    end
+  end
+
+  test "extract_jti returns jti from payload" do
+    payload = { "jti" => @jti }
+    assert_equal @jti, Preference::Token.extract_jti(payload)
+  end
+
+  test "extract_jti returns nil for invalid payload" do
+    assert_nil Preference::Token.extract_jti(nil)
+    assert_nil Preference::Token.extract_jti({})
+  end
+
   test "handle invalid signature gracefully" do
     with_jwt_keys do
       token = Preference::Token.encode(
@@ -125,6 +162,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
       tampered_token = token.reverse
 
@@ -142,6 +180,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
     ensure
       Preference::JwtConfiguration.define_singleton_method(:private_key, &original)
@@ -155,6 +194,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
         host: @host,
         preference_type: @preference_type,
         public_id: @public_id,
+        jti: @jti,
       )
 
       original = Preference::JwtConfiguration.method(:public_key)

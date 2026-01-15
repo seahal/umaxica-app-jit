@@ -417,7 +417,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
     get public_send("apex_#{domain[:name]}_preference_url", ri: "jp")
     assert_response :success
 
-    cookie_name = "Jit-Preference"
+    cookie_name = preference_refresh_cookie_name
     token = cookies[cookie_name]
     assert_not_nil token
     token_digest = SHA3::Digest::SHA3_384.digest(token)

@@ -59,8 +59,8 @@ module Core
           get core_com_v1_preference_url
           assert_response :success
 
-          assert_predicate cookies["Jit-Preference"], :present?, "Refresh cookie should be set"
-          assert_predicate cookies[:root_app_preferences], :present?, "Access cookie should be set"
+          assert_predicate cookies[preference_refresh_cookie_name], :present?, "Refresh cookie should be set"
+          assert_predicate cookies[preference_access_cookie_name], :present?, "Access cookie should be set"
         end
 
         test "should return JSON with correct structure" do

@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class Authentication::StaffTest < ActiveSupport::TestCase
+class Auth::StaffTest < ActiveSupport::TestCase
   class FormatMock
     attr_accessor :format_type
 
@@ -16,7 +16,7 @@ class Authentication::StaffTest < ActiveSupport::TestCase
   end
 
   class DummyClass
-    include Authentication::Staff
+    include Auth::Staff
 
     attr_accessor :session, :cookies, :request
 
@@ -28,15 +28,6 @@ class Authentication::StaffTest < ActiveSupport::TestCase
 
     def reset_session
       @session = {}
-    end
-
-    # Mock jwt_private_key to avoid needing actual keys
-    def jwt_private_key
-      @jwt_private_key ||= OpenSSL::PKey::EC.generate("prime256v1")
-    end
-
-    def jwt_public_key
-      @jwt_public_key ||= jwt_private_key
     end
   end
 
@@ -78,16 +69,15 @@ class Authentication::StaffTest < ActiveSupport::TestCase
   end
 
   test "module can be included" do
-    assert_kind_of Authentication::Staff, @obj
+    assert_kind_of Auth::Staff, @obj
   end
 
   test "log_in sets access token in cookie" do
-    # Stub request_ip_address to avoid needing request object
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
 
     @obj.send(:log_in, @staff)
 
-    assert @obj.cookies[Authentication::Staff::ACCESS_COOKIE_KEY]
+    assert @obj.cookies[Auth::Staff::ACCESS_COOKIE_KEY]
     assert_predicate @obj, :logged_in?
     assert_equal @staff, @obj.current_staff
   end
@@ -97,8 +87,8 @@ class Authentication::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    access_opts = @obj.cookies.options_for(Authentication::Staff::ACCESS_COOKIE_KEY)
-    refresh_opts = @obj.cookies.options_for(Authentication::Staff::REFRESH_COOKIE_KEY)
+    access_opts = @obj.cookies.options_for(Auth::Staff::ACCESS_COOKIE_KEY)
+    refresh_opts = @obj.cookies.options_for(Auth::Staff::REFRESH_COOKIE_KEY)
 
     assert_operator access_opts[:expires], :>, 10.minutes.from_now
     assert_operator access_opts[:expires], :<, 20.minutes.from_now
@@ -107,7 +97,6 @@ class Authentication::StaffTest < ActiveSupport::TestCase
   end
 
   test "log_out clears session and current_staff" do
-    # Stub request_ip_address to avoid needing request object
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
 
     @obj.send(:log_in, @staff)
@@ -122,8 +111,8 @@ class Authentication::StaffTest < ActiveSupport::TestCase
     @obj.send(:log_in, @staff)
 
     assert_difference("StaffToken.count", -1) { @obj.send(:log_out) }
-    assert_nil @obj.cookies[Authentication::Staff::ACCESS_COOKIE_KEY]
-    assert_nil @obj.cookies.encrypted[Authentication::Staff::REFRESH_COOKIE_KEY]
+    assert_nil @obj.cookies[Auth::Staff::ACCESS_COOKIE_KEY]
+    assert_nil @obj.cookies.encrypted[Auth::Staff::REFRESH_COOKIE_KEY]
   end
 
   test "log_in derives shared cookie domain from host" do
@@ -132,7 +121,29 @@ class Authentication::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    assert_equal ".org.localhost", @obj.cookies.options_for(Authentication::Staff::ACCESS_COOKIE_KEY)[:domain]
-    assert_equal ".org.localhost", @obj.cookies.options_for(Authentication::Staff::REFRESH_COOKIE_KEY)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(Auth::Staff::ACCESS_COOKIE_KEY)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(Auth::Staff::REFRESH_COOKIE_KEY)[:domain]
+  end
+
+  test "log_in returns tokens hash" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+
+    tokens = @obj.send(:log_in, @staff)
+
+    assert_kind_of Hash, tokens
+    assert tokens[:access_token]
+    assert tokens[:refresh_token]
+    assert_equal "Bearer", tokens[:token_type]
+    assert_equal Auth::Base::Token::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
+  end
+
+  test "current_staff works with Bearer token" do
+    @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
+
+    # Generate access token using Auth::Base::Token
+    access_token = Auth::Base::Token.encode(@staff, host: @obj.request.host)
+    @obj.request.headers["Authorization"] = "Bearer #{access_token}"
+
+    assert_equal @staff, @obj.current_staff
   end
 end

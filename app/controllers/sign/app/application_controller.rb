@@ -5,8 +5,7 @@ module Sign
     class ApplicationController < ActionController::Base
       include ::RateLimit
       include ::Preference::Global
-      include ::Authentication::User
-      include ::Authorization::User
+      include ::Auth::User
       include Pundit::Authorization
       include Sign::ErrorResponses
 

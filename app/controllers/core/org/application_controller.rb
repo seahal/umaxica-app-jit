@@ -4,8 +4,7 @@ module Core
   module Org
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
-      include ::Authentication::Staff
-      include ::Authorization::Staff
+      include ::Auth::Staff
       include ::Preference::Regional
       include ::AuthorizationAudit
 

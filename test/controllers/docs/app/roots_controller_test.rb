@@ -47,10 +47,12 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "sets theme cookie" do
-    host! "app.localhost"
-    get docs_app_root_path(ri: "jp")
-    assert_response :success
-    assert_not_nil cookies[:ct]
+    assert_theme_cookie_for(
+      host: "app.localhost",
+      path: :docs_app_root_path,
+      label: "docs app root",
+      ri: "jp"
+    )
   end
 
   private

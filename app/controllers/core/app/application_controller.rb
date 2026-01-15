@@ -6,8 +6,7 @@ module Core
       include Pundit::Authorization
       include ::AuthorizationAudit
       include ::RateLimit
-      include ::Authentication::User
-      include ::Authorization::User
+      include ::Auth::User
       include ::Preference::Regional
 
       protect_from_forgery with: :exception

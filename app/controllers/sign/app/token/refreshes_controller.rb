@@ -4,6 +4,10 @@ module Sign
   module App
     module Token
       class RefreshesController < Sign::App::ApplicationController
+        skip_before_action :set_preferences_cookie
+
+
+
         def create
           refresh_token = params[:refresh_token]
 

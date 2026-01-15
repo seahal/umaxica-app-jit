@@ -7,7 +7,7 @@ module Apex
       include ::RateLimit
       include ::Preference::Global
       include ::Sign::ErrorResponses
-      include ::Authentication::User
+      include ::Auth::User
 
       protect_from_forgery with: :exception
 

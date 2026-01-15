@@ -45,9 +45,11 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "sets theme cookie" do
-    host! "sign.app.localhost"
-    get sign_app_root_path(ri: "jp")
-    assert_response :success
-    assert_not_nil cookies[:ct]
+    assert_theme_cookie_for(
+      host: "sign.app.localhost",
+      path: :sign_app_root_path,
+      label: "sign app root",
+      ri: "jp"
+    )
   end
 end

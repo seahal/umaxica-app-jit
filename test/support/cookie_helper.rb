@@ -2,6 +2,14 @@
 
 # Helper methods for working with cookies in integration tests
 module CookieHelper
+  def preference_refresh_cookie_name
+    Rails.env.production? ? "__Secure-jit_preference" : "jit_preference_refresh"
+  end
+
+  def preference_access_cookie_name
+    Rails.env.production? ? "__Secure-jit_preference_access" : "jit_preference_access"
+  end
+
   # Read a signed cookie value by key
   # @param key [Symbol, String] The cookie key to read
   # @return [String, nil] The signed cookie value or nil if not found

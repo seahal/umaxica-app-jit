@@ -6,7 +6,7 @@ module Apex
       include Pundit::Authorization
       include ::RateLimit
       include ::Preference::Global
-      include ::Authentication::Staff
+      include ::Auth::Staff
 
       protect_from_forgery with: :exception
 
