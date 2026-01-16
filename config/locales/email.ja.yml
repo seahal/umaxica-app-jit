@@ -1,0 +1,14 @@
+ja:
+  mail:
+    common:
+      greeting: "こんにちは"
+      footer_note: "このメールは自動送信されています。返信はできません。"
+    email:
+      app:
+        registration_mailer:
+          create:
+            subject: "確認コードのお知らせ"
+            title: "メールアドレスの確認"
+            instruction: "以下の確認コードを使用して、登録を完了してください："
+            expiration_note: "このコードは10分間有効です。"
+            ignore_instruction: "心当たりがない場合は、このメールを無視してください。"

@@ -1,0 +1,14 @@
+en:
+  mail:
+    common:
+      greeting: "Hello,"
+      footer_note: "This is an automated message. Please do not reply."
+    email:
+      app:
+        registration_mailer:
+          create:
+            subject: "Your verification code"
+            title: "Verify your email address"
+            instruction: "Please use the following verification code to complete your registration:"
+            expiration_note: "This code will expire in 10 minutes."
+            ignore_instruction: "If you did not request this, please ignore this email."

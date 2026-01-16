@@ -27,7 +27,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
 
-    assert_select "h1", I18n.t("sign.app.registration.email.new.page_title")
+    assert_select "h2", I18n.t("sign.app.registration.email.new.page_title")
   end
 
   test "includes navigation links to other registration flows" do

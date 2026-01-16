@@ -97,6 +97,7 @@ module Jit
 
     # Load translations from nested locale directories (e.g., config/locales/jp/**/*.yml)
     config.i18n.load_path += Rails.root.glob("config/locales/**/*.{rb,yml}")
+    config.i18n.default_locale = :ja
 
     # Set UUID as default primary key for new tables
     config.generators do |g|

@@ -9,7 +9,6 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  status_id    :string(255)      default("NEYO"), not null
-#  lock_version :integer          default(0), not null
 #  jti          :string
 #
 # Indexes

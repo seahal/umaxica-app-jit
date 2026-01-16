@@ -312,30 +312,30 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_115821) do
   end
 
   add_foreign_key "app_document_categories", "app_document_category_masters"
-  add_foreign_key "app_document_categories", "app_documents", on_delete: :cascade, validate: false
-  add_foreign_key "app_document_category_masters", "app_document_category_masters", column: "parent_id", validate: false
+  add_foreign_key "app_document_categories", "app_documents", on_delete: :cascade
+  add_foreign_key "app_document_category_masters", "app_document_category_masters", column: "parent_id"
   add_foreign_key "app_document_revisions", "app_documents"
-  add_foreign_key "app_document_tag_masters", "app_document_tag_masters", column: "parent_id", validate: false
+  add_foreign_key "app_document_tag_masters", "app_document_tag_masters", column: "parent_id"
   add_foreign_key "app_document_tags", "app_document_tag_masters"
-  add_foreign_key "app_document_tags", "app_documents", on_delete: :cascade, validate: false
-  add_foreign_key "app_document_versions", "app_documents", on_delete: :cascade, validate: false
-  add_foreign_key "app_documents", "app_document_statuses", column: "status_id", validate: false
+  add_foreign_key "app_document_tags", "app_documents", on_delete: :cascade
+  add_foreign_key "app_document_versions", "app_documents", on_delete: :cascade
+  add_foreign_key "app_documents", "app_document_statuses", column: "status_id"
   add_foreign_key "com_document_categories", "com_document_category_masters"
-  add_foreign_key "com_document_categories", "com_documents", on_delete: :cascade, validate: false
-  add_foreign_key "com_document_category_masters", "com_document_category_masters", column: "parent_id", validate: false
+  add_foreign_key "com_document_categories", "com_documents", on_delete: :cascade
+  add_foreign_key "com_document_category_masters", "com_document_category_masters", column: "parent_id"
   add_foreign_key "com_document_revisions", "com_documents"
-  add_foreign_key "com_document_tag_masters", "com_document_tag_masters", column: "parent_id", validate: false
+  add_foreign_key "com_document_tag_masters", "com_document_tag_masters", column: "parent_id"
   add_foreign_key "com_document_tags", "com_document_tag_masters"
-  add_foreign_key "com_document_tags", "com_documents", on_delete: :cascade, validate: false
-  add_foreign_key "com_document_versions", "com_documents", on_delete: :cascade, validate: false
-  add_foreign_key "com_documents", "com_document_statuses", column: "status_id", validate: false
+  add_foreign_key "com_document_tags", "com_documents", on_delete: :cascade
+  add_foreign_key "com_document_versions", "com_documents", on_delete: :cascade
+  add_foreign_key "com_documents", "com_document_statuses", column: "status_id"
   add_foreign_key "org_document_categories", "org_document_category_masters"
-  add_foreign_key "org_document_categories", "org_documents", on_delete: :cascade, validate: false
-  add_foreign_key "org_document_category_masters", "org_document_category_masters", column: "parent_id", validate: false
+  add_foreign_key "org_document_categories", "org_documents", on_delete: :cascade
+  add_foreign_key "org_document_category_masters", "org_document_category_masters", column: "parent_id"
   add_foreign_key "org_document_revisions", "org_documents"
-  add_foreign_key "org_document_tag_masters", "org_document_tag_masters", column: "parent_id", validate: false
+  add_foreign_key "org_document_tag_masters", "org_document_tag_masters", column: "parent_id"
   add_foreign_key "org_document_tags", "org_document_tag_masters"
-  add_foreign_key "org_document_tags", "org_documents", on_delete: :cascade, validate: false
-  add_foreign_key "org_document_versions", "org_documents", on_delete: :cascade, validate: false
-  add_foreign_key "org_documents", "org_document_statuses", column: "status_id", validate: false
+  add_foreign_key "org_document_tags", "org_documents", on_delete: :cascade
+  add_foreign_key "org_document_versions", "org_documents", on_delete: :cascade
+  add_foreign_key "org_documents", "org_document_statuses", column: "status_id"
 end

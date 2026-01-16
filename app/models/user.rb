@@ -23,9 +23,9 @@
 class User < PrincipalRecord
   include ::PublicId
   include ::Accountably
+  include ::Withdrawable
 
   attribute :status_id, default: UserStatus::NEYO
-  include Withdrawable
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :status_id, length: { maximum: 255 }

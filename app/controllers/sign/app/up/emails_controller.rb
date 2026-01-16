@@ -28,8 +28,6 @@ module Sign
         end
 
         def create
-          # FIXME: write test code!
-
           # Validate Cloudflare Turnstile first
           turnstile_result = cloudflare_turnstile_validation
 
@@ -61,7 +59,6 @@ module Sign
 
           # Save email and store OTP in database
           @user_email.save!
-          # @user_email.store_otp(otp_private_key, otp_count_number, expires_at) # Already set above
 
           # Send email
           Email::App::RegistrationMailer.with(
@@ -76,7 +73,6 @@ module Sign
         end
 
         def update
-          # FIXME: write test code!
           # Retrieve email record with OTP
           @user_email = UserEmail.find_by(id: params["id"])
           if @user_email.blank? ||

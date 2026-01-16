@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_14_174717) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_16_004402) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -109,7 +109,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_174717) do
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.string "jti"
-    t.integer "lock_version", default: 0, null: false
     t.string "public_id"
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.binary "token_digest"
@@ -213,7 +212,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_174717) do
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.string "jti"
-    t.integer "lock_version", default: 0, null: false
     t.string "public_id"
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.binary "token_digest"
@@ -317,7 +315,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_174717) do
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.string "jti"
-    t.integer "lock_version", default: 0, null: false
     t.string "public_id"
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.binary "token_digest"

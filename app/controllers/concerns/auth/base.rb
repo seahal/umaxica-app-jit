@@ -152,45 +152,26 @@ module Auth
     def current_resource
       return @current_resource if defined?(@current_resource)
 
-      if Rails.env.test? && respond_to?(:request, true) && request
-        test_id = request.headers[test_header_key]
-        if test_id
-          @current_resource = resource_class.find_by(id: test_id)
-          @bypass_withdrawn_check = true
-          return @current_resource
-        end
-      end
-
-      access_token = extract_access_token(self.class::ACCESS_COOKIE_KEY)
-      return nil if access_token.blank?
-
-      payload = Token.decode(access_token, host: request.host)
-      return nil if payload.blank?
-      return nil unless Token.extract_type(payload) == resource_type
-
-      @current_resource = resource_class.find_by(id: Token.extract_subject(payload))
-      if @current_resource&.respond_to?(:withdrawn?) &&
-          @current_resource.withdrawn? &&
-          !@bypass_withdrawn_check
-        @current_resource = nil
-      end
-
-      @current_resource
+      @current_resource = load_current_resource
     end
 
     def log_in(resource, record_login_audit: true)
       reset_session
 
-      token =
+      token_record =
         TokenRecord.connected_to(role: :writing) do
           token_class.create!(resource_foreign_key => resource.id)
         end
-      refresh_token = token.rotate_refresh_token!
-      credentials = Token.encode(resource, host: request.host, session_public_id: token.public_id)
+      
+      # Generate SHA3-based refresh token
+      refresh_token = token_record.rotate_refresh_token!
+      
+      # Generate JWT access token
+      access_token = Token.encode(resource, host: request.host, session_public_id: token_record.public_id)
 
       unless request.format.json?
         cookies[self.class::ACCESS_COOKIE_KEY] = cookie_options.merge(
-          value: credentials,
+          value: access_token,
           expires: Token::ACCESS_TOKEN_TTL.from_now,
         )
         cookies.encrypted[self.class::REFRESH_COOKIE_KEY] = cookie_options.merge(
@@ -202,7 +183,7 @@ module Auth
       record_audit(AUDIT_EVENTS[:logged_in], resource: resource) if record_login_audit
 
       {
-        access_token: credentials,
+        access_token: access_token,
         refresh_token: refresh_token,
         token_type: "Bearer",
         expires_in: Token::ACCESS_TOKEN_TTL.to_i,
@@ -276,22 +257,12 @@ module Auth
 
     def log_out
       resource = current_resource
-      token_value = cookies.encrypted[self.class::REFRESH_COOKIE_KEY]
-      if token_value
-        begin
-          public_id, = token_class.parse_refresh_token(token_value)
-          token_class.find_by(public_id: public_id)&.destroy if public_id
-        rescue ActiveRecord::RecordNotDestroyed => e
-          Rails.event.notify(
-            "#{resource_type}.token.destroy.failed",
-            token_id: token_value,
-            error_message: e.message,
-            ip_address: request_ip_address,
-          )
-        end
-      end
+
+      destroy_refresh_token_from_cookie
+
       cookies.delete self.class::ACCESS_COOKIE_KEY, **cookie_deletion_options
       cookies.delete self.class::REFRESH_COOKIE_KEY, **cookie_deletion_options
+
       record_audit(AUDIT_EVENTS[:logged_out], resource: resource) if resource
       reset_session
       @current_resource = nil
@@ -371,16 +342,7 @@ module Auth
     end
 
     def shared_cookie_domain
-      @shared_cookie_domain ||=
-        begin
-          configured = ENV["SIGN_COOKIE_DOMAIN"]&.strip
-          if configured.present?
-            formatted_domain(configured)
-          else
-            derived = derive_cookie_domain_from_host
-            formatted_domain(derived)
-          end
-        end
+      @shared_cookie_domain ||= resolve_cookie_domain
     end
 
     def derive_cookie_domain_from_host
@@ -425,6 +387,72 @@ module Auth
 
     def request_ip_address
       (respond_to?(:request, true) && request) ? request.remote_ip : nil
+    end
+
+    def load_current_resource
+      if Rails.env.test?
+        resource = load_from_test_header
+        return resource if resource
+      end
+
+      resource = load_from_token
+      return nil if resource_withdrawn?(resource)
+
+      resource
+    end
+
+    def load_from_test_header
+      return nil unless respond_to?(:request, true) && request
+
+      test_id = request.headers[test_header_key]
+      return nil unless test_id
+
+      resource = resource_class.find_by(id: test_id)
+      @bypass_withdrawn_check = true if resource
+      resource
+    end
+
+    def load_from_token
+      access_token = extract_access_token(self.class::ACCESS_COOKIE_KEY)
+      return nil if access_token.blank?
+
+      payload = Token.decode(access_token, host: request.host)
+      return nil if payload.blank?
+      return nil unless Token.extract_type(payload) == resource_type
+
+      resource_class.find_by(id: Token.extract_subject(payload))
+    end
+
+    def resource_withdrawn?(resource)
+      return false unless resource&.respond_to?(:withdrawn?)
+      return false if @bypass_withdrawn_check
+
+      resource.withdrawn?
+    end
+
+    def destroy_refresh_token_from_cookie
+      token_value = cookies.encrypted[self.class::REFRESH_COOKIE_KEY]
+      return unless token_value
+
+      public_id, = token_class.parse_refresh_token(token_value)
+      return unless public_id
+
+      token_class.find_by(public_id: public_id)&.destroy
+    rescue ActiveRecord::RecordNotDestroyed => e
+      Rails.event.notify(
+        "#{resource_type}.token.destroy.failed",
+        token_id: token_value,
+        error_message: e.message,
+        ip_address: request_ip_address,
+      )
+    end
+
+    def resolve_cookie_domain
+      configured = ENV["SIGN_COOKIE_DOMAIN"]&.strip
+      return formatted_domain(configured) if configured.present?
+
+      derived = derive_cookie_domain_from_host
+      formatted_domain(derived)
     end
   end
 end

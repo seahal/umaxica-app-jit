@@ -12,13 +12,9 @@ module Auth
       helper_method :current_user, :logged_in?, :active_user? if respond_to?(:helper_method)
     end
 
-    def current_user
-      @current_user ||= current_resource
-    end
+    alias_method :current_user, :current_resource
 
-    def authenticate_user!
-      authenticate!
-    end
+    alias_method :authenticate_user!, :authenticate!
 
     def audit_user_login_failed(user)
       record_audit(AUDIT_EVENTS[:login_failed], resource: user, actor: nil) if user
