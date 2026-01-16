@@ -32,7 +32,11 @@ class ComDocumentAuditLevelTest < ActiveSupport::TestCase
       assert_not level.destroy
     end
     assert_not_empty level.errors[:base]
-    assert_equal "com document auditsが存在しているので削除できません", level.errors[:base].first
+    expected_message = I18n.t(
+      "activerecord.errors.messages.restrict_dependent_destroy.has_many",
+      record: "com document audits",
+    )
+    assert_equal expected_message, level.errors[:base].first
   end
 
   test "can destroy when no audits exist" do

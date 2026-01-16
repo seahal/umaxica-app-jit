@@ -23,15 +23,15 @@ module Core
           second_json = response.parsed_body
           assert_equal first_public_id, second_json["preference"]["public_id"]
 
-          assert_equal "JA", second_json["preference"]["lx"]
-          assert_equal "system", second_json["preference"]["ct"]
-          assert_equal "JP", second_json["preference"]["ri"]
+          assert_equal "ja", second_json["preference"]["lx"]
+          assert_equal "sy", second_json["preference"]["ct"]
+          assert_equal "jp", second_json["preference"]["ri"]
           assert_equal "Asia/Tokyo", second_json["preference"]["tz"]
         end
 
         test "should create new preference when cookie is missing" do
           assert_difference -> { ComPreference.count }, 1 do
-            assert_difference -> { ComPreferenceAudit.count }, 1 do
+            assert_difference -> { ComPreferenceAudit.count }, 2 do
               get core_com_v1_preference_url
               assert_response :success
             end
@@ -39,9 +39,9 @@ module Core
 
           json = response.parsed_body
           assert_predicate json["preference"]["public_id"], :present?
-          assert_equal "JA", json["preference"]["lx"]
-          assert_equal "system", json["preference"]["ct"]
-          assert_equal "JP", json["preference"]["ri"]
+          assert_equal "ja", json["preference"]["lx"]
+          assert_equal "sy", json["preference"]["ct"]
+          assert_equal "jp", json["preference"]["ri"]
           assert_equal "Asia/Tokyo", json["preference"]["tz"]
         end
 
@@ -49,7 +49,8 @@ module Core
           get core_com_v1_preference_url
           assert_response :success
 
-          audit = ComPreferenceAudit.last
+          audit = ComPreferenceAudit.where(event_id: "CREATE_NEW_PREFERENCE_TOKEN").order(:created_at).last
+          assert_predicate audit, :present?
           assert_equal "CREATE_NEW_PREFERENCE_TOKEN", audit.event_id
           assert_equal "INFO", audit.level_id
           assert_equal "ComPreference", audit.subject_type

@@ -32,7 +32,7 @@ module Core::Com
         host: "com.localhost",
         path: :core_com_root_path,
         label: "core com root",
-        ri: "jp"
+        ri: "jp",
       )
     end
   end

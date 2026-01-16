@@ -44,7 +44,7 @@ class Sign::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       host: "sign.org.localhost",
       path: :sign_org_root_path,
       label: "sign org root",
-      ri: "jp"
+      ri: "jp",
     )
   end
 end

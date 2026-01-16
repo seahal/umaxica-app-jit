@@ -20,15 +20,28 @@ function resolveTheme(value) {
 	return THEME_CODE_MAP[value.toLowerCase()] || value.toLowerCase();
 }
 
+let systemListenerRegistered = false;
+
 function applyTheme(theme) {
 	const html = document.documentElement;
+	const systemMatch = window.matchMedia("(prefers-color-scheme: dark)");
+	const resolveSystem = () => (systemMatch.matches ? "dark" : "light");
+	const appliedTheme = theme === "system" ? resolveSystem() : theme;
 	html.dataset.theme = theme;
 	html.classList.remove("theme-dark", "theme-light", "theme-system");
 	html.classList.add(`theme-${theme}`);
+	html.classList.toggle("dark", appliedTheme === "dark");
+
+	if (theme === "system" && !systemListenerRegistered) {
+		systemListenerRegistered = true;
+		systemMatch.addEventListener("change", () => {
+			html.classList.toggle("dark", resolveSystem() === "dark");
+		});
+	}
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-	const raw = readCookie("ct");
+function initThemeFromCookie() {
+	const raw = readCookie("jit_ct") || readCookie("ct");
 	const theme = resolveTheme(raw);
 	applyTheme(theme);
 
@@ -36,4 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (valueEl) {
 		valueEl.textContent = theme;
 	}
-});
+}
+
+document.addEventListener("DOMContentLoaded", initThemeFromCookie);
+document.addEventListener("turbo:load", initThemeFromCookie);

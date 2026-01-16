@@ -15,12 +15,18 @@ module Preference::Regional
 
   def default_url_options
     base_options = super || {}
+    return base_options unless regional_context_requested?
+
     options = normalized_locale_options
 
     # Note: ri parameter is intentionally excluded from default_url_options
     # to prevent redirect loops in canonicalize_regional_params
 
-    base_options.merge(options.compact)
+    base_options.merge(options)
+  end
+
+  def regional_context_requested?
+    %i(lx ct tz).all? { |key| params[key].present? }
   end
 
   private
@@ -55,6 +61,7 @@ module Preference::Regional
 
   def set_locale
     set_locale_from_params
+    write_preference_cookie(Preference::Base::LANGUAGE_COOKIE_KEY, I18n.locale.to_s.downcase)
   end
 
   def set_timezone
@@ -67,6 +74,8 @@ module Preference::Regional
     session[:timezone] = timezone if timezone.present?
 
     set_timezone_from_session
+    timezone_value = timezone.presence || Time.zone&.name
+    write_preference_cookie(Preference::Base::TIMEZONE_COOKIE_KEY, timezone_value) if timezone_value.present?
   end
 
   def canonicalize_regional_params

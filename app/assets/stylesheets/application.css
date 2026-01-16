@@ -133,3 +133,49 @@ footer nav {
     margin: 0;
     padding: 0;
 }
+
+/* Dark theme overrides for utility classes used outside token-based styles. */
+html.dark body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    background-image: none;
+}
+
+html.dark .bg-white {
+    background-color: hsl(var(--card));
+}
+
+html.dark .bg-white\/90,
+html.dark .bg-white\/80 {
+    background-color: hsl(var(--card));
+}
+
+html.dark .bg-slate-50,
+html.dark .bg-slate-100 {
+    background-color: hsl(var(--background));
+}
+
+html.dark .bg-slate-200 {
+    background-color: hsl(var(--secondary));
+}
+
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-slate-700 {
+    color: hsl(var(--foreground));
+}
+
+html.dark .text-slate-600,
+html.dark .text-gray-600,
+html.dark .text-gray-700 {
+    color: hsl(var(--muted-foreground));
+}
+
+html.dark .border-slate-200,
+html.dark .border-slate-300 {
+    border-color: hsl(var(--border));
+}
+
+html.dark .ring-slate-200 {
+    --tw-ring-color: hsl(var(--border));
+}

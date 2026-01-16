@@ -3,6 +3,7 @@
 class EnsurePreferenceAuditEventsAndLevels < ActiveRecord::Migration[8.2]
   EVENTS = %w(
     CREATE_NEW_PREFERENCE_TOKEN
+    REFRESH_TOKEN_ROTATED
     PREFERENCE_CREATED
     PREFERENCE_ACCESSED
     PREFERENCE_UPDATED

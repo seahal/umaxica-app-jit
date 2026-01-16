@@ -9,7 +9,7 @@
     <%= link_to t("sign.org.authentication.new.links.secret"),
                 new_sign_org_in_secret_path,
                 class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-    <%= link_to apex_org_root_path(ct: "sy", lx: "ja", ri: "jp", tz: "jst"),
+    <%= link_to apex_org_root_path,
                 class: "mt-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.4em] text-slate-500" do %>
       <span aria-hidden="true">↑</span>
       <span><%= t("sign.org.authentication.new.back_to_root", default: "うえへ") %></span>

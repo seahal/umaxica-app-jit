@@ -54,7 +54,7 @@ class News::App::RootsControllerTest < ActionDispatch::IntegrationTest
       host: "app.localhost",
       path: :news_app_root_path,
       label: "news app root",
-      ri: "jp"
+      ri: "jp",
     )
   end
 

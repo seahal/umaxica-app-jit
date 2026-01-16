@@ -141,6 +141,15 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_not_equal english_title, japanese_title
     end
 
+    test "#{domain[:name]} domain falls back to Japanese when lx invalid" do
+      host!(domain[:host])
+
+      get public_send("apex_#{domain[:name]}_preference_url", ri: "jp", lx: "ex")
+
+      assert_response :success
+      assert_equal :ja, I18n.locale
+    end
+
     test "#{domain[:name]} domain applies timezone setting to Time.zone" do
       host!(domain[:host])
       assert_preference_created(domain)
@@ -181,11 +190,11 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
       pref, = assert_preference_created(domain)
 
-      state = default_state.merge(ct: "dark")
+      state = default_state.merge(ct: "dr")
       assert_preference_update(
         domain,
         :theme,
-        { preference_colortheme: { option_id: "dark" } },
+        { preference_colortheme: { option_id: "dr" } },
         state,
       )
 

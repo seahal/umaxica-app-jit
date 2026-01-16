@@ -8,6 +8,7 @@ module Auth
       logged_in: "LOGGED_IN",
       logged_out: "LOGGED_OUT",
       login_failed: "LOGIN_FAILED",
+      token_refreshed: "TOKEN_REFRESHED",
     }.freeze
 
     module JwtConfiguration
@@ -120,7 +121,7 @@ module Auth
           payload = {
             "iat" => now.to_i,
             "exp" => (now + ACCESS_TOKEN_TTL).to_i,
-            "jti" => SecureRandom.uuid,
+            "jti" => Jwt::Jti.generate,
             "iss" => JwtConfiguration.issuer,
             "aud" => JwtConfiguration.audiences,
             "sub" => resource.id,
@@ -245,6 +246,7 @@ module Auth
         new_refresh_token_id: result[:refresh_token],
         ip_address: request_ip_address,
       )
+      record_audit(AUDIT_EVENTS[:token_refreshed], resource: resource)
 
       {
         access_token: new_access_token,
@@ -358,7 +360,7 @@ module Auth
       opts = {
         httponly: true,
         secure: true,
-        samesite: :strict,
+        samesite: :lax,
       }
       opts[:domain] = shared_cookie_domain if shared_cookie_domain
       opts

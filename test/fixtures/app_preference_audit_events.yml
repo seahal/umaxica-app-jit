@@ -10,6 +10,9 @@
 create_new_preference_token:
   id: CREATE_NEW_PREFERENCE_TOKEN
 
+refresh_token_rotated:
+  id: REFRESH_TOKEN_ROTATED
+
 update_preference_cookie:
   id: UPDATE_PREFERENCE_COOKIE
 

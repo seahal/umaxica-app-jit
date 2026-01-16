@@ -32,7 +32,7 @@ module Core::Org
         host: "org.localhost",
         path: :core_org_root_path,
         label: "core org root",
-        ri: "jp"
+        ri: "jp",
       )
     end
   end

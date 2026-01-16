@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= get_language %>">
+<html lang="<%= get_language %>" data-theme="<%= theme_cookie_value %>" class="<%= theme_html_class %>">
 <head>
   <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (org) JP" %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -28,14 +28,14 @@
       </div>
       <nav class="flex flex-wrap gap-3">
         <% unless logged_in? %>
-          <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_up_path,
+          <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_org_up_url(host: ENV["SIGN_STAFF_URL"]),
                       class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-          <%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_in_path,
+          <%= link_to t("sign.app.layout.nav.log_in"), new_sign_org_in_url(host: ENV["SIGN_STAFF_URL"]),
                       class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
         <% else %>
-          <%= link_to t("sign.app.layout.nav.configuration"), sign_app_configuration_path,
+          <%= link_to t("sign.app.layout.nav.configuration"), sign_org_configuration_url(host: ENV["SIGN_STAFF_URL"]),
                       class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
-          <%= link_to t("sign.app.layout.nav.logout"), sign_app_out_path, data: { turbo_method: :delete },
+          <%= link_to t("sign.app.layout.nav.logout"), sign_org_out_url(host: ENV["SIGN_STAFF_URL"]), data: { turbo_method: :delete },
                       class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
         <% end %>
       </nav>

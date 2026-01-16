@@ -47,7 +47,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       url_method = domain[:preference_url_method] || domain[:root_url_method]
-      get public_send(url_method, ri: "us")
+      get public_send(url_method, ri: "us", lx: "en", ct: "dr", tz: "utc")
 
       assert_response :success
 
@@ -70,7 +70,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       url_method = domain[:preference_url_method] || domain[:root_url_method]
-      get public_send(url_method, ri: "jp", lx: "en")
+      get public_send(url_method, ri: "jp", lx: "en", ct: "dr", tz: "utc")
 
       assert_response :success
 
@@ -99,12 +99,12 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       url_method = domain[:preference_url_method] || domain[:root_url_method]
-      get public_send(url_method, ri: "jp", ct: "dark")
+      get public_send(url_method, ri: "jp", lx: "en", ct: "dr", tz: "utc")
 
       assert_response :success
 
-      links = css_select("a[href*='/preference'][href*='ct=dark']")
-      assert_predicate links, :any?, "Preference links should preserve ct=dark parameter when it was in the request"
+      links = css_select("a[href*='/preference'][href*='ct=dr']")
+      assert_predicate links, :any?, "Preference links should preserve ct=dr parameter when it was in the request"
     end
 
     test "#{domain[:name]} ct param is NOT added to navigation links when NOT in request" do
@@ -126,7 +126,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       url_method = domain[:preference_url_method] || domain[:root_url_method]
-      get public_send(url_method, ri: "jp", tz: "utc")
+      get public_send(url_method, ri: "jp", lx: "en", ct: "dr", tz: "utc")
 
       assert_response :success
 
@@ -153,7 +153,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       url_method = domain[:preference_url_method] || domain[:root_url_method]
-      get public_send(url_method, ri: "us", lx: "en", ct: "dark", tz: "utc")
+      get public_send(url_method, ri: "us", lx: "en", ct: "dr", tz: "utc")
 
       assert_response :success
 
@@ -165,7 +165,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       links_with_all_params =
         links.select do |link|
           href = link["href"]
-          href.include?("lx=en") && href.include?("ct=dark") && href.include?("tz=utc")
+          href.include?("lx=en") && href.include?("ct=dr") && href.include?("tz=utc")
         end
       assert_predicate links_with_all_params, :any?, "Some preference links should have all optional params preserved"
     end
@@ -245,7 +245,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
     test "#{domain[:name]} regional redirect to remove ri preserves other params" do
       host!(domain[:host])
 
-      get public_send(domain[:root_url_method], ri: "jp", lx: "en", ct: "dark", tz: "utc", foo: "bar")
+      get public_send(domain[:root_url_method], ri: "jp", lx: "en", ct: "dr", tz: "utc", foo: "bar")
 
       assert_response :moved_permanently
       location = response.headers["Location"]
@@ -254,7 +254,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       assert_no_match(/ri=/, location)
       # Other params should be preserved
       assert_match(/lx=en/, location)
-      assert_match(/ct=dark/, location)
+      assert_match(/ct=dr/, location)
       assert_match(/tz=utc/, location)
       assert_match(/foo=bar/, location)
     end
@@ -267,7 +267,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       assert_response :success
 
       # Check that internal links do NOT have ri parameter
-      links = css_select("a[href^='/']")
+      links = internal_links_for(domain[:host])
       links.each do |link|
         href = link["href"]
         next if href.start_with?("#")
@@ -279,50 +279,50 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
     test "#{domain[:name]} regional preserves lx param in links when present" do
       host!(domain[:host])
 
-      get public_send(domain[:root_url_method], lx: "en")
+      get public_send(domain[:root_url_method], lx: "en", ct: "dr", tz: "utc")
 
       assert_response :success
 
       # Check that internal links preserve lx
-      links = css_select("a[href^='/'][href*='lx=en']")
+      links = internal_links_for(domain[:host]).select { |link| link["href"].include?("lx=en") }
       assert_predicate links, :any?, "Links should preserve lx=en parameter"
     end
 
     test "#{domain[:name]} regional preserves ct param in links when present" do
       host!(domain[:host])
 
-      get public_send(domain[:root_url_method], ct: "dark")
+      get public_send(domain[:root_url_method], lx: "en", ct: "dr", tz: "utc")
 
       assert_response :success
 
-      links = css_select("a[href^='/'][href*='ct=dark']")
-      assert_predicate links, :any?, "Links should preserve ct=dark parameter"
+      links = internal_links_for(domain[:host]).select { |link| link["href"].include?("ct=dr") }
+      assert_predicate links, :any?, "Links should preserve ct=dr parameter"
     end
 
     test "#{domain[:name]} regional preserves tz param in links when present" do
       host!(domain[:host])
 
-      get public_send(domain[:root_url_method], tz: "utc")
+      get public_send(domain[:root_url_method], lx: "en", ct: "dr", tz: "utc")
 
       assert_response :success
 
-      links = css_select("a[href^='/'][href*='tz=utc']")
+      links = internal_links_for(domain[:host]).select { |link| link["href"].include?("tz=utc") }
       assert_predicate links, :any?, "Links should preserve tz=utc parameter"
     end
 
     test "#{domain[:name]} regional preserves all optional params together" do
       host!(domain[:host])
 
-      get public_send(domain[:root_url_method], lx: "en", ct: "dark", tz: "utc")
+      get public_send(domain[:root_url_method], lx: "en", ct: "dr", tz: "utc")
 
       assert_response :success
 
       # Check that links have all three params
-      links = css_select("a[href^='/']")
+      links = internal_links_for(domain[:host])
       links_with_all =
         links.select do |link|
           href = link["href"]
-          href.include?("lx=en") && href.include?("ct=dark") && href.include?("tz=utc")
+          href.include?("lx=en") && href.include?("ct=dr") && href.include?("tz=utc")
         end
       assert_predicate links_with_all, :any?, "Some links should have all optional params preserved"
     end
@@ -335,7 +335,7 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       assert_response :success
 
       # Check internal links - they should NOT have lx, ct, tz
-      links = css_select("a[href^='/']")
+      links = internal_links_for(domain[:host])
       links.each do |link|
         href = link["href"]
         next if href.start_with?("#")
@@ -350,17 +350,41 @@ class PreferenceGlobalParamContextTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       # efg=abc should NOT be preserved in links (not in OPTIONAL_PARAM_KEYS)
-      get public_send(domain[:root_url_method], lx: "en", efg: "abc")
+      get public_send(domain[:root_url_method], lx: "en", ct: "dr", tz: "utc", efg: "abc")
 
       assert_response :success
 
       # lx should be in links, but efg should NOT
-      links = css_select("a[href^='/'][href*='lx=en']")
+      links = internal_links_for(domain[:host]).select { |link| link["href"].include?("lx=en") }
       assert_predicate links, :any?, "Links should preserve lx=en"
 
       links.each do |link|
         href = link["href"]
         assert_no_match(/efg=/, href, "Link should NOT include efg param: #{href}")
+      end
+    end
+  end
+
+  private
+
+  def internal_links_for(host)
+    allowed_hosts = [
+      host,
+      ENV["SIGN_SERVICE_URL"],
+      ENV["SIGN_STAFF_URL"],
+      ENV["EDGE_SERVICE_URL"],
+      ENV["EDGE_STAFF_URL"],
+    ].compact
+
+    css_select("a[href]").select do |link|
+      href = link["href"]
+      next false if href.blank? || href.start_with?("#")
+
+      if href.start_with?("/")
+        true
+      else
+        uri = URI.parse(href) rescue nil
+        uri&.host && allowed_hosts.include?(uri.host)
       end
     end
   end

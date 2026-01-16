@@ -49,7 +49,7 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
       host: "sign.app.localhost",
       path: :sign_app_root_path,
       label: "sign app root",
-      ri: "jp"
+      ri: "jp",
     )
   end
 end

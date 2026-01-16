@@ -23,3 +23,5 @@ logged_out:
 login_failed:
   id: LOGIN_FAILED
 
+token_refreshed:
+  id: TOKEN_REFRESHED

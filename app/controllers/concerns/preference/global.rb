@@ -17,7 +17,6 @@ module Preference::Global
   included do
     helper_method :get_language, :get_timezone, :get_region, :get_colortheme
     helper_method :effective_context, :required_ri
-
     before_action :set_preferences_cookie
     before_action :resolve_param_context
     before_action :set_region
@@ -63,19 +62,9 @@ module Preference::Global
     preferences = preference_payload_preferences
     context =
       if preferences.present?
-        {
-          ri: preferences["ri"]&.to_s&.downcase,
-          lx: preferences["lx"]&.to_s&.downcase,
-          tz: preferences["tz"],
-          ct: preferences["ct"]&.to_s&.downcase,
-        }
+        preference_context_from_hash(preferences)
       elsif @preferences.present?
-        {
-          ri: preference_option_value(association_name_for_region),
-          lx: preference_option_value(association_name_for_language),
-          tz: preference_option_value(association_name_for_timezone),
-          ct: preference_option_value(preference_colortheme_association),
-        }
+        preference_context_from_record
       else
         {}
       end
@@ -86,17 +75,36 @@ module Preference::Global
     @effective_context ||= default_context.merge(cookie_context).merge(requested_context)
   end
 
-  def optional_context_params_for_urls
-    requested_context.slice(*OPTIONAL_PARAM_KEYS)
-  end
-
   def required_ri
     effective_context[:ri]
   end
 
   def default_url_options
     base_options = super || {}
-    base_options.merge(ri: required_ri).merge(optional_context_params_for_urls)
+    context = requested_context.slice(*PARAM_CONTEXT_KEYS)
+    context.present? ? base_options.merge(context) : base_options
+  end
+
+  def preference_context_from_hash(preferences)
+    {
+      ri: normalized_preference_value(preferences, "ri"),
+      lx: normalized_preference_value(preferences, "lx"),
+      tz: preferences["tz"],
+      ct: colortheme_short_code(preferences["ct"]),
+    }
+  end
+
+  def preference_context_from_record
+    {
+      ri: preference_option_value(association_name_for_region),
+      lx: preference_option_value(association_name_for_language),
+      tz: preference_option_value(association_name_for_timezone),
+      ct: colortheme_short_code(preference_option_value(preference_colortheme_association)),
+    }
+  end
+
+  def normalized_preference_value(preferences, key)
+    preferences[key]&.to_s&.downcase
   end
 
   private
@@ -184,6 +192,7 @@ module Preference::Global
 
   def set_locale
     set_locale_from_params
+    write_preference_cookie(Preference::Base::LANGUAGE_COOKIE_KEY, I18n.locale.to_s.downcase)
   end
 
   def set_timezone
@@ -196,5 +205,7 @@ module Preference::Global
     session[:timezone] = timezone if timezone.present?
 
     set_timezone_from_session
+    timezone_value = timezone.presence || Time.zone&.name
+    write_preference_cookie(Preference::Base::TIMEZONE_COOKIE_KEY, timezone_value) if timezone_value.present?
   end
 end

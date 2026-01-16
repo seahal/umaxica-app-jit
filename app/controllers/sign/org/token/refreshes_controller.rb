@@ -6,7 +6,6 @@ module Sign
       class RefreshesController < ApplicationController
         skip_before_action :set_preferences_cookie
 
-
         def create
           refresh_token_id = params[:refresh_token] || cookies.encrypted[::Auth::Staff::REFRESH_COOKIE_KEY]
 

@@ -26,7 +26,7 @@ class OrgPreferenceRegionTest < ActiveSupport::TestCase
   test "belongs to preference" do
     region = OrgPreferenceRegion.new
     assert_not region.valid?
-    assert_includes region.errors[:preference], "を入力してください"
+    assert_includes region.errors[:preference], I18n.t("errors.messages.required")
   end
 
   test "can be created with preference and option" do

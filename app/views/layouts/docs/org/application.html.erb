@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= get_language %>">
+<html lang="<%= get_language %>" data-theme="<%= theme_cookie_value %>" class="<%= theme_html_class %>">
 <head>
   <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (org) Documents" %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -19,7 +19,6 @@
 
 <div class="min-h-screen">    <%= render "concern/flash_messages" %>
   <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
-
 
     <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
       <div class="flex flex-col">

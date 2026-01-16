@@ -58,7 +58,7 @@ class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       host: "org.localhost",
       path: :help_org_root_path,
       label: "help org root",
-      ri: "jp"
+      ri: "jp",
     )
   end
 

@@ -82,7 +82,7 @@ module Preference::Core
 
       update_preference_child_with_audit(
         @preference_colortheme,
-        sanitize_option_id(preference_colortheme_params),
+        sanitize_option_id(preference_colortheme_params, option_type: :colortheme),
         "UPDATE_PREFERENCE_COLORTHEME",
       )
     end
@@ -193,8 +193,13 @@ module Preference::Core
     domain = cookie_domain
     delete_options[:domain] = domain if domain.present?
 
-    cookies.delete(refresh_token_cookie_name, **delete_options)
-    cookies.delete(access_token_cookie_name, **delete_options)
+    cookie_names = [
+      refresh_token_cookie_name,
+      access_token_cookie_name,
+    ].uniq
+    cookie_names.each do |cookie_name|
+      cookies.delete(cookie_name, **delete_options)
+    end
     @preferences = nil
     @preference_payload = nil
     @refresh_token_value = nil

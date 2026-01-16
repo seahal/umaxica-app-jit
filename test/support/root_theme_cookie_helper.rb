@@ -5,10 +5,10 @@ module RootThemeCookieHelper
     host!(host)
     get public_send(path, **params)
     assert_response :success
-    
+
     token = cookies["jit_preference_access"]
     assert_not_nil token, "#{label} should set cookies[jit_preference_access]"
-    
+
     cookies.delete("jit_preference_access")
   end
 end

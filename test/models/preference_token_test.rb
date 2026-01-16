@@ -11,7 +11,7 @@ class PreferenceTokenModelTest < ActiveSupport::TestCase
       "lx" => "en",
       "ri" => "us",
       "tz" => "utc",
-      "ct" => "dark",
+      "ct" => "dr",
     }.freeze
     @preference_type = "AppPreference".freeze
     @public_id = "pref_public_id".freeze

@@ -51,7 +51,7 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
       host: "app.localhost",
       path: :docs_app_root_path,
       label: "docs app root",
-      ri: "jp"
+      ri: "jp",
     )
   end
 

@@ -23,15 +23,15 @@ module Core
           second_json = response.parsed_body
           assert_equal first_public_id, second_json["preference"]["public_id"]
 
-          assert_equal "JA", second_json["preference"]["lx"]
-          assert_equal "system", second_json["preference"]["ct"]
-          assert_equal "JP", second_json["preference"]["ri"]
+          assert_equal "ja", second_json["preference"]["lx"]
+          assert_equal "sy", second_json["preference"]["ct"]
+          assert_equal "jp", second_json["preference"]["ri"]
           assert_equal "Asia/Tokyo", second_json["preference"]["tz"]
         end
 
         test "should create new preference when cookie is missing" do
           assert_difference -> { AppPreference.count }, 1 do
-            assert_difference -> { AppPreferenceAudit.count }, 1 do
+            assert_difference -> { AppPreferenceAudit.count }, 2 do
               get core_app_v1_preference_url
               assert_response :success
             end
@@ -39,9 +39,9 @@ module Core
 
           json = response.parsed_body
           assert_predicate json["preference"]["public_id"], :present?
-          assert_equal "JA", json["preference"]["lx"]
-          assert_equal "system", json["preference"]["ct"]
-          assert_equal "JP", json["preference"]["ri"]
+          assert_equal "ja", json["preference"]["lx"]
+          assert_equal "sy", json["preference"]["ct"]
+          assert_equal "jp", json["preference"]["ri"]
           assert_equal "Asia/Tokyo", json["preference"]["tz"]
         end
 
@@ -49,7 +49,8 @@ module Core
           get core_app_v1_preference_url
           assert_response :success
 
-          audit = AppPreferenceAudit.order(:created_at).last
+          audit = AppPreferenceAudit.where(event_id: "CREATE_NEW_PREFERENCE_TOKEN").order(:created_at).last
+          assert_predicate audit, :present?
           assert_equal "CREATE_NEW_PREFERENCE_TOKEN", audit.event_id
           assert_equal "INFO", audit.level_id
           assert_equal "AppPreference", audit.subject_type
@@ -67,8 +68,13 @@ module Core
           get core_app_v1_preference_url
           assert_response :success
 
+          preference_public_id = response.parsed_body["preference"]["public_id"]
+          preference = AppPreference.find_by(public_id: preference_public_id)
+          assert_predicate preference, :present?, "Preference from response should exist"
+
           old_refresh = cookies[preference_refresh_cookie_name]
           assert_predicate old_refresh, :present?
+          old_jti = preference.jti
 
           cookies.delete(preference_access_cookie_name)
 
@@ -79,6 +85,8 @@ module Core
           assert_predicate new_refresh, :present?
           assert_not_equal old_refresh, new_refresh
           assert_predicate cookies[preference_access_cookie_name], :present?, "Access cookie should be set"
+          preference.reload
+          assert_not_equal old_jti, preference.jti, "jti should rotate when access token is reissued"
         end
 
         test "should return JSON with correct structure" do
@@ -148,8 +156,12 @@ module Core
           assert_response :success
 
           preference = AppPreference.order(:created_at).last
+          expected_length = Jwt::Jti.encoded_length(Jwt::Jti::DEFAULT_BYTES)
           assert_predicate preference.jti, :present?, "jti should be set for new preferences"
-          assert_match(/\A[0-9a-f-]{36}\z/i, preference.jti, "jti should be a valid UUID")
+          assert_match(Jwt::Jti::BASE64URL_REGEX, preference.jti, "jti should be base64url-safe")
+          assert_equal expected_length, preference.jti.length,
+                       "jti should be #{expected_length} chars for #{Jwt::Jti::DEFAULT_BYTES} bytes"
+          assert_no_match(/\A[0-9a-f-]{36}\z/i, preference.jti, "jti should not remain a UUID")
         end
 
         test "should set access token cookie after creating preference" do

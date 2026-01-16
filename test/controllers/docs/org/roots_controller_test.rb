@@ -49,7 +49,7 @@ class Docs::Org::RootsControllerTest < ActionDispatch::IntegrationTest
       host: "org.localhost",
       path: :docs_org_root_path,
       label: "docs org root",
-      ri: "jp"
+      ri: "jp",
     )
   end
 

@@ -32,7 +32,7 @@ module Core::App
         host: "app.localhost",
         path: :core_app_root_path,
         label: "core app root",
-        ri: "jp"
+        ri: "jp",
       )
     end
   end

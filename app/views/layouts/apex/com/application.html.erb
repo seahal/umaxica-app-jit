@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= get_language %>">
+<html lang="<%= get_language %>" data-theme="<%= theme_cookie_value %>" class="<%= theme_html_class %>">
 <head>
   <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (com) Apex" %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -22,7 +22,6 @@
     <div class="flex flex-col">
       <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
       <h1 class="text-3xl font-semibold tracking-tight text-slate-900">
-
 
           Umaxica (com)
 

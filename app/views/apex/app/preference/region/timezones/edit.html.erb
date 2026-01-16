@@ -18,7 +18,6 @@
     ) %>
   </p>
 
-
   <% timezone_labels = I18n.t("apex.app.preference.locale.edit.timezone_options", default: {}) %>
   <% timezone_options = AppPreferenceTimezoneOption.order(:id).map do |option|
     label_key = case option.id
@@ -53,6 +52,5 @@
       <%= link_to t("apex.app.preferences.back_to_settings"), apex_app_preference_url, class: "text-sm font-semibold text-slate-700 transition hover:text-slate-900" %>
     </div>
   <% end %>
-
 
 </section>

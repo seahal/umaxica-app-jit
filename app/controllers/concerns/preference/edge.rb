@@ -29,9 +29,9 @@ module Preference::Edge
       region = preference.send("#{prefix}_preference_region")
 
       preferences = {
-        "lx" => language&.option_id || "JA",
-        "ct" => colortheme&.option_id || "system",
-        "ri" => region&.option_id || "JP",
+        "lx" => language&.option_id&.downcase || "ja",
+        "ct" => colortheme_short_code(colortheme&.option_id || "system"),
+        "ri" => region&.option_id&.downcase || "jp",
         "tz" => timezone&.option_id || "Asia/Tokyo",
       }
       public_id ||= preference.public_id
@@ -40,9 +40,9 @@ module Preference::Edge
     render json: {
       preference: {
         public_id: public_id,
-        lx: preferences["lx"] || "JA",
-        ct: preferences["ct"] || "system",
-        ri: preferences["ri"] || "JP",
+        lx: preferences["lx"] || "ja",
+        ct: preferences["ct"] || colortheme_short_code("system"),
+        ri: preferences["ri"] || "jp",
         tz: preferences["tz"] || "Asia/Tokyo",
       },
     }

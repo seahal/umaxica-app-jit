@@ -2,9 +2,13 @@
 
 require "jwt"
 require "sha3"
+require "concurrent"
 
 module Preference
   module JwtConfiguration
+    EPHEMERAL_PRIVATE_KEY_MUTEX = Mutex.new
+    EPHEMERAL_PRIVATE_KEY_CACHE = Concurrent::AtomicReference.new(nil)
+
     def self.issuer
       ENV.fetch("PREFERENCE_JWT_ISSUER", "jit-preference")
     end
@@ -19,7 +23,11 @@ module Preference
     def self.private_key
       private_key_base64 = ENV["PREFERENCE_JWT_PRIVATE_KEY"] ||
         Rails.application.credentials.dig(:JWT, :PREFERENCE, :PRIVATE_KEY)
-      raise "Preference JWT private key not configured in credentials" if private_key_base64.blank?
+      if private_key_base64.blank?
+        return ephemeral_private_key unless Rails.env.production?
+
+        raise "Preference JWT private key not configured in credentials"
+      end
 
       private_key_der = Base64.decode64(private_key_base64)
       OpenSSL::PKey::EC.new(private_key_der)
@@ -28,10 +36,24 @@ module Preference
     def self.public_key
       public_key_base64 = ENV["PREFERENCE_JWT_PUBLIC_KEY"] ||
         Rails.application.credentials.dig(:JWT, :PREFERENCE, :PUBLIC_KEY)
-      raise "Preference JWT public key not configured in credentials" if public_key_base64.blank?
+      if public_key_base64.blank?
+        return ephemeral_private_key.public_key unless Rails.env.production?
+
+        raise "Preference JWT public key not configured in credentials"
+      end
 
       public_key_der = Base64.decode64(public_key_base64)
       OpenSSL::PKey::EC.new(public_key_der)
+    end
+
+    def self.ephemeral_private_key
+      cached_key = EPHEMERAL_PRIVATE_KEY_CACHE.get
+      return cached_key if cached_key
+
+      EPHEMERAL_PRIVATE_KEY_MUTEX.synchronize do
+        EPHEMERAL_PRIVATE_KEY_CACHE.get ||
+          EPHEMERAL_PRIVATE_KEY_CACHE.set(OpenSSL::PKey::EC.generate("secp384r1"))
+      end
     end
   end
 
@@ -129,6 +151,7 @@ module Preference
         {
           "iss" => JwtConfiguration.issuer,
           "aud" => resolve_audiences,
+          "nonce" => SecureRandom.uuid_v7,
           "iat" => now.to_i,
           "exp" => (now + ACCESS_TOKEN_TTL).to_i,
         }
@@ -137,8 +160,11 @@ module Preference
       def decode_options
         {
           algorithms: [JWT_ALGORITHM],
+          verify_exp: true,
           verify_iss: true,
           iss: JwtConfiguration.issuer,
+          verify_aud: true,
+          aud: JwtConfiguration.audiences,
         }
       end
 
@@ -152,6 +178,7 @@ module Preference
         when Array then aud_claim
         when String then [aud_claim]
         else []
+             raise
         end
       end
     end
@@ -162,22 +189,43 @@ module Preference
 
     ACCESS_TOKEN_TTL = Token::ACCESS_TOKEN_TTL
     REFRESH_TOKEN_TTL = 400.days
+    THEME_COOKIE_KEY = "jit_ct"
+    LEGACY_THEME_COOKIE_KEY = "ct"
+    LANGUAGE_COOKIE_KEY = "jit_lx"
+    TIMEZONE_COOKIE_KEY = "jit_tz"
+
+    included do
+      before_action :set_preferences_cookie
+    end
 
     private
 
     def set_preferences_cookie
       return if load_access_token_payload
 
-      preference, created = load_preference_record_from_refresh_token!(create_if_missing: true)
+      preference, _ = load_preference_record_from_refresh_token!(create_if_missing: true)
       return if preference.blank?
 
-      refresh_refresh_token_lifetime(preference) unless created
+      # Rotate refresh token on access token re-issue to limit replay if leaked.
+      refresh_refresh_token_lifetime(preference)
       issue_access_token_from(preference)
       nil
     end
 
     def set_color_theme
-      ""
+      theme = normalize_colortheme(params[:ct].presence)
+      theme ||= normalize_colortheme(preference_payload_value("ct"))
+      if theme.blank? && @preferences.present?
+        theme = normalize_colortheme(@preferences.public_send(preference_colortheme_association)&.option_id)
+      end
+      # Rails must not trust this value; use jit_preference_access instead.
+      theme ||= normalize_colortheme(cookies[THEME_COOKIE_KEY])
+      theme ||= normalize_colortheme(cookies[LEGACY_THEME_COOKIE_KEY])
+      theme ||= "sy"
+
+      write_preference_cookie(THEME_COOKIE_KEY, theme)
+      @color_theme = theme
+      nil
     end
 
     def create_preference_options(preference)
@@ -211,11 +259,51 @@ module Preference
       )
     end
 
+    COLORTHEME_OPTION_MAP = {
+      "sy" => "system",
+      "system" => "system",
+      "dr" => "dark",
+      "dark" => "dark",
+      "li" => "light",
+      "light" => "light",
+    }.freeze
+
+    COLORTHEME_SHORT_MAP = {
+      "sy" => "sy",
+      "system" => "sy",
+      "dr" => "dr",
+      "dark" => "dr",
+      "li" => "li",
+      "light" => "li",
+    }.freeze
+
+    def normalize_colortheme(value)
+      return nil if value.blank?
+
+      COLORTHEME_SHORT_MAP[value.to_s.downcase]
+    end
+
+    def write_preference_cookie(key, value)
+      cookie_options = {
+        value: value,
+        expires: REFRESH_TOKEN_TTL.from_now,
+        secure: Rails.env.production?,
+        same_site: :lax,
+      }
+      domain = cookie_domain
+      cookie_options[:domain] = domain if domain.present?
+      cookies[key] = cookie_options
+    end
+
     def set_locale_from_params
-      locale_param = params[:lx].presence
-      locale_from_region = locale_from_region_param(params[:ri])
-      locale = locale_param || locale_from_region || session[:language]&.downcase || I18n.default_locale
-      I18n.locale = locale.to_s.downcase
+      candidates = [
+        params[:lx],
+        locale_from_region_param(params[:ri]),
+        session[:language],
+        I18n.default_locale,
+      ]
+      locale = candidates.map { |value| normalized_locale(value) }.compact.first
+      I18n.locale = locale || I18n.default_locale
     end
 
     def locale_from_region_param(region_param)
@@ -226,6 +314,21 @@ module Preference
         "jp" => "ja",
         "us" => "en",
       }[region]
+    end
+
+    def normalized_locale(value)
+      return unless value.present?
+
+      normalized_value = value.to_s.downcase
+      return if normalized_value.blank?
+
+      if available_locale_strings.include?(normalized_value)
+        normalized_value.to_sym
+      end
+    end
+
+    def available_locale_strings
+      @available_locale_strings ||= I18n.available_locales.map { |locale| locale.to_s.downcase }.uniq
     end
 
     def set_timezone_from_session
@@ -245,10 +348,18 @@ module Preference
       @preference_audit_class ||= "#{preference_class.name}Audit".constantize
     end
 
+    def preference_audit_event_class
+      @preference_audit_event_class ||= "#{preference_class.name}AuditEvent".constantize
+    end
+
     def create_audit_log(event_id:, context:, expires_at: nil)
       expires_at_value = expires_at || Preference::Core::COOKIE_EXPIRY.from_now
 
       AuditRecord.connected_to(role: :writing) do
+        if event_id.present?
+          preference_audit_event_class.find_or_create_by!(id: event_id)
+        end
+
         preference_audit_class.create!(
           subject_id: @preferences.id.to_s,
           subject_type: @preferences.class.name,
@@ -331,9 +442,22 @@ module Preference
       end
     end
 
-    def sanitize_option_id(params)
+    def sanitize_option_id(params, option_type: nil)
       params[:option_id] = nil if params[:option_id].blank?
+      params[:option_id] = canonical_colortheme_option_id(params[:option_id]) if option_type == :colortheme
       params
+    end
+
+    def canonical_colortheme_option_id(value)
+      return nil if value.blank?
+
+      COLORTHEME_OPTION_MAP[value.to_s.downcase]
+    end
+
+    def colortheme_short_code(value)
+      return nil if value.blank?
+
+      COLORTHEME_SHORT_MAP[value.to_s.downcase]
     end
 
     def load_access_token_payload
@@ -380,7 +504,7 @@ module Preference
           @preferences = preference_class.create!(
             token_digest: token_digest,
             expires_at: expires_at,
-            jti: SecureRandom.uuid_v7,
+            jti: Jwt::Jti.generate,
           )
 
           create_preference_options(@preferences)
@@ -409,6 +533,7 @@ module Preference
       new_digest = refresh_token_digest(new_token)
       new_expiry = refresh_token_expiry
 
+      # TODO: Detect refresh token reuse (theft) by tracking previous token digest.
       PreferenceRecord.connected_to(role: :writing) do
         preference.update!(
           token_digest: new_digest,
@@ -416,12 +541,19 @@ module Preference
         )
       end
 
+      @preferences ||= preference
+      create_audit_log(
+        event_id: "REFRESH_TOKEN_ROTATED",
+        context: { refresh_token_rotated: true, expires_at: new_expiry },
+        expires_at: new_expiry,
+      )
+
       set_refresh_token_cookie(new_token, new_expiry)
       @refresh_token_value = new_token
     end
 
     def issue_access_token_from(preference)
-      ensure_preference_jti!(preference)
+      rotate_preference_jti!(preference)
       payload = build_preferences_payload(preference)
       token = Token.encode(
         payload,
@@ -454,10 +586,10 @@ module Preference
       colortheme = preference.public_send("#{prefix}_colortheme")&.option_id
 
       {
-        "lx" => language.presence || "JA",
-        "ri" => region.presence || "JP",
+        "lx" => language.presence&.downcase || "ja",
+        "ri" => region.presence&.downcase || "jp",
         "tz" => timezone.presence || "Asia/Tokyo",
-        "ct" => colortheme.presence || "system",
+        "ct" => normalize_colortheme(colortheme.presence) || "sy",
       }
     end
 
@@ -528,13 +660,13 @@ module Preference
       return if preference.jti.present?
 
       PreferenceRecord.connected_to(role: :writing) do
-        preference.update!(jti: SecureRandom.uuid_v7)
+        preference.update!(jti: Jwt::Jti.generate)
       end
     end
 
     def rotate_preference_jti!(preference)
       PreferenceRecord.connected_to(role: :writing) do
-        preference.update!(jti: SecureRandom.uuid_v7)
+        preference.update!(jti: Jwt::Jti.generate)
       end
     end
 
@@ -555,9 +687,26 @@ module Preference
     end
 
     def cookie_domain
-      return :all unless Rails.env.development?
+      configured = ENV["PREFERENCE_COOKIE_DOMAIN"]&.strip
+      return formatted_domain(configured) if configured.present?
+      return nil unless Rails.env.production?
 
-      nil
+      formatted_domain(derive_cookie_domain_from_host)
+    end
+
+    def derive_cookie_domain_from_host
+      return nil unless request&.host
+
+      host_parts = request.host.split(".")
+      return nil if host_parts.length < 2
+
+      host_parts.last(2).join(".")
+    end
+
+    def formatted_domain(value)
+      return nil if value.blank?
+
+      value.start_with?(".") ? value : ".#{value}"
     end
   end
 end
