@@ -68,6 +68,7 @@ module Sign
 
           # Preserve rd parameter if provided
           redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
+          sanitize_redirect_params!(redirect_params)
 
           redirect_to edit_sign_app_up_email_path(@user_email.id, redirect_params)
         end
@@ -126,6 +127,29 @@ module Sign
         end
 
         private
+
+        def sanitize_redirect_params!(redirect_params)
+          return unless redirect_params[:rd].present?
+
+          redirect_params[:rd] = sanitize_encoded_redirect(redirect_params[:rd])
+          redirect_params.delete(:rd) unless redirect_params[:rd].present?
+        end
+
+        def sanitize_encoded_redirect(encoded_url)
+          return unless encoded_url.present?
+
+          decoded_url = Base64.urlsafe_decode64(encoded_url)
+          safe_path = safe_internal_path(decoded_url)
+
+          case
+          when safe_path
+            Base64.urlsafe_encode64(safe_path)
+          when safe_external_url?(decoded_url)
+            Base64.urlsafe_encode64(decoded_url)
+          end
+        rescue ArgumentError, URI::InvalidURIError
+          nil
+        end
       end
     end
   end

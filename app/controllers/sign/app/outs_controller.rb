@@ -5,7 +5,7 @@ module Sign
     class OutsController < ApplicationController
       include Sign::SessionVerification
 
-      before_action :verify_session_user
+      #   before_action :verify_session_user
 
       def edit
       end

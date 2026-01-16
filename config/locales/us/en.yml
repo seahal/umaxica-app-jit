@@ -50,6 +50,9 @@ en:
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
     app:
+      title_suffix: "(app)"
+      header:
+        sign: "Sign"
       layout:
         nav:
           sign_up: "Sign Up"
@@ -58,6 +61,10 @@ en:
           logout: "Log Out"
       preferences:
         title: "Preference settings"
+        footer:
+          home: "Home"
+          preference: "Preferences"
+          configuration: "Settings"
     org:
       layout:
         nav:

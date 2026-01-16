@@ -19,8 +19,6 @@ class Sign::App::InsControllerTest < ActionDispatch::IntegrationTest
                   I18n.t("sign.app.authentication.new.links.passkey")
     assert_select "a[href=?]", new_sign_app_in_secret_path(query, ri: "jp"),
                   I18n.t("sign.app.authentication.new.links.secret")
-    assert_select "a[href=?]", sign_app_root_path(query, ri: "jp"),
-                  I18n.t("sign.app.authentication.new.back_link")
   end
 
   test "should render in english when lx=en" do

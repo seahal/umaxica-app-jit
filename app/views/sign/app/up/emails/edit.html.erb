@@ -1,34 +1,48 @@
-<% content_for :title, "Showing sample" %>
+<% content_for :title, t("sign.app.authentication.email.edit.page_title") %>
 
-<div class="md:w-2/3 w-full">
-
-  <h1 class="font-bold text-4xl">Showing sample</h1>
-
-  <%= form_with model: @user_email, url: sign_app_up_email_path, method: :patch do |form| %>
-    <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
-
-    <% if @user_email.errors.any? %>
-      <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-        <h2><%= pluralize(@user_email.errors.count, "error") %> prohibited this sample from being saved:</h2>
-
-        <ul class="list-disc ml-6">
-          <% @user_email.errors.each do |error| %>
-            <li><%= error.full_message %></li>
-          <% end %>
-        </ul>
+<div class="mx-auto max-w-sm w-full pt-12">
+  <div class="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] shadow-sm">
+    <div class="p-6 space-y-6">
+      <div class="space-y-2 text-center">
+        <h1 class="text-2xl font-bold tracking-tight"><%= t("sign.app.authentication.email.edit.page_title") %></h1>
+        <p class="text-sm text-[hsl(var(--muted-foreground))]">
+          <%= t("sign.app.registration.email.create.verification_code_sent") %>
+        </p>
       </div>
-    <% end %>
 
-    <div>
-      <%= form.label :pass_code %>
-      <%= form.text_field :pass_code %>
+      <%= form_with model: @user_email, url: sign_app_up_email_path, method: :patch, class: "space-y-4" do |form| %>
+        <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
+
+        <% if @user_email.errors.any? %>
+          <div class="rounded-md bg-red-50 p-3 text-sm text-red-500 dark:bg-red-900/30 dark:text-red-400">
+            <ul class="list-disc pl-5 space-y-1">
+              <% @user_email.errors.each do |error| %>
+                <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="space-y-2">
+          <%= form.label :pass_code, class: "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" %>
+          <%= form.text_field :pass_code, 
+              class: "flex h-10 w-full rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] px-3 py-2 text-sm ring-offset-[hsl(var(--background))] file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[hsl(var(--muted-foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+              placeholder: "123456",
+              autofocus: true,
+              autocomplete: "one-time-code",
+              inputmode: "numeric",
+              pattern: "[0-9]*"
+          %>
+        </div>
+
+        <%= form.submit "確認する", 
+            class: "inline-flex h-10 w-full items-center justify-center rounded-md bg-[hsl(var(--primary))] px-4 py-2 text-sm font-medium text-[hsl(var(--primary-foreground))] ring-offset-[hsl(var(--background))] transition-colors hover:bg-[hsl(var(--primary))]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer" 
+        %>
+      <% end %>
+
+      <div class="text-center">
+        <%= link_to t("sign.app.registration.email.edit.return_page"), new_sign_app_up_path, class: "text-sm font-medium text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors underline underline-offset-4" %>
+      </div>
     </div>
-
-    <%= form.submit %>
-  <% end %>
-
-  <div class="mt-6">
-    <%= link_to t("sign.app.authentication.new.back"), new_sign_app_up_path, class: "inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition" %>
   </div>
-
 </div>

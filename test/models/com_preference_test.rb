@@ -3,14 +3,13 @@
 # Table name: com_preferences
 #
 #  id           :uuid             not null, primary key
-#  public_id    :string
-#  expires_at   :datetime
-#  token_digest :binary
 #  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  status_id    :string(255)      default("NEYO"), not null
-#  lock_version :integer          default(0), not null
+#  expires_at   :datetime
 #  jti          :string
+#  public_id    :string
+#  status_id    :string(255)      default("NEYO"), not null
+#  token_digest :binary
+#  updated_at   :datetime         not null
 #
 # Indexes
 #

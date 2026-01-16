@@ -1,4 +1,37 @@
-<div>
-  <h1 class="font-bold text-4xl"><%= title t("sign.app.exits.edit.title") %></h1>
-  <%= button_to t("sign.app.exits.destroy.success"), sign_app_out_path, method: :delete %>
+<% content_for :title, t("sign.app.exits.edit.title") %>
+
+<div class="mx-auto max-w-md w-full pt-12">
+  <div class="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] shadow-sm">
+    <div class="p-6 space-y-6">
+      <div class="space-y-2 text-center">
+        <h1 class="text-2xl font-bold tracking-tight"><%= t("sign.app.exits.edit.title") %></h1>
+        <p class="text-sm text-[hsl(var(--muted-foreground))]">
+          <%= t("sign.app.configuration.show.description") %>
+        </p>
+      </div>
+
+      <%= form_with url: sign_app_out_path, method: :delete, class: "space-y-4" do |form| %>
+        
+        <div class="flex items-start space-x-3 p-4 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))]/50">
+          <div class="flex items-center h-5">
+            <%= form.check_box :confirm, required: true, class: "h-4 w-4 rounded border-[hsl(var(--input))] bg-[hsl(var(--background))] text-[hsl(var(--primary))] focus:ring-[hsl(var(--ring))] focus:ring-offset-0" %>
+          </div>
+          <div class="text-sm leading-none">
+            <%= form.label :confirm, "ろぐあうとしますか？", class: "font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" %>
+            <p class="text-xs text-[hsl(var(--muted-foreground))] mt-1">
+              一度ログアウトすると、再度ログインが必要になります。
+            </p>
+          </div>
+        </div>
+
+        <%= form.submit t("sign.app.exits.destroy.success"), 
+            class: "inline-flex h-10 w-full items-center justify-center rounded-md bg-[hsl(var(--destructive))] px-4 py-2 text-sm font-medium text-[hsl(var(--destructive-foreground))] ring-offset-[hsl(var(--background))] transition-colors hover:bg-[hsl(var(--destructive))]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer" 
+        %>
+      <% end %>
+
+      <div class="text-center">
+        <%= link_to t("sign.app.configuration.show.back"), sign_app_root_path, class: "text-sm font-medium text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors underline underline-offset-4" %>
+      </div>
+    </div>
+  </div>
 </div>
