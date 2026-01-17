@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SeedUserEmailStatuses < ActiveRecord::Migration[8.2]
-  STATUS_IDS = %w[
+  STATUS_IDS = %w(
     NEYO
     UNVERIFIED_WITH_SIGN_UP
     VERIFIED_WITH_SIGN_UP
@@ -9,7 +9,7 @@ class SeedUserEmailStatuses < ActiveRecord::Migration[8.2]
     VERIFIED
     SUSPENDED
     DELETED
-  ].freeze
+  ).freeze
 
   def up
     safety_assured do

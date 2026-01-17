@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SeedUserAuditEvents < ActiveRecord::Migration[8.2]
-  EVENT_IDS = %w[
+  EVENT_IDS = %w(
     NEYO
     LOGIN_SUCCESS
     LOGIN_FAILED
@@ -23,7 +23,7 @@ class SeedUserAuditEvents < ActiveRecord::Migration[8.2]
     RECOVERY_CODES_GENERATED
     AUTHORIZATION_FAILED
     NON_EXISTENT_EVENT
-  ].freeze
+  ).freeze
 
   def up
     return unless table_exists?(:user_audit_events)

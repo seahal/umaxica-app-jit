@@ -5,7 +5,7 @@ module Core
     class ContactsController < Core::App::ApplicationController
       include ::RateLimit
       include CloudflareTurnstile
-      include Rotp
+      include Common::Otp
 
       before_action :set_contact, only: %i(show edit)
 

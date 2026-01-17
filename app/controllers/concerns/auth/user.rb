@@ -2,19 +2,20 @@
 
 module Auth
   module User
-    include Auth::Base
     extend ActiveSupport::Concern
+    include Auth::Base
 
-    ACCESS_COOKIE_KEY = :"__Secure-access_user_token"
-    REFRESH_COOKIE_KEY = :"__Secure-refresh_user_token"
+    # Cookie keys are defined in Auth::Base (environment-dependent)
+    ACCESS_COOKIE_KEY = Auth::Base::ACCESS_COOKIE_KEY
+    REFRESH_COOKIE_KEY = Auth::Base::REFRESH_COOKIE_KEY
+    AUDIT_EVENTS = Auth::Base::AUDIT_EVENTS
 
     included do
-      helper_method :current_user, :logged_in?, :active_user? if respond_to?(:helper_method)
+      helper_method :current_user, :logged_in?, :active_user?, :logged_in_user? if respond_to?(:helper_method)
+      alias_method :current_user, :current_resource
+      alias_method :authenticate_user!, :authenticate!
+      alias_method :logged_in_user?, :logged_in?
     end
-
-    alias_method :current_user, :current_resource
-
-    alias_method :authenticate_user!, :authenticate!
 
     def audit_user_login_failed(user)
       record_audit(AUDIT_EVENTS[:login_failed], resource: user, actor: nil) if user

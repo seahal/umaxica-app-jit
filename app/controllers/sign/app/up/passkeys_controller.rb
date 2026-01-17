@@ -5,7 +5,7 @@ module Sign
     module Up
       class PasskeysController < ApplicationController
         include ::Redirect
-        include Sign::OtpAuthentication
+        include Common::Otp
 
         # todo: verify not logged in
         def new

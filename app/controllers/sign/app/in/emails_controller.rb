@@ -7,10 +7,10 @@ module Sign
         include ::CloudflareTurnstile
         include EmailValidation
         include ::Redirect
-        include Sign::OtpAuthentication
-        include Sign::SessionAuthentication
-        include Sign::RedirectParameterHandling
-        include Sign::PreAuthenticationGuards
+        include Common::Otp
+        include Auth::SessionAuthentication
+        include Auth::RedirectParameterHandling
+        include Auth::PreAuthenticationGuards
 
         before_action :ensure_not_logged_in
         before_action :load_user_email, only: %i(edit update)

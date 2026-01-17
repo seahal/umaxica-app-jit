@@ -13,21 +13,22 @@ module Sign
 
       allow_browser versions: :modern
 
-      helper_method :logged_in?, :logged_in_staff?, :logged_in_user?
+      before_action :set_locale
+      before_action :set_timezone
+      before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
 
-      protected
+      private
 
-      def logged_in_staff?
-        current_staff.present?
-      end
+      def transparent_refresh_access_token
+        return if logged_in?
 
-      def logged_in_user?
-        # TODO: Implement staff-side end-user sessions
-        false
-      end
+        refresh_plain = cookies[::Auth::Base::REFRESH_COOKIE_KEY]
+        return if refresh_plain.blank?
 
-      def logged_in?
-        logged_in_staff?
+        refreshed = refresh_access_token(refresh_plain)
+        return unless refreshed
+
+        remove_instance_variable(:@current_resource) if defined?(@current_resource)
       end
     end
   end

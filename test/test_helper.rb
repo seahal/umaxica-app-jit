@@ -4,7 +4,18 @@
 
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
+
+if ENV["SKIP_DB"] == "1" && defined?(ActiveRecord::Migration)
+  class << ActiveRecord::Migration
+    def maintain_test_schema!
+    end
+  end
+end
+
 require "rails/test_help"
+require_relative "../app/controllers/concerns/auth/base"
+require_relative "../app/controllers/concerns/auth/user"
+require_relative "../app/controllers/concerns/auth/staff"
 
 Rails.root.glob("test/support/**/*.rb").each { |f| require f }
 if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
@@ -29,8 +40,20 @@ end
 class ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
+  self.use_transactional_tests = false if ENV["SKIP_DB"] == "1" && respond_to?(:use_transactional_tests=)
+
   # Load fixtures only when explicitly needed in individual test files
   # instead of loading all fixtures globally
   # To use fixtures in a specific test file, add:
-  fixtures :all
+  fixtures :all unless ENV["SKIP_DB"] == "1"
+end
+
+if ENV["SKIP_DB"] == "1"
+  module SkipDbTests
+    def before_setup
+      skip "SKIP_DB=1 (database unavailable in this environment)"
+    end
+  end
+
+  ActiveSupport.on_load(:active_support_test_case) { prepend SkipDbTests }
 end

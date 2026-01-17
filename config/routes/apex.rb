@@ -7,10 +7,12 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html
         resource :health, only: :show, format: :html
-        # api endpoint
-        namespace :v1 do
-          resource :csrf, only: :show
-          resource :health, only: :show
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :csrf, only: :show
+            resource :health, only: :show
+          end
         end
         # preferences
         resource :preference, only: [:show]
@@ -42,10 +44,12 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # endpoint of health check
         resource :health, only: :show
-        # api endpoint
-        namespace :v1 do
-          resource :csrf, only: :show
-          resource :health, only: :show
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :csrf, only: :show
+            resource :health, only: :show
+          end
         end
         # preferences
         resource :preference, only: [:show]
@@ -78,9 +82,11 @@ Rails.application.routes.draw do
         # health check for html
         resource :csrf, only: :show
         resource :health, only: :show, format: :html
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :health, only: :show
+          end
         end
         # preferences
         resource :preference, only: [:show]

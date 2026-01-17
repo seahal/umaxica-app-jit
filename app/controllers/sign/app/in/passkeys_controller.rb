@@ -4,7 +4,7 @@ module Sign
   module App
     module In
       class PasskeysController < ApplicationController
-        include Sign::PreAuthenticationGuards
+        include Auth::PreAuthenticationGuards
 
         def new
           @user_telephone = UserTelephone.new

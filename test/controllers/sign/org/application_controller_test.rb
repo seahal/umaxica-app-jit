@@ -25,8 +25,8 @@ module Sign::Org
       assert_includes @controller.class, RateLimit
     end
 
-    test "logged_in_user? returns false" do
-      assert_not @controller.send(:logged_in_user?)
+    test "am_i_user? returns false" do
+      assert_not @controller.send(:am_i_user?)
     end
 
     test "authenticate_staff! allows access when staff is logged in" do

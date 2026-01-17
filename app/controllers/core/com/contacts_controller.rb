@@ -5,7 +5,7 @@ module Core
     class ContactsController < Core::Com::ApplicationController
       include ::RateLimit
       include CloudflareTurnstile
-      include Rotp
+      include Common::Otp
 
       def show
         @contact = ComContact.find_by!(public_id: params[:id])

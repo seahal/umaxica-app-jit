@@ -4,8 +4,6 @@ module Sign
   module Org
     module Configuration
       class SecretsController < ApplicationController
-        include Sign::Setting::Secrets
-
         private
 
         def authenticate_identity!

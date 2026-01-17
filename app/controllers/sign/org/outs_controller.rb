@@ -3,15 +3,13 @@
 module Sign
   module Org
     class OutsController < ApplicationController
-      include Sign::SessionVerification
-
-      before_action :verify_session_staff
+      before_action :authenticate!
 
       def edit
       end
 
       def destroy
-        session.delete(:staff)
+        log_out
         redirect_to sign_org_root_path, notice: t(".destroy.success")
       end
     end

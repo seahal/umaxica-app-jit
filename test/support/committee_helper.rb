@@ -6,12 +6,18 @@ module CommitteeHelper
   include Committee::Rails::Test::Methods
 
   def committee_options
-    @committee_options ||= {
+    prefix =
+      if request&.path.to_s.start_with?("/edge/")
+        # Our OpenAPI defines "/v1/*" while the Edge API is served at "/edge/v1/*".
+        # Committee will strip this prefix when matching paths.
+        "/edge"
+      elsif request&.path.to_s.start_with?("/client/")
+        "/client"
+      end
+
+    {
       schema_path: Rails.public_path.join("openapi.yml").to_s,
-      # prefix: nil means the full request path must match the OpenAPI path exactly
-      # Since our OpenAPI defines "/v1/health", and our request is to "/v1/health",
-      # we don't need a prefix
-      prefix: nil,
+      prefix: prefix,
       parse_response_by_content_type: true,
       strict_reference_validation: true,
     }

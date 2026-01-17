@@ -6,9 +6,10 @@ module Sign
       class EmailsController < ApplicationController
         include ::CloudflareTurnstile
         include ::Redirect
-        include Sign::OtpAuthentication
-        include Sign::RedirectParameterHandling
-        include Sign::PreAuthenticationGuards
+        include Common::Otp
+        include Auth::RedirectParameterHandling
+        include Auth::PreAuthenticationGuards
+        include Auth::SessionAuthentication
 
         before_action :ensure_not_logged_in_for_registration
 
@@ -129,14 +130,14 @@ module Sign
         private
 
         def sanitize_redirect_params!(redirect_params)
-          return unless redirect_params[:rd].present?
+          return if redirect_params[:rd].blank?
 
           redirect_params[:rd] = sanitize_encoded_redirect(redirect_params[:rd])
-          redirect_params.delete(:rd) unless redirect_params[:rd].present?
+          redirect_params.delete(:rd) if redirect_params[:rd].blank?
         end
 
         def sanitize_encoded_redirect(encoded_url)
-          return unless encoded_url.present?
+          return if encoded_url.blank?
 
           decoded_url = Base64.urlsafe_decode64(encoded_url)
           safe_path = safe_internal_path(decoded_url)

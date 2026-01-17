@@ -9,7 +9,7 @@ module RefreshTokenable
 
   REFRESH_TOKEN_SEPARATOR = "."
   REFRESH_VERIFIER_BYTES = 48
-  REFRESH_TTL = 1.year
+  REFRESH_TTL = 30.days
 
   included do
     before_validation :ensure_refresh_expires_at, on: :create
@@ -51,7 +51,6 @@ module RefreshTokenable
 
       self.refresh_token_digest = digest_refresh_token(verifier)
       self.refresh_expires_at = expires_at || default_refresh_expires_at
-      self.rotated_at = Time.current
       self.last_used_at = Time.current
       save!
 

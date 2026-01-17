@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SeedUserTokenStatuses < ActiveRecord::Migration[8.2]
-  STATUS_IDS = %w[NEYO].freeze
+  STATUS_IDS = %w(NEYO).freeze
 
   def up
     return unless table_exists?(:user_token_statuses)

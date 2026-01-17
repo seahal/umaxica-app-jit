@@ -86,8 +86,6 @@ gem "meta-tags"
 gem "nanoid"
 # Authentication
 gem "pundit"
-# Component-based UI
-gem "view_component"
 # state management
 gem "aasm"
 # billing
@@ -163,5 +161,3 @@ group :development do
   # Security
   gem "bundler-audit", require: false
 end
-
-gem "rails-i18n", "~> 8.1"

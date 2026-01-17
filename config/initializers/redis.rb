@@ -8,13 +8,18 @@ redis_config = { url: default_redis_url }
 
 REDIS_CLIENT = Redis.new(redis_config)
 
-# Connection smoke test (skip in test)
-unless Rails.env.test?
+# Connection smoke test (skip in test).
+# Default: only fail fast in production. Opt-in for dev via env vars.
+should_smoke_test =
+  ENV.fetch("REDIS_SMOKE_TEST", Rails.env.production? ? "1" : "0") == "1"
+fail_fast =
+  ENV.fetch("REDIS_FAIL_FAST", Rails.env.production? ? "1" : "0") == "1"
+
+if should_smoke_test && !Rails.env.test?
   begin
     REDIS_CLIENT.ping
   rescue StandardError => e
     Rails.logger.error "❌ Redis connection failed: #{e.class}: #{e.message} (url=#{default_redis_url})"
-    # Fail fast only in development to surface local setup issues
-    raise e if Rails.env.development?
+    raise e if fail_fast
   end
 end

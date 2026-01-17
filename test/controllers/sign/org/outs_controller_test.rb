@@ -12,18 +12,20 @@ class Sign::Org::OutsControllerTest < ActionDispatch::IntegrationTest
   test "should get edit raises error without session" do
     get edit_sign_org_out_url(ri: "jp"), headers: { "Host" => @host }
 
-    assert_response :not_found
+    rt = Base64.urlsafe_encode64(edit_sign_org_out_url(ri: "jp", host: @host))
+    assert_redirected_to new_sign_org_in_url(rt: rt, host: @host)
   end
 
   test "should destroy raises error without session" do
     delete sign_org_out_url(ri: "jp"), headers: { "Host" => @host }
 
-    assert_response :not_found
+    rt = Base64.urlsafe_encode64(sign_org_out_url(ri: "jp", host: @host))
+    assert_redirected_to new_sign_org_in_url(rt: rt, host: @host)
   end
 
   test "should destroy with staff session" do
-    get edit_sign_org_out_url(ri: "jp"), headers: { "Host" => @host }
+    delete sign_org_out_url(ri: "jp"), headers: { "Host" => @host, "X-TEST-CURRENT-STAFF" => @staff.id }
 
-    assert_response :not_found
+    assert_redirected_to sign_org_root_path(ri: "jp")
   end
 end

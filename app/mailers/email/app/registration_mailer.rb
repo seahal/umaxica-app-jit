@@ -12,7 +12,7 @@ module Email::App
       @pass_code = params[:hotp_token]
       mail(
         to: params[:email_address],
-        subject: I18n.t("mail.email.app.registration_mailer.create.subject")
+        subject: I18n.t("mail.email.app.registration_mailer.create.subject"),
       )
     end
   end

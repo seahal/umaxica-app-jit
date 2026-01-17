@@ -8,12 +8,14 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html
         resource :health, only: :show, format: :html
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
-          resource :csrf, only: :show
-          resource :preference, only: :show
-          # TODO: Add preference refresh endpoint (CSRF-protected) for React Router 401/419 recovery.
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :health, only: :show
+            resource :csrf, only: :show
+            resource :preference, only: :show
+            # TODO: Add preference refresh endpoint (CSRF-protected) for React Router 401/419 recovery.
+          end
         end
         # configuration
         resource :configuration, only: [:show]
@@ -33,11 +35,13 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # endpoint of health check
         resource :health, only: :show
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
-          resource :csrf, only: :show
-          resource :preference, only: :show
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :health, only: :show
+            resource :csrf, only: :show
+            resource :preference, only: :show
+          end
         end
         # configuration
         resource :configuration, only: [:show]
@@ -58,11 +62,13 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html
         resource :health, only: :show
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
-          resource :csrf, only: :show
-          resource :preference, only: :show
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :health, only: :show
+            resource :csrf, only: :show
+            resource :preference, only: :show
+          end
         end
         # configuration
         resource :configuration, only: [:show]

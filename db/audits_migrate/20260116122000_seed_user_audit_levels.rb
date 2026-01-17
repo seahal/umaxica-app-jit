@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class SeedUserAuditLevels < ActiveRecord::Migration[8.2]
-  LEVEL_IDS = %w[
+  LEVEL_IDS = %w(
     NEYO
     INFO
     DEBUG
     WARN
     ERROR
-  ].freeze
+  ).freeze
 
   def up
     return unless table_exists?(:user_audit_levels)

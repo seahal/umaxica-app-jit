@@ -302,7 +302,7 @@ module Preference
         session[:language],
         I18n.default_locale,
       ]
-      locale = candidates.map { |value| normalized_locale(value) }.compact.first
+      locale = candidates.filter_map { |value| normalized_locale(value) }.first
       I18n.locale = locale || I18n.default_locale
     end
 
@@ -317,7 +317,7 @@ module Preference
     end
 
     def normalized_locale(value)
-      return unless value.present?
+      return if value.blank?
 
       normalized_value = value.to_s.downcase
       return if normalized_value.blank?
@@ -328,7 +328,12 @@ module Preference
     end
 
     def available_locale_strings
-      @available_locale_strings ||= I18n.available_locales.map { |locale| locale.to_s.downcase }.uniq
+      @available_locale_strings ||=
+        begin
+          locales = I18n.available_locales.map { |locale| locale.to_s.downcase }
+          locales.uniq!
+          locales
+        end
     end
 
     def set_timezone_from_session

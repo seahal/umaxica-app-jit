@@ -4,6 +4,18 @@ require "jwt"
 
 module Auth
   module Base
+    extend ActiveSupport::Concern
+
+    # Cookie keys - environment-dependent naming
+    # Production: "__Secure-" prefix for secure cookies
+    # Dev/Test: no prefix (String, not Symbol)
+    ACCESS_COOKIE_KEY = Rails.env.production? ? "__Secure-auth_access" : "auth_access"
+    REFRESH_COOKIE_KEY = Rails.env.production? ? "__Secure-auth_refresh" : "auth_refresh"
+
+    # Token TTLs
+    ACCESS_TOKEN_TTL = ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i).to_i.seconds
+    REFRESH_TOKEN_TTL = 30.days
+
     AUDIT_EVENTS = {
       logged_in: "LOGGED_IN",
       logged_out: "LOGGED_OUT",
@@ -44,13 +56,14 @@ module Auth
 
     class Token
       JWT_ALGORITHM = "ES384"
-      ACCESS_TOKEN_TTL = 15.minutes
 
       class << self
-        def encode(resource, host:, session_public_id: nil)
+        def encode(resource, host:, session_public_id: nil, resource_type: nil)
           return nil unless valid_encode_params?(resource, host)
 
-          payload = build_payload(resource, session_public_id)
+          # Use provided resource_type or fallback to class name
+          type = resource_type || resource.class.name.downcase
+          payload = build_payload(resource, session_public_id, type)
           JWT.encode(payload, JwtConfiguration.private_key, JWT_ALGORITHM)
         rescue StandardError => error
           Rails.event.notify(
@@ -115,17 +128,17 @@ module Auth
           true
         end
 
-        def build_payload(resource, session_public_id)
+        def build_payload(resource, session_public_id, type)
           now = Time.current
 
           payload = {
             "iat" => now.to_i,
-            "exp" => (now + ACCESS_TOKEN_TTL).to_i,
+            "exp" => (now + Auth::Base::ACCESS_TOKEN_TTL).to_i,
             "jti" => Jwt::Jti.generate,
             "iss" => JwtConfiguration.issuer,
             "aud" => JwtConfiguration.audiences,
             "sub" => resource.id,
-            "type" => resource.class.name.downcase,
+            "type" => type,
           }
           payload["sid"] = session_public_id if session_public_id.present?
           payload
@@ -162,83 +175,89 @@ module Auth
         TokenRecord.connected_to(role: :writing) do
           token_class.create!(resource_foreign_key => resource.id)
         end
-      
-      # Generate SHA3-based refresh token
-      refresh_token = token_record.rotate_refresh_token!
-      
-      # Generate JWT access token
-      access_token = Token.encode(resource, host: request.host, session_public_id: token_record.public_id)
 
-      unless request.format.json?
-        cookies[self.class::ACCESS_COOKIE_KEY] = cookie_options.merge(
-          value: access_token,
-          expires: Token::ACCESS_TOKEN_TTL.from_now,
-        )
-        cookies.encrypted[self.class::REFRESH_COOKIE_KEY] = cookie_options.merge(
-          value: refresh_token,
-          expires: 1.year.from_now,
-        )
-      end
+      # Generate SHA3-based refresh token
+      refresh_plain = token_record.rotate_refresh_token!
+
+      # Generate JWT access token with explicit resource_type
+      access_token = Token.encode(
+        resource,
+        host: request.host,
+        session_public_id: token_record.public_id,
+        resource_type: resource_type,
+      )
+
+      # Always set cookies (even for JSON responses - required for Edge/SPA)
+      set_auth_cookies(access_token: access_token, refresh_token: refresh_plain)
 
       record_audit(AUDIT_EVENTS[:logged_in], resource: resource) if record_login_audit
 
       {
         access_token: access_token,
-        refresh_token: refresh_token,
+        refresh_token: refresh_plain,
         token_type: "Bearer",
-        expires_in: Token::ACCESS_TOKEN_TTL.to_i,
+        expires_in: ACCESS_TOKEN_TTL.to_i,
       }
     end
 
-    def refresh_access_token(refresh_token)
-      result = Sign::RefreshTokenService.call(refresh_token: refresh_token)
-      old_token = result[:token]
+    def refresh_access_token(refresh_plain)
+      result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
+      token_record = result[:token]
+      new_refresh_plain = result[:refresh_token]
 
-      unless old_token.is_a?(token_class)
+      unless token_record.is_a?(token_class)
         Rails.event.notify(
           "#{resource_type}.token.refresh.failed",
-          refresh_token_id: refresh_token,
+          refresh_token_id: refresh_plain,
           reason: "token_not_found",
           ip_address: request_ip_address,
         )
         return nil
       end
 
-      resource = old_token.public_send(resource_type)
+      resource = token_record.public_send(resource_type)
 
       unless resource&.active?
         Rails.event.notify(
           "#{resource_type}.token.refresh.failed",
           "#{resource_type}_id": resource&.id,
-          refresh_token_id: refresh_token,
+          refresh_token_id: refresh_plain,
           reason: "#{resource_type}_inactive",
           ip_address: request_ip_address,
         )
-        TokenRecord.connected_to(role: :writing) { old_token.destroy! }
+        TokenRecord.connected_to(role: :writing) { token_record.destroy! }
         return nil
       end
 
-      new_access_token = Token.encode(resource, host: request.host, session_public_id: old_token.public_id)
+      new_access_token = Token.encode(
+        resource,
+        host: request.host,
+        session_public_id: token_record.public_id,
+        resource_type: resource_type,
+      )
+
+      # Always set cookies (even for JSON responses - required for Edge/SPA)
+      set_auth_cookies(access_token: new_access_token, refresh_token: new_refresh_plain)
 
       Rails.event.notify(
         "#{resource_type}.token.refreshed",
         "#{resource_type}_id": resource.id,
-        old_refresh_token_id: old_token.public_id,
-        new_refresh_token_id: result[:refresh_token],
+        old_refresh_token_id: token_record.public_id,
+        new_refresh_token_id: new_refresh_plain,
         ip_address: request_ip_address,
       )
       record_audit(AUDIT_EVENTS[:token_refreshed], resource: resource)
 
       {
         access_token: new_access_token,
-        refresh_token: result[:refresh_token],
+        refresh_token: new_refresh_plain,
         token_type: "Bearer",
-        expires_in: Token::ACCESS_TOKEN_TTL.to_i,
+        expires_in: ACCESS_TOKEN_TTL.to_i,
       }
     rescue Sign::InvalidRefreshToken => e
       Rails.event.notify(
         "#{resource_type}.token.refresh.failed",
-        refresh_token_id: refresh_token,
+        refresh_token_id: refresh_plain,
         reason: e.class.name,
         ip_address: request_ip_address,
       )
@@ -247,7 +266,7 @@ module Auth
       Rails.event.notify(
         "#{resource_type}.token.refresh.error",
         "#{resource_type}_id": resource&.id,
-        refresh_token_id: refresh_token,
+        refresh_token_id: refresh_plain,
         error_class: e.class.name,
         error_message: e.message,
         ip_address: request_ip_address,
@@ -260,8 +279,8 @@ module Auth
 
       destroy_refresh_token_from_cookie
 
-      cookies.delete self.class::ACCESS_COOKIE_KEY, **cookie_deletion_options
-      cookies.delete self.class::REFRESH_COOKIE_KEY, **cookie_deletion_options
+      cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
+      cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
 
       record_audit(AUDIT_EVENTS[:logged_out], resource: resource) if resource
       reset_session
@@ -330,15 +349,31 @@ module Auth
     def cookie_options
       opts = {
         httponly: true,
-        secure: true,
+        secure: Rails.env.production?,
         samesite: :lax,
+        path: "/",
       }
       opts[:domain] = shared_cookie_domain if shared_cookie_domain
       opts
     end
 
     def cookie_deletion_options
-      shared_cookie_domain ? { domain: shared_cookie_domain } : {}
+      opts = { path: "/" }
+      opts[:domain] = shared_cookie_domain if shared_cookie_domain
+      opts
+    end
+
+    def set_auth_cookies(access_token:, refresh_token:)
+      # Access cookie
+      cookies[ACCESS_COOKIE_KEY] = cookie_options.merge(
+        value: access_token,
+        expires: ACCESS_TOKEN_TTL.from_now,
+      )
+      # Refresh cookie - use regular cookies (not encrypted)
+      cookies[REFRESH_COOKIE_KEY] = cookie_options.merge(
+        value: refresh_token,
+        expires: REFRESH_TOKEN_TTL.from_now,
+      )
     end
 
     def shared_cookie_domain
@@ -413,7 +448,7 @@ module Auth
     end
 
     def load_from_token
-      access_token = extract_access_token(self.class::ACCESS_COOKIE_KEY)
+      access_token = extract_access_token(ACCESS_COOKIE_KEY)
       return nil if access_token.blank?
 
       payload = Token.decode(access_token, host: request.host)
@@ -431,7 +466,8 @@ module Auth
     end
 
     def destroy_refresh_token_from_cookie
-      token_value = cookies.encrypted[self.class::REFRESH_COOKIE_KEY]
+      # Use regular cookies (not encrypted)
+      token_value = cookies[REFRESH_COOKIE_KEY]
       return unless token_value
 
       public_id, = token_class.parse_refresh_token(token_value)

@@ -77,7 +77,7 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    assert @obj.cookies[Auth::Staff::ACCESS_COOKIE_KEY]
+    assert @obj.cookies[::Auth::Staff::ACCESS_COOKIE_KEY]
     assert_predicate @obj, :logged_in?
     assert_equal @staff, @obj.current_staff
   end
@@ -87,13 +87,13 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    access_opts = @obj.cookies.options_for(Auth::Staff::ACCESS_COOKIE_KEY)
-    refresh_opts = @obj.cookies.options_for(Auth::Staff::REFRESH_COOKIE_KEY)
+    access_opts = @obj.cookies.options_for(::Auth::Staff::ACCESS_COOKIE_KEY)
+    refresh_opts = @obj.cookies.options_for(::Auth::Staff::REFRESH_COOKIE_KEY)
 
     assert_operator access_opts[:expires], :>, 10.minutes.from_now
-    assert_operator access_opts[:expires], :<, 20.minutes.from_now
-    assert_operator refresh_opts[:expires], :>, 11.months.from_now
-    assert_operator refresh_opts[:expires], :<, 13.months.from_now
+    assert_operator access_opts[:expires], :<, 2.hours.from_now
+    assert_operator refresh_opts[:expires], :>, 29.days.from_now
+    assert_operator refresh_opts[:expires], :<, 31.days.from_now
   end
 
   test "log_out clears session and current_staff" do
@@ -111,8 +111,8 @@ class Auth::StaffTest < ActiveSupport::TestCase
     @obj.send(:log_in, @staff)
 
     assert_difference("StaffToken.count", -1) { @obj.send(:log_out) }
-    assert_nil @obj.cookies[Auth::Staff::ACCESS_COOKIE_KEY]
-    assert_nil @obj.cookies.encrypted[Auth::Staff::REFRESH_COOKIE_KEY]
+    assert_nil @obj.cookies[::Auth::Staff::ACCESS_COOKIE_KEY]
+    assert_nil @obj.cookies.encrypted[::Auth::Staff::REFRESH_COOKIE_KEY]
   end
 
   test "log_in derives shared cookie domain from host" do
@@ -121,8 +121,8 @@ class Auth::StaffTest < ActiveSupport::TestCase
 
     @obj.send(:log_in, @staff)
 
-    assert_equal ".org.localhost", @obj.cookies.options_for(Auth::Staff::ACCESS_COOKIE_KEY)[:domain]
-    assert_equal ".org.localhost", @obj.cookies.options_for(Auth::Staff::REFRESH_COOKIE_KEY)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Staff::ACCESS_COOKIE_KEY)[:domain]
+    assert_equal ".org.localhost", @obj.cookies.options_for(::Auth::Staff::REFRESH_COOKIE_KEY)[:domain]
   end
 
   test "log_in returns tokens hash" do
@@ -134,7 +134,7 @@ class Auth::StaffTest < ActiveSupport::TestCase
     assert tokens[:access_token]
     assert tokens[:refresh_token]
     assert_equal "Bearer", tokens[:token_type]
-    assert_equal Auth::Base::Token::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
+    assert_equal ::Auth::Base::ACCESS_TOKEN_TTL.to_i, tokens[:expires_in]
   end
 
   test "current_staff works with Bearer token" do

@@ -6,19 +6,32 @@ Rails.application.routes.draw do
     constraints host: ENV["SIGN_SERVICE_URL"] do
       scope module: :app, as: :app do
         root to: "roots#index"
+
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
-          resource :csrf, only: :show
+
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :health, only: :show
+            resource :csrf, only: :show
+            # REST-ish token endpoints:
+            # GET  /edge/v1/token/check   -> checks#show
+            # POST /edge/v1/token/refresh -> refreshes#create
+            namespace :token do
+              resource :check, only: :show
+              resource :refresh, only: :create
+            end
+          end
         end
+
         # Sign up
         resource :up, only: :new
         namespace :up do
           resources :emails, only: %i(new create edit update)
           resources :passkeys, only: %i(new create edit update)
         end
+
         # Sign in/out
         resource :in, only: %i(new)
         namespace :in do
@@ -26,20 +39,31 @@ Rails.application.routes.draw do
           resource :passkey, only: %i(new create edit update)
           resource :secret, only: %i(new create)
         end
+
         # Social sign-up / log-in
         namespace :social do
-          match "apple/callback", to: "sessions#create", defaults: { provider: "apple" }, via: %i(get post)
-          get "google/callback", to: "sessions#create", defaults: { provider: "google_oauth2" }
+          match "apple/callback",
+                to: "sessions#create",
+                defaults: { provider: "apple" },
+                via: %i(get post)
+          get "google/callback",
+              to: "sessions#create",
+              defaults: { provider: "google_oauth2" }
         end
+
         # Settings with logged-in user
         resource :configuration, only: :show
         namespace :configuration do
           # TODO: Implement TOTP settings management
           resources :totps, only: %i(index new create edit)
-          # TODO: Implement telephone settings management
-          # resources :passkeys
-          post "passkeys/challenge", to: "passkeys#challenge", as: :sign_app_configuration_passkeys_challenge
-          post "passkeys/verify", to: "passkeys#verify", as: :sign_app_configuration_passkeys_verify
+
+          post "passkeys/challenge",
+               to: "passkeys#challenge",
+               as: :sign_app_configuration_passkeys_challenge
+          post "passkeys/verify",
+               to: "passkeys#verify",
+               as: :sign_app_configuration_passkeys_verify
+
           resources :passkeys, only: %i(index show new create edit update destroy) do
             collection do
               post :challenge
@@ -47,26 +71,17 @@ Rails.application.routes.draw do
             end
             resources :secrets, only: [:index], controller: "configuration/secrets"
           end
-          # TODO: Implement email settings management
           resources :emails
-          # TODO: Implement email settings management
           resources :telephones
-          # sign in with ***
           resource :apple, only: [:show]
-          resource :google, only: [:show]
-          # TODO : Implement recovery code management
+          resource :google, only: [:update]
           resources :secrets
-          # TODO: Implement connected apps management
           resources :sessions
-          # Withdrawal
           resource :withdrawal
         end
-        # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
-        namespace :token do
-          resource :refresh, only: :create
-        end
+
         # Sign out
-        resource :out, only: [:edit, :destroy]
+        resource :out, only: %i(edit destroy)
       end
     end
 
@@ -74,44 +89,48 @@ Rails.application.routes.draw do
     constraints host: ENV["SIGN_STAFF_URL"] do
       scope module: :org, as: :org do
         root to: "roots#index"
+
         # health check for html/json
         resource :health, only: :show, defaults: { format: :html }
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
-          resource :csrf, only: :show
+
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :health, only: :show
+            resource :csrf, only: :show
+
+            # REST-ish token endpoints:
+            # GET  /edge/v1/token/check   -> checks#show
+            # POST /edge/v1/token/refresh -> refreshes#create
+            namespace :token do
+              resource :check, only: :show
+              resource :refresh, only: :create
+            end
+          end
         end
+
         # Sign up
         resource :up, only: :new
+
         # Login
         resource :in, only: [:new]
         namespace :in do
           resource :passkey, only: %i(new create edit update)
           resource :secret, only: %i(new create)
         end
+
         # Settings
         resource :configuration, only: :show
         namespace :configuration do
-          # TODO: Implement TOTP settings management
           resources :totps, only: %i(index new create edit)
-          # resources :totp, only: [ :index, :new, :create, :edit, :update ]
           resources :passkeys, only: %i(index edit update new)
-          # TODO: Implement email settings index
-          # resources :emails, only: [ :index ]
           resources :secrets
-          # TODO: Implement connected apps management
           resources :sessions
-          # Withdrawal
           resource :withdrawal, only: %i(show)
         end
-        # Token refresh endpoint for JSON API clients (SPA, Mobile apps)
-        namespace :token do
-          resource :refresh, only: :create
-        end
+
         # Sign out
-        resource :out, only: [:edit, :destroy]
-        # TODO: move to configuration namespace
-        resource :out, only: [:edit, :destroy]
+        resource :out, only: %i(edit destroy)
       end
     end
   end

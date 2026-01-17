@@ -372,7 +372,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           headers: default_headers
 
     # Verify JWT access token cookie was set
-    assert_not_nil cookies[Auth::User::ACCESS_COOKIE_KEY],
+    assert_not_nil cookies[::Auth::User::ACCESS_COOKIE_KEY],
                    "Access token cookie should be set after successful registration"
 
     # Verify user and token were created

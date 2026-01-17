@@ -141,7 +141,6 @@ class StaffTokenTest < ActiveSupport::TestCase
 
     assert_match(/\A#{@token.public_id}\./, new_token)
     assert_not_equal old_digest, @token.refresh_token_digest
-    assert_predicate @token.rotated_at, :present?
     assert_predicate @token.last_used_at, :present?
   end
 

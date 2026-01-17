@@ -11,11 +11,21 @@ class Sign::App::OutsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get edit raises error without session" do
     get edit_sign_app_out_url(ri: "jp"), headers: { "Host" => @host }
-    assert_response :not_found
+
+    rt = Base64.urlsafe_encode64(edit_sign_app_out_url(ri: "jp", host: @host))
+    assert_redirected_to new_sign_app_in_url(rt: rt, host: @host)
   end
 
   test "should destroy raises error without session" do
     delete sign_app_out_url(ri: "jp"), headers: { "Host" => @host }
-    assert_response :not_found
+
+    rt = Base64.urlsafe_encode64(sign_app_out_url(ri: "jp", host: @host))
+    assert_redirected_to new_sign_app_in_url(rt: rt, host: @host)
+  end
+
+  test "should destroy with user session" do
+    delete sign_app_out_url(ri: "jp"), headers: { "Host" => @host, "X-TEST-CURRENT-USER" => @user.id }
+
+    assert_redirected_to sign_app_root_path(ri: "jp")
   end
 end

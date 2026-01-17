@@ -7,7 +7,8 @@ module Sign
         skip_before_action :set_preferences_cookie
 
         def create
-          refresh_token = params[:refresh_token]
+          response.set_header("Cache-Control", "no-store")
+          refresh_token = params[:refresh_token].presence || cookies[::Auth::Base::REFRESH_COOKIE_KEY]
 
           if refresh_token.blank?
             Rails.event.notify(

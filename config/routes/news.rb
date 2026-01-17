@@ -7,11 +7,13 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # api endpoint
-        namespace :v1, defaults: { format: :json } do
-          resource :health, only: :show
-          resources :posts, only: [:index, :show] do
-            resources :versions, only: [:index, :show]
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1, defaults: { format: :json } do
+            resource :health, only: :show
+            resources :posts, only: [:index, :show] do
+              resources :versions, only: [:index, :show]
+            end
           end
         end
       end
@@ -22,11 +24,13 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # api endpoint
-        namespace :v1, defaults: { format: :json } do
-          resource :health, only: :show
-          resources :posts, only: [:index, :show] do
-            resources :versions, only: [:index, :show]
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1, defaults: { format: :json } do
+            resource :health, only: :show
+            resources :posts, only: [:index, :show] do
+              resources :versions, only: [:index, :show]
+            end
           end
         end
       end
@@ -38,11 +42,13 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # api endpoint
-        namespace :v1, defaults: { format: :json } do
-          resource :health, only: :show
-          resources :posts, only: [:index, :show] do
-            resources :versions, only: [:index, :show]
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1, defaults: { format: :json } do
+            resource :health, only: :show
+            resources :posts, only: [:index, :show] do
+              resources :versions, only: [:index, :show]
+            end
           end
         end
       end
