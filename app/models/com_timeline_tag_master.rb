@@ -16,6 +16,7 @@
 
 class ComTimelineTagMaster < NewsRecord
   include StringPrimaryKey
+  include Treeable
 
   validates :id, uniqueness: { case_sensitive: false }
 

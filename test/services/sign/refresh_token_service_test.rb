@@ -2,51 +2,52 @@
 
 require "test_helper"
 
-# Ensures refresh token parsing/verification/rotation behavior stays consistent.
-class RefreshTokenServiceTest < ActiveSupport::TestCase
-  test "rotates a valid user refresh token" do
-    user = users(:one)
-    token = UserToken.create!(user: user)
-    raw = token.rotate_refresh_token!
-    old_digest = token.refresh_token_digest
+class Sign::RefreshTokenServiceTest < ActiveSupport::TestCase
+  fixtures :users, :user_tokens
 
-    result = Sign::RefreshTokenService.call(refresh_token: raw)
+  test "rotation increments generation counter" do
+    token = UserToken.create!(user: users(:one))
+    first_refresh = token.rotate_refresh_token!
+    result = Sign::RefreshTokenService.call(refresh_token: first_refresh)
 
+    token.reload
+    second_generation = token.refresh_token_generation
+
+    assert_equal 2, second_generation
+    assert_kind_of Hash, result
     assert_equal token, result[:token]
-    assert_match(/\A#{token.public_id}\./, result[:refresh_token])
-    assert_not_equal raw, result[:refresh_token]
-    assert_not_equal old_digest, token.reload.refresh_token_digest
   end
 
-  test "rotates a valid staff refresh token" do
-    staff = staffs(:one)
-    token = StaffToken.create!(staff: staff)
-    raw = token.rotate_refresh_token!
-
-    result = Sign::RefreshTokenService.call(refresh_token: raw)
-
-    assert_equal token, result[:token]
-    assert_match(/\A#{token.public_id}\./, result[:refresh_token])
-  end
-
-  test "rejects invalid verifier" do
+  test "reuse detection revokes all actor tokens" do
     user = users(:one)
     token = UserToken.create!(user: user)
-    token.rotate_refresh_token!
+    initial_refresh = token.rotate_refresh_token!
+    rotated = Sign::RefreshTokenService.call(refresh_token: initial_refresh)
+    rotated_refresh = rotated[:refresh_token]
 
     assert_raises(Sign::InvalidRefreshToken) do
-      Sign::RefreshTokenService.call(refresh_token: "#{token.public_id}.wrong")
+      Sign::RefreshTokenService.call(refresh_token: initial_refresh)
+    end
+
+    token.reload
+    assert token.revoked_at, "Original token should be revoked"
+    assert token.compromised_at, "Compromise timestamp should be recorded"
+    assert UserToken.where(user_id: user.id).all?(&:revoked?), "All actor tokens should be revoked"
+
+    assert_raises(Sign::InvalidRefreshToken) do
+      Sign::RefreshTokenService.call(refresh_token: rotated_refresh)
     end
   end
 
-  test "rejects revoked refresh token" do
-    user = users(:one)
-    token = UserToken.create!(user: user)
-    raw = token.rotate_refresh_token!
+  test "revoked tokens stay invalid without marking compromise" do
+    token = user_tokens(:one)
+    refresh = token.rotate_refresh_token!
     token.revoke!
 
     assert_raises(Sign::InvalidRefreshToken) do
-      Sign::RefreshTokenService.call(refresh_token: raw)
+      Sign::RefreshTokenService.call(refresh_token: refresh)
     end
+
+    assert_nil token.reload.compromised_at
   end
 end

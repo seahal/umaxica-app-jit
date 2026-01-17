@@ -13,6 +13,8 @@ module RefreshTokenable
 
   included do
     before_validation :ensure_refresh_expires_at, on: :create
+    before_validation :ensure_refresh_token_family_id, on: :create
+    before_validation :ensure_refresh_token_generation, on: :create
     validates :refresh_token_digest, uniqueness: true, allow_nil: true
   end
 
@@ -52,6 +54,7 @@ module RefreshTokenable
       self.refresh_token_digest = digest_refresh_token(verifier)
       self.refresh_expires_at = expires_at || default_refresh_expires_at
       self.last_used_at = Time.current
+      self.refresh_token_generation = refresh_token_generation.to_i + 1
       save!
 
       # Return the combined token for the client.
@@ -70,8 +73,12 @@ module RefreshTokenable
 
   # Authenticate the refresh token.
   def authenticate_refresh_token(verifier)
-    # Ensure the token is active before doing any hash work.
     return false unless active?
+
+    refresh_token_digest_matches?(verifier)
+  end
+
+  def refresh_token_digest_matches?(verifier)
     return false if verifier.blank? || refresh_token_digest.blank?
 
     candidate = digest_refresh_token(verifier)
@@ -98,5 +105,13 @@ module RefreshTokenable
 
   def ensure_refresh_expires_at
     self.refresh_expires_at ||= default_refresh_expires_at
+  end
+
+  def ensure_refresh_token_family_id
+    self.refresh_token_family_id ||= SecureRandom.uuid
+  end
+
+  def ensure_refresh_token_generation
+    self.refresh_token_generation ||= 0
   end
 end

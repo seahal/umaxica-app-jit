@@ -16,6 +16,7 @@
 
 class ComDocumentTagMaster < DocumentRecord
   include StringPrimaryKey
+  include Treeable
 
   validates :id, uniqueness: { case_sensitive: false }
 

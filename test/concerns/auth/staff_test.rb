@@ -140,8 +140,18 @@ class Auth::StaffTest < ActiveSupport::TestCase
   test "current_staff works with Bearer token" do
     @obj.define_singleton_method(:request_ip_address) { "127.0.0.1" }
 
+    token_record =
+      TokenRecord.connected_to(role: :writing) do
+        StaffToken.create!(staff: @staff)
+      end
+
     # Generate access token using Auth::Base::Token
-    access_token = Auth::Base::Token.encode(@staff, host: @obj.request.host)
+    access_token = Auth::Base::Token.encode(
+      @staff,
+      host: @obj.request.host,
+      session_public_id: token_record.public_id,
+      resource_type: "staff",
+    )
     @obj.request.headers["Authorization"] = "Bearer #{access_token}"
 
     assert_equal @staff, @obj.current_staff

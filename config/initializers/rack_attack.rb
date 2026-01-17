@@ -51,6 +51,13 @@ class Rack::Attack
     %r{\A/api/exports},
     %r{\A/documents/export},
   ].freeze
+
+  ############################################################
+  # 6.1) auth endpoints (credential stuffing / token abuse)
+  ############################################################
+  AUTH_TOKEN_REFRESH_PATH = %r{\A/edge/v1/token/refresh\z}.freeze
+  AUTH_TOKEN_CHECK_PATH = %r{\A/edge/v1/token/check\z}.freeze
+  AUTH_LOGIN_PATH = %r{\A/in/(email|passkey|secret)\z}.freeze
   ############################################################
   # 3) tenant_key (multi-domain support)
   ############################################################
@@ -74,6 +81,24 @@ class Rack::Attack
 
   throttle("req/heavy/tenant/ip", limit: 60, period: 1.minute) do |req|
     next unless HEAVY_PATHS.any? { |re| re.match?(req.path) }
+
+    "#{tenant_key(req)}:#{req.ip}"
+  end
+
+  throttle("auth/token_refresh/tenant/ip", limit: 30, period: 1.minute) do |req|
+    next unless req.post? && AUTH_TOKEN_REFRESH_PATH.match?(req.path)
+
+    "#{tenant_key(req)}:#{req.ip}"
+  end
+
+  throttle("auth/token_check/tenant/ip", limit: 300, period: 1.minute) do |req|
+    next unless req.get? && AUTH_TOKEN_CHECK_PATH.match?(req.path)
+
+    "#{tenant_key(req)}:#{req.ip}"
+  end
+
+  throttle("auth/login/tenant/ip", limit: 30, period: 1.minute) do |req|
+    next unless req.post? && AUTH_LOGIN_PATH.match?(req.path)
 
     "#{tenant_key(req)}:#{req.ip}"
   end

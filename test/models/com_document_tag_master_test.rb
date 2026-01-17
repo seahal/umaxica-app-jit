@@ -17,55 +17,11 @@
 require "test_helper"
 
 class ComDocumentTagMasterTest < ActiveSupport::TestCase
-  test "validates id presence and uniqueness" do
-    master = ComDocumentTagMaster.new(id: nil)
-    assert_not master.valid?
-    assert_not_empty master.errors[:id]
+  include TreeableSharedTests
 
-    existing = ComDocumentTagMaster.first || ComDocumentTagMaster.create!(id: "EXISTING")
-    duplicate = ComDocumentTagMaster.new(id: existing.id.downcase)
-    assert_not duplicate.valid?
-    assert_not_empty duplicate.errors[:id]
-  end
+  private
 
-  test "upcases id before validation" do
-    master = ComDocumentTagMaster.new(id: "new_category")
-    master.valid?
-    assert_equal "NEW_CATEGORY", master.id
-  end
-
-  test "validates id format" do
-    master = ComDocumentTagMaster.new(id: "INVALID-ID!")
-    assert_not master.valid?
-    assert_not_empty master.errors[:id]
-  end
-
-  test "root? returns true when parent_id is NEYO" do
-    master = ComDocumentTagMaster.new(id: "ROOT", parent_id: "NEYO")
-    assert_predicate master, :root?
-
-    master.parent_id = "SOME_PARENT"
-    assert_not master.root?
-  end
-
-  test "parent and children associations" do
-    parent = ComDocumentTagMaster.create!(id: "PARENT_CAT")
-    child = ComDocumentTagMaster.create!(id: "CHILD_CAT", parent: parent)
-
-    assert_equal parent, child.parent
-    assert_includes parent.children, child
-  end
-
-  test "name returns translated string" do
-    master = ComDocumentTagMaster.new(id: "TEST_CAT")
-    # This might depend on your locale file having this key,
-    # but the method should at least return a string.
-    assert_kind_of String, master.name
-  end
-
-  test "validates length of id" do
-    record = ComDocumentTagMaster.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  def treeable_class
+    ComDocumentTagMaster
   end
 end

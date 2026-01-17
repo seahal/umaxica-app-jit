@@ -162,6 +162,14 @@ module Auth
       current_resource.present?
     end
 
+    def current_account
+      current_resource
+    end
+
+    def current_session_public_id
+      @current_session_public_id
+    end
+
     def current_resource
       return @current_resource if defined?(@current_resource)
 
@@ -201,6 +209,7 @@ module Auth
     end
 
     def refresh_access_token(refresh_plain)
+      refresh_public_id, = token_class.parse_refresh_token(refresh_plain.to_s)
       result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
       token_record = result[:token]
       new_refresh_plain = result[:refresh_token]
@@ -208,7 +217,7 @@ module Auth
       unless token_record.is_a?(token_class)
         Rails.event.notify(
           "#{resource_type}.token.refresh.failed",
-          refresh_token_id: refresh_plain,
+          refresh_token_id: refresh_public_id,
           reason: "token_not_found",
           ip_address: request_ip_address,
         )
@@ -221,7 +230,7 @@ module Auth
         Rails.event.notify(
           "#{resource_type}.token.refresh.failed",
           "#{resource_type}_id": resource&.id,
-          refresh_token_id: refresh_plain,
+          refresh_token_id: refresh_public_id,
           reason: "#{resource_type}_inactive",
           ip_address: request_ip_address,
         )
@@ -243,7 +252,7 @@ module Auth
         "#{resource_type}.token.refreshed",
         "#{resource_type}_id": resource.id,
         old_refresh_token_id: token_record.public_id,
-        new_refresh_token_id: new_refresh_plain,
+        new_refresh_token_id: token_record.public_id,
         ip_address: request_ip_address,
       )
       record_audit(AUDIT_EVENTS[:token_refreshed], resource: resource)
@@ -257,7 +266,7 @@ module Auth
     rescue Sign::InvalidRefreshToken => e
       Rails.event.notify(
         "#{resource_type}.token.refresh.failed",
-        refresh_token_id: refresh_plain,
+        refresh_token_id: refresh_public_id,
         reason: e.class.name,
         ip_address: request_ip_address,
       )
@@ -266,7 +275,7 @@ module Auth
       Rails.event.notify(
         "#{resource_type}.token.refresh.error",
         "#{resource_type}_id": resource&.id,
-        refresh_token_id: refresh_plain,
+        refresh_token_id: refresh_public_id,
         error_class: e.class.name,
         error_message: e.message,
         ip_address: request_ip_address,
@@ -344,13 +353,17 @@ module Auth
       raise NotImplementedError, "am_i_owner? must be implemented"
     end
 
+    included do
+      helper_method :current_account, :current_session_public_id if respond_to?(:helper_method)
+    end
+
     private
 
     def cookie_options
       opts = {
         httponly: true,
         secure: Rails.env.production?,
-        samesite: :lax,
+        same_site: :lax,
         path: "/",
       }
       opts[:domain] = shared_cookie_domain if shared_cookie_domain
@@ -455,6 +468,27 @@ module Auth
       return nil if payload.blank?
       return nil unless Token.extract_type(payload) == resource_type
 
+      sid = Token.extract_session_id(payload)
+      return nil if sid.blank?
+
+      # Use replica for reading, but skip connected_to in tests to ensure transaction visibility
+      check_logic =
+        -> {
+          scope = token_class.where(public_id: sid)
+          scope = scope.where(revoked_at: nil) if token_class.column_names.include?("revoked_at")
+          scope.exists?
+        }
+
+      token_exists =
+        if Rails.env.test?
+          check_logic.call
+        else
+          TokenRecord.connected_to(role: :reading, &check_logic)
+        end
+      return nil unless token_exists
+
+      @current_session_public_id = sid
+
       resource_class.find_by(id: Token.extract_subject(payload))
     end
 
@@ -473,11 +507,20 @@ module Auth
       public_id, = token_class.parse_refresh_token(token_value)
       return unless public_id
 
-      token_class.find_by(public_id: public_id)&.destroy
+      destroy_logic =
+        -> {
+          token_class.find_by(public_id: public_id)&.destroy
+        }
+
+      if Rails.env.test?
+        destroy_logic.call
+      else
+        TokenRecord.connected_to(role: :writing, &destroy_logic)
+      end
     rescue ActiveRecord::RecordNotDestroyed => e
       Rails.event.notify(
         "#{resource_type}.token.destroy.failed",
-        token_id: token_value,
+        token_id: public_id,
         error_message: e.message,
         ip_address: request_ip_address,
       )

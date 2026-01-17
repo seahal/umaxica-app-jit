@@ -14,6 +14,8 @@ Rails.application.routes.draw do
             resources :posts, only: [:index, :show] do
               resources :versions, only: [:index, :show]
             end
+            resources :tags, only: :index
+            resources :categories, only: :index
           end
         end
       end
@@ -31,6 +33,8 @@ Rails.application.routes.draw do
             resources :posts, only: [:index, :show] do
               resources :versions, only: [:index, :show]
             end
+            resources :tags, only: :index
+            resources :categories, only: :index
           end
         end
       end
@@ -49,6 +53,8 @@ Rails.application.routes.draw do
             resources :posts, only: [:index, :show] do
               resources :versions, only: [:index, :show]
             end
+            resources :tags, only: :index
+            resources :categories, only: :index
           end
         end
       end

@@ -27,6 +27,13 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert response_has_cookie?(Auth::Base::REFRESH_COOKIE_KEY),
            "Response should set refresh cookie (#{Auth::Base::REFRESH_COOKIE_KEY})"
 
+    raw_header = response.headers["Set-Cookie"] || response.headers["set-cookie"]
+    cookie_lines = raw_header.is_a?(Array) ? raw_header : raw_header.to_s.split("\n")
+    access_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::ACCESS_COOKIE_KEY}=") }.to_s
+    refresh_cookie = cookie_lines.find { |line| line.start_with?("#{Auth::Base::REFRESH_COOKIE_KEY}=") }.to_s
+    assert_match(/samesite=lax/i, access_cookie)
+    assert_match(/samesite=lax/i, refresh_cookie)
+
     json = response.parsed_body
     assert json["refreshed"]
   end

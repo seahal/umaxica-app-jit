@@ -32,6 +32,9 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
     assert_response :ok
     json = response.parsed_body
     assert json["authenticated"], "User should be authenticated"
+    assert_equal "user", json["type"]
+    assert_equal @user.id, json["id"]
+    assert_equal token_record.public_id, json["sid"]
   end
 
   test "GET check without access token returns 401" do
@@ -42,7 +45,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
     assert_response :unauthorized
     json = response.parsed_body
     assert_not json["authenticated"]
-    assert_predicate json["error"], :present?
+    assert_equal({ "authenticated" => false }, json)
   end
 
   test "GET check with invalid JWT returns 401" do
@@ -55,6 +58,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
     assert_response :unauthorized
     json = response.parsed_body
     assert_not json["authenticated"]
+    assert_equal({ "authenticated" => false }, json)
   end
 
   test "GET check with expired JWT returns 401" do
@@ -83,6 +87,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
     assert_response :unauthorized
     json = response.parsed_body
     assert_not json["authenticated"]
+    assert_equal({ "authenticated" => false }, json)
   end
 
   test "GET check with wrong resource type returns 401" do
@@ -107,6 +112,7 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
     assert_response :unauthorized
     json = response.parsed_body
     assert_not json["authenticated"]
+    assert_equal({ "authenticated" => false }, json)
   end
 
   test "GET check includes Cache-Control no-store header" do
@@ -144,5 +150,60 @@ class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::Integra
     assert_response :ok
     json = response.parsed_body
     assert json["authenticated"], "Bearer token should take precedence"
+    assert_equal "user", json["type"]
+    assert_equal @user.id, json["id"]
+    assert_equal token_record.public_id, json["sid"]
+  end
+
+  test "GET check with missing sid returns 401" do
+    access_token = jwt_access_token_for(
+      @user,
+      host: @host,
+      session_public_id: nil,
+      resource_type: "user",
+    )
+
+    get "/edge/v1/token/check",
+        headers: {
+          "Host" => @host,
+          "Accept" => "application/json",
+          "Authorization" => "Bearer #{access_token}",
+        },
+        as: :json
+
+    assert_response :unauthorized
+    assert_equal({ "authenticated" => false }, response.parsed_body)
+  end
+
+  test "logout destroys token record so old Bearer access fails" do
+    token_record = UserToken.create!(user: @user)
+    refresh_plain = token_record.rotate_refresh_token!
+    access_token = jwt_access_token_for(
+      @user,
+      host: @host,
+      session_public_id: token_record.public_id,
+      resource_type: "user",
+    )
+
+    cookies[Auth::Base::ACCESS_COOKIE_KEY] = access_token
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    # Verify token exists before logout
+    assert_not_nil UserToken.find_by(public_id: token_record.public_id)
+
+    # Simulate logout by destroying the token directly (the cookie-based destroy
+    # requires domain matching which is complex in integration tests)
+    token_record.destroy!
+
+    get "/edge/v1/token/check",
+        headers: {
+          "Host" => @host,
+          "Accept" => "application/json",
+          "Authorization" => "Bearer #{access_token}",
+        },
+        as: :json
+
+    assert_response :unauthorized
+    assert_equal({ "authenticated" => false }, response.parsed_body)
   end
 end

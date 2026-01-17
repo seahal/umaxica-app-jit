@@ -7,10 +7,19 @@ class Sign::Org::Edge::V1::Token::ChecksController < Sign::Org::Edge::V1::BaseCo
   def show
     response.set_header("Cache-Control", "no-store")
 
-    if logged_in?
-      render json: { authenticated: true }, status: :ok
-    else
-      render json: { authenticated: false, error: "Unauthorized" }, status: :unauthorized
-    end
+    authenticated = logged_in?
+    body =
+      if authenticated
+        {
+          authenticated: true,
+          type: resource_type,
+          id: current_resource.id,
+          sid: current_session_public_id,
+        }
+      else
+        { authenticated: false }
+      end
+
+    render json: body, status: authenticated ? :ok : :unauthorized
   end
 end

@@ -5,16 +5,16 @@
 # Table name: user_tokens
 #
 #  id                   :uuid             not null, primary key
-#  user_id              :uuid             not null
 #  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  user_token_status_id :string           default("NEYO"), not null
-#  refresh_token_digest :binary
+#  last_used_at         :datetime
 #  public_id            :string(21)       default(""), not null
 #  refresh_expires_at   :datetime         not null
+#  refresh_token_digest :binary
 #  revoked_at           :datetime
 #  rotated_at           :datetime
-#  last_used_at         :datetime
+#  updated_at           :datetime         not null
+#  user_id              :uuid             not null
+#  user_token_status_id :string           default("NEYO"), not null
 #
 # Indexes
 #

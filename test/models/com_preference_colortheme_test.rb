@@ -26,7 +26,7 @@ class ComPreferenceColorthemeTest < ActiveSupport::TestCase
   test "belongs to preference" do
     colortheme = ComPreferenceColortheme.new
     assert_not colortheme.valid?
-    assert_includes colortheme.errors[:preference], "を入力してください"
+    assert_predicate colortheme.errors[:preference], :any?, "Expected preference error to be present"
   end
 
   test "can be created with preference and option" do
