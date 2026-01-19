@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_15_120000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_19_051226) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -387,7 +387,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_15_120000) do
   add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id"
   add_foreign_key "user_memberships", "users"
   add_foreign_key "user_one_time_passwords", "user_one_time_password_statuses", column: "user_identity_one_time_password_status_id"
-  add_foreign_key "user_one_time_passwords", "users"
+  add_foreign_key "user_one_time_passwords", "users", validate: false
   add_foreign_key "user_passkeys", "user_passkey_statuses"
   add_foreign_key "user_passkeys", "users"
   add_foreign_key "user_secrets", "user_secret_statuses", column: "user_identity_secret_status_id"

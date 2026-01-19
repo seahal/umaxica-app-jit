@@ -1,0 +1,55 @@
+<% title t("sign.app.authentication.totp.new.page_title", default: "認証コードを入力") %>
+
+<div class="mx-auto max-w-md">
+  <div class="text-center mb-8">
+    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+      <svg class="h-7 w-7 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-slate-900"><%= t("sign.app.authentication.totp.new.page_title", default: "認証コードを入力") %></h1>
+    <p class="mt-2 text-sm text-slate-600"><%= t("sign.app.authentication.totp.new.description", default: "認証アプリに表示される6桁のコードを入力してください。") %></p>
+  </div>
+
+  <%= form_with model: @totp_form,
+                url: sign_app_in_totp_path,
+                data: { turbo: false },
+                class: "space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" do |f| %>
+
+    <% if @totp_form.errors.any? %>
+      <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <h2 class="font-semibold"><%= t("errors.messages.validation_failed", default: "入力内容を確認してください") %></h2>
+        <ul class="mt-1 list-disc pl-5 text-red-600">
+          <% @totp_form.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
+
+    <div class="space-y-2">
+      <%= f.label :token, t("sign.app.authentication.totp.new.token_label", default: "6桁のコード"), class: "block text-sm font-medium text-slate-700" %>
+      <%= f.text_field :token,
+                       placeholder: "000000",
+                       maxlength: 6,
+                       inputmode: "numeric",
+                       autocomplete: "one-time-code",
+                       class: "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-lg tracking-widest text-center font-mono text-slate-900 transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200" %>
+    </div>
+
+    <div class="flex flex-col gap-3 pt-2">
+      <%= f.submit t("actions.submit", default: "続ける"),
+                   class: "w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 hover:shadow-md active:scale-[0.98]" %>
+      <%= link_to new_sign_app_in_secret_path(rd: params[:rd]),
+                  class: "flex items-center justify-center w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50" do %>
+        <%= t("sign.app.authentication.totp.new.use_secret", default: "控え用シークレットを使う") %>
+        <% if @secret_hints.present? %>
+          <span class="ml-2 text-xs font-mono text-slate-500">(<%= @secret_hints.join(", ") %>)</span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+

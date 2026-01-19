@@ -1,0 +1,15 @@
+# == Schema Information
+#
+# Table name: user_token_kinds
+#
+#  id :string           not null, primary key
+#
+
+# frozen_string_literal: true
+
+class UserTokenKind < TokenRecord
+  # id is a string, manually managed
+  self.primary_key = :id
+
+  has_many :user_tokens
+end

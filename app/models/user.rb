@@ -5,11 +5,11 @@
 # Table name: users
 #
 #  id           :uuid             not null, primary key
+#  webauthn_id  :string           default(""), not null
 #  created_at   :datetime         not null
+#  updated_at   :datetime         not null
 #  public_id    :string(255)      default("")
 #  status_id    :string(255)      default("NEYO"), not null
-#  updated_at   :datetime         not null
-#  webauthn_id  :string           default(""), not null
 #  withdrawn_at :datetime         default("infinity")
 #  lock_version :integer          default(0), not null
 #
@@ -112,6 +112,10 @@ class User < PrincipalRecord
            -> { joins(:avatar_assignments).where(avatar_assignments: { role: "owner" }) },
            through: :avatar_assignments,
            source: :avatar
+
+  def totp_enabled?
+    user_one_time_passwords.exists?(user_one_time_password_status_id: "ACTIVE")
+  end
 
   def staff?
     false

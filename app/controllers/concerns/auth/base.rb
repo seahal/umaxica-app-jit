@@ -176,12 +176,22 @@ module Auth
       @current_resource = load_current_resource
     end
 
-    def log_in(resource, record_login_audit: true)
+    def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
+      if require_totp_check && resource.respond_to?(:totp_enabled?) && resource.totp_enabled?
+        session[:mfa_user_id] = resource.id
+        return { status: :totp_required }
+      end
+
       reset_session
 
       token_record =
         TokenRecord.connected_to(role: :writing) do
-          token_class.create!(resource_foreign_key => resource.id)
+          token_attributes = { resource_foreign_key => resource.id }
+          # Determine kind column based on resource type (user_token_kind_id or staff_token_kind_id)
+          kind_column = "#{resource_type}_token_kind_id"
+          token_attributes[kind_column] = token_kind_id if token_class.column_names.include?(kind_column)
+
+          token_class.create!(token_attributes)
         end
 
       # Generate SHA3-based refresh token
@@ -201,6 +211,7 @@ module Auth
       record_audit(AUDIT_EVENTS[:logged_in], resource: resource) if record_login_audit
 
       {
+        status: :success,
         access_token: access_token,
         refresh_token: refresh_plain,
         token_type: "Bearer",

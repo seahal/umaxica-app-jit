@@ -284,7 +284,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_120236) do
   add_foreign_key "staff_admins", "staffs", on_delete: :cascade
   add_foreign_key "staff_emails", "staff_email_statuses", column: "staff_identity_email_status_id"
   add_foreign_key "staff_emails", "staffs"
-  add_foreign_key "staff_passkeys", "staff_passkey_statuses"
+  add_foreign_key "staff_passkeys", "staff_passkey_statuses", validate: false
   add_foreign_key "staff_passkeys", "staffs"
   add_foreign_key "staff_recovery_codes", "staffs"
   add_foreign_key "staff_secrets", "staff_secret_statuses", column: "staff_identity_secret_status_id"

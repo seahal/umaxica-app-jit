@@ -69,8 +69,12 @@ module Sign
           if result[:success]
             respond_to do |format|
               format.html do
-                # Redirect to rd parameter if provided, otherwise to root
-                redirect_with_notice("/", t("sign.app.authentication.email.update.success"))
+                if result[:redirect_path]
+                  redirect_to result[:redirect_path], notice: t("sign.app.authentication.totp.required")
+                else
+                  # Redirect to rd parameter if provided, otherwise to root
+                  redirect_with_notice("/", t("sign.app.authentication.email.update.success"))
+                end
               end
               format.json do
                 # Return tokens for JSON API clients
@@ -148,8 +152,12 @@ module Sign
             user = user_from_user_email(user_email)
             clear_otp(user_email)
             session[:user_email_authentication_id] = nil
-            tokens = log_in(user) if user
-            { success: true, tokens: tokens }
+            result = log_in(user)
+            if result[:status] == :totp_required
+              { success: true, redirect_path: new_sign_app_in_totp_path }
+            else
+              { success: true, tokens: result }
+            end
           else
             user = user_from_user_email(user_email)
             increment_otp_attempts!(user_email)

@@ -4,26 +4,33 @@
 #
 # Table name: user_tokens
 #
-#  id                   :uuid             not null, primary key
-#  created_at           :datetime         not null
-#  last_used_at         :datetime
-#  public_id            :string(21)       default(""), not null
-#  refresh_expires_at   :datetime         not null
-#  refresh_token_digest :binary
-#  revoked_at           :datetime
-#  rotated_at           :datetime
-#  updated_at           :datetime         not null
-#  user_id              :uuid             not null
-#  user_token_status_id :string           default("NEYO"), not null
+#  id                       :uuid             not null, primary key
+#  compromised_at           :datetime
+#  created_at               :datetime         not null
+#  last_used_at             :datetime
+#  public_id                :string(21)       default(""), not null
+#  refresh_expires_at       :datetime         not null
+#  refresh_token_digest     :binary
+#  refresh_token_family_id  :string
+#  refresh_token_generation :integer          default(0), not null
+#  revoked_at               :datetime
+#  rotated_at               :datetime
+#  updated_at               :datetime         not null
+#  user_id                  :uuid             not null
+#  user_token_kind_id       :string           default("BROWSER_WEB"), not null
+#  user_token_status_id     :string           default("NEYO"), not null
 #
 # Indexes
 #
-#  index_user_tokens_on_public_id             (public_id) UNIQUE
-#  index_user_tokens_on_refresh_expires_at    (refresh_expires_at)
-#  index_user_tokens_on_refresh_token_digest  (refresh_token_digest) UNIQUE
-#  index_user_tokens_on_revoked_at            (revoked_at)
-#  index_user_tokens_on_user_id               (user_id)
-#  index_user_tokens_on_user_token_status_id  (user_token_status_id)
+#  index_user_tokens_on_compromised_at           (compromised_at)
+#  index_user_tokens_on_public_id                (public_id) UNIQUE
+#  index_user_tokens_on_refresh_expires_at       (refresh_expires_at)
+#  index_user_tokens_on_refresh_token_digest     (refresh_token_digest) UNIQUE
+#  index_user_tokens_on_refresh_token_family_id  (refresh_token_family_id)
+#  index_user_tokens_on_revoked_at               (revoked_at)
+#  index_user_tokens_on_user_id                  (user_id)
+#  index_user_tokens_on_user_token_kind_id       (user_token_kind_id)
+#  index_user_tokens_on_user_token_status_id     (user_token_status_id)
 #
 
 # Refresh tokens are persisted as digests only.
@@ -36,6 +43,7 @@ class UserToken < TokenRecord
 
   belongs_to :user, inverse_of: :user_tokens
   belongs_to :user_token_status
+  belongs_to :user_token_kind, optional: true
   attribute :user_token_status_id, default: "NEYO"
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }

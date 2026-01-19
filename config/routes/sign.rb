@@ -37,6 +37,7 @@ Rails.application.routes.draw do
         namespace :in do
           resource :email, only: %i(new create edit update)
           resource :passkey, only: %i(new create edit update)
+          resource :totp, only: %i(new create)
           resource :secret, only: %i(new create)
         end
 
@@ -75,7 +76,9 @@ Rails.application.routes.draw do
           resources :telephones
           resource :apple, only: [:show]
           resource :google, only: [:update]
-          resources :secrets
+          resources :secrets do
+            post :regenerate, on: :member
+          end
           resources :sessions
           resource :withdrawal
         end
