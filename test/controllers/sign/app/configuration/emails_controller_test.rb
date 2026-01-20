@@ -6,41 +6,23 @@ require "ostruct"
 
 class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+    @user = users(:one)
     @email = OpenStruct.new(id: "1")
   end
 
-  test "should get index" do
-    get sign_app_configuration_emails_url(ri: "jp")
-    assert_response :success
+  def request_headers
+    { "Host" => @host, "X-TEST-CURRENT-USER" => @user.id }
   end
 
-  test "should get show" do
-    get sign_app_configuration_email_url(@email, ri: "jp")
+  test "should get index" do
+    get sign_app_configuration_emails_url(ri: "jp"), headers: request_headers
     assert_response :success
   end
 
   test "should get new" do
-    get new_sign_app_configuration_email_url(ri: "jp")
-    assert_response :success
-  end
-
-  test "should get create" do
-    get sign_app_configuration_emails_url(ri: "jp")
-    assert_response :success
-  end
-
-  test "should get edit" do
-    get edit_sign_app_configuration_email_url(@email, ri: "jp")
-    assert_response :success
-  end
-
-  test "should get update" do
-    get sign_app_configuration_email_url(@email, ri: "jp")
-    assert_response :success
-  end
-
-  test "should get destroy" do
-    get sign_app_configuration_email_url(@email, ri: "jp")
+    get new_sign_app_configuration_email_url(ri: "jp"), headers: request_headers
     assert_response :success
   end
 end

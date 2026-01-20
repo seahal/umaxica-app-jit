@@ -2,6 +2,7 @@
 
 require "test_helper"
 require "minitest/mock"
+require "base64"
 
 class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -136,6 +137,12 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       delete sign_app_configuration_passkey_url(passkey, ri: "jp"), headers: @headers
     end
     assert_redirected_to sign_app_configuration_passkeys_url(regional_defaults)
+  end
+
+  test "should redirect index when not logged in" do
+    get sign_app_configuration_passkeys_url(ri: "jp")
+    rt = Base64.strict_encode64(sign_app_configuration_passkeys_url(ri: "jp"))
+    assert_redirected_to new_sign_app_in_url(rt: rt, host: "sign.app.localhost")
   end
 
   private

@@ -32,18 +32,4 @@ Rails.application.routes.draw do
 
   # mount Rswag::Ui::Engine => '/api-docs'
   # mount Rswag::Api::Engine => '/api-docs'
-
-  # Global health endpoints for each API surface.
-  # (Auth-free, always returns 200; intended for liveness checks.)
-  namespace :edge do
-    namespace :v1 do
-      resource :health, only: :show
-    end
-  end
-
-  namespace :client do
-    namespace :v1 do
-      resource :health, only: :show
-    end
-  end
 end

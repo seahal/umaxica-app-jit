@@ -2,8 +2,8 @@
 
 class CreateStaffTokenKinds < ActiveRecord::Migration[8.2]
   def up
-    create_table :staff_token_kinds, id: false do |t|
-      t.string :id, primary_key: true
+    create_table :staff_token_kinds, id: :string do |t|
+      t.timestamps null: false
     end
   end
 

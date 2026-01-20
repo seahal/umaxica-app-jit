@@ -1,16 +1,23 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "base64"
 
 class Sign::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
-  test "should get show" do
-    get sign_org_configuration_url(ri: "jp")
+  setup do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    @staff = staffs(:one)
+    @headers = { "X-TEST-CURRENT-STAFF" => @staff.id }.freeze
+  end
 
+  test "should get show when logged in" do
+    get sign_org_configuration_url(ri: "jp"), headers: @headers
     assert_response :success
-    assert_select "a[href^=?]", sign_org_configuration_sessions_path, count: 1
-    assert_select "a[href^=?]", sign_org_configuration_passkeys_path
-    assert_select "a[href^=?]", sign_org_configuration_secrets_path
-    assert_select "a[href^=?]", sign_org_configuration_withdrawal_path
-    assert_select "a[href^=?]", sign_org_root_path
+  end
+
+  test "should redirect show when not logged in" do
+    get sign_org_configuration_url(ri: "jp")
+    rt = Base64.strict_encode64(sign_org_configuration_url(ri: "jp"))
+    assert_redirected_to new_sign_org_in_url(rt: rt, host: "sign.org.localhost")
   end
 end

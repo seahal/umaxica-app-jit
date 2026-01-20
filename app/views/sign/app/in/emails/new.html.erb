@@ -1,18 +1,25 @@
-<div class="mx-auto max-w-xl">
-  <% title t("sign.app.authentication.email.new.page_title") %>
-  <h1 class="text-3xl font-semibold text-slate-900"><%= t("sign.app.authentication.email.new.page_title") %></h1>
+<% title t("sign.app.authentication.email.new.page_title") %>
+
+<div class="mx-auto max-w-md">
+  <div class="text-center mb-8">
+    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+      <svg class="h-7 w-7 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-slate-900"><%= t("sign.app.authentication.email.new.page_title") %></h1>
+  </div>
 
   <%= form_with model: @user_email,
                 url: sign_app_in_email_path,
                 data: { turbo: false },
-                class: "mt-6 space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm" do |form| %>
+                class: "space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" do |form| %>
     <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
 
     <% if @user_email.errors.any? %>
-      <div id="error_explanation" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-        <h2 class="font-semibold"><%= pluralize(@user_email.errors.count, "error") %> prohibited this sample from being
-          saved:</h2>
-        <ul class="mt-2 list-disc pl-5">
+      <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <h2 class="font-semibold"><%= pluralize(@user_email.errors.count, "error") %> prohibited this sample from being saved:</h2>
+        <ul class="mt-1 list-disc pl-5 text-red-600">
           <% @user_email.errors.each do |error| %>
             <li><%= error.full_message %></li>
           <% end %>
@@ -21,18 +28,18 @@
     <% end %>
 
     <div class="space-y-2">
-      <%= form.label :address, class: "text-sm font-medium text-slate-700" %>
+      <%= form.label :address, class: "block text-sm font-medium text-slate-700" %>
       <%= form.email_field :address,
-                           class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200" %>
+                           class: "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200" %>
     </div>
 
     <%= render "concern/cloudflare_turnstile" %>
 
-    <div class="flex items-center gap-3">
+    <div class="flex flex-col gap-3 pt-2">
       <%= form.submit t("actions.submit", default: "Continue"),
-                      class: "inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800" %>
+                      class: "w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 hover:shadow-md active:scale-[0.98]" %>
       <%= link_to t("sign.app.authentication.new.back"), new_sign_app_in_path,
-                  class: "inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+                  class: "flex items-center justify-center w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50" %>
     </div>
   <% end %>
 </div>

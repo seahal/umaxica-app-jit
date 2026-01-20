@@ -44,7 +44,11 @@ Rails.application.routes.draw do
           end
         end
         # configuration
-        resource :configuration, only: [:show]
+        resource :configuration, only: [:show] do
+          scope module: :configuration do
+            resources :emails, only: [:new, :create]
+          end
+        end
         # contact page
         resources :contacts, only: %i(new create show edit update) do
           scope module: :contact do
@@ -71,12 +75,31 @@ Rails.application.routes.draw do
           end
         end
         # configuration
-        resource :configuration, only: [:show]
+        resource :configuration, only: [:show] do
+          scope module: :configuration do
+            resources :emails, only: [:new, :create]
+          end
+        end
         # contact page
         resources :contacts, only: %i(new create show edit) do
           scope module: :contact do
             resource :email, only: [:new, :create]
             resource :telephone, only: [:new, :create]
+          end
+        end
+        # for owner
+        namespace :owner do
+          namespace :app do
+            resource :outage, only: %i(show update)
+            resource :token, only: %i(show update)
+          end
+          namespace :com do
+            resource :outage, only: %i(show update)
+            resource :token, only: %i(show update)
+          end
+          namespace :org do
+            resource :outage, only: %i(show update)
+            resource :token, only: %i(show update)
           end
         end
         # for docs

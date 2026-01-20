@@ -75,7 +75,7 @@ Rails.application.routes.draw do
           resources :emails
           resources :telephones
           resource :apple, only: [:show]
-          resource :google, only: [:update]
+          resource :google, only: [:show, :update]
           resources :secrets do
             post :regenerate, on: :member
           end

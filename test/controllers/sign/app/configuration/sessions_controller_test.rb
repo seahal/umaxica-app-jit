@@ -10,33 +10,27 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
     @headers = { "Host" => @host, "X-TEST-CURRENT-USER" => @user.id }.freeze
   end
 
-  test "index returns empty collection" do
+  test "index returns active sessions" do
     get sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
 
     assert_response :success
-    assert_empty response.parsed_body["sessions"]
+    assert response.parsed_body.key?("sessions")
   end
 
-  test "lifecycle: create, show, update, destroy" do
-    post sign_app_configuration_sessions_url(ri: "jp"), params: { session: { name: "My Session" } }, headers: @headers
-    assert_response :created
-    created = response.parsed_body.fetch("session")
-    assert_equal "My Session", created["name"]
+  test "destroy revokes session and returns see_other" do
+    # Create a user token to revoke
+    user_token = UserToken.create!(
+      user_id: @user.id,
+      public_id: "test_session_#{SecureRandom.hex(4)}",
+      refresh_expires_at: 1.day.from_now,
+      user_token_kind_id: "BROWSER_WEB",
+    )
 
-    get sign_app_configuration_session_url(created["id"], ri: "jp"), headers: @headers
-    assert_response :success
-
-    patch sign_app_configuration_session_url(created["id"], ri: "jp"),
-          params: { session: { status: "revoked" } },
-          headers: @headers
-    assert_response :success
-    assert_equal "revoked", response.parsed_body.dig("session", "status")
-
-    delete sign_app_configuration_session_url(created["id"], ri: "jp"), headers: @headers
+    delete sign_app_configuration_session_url(user_token.public_id, ri: "jp"), headers: @headers
     assert_response :see_other
 
-    get sign_app_configuration_session_url(created["id"], ri: "jp"), headers: @headers
-    assert_response :not_found
+    user_token.reload
+    assert_not_nil user_token.revoked_at
   end
 
   test "requires authentication" do

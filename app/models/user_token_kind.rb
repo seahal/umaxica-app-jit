@@ -11,5 +11,5 @@ class UserTokenKind < TokenRecord
   # id is a string, manually managed
   self.primary_key = :id
 
-  has_many :user_tokens
+  has_many :user_tokens, dependent: :restrict_with_error
 end

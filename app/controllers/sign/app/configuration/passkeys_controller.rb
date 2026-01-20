@@ -137,11 +137,6 @@ module Sign
           params.expect(passkey: %i(description public_key external_id webauthn_id sign_count))
         end
 
-        def authenticate_user!
-          # This should be implemented in ApplicationController
-          # For now, assuming current_user method exists
-        end
-
         def set_webauthn_user
           return render(json: { error: I18n.t("errors.unauthorized") }, status: :unauthorized) unless current_user
 

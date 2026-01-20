@@ -28,13 +28,13 @@ _fixture:
 # Load explicitly in tests that need it
 
 one:
-  preference_id: a2a399f6-15dd-4ae0-9d3a-69acef9cab56
+  preference: one
   functional: false
   performant: false
   targetable: false
 
 two:
-  preference_id: be741a2a-5b6c-496a-877a-3068441d9eae
+  preference: two
   functional: false
   performant: false
   targetable: false

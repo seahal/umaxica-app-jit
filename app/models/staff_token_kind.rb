@@ -11,5 +11,5 @@ class StaffTokenKind < TokenRecord
   # id is a string, manually managed
   self.primary_key = :id
 
-  has_many :staff_tokens
+  has_many :staff_tokens, dependent: :restrict_with_error
 end

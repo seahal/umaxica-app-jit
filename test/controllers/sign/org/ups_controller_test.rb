@@ -22,11 +22,11 @@ class Sign::Org::UpsControllerTest < ActionDispatch::IntegrationTest
 
     core_host = ENV["CORE_STAFF_URL"].presence || "core.org.localhost"
     # Match the URL while allowing any order of query parameters
-    assert_select "p a[href^=?]", "http://#{core_host}/contacts/new",
+    assert_select "div a[href^=?]", "http://#{core_host}/contacts/new",
                   text: I18n.t("sign.org.ups.new.recruit_link_text")
 
     # Verify that the URL contains all required parameters
-    link = css_select("p a").find { |a| a.text == I18n.t("sign.org.ups.new.recruit_link_text") }
+    link = css_select("div a").find { |a| a.text == I18n.t("sign.org.ups.new.recruit_link_text") }
     assert_not_nil link, "Could not find link with text: #{I18n.t("sign.org.ups.new.recruit_link_text").inspect}"
     href = link["href"]
     assert_match(/category=recruit/, href)

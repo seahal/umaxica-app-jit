@@ -2,7 +2,9 @@
 
 module Core
   module Com
-    class ConfigurationsController < ApplicationController
+    class ConfigurationsController < Core::Com::ApplicationController
+      prepend_before_action :authenticate_user!
+
       def show
       end
     end
