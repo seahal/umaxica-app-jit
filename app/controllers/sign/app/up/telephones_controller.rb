@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
-class Sign::App::Up::TelephonesController < ApplicationController
+class Sign::App::Up::TelephonesController < Sign::App::ApplicationController
   include Sign::App::TelephoneRegistrable
-  include Auth::RedirectParameterHandling
-  include Auth::PreAuthenticationGuards
-  include Auth::SessionAuthentication
 
   before_action :ensure_not_logged_in_for_registration
 

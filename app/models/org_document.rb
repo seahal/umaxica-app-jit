@@ -46,7 +46,6 @@ class OrgDocument < DocumentRecord
              inverse_of: :latest_document,
              optional: true
 
-  validates :status_id, length: { maximum: 255 }
   has_many :org_document_versions, dependent: :delete_all, inverse_of: :org_document
   has_many :org_document_revisions, dependent: :delete_all, inverse_of: :org_document
   has_many :org_document_audits,
@@ -66,6 +65,7 @@ class OrgDocument < DocumentRecord
   has_one :category_master,
           through: :category,
           source: :org_document_category_master
+  validates :status_id, length: { maximum: 255 }
 
   def latest_version
     org_document_versions.order(created_at: :desc).first!

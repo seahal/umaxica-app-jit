@@ -3,6 +3,8 @@
 module Sign
   module Org
     class RecoveriesController < ApplicationController
+      before_action :reject_logged_in_session
+
       def new
         @staff_recover_code = RecoveryForm.new
       end

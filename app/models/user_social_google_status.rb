@@ -10,12 +10,10 @@
 class UserSocialGoogleStatus < PrincipalRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  has_many :user_social_googles, inverse_of: :user_social_google_status, dependent: :restrict_with_error
-
   # Status constants
   ACTIVE = "ACTIVE"
   REVOKED = "REVOKED"
   DELETED = "DELETED"
+  has_many :user_social_googles, inverse_of: :user_social_google_status, dependent: :restrict_with_error
+  validates :id, uniqueness: { case_sensitive: false }
 end

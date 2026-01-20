@@ -118,6 +118,10 @@ ja:
               not_withdrawn: "退会済みでないため、削除できません。"
               failed: "アカウント削除処理に失敗しました。後でもう一度お試しください。"
             authenticate_error: "認証が必要です。ログインしてください。"
+        sessions:
+          revoke:
+            success: "セッションを破棄しました。"
+            failure: "現在のセッションは破棄できません。"
         registration:
           google:
             new:
@@ -488,8 +492,13 @@ ja:
             email_not_found: 登録済みのメールアドレスが見つかりませんでした。
             verification_code_sent: 確認コードをメールアドレスに送信しました。
             turnstile_error: セキュリティ検証に失敗しました。ページを更新して再度お試しください。
+          edit:
+            page_title: 認証コードの入力
+            description: 完了まであと少しです。メールに送信された6桁の認証コードを入力してください。
+            return_page: 戻る
           update:
             invalid_code: パスコードが正しくありません
+            success: ログインしました。
         telephone:
           new:
             page_title: 電話番号でサインイン
@@ -550,6 +559,11 @@ ja:
             session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
           update:
             success: "電話番号の確認が完了しました。"
+          complete:
+            page_title: "登録が完了しました"
+            description: "アカウントの登録が正常に完了しました。引き続きサービスをご利用ください。"
+            link_to_home: "ホームへ戻る"
+            link_to_sign_in: "ログイン画面へ"
       configuration:
         show:
           page_title: 設定

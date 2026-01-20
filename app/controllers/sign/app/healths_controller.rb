@@ -3,6 +3,7 @@
 module Sign
   module App
     class HealthsController < ApplicationController
+      public_strict!
       include ::Health
 
       def show

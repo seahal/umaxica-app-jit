@@ -32,12 +32,20 @@
 #
 
 class ComDocumentAudit < AuditRecord
+  # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
+  belongs_to :com_document, optional: true, foreign_key: :subject_id, inverse_of: :com_document_audits
+  belongs_to :actor, polymorphic: true, optional: true
+  belongs_to :com_document_audit_level, foreign_key: :level_id, inverse_of: :com_document_audits
+  belongs_to :com_document_audit_event,
+             class_name: "ComDocumentAuditEvent",
+             foreign_key: "event_id",
+             primary_key: "id",
+             inverse_of: :com_document_audits
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
-  # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
-  belongs_to :com_document, optional: true, foreign_key: :subject_id, inverse_of: :com_document_audits
-
+  validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
   def com_document
     ComDocument.find(subject_id) if subject_type == "ComDocument"
   end
@@ -46,16 +54,4 @@ class ComDocumentAudit < AuditRecord
     self.subject_id = doc.id.to_s
     self.subject_type = "ComDocument"
   end
-
-  belongs_to :actor, polymorphic: true, optional: true
-
-  belongs_to :com_document_audit_level, foreign_key: :level_id, inverse_of: :com_document_audits
-  belongs_to :com_document_audit_event,
-             class_name: "ComDocumentAuditEvent",
-             foreign_key: "event_id",
-             primary_key: "id",
-             inverse_of: :com_document_audits
-
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
 end

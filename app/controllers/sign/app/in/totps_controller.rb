@@ -5,7 +5,6 @@ module Sign
     module In
       class TotpsController < ApplicationController
         include ::Redirect
-        include Auth::RedirectParameterHandling
 
         MFA_USER_SESSION_KEY = :mfa_user_id
 
@@ -20,6 +19,7 @@ module Sign
             end
           end
 
+        before_action :reject_logged_in_session
         before_action :ensure_mfa_user!
 
         def new

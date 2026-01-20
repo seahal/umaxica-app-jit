@@ -158,6 +158,11 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
+          complete:
+            page_title: "Registration Complete"
+            description: "Your account registration has been successfully completed. You can now continue to use our services."
+            link_to_home: "Back to Home"
+            link_to_sign_in: "Go to Sign In"
       configuration:
         show:
           page_title: "Configuration"
@@ -178,6 +183,10 @@ en:
           index:
             description: "Manage time-based one-time passwords linked to your account."
             new_link: "Create a new TOTP credential"
+        sessions:
+          revoke:
+            success: "Session revoked."
+            failure: "Cannot revoke current session."
       preferences:
         title: "Preference settings"
         footer:

@@ -32,10 +32,26 @@
 # frozen_string_literal: true
 
 class ComPreferenceAudit < AuditRecord
+  belongs_to :com_preference,
+             class_name: "ComPreference",
+             foreign_key: :subject_id,
+             primary_key: :id,
+             optional: true,
+             inverse_of: :com_preference_audits
+  belongs_to :actor, polymorphic: true, optional: true
+  belongs_to :com_preference_audit_level, foreign_key: :level_id, inverse_of: :com_preference_audits
+  # event_id references ComPreferenceAuditEvent.id (string)
+  belongs_to :com_preference_audit_event,
+             class_name: "ComPreferenceAuditEvent",
+             foreign_key: "event_id",
+             primary_key: "id",
+             inverse_of: :com_preference_audits
   # subject_id/subject_type for cross-DB compatibility (no FK)
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
+  validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
   # Helper methods for compatibility
   def com_preference
     ComPreference.find(subject_id) if subject_type == "ComPreference"
@@ -45,24 +61,4 @@ class ComPreferenceAudit < AuditRecord
     self.subject_id = pref.id.to_s
     self.subject_type = "ComPreference"
   end
-
-  belongs_to :com_preference,
-             class_name: "ComPreference",
-             foreign_key: :subject_id,
-             primary_key: :id,
-             optional: true,
-             inverse_of: :com_preference_audits
-
-  belongs_to :actor, polymorphic: true, optional: true
-
-  belongs_to :com_preference_audit_level, foreign_key: :level_id, inverse_of: :com_preference_audits
-  # event_id references ComPreferenceAuditEvent.id (string)
-  belongs_to :com_preference_audit_event,
-             class_name: "ComPreferenceAuditEvent",
-             foreign_key: "event_id",
-             primary_key: "id",
-             inverse_of: :com_preference_audits
-
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
 end

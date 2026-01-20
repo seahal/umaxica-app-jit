@@ -33,6 +33,12 @@ class UserTelephone < PrincipalRecord
   belongs_to :user_telephone_status, inverse_of: :user_telephones, foreign_key: :user_identity_telephone_status_id
   belongs_to :user, inverse_of: :user_telephones
 
+  validates :number, presence: true, length: { maximum: 255 }
+  validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
+  validates :otp_counter, presence: true
+  validates :otp_private_key, presence: true, length: { maximum: 255 }
+  validates :user_identity_telephone_status_id, length: { maximum: 255 }
+  validate :enforce_user_telephone_limit, on: :create
   before_validation do
     self.user_id ||= "00000000-0000-0000-0000-000000000000"
   end
@@ -42,14 +48,6 @@ class UserTelephone < PrincipalRecord
   end
 
   encrypts :number, deterministic: true
-
-  validates :number, presence: true, length: { maximum: 255 }
-  validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
-  validates :otp_counter, presence: true
-  validates :otp_private_key, presence: true, length: { maximum: 255 }
-  validates :user_identity_telephone_status_id, length: { maximum: 255 }
-
-  validate :enforce_user_telephone_limit, on: :create
 
   private
 

@@ -21,6 +21,6 @@ module Preference
     }.freeze
 
     # Cookie key used to store user preferences
-    PREFERENCE_COOKIE_KEY = :"__Secure-Jit_Preferences"
+    #    PREFERENCE_COOKIE_KEY = :"__Secure-Jit_Preferences"
   end
 end

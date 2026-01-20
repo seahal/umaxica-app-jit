@@ -46,7 +46,6 @@ class ComDocument < DocumentRecord
              inverse_of: :latest_document,
              optional: true
 
-  validates :status_id, length: { maximum: 255 }
   has_many :com_document_versions, dependent: :delete_all, inverse_of: :com_document
   has_many :com_document_revisions, dependent: :delete_all, inverse_of: :com_document
   has_many :com_document_audits,
@@ -65,6 +64,7 @@ class ComDocument < DocumentRecord
   has_one :category_master,
           through: :category,
           source: :com_document_category_master
+  validates :status_id, length: { maximum: 255 }
 
   def latest_version
     com_document_versions.order(created_at: :desc).first!

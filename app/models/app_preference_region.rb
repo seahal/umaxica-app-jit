@@ -17,16 +17,14 @@
 # frozen_string_literal: true
 
 class AppPreferenceRegion < PreferenceRecord
-  before_validation :set_option_id
-
   belongs_to :preference, class_name: "AppPreference", inverse_of: :app_preference_region
   belongs_to :option,
              class_name: "AppPreferenceRegionOption",
              inverse_of: :app_preference_regions,
              optional: true
-
   validates :preference_id, uniqueness: true
   validates :option_id, presence: true
+  before_validation :set_option_id
 
   private
 

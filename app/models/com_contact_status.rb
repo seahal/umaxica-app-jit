@@ -10,12 +10,11 @@
 class ComContactStatus < GuestRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  validates :description, length: { maximum: 255 }
-
   has_many :com_contacts,
            foreign_key: :status_id,
            inverse_of: :com_contact_status,
            dependent: :nullify
+  validates :id, uniqueness: { case_sensitive: false }
+
+  validates :description, length: { maximum: 255 }
 end

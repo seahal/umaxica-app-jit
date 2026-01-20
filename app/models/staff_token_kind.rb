@@ -2,7 +2,9 @@
 #
 # Table name: staff_token_kinds
 #
-#  id :string           not null, primary key
+#  id         :string           not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 
 # frozen_string_literal: true

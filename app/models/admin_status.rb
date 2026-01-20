@@ -3,13 +3,11 @@
 class AdminStatus < OperatorRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
+  # Status constants
+  NEYO = "NEYO"
   has_many :admins,
            foreign_key: :status_id,
            inverse_of: :admin_status,
            dependent: :restrict_with_error
-
-  # Status constants
-  NEYO = "NEYO"
+  validates :id, uniqueness: { case_sensitive: false }
 end

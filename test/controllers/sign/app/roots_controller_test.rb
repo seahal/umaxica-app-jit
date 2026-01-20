@@ -52,4 +52,12 @@ class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
       ri: "jp",
     )
   end
+
+  test "GET / fails when logged in" do
+    user = users(:one)
+    get sign_app_root_url(ri: "jp"), headers: { "X-TEST-CURRENT-USER" => user.id }
+
+    assert_response :unauthorized
+    assert_equal "権限がありません", response.body
+  end
 end

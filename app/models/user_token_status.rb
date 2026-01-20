@@ -10,10 +10,8 @@
 class UserTokenStatus < TokenRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  has_many :user_tokens, dependent: :restrict_with_error
-
   # Status constants
   NEYO = "NEYO"
+  has_many :user_tokens, dependent: :restrict_with_error
+  validates :id, uniqueness: { case_sensitive: false }
 end

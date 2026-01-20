@@ -3,7 +3,7 @@
 module Core
   module Org
     class ConfigurationsController < Core::Org::ApplicationController
-      prepend_before_action :authenticate_staff!
+      auth_required!
 
       def show
       end

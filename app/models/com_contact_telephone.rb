@@ -30,6 +30,11 @@
 class ComContactTelephone < GuestRecord
   belongs_to :com_contact, inverse_of: :com_contact_telephone
 
+  # Validations
+  validates :telephone_number, presence: true, length: { maximum: 1000 },
+                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+  validates :verifier_digest, length: { maximum: 255 }
+  validates :com_contact_id, uniqueness: true
   before_create :generate_id
   encrypts :telephone_number, deterministic: true
   encrypts :hotp_secret
@@ -37,12 +42,6 @@ class ComContactTelephone < GuestRecord
   alias_attribute :otp_digest, :verifier_digest
   alias_attribute :otp_expires_at, :verifier_expires_at
   alias_attribute :otp_attempts_left, :verifier_attempts_left
-
-  # Validations
-  validates :telephone_number, presence: true, length: { maximum: 1000 },
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
-  validates :verifier_digest, length: { maximum: 255 }
-  validates :com_contact_id, uniqueness: true
 
   # Generate and store OTP
   def generate_otp!

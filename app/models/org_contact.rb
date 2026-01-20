@@ -30,6 +30,8 @@
 class OrgContact < GuestRecord
   include ::PublicId
 
+  attr_accessor :confirm_policy
+
   # Associations
   has_many :org_contact_emails, dependent: :destroy, inverse_of: :org_contact
   has_many :org_contact_telephones, dependent: :destroy, inverse_of: :org_contact
@@ -44,8 +46,6 @@ class OrgContact < GuestRecord
              inverse_of: :org_contacts
   has_many :org_contact_topics, dependent: :destroy, inverse_of: :org_contact
 
-  attr_accessor :confirm_policy
-
   after_initialize do
     if new_record?
       self.category_id ||= "ORGANIZATION_INQUIRY"
@@ -53,17 +53,16 @@ class OrgContact < GuestRecord
     end
   end
 
-  # Callbacks
-  before_validation { self.category_id = category_id&.upcase }
-  before_validation { self.status_id = status_id&.upcase }
-  before_create :generate_token
-
   # Validations
   validates :confirm_policy, acceptance: true
   validates :category_id, length: { maximum: 255 }
   validates :status_id, length: { maximum: 255 }
   validates :token, length: { maximum: 32 }
   validates :token_digest, length: { maximum: 255 }
+  # Callbacks
+  before_validation { self.category_id = category_id&.upcase }
+  before_validation { self.status_id = status_id&.upcase }
+  before_create :generate_token
 
   # State transition helpers
   def email_pending?

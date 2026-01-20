@@ -17,16 +17,14 @@
 # frozen_string_literal: true
 
 class OrgPreferenceRegion < PreferenceRecord
-  before_validation :set_option_id
-
   belongs_to :preference, class_name: "OrgPreference", inverse_of: :org_preference_region
   belongs_to :option,
              class_name: "OrgPreferenceRegionOption",
              inverse_of: :org_preference_regions,
              optional: true
-
   validates :preference_id, uniqueness: true
   validates :option_id, presence: true
+  before_validation :set_option_id
 
   private
 

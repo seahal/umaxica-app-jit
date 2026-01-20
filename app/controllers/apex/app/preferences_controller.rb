@@ -3,6 +3,7 @@
 module Apex
   module App
     class PreferencesController < ApplicationController
+      public_strict!
       def show
       end
     end

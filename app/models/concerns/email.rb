@@ -33,6 +33,7 @@ module Email
 
   # OTP-related methods for email authentication
   # Stores OTP secret on this email record
+  # FIXME: minus -> plus
   def store_otp(otp_private_key, otp_counter, expires_at)
     update!(
       otp_private_key: otp_private_key,
@@ -56,6 +57,7 @@ module Email
   end
 
   # Clears OTP secret after verification
+  # FIXME: minus -> plus
   def clear_otp
     update!(
       otp_counter: "0",

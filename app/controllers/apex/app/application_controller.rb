@@ -9,6 +9,8 @@ module Apex
       include ::Sign::ErrorResponses
       include ::Auth::User
 
+      public_strict!
+
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern

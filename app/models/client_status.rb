@@ -12,13 +12,11 @@
 class ClientStatus < PrincipalRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
+  # Status constants
+  NEYO = "NEYO"
   has_many :clients,
            foreign_key: :status_id,
            dependent: :restrict_with_error,
            inverse_of: :client_status
-
-  # Status constants
-  NEYO = "NEYO"
+  validates :id, uniqueness: { case_sensitive: false }
 end

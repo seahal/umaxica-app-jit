@@ -114,7 +114,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   end
 
   # Error path tests for withdrawal state validation
-  test "should raise InvalidUserStatusError when accessing new for non-NEYO user" do
+  test "should raise InvalidUserStatusError when accessing new for non-NONE user" do
     @user.update!(status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
     assert_raises(InvalidUserStatusError) do

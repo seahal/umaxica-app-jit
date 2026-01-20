@@ -27,6 +27,8 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
       @flash = {}
     end
 
+    attr_reader :redirected_to, :rendered
+
     def flash
       @flash
     end
@@ -62,8 +64,6 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
 
       yield format
     end
-
-    attr_reader :redirected_to, :rendered
   end
 
   test "current_user_or_staff prefers current_user" do

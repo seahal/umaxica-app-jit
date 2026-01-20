@@ -33,15 +33,14 @@
 class ComContactEmail < GuestRecord
   belongs_to :com_contact, inverse_of: :com_contact_email
 
-  before_create :generate_id
-  before_save { self.email_address&.downcase! }
-  encrypts :email_address, downcase: true, deterministic: true
-
   # Validations
   validates :email_address, presence: true, length: { maximum: 1000 }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :token_digest, length: { maximum: 255 }
   validates :verifier_digest, length: { maximum: 255 }
   validates :com_contact_id, uniqueness: true
+  before_create :generate_id
+  before_save { self.email_address&.downcase! }
+  encrypts :email_address, downcase: true, deterministic: true
 
   # Encryptions
   encrypts :hotp_secret

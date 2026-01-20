@@ -18,27 +18,24 @@ class OrgDocumentCategoryMaster < DocumentRecord
   include StringPrimaryKey
   include Treeable
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  self.primary_key = "id"
-
-  attribute :parent_id, default: "NEYO"
-
   belongs_to :parent,
              class_name: "OrgDocumentCategoryMaster",
              inverse_of: :children,
              optional: true
-
   has_many :children,
            class_name: "OrgDocumentCategoryMaster",
            foreign_key: :parent_id,
            inverse_of: :parent,
            dependent: :restrict_with_error
-
   has_many :org_document_categories,
            dependent: :restrict_with_error,
            inverse_of: :org_document_category_master
   has_many :org_documents, through: :org_document_categories
+  validates :id, uniqueness: { case_sensitive: false }
+
+  self.primary_key = "id"
+
+  attribute :parent_id, default: "NEYO"
 
   validates :parent_id, presence: true, length: { maximum: 255 }
 

@@ -200,6 +200,10 @@ en:
           index:
             description: "Manage time-based one-time passwords linked to your account."
             new_link: "Create a new TOTP credential"
+        sessions:
+          revoke:
+            success: "Session revoked."
+            failure: "Cannot revoke current session."
       registration:
         new:
           page_title: "Create your account"

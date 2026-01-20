@@ -43,7 +43,6 @@ class OrgTimeline < NewsRecord
              inverse_of: :latest_timeline,
              optional: true
 
-  validates :status_id, length: { maximum: 255 }
   has_many :org_timeline_versions, dependent: :delete_all, inverse_of: :org_timeline
   has_many :org_timeline_revisions, dependent: :delete_all, inverse_of: :org_timeline
   has_many :org_timeline_audits,
@@ -63,6 +62,7 @@ class OrgTimeline < NewsRecord
   has_one :category_master,
           through: :category,
           source: :org_timeline_category_master
+  validates :status_id, length: { maximum: 255 }
 
   def latest_version
     org_timeline_versions.order(created_at: :desc).first!

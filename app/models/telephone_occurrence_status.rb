@@ -15,15 +15,14 @@
 class TelephoneOccurrenceStatus < OccurrenceRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
   include OccurrenceStatus
-
-  has_many :telephone_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
-                                   inverse_of: :telephone_occurrence_status
 
   # Status constants
   NEYO = "NEYO"
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"
+  has_many :telephone_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
+                                   inverse_of: :telephone_occurrence_status
+  validates :id, uniqueness: { case_sensitive: false }
 end

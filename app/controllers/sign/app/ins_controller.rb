@@ -2,10 +2,9 @@
 
 module Sign::App
   class InsController < ApplicationController
-    include ::Redirect
+    before_action :reject_logged_in_session
 
     def new
-      raise AlreadyAuthenticatedError, "User is already logged in" if logged_in?
     end
   end
 end

@@ -66,7 +66,11 @@ module Auth
     end
 
     def sign_in_url_with_return(return_to)
-      new_sign_app_in_url(rt: return_to, host: ENV["SIGN_SERVICE_URL"])
+      new_sign_app_in_url(
+        rt: return_to,
+        host: ENV["SIGN_SERVICE_URL"],
+        protocol: request.protocol,
+      )
     end
   end
 end

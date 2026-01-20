@@ -17,13 +17,12 @@
 class AppPreferenceColorthemeOption < PreferenceRecord
   include StringPrimaryKey
 
-  scope :ordered, -> { order(:position, :id) }
-
   has_many :app_preference_colorthemes,
            class_name: "AppPreferenceColortheme",
            foreign_key: :option_id,
            inverse_of: :option,
            dependent: :restrict_with_error
+  scope :ordered, -> { order(:position, :id) }
 
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Za-z0-9_]+\z/ }

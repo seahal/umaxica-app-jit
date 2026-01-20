@@ -45,8 +45,6 @@ class AppDocument < DocumentRecord
              inverse_of: :latest_document,
              optional: true
 
-  validates :status_id, length: { maximum: 255 }
-
   has_many :app_document_versions, dependent: :delete_all, inverse_of: :app_document
   has_many :app_document_revisions, dependent: :delete_all, inverse_of: :app_document
   has_many :app_document_audits,
@@ -65,6 +63,7 @@ class AppDocument < DocumentRecord
   has_one :category_master,
           through: :category,
           source: :app_document_category_master
+  validates :status_id, length: { maximum: 255 }
 
   def latest_version
     app_document_versions.order(created_at: :desc).first!

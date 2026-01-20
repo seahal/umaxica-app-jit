@@ -10,6 +10,7 @@ module Health
     rescue ArgumentError
       # Callback doesn't exist, ignore
     end
+    public_strict! if respond_to?(:public_strict!)
   end
 
   private

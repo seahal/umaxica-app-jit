@@ -10,14 +10,12 @@
 class UserOneTimePasswordStatus < PrincipalRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  has_many :user_one_time_passwords, dependent: :restrict_with_error,
-                                     inverse_of: :user_one_time_password_status
-
   # Status constants
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   REVOKED = "REVOKED"
   DELETED = "DELETED"
+  has_many :user_one_time_passwords, dependent: :restrict_with_error,
+                                     inverse_of: :user_one_time_password_status
+  validates :id, uniqueness: { case_sensitive: false }
 end

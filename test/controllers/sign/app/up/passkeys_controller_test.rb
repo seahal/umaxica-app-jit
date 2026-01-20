@@ -35,6 +35,13 @@ module Sign::App::Up
       assert_response :success
     end
 
+    test "should get complete" do
+      get complete_sign_app_up_passkeys_url(ri: "jp")
+
+      assert_response :success
+      assert_select "h2", text: "登録が完了しました"
+    end
+
     test "should create telephone and redirect to edit" do
       assert_difference("UserTelephone.count") do
         post sign_app_up_passkeys_url(ri: "jp"), params: {
@@ -73,7 +80,7 @@ module Sign::App::Up
         user_telephone: { pass_code: code },
       }
 
-      assert_redirected_to "/"
+      assert_redirected_to complete_sign_app_up_passkeys_url(regional_defaults)
 
       telephone.reload
 

@@ -17,16 +17,14 @@
 # frozen_string_literal: true
 
 class ComPreferenceTimezone < PreferenceRecord
-  before_validation :set_option_id
-
   belongs_to :preference, class_name: "ComPreference", inverse_of: :com_preference_timezone
   belongs_to :option,
              class_name: "ComPreferenceTimezoneOption",
              inverse_of: :com_preference_timezones,
              optional: true
-
   validates :preference_id, uniqueness: true
   validates :option_id, presence: true
+  before_validation :set_option_id
 
   private
 

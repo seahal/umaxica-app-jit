@@ -3,6 +3,7 @@
 module Sign
   module Org
     class OutsController < ApplicationController
+      auth_required!
       before_action :authenticate!
 
       def edit

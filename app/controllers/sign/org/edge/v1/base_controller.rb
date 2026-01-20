@@ -5,6 +5,7 @@ module Sign
     module Edge
       module V1
         class BaseController < Sign::Org::ApplicationController
+          public_strict!
           before_action :ensure_json_request
           skip_before_action :set_region
 

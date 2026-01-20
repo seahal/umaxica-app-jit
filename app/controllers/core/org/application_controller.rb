@@ -5,6 +5,8 @@ module Core
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
       include ::Auth::Staff
+
+      auth_required!
       include ::Preference::Regional
       include ::AuthorizationAudit
 

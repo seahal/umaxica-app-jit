@@ -4,10 +4,14 @@ module Core
   module App
     module Configuration
       class EmailsController < Core::App::ApplicationController
-        prepend_before_action :authenticate_user!
+        auth_required!
 
         def new
           render plain: "Core App Configuration Emails New"
+        end
+
+        def create
+          head :ok
         end
       end
     end

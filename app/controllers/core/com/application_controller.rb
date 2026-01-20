@@ -4,8 +4,11 @@ module Core
   module Com
     class ApplicationController < ActionController::Base
       include Pundit::Authorization
-      include ::Auth::User
       include ::AuthorizationAudit
+      include ::RateLimit
+      include ::Auth::User
+
+      public_strict!
       include ::Preference::Regional
 
       protect_from_forgery with: :exception

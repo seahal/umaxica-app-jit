@@ -10,16 +10,15 @@
 class UserStatus < PrincipalRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
+  # Status constants
+  NONE = "NONE"
+  GHOST = "GHOST"
+  ALIVE = "ALIVE"
+  PRE_WITHDRAWAL_CONDITION = "PRE_WITHDRAWAL_CONDITION"
+  WITHDRAWAL_COMPLETED = "WITHDRAWAL_COMPLETED"
   has_many :users,
            foreign_key: :status_id,
            dependent: :restrict_with_error,
            inverse_of: :user_status
-
-  # Status constants
-  NEYO = "NEYO"
-  ALIVE = "ALIVE"
-  PRE_WITHDRAWAL_CONDITION = "PRE_WITHDRAWAL_CONDITION"
-  WITHDRAWAL_COMPLETED = "WITHDRAWAL_COMPLETED"
+  validates :id, uniqueness: { case_sensitive: false }
 end

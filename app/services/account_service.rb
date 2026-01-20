@@ -21,6 +21,11 @@ class AccountService
            :persisted?, :new_record?, :destroyed?,
            to: :accountable
 
+  # Override class method to return the underlying model's class
+  # This ensures JWT generation and type checks continue to lean on the wrapped model.
+  #
+  # @return [Class] User or Staff class
+  delegate :class, to: :accountable
   # Find an account by ID
   #
   # @param id [String, Integer] The UUID of the user or staff
@@ -137,12 +142,6 @@ class AccountService
 
   # Duck Typing Support
   # -------------------
-
-  # Override class method to return the underlying model's class
-  # This ensures JWT generation and type checks continue to lean on the wrapped model.
-  #
-  # @return [Class] User or Staff class
-  delegate :class, to: :accountable
 
   # Override is_a? to check against the underlying model
   # This ensures Pundit and other type checks work correctly

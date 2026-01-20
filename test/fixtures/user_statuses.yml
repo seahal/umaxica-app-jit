@@ -1,6 +1,10 @@
 # Auto-generated minimal fixture
 neyo:
   id: NEYO
+none:
+  id: NONE
+ghost:
+  id: GHOST
 active:
   id: ACTIVE
 inactive:

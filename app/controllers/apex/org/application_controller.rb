@@ -8,6 +8,8 @@ module Apex
       include ::Preference::Global
       include ::Auth::Staff
 
+      auth_required!
+
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern

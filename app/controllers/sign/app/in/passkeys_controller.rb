@@ -4,7 +4,7 @@ module Sign
   module App
     module In
       class PasskeysController < ApplicationController
-        include Auth::PreAuthenticationGuards
+        before_action :reject_logged_in_session
 
         def new
           @user_telephone = UserTelephone.new

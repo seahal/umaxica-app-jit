@@ -18,27 +18,24 @@ class ComTimelineCategoryMaster < NewsRecord
   include StringPrimaryKey
   include Treeable
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  self.primary_key = "id"
-
-  attribute :parent_id, default: "NEYO"
-
   belongs_to :parent,
              class_name: "ComTimelineCategoryMaster",
              inverse_of: :children,
              optional: true
-
   has_many :children,
            class_name: "ComTimelineCategoryMaster",
            foreign_key: :parent_id,
            inverse_of: :parent,
            dependent: :restrict_with_error
-
   has_many :com_timeline_categories,
            dependent: :restrict_with_error,
            inverse_of: :com_timeline_category_master
   has_many :com_timelines, through: :com_timeline_categories
+  validates :id, uniqueness: { case_sensitive: false }
+
+  self.primary_key = "id"
+
+  attribute :parent_id, default: "NEYO"
 
   validates :parent_id, presence: true, length: { maximum: 255 }
 

@@ -27,7 +27,7 @@ require "concurrent"
 
 class UserSecretTest < ActiveSupport::TestCase
   setup do
-    UserStatus.find_or_create_by!(id: "NEYO")
+    UserStatus.find_or_create_by!(id: "NONE")
     # Also need UserSecretStatus as 'ACTIVE', 'USED', 'EXPIRED' are used in tests
     UserSecretStatus.find_or_create_by!(id: "ACTIVE")
     UserSecretStatus.find_or_create_by!(id: "USED")
@@ -35,7 +35,7 @@ class UserSecretTest < ActiveSupport::TestCase
 
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
-        u.status_id = "NEYO"
+        u.status_id = "NONE"
       end
   end
 

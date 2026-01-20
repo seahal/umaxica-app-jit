@@ -17,13 +17,12 @@
 class ComPreferenceTimezoneOption < PreferenceRecord
   self.primary_key = :id
 
-  scope :ordered, -> { order(:position, :id) }
-
   has_many :com_preference_timezones,
            class_name: "ComPreferenceTimezone",
            foreign_key: :option_id,
            inverse_of: :option,
            dependent: :restrict_with_error
+  scope :ordered, -> { order(:position, :id) }
 
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Za-z0-9_\/\-\+]+\z/ }

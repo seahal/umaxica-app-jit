@@ -7,6 +7,9 @@ module News
 
       protect_from_forgery with: :exception
       include ::RateLimit
+      include ::Auth::Base
+
+      public_strict!
 
       allow_browser versions: :modern
     end

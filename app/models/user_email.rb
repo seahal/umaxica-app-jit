@@ -38,6 +38,12 @@ class UserEmail < PrincipalRecord
              foreign_key: :user_identity_email_status_id
   belongs_to :user, optional: true, inverse_of: :user_emails
 
+  validates :address, presence: true, length: { maximum: 255 }
+  validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
+  validates :otp_counter, presence: true
+  validates :otp_private_key, presence: true, length: { maximum: 255 }
+  validates :user_identity_email_status_id, length: { maximum: 255 }
+  validate :enforce_user_email_limit, on: :create
   before_validation do
     self.user_id ||= "00000000-0000-0000-0000-000000000000"
   end
@@ -47,14 +53,6 @@ class UserEmail < PrincipalRecord
   end
 
   encrypts :address, deterministic: true
-
-  validates :address, presence: true, length: { maximum: 255 }
-  validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
-  validates :otp_counter, presence: true
-  validates :otp_private_key, presence: true, length: { maximum: 255 }
-  validates :user_identity_email_status_id, length: { maximum: 255 }
-
-  validate :enforce_user_email_limit, on: :create
 
   private
 

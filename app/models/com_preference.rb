@@ -27,8 +27,6 @@ class ComPreference < PreferenceRecord
              foreign_key: :status_id,
              inverse_of: :com_preferences
 
-  validates :status_id, length: { maximum: 255 }
-
   has_one :com_preference_cookie,
           foreign_key: :preference_id,
           inverse_of: :preference,
@@ -53,4 +51,5 @@ class ComPreference < PreferenceRecord
            foreign_key: :subject_id,
            inverse_of: :com_preference,
            dependent: :destroy
+  validates :status_id, length: { maximum: 255 }
 end

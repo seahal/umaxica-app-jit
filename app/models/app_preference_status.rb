@@ -17,14 +17,13 @@
 class AppPreferenceStatus < PreferenceRecord
   include StringPrimaryKey
 
-  scope :ordered, -> { order(:position, :id) }
-
   has_many :app_preferences,
            class_name: "AppPreference",
            foreign_key: "status_id",
            primary_key: "id",
            inverse_of: :app_preference_status,
            dependent: :restrict_with_error
+  scope :ordered, -> { order(:position, :id) }
 
   validates :position,
             presence: true,

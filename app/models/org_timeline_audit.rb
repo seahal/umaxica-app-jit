@@ -32,12 +32,20 @@
 #
 
 class OrgTimelineAudit < AuditRecord
+  # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
+  belongs_to :org_timeline, optional: true, foreign_key: :subject_id, inverse_of: :org_timeline_audits
+  belongs_to :actor, polymorphic: true, optional: true
+  belongs_to :org_timeline_audit_level, foreign_key: :level_id, inverse_of: :org_timeline_audits
+  belongs_to :org_timeline_audit_event,
+             class_name: "OrgTimelineAuditEvent",
+             foreign_key: "event_id",
+             primary_key: "id",
+             inverse_of: :org_timeline_audits
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
-  # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
-  belongs_to :org_timeline, optional: true, foreign_key: :subject_id, inverse_of: :org_timeline_audits
-
+  validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
   def org_timeline
     OrgTimeline.find(subject_id) if subject_type == "OrgTimeline"
   end
@@ -46,16 +54,4 @@ class OrgTimelineAudit < AuditRecord
     self.subject_id = timeline.id.to_s
     self.subject_type = "OrgTimeline"
   end
-
-  belongs_to :actor, polymorphic: true, optional: true
-
-  belongs_to :org_timeline_audit_level, foreign_key: :level_id, inverse_of: :org_timeline_audits
-  belongs_to :org_timeline_audit_event,
-             class_name: "OrgTimelineAuditEvent",
-             foreign_key: "event_id",
-             primary_key: "id",
-             inverse_of: :org_timeline_audits
-
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
 end

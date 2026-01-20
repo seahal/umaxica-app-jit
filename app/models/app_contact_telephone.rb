@@ -28,17 +28,16 @@
 class AppContactTelephone < GuestRecord
   belongs_to :app_contact, inverse_of: :app_contact_telephones
 
+  # Validations
+  validates :telephone_number, presence: true, length: { maximum: 1000 },
+                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+  validates :verifier_digest, length: { maximum: 255 }
   before_create :generate_id
   encrypts :telephone_number, deterministic: true
   # Bridge OTP helpers to stored verifier_* columns
   alias_attribute :otp_digest, :verifier_digest
   alias_attribute :otp_expires_at, :verifier_expires_at
   alias_attribute :otp_attempts_left, :verifier_attempts_left
-
-  # Validations
-  validates :telephone_number, presence: true, length: { maximum: 1000 },
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
-  validates :verifier_digest, length: { maximum: 255 }
 
   # Generate and store OTP
   def generate_otp!

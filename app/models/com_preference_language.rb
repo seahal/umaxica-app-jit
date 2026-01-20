@@ -17,16 +17,14 @@
 # frozen_string_literal: true
 
 class ComPreferenceLanguage < PreferenceRecord
-  before_validation :set_option_id
-
   belongs_to :preference, class_name: "ComPreference", inverse_of: :com_preference_language
   belongs_to :option,
              class_name: "ComPreferenceLanguageOption",
              inverse_of: :com_preference_languages,
              optional: true
-
   validates :preference_id, uniqueness: true
   validates :option_id, presence: true
+  before_validation :set_option_id
 
   private
 

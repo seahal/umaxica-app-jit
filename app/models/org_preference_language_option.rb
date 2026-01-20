@@ -17,18 +17,17 @@
 class OrgPreferenceLanguageOption < PreferenceRecord
   include StringPrimaryKey
 
+  has_many :org_preference_languages,
+           class_name: "OrgPreferenceLanguage",
+           foreign_key: :option_id,
+           inverse_of: :option,
+           dependent: :restrict_with_error
   scope :ordered, -> { order(:position, :id) }
 
   self.primary_key = :id
 
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Z0-9_]+\z/ }
-
-  has_many :org_preference_languages,
-           class_name: "OrgPreferenceLanguage",
-           foreign_key: :option_id,
-           inverse_of: :option,
-           dependent: :restrict_with_error
 
   validates :position,
             presence: true,

@@ -18,23 +18,20 @@ class AppDocumentCategoryMaster < DocumentRecord
   include StringPrimaryKey
   include Treeable
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  self.primary_key = "id"
-
   belongs_to :parent,
              class_name: "AppDocumentCategoryMaster",
              inverse_of: :children,
              optional: true
-
   has_many :children,
            class_name: "AppDocumentCategoryMaster",
            foreign_key: :parent_id,
            inverse_of: :parent,
            dependent: :restrict_with_error
-
   has_many :app_document_categories, dependent: :restrict_with_error
   has_many :app_documents, through: :app_document_categories
+  validates :id, uniqueness: { case_sensitive: false }
+
+  self.primary_key = "id"
 
   validates :parent_id, presence: true, length: { maximum: 255 }
 

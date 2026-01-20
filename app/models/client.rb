@@ -27,15 +27,11 @@ class Client < PrincipalRecord
 
   attribute :status_id, default: ClientStatus::NEYO
 
-  validates :public_id, uniqueness: true, allow_nil: true
-  validates :status_id, length: { maximum: 255 }
-
   belongs_to :user, optional: true, inverse_of: :owned_clients
   belongs_to :client_status,
              foreign_key: :status_id,
              inverse_of: :clients
   belongs_to :division, optional: true, inverse_of: :clients
-
   has_many :avatars, dependent: :nullify, inverse_of: :client
   has_many :client_avatar_accesses, dependent: :destroy, inverse_of: :client
   has_many :client_avatar_visibilities, dependent: :destroy, inverse_of: :client
@@ -70,4 +66,6 @@ class Client < PrincipalRecord
            inverse_of: :client
   has_many :user_clients, dependent: :destroy
   has_many :users, through: :user_clients
+  validates :public_id, uniqueness: true, allow_nil: true
+  validates :status_id, length: { maximum: 255 }
 end

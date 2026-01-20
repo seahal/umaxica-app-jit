@@ -12,12 +12,11 @@
 class AppContactStatus < GuestRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  validates :description, length: { maximum: 255 }
-
   has_many :app_contacts,
            foreign_key: :status_id,
            inverse_of: :app_contact_status,
            dependent: :restrict_with_exception
+  validates :id, uniqueness: { case_sensitive: false }
+
+  validates :description, length: { maximum: 255 }
 end

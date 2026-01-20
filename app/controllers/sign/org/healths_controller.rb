@@ -3,6 +3,7 @@
 module Sign
   module Org
     class HealthsController < ApplicationController
+      public_strict!
       include ::Health
 
       def show

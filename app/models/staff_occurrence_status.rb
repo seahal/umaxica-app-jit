@@ -15,15 +15,14 @@
 class StaffOccurrenceStatus < OccurrenceRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
   include OccurrenceStatus
-
-  has_many :staff_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
-                               inverse_of: :staff_occurrence_status
 
   # Status constants
   NEYO = "NEYO"
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"
+  has_many :staff_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
+                               inverse_of: :staff_occurrence_status
+  validates :id, uniqueness: { case_sensitive: false }
 end

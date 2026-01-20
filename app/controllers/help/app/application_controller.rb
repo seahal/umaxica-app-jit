@@ -4,6 +4,9 @@ module Help
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Auth::Base
+
+      public_strict!
       include ::Preference::Regional
       include Pundit::Authorization
 

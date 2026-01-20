@@ -6,6 +6,21 @@ module Auth
   module Base
     extend ActiveSupport::Concern
 
+    # --- Policy errors ---
+    class MissingPolicyError < StandardError; end
+
+    class InvalidPolicyError < StandardError; end
+
+    class SkipNotAllowedError < StandardError; end
+
+    VALID_POLICIES = %i(
+      public_strict
+      auth_required
+      guest_only
+    ).freeze
+
+    ACCESS_POLICY_RULES = Concurrent::Map.new
+
     # Cookie keys - environment-dependent naming
     # Production: "__Secure-" prefix for secure cookies
     # Dev/Test: no prefix (String, not Symbol)
@@ -162,6 +177,279 @@ module Auth
       current_resource.present?
     end
 
+    # ======================================================================
+    # Pre-Authentication Guards
+    # ======================================================================
+
+    # Ensures user is not already logged in
+    # Renders bad_request with message if user is logged in
+    # Used for authentication endpoints (login)
+    #
+    # @param message_key [String] Optional translation key for the error message
+    # @return [nil] Returns nil if user is logged in (stops filter chain)
+    def ensure_not_logged_in(message_key: nil)
+      return unless logged_in?
+
+      message = message_key ? t(message_key) : "権限がありません"
+      render plain: message, status: :unauthorized
+      nil
+    end
+
+    # Ensures user is not already logged in (registration variant)
+    # Redirects to root with alert message if user is logged in
+    # Used for registration endpoints
+    #
+    # @param redirect_path [String] Path to redirect to (default: "/")
+    # @param message_key [String] Optional translation key for the alert message
+    def ensure_not_logged_in_for_registration(redirect_path: "/", message_key: nil)
+      return unless logged_in?
+
+      message = message_key ? t(message_key) : "権限がありません"
+
+      if request.format.json?
+        render plain: message, status: :unauthorized
+      else
+        redirect_to redirect_path, alert: message
+      end
+    end
+
+    # Checks if user is logged in and renders error if so (inline variant)
+    # Returns true if user is logged in, false otherwise
+    # Useful for inline checks in actions
+    #
+    # @param message_key [String] Translation key for the error message
+    # @return [Boolean] true if user is logged in, false otherwise
+    def reject_if_logged_in(message_key)
+      if logged_in?
+        render plain: t(message_key), status: :bad_request
+        true
+      else
+        false
+      end
+    end
+
+    # Reject if user/staff is already logged in with 401 Unauthorized
+    def reject_logged_in_session
+      if logged_in?
+        render plain: "権限がありません", status: :unauthorized
+      end
+    end
+
+    # ======================================================================
+    # Redirect Parameter Handling
+    # ======================================================================
+
+    # Default session key for storing redirect parameter
+    DEFAULT_RD_SESSION_KEY = :user_email_authentication_rd
+
+    # Preserves the redirect parameter in session and returns it for immediate use
+    #
+    # @param session_key [Symbol] The session key to store rd parameter in
+    # @return [String, nil] The rd parameter value if present
+    def preserve_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
+      if params[:rd].present?
+        session[session_key] = params[:rd]
+        params[:rd]
+      end
+    end
+
+    # Retrieves and clears the redirect parameter from session
+    # Falls back to params[:rd] if session is empty
+    #
+    # @param session_key [Symbol] The session key to retrieve from
+    # @return [String, nil] The rd parameter value
+    def retrieve_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
+      rd_param = params[:rd].presence || session[session_key]
+      session[session_key] = nil
+      rd_param
+    end
+
+    # Retrieves redirect parameter without clearing session
+    #
+    # @param session_key [Symbol] The session key to retrieve from
+    # @return [String, nil] The rd parameter value
+    def peek_redirect_parameter(session_key = DEFAULT_RD_SESSION_KEY)
+      params[:rd].presence || session[session_key]
+    end
+
+    # Builds redirect params hash with optional rd parameter
+    # Automatically includes rd from params or session if present
+    #
+    # @param message_key [Symbol] Either :notice or :alert
+    # @param message_value [String] The message text or translation key result
+    # @param session_key [Symbol] The session key to check for rd parameter
+    # @return [Hash] Redirect params hash
+    def build_redirect_params(message_key, message_value, session_key = DEFAULT_RD_SESSION_KEY)
+      redirect_params = { message_key => message_value }
+      rd_value = peek_redirect_parameter(session_key)
+      redirect_params[:rd] = rd_value if rd_value.present?
+      redirect_params
+    end
+
+    # Builds redirect params hash with notice message
+    #
+    # @param message_value [String] The notice message
+    # @param session_key [Symbol] The session key to check for rd parameter
+    # @return [Hash] Redirect params with notice
+    def build_notice_params(message_value, session_key = DEFAULT_RD_SESSION_KEY)
+      build_redirect_params(:notice, message_value, session_key)
+    end
+
+    # Builds redirect params hash with alert message
+    #
+    # @param message_value [String] The alert message
+    # @param session_key [Symbol] The session key to check for rd parameter
+    # @return [Hash] Redirect params with alert
+    def build_alert_params(message_value, session_key = DEFAULT_RD_SESSION_KEY)
+      build_redirect_params(:alert, message_value, session_key)
+    end
+
+    # Performs redirect with rd parameter handling
+    # Either redirects to encoded rd URL or falls back to default path
+    #
+    # @param default_path [String] Default path if no rd parameter
+    # @param message_key [Symbol] Either :notice or :alert
+    # @param message_value [String] Flash message value
+    # @param session_key [Symbol] The session key for rd parameter
+    def redirect_with_rd_handling(default_path, message_key, message_value, session_key = DEFAULT_RD_SESSION_KEY)
+      rd_param = retrieve_redirect_parameter(session_key)
+
+      if rd_param.present?
+        flash[message_key] = message_value
+        jump_to_generated_url(rd_param, fallback: default_path)
+      else
+        redirect_to default_path, message_key => message_value
+      end
+    end
+
+    # Performs redirect with notice message and rd handling
+    #
+    # @param default_path [String] Default path if no rd parameter
+    # @param message_value [String] Notice message value
+    # @param session_key [Symbol] The session key for rd parameter
+    def redirect_with_notice(default_path, message_value, session_key = DEFAULT_RD_SESSION_KEY)
+      redirect_with_rd_handling(default_path, :notice, message_value, session_key)
+    end
+
+    # Performs redirect with alert message and rd handling
+    #
+    # @param default_path [String] Default path if no rd parameter
+    # @param message_value [String] Alert message value
+    # @param session_key [Symbol] The session key for rd parameter
+    def redirect_with_alert(default_path, message_value, session_key = DEFAULT_RD_SESSION_KEY)
+      redirect_with_rd_handling(default_path, :alert, message_value, session_key)
+    end
+
+    # Adds rd parameter to existing redirect params if present
+    # Modifies the hash in place
+    #
+    # @param redirect_params [Hash] The redirect params hash to modify
+    # @param session_key [Symbol] The session key to check for rd parameter
+    # @return [Hash] The modified redirect_params hash
+    def add_rd_to_params!(redirect_params, session_key = DEFAULT_RD_SESSION_KEY)
+      rd_value = peek_redirect_parameter(session_key)
+      redirect_params[:rd] = rd_value if rd_value.present?
+      redirect_params
+    end
+
+    # ======================================================================
+    # Session Authentication
+    # ======================================================================
+
+    # Loads authentication session data and validates expiry
+    # Returns the found record or handles redirect on expiry
+    #
+    # @param session_key [Symbol, String] The session key to load from
+    # @param model_class [Class] The model class to load
+    # @param redirect_path [String, Symbol] Where to redirect on session expiry
+    # @param redirect_message [String] The translation key for expiry message
+    # @param block [Proc] Optional block for additional validation
+    # @return [ActiveRecord::Base, nil] The loaded record or nil
+    def load_authentication_session(session_key, model_class, redirect_path, redirect_message)
+      record = nil
+
+      if session[session_key].present?
+        record = model_class.find_by(id: session[session_key])
+
+        # If block provided, use it for validation; otherwise just check presence
+        is_valid =
+          if block_given?
+            yield(record)
+          else
+            record.present?
+          end
+
+        return record if is_valid
+
+        # Session expired or invalid
+        handle_session_expiry(redirect_path, redirect_message)
+        nil
+      else
+        # No session data
+        handle_session_expiry(redirect_path, redirect_message)
+        nil
+      end
+    end
+
+    # Stores authentication session data
+    #
+    # @param session_key [Symbol, String] The session key to store to
+    # @param value [Object] The value to store (typically an ID or hash)
+    def store_authentication_session(session_key, value)
+      session[session_key] = value
+    end
+
+    # Clears authentication session data
+    #
+    # @param session_keys [Array<Symbol, String>] The session keys to clear
+    def clear_authentication_session(*session_keys)
+      session_keys.each do |key|
+        session[key] = nil
+      end
+    end
+
+    # Validates session expiry against a timestamp
+    #
+    # @param session_data [Hash] The session data containing expiry information
+    # @param expiry_key [String, Symbol] The key in session_data that contains expiry timestamp
+    # @return [Boolean] true if not expired, false otherwise
+    def validate_session_expiry(session_data, expiry_key = "expires_at")
+      return false if session_data.blank?
+      return true unless session_data[expiry_key]
+
+      session_data[expiry_key].to_i > Time.now.to_i
+    end
+
+    # Loads a record from session with additional validation
+    #
+    # @param session_key [Symbol, String] The session key containing the record ID
+    # @param model_class [Class] The model class to load
+    # @param validations [Hash] Additional validations to perform
+    # @return [ActiveRecord::Base, nil] The loaded record or nil
+    def load_session_record(session_key, model_class, validations = {})
+      return nil if session[session_key].blank?
+
+      record = model_class.find_by(id: session[session_key])
+      return nil if record.blank?
+
+      # Check OTP expiry if requested
+      if validations[:check_otp_expiry] && record.respond_to?(:otp_expired?)
+        return nil if record.otp_expired?
+      end
+
+      # Check status_id if provided
+      if validations[:status_id] && record.respond_to?(:user_email_status_id)
+        return nil if record.user_email_status_id != validations[:status_id]
+      end
+
+      # Run custom validation if provided
+      if validations[:custom]
+        return nil unless validations[:custom].call(record)
+      end
+
+      record
+    end
+
     def current_account
       current_resource
     end
@@ -307,6 +595,18 @@ module Auth
       @current_resource = nil
     end
 
+    def transparent_refresh_access_token
+      return if logged_in?
+
+      refresh_plain = cookies[REFRESH_COOKIE_KEY]
+      return if refresh_plain.blank?
+
+      refreshed = refresh_access_token(refresh_plain)
+      return unless refreshed
+
+      remove_instance_variable(:@current_resource) if defined?(@current_resource)
+    end
+
     def authenticate!
       return if logged_in?
 
@@ -365,7 +665,67 @@ module Auth
     end
 
     included do
+      # Important: prepend first so this runs before other before_action hooks.
+      prepend_before_action :enforce_access_policy! if respond_to?(:prepend_before_action)
       helper_method :current_account, :current_session_public_id if respond_to?(:helper_method)
+    end
+
+    class_methods do
+      # Declare policy for controller or specific actions (only/except).
+      def access_policy_rules
+        ACCESS_POLICY_RULES.fetch_or_store(self) do
+          parent_rules =
+            if superclass.respond_to?(:access_policy_rules)
+              superclass.access_policy_rules
+            else
+              []
+            end
+          parent_rules.dup
+        end
+      end
+
+      def access_policy(policy, only: nil, except: nil, **options)
+        policy = policy.to_sym
+        raise InvalidPolicyError, "Invalid policy: #{policy.inspect}" unless VALID_POLICIES.include?(policy)
+
+        rule = {
+          policy: policy,
+          only: Array(only).map(&:to_s).presence,
+          except: Array(except).map(&:to_s).presence,
+          options: options,
+        }
+
+        ACCESS_POLICY_RULES[self] = access_policy_rules + [rule]
+      end
+
+      # Readable shortcuts.
+      def public_strict!(**) = access_policy(:public_strict, **)
+
+      def auth_required!(**) = access_policy(:auth_required, **)
+
+      def guest_only!(**) = access_policy(:guest_only, **)
+
+      # --- Skip guardrails ---
+      # Disallow removing enforce_access_policy! via skip_before_action.
+      def skip_before_action(*filters, **options)
+        filters = filters.flatten
+        filters.map!(&:to_sym)
+        if filters.include?(:enforce_access_policy!)
+          raise SkipNotAllowedError, "skip_before_action :enforce_access_policy! is prohibited (#{name})"
+        end
+
+        super
+      end
+
+      # Some code uses skip_action_callback, so lock this down too.
+      def skip_action_callback(*args, **kwargs)
+        # skip_action_callback(:process_action, :before, :enforce_access_policy!)
+        if args.map(&:to_sym).include?(:enforce_access_policy!)
+          raise SkipNotAllowedError, "skip_action_callback :enforce_access_policy! is prohibited (#{name})"
+        end
+
+        super
+      end
     end
 
     private
@@ -543,6 +903,125 @@ module Auth
 
       derived = derive_cookie_domain_from_host
       formatted_domain(derived)
+    end
+
+    # Handles session expiry by redirecting with appropriate message
+    #
+    # @param redirect_path [String, Symbol] Where to redirect
+    # @param message_key [String] Translation key for the expiry message
+    def handle_session_expiry(redirect_path, message_key)
+      redirect_params = { notice: t(message_key) }
+      # Preserve redirect parameter if present
+      redirect_params[:rd] = session[:user_email_authentication_rd] if session[:user_email_authentication_rd].present?
+      redirect_to redirect_path, redirect_params
+    end
+
+    # --- Policy enforcement methods ---
+
+    def enforce_access_policy!
+      rule = resolve_access_policy_for(action_name)
+
+      if rule.nil?
+        Rails.logger.warn "AUTH_POLICY: Missing for #{self.class.name}##{action_name}"
+        raise MissingPolicyError,
+              "Missing access_policy for #{self.class.name}##{action_name}. " \
+              "Declare one of: #{VALID_POLICIES.join(", ")}"
+      end
+
+      policy = rule[:policy]
+      options = rule[:options] || {}
+
+      Rails.logger.warn(
+        "AUTH_POLICY: Resolved #{policy} for #{self.class.name}##{action_name} " \
+        "(Rules: #{self.class.access_policy_rules.size})",
+      )
+
+      case policy
+      when :public_strict
+        enforce_public_strict!(options)
+      when :auth_required
+        enforce_auth_required!(options)
+      when :guest_only
+        enforce_guest_only!(options)
+      else
+        raise InvalidPolicyError, "Unexpected policy: #{policy.inspect}"
+      end
+    end
+
+    def resolve_access_policy_for(action)
+      action = action.to_s
+
+      # Last rule wins so controller-wide policies can be overridden per action.
+      rules = self.class.access_policy_rules
+      return nil if rules.blank?
+
+      rules.reverse_each do |rule|
+        next if rule[:only].present? && rule[:only].exclude?(action)
+        next if rule[:except].present? && rule[:except].include?(action)
+
+        return rule
+      end
+
+      nil
+    end
+
+    # --- Behavior implementation (align with your auth stack) ---
+
+    def enforce_public_strict!(_options = {})
+      # If you avoid touching current_user/current_resource here,
+      # the safest default is to do nothing.
+      true
+    end
+
+    def enforce_auth_required!(options = {})
+      # Example: use Auth::Base logged_in? / current_resource.
+      return true if respond_to?(:logged_in?) && logged_in?
+
+      # Branch HTML vs API (or delegate to your responder).
+      if request.format.json? || options[:request_format] == :json
+        status = options[:status] || :unauthorized
+        render json: { error: (options[:message] || "unauthorized") }, status: status
+      else
+        path =
+          if respond_to?(:sign_in_url_with_return, true)
+            rt = Base64.urlsafe_encode64(request.original_url)
+            sign_in_url_with_return(rt)
+          elsif main_app.respond_to?(:sign_in_path)
+            main_app.sign_in_path
+          else
+            "/sign/in"
+          end
+        message = options[:message] || I18n.t("errors.messages.login_required")
+        redirect_to(path, allow_other_host: true, alert: message)
+      end
+    end
+
+    def enforce_guest_only!(options = {})
+      # Guest-only policy: block logged-in users.
+      return true unless respond_to?(:logged_in?) && logged_in?
+
+      if request.format.json? || options[:request_format] == :json
+        status = options[:status] || :forbidden
+        render json: { error: (options[:message] || "already_authenticated") }, status: status
+      else
+        if options[:status] == :unauthorized
+          return render plain: (options[:message] || "権限がありません"), status: :unauthorized
+        end
+        if options[:status] == :bad_request
+          return render plain: (options[:message] || "リクエストが不正です"), status: :bad_request
+        end
+
+        path =
+          if respond_to?(:after_login_path, true)
+            after_login_path
+          elsif main_app.respond_to?(:after_login_path)
+            main_app.after_login_path
+          else
+            "/"
+          end
+        message = options[:message] || I18n.t("errors.messages.already_authenticated")
+        redirect_to(path, allow_other_host: true, alert: message)
+      end
     end
   end
 end

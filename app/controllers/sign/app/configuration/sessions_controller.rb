@@ -8,20 +8,47 @@ module Sign
         before_action :set_session, only: %i(destroy)
 
         def index
-          render json: { sessions: current_user.user_tokens.where(revoked_at: nil) }
+          @sessions = current_user.user_tokens.where(revoked_at: nil).order(created_at: :desc)
         end
 
         def destroy
           if @session.public_id == current_session_public_id
-            render json: { error: "Cannot revoke current session" }, status: :unprocessable_content
-            return
+            return render_current_session_error
           end
 
           @session.revoke!
-          head :see_other
+
+          respond_to do |format|
+            format.html do
+              redirect_to(
+                sign_app_configuration_sessions_path,
+                status: :see_other,
+                notice: t("sign.app.configuration.sessions.revoke.success"),
+              )
+            end
+            format.json do
+              head :see_other
+            end
+          end
         end
 
         private
+
+        def render_current_session_error
+          respond_to do |format|
+            format.html do
+              redirect_to(
+                sign_app_configuration_sessions_path,
+                alert: t("sign.app.configuration.sessions.revoke.failure"),
+              )
+            end
+            format.json do
+              render json: {
+                error: t("sign.app.configuration.sessions.revoke.failure"),
+              }, status: :unprocessable_content
+            end
+          end
+        end
 
         def set_session
           @session = current_user.user_tokens.find_by(public_id: params[:id])

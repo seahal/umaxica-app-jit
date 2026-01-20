@@ -3,6 +3,7 @@
 module Sign
   module App
     class ConfigurationsController < ApplicationController
+      auth_required!
       before_action :authenticate_user!
 
       def show

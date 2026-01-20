@@ -12,9 +12,8 @@
 class DivisionStatus < OperatorRecord
   include StringPrimaryKey
 
+  has_many :divisions, dependent: :restrict_with_error
   validates :id, uniqueness: { case_sensitive: false }
 
   self.primary_key = "id"
-
-  has_many :divisions, dependent: :restrict_with_error
 end

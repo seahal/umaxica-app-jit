@@ -30,6 +30,8 @@
 class ComContact < GuestRecord
   include ::PublicId
 
+  attr_accessor :confirm_policy
+
   # Associations
   has_one :com_contact_email, dependent: :destroy, inverse_of: :com_contact
   has_one :com_contact_telephone, dependent: :destroy, inverse_of: :com_contact
@@ -44,8 +46,6 @@ class ComContact < GuestRecord
              inverse_of: :com_contacts
   has_many :com_contact_topics, dependent: :destroy, inverse_of: :com_contact
 
-  attr_accessor :confirm_policy
-
   after_initialize do
     if new_record?
       self.category_id ||= "SECURITY_ISSUE"
@@ -53,17 +53,16 @@ class ComContact < GuestRecord
     end
   end
 
-  # Callbacks
-  before_validation { self.category_id = category_id&.upcase }
-  before_validation { self.status_id = status_id&.upcase }
-  before_create :generate_token
-
   # Validations
   validates :confirm_policy, acceptance: true
   validates :category_id, length: { maximum: 255 }
   validates :status_id, length: { maximum: 255 }
   validates :token, length: { maximum: 32 }
   validates :token_digest, length: { maximum: 255 }
+  # Callbacks
+  before_validation { self.category_id = category_id&.upcase }
+  before_validation { self.status_id = status_id&.upcase }
+  before_create :generate_token
 
   # State check methods
   def email_pending?

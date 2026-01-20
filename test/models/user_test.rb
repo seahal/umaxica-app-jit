@@ -26,17 +26,17 @@ class UserTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
-    UserStatus.find_or_create_by!(id: "NEYO")
-    UserTokenStatus.find_or_create_by!(id: "NEYO")
-    UserTelephoneStatus.find_or_create_by!(id: "NEYO")
-    UserEmailStatus.find_or_create_by!(id: "NEYO")
-    UserPasskeyStatus.find_or_create_by!(id: "NEYO")
-    UserSecretStatus.find_or_create_by!(id: "NEYO")
-    UserSocialAppleStatus.find_or_create_by!(id: "NEYO")
-    UserSocialGoogleStatus.find_or_create_by!(id: "NEYO")
+    UserStatus.find_or_create_by!(id: "NONE")
+    UserTokenStatus.find_or_create_by!(id: "NONE")
+    UserTelephoneStatus.find_or_create_by!(id: "NONE")
+    UserEmailStatus.find_or_create_by!(id: "NONE")
+    UserPasskeyStatus.find_or_create_by!(id: "NONE")
+    UserSecretStatus.find_or_create_by!(id: "NONE")
+    UserSocialAppleStatus.find_or_create_by!(id: "NONE")
+    UserSocialGoogleStatus.find_or_create_by!(id: "NONE")
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
-        u.status_id = "NEYO"
+        u.status_id = "NONE"
       end
   end
 
@@ -70,7 +70,7 @@ class UserTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     user = User.create!
 
-    assert_equal UserStatus::NEYO, user.status_id
+    assert_equal UserStatus::NONE, user.status_id
   end
 
   test "should have many user_emails association" do

@@ -10,12 +10,11 @@
 class ComTimelineStatus < NewsRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  validates :description, length: { maximum: 255 }
-
   has_many :com_timelines,
            foreign_key: :status_id,
            inverse_of: :com_timeline_status,
            dependent: :restrict_with_error
+  validates :id, uniqueness: { case_sensitive: false }
+
+  validates :description, length: { maximum: 255 }
 end

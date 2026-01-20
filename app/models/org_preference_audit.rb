@@ -32,10 +32,6 @@
 # frozen_string_literal: true
 
 class OrgPreferenceAudit < AuditRecord
-  # subject_id/subject_type for cross-DB compatibility (no FK)
-  validates :subject_id, presence: true
-  validates :subject_type, presence: true
-
   # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
   belongs_to :org_preference,
              class_name: "OrgPreference",
@@ -43,8 +39,20 @@ class OrgPreferenceAudit < AuditRecord
              primary_key: :id,
              optional: true,
              inverse_of: :org_preference_audits
+  belongs_to :actor, polymorphic: true, optional: true # Helper methods for compatibility
+  belongs_to :org_preference_audit_level, foreign_key: :level_id, inverse_of: :org_preference_audits
+  # event_id references OrgPreferenceAuditEvent.id (string)
+  belongs_to :org_preference_audit_event,
+             class_name: "OrgPreferenceAuditEvent",
+             foreign_key: "event_id",
+             primary_key: "id",
+             inverse_of: :org_preference_audits
+  # subject_id/subject_type for cross-DB compatibility (no FK)
+  validates :subject_id, presence: true
+  validates :subject_type, presence: true
 
-  # Helper methods for compatibility
+  validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
   def org_preference
     OrgPreference.find(subject_id) if subject_type == "OrgPreference"
   end
@@ -53,17 +61,4 @@ class OrgPreferenceAudit < AuditRecord
     self.subject_id = pref.id.to_s
     self.subject_type = "OrgPreference"
   end
-
-  belongs_to :actor, polymorphic: true, optional: true
-
-  belongs_to :org_preference_audit_level, foreign_key: :level_id, inverse_of: :org_preference_audits
-  # event_id references OrgPreferenceAuditEvent.id (string)
-  belongs_to :org_preference_audit_event,
-             class_name: "OrgPreferenceAuditEvent",
-             foreign_key: "event_id",
-             primary_key: "id",
-             inverse_of: :org_preference_audits
-
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
 end

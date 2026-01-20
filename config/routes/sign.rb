@@ -29,7 +29,9 @@ Rails.application.routes.draw do
         resource :up, only: :new
         namespace :up do
           resources :emails, only: %i(new create edit update)
-          resources :passkeys, only: %i(new create edit update)
+          resources :passkeys, only: %i(new create edit update) do
+            get :complete, on: :collection
+          end
         end
 
         # Sign in/out

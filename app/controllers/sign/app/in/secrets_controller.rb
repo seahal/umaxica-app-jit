@@ -5,7 +5,6 @@ module Sign
     module In
       class SecretsController < ApplicationController
         include ::Redirect
-        include Auth::RedirectParameterHandling
 
         SecretLoginForm =
           Struct.new(
@@ -37,6 +36,8 @@ module Sign
           end
 
         MFA_USER_SESSION_KEY = :mfa_user_id
+
+        before_action :reject_logged_in_session
 
         def new
           if mfa_user

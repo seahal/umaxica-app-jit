@@ -25,4 +25,11 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     get new_sign_app_configuration_email_url(ri: "jp"), headers: request_headers
     assert_response :success
   end
+
+  test "should redirect index when not logged in" do
+    get sign_app_configuration_emails_url(ri: "jp")
+    rt = Base64.urlsafe_encode64(sign_app_configuration_emails_url(ri: "jp"))
+    assert_redirected_to new_sign_app_in_url(rt: rt, host: "sign.app.localhost")
+    assert_equal I18n.t("errors.messages.login_required"), flash[:alert]
+  end
 end

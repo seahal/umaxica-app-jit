@@ -8,11 +8,10 @@ module Sign
         include EmailValidation
         include ::Redirect
         include Common::Otp
-        include Auth::SessionAuthentication
-        include Auth::RedirectParameterHandling
-        include Auth::PreAuthenticationGuards
 
-        before_action :ensure_not_logged_in
+        guest_only! status: :bad_request,
+                    message: I18n.t("sign.app.authentication.email.new.you_have_already_logged_in")
+
         before_action :load_user_email, only: %i(edit update)
 
         def new

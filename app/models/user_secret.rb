@@ -26,9 +26,8 @@ class UserSecret < PrincipalRecord
   alias_attribute :user_secret_status_id, :user_identity_secret_status_id
   include ::Secret
 
-  attr_accessor :raw_secret
-
   MAX_SECRETS_PER_USER = 10
+  attr_accessor :raw_secret
 
   belongs_to :user, inverse_of: :user_secrets
   belongs_to :user_secret_status, inverse_of: :user_secrets, foreign_key: :user_identity_secret_status_id

@@ -21,6 +21,11 @@ class AccountablyService
            :persisted?, :new_record?, :destroyed?,
            to: :accountably
 
+  # Override class method to return the underlying model's class
+  # This ensures JWT generation and type checks continue to lean on the wrapped model.
+  #
+  # @return [Class] User or Staff class
+  delegate :class, to: :accountably
   # Find an accountably by ID
   #
   # @param id [String, Integer] The UUID of the user or staff
@@ -137,12 +142,6 @@ class AccountablyService
 
   # Duck Typing Support
   # -------------------
-
-  # Override class method to return the underlying model's class
-  # This ensures JWT generation and type checks continue to lean on the wrapped model.
-  #
-  # @return [Class] User or Staff class
-  delegate :class, to: :accountably
 
   # Override is_a? to check against the underlying model
   # This ensures Pundit and other type checks work correctly

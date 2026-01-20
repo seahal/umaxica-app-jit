@@ -11,7 +11,7 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
   end
 
   test "index returns active sessions" do
-    get sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
+    get sign_app_configuration_sessions_url(ri: "jp", format: :json), headers: @headers
 
     assert_response :success
     assert response.parsed_body.key?("sessions")

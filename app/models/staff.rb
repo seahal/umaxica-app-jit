@@ -31,9 +31,6 @@ class Staff < OperatorRecord
 
   attribute :status_id, default: StaffStatus::NEYO
 
-  validates :public_id, uniqueness: true, length: { maximum: 21 }
-  validates :status_id, length: { maximum: 255 }
-
   belongs_to :staff_status,
              foreign_key: :status_id,
              inverse_of: :staffs
@@ -73,6 +70,8 @@ class Staff < OperatorRecord
            class_name: "Admin",
            inverse_of: :staff,
            dependent: :destroy
+  validates :public_id, uniqueness: true, length: { maximum: 21 }
+  validates :status_id, length: { maximum: 255 }
 
   def staff?
     true

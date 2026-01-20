@@ -10,14 +10,12 @@
 class UserSecretStatus < PrincipalRecord
   include StringPrimaryKey
 
-  validates :id, uniqueness: { case_sensitive: false }
-
-  has_many :user_secrets, inverse_of: :user_secret_status, dependent: :restrict_with_error
-
   # Status constants
   ACTIVE = "ACTIVE"
   USED = "USED"
   EXPIRED = "EXPIRED"
   REVOKED = "REVOKED"
   DELETED = "DELETED"
+  has_many :user_secrets, inverse_of: :user_secret_status, dependent: :restrict_with_error
+  validates :id, uniqueness: { case_sensitive: false }
 end

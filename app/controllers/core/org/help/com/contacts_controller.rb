@@ -4,7 +4,8 @@ module Core
   module Org
     module Help
       module Com
-        class ContactsController < Core::Org::HelpController
+        class ContactsController < ApplicationController
+          public_strict!
           def index
             head :ok
           end

@@ -33,12 +33,26 @@
 #
 
 class UserAudit < AuditRecord
+  belongs_to :actor, polymorphic: true, optional: true
+  belongs_to :user_audit_event, foreign_key: :event_id, inverse_of: :user_audits
+  belongs_to :user_audit_level, foreign_key: :level_id, inverse_of: :user_audits
   # subject_id/subject_type for cross-DB compatibility (no FK)
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
   attribute :level_id, default: "NEYO"
 
+  validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
+  # Validate that event_id exists in user_audit_events table
+  validate :event_id_must_exist
+  before_create :set_timestamp
+  before_validation do
+    if actor_id.blank?
+      self.actor_id = "00000000-0000-0000-0000-000000000000"
+      self.actor_type ||= "User"
+    end
+  end
   # Helper methods for compatibility with existing code
   def user
     User.find(subject_id) if subject_type == "User"
@@ -47,8 +61,6 @@ class UserAudit < AuditRecord
   def user_id
     subject_id if subject_type == "User"
   end
-
-  before_create :set_timestamp
 
   def set_timestamp
     self.timestamp ||= Time.current
@@ -62,27 +74,11 @@ class UserAudit < AuditRecord
   # Alias for backward compatibility
   alias_attribute :timestamp, :occurred_at
 
-  belongs_to :actor, polymorphic: true, optional: true
-  belongs_to :user_audit_event, foreign_key: :event_id, inverse_of: :user_audits
-  belongs_to :user_audit_level, foreign_key: :level_id, inverse_of: :user_audits
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
-
-  # Validate that event_id exists in user_audit_events table
-  validate :event_id_must_exist
-
   def event_id_must_exist
     return if event_id.blank?
     return if UserAuditEvent.exists?(id: event_id)
 
     errors.add(:event_id, "must reference a valid user audit event")
-  end
-
-  before_validation do
-    if actor_id.blank?
-      self.actor_id = "00000000-0000-0000-0000-000000000000"
-      self.actor_type ||= "User"
-    end
   end
 
   encrypts :previous_value

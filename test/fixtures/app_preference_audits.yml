@@ -31,7 +31,8 @@
 
 one:
   id: 018eb261-1234-7000-8000-000000000001
-  subject: one (AppPreference)
+  subject_id: <%= ActiveRecord::FixtureSet.identify(:one, :uuid) %>
+  subject_type: AppPreference
   event_id: CREATE_NEW_PREFERENCE_TOKEN
   level_id: INFO
   occurred_at: <%= Time.current %>

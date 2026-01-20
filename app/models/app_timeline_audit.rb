@@ -32,11 +32,20 @@
 #
 
 class AppTimelineAudit < AuditRecord
-  validates :subject_id, presence: true
-  validates :subject_type, presence: true
-
   # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
   belongs_to :app_timeline, optional: true, foreign_key: :subject_id, inverse_of: :app_timeline_audits
+  belongs_to :actor, polymorphic: true, optional: true
+  belongs_to :app_timeline_audit_level, foreign_key: :level_id, inverse_of: :app_timeline_audits
+  belongs_to :app_timeline_audit_event,
+             class_name: "AppTimelineAuditEvent",
+             foreign_key: "event_id",
+             primary_key: "id",
+             inverse_of: :app_timeline_audits
+
+  validates :subject_id, presence: true
+  validates :subject_type, presence: true
+  validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
 
   def app_timeline
     AppTimeline.find(subject_id) if subject_type == "AppTimeline"
@@ -46,16 +55,4 @@ class AppTimelineAudit < AuditRecord
     self.subject_id = timeline.id.to_s
     self.subject_type = "AppTimeline"
   end
-
-  belongs_to :actor, polymorphic: true, optional: true
-
-  belongs_to :app_timeline_audit_level, foreign_key: :level_id, inverse_of: :app_timeline_audits
-  belongs_to :app_timeline_audit_event,
-             class_name: "AppTimelineAuditEvent",
-             foreign_key: "event_id",
-             primary_key: "id",
-             inverse_of: :app_timeline_audits
-
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
 end

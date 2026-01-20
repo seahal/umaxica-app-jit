@@ -3,6 +3,8 @@
 module Sign
   module Org
     class PasskeysController < ApplicationController
+      before_action :reject_logged_in_session
+
       def new
         @staff_telephone = StaffTelephone.new
       end
@@ -12,16 +14,10 @@ module Sign
       end
 
       def create
-        render plain: t("sign.org.authentication.telephone.create.you_have_already_logged_in"),
-               status: :bad_request and return if logged_in?
-
         head :ok
       end
 
       def update
-        render plain: t("sign.org.authentication.telephone.create.you_have_already_logged_in"),
-               status: :bad_request and return if logged_in?
-
         head :ok
       end
     end

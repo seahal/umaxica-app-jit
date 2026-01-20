@@ -4,11 +4,11 @@ require "test_helper"
 
 class SecretTest < ActiveSupport::TestCase
   class SecretStatus
+    attr_reader :id
+
     def self.find(id)
       new(id)
     end
-
-    attr_reader :id
 
     def initialize(id)
       @id = id

@@ -32,10 +32,25 @@
 # frozen_string_literal: true
 
 class AppPreferenceAudit < AuditRecord
+  belongs_to :app_preference,
+             class_name: "AppPreference",
+             foreign_key: :subject_id,
+             primary_key: :id,
+             optional: true,
+             inverse_of: :app_preference_audits
+  belongs_to :app_preference_audit_level, foreign_key: :level_id, inverse_of: :app_preference_audits
+  # event_id references AppPreferenceAuditEvent.id (string)
+  belongs_to :app_preference_audit_event,
+             class_name: "AppPreferenceAuditEvent",
+             foreign_key: "event_id",
+             primary_key: "id",
+             inverse_of: :app_preference_audits
   # subject_id/subject_type for cross-DB compatibility (no FK)
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
+  validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
   # Helper methods for compatibility
   def app_preference
     AppPreference.find(subject_id) if subject_type == "AppPreference"
@@ -45,22 +60,4 @@ class AppPreferenceAudit < AuditRecord
     self.subject_id = pref.id.to_s
     self.subject_type = "AppPreference"
   end
-
-  belongs_to :app_preference,
-             class_name: "AppPreference",
-             foreign_key: :subject_id,
-             primary_key: :id,
-             optional: true,
-             inverse_of: :app_preference_audits
-
-  belongs_to :app_preference_audit_level, foreign_key: :level_id, inverse_of: :app_preference_audits
-  # event_id references AppPreferenceAuditEvent.id (string)
-  belongs_to :app_preference_audit_event,
-             class_name: "AppPreferenceAuditEvent",
-             foreign_key: "event_id",
-             primary_key: "id",
-             inverse_of: :app_preference_audits
-
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
 end

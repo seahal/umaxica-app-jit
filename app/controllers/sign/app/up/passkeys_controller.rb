@@ -7,7 +7,8 @@ module Sign
         include ::Redirect
         include Common::Otp
 
-        # todo: verify not logged in
+        before_action :reject_logged_in_session
+
         def new
           @user_telephone = UserTelephone.new
 
@@ -15,10 +16,7 @@ module Sign
           session[:user_telephone_registration] = nil
         end
 
-        # todo: verify not logged in
         def edit
-          render plain: t("sign.app.registration.telephone.edit.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
           render plain: t("sign.app.registration.telephone.edit.forbidden_action"),
                  status: :bad_request and return if session[:user_telephone_registration].nil?
 
@@ -32,11 +30,7 @@ module Sign
           end
         end
 
-        # todo: verify not logged in
         def create
-          render plain: t("sign.app.authentication.telephone.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
-
           @user_telephone = UserTelephone.new(
             params.expect(
               user_telephone: %i(number confirm_policy
@@ -80,11 +74,8 @@ module Sign
           end
         end
 
-        # todo: verify not logged in
         def update
           # FIXME: write test code!
-          render plain: t("sign.app.authentication.telephone.new.you_have_already_logged_in"),
-                 status: :bad_request and return if logged_in?
 
           registration_session = session[:user_telephone_registration]
           if registration_session.blank? || registration_session["id"] != params["id"]
@@ -116,7 +107,10 @@ module Sign
           )
           clear_otp(@user_telephone)
           session[:user_telephone_registration] = nil
-          redirect_to "/", notice: t("sign.app.registration.telephone.update.success")
+          redirect_to complete_sign_app_up_passkeys_path, notice: t("sign.app.registration.telephone.update.success")
+        end
+
+        def complete
         end
 
         private

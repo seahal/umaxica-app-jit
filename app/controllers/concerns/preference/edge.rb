@@ -4,6 +4,10 @@ module Preference::Edge
   extend ActiveSupport::Concern
   include Preference::Base
 
+  included do
+    public_strict! # may be rewriten in future controllers
+  end
+
   def show
     preferences = preference_payload_preferences
     public_id = preference_payload_public_id

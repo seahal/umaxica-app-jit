@@ -15,7 +15,7 @@ class ComDocumentAuditEvent < AuditRecord
            inverse_of: :com_document_audit_event,
            dependent: :restrict_with_error
 
-  before_validation { self.id = id&.upcase }
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Z0-9_]+\z/ }
+  before_validation { self.id = id&.upcase }
 end

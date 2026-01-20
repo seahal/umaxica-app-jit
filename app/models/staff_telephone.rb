@@ -32,6 +32,12 @@ class StaffTelephone < OperatorRecord
   belongs_to :staff_telephone_status, inverse_of: :staff_telephones, foreign_key: :staff_identity_telephone_status_id
   belongs_to :staff
 
+  validates :number, presence: true, length: { maximum: 255 }
+  validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
+  validates :otp_counter, presence: true
+  validates :otp_private_key, presence: true, length: { maximum: 255 }
+  validates :staff_identity_telephone_status_id, length: { maximum: 255 }
+  validate :enforce_staff_telephone_limit, on: :create
   before_validation do
     self.staff_id ||= "00000000-0000-0000-0000-000000000000"
   end
@@ -41,14 +47,6 @@ class StaffTelephone < OperatorRecord
   end
 
   encrypts :number, deterministic: true
-
-  validates :number, presence: true, length: { maximum: 255 }
-  validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
-  validates :otp_counter, presence: true
-  validates :otp_private_key, presence: true, length: { maximum: 255 }
-  validates :staff_identity_telephone_status_id, length: { maximum: 255 }
-
-  validate :enforce_staff_telephone_limit, on: :create
 
   private
 

@@ -33,12 +33,19 @@
 #
 
 class StaffAudit < AuditRecord
+  belongs_to :staff_audit_event, foreign_key: :event_id, inverse_of: :staff_audits
+  belongs_to :actor, polymorphic: true, optional: true
+  belongs_to :staff_audit_level, foreign_key: :level_id, inverse_of: :staff_audits
   # subject_id/subject_type for cross-DB compatibility (no FK)
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
   attribute :level_id, default: "NEYO"
 
+  validates :event_id, length: { maximum: 255 }
+  validates :level_id, length: { maximum: 255 }
+  # Validate that event_id exists in staff_audit_events table
+  validate :event_id_must_exist
   # Helper methods for compatibility with existing code
   before_create :set_timestamp
 
@@ -57,15 +64,6 @@ class StaffAudit < AuditRecord
 
   # Alias for backward compatibility
   alias_attribute :timestamp, :occurred_at
-
-  belongs_to :staff_audit_event, foreign_key: :event_id, inverse_of: :staff_audits
-  belongs_to :actor, polymorphic: true, optional: true
-  belongs_to :staff_audit_level, foreign_key: :level_id, inverse_of: :staff_audits
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
-
-  # Validate that event_id exists in staff_audit_events table
-  validate :event_id_must_exist
 
   def event_id_must_exist
     return if event_id.blank?

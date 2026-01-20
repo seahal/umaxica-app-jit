@@ -4,10 +4,14 @@ module Core
   module Org
     module Configuration
       class EmailsController < Core::Org::ApplicationController
-        prepend_before_action :authenticate_staff!
+        auth_required!
 
         def new
           render plain: "Core Org Configuration Emails New"
+        end
+
+        def create
+          head :ok
         end
       end
     end

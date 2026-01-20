@@ -5,11 +5,8 @@ module Sign
     module Up
       class EmailsController < ApplicationController
         include Sign::App::EmailRegistrable
-        include Auth::RedirectParameterHandling
-        include Auth::PreAuthenticationGuards
-        include Auth::SessionAuthentication
 
-        before_action :ensure_not_logged_in_for_registration
+        guest_only! message: I18n.t("sign.app.registration.email.already_logged_in")
 
         def new
           @user_email = UserEmail.new

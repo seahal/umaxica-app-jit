@@ -43,7 +43,6 @@ class ComTimeline < NewsRecord
              inverse_of: :latest_timeline,
              optional: true
 
-  validates :status_id, length: { maximum: 255 }
   has_many :com_timeline_versions, dependent: :delete_all, inverse_of: :com_timeline
   has_many :com_timeline_revisions, dependent: :delete_all, inverse_of: :com_timeline
   has_many :com_timeline_audits,
@@ -63,6 +62,7 @@ class ComTimeline < NewsRecord
   has_one :category_master,
           through: :category,
           source: :com_timeline_category_master
+  validates :status_id, length: { maximum: 255 }
 
   def latest_version
     com_timeline_versions.order(created_at: :desc).first!

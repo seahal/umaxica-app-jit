@@ -25,10 +25,7 @@ class User < PrincipalRecord
   include ::Accountably
   include ::Withdrawable
 
-  attribute :status_id, default: UserStatus::NEYO
-
-  validates :public_id, uniqueness: true, length: { maximum: 21 }
-  validates :status_id, length: { maximum: 255 }
+  attribute :status_id, default: UserStatus::NONE
 
   belongs_to :user_status,
              foreign_key: :status_id,
@@ -112,6 +109,8 @@ class User < PrincipalRecord
            -> { joins(:avatar_assignments).where(avatar_assignments: { role: "owner" }) },
            through: :avatar_assignments,
            source: :avatar
+  validates :public_id, uniqueness: true, length: { maximum: 21 }
+  validates :status_id, length: { maximum: 255 }
 
   def totp_enabled?
     user_one_time_passwords.exists?(user_one_time_password_status_id: "ACTIVE")

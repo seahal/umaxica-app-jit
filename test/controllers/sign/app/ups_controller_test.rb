@@ -77,6 +77,14 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a", text: "メールで登録する"
   end
 
+  test "should fail when logged in" do
+    user = users(:one)
+    get new_sign_app_up_url(format: :html, ri: "jp"), headers: { "X-TEST-CURRENT-USER" => user.id }
+
+    assert_response :unauthorized
+    assert_equal "権限がありません", response.body
+  end
+
   private
 
   def host

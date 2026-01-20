@@ -4,6 +4,9 @@ module Docs
   module Org
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Auth::Base
+
+      public_strict!
       include ::Preference::Regional
 
       protect_from_forgery with: :exception

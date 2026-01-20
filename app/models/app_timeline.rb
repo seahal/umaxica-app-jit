@@ -43,7 +43,6 @@ class AppTimeline < NewsRecord
              inverse_of: :latest_timeline,
              optional: true
 
-  validates :status_id, length: { maximum: 255 }
   has_many :app_timeline_versions, dependent: :delete_all, inverse_of: :app_timeline
   has_many :app_timeline_revisions, dependent: :delete_all, inverse_of: :app_timeline
   has_many :app_timeline_audits,
@@ -63,6 +62,7 @@ class AppTimeline < NewsRecord
   has_one :category_master,
           through: :category,
           source: :app_timeline_category_master
+  validates :status_id, length: { maximum: 255 }
 
   def latest_version
     app_timeline_versions.order(created_at: :desc).first!

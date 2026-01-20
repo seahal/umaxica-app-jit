@@ -12,8 +12,6 @@
 class AppPreferenceAuditEvent < AuditRecord
   include StringPrimaryKey
 
-  scope :ordered, -> { column_names.include?("position") ? order(:position, :id) : order(:id) }
-
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')
   has_many :app_preference_audits,
            class_name: "AppPreferenceAudit",
@@ -21,6 +19,7 @@ class AppPreferenceAuditEvent < AuditRecord
            primary_key: "id",
            inverse_of: :app_preference_audit_event,
            dependent: :restrict_with_error
+  scope :ordered, -> { column_names.include?("position") ? order(:position, :id) : order(:id) }
 
   validates :position,
             presence: true,
@@ -28,7 +27,7 @@ class AppPreferenceAuditEvent < AuditRecord
             uniqueness: true,
             if: -> { self.class.column_names.include?("position") }
 
-  before_validation { self.id = id&.upcase }
   validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Z0-9_]+\z/ }
+  before_validation { self.id = id&.upcase }
 end

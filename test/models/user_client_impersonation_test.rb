@@ -20,15 +20,15 @@ require "test_helper"
 
 class UserClientImpersonationTest < ActiveSupport::TestCase
   setup do
-    UserStatus.find_or_create_by!(id: "NEYO")
+    UserStatus.find_or_create_by!(id: "NONE")
     create_user_and_status
     @user = User.find_by!(public_id: "one_id")
   end
 
   def create_user_and_status
-    UserStatus.find_or_create_by!(id: "NEYO")
+    UserStatus.find_or_create_by!(id: "NONE")
     User.find_or_create_by!(public_id: "one_id") do |u|
-      u.status_id = "NEYO"
+      u.status_id = "NONE"
     end
   end
 
