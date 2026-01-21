@@ -40,10 +40,10 @@
   <% end %>
 
   <div class="mt-8 flex flex-wrap items-center gap-3">
-    <%= link_to t("apex.app.preferences.region.timezone.link", default: "Time zone settings"),
+    <%= link_to t("apex.app.preferences.region.timezone.link"),
                 edit_apex_app_preference_region_timezone_path(lx: params[:lx], ri: params[:ri]),
                 class: "inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-    <%= link_to t("apex.app.preferences.region.language.link", default: "Language settings"),
+    <%= link_to t("apex.app.preferences.region.language.link"),
                 edit_apex_app_preference_region_language_path(lx: params[:lx], ri: params[:ri]),
                 class: "inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
   </div>

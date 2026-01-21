@@ -52,8 +52,6 @@ gem "opentelemetry-exporter-otlp", require: false
 gem "opentelemetry-instrumentation-all", require: false
 # Sitemap
 gem "sitemap_generator"
-# WebAuthn (FIDO2)
-gem "webauthn"
 # TOTP
 gem "rotp"
 # QR code generation
@@ -65,6 +63,8 @@ gem "solid_queue"
 gem "mission_control-jobs"
 # Pagination
 gem "pagy"
+# WebAuthn (FIDO2)
+gem "webauthn"
 # Social login
 gem "omniauth"
 gem "omniauth-apple"
@@ -86,8 +86,6 @@ gem "meta-tags"
 gem "nanoid"
 # Authentication
 gem "pundit"
-# state management
-gem "aasm"
 # billing
 gem "stripe"
 # sorbet

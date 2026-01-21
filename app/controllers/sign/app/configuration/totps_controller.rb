@@ -4,13 +4,23 @@ module Sign
   module App
     module Configuration
       class TotpsController < ApplicationController
+        MAX_TOTPS = 2
+
         def index
-          @totps = UserOneTimePassword.where(user_id: session[:user])
+          @totps = current_user.user_one_time_passwords
         end
 
         def new
+          if current_user.user_one_time_passwords.count >= MAX_TOTPS
+            return render plain: "#{MAX_TOTPS}件以上は登録できないです"
+          end
+
           @totp = UserOneTimePassword.new
           generate_totp_session
+        end
+
+        def edit
+          @totp = find_totp
         end
 
         def create
@@ -27,12 +37,34 @@ module Sign
             redirect_to sign_app_configuration_totps_path, notice: t("messages.totp_successfully_created")
           else
             @totp.valid?
+            @totp.errors.add(:first_token, t("sign.app.configuration.totps.invalid_code"))
             render_totp_qrcode(@totp.private_key)
             render :new, status: :unprocessable_content
           end
         end
 
+        def update
+          @totp = find_totp
+          if @totp.update(update_params)
+            redirect_to sign_app_configuration_totps_path,
+                        notice: t("messages.totp_successfully_updated")
+          else
+            render :edit, status: :unprocessable_content
+          end
+        end
+
+        def destroy
+          @totp = find_totp
+          @totp.destroy!
+          redirect_to sign_app_configuration_totps_path,
+                      notice: t("messages.totp_successfully_deleted")
+        end
+
         private
+
+        def find_totp
+          current_user.user_one_time_passwords.find_by!(public_id: params[:id])
+        end
 
         def generate_totp_session
           session[:private_key] ||= ROTP::Base32.random_base32
@@ -53,12 +85,15 @@ module Sign
         end
 
         def account_id
-          # Use user's email address if available, otherwise use public_id
           current_user.user_emails.first&.address || current_user.public_id
         end
 
         def totp_params
-          params.expect(time_based_one_time_password: [:first_token])
+          params.expect(user_one_time_password: [:first_token, :title])
+        end
+
+        def update_params
+          params.expect(user_one_time_password: [:title])
         end
       end
     end

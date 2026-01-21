@@ -27,17 +27,17 @@
 class UserEmail < PrincipalRecord
   alias_attribute :user_email_status_id, :user_identity_email_status_id
   include SetId
+  include PublicId
   include Email
+
   include Turnstile
 
   MAX_EMAILS_PER_USER = 4
-
   belongs_to :user_email_status,
              optional: true,
              inverse_of: :user_emails,
              foreign_key: :user_identity_email_status_id
   belongs_to :user, optional: true, inverse_of: :user_emails
-
   validates :address, presence: true, length: { maximum: 255 }
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
@@ -46,6 +46,9 @@ class UserEmail < PrincipalRecord
   validate :enforce_user_email_limit, on: :create
   before_validation do
     self.user_id ||= "00000000-0000-0000-0000-000000000000"
+  end
+  def to_param
+    public_id
   end
 
   after_initialize do

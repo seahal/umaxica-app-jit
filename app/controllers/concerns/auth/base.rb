@@ -24,8 +24,8 @@ module Auth
     # Cookie keys - environment-dependent naming
     # Production: "__Secure-" prefix for secure cookies
     # Dev/Test: no prefix (String, not Symbol)
-    ACCESS_COOKIE_KEY = Rails.env.production? ? "__Secure-auth_access" : "auth_access"
-    REFRESH_COOKIE_KEY = Rails.env.production? ? "__Secure-auth_refresh" : "auth_refresh"
+    ACCESS_COOKIE_KEY = Rails.env.production? ? "__Secure-jit_auth_access" : "jit_auth_access"
+    REFRESH_COOKIE_KEY = Rails.env.production? ? "__Secure-jit_auth_refresh" : "jit_auth_refresh"
 
     # Token TTLs
     ACCESS_TOKEN_TTL = ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i).to_i.seconds
@@ -465,12 +465,12 @@ module Auth
     end
 
     def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
+      reset_session
+
       if require_totp_check && resource.respond_to?(:totp_enabled?) && resource.totp_enabled?
         session[:mfa_user_id] = resource.id
         return { status: :totp_required }
       end
-
-      reset_session
 
       token_record =
         TokenRecord.connected_to(role: :writing) do

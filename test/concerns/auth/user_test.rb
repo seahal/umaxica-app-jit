@@ -70,7 +70,6 @@ class Auth::UserTest < ActiveSupport::TestCase
       User.find_or_create_by!(id: SecureRandom.uuid) do |u|
         u.status_id = "NEYO"
         u.public_id = SecureRandom.alphanumeric(21)
-        u.webauthn_id = SecureRandom.hex(16)
       end
   end
 

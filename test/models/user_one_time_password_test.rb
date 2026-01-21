@@ -11,10 +11,13 @@
 #  user_identity_one_time_password_status_id :string           default("NEYO"), not null
 #  id                                        :uuid             not null, primary key
 #  user_id                                   :uuid             not null
+#  public_id                                 :string(21)
+#  title                                     :string(32)
 #
 # Indexes
 #
 #  idx_on_user_identity_one_time_password_status_id_c03cdf0b39  (user_identity_one_time_password_status_id)
+#  index_user_one_time_passwords_on_public_id                   (public_id) UNIQUE
 #  index_user_one_time_passwords_on_user_id                     (user_id)
 #
 

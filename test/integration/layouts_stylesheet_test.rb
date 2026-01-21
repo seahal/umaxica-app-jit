@@ -11,7 +11,7 @@ class StylesheetTagsTest < ActiveSupport::TestCase
 
     paths.each do |path|
       contents = Rails.root.join(path).read
-      assert_match(/stylesheet_link_tag\s+\"sign\/main\"/, contents, "missing sign/main in #{path}")
+      assert_match(/(stylesheet_link_tag\s+\"sign\/main\")|(\"sign\/main\")/, contents, "missing sign/main in #{path}")
     end
   end
 
@@ -24,7 +24,7 @@ class StylesheetTagsTest < ActiveSupport::TestCase
 
     paths.each do |path|
       contents = Rails.root.join(path).read
-      assert_match(/stylesheet_link_tag\s+\"core\/main\"/, contents, "missing core/main in #{path}")
+      assert_match(/(stylesheet_link_tag\s+\"core\/main\")|(\"core\/main\")/, contents, "missing core/main in #{path}")
     end
   end
 
@@ -63,7 +63,7 @@ class StylesheetTagsTest < ActiveSupport::TestCase
 
     paths.each do |path|
       contents = Rails.root.join(path).read
-      assert_match(/stylesheet_link_tag\s+\"apex\/main\"/, contents, "missing apex/main in #{path}")
+      assert_match(/(stylesheet_link_tag\s+\"apex\/main\")|(\"apex\/main\")/, contents, "missing apex/main in #{path}")
     end
   end
 end

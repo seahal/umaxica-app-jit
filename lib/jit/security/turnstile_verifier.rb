@@ -10,11 +10,15 @@ module Jit
       VERIFY_URI = URI("https://challenges.cloudflare.com/turnstile/v0/siteverify").freeze
 
       # Configuration for testing
-      # Using class instance variables for pure Ruby compatibility if ActiveSupport isn't loaded,
-      # typically in Rails apps ActiveSupport is available.
+      # rubocop:disable ThreadSafety/ClassAndModuleAttributes, ThreadSafety/ClassInstanceVariable
       class << self
         attr_accessor :test_mode, :test_response
+
+        def test_mode?
+          @test_mode == true
+        end
       end
+      # rubocop:enable ThreadSafety/ClassAndModuleAttributes, ThreadSafety/ClassInstanceVariable
 
       def self.verify(token:, remote_ip:, secret_key: nil)
         new(token: token, remote_ip: remote_ip, secret_key: secret_key).verify
@@ -24,10 +28,6 @@ module Jit
         @token = token
         @remote_ip = remote_ip
         @secret_key = secret_key || default_secret_key
-      end
-
-      def self.test_mode?
-        @test_mode == true
       end
 
       def verify

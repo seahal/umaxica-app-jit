@@ -6,34 +6,31 @@ module Sign
       class SecretsController < ApplicationController
         include Common::Redirect
 
-        SecretLoginForm =
-          Struct.new(
-            :account_identifiable_information,
-            :secret_value,
-            :confirm_saved,
-            keyword_init: true,
-          ) do
-            include ActiveModel::Model
+        class SecretLoginForm
+          include ActiveModel::Model
 
-            validates :account_identifiable_information, :secret_value, presence: true
-            validates :confirm_saved, acceptance: { accept: "1" }
+          attr_accessor :account_identifiable_information, :secret_value, :confirm_saved
 
-            def self.model_name
-              ActiveModel::Name.new(self, nil, "secret_login_form")
-            end
+          validates :account_identifiable_information, :secret_value, presence: true
+          validates :confirm_saved, acceptance: { accept: "1" }
+
+          def self.model_name
+            ActiveModel::Name.new(self, nil, "secret_login_form")
           end
+        end
 
-        MfaSecretForm =
-          Struct.new(:secret_value, :confirm_saved, keyword_init: true) do
-            include ActiveModel::Model
+        class MfaSecretForm
+          include ActiveModel::Model
 
-            validates :secret_value, presence: true
-            validates :confirm_saved, acceptance: { accept: "1" }
+          attr_accessor :secret_value, :confirm_saved
 
-            def self.model_name
-              ActiveModel::Name.new(self, nil, "mfa_secret_form")
-            end
+          validates :secret_value, presence: true
+          validates :confirm_saved, acceptance: { accept: "1" }
+
+          def self.model_name
+            ActiveModel::Name.new(self, nil, "mfa_secret_form")
           end
+        end
 
         MFA_USER_SESSION_KEY = :mfa_user_id
 
@@ -77,10 +74,10 @@ module Sign
             @secret_form = SecretLoginForm.new(secret_params)
             return render :new, status: :unprocessable_content unless @secret_form.valid?
 
-            # Find user by email (simplified for requirement)
+            # Find user by email or telephone using find_by to handle encrypted columns correctly
             info = @secret_form.account_identifiable_information
-            user = User.joins(:user_emails).where(user_emails: { address: info }).first ||
-              User.joins(:user_telephones).where(user_telephones: { telephone_number: info }).first
+            user = UserEmail.find_by(address: info)&.user ||
+              UserTelephone.find_by(number: info)&.user
 
             secret = user ? verify_and_consume_secret(user, @secret_form.secret_value) : nil
 

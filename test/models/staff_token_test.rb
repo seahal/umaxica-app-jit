@@ -38,7 +38,7 @@ require "test_helper"
 # Covers refresh token behavior and session constraints for staff.
 class StaffTokenTest < ActiveSupport::TestCase
   def setup
-    @staff = Staff.find_by!(public_id: "one_staff_id")
+    @staff = Staff.find_by!(public_id: "bcde3456")
 
     @token = StaffToken.create!(staff: @staff, staff_token_status_id: "ACTIVE")
   end

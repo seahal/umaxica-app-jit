@@ -11,14 +11,19 @@
 #  user_identity_one_time_password_status_id :string           default("NEYO"), not null
 #  id                                        :uuid             not null, primary key
 #  user_id                                   :uuid             not null
+#  public_id                                 :string(21)
+#  title                                     :string(32)
 #
 # Indexes
 #
 #  idx_on_user_identity_one_time_password_status_id_c03cdf0b39  (user_identity_one_time_password_status_id)
+#  index_user_one_time_passwords_on_public_id                   (public_id) UNIQUE
 #  index_user_one_time_passwords_on_user_id                     (user_id)
 #
 
 class UserOneTimePassword < PrincipalRecord
+  include ::PublicId
+
   alias_attribute :user_one_time_password_status_id, :user_identity_one_time_password_status_id
   MAX_TOTPS_PER_USER = 2
 
@@ -31,11 +36,19 @@ class UserOneTimePassword < PrincipalRecord
 
   validates :private_key, presence: true, length: { maximum: 1024 }
   validates :last_otp_at, presence: true
+  validates :title, length: { maximum: 32 }, allow_blank: true
   validate :enforce_user_totp_limit, on: :create
 
   after_initialize :generate_private_key_if_blank
+  after_initialize :generate_public_id_if_blank
 
   private
+
+  def generate_public_id_if_blank
+    return unless has_attribute?(:public_id)
+
+    self.public_id = Nanoid.generate(size: 21) if self[:public_id].blank?
+  end
 
   def enforce_user_totp_limit
     return unless user_id

@@ -7,13 +7,13 @@ module Core
       include ::AuthorizationAudit
       include ::RateLimit
       include ::Auth::User
-
-      public_strict!
       include ::Preference::Regional
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
+
+      public_strict!
 
       # Note: AuthorizationAudit concern handles Pundit::NotAuthorizedError
       # and provides audit logging functionality

@@ -27,7 +27,7 @@ require "test_helper"
 class StaffPasskeyTest < ActiveSupport::TestCase
   test "should create passkey with valid attributes" do
     passkey = StaffPasskey.new(
-      staff: Staff.find_by!(public_id: "one_staff_id"),
+      staff: Staff.find_by!(public_id: "bcde3456"),
       description: "Staff Passkey",
       public_key: "test_staff_public_key",
       sign_count: 1,
@@ -69,7 +69,7 @@ class StaffPasskeyTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum passkeys per staff" do
-    staff = Staff.find_by!(public_id: "one_staff_id")
+    staff = Staff.find_by!(public_id: "bcde3456")
     relation_stub = Struct.new(:count).new(StaffPasskey::MAX_PASSKEYS_PER_STAFF)
 
     StaffPasskey.stub(:where, relation_stub) do

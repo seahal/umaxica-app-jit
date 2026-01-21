@@ -41,9 +41,9 @@ module Sign
 
           # Preserve rd parameter if provided
           preserve_redirect_parameter
-          redirect_params = build_notice_params(t("sign.app.authentication.email.create.verification_code_sent"))
 
-          redirect_to edit_sign_app_in_email_path(redirect_params)
+          flash[:notice] = t("sign.app.authentication.email.create.verification_code_sent")
+          redirect_to edit_sign_app_in_email_path(rd: peek_redirect_parameter)
         end
 
         def update
@@ -101,14 +101,15 @@ module Sign
             )
 
             unless @user_email
-              redirect_params = build_notice_params(t("sign.app.authentication.email.edit.session_expired"))
-              redirect_to new_sign_app_in_email_path(redirect_params)
+              flash[:notice] = t("sign.app.authentication.email.edit.session_expired")
+              redirect_to new_sign_app_in_email_path(rd: peek_redirect_parameter)
             end
           elsif session[:user_email_authentication_address].present?
             @user_email = UserEmail.new(address: session[:user_email_authentication_address])
           else
-            redirect_params = build_notice_params(t("sign.app.authentication.email.edit.session_expired"))
-            redirect_to new_sign_app_in_email_path(redirect_params)
+
+            flash[:notice] = t("sign.app.authentication.email.edit.session_expired")
+            redirect_to new_sign_app_in_email_path(rd: peek_redirect_parameter)
           end
         end
 

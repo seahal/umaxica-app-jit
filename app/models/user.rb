@@ -5,7 +5,6 @@
 # Table name: users
 #
 #  id           :uuid             not null, primary key
-#  webauthn_id  :string           default(""), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string(255)      default("")
@@ -21,6 +20,7 @@
 #
 
 class User < PrincipalRecord
+  self.ignored_columns += ["webauthn_id"]
   include ::PublicId
   include ::Accountably
   include ::Withdrawable

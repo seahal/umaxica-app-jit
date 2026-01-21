@@ -1,0 +1,16 @@
+<header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
+  <div class="flex flex-col">
+    <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]"><%= local_assigns[:service_name] || "Sign" %></span>
+    <h1 class="text-2xl font-semibold tracking-tight">
+      <% if local_assigns[:home_path].present? %>
+        <a class="transition hover:text-[hsl(var(--primary))]" href="<%= home_path %>"><%= ENV.fetch("BRAND_NAME", "Umaxica") %></a>
+      <% else %>
+        <%= ENV.fetch("BRAND_NAME", "Umaxica") %>
+      <% end %>
+      <span class="text-[hsl(var(--muted-foreground))]">(<%= local_assigns[:namespace] || "app" %>)</span>
+    </h1>
+  </div>
+  <nav class="flex flex-wrap gap-3 text-sm">
+    <%= yield %>
+  </nav>
+</header>

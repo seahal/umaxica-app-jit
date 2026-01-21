@@ -29,7 +29,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
 
       assert_difference("UserOneTimePassword.count") do
         post sign_app_configuration_totps_url(ri: "jp"),
-             params: { time_based_one_time_password: { first_token: token } },
+             params: { user_one_time_password: { first_token: token } },
              headers: @headers
       end
 
@@ -43,7 +43,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
       token = ROTP::TOTP.new(secret).now
 
       post sign_app_configuration_totps_url(ri: "jp"),
-           params: { time_based_one_time_password: { first_token: token } },
+           params: { user_one_time_password: { first_token: token } },
            headers: @headers
 
       created_totp = UserOneTimePassword.order(created_at: :desc).first
@@ -58,7 +58,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
 
     assert_no_difference("UserOneTimePassword.count") do
       post sign_app_configuration_totps_url(ri: "jp"),
-           params: { time_based_one_time_password: { first_token: "invalid" } },
+           params: { user_one_time_password: { first_token: "invalid" } },
            headers: @headers
     end
 

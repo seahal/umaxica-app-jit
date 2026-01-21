@@ -28,7 +28,7 @@ require "test_helper"
 
 class StaffEmailTest < ActiveSupport::TestCase
   setup do
-    @staff = Staff.find_by!(public_id: "none_staff_id")
+    @staff = Staff.find_by!(public_id: "cdef4567")
     @valid_attributes = {
       address: "staff@example.com",
       confirm_policy: true,

@@ -7,9 +7,9 @@ module Core
       include ::AuthorizationAudit
       include ::RateLimit
       include ::Auth::User
+      include ::Preference::Regional
 
       public_strict!
-      include ::Preference::Regional
 
       protect_from_forgery with: :exception
 

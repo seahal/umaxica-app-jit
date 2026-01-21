@@ -11,7 +11,7 @@
       </div>
 
       <%= form_with url: sign_app_out_path, method: :delete, class: "space-y-4" do |form| %>
-        
+
         <div class="flex items-start space-x-3 p-4 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))]/50">
           <div class="flex items-center h-5">
             <%= form.check_box :confirm, required: true, class: "h-4 w-4 rounded border-[hsl(var(--input))] bg-[hsl(var(--background))] text-[hsl(var(--primary))] focus:ring-[hsl(var(--ring))] focus:ring-offset-0" %>
@@ -24,9 +24,8 @@
           </div>
         </div>
 
-        <%= form.submit t("sign.app.exits.destroy.success"), 
-            class: "inline-flex h-10 w-full items-center justify-center rounded-md bg-[hsl(var(--destructive))] px-4 py-2 text-sm font-medium text-[hsl(var(--destructive-foreground))] ring-offset-[hsl(var(--background))] transition-colors hover:bg-[hsl(var(--destructive))]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer" 
-        %>
+        <%= form.submit t("sign.app.exits.destroy.success"),
+            class: "inline-flex h-10 w-full items-center justify-center rounded-md bg-[hsl(var(--destructive))] px-4 py-2 text-sm font-medium text-[hsl(var(--destructive-foreground))] ring-offset-[hsl(var(--background))] transition-colors hover:bg-[hsl(var(--destructive))]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer" %>
       <% end %>
 
       <div class="text-center">

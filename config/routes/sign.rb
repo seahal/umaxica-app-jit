@@ -11,6 +11,7 @@ Rails.application.routes.draw do
         resource :health, only: :show, defaults: { format: :html }
 
         # Edge API endpoint (browser/SPA)
+        resource :edge, only: :show
         namespace :edge do
           namespace :v1 do
             resource :health, only: :show
@@ -24,6 +25,7 @@ Rails.application.routes.draw do
             end
           end
         end
+        resource :client, only: :show
 
         # Sign up
         resource :up, only: :new
@@ -61,7 +63,7 @@ Rails.application.routes.draw do
         resource :configuration, only: :show
         namespace :configuration do
           # TODO: Implement TOTP settings management
-          resources :totps, only: %i(index new create edit)
+          resources :totps, only: %i(index new create edit update destroy)
 
           # Passkey registration ceremony (Route 2: options + verification as separate resources)
           namespace :passkeys do
@@ -124,15 +126,13 @@ Rails.application.routes.draw do
         # Settings
         resource :configuration, only: :show
         namespace :configuration do
-          resources :totps, only: %i(index new create edit)
+          resources :totps, only: %i(index new create edit update destroy)
 
           # Passkey registration ceremony (Route 2: options + verification as separate resources)
           namespace :passkeys do
             resource :options, only: %i(create)
             resource :verification, only: %i(create)
           end
-
-          # Passkey CRUD (existing)
           resources :passkeys, only: %i(index edit update new)
           resources :secrets
           resources :sessions

@@ -33,9 +33,12 @@
 				"-dbaeumer.vscode-eslint",
 				"-esbenp.prettier-vscode",
 				"-eamodio.gitlens",
-				"KoichiSasada.vscode-rdbg",
+				"-KoichiSasada.vscode-rdbg",
 				"openai.chatgpt",
-				"anthropic.claude-code"
+				"anthropic.claude-code",
+				"-sorbet.sorbet-vscode-extension",
+				"-GitHub.copilot",
+				"-GitHub.copilot-chat"
 			],
 			"settings": {
 				"claude.allowDangerouslySkipPermissions": true,

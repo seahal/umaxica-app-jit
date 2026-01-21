@@ -11,7 +11,7 @@ module Sign
 
           if refresh_token.blank?
             render json: {
-              error: I18n.t("sign.token_refresh.errors.missing_refresh_token", default: "Refresh token is required"),
+              error: I18n.t("sign.token_refresh.errors.missing_refresh_token"),
               error_code: "missing_refresh_token",
             }, status: :bad_request
             return
@@ -26,7 +26,6 @@ module Sign
             render json: {
               error: I18n.t(
                 "sign.token_refresh.errors.invalid_refresh_token",
-                default: "Invalid or expired refresh token",
               ),
               error_code: "invalid_refresh_token",
             }, status: :unauthorized

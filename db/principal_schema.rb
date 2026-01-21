@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_21_083250) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_21_184557) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -165,11 +165,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_083250) do
     t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
     t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", default: "", null: false
+    t.string "public_id", limit: 21, null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_identity_email_status_id", limit: 255, default: "NEYO", null: false
     t.index "lower((address)::text)", name: "index_user_identity_emails_on_lower_address", unique: true
     t.index ["otp_last_sent_at"], name: "index_user_emails_on_otp_last_sent_at"
+    t.index ["public_id"], name: "index_user_emails_on_public_id", unique: true
     t.index ["user_id"], name: "index_user_emails_on_user_id"
     t.index ["user_identity_email_status_id"], name: "index_user_emails_on_user_identity_email_status_id"
     t.check_constraint "user_identity_email_status_id IS NULL OR user_identity_email_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_emails_user_identity_email_status_id_format"
@@ -224,9 +226,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_083250) do
     t.datetime "created_at", null: false
     t.datetime "last_otp_at", default: -::Float::INFINITY, null: false
     t.string "private_key", limit: 1024, default: "", null: false
+    t.string "public_id", limit: 21
+    t.string "title", limit: 32
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_identity_one_time_password_status_id", default: "NEYO", null: false
+    t.index ["public_id"], name: "index_user_one_time_passwords_on_public_id", unique: true
     t.index ["user_id"], name: "index_user_one_time_passwords_on_user_id"
     t.index ["user_identity_one_time_password_status_id"], name: "idx_on_user_identity_one_time_password_status_id_c03cdf0b39"
     t.check_constraint "user_identity_one_time_password_status_id IS NULL OR user_identity_one_time_password_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_one_time_passwords_user_identity_one_time_pas"
@@ -361,7 +366,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_083250) do
     t.string "public_id", limit: 255, default: ""
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
-    t.string "webauthn_id", default: "", null: false
     t.datetime "withdrawn_at", default: ::Float::INFINITY
     t.index ["public_id"], name: "index_users_on_public_id", unique: true
     t.index ["status_id"], name: "index_users_on_status_id"

@@ -44,7 +44,8 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     assert_includes response.location, "/up/emails/new"
-    assert_includes response.location, "notice="
+    assert_not_includes response.location, "notice="
+    assert_equal I18n.t("sign.app.registration.email.edit.session_expired"), flash[:notice]
     assert_includes response.location, "ri=jp"
   end
 
@@ -180,7 +181,8 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     # Verify redirect and record deletion
     assert_response :redirect
     assert_includes response.location, "/up/emails/new"
-    assert_includes response.location, "alert="
+    assert_not_includes response.location, "alert="
+    assert_equal I18n.t("sign.app.registration.email.update.attempts_exceeded"), flash[:alert]
     assert_includes response.location, "ri=jp"
     assert_nil UserEmail.find_by(id: user_email.id)
   end
@@ -434,5 +436,44 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
   def host
     ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
+  end
+  test "resets session ID after successful registration" do
+    email = "session_reset_test@example.com"
+
+    # Create registration record
+    perform_enqueued_jobs do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    user_email = UserEmail.find(email_id)
+    otp_data = user_email.get_otp
+    hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+    correct_code = hotp.at(otp_data[:otp_counter]).to_s
+
+    # Ensure we have a session
+    get new_sign_app_up_email_url(ri: "jp"), headers: default_headers
+    old_session_id = session.id
+
+    # Submit correct OTP
+    patch sign_app_up_email_url(user_email.id, ri: "jp"),
+          params: {
+            id: user_email.id,
+            user_email: {
+              pass_code: correct_code,
+            },
+          },
+          headers: default_headers
+
+    assert_not_nil session.id
+    assert_not_equal old_session_id, session.id
   end
 end

@@ -13,7 +13,7 @@ class Sign::App::Edge::V1::Token::RefreshesController < Sign::App::Edge::V1::Bas
 
     if refresh_plain.blank?
       render json: {
-        error: I18n.t("sign.token_refresh.errors.missing_refresh_token", default: "Refresh token is required"),
+        error: I18n.t("sign.token_refresh.errors.missing_refresh_token"),
         error_code: "missing_refresh_token",
       }, status: :bad_request
       return
@@ -26,7 +26,7 @@ class Sign::App::Edge::V1::Token::RefreshesController < Sign::App::Edge::V1::Bas
       render json: { refreshed: true }, status: :ok
     else
       render json: {
-        error: I18n.t("sign.token_refresh.errors.invalid_refresh_token", default: "Invalid or expired refresh token"),
+        error: I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
         error_code: "invalid_refresh_token",
       }, status: :unauthorized
     end

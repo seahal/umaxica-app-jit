@@ -10,13 +10,13 @@
 
   <%= form_with model: @preference_colortheme, scope: :preference_colortheme, url: apex_app_preference_theme_path, method: :patch, class: "mt-6 space-y-5" do |f| %>
     <div>
-      <%= f.label :option_id, t("apex.app.preferences.theme.select_theme", default: "Theme"), class: "block text-sm font-semibold text-slate-700" %>
+      <%= f.label :option_id, t("apex.app.preferences.theme.select_theme"), class: "block text-sm font-semibold text-slate-700" %>
       <div class="mt-1">
         <%= f.select :option_id,
                      options_for_select([
-                                          [t("apex.app.preference.theme.edit.options.light", default: "Light"), "light"],
-                                          [t("apex.app.preference.theme.edit.options.dark", default: "Dark"), "dark"],
-                                          [t("apex.app.preference.theme.edit.options.system", default: "System"), "system"]
+                                          [t("apex.app.preference.theme.edit.options.light"), "light"],
+                                          [t("apex.app.preference.theme.edit.options.dark"), "dark"],
+                                          [t("apex.app.preference.theme.edit.options.system"), "system"]
                                         ], @preference_colortheme.option_id),
                      { class: "block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary" } %>
       </div>

@@ -27,13 +27,12 @@
 class StaffEmail < OperatorRecord
   alias_attribute :staff_email_status_id, :staff_identity_email_status_id
   include SetId
+  include PublicId
   include Email
 
   MAX_EMAILS_PER_STAFF = 4
-
   belongs_to :staff_email_status, inverse_of: :staff_emails, foreign_key: :staff_identity_email_status_id
   belongs_to :staff
-
   validates :address, presence: true, length: { maximum: 255 }
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
@@ -42,6 +41,9 @@ class StaffEmail < OperatorRecord
   validate :enforce_staff_email_limit, on: :create
   before_validation do
     self.staff_id ||= "00000000-0000-0000-0000-000000000000"
+  end
+  def to_param
+    public_id
   end
 
   after_initialize do

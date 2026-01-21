@@ -57,7 +57,7 @@ class StaffEmailStatusTest < ActiveSupport::TestCase
   test "restrict_with_error prevents deletion when emails exist" do
     status = StaffEmailStatus.find("VERIFIED")
     # Create a staff identity email with this status
-    staff = Staff.create!(public_id: "test-staff-#{SecureRandom.hex(4)}")
+    staff = Staff.create!
     StaffEmail.create!(
       id: SecureRandom.uuid,
       address: "staff@example.com",

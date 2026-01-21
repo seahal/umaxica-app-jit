@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_21_083251) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_21_195628) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -124,11 +124,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_083251) do
     t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
     t.datetime "otp_last_sent_at", default: -::Float::INFINITY, null: false
     t.string "otp_private_key", default: "", null: false
+    t.string "public_id", limit: 21, null: false
     t.uuid "staff_id", null: false
     t.string "staff_identity_email_status_id", limit: 255, default: "UNVERIFIED", null: false
     t.datetime "updated_at", null: false
     t.index "lower((address)::text)", name: "index_staff_identity_emails_on_lower_address"
     t.index ["otp_last_sent_at"], name: "index_staff_emails_on_otp_last_sent_at"
+    t.index ["public_id"], name: "index_staff_emails_on_public_id", unique: true
     t.index ["staff_id"], name: "index_staff_emails_on_staff_id"
     t.index ["staff_identity_email_status_id"], name: "index_staff_emails_on_staff_identity_email_status_id"
     t.check_constraint "staff_identity_email_status_id IS NULL OR staff_identity_email_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_emails_staff_identity_email_status_id_format"
@@ -161,6 +163,25 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_083251) do
     t.index ["level_id"], name: "index_staff_identity_audits_on_level_id"
     t.index ["staff_id"], name: "index_staff_identity_audits_on_staff_id"
     t.index ["subject_id"], name: "index_staff_identity_audits_on_subject_id"
+  end
+
+  create_table "staff_one_time_password_statuses", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_one_time_passwords", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "last_otp_at", default: -::Float::INFINITY, null: false
+    t.string "private_key", limit: 1024, default: "", null: false
+    t.string "public_id", limit: 21
+    t.uuid "staff_id", null: false
+    t.string "staff_one_time_password_status_id", default: "NEYO", null: false
+    t.string "title", limit: 32
+    t.datetime "updated_at", null: false
+    t.index ["public_id"], name: "index_staff_one_time_passwords_on_public_id", unique: true
+    t.index ["staff_id"], name: "index_staff_one_time_passwords_on_staff_id"
+    t.index ["staff_one_time_password_status_id"], name: "idx_on_staff_one_time_password_status_id_8958a1c9bf"
   end
 
   create_table "staff_passkey_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
@@ -249,7 +270,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_083251) do
   create_table "staffs", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "lock_version", default: 0, null: false
-    t.string "public_id", limit: 255, default: ""
+    t.string "public_id", limit: 8, null: false
     t.string "status_id", limit: 255, default: "NEYO", null: false
     t.datetime "updated_at", null: false
     t.string "webauthn_id", default: "", null: false
@@ -257,6 +278,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_083251) do
     t.index ["public_id"], name: "index_staffs_on_public_id", unique: true
     t.index ["status_id"], name: "index_staffs_on_status_id"
     t.index ["withdrawn_at"], name: "index_staffs_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"
+    t.check_constraint "char_length(public_id::text) = 8", name: "chk_staffs_public_id_length"
+    t.check_constraint "public_id::text ~ '^[abcdefhjklmnpqrtuvwxy23456789]{8}$'::text", name: "chk_staffs_public_id_format"
     t.check_constraint "status_id IS NULL OR status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staffs_staff_identity_status_id_format"
   end
 
@@ -289,6 +312,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_083251) do
   add_foreign_key "staff_admins", "staffs", on_delete: :cascade
   add_foreign_key "staff_emails", "staff_email_statuses", column: "staff_identity_email_status_id"
   add_foreign_key "staff_emails", "staffs"
+  add_foreign_key "staff_one_time_passwords", "staff_one_time_password_statuses"
+  add_foreign_key "staff_one_time_passwords", "staffs"
   add_foreign_key "staff_passkeys", "staff_passkey_statuses", validate: false
   add_foreign_key "staff_passkeys", "staffs"
   add_foreign_key "staff_recovery_codes", "staffs"

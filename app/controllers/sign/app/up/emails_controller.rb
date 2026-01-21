@@ -18,6 +18,7 @@ module Sign
               @user_email.otp_expired? ||
               @user_email.user_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
             redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
+            flash[:notice] = redirect_params.delete(:notice)
             redirect_to new_sign_app_up_email_path(redirect_params)
           end
         end
@@ -26,6 +27,7 @@ module Sign
           email_params = params.expect(user_email: [:address, :confirm_policy])
           if initiate_email_verification(email_params[:address])
             redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
+            flash[:notice] = redirect_params.delete(:notice)
             sanitize_redirect_params!(redirect_params)
             redirect_to edit_sign_app_up_email_path(@user_email.id, redirect_params)
           else
@@ -45,17 +47,27 @@ module Sign
                 audit.save!
                 user_email.save!
               end
-              log_in(@user, record_login_audit: false)
+              # Bypass standard log_in which might trigger guest_only filters on next request
+              # Instead, we'll manually set the cookies and return success
+              login_result = log_in(@user, record_login_audit: false)
+
+              # Return success to let the caller handle the redirect
+              login_result
             end
 
           case status
           when :success
+            # todo
+            #   1. redirect to rd if present
+            #   2. otherwise redirect to root of core path
             redirect_with_notice("/", t("sign.app.registration.email.update.success"))
           when :session_expired
             redirect_params = build_alert_params(t("sign.app.registration.email.update.session_expired"))
+            flash[:alert] = redirect_params.delete(:alert)
             redirect_to new_sign_app_up_email_path(redirect_params)
           when :locked
             redirect_params = build_alert_params(t("sign.app.registration.email.update.attempts_exceeded"))
+            flash[:alert] = redirect_params.delete(:alert)
             redirect_to new_sign_app_up_email_path(redirect_params)
           when :invalid_code
             render :edit, status: :unprocessable_content

@@ -15,8 +15,6 @@ module Sign::Org
       @staff =
         Staff.find_or_create_by!(id: SecureRandom.uuid) do |s|
           s.status_id = "NEYO"
-          s.public_id = SecureRandom.alphanumeric(21)
-          s.webauthn_id = SecureRandom.hex(16)
         end
     end
 

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 5721ac5aa18dbaaf6c3fc0a2e24b87f8b23dd3b2
+  revision: 6f9cbce21d8ec2de86c37b5a37073bac6d5f1d83
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -103,8 +103,6 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    aasm (5.5.2)
-      concurrent-ruby (~> 1.0)
     action_text-trix (2.1.16)
       railties
     addressable (2.8.8)
@@ -738,7 +736,7 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-graphviz (1.2.5)
       rexml
-    ruby-lsp (0.26.4)
+    ruby-lsp (0.26.5)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 5)
@@ -868,7 +866,6 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  aasm
   annotate
   argon2
   aws-sdk-connect
@@ -962,4 +959,4 @@ RUBY VERSION
   ruby 4.0.1
 
 BUNDLED WITH
-  4.0.3
+  4.0.4

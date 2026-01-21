@@ -1,12 +1,12 @@
 <div class="mx-auto max-w-xl">
-  <h1 class="text-3xl font-semibold text-slate-900"><%= title t("sign.app.root.title", default: "Welcome") %></h1>
-  <p class="mt-2 text-sm text-slate-600"><%= t("sign.app.root.description", default: "Choose an action below") %></p>
+  <h1 class="text-3xl font-semibold text-slate-900"><%= title t("sign.app.root.title") %></h1>
+  <p class="mt-2 text-sm text-slate-600"><%= t("sign.app.root.description") %></p>
 
   <div class="mt-6 space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-    <%= link_to t("sign.app.root.registration", default: "Sign Up"),
+    <%= link_to t("sign.app.root.registration"),
                 new_sign_app_up_path,
                 class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-    <%= link_to t("sign.app.root.authentication", default: "Sign In"),
+    <%= link_to t("sign.app.root.authentication"),
                 new_sign_app_in_path,
                 class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
   </div>

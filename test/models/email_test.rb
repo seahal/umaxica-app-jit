@@ -94,7 +94,7 @@ class IdentityEmailTest < ActiveSupport::TestCase
     when UserEmail
       record.user = User.find_by!(public_id: "none_id")
     when StaffEmail
-      record.staff = Staff.find_by!(public_id: "none_staff_id")
+      record.staff = Staff.find_by!(public_id: "cdef4567")
     end
   end
 end

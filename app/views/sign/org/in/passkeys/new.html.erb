@@ -18,7 +18,7 @@
     <%= render "concern/cloudflare_turnstile" %>
 
     <div class="flex flex-col gap-3 pt-2">
-      <%= form.submit t("sign.org.authentication.passkey.new.submit", default: "パスキーでログイン"),
+      <%= form.submit t("sign.org.authentication.passkey.new.submit"),
                       class: "w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 hover:shadow-md active:scale-[0.98]" %>
       <%= link_to t("sign.org.authentication.new.back"), new_sign_org_in_path,
                   class: "flex items-center justify-center w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50" %>

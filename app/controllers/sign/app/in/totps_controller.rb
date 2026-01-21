@@ -4,7 +4,7 @@ module Sign
   module App
     module In
       class TotpsController < ApplicationController
-        include ::Redirect
+        include Common::Redirect
 
         MFA_USER_SESSION_KEY = :mfa_user_id
 
@@ -45,14 +45,14 @@ module Sign
 
             clear_mfa_session!
             log_in(user, require_totp_check: false)
-            redirect_with_notice("/", t("sign.app.authentication.totp.success", default: "ログインしました。"))
+            redirect_with_notice("/", t("sign.app.authentication.totp.success"))
           else
             Rails.event.notify(
               "authentication.totp.failed",
               user_id: user&.id,
               ip_address: request.remote_ip,
             )
-            @totp_form.errors.add(:token, t("sign.app.authentication.totp.invalid", default: "コードが正しくありません。"))
+            @totp_form.errors.add(:token, t("sign.app.authentication.totp.invalid"))
             @secret_hints = active_secret_hints_for(user)
             render :new, status: :unprocessable_content
           end

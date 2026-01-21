@@ -55,7 +55,7 @@ class StaffTelephoneStatusTest < ActiveSupport::TestCase
   test "restrict_with_error prevents deletion when telephones exist" do
     status = StaffTelephoneStatus.find("VERIFIED")
     # Create a staff identity telephone with this status
-    staff = Staff.create!(public_id: "test-staff-#{SecureRandom.hex(4)}")
+    staff = Staff.create!
     StaffTelephone.create!(
       id: SecureRandom.uuid,
       number: "+81901234567",

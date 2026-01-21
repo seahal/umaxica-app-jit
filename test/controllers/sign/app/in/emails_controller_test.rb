@@ -437,4 +437,40 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to "/"
   end
   # rubocop:enable Minitest/MultipleAssertions
+  test "resets session ID after successful email login" do
+    # Create email with user association
+    user = users(:one)
+    test_email = user.user_emails.create!(
+      address: "session_reset_login_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    # Start authentication
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    # Generate valid OTP code
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 12_345
+    hotp = ROTP::HOTP.new(otp_private_key)
+    valid_pass_code = hotp.at(otp_counter).to_s
+
+    # Store OTP
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    # Ensure we have a session
+    old_session_id = session.id
+
+    # Verify OTP to log in
+    patch sign_app_in_email_url(ri: "jp"),
+          params: { user_email: { pass_code: valid_pass_code } },
+          headers: { "Host" => @host }
+
+    assert_response :found
+    assert_not_nil session.id
+    assert_not_equal old_session_id, session.id
+  end
 end

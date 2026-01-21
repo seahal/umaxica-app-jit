@@ -10,6 +10,10 @@ ja:
   common:
     ok: OK
     unsaved_changes: "変更は保存されていません。移動しますか？"
+  actions:
+    submit: "送信"
+    cancel: "キャンセル"
+    save: "保存"
   sign:
     default_user_name: "ユーザー"
     default_staff_name: "スタッフ"
@@ -80,7 +84,18 @@ ja:
               totp: TOTP
               recovery: Recovery
             new:
-              title: TOTP no shinki
+              page_title: "TOTP認証の設定"
+              description: "認証アプリでQRコードをスキャンし、生成されたコードを入力して設定を完了します。"
+              title_hint: "識別しやすい名前を付けてください（例: 個人用iPhone）"
+          email:
+            index:
+              title: "メール設定"
+              description: "アカウントに関連付けられたメールアドレスを管理します。"
+              new_link: "メールアドレスを追加"
+            new:
+              page_title: "メールアドレスを追加"
+              description: "新しいメールアドレスを追加して、アカウントの管理をより柔軟にします。"
+              help_text: "入力されたメールアドレスに確認コードを送信します。"
           withdrawal:
             show:
               title: "退会ステータス"
@@ -172,6 +187,7 @@ ja:
             edit:
               page_title: "メールアドレスの確認"
               return_page: "戻る"
+              session_expired: "セッションの有効期限が切れました。最初からやり直してください。"
             update:
               invalid_code: "Invalid verification code"
               success: "ログインしました。"
@@ -448,7 +464,10 @@ ja:
     access_blocked_auth_error: 'アクセスをブロック: 認証エラーです'
     email_successfully_created: メールアドレスの確認コードを送信しました。
     telephone_successfully_created: 電話番号の確認コードを送信しました。
+    email_successfully_created: メールアドレスの確認コードを送信しました。
+    telephone_successfully_created: 電話番号の確認コードを送信しました。
     sample_successfully_updated: 登録が完了しました。
+    totp_title_placeholder: "タイトル（任意）"
   sign:
     token_refresh:
       errors:
