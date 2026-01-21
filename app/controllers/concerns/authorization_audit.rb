@@ -6,7 +6,7 @@ module AuthorizationAudit
   extend ActiveSupport::Concern
 
   included do
-    include Redirect
+    include Common::Redirect
 
     # Log authorization failures for audit purposes
     rescue_from Pundit::NotAuthorizedError, with: :handle_authorization_error

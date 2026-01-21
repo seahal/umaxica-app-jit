@@ -29,16 +29,19 @@ Rails.application.routes.draw do
         resource :up, only: :new
         namespace :up do
           resources :emails, only: %i(new create edit update)
-          resources :passkeys, only: %i(new create edit update) do
-            get :complete, on: :collection
-          end
+          resources :telephones, only: %i(new create edit update show destroy)
         end
 
         # Sign in/out
         resource :in, only: %i(new)
         namespace :in do
           resource :email, only: %i(new create edit update)
-          resource :passkey, only: %i(new create edit update)
+          # Passkey authentication (Route 2: options + verification as separate resources)
+          namespace :passkey do
+            resource :options, only: %i(create)
+            resource :verification, only: %i(create)
+          end
+          resource :passkey, only: %i(new)
           resource :totp, only: %i(new create)
           resource :secret, only: %i(new create)
         end
@@ -60,20 +63,14 @@ Rails.application.routes.draw do
           # TODO: Implement TOTP settings management
           resources :totps, only: %i(index new create edit)
 
-          post "passkeys/challenge",
-               to: "passkeys#challenge",
-               as: :sign_app_configuration_passkeys_challenge
-          post "passkeys/verify",
-               to: "passkeys#verify",
-               as: :sign_app_configuration_passkeys_verify
-
-          resources :passkeys, only: %i(index show new create edit update destroy) do
-            collection do
-              post :challenge
-              post :verify
-            end
-            resources :secrets, only: [:index], controller: "configuration/secrets"
+          # Passkey registration ceremony (Route 2: options + verification as separate resources)
+          namespace :passkeys do
+            resource :options, only: %i(create)
+            resource :verification, only: %i(create)
           end
+
+          # Passkey CRUD (existing)
+          resources :passkeys, only: %i(index show new create edit update destroy)
           resources :emails
           resources :telephones
           resource :apple, only: [:show]
@@ -128,6 +125,14 @@ Rails.application.routes.draw do
         resource :configuration, only: :show
         namespace :configuration do
           resources :totps, only: %i(index new create edit)
+
+          # Passkey registration ceremony (Route 2: options + verification as separate resources)
+          namespace :passkeys do
+            resource :options, only: %i(create)
+            resource :verification, only: %i(create)
+          end
+
+          # Passkey CRUD (existing)
           resources :passkeys, only: %i(index edit update new)
           resources :secrets
           resources :sessions

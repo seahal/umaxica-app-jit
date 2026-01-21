@@ -11,7 +11,13 @@ ja:
     ok: OK
     unsaved_changes: "変更は保存されていません。移動しますか？"
   sign:
+    default_user_name: "ユーザー"
+    default_staff_name: "スタッフ"
+    default_passkey_description: "パスキー"
     app:
+      authentication:
+        passkey:
+          already_logged_in: "既にログインしています。"
       title_suffix: "(アプリ)"
       header:
         sign: "サイン"
@@ -942,11 +948,18 @@ ja:
   errors:
     unauthorized: "不正なアクセスです"
     not_implemented: "機能はまだ実装されていません"
+    webauthn:
+      challenge_invalid: "WebAuthn認証に失敗しました。もう一度やり直してください。"
+      credential_not_found: "パスキーが見つかりませんでした。"
+      verification_failed: "パスキーの検証に失敗しました。"
+      sign_count_mismatch: "パスキーのセキュリティカウンターに問題があります。"
+    login_failed: "ログインに失敗しました。"
     messages:
       not_authorized: "この操作を行う権限がありません。"
       login_required: "ログインが必要です"
       already_authenticated: "すでにログインしています"
       preference_operation_failed: "設定の操作に失敗しました。"
+
       accepted: を受諾してください
       blank: を入力してください
       confirmation: と%{attribute}の入力が一致しません

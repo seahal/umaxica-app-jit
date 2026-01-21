@@ -7,7 +7,7 @@ module Sign
 
       included do
         include ::CloudflareTurnstile
-        include ::Redirect
+        include Common::Redirect
         include Common::Otp
       end
 

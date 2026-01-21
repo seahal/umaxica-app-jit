@@ -13,7 +13,7 @@ module Sign
     extend ActiveSupport::Concern
 
     included do
-      include Redirect
+      include Common::Redirect
 
       # Automatically set up rescue_from if Pundit is included
       rescue_from Pundit::NotAuthorizedError, with: :handle_not_authorized if defined?(Pundit)

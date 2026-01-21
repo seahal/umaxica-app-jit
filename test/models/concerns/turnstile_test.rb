@@ -11,6 +11,8 @@ class TurnstileTest < ActiveSupport::TestCase
   setup do
     @original_test_response = Turnstile.test_response
     Turnstile.test_response = nil
+    Jit::Security::TurnstileVerifier.test_mode = false
+    Jit::Security::TurnstileVerifier.test_response = nil
   end
 
   teardown do
@@ -59,7 +61,7 @@ class TurnstileTest < ActiveSupport::TestCase
   test "verify_turnstile returns missing response error" do
     result = DummyTurnstile.verify_turnstile(turnstile_response: nil, remote_ip: "127.0.0.1")
 
-    assert_equal DummyTurnstile.missing_response_error, result
+    assert_equal({ "success" => false, "error" => "missing cf-turnstile-response" }, result)
   end
 
   test "verify_turnstile returns missing secret error" do
@@ -69,7 +71,7 @@ class TurnstileTest < ActiveSupport::TestCase
     Rails.application.credentials.stub(:dig, nil) do
       result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
 
-      assert_equal DummyTurnstile.missing_secret_error, result
+      assert_equal({ "success" => false, "error" => "missing turnstile secret" }, result)
     end
   ensure
     ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"] = old_env

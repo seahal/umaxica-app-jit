@@ -149,7 +149,7 @@ module Auth
           payload = {
             "iat" => now.to_i,
             "exp" => (now + Auth::Base::ACCESS_TOKEN_TTL).to_i,
-            "jti" => Jwt::Jti.generate,
+            "jti" => Jit::Security::Jwt::JtiGenerator.generate,
             "iss" => JwtConfiguration.issuer,
             "aud" => JwtConfiguration.audiences,
             "sub" => resource.id,

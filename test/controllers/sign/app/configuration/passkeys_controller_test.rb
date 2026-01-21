@@ -11,42 +11,6 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
   end
 
-  test "should get challenge" do
-    # Mocking WebAuthn::Credential.options_for_create
-    stub_options = OpenStruct.new(challenge: "mock_challenge")
-
-    WebAuthn::Credential.stub :options_for_create, stub_options do
-      post challenge_sign_app_configuration_passkeys_url(ri: "jp"), headers: @headers
-    end
-
-    assert_response :ok
-    assert_not_nil session[:webauthn_user_create_challenge]
-    assert_equal "mock_challenge", session[:webauthn_user_create_challenge]
-  end
-
-  test "should verify passkey" do
-    # First set the session challenge
-    stub_options = OpenStruct.new(challenge: "mock_challenge")
-    WebAuthn::Credential.stub :options_for_create, stub_options do
-      post challenge_sign_app_configuration_passkeys_url(ri: "jp"), headers: @headers
-    end
-
-    # Now verify
-    credential = OpenStruct.new(id: "credential-id", public_key: "pk", sign_count: 0)
-
-    def credential.verify(_challenge)
-      true
-    end
-
-    WebAuthn::Credential.stub :from_create, credential do
-      post verify_sign_app_configuration_passkeys_url(ri: "jp"),
-           params: { credential: { id: "credential-id", rawId: "credential-id" }, description: "Test" },
-           headers: @headers
-    end
-
-    assert_response :ok
-  end
-
   test "should get index" do
     get sign_app_configuration_passkeys_url(ri: "jp"), headers: @headers
 

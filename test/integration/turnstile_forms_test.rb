@@ -8,7 +8,6 @@ class TurnstileFormsTest < ActionDispatch::IntegrationTest
     # Format: [Host ENV Name, Path, Description]
     @turnstile_form_paths = [
       { name: "Sign::App registration emails", env_key: "SIGN_SERVICE_URL", path: "/up/emails/new" },
-      { name: "Sign::App registration passkeys", env_key: "SIGN_SERVICE_URL", path: "/up/passkeys/new" },
       { name: "Sign::App authentication email", env_key: "SIGN_SERVICE_URL", path: "/in/email/new" },
       # { name: "Sign::Org registration emails", env_key: "SIGN_STAFF_URL", path: "/registration/emails/new" },
       # { name: "Sign::Org registration passkeys", env_key: "SIGN_STAFF_URL", path: "/registration/passkeys/new" },

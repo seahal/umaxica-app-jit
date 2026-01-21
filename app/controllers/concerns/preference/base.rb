@@ -509,7 +509,7 @@ module Preference
           @preferences = preference_class.create!(
             token_digest: token_digest,
             expires_at: expires_at,
-            jti: Jwt::Jti.generate,
+            jti: Jit::Security::Jwt::JtiGenerator.generate,
           )
 
           create_preference_options(@preferences)
@@ -665,13 +665,13 @@ module Preference
       return if preference.jti.present?
 
       PreferenceRecord.connected_to(role: :writing) do
-        preference.update!(jti: Jwt::Jti.generate)
+        preference.update!(jti: Jit::Security::Jwt::JtiGenerator.generate)
       end
     end
 
     def rotate_preference_jti!(preference)
       PreferenceRecord.connected_to(role: :writing) do
-        preference.update!(jti: Jwt::Jti.generate)
+        preference.update!(jti: Jit::Security::Jwt::JtiGenerator.generate)
       end
     end
 

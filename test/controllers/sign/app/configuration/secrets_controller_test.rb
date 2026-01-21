@@ -11,6 +11,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
       name: "Test Secret",
       password_digest: "test_password_digest",
       last_used_at: Time.zone.now,
+      user_secret_kind_id: UserSecret::Kinds::LOGIN,
     )
   end
 

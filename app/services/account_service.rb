@@ -17,7 +17,7 @@ class AccountService
   attr_reader :accountable, :type
 
   # Delegate common methods to the underlying User or Staff model
-  delegate :id, :created_at, :updated_at, :webauthn_id,
+  delegate :id, :created_at, :updated_at,
            :persisted?, :new_record?, :destroyed?,
            to: :accountable
 
@@ -245,7 +245,7 @@ class AccountService
     when :phone
       user? && collection_present?(phones)
     when :webauthn
-      webauthn_id.present?
+      passkeys_present?
     when :oauth
       user? && oauth_configured?
     when :totp
@@ -262,7 +262,7 @@ class AccountService
     methods = []
     methods << :email if collection_present?(emails)
     methods << :phone if user? && collection_present?(phones)
-    methods << :webauthn if webauthn_id.present?
+    methods << :webauthn if passkeys_present?
     methods << :oauth if user? && oauth_configured?
     methods << :totp if totp_configured?
     methods
@@ -341,5 +341,15 @@ class AccountService
 
   def collection_present?(collection)
     collection.respond_to?(:exists?) ? collection.exists? : collection.any?
+  end
+
+  def passkeys_present?
+    if user?
+      accountable.user_passkeys.exists?
+    elsif staff?
+      accountable.staff_passkeys.exists?
+    else
+      false
+    end
   end
 end

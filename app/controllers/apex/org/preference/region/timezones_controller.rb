@@ -5,6 +5,7 @@ module Apex
     module Preference
       module Region
         class TimezonesController < ApplicationController
+          public_strict!
           include ::Preference::Core
 
           def edit

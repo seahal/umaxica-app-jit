@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_14_120236) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_21_083251) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -192,6 +192,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_120236) do
     t.index ["staff_id"], name: "index_staff_recovery_codes_on_staff_id"
   end
 
+  create_table "staff_secret_kinds", id: { type: :string, limit: 255 }, force: :cascade do |t|
+  end
+
   create_table "staff_secret_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_staff_identity_secret_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_secret_statuses_id_format"
@@ -205,11 +208,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_120236) do
     t.string "password_digest", default: "", null: false
     t.uuid "staff_id", null: false
     t.string "staff_identity_secret_status_id", limit: 255, default: "ACTIVE", null: false
+    t.string "staff_secret_kind_id", limit: 255, null: false
     t.datetime "updated_at", null: false
     t.integer "uses_remaining", default: 1, null: false
     t.index ["expires_at"], name: "index_staff_secrets_on_expires_at"
     t.index ["staff_id"], name: "index_staff_secrets_on_staff_id"
     t.index ["staff_identity_secret_status_id"], name: "index_staff_secrets_on_staff_identity_secret_status_id"
+    t.index ["staff_secret_kind_id"], name: "index_staff_secrets_on_staff_secret_kind_id"
     t.check_constraint "staff_identity_secret_status_id IS NULL OR staff_identity_secret_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_identity_secrets_staff_identity_secret_status_id_94c4"
     t.check_constraint "uses_remaining >= 0", name: "chk_staff_identity_secrets_uses_remaining_non_negative"
   end
@@ -287,6 +292,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_14_120236) do
   add_foreign_key "staff_passkeys", "staff_passkey_statuses", validate: false
   add_foreign_key "staff_passkeys", "staffs"
   add_foreign_key "staff_recovery_codes", "staffs"
+  add_foreign_key "staff_secrets", "staff_secret_kinds"
   add_foreign_key "staff_secrets", "staff_secret_statuses", column: "staff_identity_secret_status_id"
   add_foreign_key "staff_secrets", "staffs"
   add_foreign_key "staff_telephones", "staff_telephone_statuses", column: "staff_identity_telephone_status_id"

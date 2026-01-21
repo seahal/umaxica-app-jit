@@ -6,7 +6,7 @@ module Sign
       class EmailsController < ApplicationController
         include ::CloudflareTurnstile
         include EmailValidation
-        include ::Redirect
+        include Common::Redirect
         include Common::Otp
 
         guest_only! status: :bad_request,

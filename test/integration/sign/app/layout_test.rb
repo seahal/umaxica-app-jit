@@ -27,7 +27,7 @@ class Sign::App::LayoutTest < ActionDispatch::IntegrationTest
 
   # test "layout links when logged in" do
   #   user = users(:one)
-  #   get new_sign_app_up_passkey_url, headers: login_headers(user)
+  #   get new_sign_app_up_telephone_url, headers: login_headers(user)
 
   #   assert_response :success
 

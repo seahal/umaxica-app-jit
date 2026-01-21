@@ -6,7 +6,7 @@ module Sign
       extend ActiveSupport::Concern
 
       included do
-        include ::Redirect
+        include Common::Redirect
         include Common::Otp
       end
 

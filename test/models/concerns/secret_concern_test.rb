@@ -26,10 +26,12 @@ class SecretConcernTest < ActiveSupport::TestCase
     UserSecretStatus.find_or_create_by!(id: "USED")
     UserSecretStatus.find_or_create_by!(id: "EXPIRED")
     UserSecretStatus.find_or_create_by!(id: "REVOKED")
+    # Ensure kinds exist
+    UserSecretKind.find_or_create_by!(id: "LOGIN")
   end
 
   test "issue! creates a new record with raw secret" do
-    record, raw = DummySecret.issue!(name: "Test Secret", user: @user)
+    record, raw = DummySecret.issue!(name: "Test Secret", user: @user, user_secret_kind_id: "LOGIN")
     assert_instance_of DummySecret, record
     assert_predicate record, :persisted?
     assert_equal 32, raw.length
@@ -37,31 +39,31 @@ class SecretConcernTest < ActiveSupport::TestCase
   end
 
   test "verify_and_consume! returns true on valid secret" do
-    record, raw = DummySecret.issue!(name: "One Time", user: @user, uses: 1)
+    record, raw = DummySecret.issue!(name: "One Time", user: @user, uses: 1, user_secret_kind_id: "LOGIN")
     assert record.verify_and_consume!(raw)
     assert_predicate record.reload, :used?
     assert_equal 0, record.uses_remaining
   end
 
   test "verify_and_consume! returns false on invalid secret" do
-    record, _raw = DummySecret.issue!(name: "One Time", user: @user)
+    record, _raw = DummySecret.issue!(name: "One Time", user: @user, user_secret_kind_id: "LOGIN")
     assert_not record.verify_and_consume!("wrong_secret")
     assert_predicate record.reload, :active?
   end
 
   test "verify_and_consume! returns false when not active" do
-    record, raw = DummySecret.issue!(name: "Inactive", user: @user, status: :revoked)
+    record, raw = DummySecret.issue!(name: "Inactive", user: @user, status: :revoked, user_secret_kind_id: "LOGIN")
     assert_not record.verify_and_consume!(raw)
   end
 
   test "verify_and_consume! returns false when expired" do
-    record, raw = DummySecret.issue!(name: "Expired", user: @user, expires_at: 1.hour.ago)
+    record, raw = DummySecret.issue!(name: "Expired", user: @user, expires_at: 1.hour.ago, user_secret_kind_id: "LOGIN")
     assert_not record.verify_and_consume!(raw)
     assert_predicate record.reload, :expired?
   end
 
   test "verify_and_consume! allows multiple uses" do
-    record, raw = DummySecret.issue!(name: "Multi", user: @user, uses: 2)
+    record, raw = DummySecret.issue!(name: "Multi", user: @user, uses: 2, user_secret_kind_id: "LOGIN")
     assert record.verify_and_consume!(raw)
     assert_predicate record.reload, :active?
     assert_equal 1, record.uses_remaining

@@ -5,21 +5,23 @@
 # Table name: user_secrets
 #
 #  id                             :uuid             not null, primary key
-#  user_id                        :uuid             not null
-#  password_digest                :string           default(""), not null
-#  last_used_at                   :datetime         default("-infinity"), not null
 #  created_at                     :datetime         not null
-#  updated_at                     :datetime         not null
-#  user_identity_secret_status_id :string(255)      default("ACTIVE"), not null
-#  name                           :string           default(""), not null
 #  expires_at                     :datetime         default("infinity"), not null
+#  last_used_at                   :datetime         default("-infinity"), not null
+#  name                           :string           default(""), not null
+#  password_digest                :string           default(""), not null
+#  updated_at                     :datetime         not null
+#  user_id                        :uuid             not null
+#  user_identity_secret_status_id :string(255)      default("ACTIVE"), not null
 #  uses_remaining                 :integer          default(1), not null
+#  user_secret_kind_id            :string(255)      not null
 #
 # Indexes
 #
 #  index_user_secrets_on_expires_at                      (expires_at)
 #  index_user_secrets_on_user_id                         (user_id)
 #  index_user_secrets_on_user_identity_secret_status_id  (user_identity_secret_status_id)
+#  index_user_secrets_on_user_secret_kind_id             (user_secret_kind_id)
 #
 
 require "test_helper"
@@ -32,6 +34,11 @@ class UserSecretTest < ActiveSupport::TestCase
     UserSecretStatus.find_or_create_by!(id: "ACTIVE")
     UserSecretStatus.find_or_create_by!(id: "USED")
     UserSecretStatus.find_or_create_by!(id: "EXPIRED")
+    # Set up UserSecretKind records
+    UserSecretKind.find_or_create_by!(id: "LOGIN")
+    UserSecretKind.find_or_create_by!(id: "TOTP")
+    UserSecretKind.find_or_create_by!(id: "RECOVERY")
+    UserSecretKind.find_or_create_by!(id: "API")
 
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
@@ -55,7 +62,7 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "issue! returns raw secret and persists a digest" do
-    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user)
+    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, user_secret_kind_id: "LOGIN")
 
     assert_predicate record, :persisted?
     assert_predicate raw_secret, :present?
@@ -64,14 +71,14 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "verify_and_consume! decrements uses_remaining" do
-    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 2)
+    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 2, user_secret_kind_id: "LOGIN")
 
     assert record.verify_and_consume!(raw_secret)
     assert_equal 1, record.reload.uses_remaining
   end
 
   test "verify_and_consume! marks used when uses_remaining reaches zero" do
-    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 1)
+    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 1, user_secret_kind_id: "LOGIN")
 
     assert record.verify_and_consume!(raw_secret)
     assert_equal UserSecretStatus::USED, record.reload.user_secret_status_id
@@ -82,6 +89,7 @@ class UserSecretTest < ActiveSupport::TestCase
       name: "API Key",
       user: @user,
       expires_at: 1.minute.ago,
+      user_secret_kind_id: "LOGIN",
     )
 
     assert_not record.verify_and_consume!(raw_secret)
@@ -89,7 +97,7 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "verify_and_consume! only allows one consumer for a single use" do
-    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 1)
+    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 1, user_secret_kind_id: "LOGIN")
     gate = Queue.new
 
     futures =
@@ -122,7 +130,7 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "association deletion: destroys when user is destroyed" do
-    record, _raw = UserSecret.issue!(name: "Cleanup Test", user: @user)
+    record, _raw = UserSecret.issue!(name: "Cleanup Test", user: @user, user_secret_kind_id: "LOGIN")
     @user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { record.reload }
   end
@@ -151,6 +159,43 @@ class UserSecretTest < ActiveSupport::TestCase
     assert_not record.enabled?
   end
 
+  test "validates kind_id is required" do
+    record = UserSecret.new(
+      user: @user,
+      name: "Test Secret",
+      password: secure_secret,
+      user_secret_kind_id: nil,
+    )
+    assert_not record.valid?
+    assert_not_empty record.errors[:user_secret_kind]
+  end
+
+  test "login_secret? predicate returns true for LOGIN kind" do
+    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: "LOGIN")
+    assert_predicate record, :login_secret?
+    assert_not record.totp_secret?
+    assert_not record.recovery_secret?
+    assert_not record.api_secret?
+  end
+
+  test "totp_secret? predicate returns true for TOTP kind" do
+    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: "TOTP")
+    assert_predicate record, :totp_secret?
+    assert_not record.login_secret?
+  end
+
+  test "recovery_secret? predicate returns true for RECOVERY kind" do
+    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: "RECOVERY")
+    assert_predicate record, :recovery_secret?
+    assert_not record.login_secret?
+  end
+
+  test "api_secret? predicate returns true for API kind" do
+    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: "API")
+    assert_predicate record, :api_secret?
+    assert_not record.login_secret?
+  end
+
   private
 
   def create_secret!
@@ -159,6 +204,7 @@ class UserSecretTest < ActiveSupport::TestCase
       name: "Secret-#{SecureRandom.hex(4)}",
       password: secure_secret,
       password_confirmation: secure_secret,
+      user_secret_kind_id: "LOGIN",
     )
   end
 

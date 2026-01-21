@@ -14,7 +14,7 @@ module Sign
 
           creation_options = WebAuthn::Credential.options_for_create(
             user: {
-              id: @webauthn_user.webauthn_id,
+              id: @webauthn_user.public_id,
               name: (@webauthn_user.try(:email) || "user@example.com").to_s,
               display_name: (@webauthn_user.try(:name) || @webauthn_user.try(:email) ||
                 I18n.t("sign.default_user_name")).to_s,
@@ -140,9 +140,6 @@ module Sign
         def set_webauthn_user
           return render(json: { error: I18n.t("errors.unauthorized") }, status: :unauthorized) unless current_user
 
-          if current_user.webauthn_id.blank?
-            current_user.update!(webauthn_id: SecureRandom.urlsafe_base64(32))
-          end
           @webauthn_user = current_user
         end
 

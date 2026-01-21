@@ -4,7 +4,7 @@ module Sign
   module App
     module In
       class SecretsController < ApplicationController
-        include ::Redirect
+        include Common::Redirect
 
         SecretLoginForm =
           Struct.new(

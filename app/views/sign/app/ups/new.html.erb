@@ -23,12 +23,12 @@
       </div>
     <% end %>
 
-    <%= link_to new_sign_app_up_passkey_path,
+    <%= link_to new_sign_app_up_telephone_path,
                 class: "group relative flex items-center w-full rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-700 transition duration-300 hover:border-violet-300 hover:shadow-md hover:text-violet-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-violet-500 dark:hover:text-violet-400" do %>
       <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-500 group-hover:bg-violet-50 group-hover:text-violet-600 dark:bg-slate-700 dark:text-slate-400 dark:group-hover:bg-violet-900/30 dark:group-hover:text-violet-400 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m14 10-2 2-2-2"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
       </div>
-      <span><%= t("sign.app.registration.new.methods.passkey.cta", default: "Use Passkey") %></span>
+      <span><%= t("sign.app.registration.new.methods.telephone.cta", default: "Use Telephone") %></span>
       <div class="ml-auto text-slate-300 group-hover:translate-x-1 group-hover:text-violet-500 transition-all dark:text-slate-600">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
       </div>

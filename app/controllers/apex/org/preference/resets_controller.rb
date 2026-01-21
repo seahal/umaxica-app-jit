@@ -4,6 +4,7 @@ module Apex
   module Org
     module Preference
       class ResetsController < ApplicationController
+        public_strict!
         include ::Preference::Core
 
         def edit

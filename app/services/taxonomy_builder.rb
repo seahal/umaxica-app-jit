@@ -22,37 +22,6 @@ module TaxonomyBuilder
   end
 
   def build_tree(records)
-    nodes_by_id = {}
-    nodes =
-      Array(records).map do |record|
-        node = {
-          id: record.id,
-          parent_id: record.parent_id,
-          name: record.name,
-          children: [],
-        }
-        nodes_by_id[node[:id]] = node
-        node
-      end
-
-    assemble_tree(nodes_by_id, nodes)
+    Jit::Algorithms::TreeBuilder.build(records)
   end
-
-  def assemble_tree(nodes_by_id, nodes)
-    roots = []
-
-    nodes.each do |node|
-      parent = nodes_by_id[node[:parent_id]]
-
-      if parent
-        parent[:children] << node
-      else
-        roots << node
-      end
-    end
-
-    roots
-  end
-
-  private_class_method :assemble_tree
 end

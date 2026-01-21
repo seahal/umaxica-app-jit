@@ -157,11 +157,16 @@ module Core
             assert_response :success
 
             preference = AppPreference.order(:created_at).last
-            expected_length = Jwt::Jti.encoded_length(Jwt::Jti::DEFAULT_BYTES)
+            expected_length = Jit::Security::Jwt::JtiGenerator.encoded_length(Jit::Security::Jwt::JtiGenerator::DEFAULT_BYTES)
             assert_predicate preference.jti, :present?, "jti should be set for new preferences"
-            assert_match(Jwt::Jti::BASE64URL_REGEX, preference.jti, "jti should be base64url-safe")
-            assert_equal expected_length, preference.jti.length,
-                         "jti should be #{expected_length} chars for #{Jwt::Jti::DEFAULT_BYTES} bytes"
+            assert_match(
+              Jit::Security::Jwt::JtiGenerator::BASE64URL_REGEX, preference.jti,
+              "jti should be base64url-safe",
+            )
+            assert_equal(
+              expected_length, preference.jti.length,
+              "jti should be #{expected_length} chars for #{Jit::Security::Jwt::JtiGenerator::DEFAULT_BYTES} bytes",
+            )
             assert_no_match(/\A[0-9a-f-]{36}\z/i, preference.jti, "jti should not remain a UUID")
           end
 

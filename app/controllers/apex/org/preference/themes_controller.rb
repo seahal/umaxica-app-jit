@@ -4,6 +4,7 @@ module Apex
   module Org
     module Preference
       class ThemesController < ApplicationController
+        public_strict!
         include ::Preference::Core
 
         def edit

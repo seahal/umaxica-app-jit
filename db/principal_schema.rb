@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_19_051226) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_21_083250) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -253,6 +253,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_19_051226) do
     t.check_constraint "user_passkey_status_id IS NULL OR user_passkey_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_passkeys_user_identity_passkey_status_id_0993"
   end
 
+  create_table "user_secret_kinds", id: { type: :string, limit: 255 }, force: :cascade do |t|
+  end
+
   create_table "user_secret_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
     t.index "lower((id)::text)", name: "index_user_identity_secret_statuses_on_lower_id", unique: true
     t.check_constraint "id IS NULL OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_secret_statuses_id_format"
@@ -267,10 +270,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_19_051226) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_identity_secret_status_id", limit: 255, default: "ACTIVE", null: false
+    t.string "user_secret_kind_id", limit: 255, null: false
     t.integer "uses_remaining", default: 1, null: false
     t.index ["expires_at"], name: "index_user_secrets_on_expires_at"
     t.index ["user_id"], name: "index_user_secrets_on_user_id"
     t.index ["user_identity_secret_status_id"], name: "index_user_secrets_on_user_identity_secret_status_id"
+    t.index ["user_secret_kind_id"], name: "index_user_secrets_on_user_secret_kind_id"
     t.check_constraint "user_identity_secret_status_id IS NULL OR user_identity_secret_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_identity_secrets_user_identity_secret_status_id_format"
     t.check_constraint "uses_remaining >= 0", name: "chk_user_identity_secrets_uses_remaining_non_negative"
   end
@@ -390,6 +395,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_19_051226) do
   add_foreign_key "user_one_time_passwords", "users", validate: false
   add_foreign_key "user_passkeys", "user_passkey_statuses"
   add_foreign_key "user_passkeys", "users"
+  add_foreign_key "user_secrets", "user_secret_kinds"
   add_foreign_key "user_secrets", "user_secret_statuses", column: "user_identity_secret_status_id"
   add_foreign_key "user_secrets", "users"
   add_foreign_key "user_social_apples", "user_social_apple_statuses", column: "user_identity_social_apple_status_id"

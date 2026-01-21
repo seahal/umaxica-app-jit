@@ -7,23 +7,6 @@ module Sign
         before_action :reject_logged_in_session
 
         def new
-          @user_telephone = UserTelephone.new
-        end
-
-        def edit
-          @user_telephone = UserTelephone.new
-        end
-
-        def create
-          return if reject_if_logged_in("sign.app.authentication.telephone.create.you_have_already_logged_in")
-
-          head :ok
-        end
-
-        def update
-          return if reject_if_logged_in("sign.app.authentication.telephone.create.you_have_already_logged_in")
-
-          head :ok
         end
       end
     end
