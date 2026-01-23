@@ -92,6 +92,7 @@ module Auth
           nil
         end
 
+        # rubocop:disable Metrics/MethodLength
         def decode(token, host:)
           return nil if token.blank? || host.blank?
 
@@ -116,6 +117,7 @@ module Auth
           )
           nil
         end
+        # rubocop:enable Metrics/MethodLength
 
         def extract_subject(payload)
           payload&.dig("sub")
@@ -426,6 +428,7 @@ module Auth
     # @param model_class [Class] The model class to load
     # @param validations [Hash] Additional validations to perform
     # @return [ActiveRecord::Base, nil] The loaded record or nil
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def load_session_record(session_key, model_class, validations = {})
       return nil if session[session_key].blank?
 
@@ -449,6 +452,7 @@ module Auth
 
       record
     end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
     def current_account
       current_resource
@@ -464,23 +468,16 @@ module Auth
       @current_resource = load_current_resource
     end
 
+    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
       reset_session
 
-      if require_totp_check && resource.respond_to?(:totp_enabled?) && resource.totp_enabled?
-        session[:mfa_user_id] = resource.id
-        return { status: :totp_required }
+      if require_totp_check
+        totp_result = check_totp_requirement(resource)
+        return totp_result if totp_result
       end
 
-      token_record =
-        TokenRecord.connected_to(role: :writing) do
-          token_attributes = { resource_foreign_key => resource.id }
-          # Determine kind column based on resource type (user_token_kind_id or staff_token_kind_id)
-          kind_column = "#{resource_type}_token_kind_id"
-          token_attributes[kind_column] = token_kind_id if token_class.column_names.include?(kind_column)
-
-          token_class.create!(token_attributes)
-        end
+      token_record = create_login_token_record(resource, token_kind_id)
 
       # Generate SHA3-based refresh token
       refresh_plain = token_record.rotate_refresh_token!
@@ -581,6 +578,7 @@ module Auth
       )
       nil
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def log_out
       resource = current_resource
@@ -708,9 +706,16 @@ module Auth
       # --- Skip guardrails ---
       # Disallow removing enforce_access_policy! via skip_before_action.
       def skip_before_action(*filters, **options)
-        filters = filters.flatten
-        filters.map!(&:to_sym)
-        if filters.include?(:enforce_access_policy!)
+        # Note: In Ruby 4.0+/Rails 8+, some callers pass Hash as positional argument
+        # instead of keyword arguments. Filter out non-symbol entries.
+        flattened = filters.flatten
+        action_names =
+          flattened.filter_map do |filter|
+            next unless filter.respond_to?(:to_sym) && !filter.is_a?(Hash)
+
+            filter.to_sym
+          end
+        if action_names.include?(:enforce_access_policy!)
           raise SkipNotAllowedError, "skip_before_action :enforce_access_policy! is prohibited (#{name})"
         end
 
@@ -831,6 +836,7 @@ module Auth
       resource
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def load_from_token
       access_token = extract_access_token(ACCESS_COOKIE_KEY)
       return nil if access_token.blank?
@@ -862,6 +868,7 @@ module Auth
 
       resource_class.find_by(id: Token.extract_subject(payload))
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def resource_withdrawn?(resource)
       return false unless resource&.respond_to?(:withdrawn?)
@@ -919,14 +926,7 @@ module Auth
     # --- Policy enforcement methods ---
 
     def enforce_access_policy!
-      rule = resolve_access_policy_for(action_name)
-
-      if rule.nil?
-        Rails.logger.warn "AUTH_POLICY: Missing for #{self.class.name}##{action_name}"
-        raise MissingPolicyError,
-              "Missing access_policy for #{self.class.name}##{action_name}. " \
-              "Declare one of: #{VALID_POLICIES.join(", ")}"
-      end
+      rule = resolve_policy_rule
 
       policy = rule[:policy]
       options = rule[:options] || {}
@@ -946,6 +946,18 @@ module Auth
       else
         raise InvalidPolicyError, "Unexpected policy: #{policy.inspect}"
       end
+    end
+
+    def resolve_policy_rule
+      rule = resolve_access_policy_for(action_name)
+
+      if rule.nil?
+        Rails.logger.warn "AUTH_POLICY: Missing for #{self.class.name}##{action_name}"
+        raise MissingPolicyError,
+              "Missing access_policy for #{self.class.name}##{action_name}. " \
+              "Declare one of: #{VALID_POLICIES.join(", ")}"
+      end
+      rule
     end
 
     def resolve_access_policy_for(action)
@@ -979,20 +991,9 @@ module Auth
 
       # Branch HTML vs API (or delegate to your responder).
       if request.format.json? || options[:request_format] == :json
-        status = options[:status] || :unauthorized
-        render json: { error: (options[:message] || "unauthorized") }, status: status
+        handle_auth_required_json(options)
       else
-        path =
-          if respond_to?(:sign_in_url_with_return, true)
-            rt = Base64.urlsafe_encode64(request.original_url)
-            sign_in_url_with_return(rt)
-          elsif main_app.respond_to?(:sign_in_path)
-            main_app.sign_in_path
-          else
-            "/sign/in"
-          end
-        message = options[:message] || I18n.t("errors.messages.login_required")
-        redirect_to(path, allow_other_host: true, alert: message)
+        handle_auth_required_html(options)
       end
     end
 
@@ -1001,27 +1002,76 @@ module Auth
       return true unless respond_to?(:logged_in?) && logged_in?
 
       if request.format.json? || options[:request_format] == :json
-        status = options[:status] || :forbidden
-        render json: { error: (options[:message] || "already_authenticated") }, status: status
+        handle_guest_only_json(options)
       else
-        if options[:status] == :unauthorized
-          return render plain: (options[:message] || "権限がありません"), status: :unauthorized
-        end
-        if options[:status] == :bad_request
-          return render plain: (options[:message] || "リクエストが不正です"), status: :bad_request
-        end
-
-        path =
-          if respond_to?(:after_login_path, true)
-            after_login_path
-          elsif main_app.respond_to?(:after_login_path)
-            main_app.after_login_path
-          else
-            "/"
-          end
-        message = options[:message] || I18n.t("errors.messages.already_authenticated")
-        redirect_to(path, allow_other_host: true, alert: message)
+        handle_guest_only_with_status_checks(options)
       end
+    end
+
+    def create_login_token_record(resource, token_kind_id)
+      TokenRecord.connected_to(role: :writing) do
+        token_attributes = { resource_foreign_key => resource.id }
+        # Determine kind column based on resource type (user_token_kind_id or staff_token_kind_id)
+        kind_column = "#{resource_type}_token_kind_id"
+        token_attributes[kind_column] = token_kind_id if token_class.column_names.include?(kind_column)
+
+        token_class.create!(token_attributes)
+      end
+    end
+
+    def check_totp_requirement(resource)
+      return unless resource.respond_to?(:totp_enabled?) && resource.totp_enabled?
+
+      session[:mfa_user_id] = resource.id
+      { status: :totp_required }
+    end
+
+    def handle_auth_required_json(options)
+      status = options[:status] || :unauthorized
+      render json: { error: (options[:message] || "unauthorized") }, status: status
+    end
+
+    def handle_auth_required_html(options)
+      path =
+        if respond_to?(:sign_in_url_with_return, true)
+          rt = Base64.urlsafe_encode64(request.original_url)
+          sign_in_url_with_return(rt)
+        elsif main_app.respond_to?(:sign_in_path)
+          main_app.sign_in_path
+        else
+          "/sign/in"
+        end
+      message = options[:message] || I18n.t("errors.messages.login_required")
+      redirect_to(path, allow_other_host: true, alert: message)
+    end
+
+    def handle_guest_only_json(options)
+      status = options[:status] || :forbidden
+      render json: { error: (options[:message] || "already_authenticated") }, status: status
+    end
+
+    def handle_guest_only_with_status_checks(options)
+      if options[:status] == :unauthorized
+        return render plain: (options[:message] || "権限がありません"), status: :unauthorized
+      end
+      if options[:status] == :bad_request
+        return render plain: (options[:message] || "リクエストが不正です"), status: :bad_request
+      end
+
+      handle_guest_only_html(options)
+    end
+
+    def handle_guest_only_html(options)
+      path =
+        if respond_to?(:after_login_path, true)
+          after_login_path
+        elsif main_app.respond_to?(:after_login_path)
+          main_app.after_login_path
+        else
+          "/"
+        end
+      message = options[:message] || I18n.t("errors.messages.already_authenticated")
+      redirect_to(path, allow_other_host: true, alert: message)
     end
   end
 end

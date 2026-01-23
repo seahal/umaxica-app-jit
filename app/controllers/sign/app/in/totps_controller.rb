@@ -35,27 +35,35 @@ module Sign
           last_otp_at, totp_record = verify_totp_for(user, @totp_form.token)
 
           if last_otp_at
-            totp_record&.update!(last_otp_at: Time.zone.at(last_otp_at))
-
-            Rails.event.notify(
-              "authentication.totp.succeeded",
-              user_id: user.id,
-              ip_address: request.remote_ip,
-            )
-
-            clear_mfa_session!
-            log_in(user, require_totp_check: false)
-            redirect_with_notice("/", t("sign.app.authentication.totp.success"))
+            handle_totp_success(user, totp_record, last_otp_at)
           else
-            Rails.event.notify(
-              "authentication.totp.failed",
-              user_id: user&.id,
-              ip_address: request.remote_ip,
-            )
-            @totp_form.errors.add(:token, t("sign.app.authentication.totp.invalid"))
-            @secret_hints = active_secret_hints_for(user)
-            render :new, status: :unprocessable_content
+            handle_totp_failure(user)
           end
+        end
+
+        def handle_totp_success(user, totp_record, last_otp_at)
+          totp_record&.update!(last_otp_at: Time.zone.at(last_otp_at))
+
+          Rails.event.notify(
+            "authentication.totp.succeeded",
+            user_id: user.id,
+            ip_address: request.remote_ip,
+          )
+
+          clear_mfa_session!
+          log_in(user, require_totp_check: false)
+          redirect_with_notice("/", t("sign.app.authentication.totp.success"))
+        end
+
+        def handle_totp_failure(user)
+          Rails.event.notify(
+            "authentication.totp.failed",
+            user_id: user&.id,
+            ip_address: request.remote_ip,
+          )
+          @totp_form.errors.add(:token, t("sign.app.authentication.totp.invalid"))
+          @secret_hints = active_secret_hints_for(user)
+          render :new, status: :unprocessable_content
         end
 
         private

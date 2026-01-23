@@ -1,1 +1,4 @@
-# Auto-generated minimal fixture
+active:
+  id: ACTIVE
+revoked:
+  id: REVOKED

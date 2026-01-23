@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_21_184557) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_22_100002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -295,6 +295,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_184557) do
     t.string "email", default: "", null: false
     t.integer "expires_at", null: false
     t.string "image", default: "", null: false
+    t.datetime "last_authenticated_at"
     t.string "provider", default: "apple", null: false
     t.string "refresh_token", default: "", null: false
     t.string "token", default: "", null: false
@@ -319,6 +320,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_184557) do
     t.string "email", default: "", null: false
     t.integer "expires_at", null: false
     t.string "image", default: "", null: false
+    t.datetime "last_authenticated_at"
     t.string "provider", default: "google_oauth2", null: false
     t.string "refresh_token", default: "", null: false
     t.string "token", default: "", null: false
@@ -362,6 +364,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_184557) do
 
   create_table "users", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "last_reauth_at"
     t.integer "lock_version", default: 0, null: false
     t.string "public_id", limit: 255, default: ""
     t.string "status_id", limit: 255, default: "NEYO", null: false

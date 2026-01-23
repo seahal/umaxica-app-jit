@@ -6,9 +6,8 @@
 
 module RefreshTokenable
   extend ActiveSupport::Concern
+  include RefreshTokenShared
 
-  REFRESH_TOKEN_SEPARATOR = "."
-  REFRESH_VERIFIER_BYTES = 48
   REFRESH_TTL = 30.days
 
   included do
@@ -16,18 +15,6 @@ module RefreshTokenable
     before_validation :ensure_refresh_token_family_id, on: :create
     before_validation :ensure_refresh_token_generation, on: :create
     validates :refresh_token_digest, uniqueness: true, allow_nil: true
-  end
-
-  class_methods do
-    # Split token into public_id and verifier.
-    def parse_refresh_token(token)
-      return nil if token.blank?
-
-      public_id, verifier = token.split(REFRESH_TOKEN_SEPARATOR, 2)
-      return nil if public_id.blank? || verifier.blank?
-
-      [public_id, verifier]
-    end
   end
 
   # Whether the token is revoked.
@@ -49,7 +36,7 @@ module RefreshTokenable
   def rotate_refresh_token!(expires_at: nil)
     # Use a transaction to keep token state consistent.
     transaction do
-      verifier = SecureRandom.urlsafe_base64(REFRESH_VERIFIER_BYTES)
+      token, verifier = generate_refresh_token(public_id: public_id)
 
       self.refresh_token_digest = digest_refresh_token(verifier)
       self.refresh_expires_at = expires_at || default_refresh_expires_at
@@ -58,7 +45,7 @@ module RefreshTokenable
       save!
 
       # Return the combined token for the client.
-      build_refresh_token(verifier)
+      token
     end
   end
 
@@ -83,21 +70,10 @@ module RefreshTokenable
 
     candidate = digest_refresh_token(verifier)
 
-    # Use a constant-time comparison to avoid timing attacks.
-    ActiveSupport::SecurityUtils.secure_compare(refresh_token_digest, candidate)
+    secure_compare?(refresh_token_digest, candidate)
   end
 
   private
-
-  # Hash with SHA3-384.
-  def digest_refresh_token(verifier)
-    SHA3::Digest::SHA3_384.digest(verifier)
-  end
-
-  # Build the token string returned to the client (public_id.verifier).
-  def build_refresh_token(verifier)
-    "#{public_id}#{REFRESH_TOKEN_SEPARATOR}#{verifier}"
-  end
 
   def default_refresh_expires_at
     Time.current + REFRESH_TTL

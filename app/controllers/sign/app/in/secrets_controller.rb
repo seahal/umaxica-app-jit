@@ -47,52 +47,77 @@ module Sign
 
         def create
           if mfa_user
-            @secret_form = MfaSecretForm.new(mfa_secret_params)
-            return render :new, status: :unprocessable_content unless @secret_form.valid?
-
-            user = mfa_user
-            secret = verify_and_consume_secret(user, @secret_form.secret_value)
-
-            if secret
-              Rails.event.notify(
-                "authentication.totp.succeeded", user_id: user.id, ip_address: request.remote_ip,
-                                                 method: "secret", secret_id: secret.id,
-              )
-              clear_mfa_session!
-              log_in(user, require_totp_check: false)
-              redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
-            else
-              Rails.event.notify(
-                "authentication.totp.failed", user_id: user.id, ip_address: request.remote_ip,
-                                              method: "secret",
-              )
-              @secret_form.errors.add(:secret_value, t("sign.app.authentication.secret.create.invalid"))
-              @secret_hints = active_secret_hints_for(user)
-              render :new, status: :unprocessable_content
-            end
+            handle_mfa_login
           else
-            @secret_form = SecretLoginForm.new(secret_params)
-            return render :new, status: :unprocessable_content unless @secret_form.valid?
-
-            # Find user by email or telephone using find_by to handle encrypted columns correctly
-            info = @secret_form.account_identifiable_information
-            user = UserEmail.find_by(address: info)&.user ||
-              UserTelephone.find_by(number: info)&.user
-
-            secret = user ? verify_and_consume_secret(user, @secret_form.secret_value) : nil
-
-            if user && secret
-              result = log_in(user, require_totp_check: true)
-              if result[:status] == :totp_required
-                redirect_to new_sign_app_in_totp_path, notice: t("sign.app.authentication.totp.required")
-              else
-                redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
-              end
-            else
-              @secret_form.errors.add(:secret_value, t("sign.app.authentication.secret.create.invalid"))
-              render :new, status: :unprocessable_content
-            end
+            handle_standard_login
           end
+        end
+
+        def handle_mfa_login
+          @secret_form = MfaSecretForm.new(mfa_secret_params)
+          return render :new, status: :unprocessable_content unless @secret_form.valid?
+
+          user = mfa_user
+          secret = verify_and_consume_secret(user, @secret_form.secret_value)
+
+          if secret
+            handle_successful_mfa(user, secret)
+          else
+            handle_failed_mfa(user)
+          end
+        end
+
+        def handle_standard_login
+          @secret_form = SecretLoginForm.new(secret_params)
+          return render :new, status: :unprocessable_content unless @secret_form.valid?
+
+          user = find_user_by_info(@secret_form.account_identifiable_information)
+          secret = user ? verify_and_consume_secret(user, @secret_form.secret_value) : nil
+
+          if user && secret
+            process_standard_login(user)
+          else
+            handle_failed_standard_login
+          end
+        end
+
+        def handle_successful_mfa(user, secret)
+          Rails.event.notify(
+            "authentication.totp.succeeded", user_id: user.id, ip_address: request.remote_ip,
+                                             method: "secret", secret_id: secret.id,
+          )
+          clear_mfa_session!
+          log_in(user, require_totp_check: false)
+          redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
+        end
+
+        def handle_failed_mfa(user)
+          Rails.event.notify(
+            "authentication.totp.failed", user_id: user.id, ip_address: request.remote_ip,
+                                          method: "secret",
+          )
+          @secret_form.errors.add(:secret_value, t("sign.app.authentication.secret.create.invalid"))
+          @secret_hints = active_secret_hints_for(user)
+          render :new, status: :unprocessable_content
+        end
+
+        def find_user_by_info(info)
+          UserEmail.find_by(address: info)&.user ||
+            UserTelephone.find_by(number: info)&.user
+        end
+
+        def process_standard_login(user)
+          result = log_in(user, require_totp_check: true)
+          if result[:status] == :totp_required
+            redirect_to new_sign_app_in_totp_path, notice: t("sign.app.authentication.totp.required")
+          else
+            redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
+          end
+        end
+
+        def handle_failed_standard_login
+          @secret_form.errors.add(:secret_value, t("sign.app.authentication.secret.create.invalid"))
+          render :new, status: :unprocessable_content
         end
 
         private

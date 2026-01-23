@@ -428,15 +428,6 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_nil user_email.get_otp
   end
 
-  private
-
-  def default_headers
-    { "Host" => host, "HTTPS" => "on" }
-  end
-
-  def host
-    ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
-  end
   test "resets session ID after successful registration" do
     email = "session_reset_test@example.com"
 
@@ -475,5 +466,15 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_not_nil session.id
     assert_not_equal old_session_id, session.id
+  end
+
+  private
+
+  def default_headers
+    { "Host" => host, "HTTPS" => "on" }
+  end
+
+  def host
+    ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
   end
 end

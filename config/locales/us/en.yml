@@ -7,6 +7,8 @@ en:
     expected_db_error: "Expected DB Error: %{message}"
     check_positions: "\nChecking existing positions:"
   turnstile_error: "Security verification failed. Please try again."
+  sequential_flow:
+    invalid_step: "Invalid access. Please start from the beginning."
   hello: "Hello world 2"
   messages:
     region_settings_updated_successfully: "Region settings updated successfully."
@@ -252,6 +254,11 @@ en:
           update:
             success: "Email address has been verified."
             failed: "Registration failed. Please try again."
+          destroy:
+            cancelled: "Registration cancelled."
+          flow:
+            invalid: "Please follow the registration steps in order."
+            invalid_step: "Please complete the previous step first."
         telephone:
           new:
             page_title: "Sign up with phone number"

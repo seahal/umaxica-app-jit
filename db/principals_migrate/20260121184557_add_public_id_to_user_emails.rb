@@ -8,8 +8,12 @@ class AddPublicIdToUserEmails < ActiveRecord::Migration[8.2]
 
     reversible do |dir|
       dir.up do
-        UserEmail.find_each do |record|
-          record.update_columns(public_id: Nanoid.generate(size: 21))
+        safety_assured do
+          execute <<-SQL.squish
+            UPDATE user_emails
+            SET public_id = REPLACE(REPLACE(SUBSTRING(ENCODE(gen_random_bytes(16), 'base64') FROM 1 FOR 21), '+', '-'), '/', '_')
+            WHERE public_id IS NULL
+          SQL
         end
       end
     end

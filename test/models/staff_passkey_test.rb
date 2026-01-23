@@ -6,7 +6,6 @@
 #
 #  id                      :uuid             not null, primary key
 #  staff_id                :uuid             not null
-#  webauthn_id             :binary           not null
 #  public_key              :text             not null
 #  description             :string           default(""), not null
 #  sign_count              :integer          default(0), not null
@@ -14,6 +13,7 @@
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  staff_passkey_status_id :string(255)      default("ACTIVE"), not null
+#  webauthn_id             :string           default(""), not null
 #
 # Indexes
 #
@@ -32,7 +32,7 @@ class StaffPasskeyTest < ActiveSupport::TestCase
       public_key: "test_staff_public_key",
       sign_count: 1,
       external_id: SecureRandom.uuid,
-      webauthn_id: SecureRandom.random_bytes(32),
+      webauthn_id: SecureRandom.hex(32),
     )
 
     assert_equal "Staff Passkey", passkey.description
@@ -79,7 +79,7 @@ class StaffPasskeyTest < ActiveSupport::TestCase
         public_key: "overflow-key",
         sign_count: 0,
         external_id: SecureRandom.uuid,
-        webauthn_id: SecureRandom.random_bytes(32),
+        webauthn_id: SecureRandom.hex(32),
       )
 
       assert_not extra_passkey.valid?

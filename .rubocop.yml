@@ -18,22 +18,27 @@
 # ============================================================
 
 # Omakase Ruby styling for Railsを継承
+inherit_from:
+  - .rubocop_todo.yml
+
 inherit_gem:
   rubocop-rails-omakase: rubocop.yml
 
 # プラグイン
 plugins:
+  - rubocop-performance
+  - rubocop-rails
   - rubocop-i18n
   - rubocop-rake
   - rubocop-rubycw
   - rubocop-minitest
-  - rubocop-performance
   - rubocop-thread_safety
 
 # 全Copに適用される設定
 AllCops:
   TargetRubyVersion: 4.0
   NewCops: enable
+  SuggestExtensions: false
   UseCache: true
   CacheRootDirectory: tmp/rubocop_cache
   Exclude:
@@ -57,9 +62,13 @@ AllCops:
 Layout:
   Enabled: true
 
-# ---------- クラス構造 ----------
+# ------------------------------------------------------------
+# Controller: enforced structure
+# ------------------------------------------------------------
 Layout/ClassStructure:
   Enabled: true
+  Include:
+    - app/controllers/**/*.rb
   Categories:
     module_inclusion:
       - include
@@ -67,50 +76,21 @@ Layout/ClassStructure:
       - extend
     constants:
       - CONSTANT
-    attribute_macros:
-      - attr_reader
-      - attr_writer
-      - attr_accessor
-      - attr
-    associations:
-      - belongs_to
-      - has_one
-      - has_many
-      - has_and_belongs_to_many
-      - has_one_attached
-      - has_many_attached
-    delegations:
-      - delegate
-    enums:
-      - enum
-    scopes:
-      - scope
-    validations:
-      - validates
-      - validates!
-      - validates_associated
-      - validates_each
-      - validate
-      - validates_with
-    callbacks:
-      - before_validation
-      - after_validation
-      - before_save
-      - around_save
-      - after_save
-      - before_create
-      - around_create
-      - after_create
-      - before_update
-      - around_update
-      - after_update
-      - before_destroy
-      - around_destroy
-      - after_destroy
-      - after_commit
-      - after_rollback
+    macros:
+      - layout
+      - respond_to
+      - helper
+      - helper_method
+      - before_action
+      - after_action
+      - around_action
+      - skip_before_action
+      - skip_after_action
+      - skip_around_action
     public_class_methods:
       - public_class_method
+    initializer:
+      - initialize
     public_methods:
       - public_method
     protected_methods:
@@ -120,14 +100,9 @@ Layout/ClassStructure:
   ExpectedOrder:
     - module_inclusion
     - constants
-    - attribute_macros
-    - associations
-    - delegations
-    - enums
-    - scopes
-    - validations
-    - callbacks
+    - macros
     - public_class_methods
+    - initializer
     - public_methods
     - protected_methods
     - private_methods
@@ -167,12 +142,24 @@ Layout/EmptyLinesAroundModuleBody:
 
 Layout/EmptyLinesAroundMethodBody:
   Enabled: true
+  Include:
+    - app/controllers/**/*.rb
+
+Layout/EmptyLinesAroundAccessModifier:
+  Enabled: true
+  Include:
+    - app/controllers/**/*.rb
 
 Layout/EmptyLineAfterGuardClause:
   Enabled: true
 
 Layout/EmptyLineAfterMagicComment:
   Enabled: true
+
+# Controller-friendly access modifier spacing
+Style/AccessModifierDeclarations:
+  Enabled: true
+  EnforcedStyle: group
 
 # メソッド間の空行を強制（1行の空行を要求）
 Layout/EmptyLineBetweenDefs:
@@ -460,10 +447,10 @@ Style/SwapValues:
 
 # ---------- Metrics（コード複雑度・サイズ制限） ----------
 Metrics/AbcSize:
-  Max: 12
-  Exclude:
-    - 'db/**/*_migrate/**/*'
-    - 'test/**/*'
+  Enabled: true
+  Include:
+    - app/controllers/**/*.rb
+  Max: 25
 
 Metrics/BlockLength:
   Max: 40
@@ -475,12 +462,16 @@ Metrics/ClassLength:
   Max: 200
 
 Metrics/CyclomaticComplexity:
-  Max: 6
+  Enabled: true
+  Include:
+    - app/controllers/**/*.rb
+  Max: 10
 
 Metrics/MethodLength:
+  Enabled: true
+  Include:
+    - app/controllers/**/*.rb
   Max: 20
-  Exclude:
-    - 'db/**/*_migrate/**/*'
 
 Metrics/ModuleLength:
   Max: 120
@@ -490,7 +481,10 @@ Metrics/ParameterLists:
   MaxOptionalParameters: 2
 
 Metrics/PerceivedComplexity:
-  Max: 6
+  Enabled: true
+  Include:
+    - app/controllers/**/*.rb
+  Max: 10
 
 Metrics/BlockNesting:
   Max: 2
@@ -692,6 +686,8 @@ Rails/ActionControllerTestCase:
 
 Rails/ActionOrder:
   Enabled: true
+  Include:
+    - app/controllers/**/*.rb
 
 Rails/ActiveRecordCallbacksOrder:
   Enabled: true

@@ -28,6 +28,8 @@ class UserPasskey < PrincipalRecord
   belongs_to :user, inverse_of: :user_passkeys
   belongs_to :user_passkey_status, optional: true
 
+  scope :active, -> { where(user_passkey_status_id: "ACTIVE") }
+
   validates :webauthn_id, presence: true, uniqueness: true
   validates :external_id, presence: true
   validates :public_key, presence: true

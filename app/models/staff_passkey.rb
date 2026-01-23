@@ -6,7 +6,7 @@
 #
 #  id                      :uuid             not null, primary key
 #  staff_id                :uuid             not null
-#  webauthn_id             :binary           not null
+#  webauthn_id             :string           default(""), not null
 #  public_key              :text             not null
 #  description             :string           default(""), not null
 #  sign_count              :integer          default(0), not null
@@ -23,10 +23,13 @@
 #
 
 class StaffPasskey < OperatorRecord
+  self.ignored_columns += ["webauthn_id_binary"]
   MAX_PASSKEYS_PER_STAFF = 4
 
-  belongs_to :staff
+  belongs_to :staff, inverse_of: :staff_passkeys
   belongs_to :staff_passkey_status, optional: true
+
+  scope :active, -> { where(staff_passkey_status_id: "ACTIVE") }
 
   validates :webauthn_id, presence: true, uniqueness: true
   validates :external_id, presence: true
@@ -37,6 +40,8 @@ class StaffPasskey < OperatorRecord
 
   validate :enforce_staff_passkey_limit, on: :create
 
+  before_validation :set_defaults
+
   private
 
   def enforce_staff_passkey_limit
@@ -46,5 +51,11 @@ class StaffPasskey < OperatorRecord
     return if count < MAX_PASSKEYS_PER_STAFF
 
     errors.add(:base, :too_many, message: "exceeds maximum passkeys per staff (#{MAX_PASSKEYS_PER_STAFF})")
+  end
+
+  def set_defaults
+    self.external_id ||= SecureRandom.uuid
+    self.sign_count ||= 0
+    self.description = I18n.t("sign.default_passkey_description") if description.blank?
   end
 end

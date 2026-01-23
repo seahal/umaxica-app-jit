@@ -30,33 +30,74 @@ Rails.application.routes.draw do
         # Sign up
         resource :up, only: :new
         namespace :up do
-          resources :emails, only: %i(new create edit update)
+          # TODO: implement 2fa at show and update methods
+          resources :emails, only: %i(new create edit update show destroy)
           resources :telephones, only: %i(new create edit update show destroy)
         end
 
         # Sign in/out
         resource :in, only: %i(new)
         namespace :in do
-          resource :email, only: %i(new create edit update)
-          # Passkey authentication (Route 2: options + verification as separate resources)
-          namespace :passkey do
-            resource :options, only: %i(create)
-            resource :verification, only: %i(create)
+          # TODO: added show delete methods for 2FA
+          resource :email, only: %i(new create edit update) do
+            resource :sessions, only: %i(edit update)
           end
-          resource :passkey, only: %i(new)
-          resource :totp, only: %i(new create)
-          resource :secret, only: %i(new create)
+          # Passkey authentication for sign-in
+          # GET  /in/passkeys/new          -> new (login page with passkey button)
+          # POST /in/passkeys/options      -> options for authentication challenge
+          # POST /in/passkeys/verification -> verify authentication response
+          resources :passkeys, only: [:new] do
+            resource :sessions, only: %i(edit update)
+            collection do
+              post :options
+              post :verification
+            end
+          end
+          resource :secret, only: %i(new create) do
+            resource :sessions, only: %i(edit update)
+          end
         end
 
-        # Social sign-up / log-in
+        # ==========================================================================
+        # Social Authentication (OmniAuth)
+        # ==========================================================================
+        # Standard OmniAuth paths:
+        #   Start:    POST /auth/:provider (handled by OmniAuth middleware)
+        #   Callback: GET/POST /auth/:provider/callback
+        #   Failure:  GET/POST /auth/failure
+        #
+        # Our custom entry point:
+        #   GET /social/start?provider=...&intent=... -> prepares intent, redirects to /auth/:provider
+        # ==========================================================================
+
+        # Entry point for social auth with intent management
         namespace :social do
-          match "apple/callback",
-                to: "sessions#create",
-                defaults: { provider: "apple" },
+          # GET /social/start?provider=google_oauth2&intent=login|link|reauth
+          # Prepares session with intent/state, then redirects to /auth/:provider
+          get "start", to: "sessions#start"
+
+          # Unlink social identity (requires auth)
+          # DELETE /social/:provider/unlink
+          delete ":provider/unlink",
+                 to: "sessions#unlink",
+                 as: :unlink,
+                 constraints: { provider: /google_oauth2|apple/ }
+        end
+
+        # OmniAuth standard callbacks (mounted at /auth/*)
+        namespace :auth, path: "auth" do
+          # OmniAuth callbacks - both GET (Google) and POST (Apple)
+          # GET/POST /auth/:provider/callback
+          match ":provider/callback",
+                to: "omniauth_callbacks#omniauth",
+                via: %i(get post),
+                as: :callback
+
+          # OmniAuth failure callback
+          # GET/POST /auth/failure
+          match "failure",
+                to: "omniauth_callbacks#failure",
                 via: %i(get post)
-          get "google/callback",
-              to: "sessions#create",
-              defaults: { provider: "google_oauth2" }
         end
 
         # Settings with logged-in user
@@ -65,14 +106,23 @@ Rails.application.routes.draw do
           # TODO: Implement TOTP settings management
           resources :totps, only: %i(index new create edit update destroy)
 
-          # Passkey registration ceremony (Route 2: options + verification as separate resources)
-          namespace :passkeys do
-            resource :options, only: %i(create)
-            resource :verification, only: %i(create)
+          # Passkey management (CRUD-based)
+          # GET    /configuration/passkeys           -> index
+          # GET    /configuration/passkeys/new       -> new (registration form)
+          # POST   /configuration/passkeys           -> create
+          # GET    /configuration/passkeys/:id       -> show
+          # GET    /configuration/passkeys/:id/edit  -> edit
+          # PATCH  /configuration/passkeys/:id       -> update
+          # DELETE /configuration/passkeys/:id       -> destroy
+          # POST   /configuration/passkeys/options      -> WebAuthn registration options
+          # POST   /configuration/passkeys/verification -> WebAuthn registration verification
+          resources :passkeys do
+            collection do
+              post :options
+              post :verification
+            end
           end
 
-          # Passkey CRUD (existing)
-          resources :passkeys, only: %i(index show new create edit update destroy)
           resources :emails
           resources :telephones
           resource :apple, only: [:show]
@@ -119,8 +169,20 @@ Rails.application.routes.draw do
         # Login
         resource :in, only: [:new]
         namespace :in do
-          resource :passkey, only: %i(new create edit update)
-          resource :secret, only: %i(new create)
+          # Passkey authentication for sign-in
+          # GET  /in/passkeys/new          -> new (login page with passkey button)
+          # POST /in/passkeys/options      -> options for authentication challenge
+          # POST /in/passkeys/verification -> verify authentication response
+          resources :passkeys, only: [:new] do
+            collection do
+              post :options
+              post :verification
+            end
+            resource :sessions, only: %i(edit update)
+          end
+          resource :secret, only: %i(new create) do
+            resource :sessions, only: %i(edit update)
+          end
         end
 
         # Settings
@@ -128,12 +190,15 @@ Rails.application.routes.draw do
         namespace :configuration do
           resources :totps, only: %i(index new create edit update destroy)
 
-          # Passkey registration ceremony (Route 2: options + verification as separate resources)
-          namespace :passkeys do
-            resource :options, only: %i(create)
-            resource :verification, only: %i(create)
+          # Passkey management (CRUD-based)
+          resources :passkeys do
+            collection do
+              post :options
+              post :verification
+            end
+            resource :sessions, only: %i(edit update)
           end
-          resources :passkeys, only: %i(index edit update new)
+
           resources :secrets
           resources :sessions
           resource :withdrawal, only: %i(show)

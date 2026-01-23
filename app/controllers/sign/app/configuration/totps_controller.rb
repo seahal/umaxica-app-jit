@@ -24,23 +24,35 @@ module Sign
         end
 
         def create
+          initialize_totp
+          last_otp_at = verify_totp(@totp.private_key, @totp.first_token)
+
+          if last_otp_at
+            handle_success(last_otp_at)
+          else
+            handle_failure
+          end
+        end
+
+        def initialize_totp
           @totp = UserOneTimePassword.new(totp_params)
           @totp.private_key = session[:private_key]
           @totp.user = current_user
           @totp.user_one_time_password_status_id = "ACTIVE"
+        end
 
-          last_otp_at = verify_totp(@totp.private_key, @totp.first_token)
-          if last_otp_at
-            @totp.last_otp_at = Time.zone.at(last_otp_at)
-            @totp.save!
-            session[:private_key] = nil
-            redirect_to sign_app_configuration_totps_path, notice: t("messages.totp_successfully_created")
-          else
-            @totp.valid?
-            @totp.errors.add(:first_token, t("sign.app.configuration.totps.invalid_code"))
-            render_totp_qrcode(@totp.private_key)
-            render :new, status: :unprocessable_content
-          end
+        def handle_success(last_otp_at)
+          @totp.last_otp_at = Time.zone.at(last_otp_at)
+          @totp.save!
+          session[:private_key] = nil
+          redirect_to sign_app_configuration_totps_path, notice: t("messages.totp_successfully_created")
+        end
+
+        def handle_failure
+          @totp.valid?
+          @totp.errors.add(:first_token, t("sign.app.configuration.totps.invalid_code"))
+          render_totp_qrcode(@totp.private_key)
+          render :new, status: :unprocessable_content
         end
 
         def update

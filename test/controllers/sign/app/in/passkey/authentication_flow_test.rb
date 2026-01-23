@@ -8,10 +8,24 @@ module Sign::App::In::Passkey
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
       @user = users(:one)
+      UserEmail.create!(
+        user: @user,
+        address: "one@example.com",
+        user_identity_email_status_id: "VERIFIED",
+        otp_attempts_count: 0,
+        otp_counter: "0",
+        otp_private_key: "secret",
+        otp_expires_at: 10.minutes.from_now,
+        otp_last_sent_at: 1.hour.ago,
+      )
+
       # Setup a passkey for the user
+      @raw_credential_id = "credential-12345"
+      @encoded_credential_id = Base64.urlsafe_encode64(@raw_credential_id, padding: false)
+
       @passkey = UserPasskey.create!(
         user: @user,
-        webauthn_id: "credential-12345",
+        webauthn_id: @encoded_credential_id,
         public_key: "dummy-public-key",
         sign_count: 10,
         description: "Test Passkey",
@@ -20,27 +34,32 @@ module Sign::App::In::Passkey
     end
 
     test "should generate authentication options and store challenge in session" do
-      post sign_app_in_passkey_options_url(ri: "jp"), as: :json
+      email = @user.user_emails.first.address
+      post options_sign_app_in_passkeys_url(ri: "jp"), params: { email: email }, as: :json
 
       assert_response :success
       json_response = response.parsed_body
-      assert_not_nil json_response["challenge"]
+      challenge_id = json_response["challenge_id"]
+      assert_not_nil challenge_id
 
       # Verify session storage
-      assert_not_nil session[:webauthn]
-      assert_equal json_response["challenge"], session[:webauthn]["challenge"]
-      assert_equal "authentication", session[:webauthn]["purpose"]
-      assert_equal "sign/app/in/passkey", session[:webauthn]["scope"]
+      assert_not_nil session[:passkey_challenges]
+      assert_not_nil session[:passkey_challenges][challenge_id]
+      assert_equal "authentication", session[:passkey_challenges][challenge_id]["purpose"]
     end
 
     test "should verify valid credential and log in" do
       # 1. Get options to setup session
-      post sign_app_in_passkey_options_url(ri: "jp"), as: :json
-      session[:webauthn]["challenge"]
+      email = @user.user_emails.first.address
+      post options_sign_app_in_passkeys_url(ri: "jp"), params: { email: email }, as: :json
+
+      json_response = response.parsed_body
+      challenge_id = json_response["challenge_id"]
+      session[:passkey_challenges][challenge_id]["challenge"]
 
       # 2. Mock WebAuthn verification
       mock_credential = OpenStruct.new(
-        id: @passkey.webauthn_id,
+        id: @raw_credential_id,
         sign_count: 11,
       )
 
@@ -50,10 +69,11 @@ module Sign::App::In::Passkey
       end
 
       WebAuthn::Credential.stub :from_get, mock_credential do
-        post sign_app_in_passkey_verification_url(ri: "jp"), params: {
+        post verification_sign_app_in_passkeys_url(ri: "jp"), params: {
+          challenge_id: challenge_id,
           credential: {
-            id: @passkey.webauthn_id,
-            rawId: @passkey.webauthn_id,
+            id: @encoded_credential_id,
+            rawId: @encoded_credential_id,
             type: "public-key",
             response: {
               clientDataJSON: "dummy",
@@ -71,7 +91,9 @@ module Sign::App::In::Passkey
       assert_not_nil json_response["access_token"]
 
       # 3. Verify side effects
-      assert_nil session[:webauthn] # consumed
+      # Challenge should be consumed (removed from session)
+      # Challenge should be consumed (removed from session) or session reset
+      assert_nil session[:passkey_challenges]
       @passkey.reload
       assert_equal 11, @passkey.sign_count # updated
     end
@@ -79,7 +101,8 @@ module Sign::App::In::Passkey
     test "should fail verification with invalid challenge" do
       # 1. No options call (no session)
 
-      post sign_app_in_passkey_verification_url(ri: "jp"), params: {
+      post verification_sign_app_in_passkeys_url(ri: "jp"), params: {
+        challenge_id: "invalid-id",
         credential: { id: "foo" },
       }, as: :json
 

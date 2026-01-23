@@ -24,8 +24,8 @@ services:
       backend: { }
       frontend:
         aliases:
-          - auth.app.localhost
-          - auth.org.localhost
+          - sign.app.localhost
+          - sign.org.localhost
       observability: { }
     depends_on:
       primary:
@@ -216,18 +216,18 @@ services:
       - filer
     restart: unless-stopped
 
-  # cloudflare-tunnel:
-  #  image: cloudflare/cloudflared:latest
-  #  depends_on:
-  #    - core
-  #  command: tunnel run --token ${CLOUDFLARED_TOKEN}
-  #  environment:
-  #    CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
-  #  networks:
-  #    - frontend
-  #  extra_hosts:
-  #    - "host.docker.internal:host-gateway"
-  #  restart: unless-stopped
+  cloudflare-tunnel:
+   image: cloudflare/cloudflared:latest
+   depends_on:
+     - core
+   command: tunnel run --token ${CLOUDFLARED_TOKEN}
+   environment:
+     CLOUDFLARED_TOKEN: ${CLOUDFLARED_TOKEN}
+   networks:
+     - frontend
+   extra_hosts:
+     - "host.docker.internal:host-gateway"
+   restart: unless-stopped
 
 networks:
   backend: { }

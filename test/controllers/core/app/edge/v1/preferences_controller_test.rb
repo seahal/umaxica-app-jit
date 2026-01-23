@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "sha3"
 require "test_helper"
 
 module Core
@@ -65,6 +66,25 @@ module Core
             assert_predicate cookies[preference_access_cookie_name], :present?, "Access cookie should be set"
           end
 
+          test "refresh token format includes public_id.verifier" do
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            refresh_token = cookies[preference_refresh_cookie_name]
+            assert_predicate refresh_token, :present?
+
+            public_id = response.parsed_body["preference"]["public_id"]
+            assert refresh_token.start_with?("#{public_id}.")
+
+            verifier = refresh_token.split(".", 2).last
+            assert_predicate verifier, :present?
+
+            expected_digest = SHA3::Digest::SHA3_384.digest(verifier)
+            preference = AppPreference.find_by(public_id: public_id)
+            assert_predicate preference, :present?
+            assert_equal expected_digest, preference.token_digest
+          end
+
           test "should rotate refresh token when access token is missing" do
             get core_app_edge_v1_preference_url
             assert_response :success
@@ -76,6 +96,7 @@ module Core
             old_refresh = cookies[preference_refresh_cookie_name]
             assert_predicate old_refresh, :present?
             old_jti = preference.jti
+            old_digest = preference.token_digest
 
             cookies.delete(preference_access_cookie_name)
 
@@ -85,9 +106,50 @@ module Core
             new_refresh = cookies[preference_refresh_cookie_name]
             assert_predicate new_refresh, :present?
             assert_not_equal old_refresh, new_refresh
+            new_verifier = new_refresh.split(".", 2).last
+            new_digest = SHA3::Digest::SHA3_384.digest(new_verifier)
+            assert_not_equal old_digest, new_digest
             assert_predicate cookies[preference_access_cookie_name], :present?, "Access cookie should be set"
             preference.reload
+            assert_equal new_digest, preference.token_digest
             assert_not_equal old_jti, preference.jti, "jti should rotate when access token is reissued"
+          end
+
+          test "invalid refresh token is ignored and new preference is created" do
+            cookies[preference_refresh_cookie_name] = "oops.bad.token"
+
+            assert_difference -> { AppPreference.count }, 1 do
+              get core_app_edge_v1_preference_url
+              assert_response :success
+            end
+          end
+
+          test "legacy refresh token migrates to public_id.verifier format" do
+            legacy_token = "legacy_refresh_#{SecureRandom.hex(8)}"
+            legacy_digest = SHA3::Digest::SHA3_384.digest(legacy_token)
+            legacy_preference =
+              AppPreference.create!(
+                public_id: "legacy_pref_#{SecureRandom.hex(6)}",
+                status_id: "NEYO",
+                expires_at: 1.day.from_now,
+                token_digest: legacy_digest,
+                jti: SecureRandom.uuid,
+              )
+
+            cookies[preference_refresh_cookie_name] = legacy_token
+            get core_app_edge_v1_preference_url
+            assert_response :success
+
+            new_token = cookies[preference_refresh_cookie_name]
+            assert_includes new_token, "."
+            assert new_token.start_with?("#{legacy_preference.public_id}.")
+
+            legacy_preference.reload
+            verifier = new_token.split(".", 2).last
+            assert_not_nil verifier
+            new_digest = SHA3::Digest::SHA3_384.digest(verifier)
+            assert_equal new_digest, legacy_preference.token_digest
+            assert_not_equal legacy_digest, legacy_preference.token_digest
           end
 
           test "should return JSON with correct structure" do

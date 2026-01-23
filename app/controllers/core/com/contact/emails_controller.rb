@@ -15,77 +15,80 @@ module Core
 
         def create
           @contact_email = ComContactEmail.find_by(com_contact_id: @contact.id)
-
-          unless @contact_email
-            raise StandardError, "Contact email not found"
-          end
+          raise StandardError, "Contact email not found" unless @contact_email
 
           hotp_code = params.dig(:com_contact_email, :hotp_code)
+          return handle_missing_code if hotp_code.blank?
+          return if check_limits!
 
-          if hotp_code.blank?
-            @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.create.hotp_code_required"))
-            render :new, status: :unprocessable_content
-            return
+          if @contact_email.verify_hotp_code(hotp_code)
+            process_verification
+          else
+            handle_invalid_code
           end
+        end
 
-          # Check if attempts left
+        def handle_missing_code
+          @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.create.hotp_code_required"))
+          render :new, status: :unprocessable_content
+        end
+
+        def check_limits!
           if @contact_email.verifier_attempts_left <= 0
             @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.max_attempts"))
             render :new, status: :unprocessable_content
-            return
+            return true
           end
 
-          # Check if expired
           if @contact_email.verifier_expires_at && Time.current >= @contact_email.verifier_expires_at
             @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.expired"))
             render :new, status: :unprocessable_content
-            return
+            return true
           end
 
-          if @contact_email.verify_hotp_code(hotp_code)
-            # Update contact status to CHECKED_EMAIL_ADDRESS
-            @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
+          false
+        end
 
-            redirect_url = new_core_com_contact_telephone_url(
-              @contact,
-              **preserved_locale_query_params,
-              **core_corporate_redirect_options,
+        def process_verification
+          @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
+
+          redirect_url = new_core_com_contact_telephone_url(
+            @contact,
+            **preserved_locale_query_params,
+            **core_corporate_redirect_options,
+          )
+
+          generate_and_send_telephone_token
+
+          redirect_to redirect_url, notice: I18n.t("help.com.contact.emails.update.success")
+        end
+
+        def generate_and_send_telephone_token
+          @contact_telephone = @contact.com_contact_telephone
+          return unless @contact_telephone
+
+          ActiveRecord::Base.transaction do
+            telephone_token = @contact_telephone.generate_hotp!
+            AwsSmsService.new.send_message(
+              to: @contact_telephone.telephone_number,
+              message: "PassCode => #{telephone_token}",
             )
-
-            # Generate HOTP for telephone verification and send via email
-            @contact_telephone = @contact.com_contact_telephone
-
-            if @contact_telephone
-              ActiveRecord::Base.transaction do
-                # Generate HOTP code
-                telephone_token = @contact_telephone.generate_hotp!
-
-                AwsSmsService.new.send_message(
-                  to: @contact_telephone.telephone_number,
-                  message: "PassCode => #{telephone_token}",
-                )
-              end
-            end
-
-            redirect_to redirect_url, notice: I18n.t("help.com.contact.emails.update.success")
-          else
-            # Reload to get updated attempts_left, but save it before reload clears errors
-            @contact_email.reload
-            attempts_left = @contact_email.verifier_attempts_left
-
-            if attempts_left > 0
-              @contact_email.errors.add(
-                :hotp_code,
-                I18n.t(
-                  "help.com.contact.emails.update.invalid_code",
-                  attempts_left: attempts_left,
-                ),
-              )
-            else
-              @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.max_attempts"))
-            end
-            render :new, status: :unprocessable_content
           end
+        end
+
+        def handle_invalid_code
+          @contact_email.reload
+          attempts_left = @contact_email.verifier_attempts_left
+
+          if attempts_left > 0
+            @contact_email.errors.add(
+              :hotp_code,
+              I18n.t("help.com.contact.emails.update.invalid_code", attempts_left: attempts_left),
+            )
+          else
+            @contact_email.errors.add(:hotp_code, I18n.t("help.com.contact.emails.update.max_attempts"))
+          end
+          render :new, status: :unprocessable_content
         end
 
         private

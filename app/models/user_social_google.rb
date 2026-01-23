@@ -16,6 +16,7 @@
 #  refresh_token                         :string           default(""), not null
 #  expires_at                            :integer          not null
 #  provider                              :string           default("google_oauth2"), not null
+#  last_authenticated_at                 :datetime
 #
 # Indexes
 #
@@ -26,6 +27,8 @@
 #
 
 class UserSocialGoogle < PrincipalRecord
+  include SocialIdentifiable
+
   alias_attribute :user_social_google_status_id, :user_identity_social_google_status_id
   belongs_to :user, inverse_of: :user_social_google
   belongs_to :user_social_google_status,
@@ -39,6 +42,10 @@ class UserSocialGoogle < PrincipalRecord
   validates :expires_at, presence: true
   validates :user_identity_social_google_status_id, length: { maximum: 255 }
 
+  def self.status_column
+    :user_identity_social_google_status_id
+  end
+
   def self.find_or_create_from_auth_hash(auth)
     # Find existing identity
     identity = find_or_initialize_by(uid: auth.uid, provider: auth.provider)
@@ -51,5 +58,24 @@ class UserSocialGoogle < PrincipalRecord
     identity.expires_at = auth.credentials.expires_at
 
     identity
+  end
+
+  # Extract uid from auth hash with fallback to extra.raw_info.sub
+  def self.extract_uid(auth)
+    uid = auth.uid
+    uid = auth.extra&.raw_info&.sub if uid.blank?
+    uid.to_s
+  end
+
+  # Update from OmniAuth hash (for link/reauth scenarios)
+  def update_from_auth_hash!(auth)
+    update!(
+      email: auth.info.email,
+      image: auth.info.image,
+      token: auth.credentials.token,
+      refresh_token: auth.credentials.refresh_token.presence || refresh_token,
+      expires_at: auth.credentials.expires_at,
+      last_authenticated_at: Time.current,
+    )
   end
 end

@@ -8,8 +8,8 @@ class Sign::Org::In::PasskeysControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get create" do
-    post sign_org_in_passkey_url(ri: "jp")
-    assert_response :success
+  test "should post options" do
+    post options_sign_org_in_passkeys_url(ri: "jp"), params: { identifier: "invalid" }
+    assert_response :unprocessable_content
   end
 end

@@ -19,7 +19,9 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     @user_secret, @password = UserSecret.issue!(
       name: "Login Password",
       user_id: @user.id,
-      user_secret_kind_id: "LOGIN", # UserSecretKind::LOGIN might not be loaded if class not referenced, but string usually works or reference constant
+      # UserSecretKind::LOGIN might not be loaded if the class is never referenced.
+      # The string usually works, or you can explicitly reference the constant.
+      user_secret_kind_id: "LOGIN",
       uses: 100,
     )
   end

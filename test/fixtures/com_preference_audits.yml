@@ -31,7 +31,7 @@
 
 one:
   id: 018eb261-2345-7000-8000-000000000001
-  subject_id: 6b24d11d-27f2-4210-96ff-5b6fdb8a663c
+  com_preference: one
   subject_type: ComPreference
   event_id: CREATE_NEW_PREFERENCE_TOKEN
   level_id: INFO

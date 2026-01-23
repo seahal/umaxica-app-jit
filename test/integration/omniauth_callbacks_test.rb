@@ -31,11 +31,12 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_social_google_callback_url(ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"), headers: { "Host" => @host }
     assert_redirected_to @expected_redirect
     follow_redirect!
 
-    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Google oauth2"), flash[:notice]
+    provider_name = SocialIdentifiable.normalize_provider("google_oauth2").humanize
+    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: provider_name), flash[:notice]
 
     user = UserSocialGoogle.find_by(uid: "123456789").user
     assert_not_nil user
@@ -57,7 +58,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_social_apple_callback_url(ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"), headers: { "Host" => @host }
     assert_redirected_to @expected_redirect
     follow_redirect!
 
@@ -96,10 +97,11 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_social_google_callback_url(ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"), headers: { "Host" => @host }
     assert_redirected_to @expected_redirect
     follow_redirect!
 
-    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Google oauth2"), flash[:notice]
+    provider_name = SocialIdentifiable.normalize_provider("google_oauth2").humanize
+    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: provider_name), flash[:notice]
   end
 end

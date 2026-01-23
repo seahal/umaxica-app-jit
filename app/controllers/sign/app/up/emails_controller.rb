@@ -5,18 +5,42 @@ module Sign
     module Up
       class EmailsController < ApplicationController
         include Sign::App::EmailRegistrable
+        include Sign::App::EmailFlowGuard
 
         guest_only! message: I18n.t("sign.app.registration.email.already_logged_in")
+
+        # ==========================================================================
+        # Step 3: Confirmation / 2FA Setup (Future)
+        # ==========================================================================
+
+        def show
+          @user_email = UserEmail.find_by(id: params["id"])
+
+          # TODO: 2FA setup hook
+          # When implementing 2FA:
+          #   - Display 2FA options (TOTP, SMS, etc.)
+          #   - Call `setup_two_factor_auth(@user)` concern method
+          #   - On success, complete registration flow
+          prepare_two_factor_auth_options
+        end
+        # ==========================================================================
+        # Step 1: Email Input
+        # ==========================================================================
 
         def new
           @user_email = UserEmail.new
         end
+
+        # ==========================================================================
+        # Step 2: OTP Verification
+        # ==========================================================================
 
         def edit
           @user_email = UserEmail.find_by(id: params["id"])
           if @user_email.blank? ||
               @user_email.otp_expired? ||
               @user_email.user_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
+            reset_email_flow! # Reset to step 1
             redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
             flash[:notice] = redirect_params.delete(:notice)
             redirect_to new_sign_app_up_email_path(redirect_params)
@@ -26,6 +50,7 @@ module Sign
         def create
           email_params = params.expect(user_email: [:address, :confirm_policy])
           if initiate_email_verification(email_params[:address])
+            progress_email_flow!(:create)
             redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
             flash[:notice] = redirect_params.delete(:notice)
             sanitize_redirect_params!(redirect_params)
@@ -57,15 +82,17 @@ module Sign
 
           case status
           when :success
-            # todo
-            #   1. redirect to rd if present
-            #   2. otherwise redirect to root of core path
+            progress_email_flow!(:update)
+            # TODO: Redirect to show for 2FA setup instead of home
+            # redirect_to sign_app_up_email_path(@user_email.id)
             redirect_with_notice("/", t("sign.app.registration.email.update.success"))
           when :session_expired
+            reset_email_flow! # Reset to step 1
             redirect_params = build_alert_params(t("sign.app.registration.email.update.session_expired"))
             flash[:alert] = redirect_params.delete(:alert)
             redirect_to new_sign_app_up_email_path(redirect_params)
           when :locked
+            reset_email_flow! # Reset to step 1
             redirect_params = build_alert_params(t("sign.app.registration.email.update.attempts_exceeded"))
             flash[:alert] = redirect_params.delete(:alert)
             redirect_to new_sign_app_up_email_path(redirect_params)
@@ -74,7 +101,45 @@ module Sign
           end
         end
 
+        def destroy
+          # Reset flow and start over
+          reset_flow!
+
+          # TODO: 2FA cleanup hook
+          # When implementing 2FA:
+          #   - Clear any pending 2FA setup state
+          #   - Call `cleanup_two_factor_auth_state` concern method
+          cleanup_two_factor_auth_state
+
+          redirect_params = build_notice_params(
+            t("sign.app.registration.email.destroy.cancelled"),
+          )
+          flash[:notice] = redirect_params.delete(:notice)
+          redirect_to new_sign_app_up_email_path(redirect_params)
+        end
+
         private
+
+        # ==========================================================================
+        # 2FA Hooks (Future Implementation)
+        # ==========================================================================
+
+        # TODO: Implement 2FA setup options for show action
+        def prepare_two_factor_auth_options
+          # Future implementation:
+          # @two_factor_methods = TwoFactorAuth.available_methods
+          # @qr_code = TwoFactorAuth.generate_totp_qr(@user)
+        end
+
+        # TODO: Cleanup 2FA state on destroy/cancel
+        def cleanup_two_factor_auth_state
+          # Future implementation:
+          # TwoFactorAuth.clear_pending_setup(session)
+        end
+
+        # ==========================================================================
+        # Helpers
+        # ==========================================================================
 
         def sanitize_redirect_params!(redirect_params)
           return if redirect_params[:rd].blank?

@@ -1,7 +1,0 @@
-ja:
-  activerecord:
-      messages:
-        too_long: "は%{count}文字以内で入力してください"
-        required: "を入力してください"
-        taken: "はすでに存在します"
-        invalid: "は不正な値です"

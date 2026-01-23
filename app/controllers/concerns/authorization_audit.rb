@@ -34,7 +34,20 @@ module AuthorizationAudit
     actor = current_user_or_staff
     return unless actor
 
-    log_data = {
+    log_data = build_log_data(actor, exception)
+
+    # Log the authorization failure event
+    Rails.event.notify("authorization.failure", log_data)
+
+    create_audit_record(actor, log_data)
+  rescue StandardError => e
+    # Don't let audit logging break the application
+    Rails.logger.error("Authorization audit logging failed: #{e.message}")
+    Rails.event.notify("authorization.failure_log.failed", error_message: e.message)
+  end
+
+  def build_log_data(actor, exception)
+    {
       actor_type: actor.class.name,
       actor_id: actor.id,
       action: action_name,
@@ -47,20 +60,15 @@ module AuthorizationAudit
       user_agent: request.user_agent,
       timestamp: Time.current,
     }
+  end
 
-    # Log the authorization failure event
-    Rails.event.notify("authorization.failure", log_data)
-
+  def create_audit_record(actor, log_data)
     # Create audit record if actor is User or Staff
     if actor.is_a?(User)
       create_user_authorization_audit(actor, log_data)
     elsif actor.is_a?(Staff)
       create_staff_authorization_audit(actor, log_data)
     end
-  rescue StandardError => e
-    # Don't let audit logging break the application
-    Rails.logger.error("Authorization audit logging failed: #{e.message}")
-    Rails.event.notify("authorization.failure_log.failed", error_message: e.message)
   end
 
   def create_user_authorization_audit(user, log_data)

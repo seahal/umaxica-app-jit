@@ -186,6 +186,7 @@ module Preference
 
   module Base
     extend ActiveSupport::Concern
+    include RefreshTokenShared
 
     ACCESS_TOKEN_TTL = Token::ACCESS_TOKEN_TTL
     REFRESH_TOKEN_TTL = 400.days
@@ -484,8 +485,8 @@ module Preference
       @refresh_token_value = token_value
       preference =
         if token_value.present?
-          digest = refresh_token_digest(token_value)
-          preference_class.includes(preference_associations_to_preload).find_by(token_digest: digest)
+          digest = refresh_token_lookup_digest(token_value)
+          preference_class.includes(preference_associations_to_preload).find_by(token_digest: digest) if digest
         end
 
       if valid_refresh_preference?(preference)
@@ -500,16 +501,19 @@ module Preference
     end
 
     def create_new_preference_record!
-      token = SecureRandom.urlsafe_base64(48)
-      token_digest = refresh_token_digest(token)
       expires_at = refresh_token_expiry
+      generated_token = nil
 
       PreferenceRecord.connected_to(role: :writing) do
         ActiveRecord::Base.transaction do
           @preferences = preference_class.create!(
-            token_digest: token_digest,
             expires_at: expires_at,
             jti: Jit::Security::Jwt::JtiGenerator.generate,
+          )
+
+          generated_token, verifier = generate_refresh_token(public_id: @preferences.public_id)
+          @preferences.update!(
+            token_digest: digest_refresh_token(verifier),
           )
 
           create_preference_options(@preferences)
@@ -525,8 +529,8 @@ module Preference
         end
       end
 
-      @refresh_token_value = token
-      set_refresh_token_cookie(token, expires_at)
+      @refresh_token_value = generated_token
+      set_refresh_token_cookie(generated_token, expires_at)
 
       @preferences
     end
@@ -534,8 +538,8 @@ module Preference
     def refresh_refresh_token_lifetime(preference)
       return if @refresh_token_value.blank? || preference.blank?
 
-      new_token = SecureRandom.urlsafe_base64(48)
-      new_digest = refresh_token_digest(new_token)
+      new_token, verifier = generate_refresh_token(public_id: preference.public_id)
+      new_digest = digest_refresh_token(verifier)
       new_expiry = refresh_token_expiry
 
       # TODO: Detect refresh token reuse (theft) by tracking previous token digest.
@@ -630,8 +634,15 @@ module Preference
       cookies[refresh_token_cookie_name]
     end
 
-    def refresh_token_digest(token)
-      SHA3::Digest::SHA3_384.digest(token)
+    def refresh_token_lookup_digest(token)
+      parsed = parse_refresh_token(token)
+      return digest_refresh_token(parsed.last) if parsed
+
+      # Legacy tokens were stored as a flat base64 string without the public_id prefix.
+      # TODO (Apr 1, 2026): once every client has rotated, remove this branch and purge digests that still match legacy SHA3 values.
+      return legacy_refresh_token_digest(token) unless token.include?(refresh_token_separator)
+
+      nil
     end
 
     def set_refresh_token_cookie(token, expires_at)

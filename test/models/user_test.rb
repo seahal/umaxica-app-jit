@@ -4,13 +4,14 @@
 #
 # Table name: users
 #
-#  id           :uuid             not null, primary key
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  public_id    :string(255)      default("")
-#  status_id    :string(255)      default("NEYO"), not null
-#  withdrawn_at :datetime         default("infinity")
-#  lock_version :integer          default(0), not null
+#  id             :uuid             not null, primary key
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  public_id      :string(255)      default("")
+#  status_id      :string(255)      default("NEYO"), not null
+#  withdrawn_at   :datetime         default("infinity")
+#  lock_version   :integer          default(0), not null
+#  last_reauth_at :datetime
 #
 # Indexes
 #

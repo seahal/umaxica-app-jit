@@ -69,6 +69,8 @@ class StaffTest < ActiveSupport::TestCase
 
   # ==========================================================================
   # B. Normalization (input equivalence)
+  # Tests verify that various input formats are normalized to the same output.
+  # This ensures case-insensitivity and tolerance for common formatting.
   # ==========================================================================
 
   test "normalization: uppercase input is converted to lowercase" do
@@ -87,6 +89,37 @@ class StaffTest < ActiveSupport::TestCase
 
   test "normalization: mixed case input is converted to lowercase" do
     staff = Staff.new(public_id: "AbCdEfHj")
+    staff.validate
+
+    assert_equal "abcdefhj", staff.public_id
+  end
+
+  # Hyphen/underscore normalization tests per spec:
+  # "ABCD-EFGH" -> "abcdefgh", "abcd_efgh" -> "abcdefgh", " abcd-efgh " -> "abcdefgh"
+
+  test "normalization: ABCD-EFGH with hyphen is normalized to abcdefgh" do
+    staff = Staff.new(public_id: "ABCD-EFHJ")
+    staff.validate
+
+    assert_equal "abcdefhj", staff.public_id
+  end
+
+  test "normalization: abcd_efgh with underscore is normalized to abcdefgh" do
+    staff = Staff.new(public_id: "abcd_efhj")
+    staff.validate
+
+    assert_equal "abcdefhj", staff.public_id
+  end
+
+  test "normalization: leading/trailing whitespace is stripped" do
+    staff = Staff.new(public_id: " abcd-efhj ")
+    staff.validate
+
+    assert_equal "abcdefhj", staff.public_id
+  end
+
+  test "normalization: multiple hyphens and underscores are all removed" do
+    staff = Staff.new(public_id: "ab-cd_ef-hj")
     staff.validate
 
     assert_equal "abcdefhj", staff.public_id

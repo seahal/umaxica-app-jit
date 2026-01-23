@@ -18,6 +18,10 @@
 3. Prepare the database (creates, migrates, seeds as`
 4. ... run `bin/dev`
 
+## WebAuthn configuration
+- WebAuthn requires a `TRUSTED_ORIGINS` environment variable that enumerates every allowed origin. Without it, Rails commands such as `bin/rails db:migrate` cannot start.
+- For local development we already set `TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000` inside `docker/core/env`. If you run Ruby commands outside the container, set the same value (or other hosts you use) beforehand.
+
 ## Database IDs
 - PostgreSQL 18 UUID primary keys default to `uuidv7()` so inserts remain time-ordered.
 

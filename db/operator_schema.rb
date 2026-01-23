@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_21_195628) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_22_130001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pgcrypto"
 
   create_table "admin_statuses", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -198,7 +199,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_21_195628) do
     t.uuid "staff_id", null: false
     t.string "staff_passkey_status_id", limit: 255, default: "ACTIVE", null: false
     t.datetime "updated_at", null: false
-    t.binary "webauthn_id", null: false
+    t.string "webauthn_id", default: "", null: false
     t.index ["staff_id"], name: "index_staff_identity_passkeys_on_staff_id"
     t.index ["staff_passkey_status_id"], name: "idx_on_staff_identity_passkey_status_id_159c890738"
     t.index ["webauthn_id"], name: "index_staff_identity_passkeys_on_webauthn_id", unique: true

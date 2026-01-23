@@ -1,38 +1,93 @@
 # frozen_string_literal: true
 
+# WebAuthn Configuration
+#
+# This initializer sets up WebAuthn for Passkey authentication.
+#
+# IMPORTANT: TRUSTED_ORIGINS must be configured in environment variables.
+# The application will fail to start if TRUSTED_ORIGINS is not set or empty.
+#
+# Environment Variables:
+# - TRUSTED_ORIGINS: Comma-separated list of allowed origins (required)
+#   - Development: http://sign.app.localhost:3000,http://sign.org.localhost:3000
+#   - Production: https://sign.app.example.com,https://sign.org.example.com
+#
+# Note: rp_id is NOT configured here. It is dynamically determined per-request
+# using request.host in the Webauthn::Config concern. This allows different
+# rp_id values for service (sign.app.localhost) and staff (sign.org.localhost).
+
+module Webauthn
+  class TrustedOriginsNotConfiguredError < StandardError; end
+
+  class << self
+    def trusted_origins
+      TRUSTED_ORIGINS
+    end
+
+    def validate_origin!(origin)
+      return true if trusted_origins.include?(origin)
+
+      raise WebAuthn::OriginVerificationError,
+            "Origin '#{origin}' is not in TRUSTED_ORIGINS. " \
+            "Allowed origins: #{trusted_origins.join(", ")}"
+    end
+
+    private
+
+    def parse_trusted_origins
+      raw = ENV["TRUSTED_ORIGINS"].to_s.strip
+      origins = raw.split(",")
+      origins.map!(&:strip)
+      origins.reject!(&:empty?)
+
+      if origins.empty?
+        raise TrustedOriginsNotConfiguredError,
+              "TRUSTED_ORIGINS environment variable is required but not set. " \
+              "Please configure it with comma-separated origin URLs. " \
+              "Example for development: TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000 " \
+              "Example for production: TRUSTED_ORIGINS=https://sign.app.example.com,https://sign.org.example.com"
+      end
+
+      # Validate origin format
+      origins.each do |origin|
+        uri = URI.parse(origin)
+        unless uri.scheme && uri.host
+          raise TrustedOriginsNotConfiguredError,
+                "Invalid origin format in TRUSTED_ORIGINS: '#{origin}'. " \
+                "Origins must include scheme and host (e.g., https://example.com)"
+        end
+
+        # Production must use HTTPS
+        if Rails.env.production? && uri.scheme != "https"
+          raise TrustedOriginsNotConfiguredError,
+                "Production requires HTTPS origins. Found HTTP origin: '#{origin}'"
+        end
+      end
+
+      origins.freeze
+    end
+  end
+
+  TRUSTED_ORIGINS = parse_trusted_origins
+end
+
+# Fail-fast: Validate TRUSTED_ORIGINS at application startup
+Webauthn.trusted_origins
+
+# Configure webauthn gem defaults
 WebAuthn.configure do |config|
-  # This value needs to match `window.location.origin` evaluated by
-  # the User Agent during registration and authentication ceremonies.
-  # Multiple origins can be used when needed. Using more than one will imply you MUST configure rp_id explicitely. If you need your credentials to be bound to a single origin but you have more than one tenant, please see [our Advanced Configuration section](https://github.com/cedarcode/webauthn-ruby/blob/master/docs/advanced_configuration.md) instead of adding multiple origins.
-  config.allowed_origins = ["http://localhost:3000"]
+  # RP name for display in authenticator UI
+  config.rp_name = ENV.fetch("WEBAUTHN_RP_NAME", "Umaxica")
 
-  # Relying Party name for display purposes
-  config.rp_name = "Umaxica"
+  # IMPORTANT: allowed_origins and rp_id are NOT set here.
+  # They are dynamically configured per-request in Webauthn::Config concern.
+  # This allows:
+  # - rp_id to vary by host (sign.app.localhost vs sign.org.localhost)
+  # - origin validation to use our stricter Webauthn.validate_origin!
 
-  # Optionally configure a client timeout hint, in milliseconds.
-  # This hint specifies how long the browser should wait for any
-  # interaction with the user.
-  # This hint may be overridden by the browser.
-  # https://www.w3.org/TR/webauthn/#dom-publickeycredentialcreationoptions-timeout
-  # config.credential_options_timeout = 120_000
+  # Use Base64URL encoding (default, but explicit for clarity)
+  config.encoding = :base64url
 
-  # You can optionally specify a different Relying Party ID
-  # (https://www.w3.org/TR/webauthn/#relying-party-identifier)
-  # if it differs from the default one.
-  #
-  # In this case the default would be "sign.example.com", but you can set it to
-  # the suffix "example.com"
-  #
-  # config.rp_id = "example.com"
-
-  # Configure preferred binary-to-text encoding scheme. This should match the encoding scheme
-  # used in your client-side (user agent) code before sending the credential to the server.
-  # Supported values: `:base64url` (default), `:base64` or `false` to disable all encoding.
-  #
-  # config.encoding = :base64url
-
-  # Possible values: "ES256", "ES384", "ES512", "PS256", "PS384", "PS512", "RS256", "RS384", "RS512", "RS1"
-  # Default: ["ES256", "PS256", "RS256"]
-  #
-  # config.algorithms << "ES384"
+  # Credential options timeout (2 minutes)
+  config.credential_options_timeout = 120_000
 end

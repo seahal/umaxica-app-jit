@@ -81,8 +81,10 @@ class Staff < OperatorRecord
             presence: true,
             uniqueness: true,
             length: { is: PUBLIC_ID_LENGTH },
-            format: { with: /\A[abcdefhjklmnpqrtuvwxy23456789]{8}\z/,
-                      message: "must be 8 lowercase alphanumeric characters (excluding i, o, 0, 1, s, z, g)", }
+            format: {
+              with: /\A[abcdefhjklmnpqrtuvwxy23456789]{8}\z/,
+              message: :invalid_format,
+            }
   validates :status_id, length: { maximum: 255 }
 
   before_validation :normalize_public_id
@@ -98,9 +100,12 @@ class Staff < OperatorRecord
 
   private
 
-  # Downcase public_id for case-insensitive normalization
+  # Normalize public_id: strip whitespace, remove hyphens/underscores, downcase
+  # Examples: "ABCD-EFGH" -> "abcdefgh", " abcd_efgh " -> "abcdefgh"
   def normalize_public_id
-    self.public_id = public_id.downcase if public_id.present?
+    return if public_id.blank?
+
+    self.public_id = public_id.strip.gsub(/[-_]/, "").downcase
   end
 
   # Assign a unique public_id if not already set

@@ -86,14 +86,7 @@ module Auth
     private
 
     def enforce_access_policy!
-      rule = resolve_access_policy_for(action_name)
-
-      if rule.nil?
-        Rails.logger.warn "AUTH_POLICY: Missing for #{self.class.name}##{action_name}"
-        raise MissingPolicyError,
-              "Missing access_policy for #{self.class.name}##{action_name}. " \
-              "Declare one of: #{VALID_POLICIES.join(", ")}"
-      end
+      rule = resolve_policy_rule
 
       policy = rule[:policy]
       options = rule[:options] || {}
@@ -113,6 +106,18 @@ module Auth
       else
         raise InvalidPolicyError, "Unexpected policy: #{policy.inspect}"
       end
+    end
+
+    def resolve_policy_rule
+      rule = resolve_access_policy_for(action_name)
+
+      if rule.nil?
+        Rails.logger.warn "AUTH_POLICY: Missing for #{self.class.name}##{action_name}"
+        raise MissingPolicyError,
+              "Missing access_policy for #{self.class.name}##{action_name}. " \
+              "Declare one of: #{VALID_POLICIES.join(", ")}"
+      end
+      rule
     end
 
     def resolve_access_policy_for(action)
@@ -146,20 +151,9 @@ module Auth
 
       # Branch HTML vs API (or delegate to your responder).
       if request.format.json? || options[:request_format] == :json
-        status = options[:status] || :unauthorized
-        render json: { error: (options[:message] || "unauthorized") }, status: status
+        handle_auth_required_json(options)
       else
-        path =
-          if respond_to?(:sign_in_url_with_return, true)
-            rt = Base64.urlsafe_encode64(request.original_url)
-            sign_in_url_with_return(rt)
-          elsif main_app.respond_to?(:sign_in_path)
-            main_app.sign_in_path
-          else
-            "/sign/in"
-          end
-        message = options[:message] || I18n.t("errors.messages.login_required")
-        redirect_to(path, allow_other_host: true, alert: message)
+        handle_auth_required_html(options)
       end
     end
 
@@ -168,27 +162,58 @@ module Auth
       return true unless respond_to?(:logged_in?) && logged_in?
 
       if request.format.json? || options[:request_format] == :json
-        status = options[:status] || :forbidden
-        render json: { error: (options[:message] || "already_authenticated") }, status: status
+        handle_guest_only_json(options)
       else
-        if options[:status] == :unauthorized
-          return render plain: (options[:message] || "権限がありません"), status: :unauthorized
-        end
-        if options[:status] == :bad_request
-          return render plain: (options[:message] || "リクエストが不正です"), status: :bad_request
-        end
-
-        path =
-          if respond_to?(:after_login_path, true)
-            after_login_path
-          elsif main_app.respond_to?(:after_login_path)
-            main_app.after_login_path
-          else
-            "/"
-          end
-        message = options[:message] || I18n.t("errors.messages.already_authenticated")
-        redirect_to(path, allow_other_host: true, alert: message)
+        handle_guest_only_with_status_checks(options)
       end
+    end
+
+    def handle_auth_required_json(options)
+      status = options[:status] || :unauthorized
+      render json: { error: (options[:message] || "unauthorized") }, status: status
+    end
+
+    def handle_auth_required_html(options)
+      path =
+        if respond_to?(:sign_in_url_with_return, true)
+          rt = Base64.urlsafe_encode64(request.original_url)
+          sign_in_url_with_return(rt)
+        elsif main_app.respond_to?(:sign_in_path)
+          main_app.sign_in_path
+        else
+          "/sign/in"
+        end
+      message = options[:message] || I18n.t("errors.messages.login_required")
+      redirect_to(path, allow_other_host: true, alert: message)
+    end
+
+    def handle_guest_only_json(options)
+      status = options[:status] || :forbidden
+      render json: { error: (options[:message] || "already_authenticated") }, status: status
+    end
+
+    def handle_guest_only_with_status_checks(options)
+      if options[:status] == :unauthorized
+        return render plain: (options[:message] || "権限がありません"), status: :unauthorized
+      end
+      if options[:status] == :bad_request
+        return render plain: (options[:message] || "リクエストが不正です"), status: :bad_request
+      end
+
+      handle_guest_only_html(options)
+    end
+
+    def handle_guest_only_html(options)
+      path =
+        if respond_to?(:after_login_path, true)
+          after_login_path
+        elsif main_app.respond_to?(:after_login_path)
+          main_app.after_login_path
+        else
+          "/"
+        end
+      message = options[:message] || I18n.t("errors.messages.already_authenticated")
+      redirect_to(path, allow_other_host: true, alert: message)
     end
   end
 end

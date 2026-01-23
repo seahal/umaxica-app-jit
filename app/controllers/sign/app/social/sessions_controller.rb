@@ -3,96 +3,81 @@
 module Sign
   module App
     module Social
+      # Controller for social auth entry points and account management
+      #
+      # Routes:
+      #   GET    /social/start          -> #start (entry point with intent)
+      #   DELETE /social/:provider/unlink -> #unlink (remove linked identity)
+      #
+      # The actual OmniAuth callbacks are handled by:
+      #   Sign::App::Auth::OmniauthCallbacksController
       class SessionsController < Sign::App::ApplicationController
-        def create
-          auth = request.env["omniauth.auth"] || mock_auth_from_test_mode
-          ActiveRecord::Base.connected_to(role: :writing) do
-            raise "Missing OmniAuth data" unless auth
+        include SocialAuthConcern
 
-            provider = auth.provider
+        REQUIRE_REAUTH_FOR_UNLINK = true
 
-            identity =
-              case provider
-              when "google_oauth2"
-                UserSocialGoogle.find_or_create_from_auth_hash(auth)
-              when "apple"
-                UserSocialApple.find_or_create_from_auth_hash(auth)
-              else
-                raise "Unknown provider: #{provider}"
-              end
+        SUPPORTED_PROVIDERS = %w(google_oauth2 apple).freeze
 
-            notice_message = I18n.t("sign.app.social.sessions.create.success", provider: provider.humanize)
+        # Public access for start (login intent doesn't require auth)
+        # For link/reauth intents, auth is checked in prepare_social_auth_intent!
+        public_strict! only: %i(start)
+        auth_required! only: %i(unlink)
 
-            if identity.persisted?
-              # Existing identity, sign in if linked to a user
-              if identity.user
-                sign_in identity.user
-                redirect_to sign_app_root_path,
-                            notice: notice_message
-              else
-                # Identity exists but no user - create and link
-                Rails.event.notify(
-                  "sign.social.orphaned_identity",
-                  provider: provider,
-                  identity_id: identity.id,
-                )
+        # GET /social/start?provider=google_oauth2&intent=login
+        # Entry point for social auth flow.
+        # Prepares session with intent/state, then redirects to OmniAuth.
+        #
+        # Params:
+        #   - provider: "google_oauth2" or "apple"
+        #   - intent: "login", "link", or "reauth" (default: "login")
+        #
+        # Flow:
+        #   1. Validate provider
+        #   2. Prepare intent in session (generates state)
+        #   3. Redirect to /auth/:provider?state=...
+        def start
+          provider = params[:provider]
+          intent = params[:intent] || "login"
 
-                user = User.new
-                identity.user = user
-                if provider == "google_oauth2"
-                  user.user_social_google = identity
-                elsif provider == "apple"
-                  user.user_social_apple = identity
-                end
-
-                user.save!
-                sign_in user
-                redirect_to sign_app_root_path,
-                            notice: notice_message
-              end
-            else
-              # New identity - create user and link
-              user = User.new
-              identity.user = user
-              if provider == "google_oauth2"
-                user.user_social_google = identity
-              elsif provider == "apple"
-                user.user_social_apple = identity
-              end
-
-              user.save!
-              identity.save! unless identity.persisted?
-
-              sign_in user
-              redirect_to sign_app_root_path,
-                          notice: notice_message
-            end
+          unless SUPPORTED_PROVIDERS.include?(provider)
+            return redirect_to new_sign_app_in_path,
+                               alert: I18n.t("sign.app.social.sessions.invalid_provider")
           end
-        rescue StandardError => e
-          Rails.event.notify(
-            "sign.social.failed",
-            error_class: e.class.name,
-            error_message: e.message,
-            provider: auth&.provider,
-          )
 
-          redirect_to new_sign_app_in_path,
-                      alert: I18n.t("sign.app.social.sessions.create.failure")
+          # Prepare session with intent and state
+          state = prepare_social_auth_intent!(intent)
+
+          # Redirect to OmniAuth with state parameter
+          # OmniAuth will handle the redirect to the provider
+          redirect_to omniauth_authorize_path(provider, state: state), allow_other_host: true
+        rescue SocialAuth::BaseError => e
+          handle_social_auth_error(e)
         end
 
-        private
-
-        def sign_in(user)
-          log_in(user)
-        end
-
-        def mock_auth_from_test_mode
-          return unless Rails.env.test?
+        # DELETE /social/:provider/unlink
+        # Removes a linked social identity from current user.
+        #
+        # Security:
+        #   - Requires authenticated user
+        #   - Optionally requires recent re-authentication (REQUIRE_REAUTH_FOR_UNLINK)
+        #   - Cannot unlink last remaining identity
+        def unlink
+          require_recent_reauth! if REQUIRE_REAUTH_FOR_UNLINK
 
           provider = params[:provider]
-          return unless provider
+          normalized_provider = SocialIdentifiable.normalize_provider(provider)
 
-          OmniAuth.config.mock_auth[provider.to_sym] || OmniAuth.config.mock_auth[provider.to_s]
+          ActiveRecord::Base.connected_to(role: :writing) do
+            SocialAuthService.unlink(provider: provider, user: current_resource)
+          end
+
+          redirect_to sign_app_configuration_path,
+                      notice: I18n.t(
+                        "sign.app.social.sessions.unlink.success",
+                        provider: normalized_provider.humanize,
+                      )
+        rescue SocialAuth::BaseError => e
+          redirect_to sign_app_configuration_path, alert: e.message
         end
       end
     end

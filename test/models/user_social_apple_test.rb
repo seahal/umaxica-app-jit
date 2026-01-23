@@ -16,6 +16,7 @@
 #  refresh_token                        :string           default(""), not null
 #  expires_at                           :integer          not null
 #  provider                             :string           default("apple"), not null
+#  last_authenticated_at                :datetime
 #
 # Indexes
 #

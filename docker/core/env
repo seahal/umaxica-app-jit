@@ -78,7 +78,7 @@ RESEND_SMTP_USER_NAME=resend
 APEX_CORPORATE_URL=com.localhost
 APEX_SERVICE_URL=app.localhost
 APEX_STAFF_URL=org.localhost
-SIGN_SERVICE_URL=sign.app.localhost
+SIGN_SERVICE_URL=sign.umaxica.app
 SIGN_STAFF_URL=sign.org.localhost
 CORE_CORPORATE_URL=www.com.localhost
 CORE_SERVICE_URL=www.app.localhost
@@ -108,3 +108,5 @@ JWT_ORGANIZATION_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4E
 # Cloudflare Turnstile Configuration
 CLOUDFLARE_TURNSTILE_SITE_KEY=1x00000000000000000000AA
 CLOUDFLARE_TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# WebAuthn
+TRUSTED_ORIGINS=http://sign.umaxica.app,http://sign.org.localhost:3000

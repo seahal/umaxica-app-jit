@@ -1,0 +1,195 @@
+ja:
+  activerecord:
+    messages:
+      too_long: "は%{count}文字以内で入力してください"
+      required: "を入力してください"
+      taken: "はすでに存在します"
+      invalid: "は不正な値です"
+    attributes:
+      user_passkey:
+        description: "名前"
+        created_at: "登録日"
+        last_used_at: "最終使用日"
+        sign_count: "使用回数"
+      staff_passkey:
+        description: "名前"
+        created_at: "登録日"
+        sign_count: "使用回数"
+    errors:
+      models:
+        staff:
+          attributes:
+            public_id:
+              invalid_format: "英小文字と数字のみ（i, o, 0, 1, s, z, g を除く）で8文字にしてください"
+  actions:
+    edit: "編集"
+    destroy: "削除"
+    save: "保存"
+    actions: "アクション"
+  messages:
+    confirm_destroy: "本当に削除しますか？"
+    passkey_successfully_updated: "パスキーを更新しました"
+    passkey_successfully_destroyed: "パスキーを削除しました"
+  errors:
+    login_failed: "ログインに失敗しました"
+    webauthn:
+      email_required: "メールアドレスを入力してください"
+      identifier_required: "メールアドレスまたはスタッフコードを入力してください"
+      no_passkeys_available: "利用可能なパスキーがありません"
+      origin_invalid: "このサイトからの認証は許可されていません"
+      origin_not_trusted: "オリジン '%{origin}' は信頼されていません。TRUSTED_ORIGINS 環境変数を設定してください。"
+      options_failed: "認証オプションの取得に失敗しました"
+      challenge_id_required: "チャレンジIDが必要です"
+      challenge_invalid: "チャレンジが無効または期限切れです"
+      credential_not_found: "パスキーが見つかりません"
+      sign_count_mismatch: "パスキーのセキュリティ検証に失敗しました"
+      verification_failed: "パスキーの検証に失敗しました"
+    not_implemented: "この機能は実装されていません"
+    messages:
+      validation_errors:
+        one: "1件のエラーがあります"
+        other: "%{count}件のエラーがあります"
+      webauthn:
+        email_required: "メールアドレスを入力してください"
+        identifier_required: "メールアドレスまたはスタッフコードを入力してください"
+        no_passkeys_available: "利用可能なパスキーがありません"
+        origin_invalid: "このサイトからの認証は許可されていません"
+        origin_not_trusted: "オリジン '%{origin}' は信頼されていません。TRUSTED_ORIGINS 環境変数を設定してください。"
+        options_failed: "認証オプションの取得に失敗しました"
+      challenge_id_required: "チャレンジIDが必要です"
+      challenge_invalid: "チャレンジが無効または期限切れです"
+      credential_not_found: "パスキーが見つかりません"
+      sign_count_mismatch: "パスキーのセキュリティ検証に失敗しました"
+      verification_failed: "パスキーの検証に失敗しました"
+    social_auth:
+      conflict: "このアカウントは既に別のユーザーに紐付けられています"
+      unauthorized: "認証に失敗しました"
+      state_missing: "セキュリティ状態パラメータがありません。もう一度お試しください。"
+      state_mismatch: "セキュリティ検証に失敗しました。もう一度お試しください。"
+      state_expired: "セッションの有効期限が切れました。もう一度お試しください。"
+      reauth_required: "この操作には最近の再認証が必要です。もう一度認証してください。"
+      user_changed: "認証中にユーザーセッションが変更されました"
+      invalid_intent: "無効な認証インテントです"
+      not_logged_in: "先にログインしてください"
+      missing_auth_hash: "認証データを受信できませんでした"
+      missing_provider: "プロバイダー情報がありません"
+      missing_uid: "プロバイダーからユーザー識別子を受信できませんでした"
+      identity_conflict: "このアカウントは既に紐付けられています"
+      linked_to_another_user: "この%{provider}アカウントは既に別のユーザーに紐付けられています"
+      identity_not_found: "%{provider}アカウントが紐付けられていません"
+      last_identity: "最後のログイン方法を削除することはできません"
+      reauth_identity_mismatch: "プロフィールに紐付けられている%{provider}アカウントを使用してください"
+      provider_error: "プロバイダーとの通信中にエラーが発生しました"
+  sign:
+    common:
+      cancel: "キャンセル"
+    default_passkey_description: "マイパスキー"
+    app:
+      authentication:
+        new:
+          back: "戻る"
+        passkey:
+          new:
+            page_title: "パスキーでログイン"
+            description: "登録済みのパスキーを使用してログインします"
+            email_label: "メールアドレス"
+            email_placeholder: "example@email.com"
+            submit: "パスキーでログイン"
+      configuration:
+        passkey:
+          index:
+            title: "パスキー管理"
+            description: "登録済みのパスキーを管理できます"
+        passkeys:
+          new:
+            page_title: "パスキーを登録"
+            description: "新しいパスキーを登録して、パスワードなしでログインできるようになります"
+            description_label: "パスキーの名前"
+            description_placeholder: "例: MacBook Pro"
+            submit: "パスキーを登録"
+          index:
+            title: "パスキー管理"
+            description: "登録済みのパスキーを管理できます"
+            add: "新しいパスキーを登録"
+            empty: "パスキーは登録されていません"
+            back: "設定に戻る"
+          show:
+            title: "パスキーの詳細"
+            back: "一覧に戻る"
+          edit:
+            title: "パスキーを編集"
+      social:
+        sessions:
+          invalid_provider: "無効なプロバイダーが指定されました"
+          create:
+            success: "%{provider}でログインしました"
+            failure: "ログインに失敗しました。もう一度お試しください。"
+          link:
+            success: "%{provider}アカウントを連携しました"
+          unlink:
+            success: "%{provider}アカウントの連携を解除しました"
+          reauth:
+            success: "%{provider}で再認証しました"
+          failure:
+            unknown_error: "不明なエラーが発生しました"
+            invalid_credentials: "認証情報が無効です"
+            access_denied: "アクセスが拒否されました"
+            timeout: "リクエストがタイムアウトしました"
+            # Apple固有のエラー
+            invalid_client: "Appleサインインの設定エラーです。サポートにお問い合わせください。"
+            invalid_grant: "Apple認証の有効期限が切れました。もう一度お試しください。"
+            invalid_request: "Appleへのリクエストが無効です。もう一度お試しください。"
+            invalid_redirect_uri: "AppleサインインのリダイレクトURLの設定に問題があります。"
+          user_cancelled_authorize: "Appleサインインがキャンセルされました。必要な場合はもう一度お試しください。"
+      registration:
+        email:
+          destroy:
+            cancelled: "登録をキャンセルしました。"
+          flow:
+            invalid: "登録ステップを順番に進めてください。"
+            invalid_step: "前のステップを完了してください。"
+    org:
+      authentication:
+        new:
+          back: "戻る"
+        passkey:
+          new:
+            page_title: "パスキーでログイン"
+            description: "登録済みのパスキーを使用してログインします"
+            identifier_label: "メールアドレスまたはスタッフコード"
+            identifier_placeholder: "メールアドレスまたはスタッフコード"
+            submit: "パスキーでログイン"
+      configuration:
+        passkeys:
+          new:
+            page_title: "パスキーを登録"
+            description: "新しいパスキーを登録して、パスワードなしでログインできるようになります"
+            description_label: "パスキーの名前"
+            description_placeholder: "例: MacBook Pro"
+            submit: "パスキーを登録"
+          index:
+            title: "パスキー管理"
+            description: "登録済みのパスキーを管理できます"
+            add: "新しいパスキーを登録"
+            empty: "パスキーは登録されていません"
+            back: "設定に戻る"
+          show:
+            title: "パスキーの詳細"
+            back: "一覧に戻る"
+          edit:
+            title: "パスキーを編集"
+  mail:
+    common:
+      greeting: "こんにちは"
+      footer_note: "このメールは自動送信されています。返信はできません。"
+    email:
+      app:
+        registration_mailer:
+          create:
+            subject: "確認コードのお知らせ"
+            title: "メールアドレスの確認"
+            instruction: "以下の確認コードを使用して、登録を完了してください："
+            expiration_note: "このコードは10分間有効です。"
+            ignore_instruction: "心当たりがない場合は、このメールを無視してください。"
+  sequential_flow:
+    invalid_step: "不正なアクセスです。最初からやり直してください。"

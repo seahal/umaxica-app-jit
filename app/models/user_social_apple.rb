@@ -16,6 +16,7 @@
 #  refresh_token                        :string           default(""), not null
 #  expires_at                           :integer          not null
 #  provider                             :string           default("apple"), not null
+#  last_authenticated_at                :datetime
 #
 # Indexes
 #
@@ -26,6 +27,8 @@
 #
 
 class UserSocialApple < PrincipalRecord
+  include SocialIdentifiable
+
   alias_attribute :user_social_apple_status_id, :user_identity_social_apple_status_id
   belongs_to :user, inverse_of: :user_social_apple
   belongs_to :user_social_apple_status,
@@ -38,6 +41,10 @@ class UserSocialApple < PrincipalRecord
   validates :uid, presence: true, uniqueness: { scope: :provider }
   validates :expires_at, presence: true
   validates :user_identity_social_apple_status_id, length: { maximum: 255 }
+
+  def self.status_column
+    :user_identity_social_apple_status_id
+  end
 
   def self.find_or_create_from_auth_hash(auth)
     # Find existing identity
@@ -52,5 +59,25 @@ class UserSocialApple < PrincipalRecord
     identity.expires_at = auth.credentials.expires_at
 
     identity
+  end
+
+  # Extract uid from auth hash with fallback to extra.raw_info.sub
+  def self.extract_uid(auth)
+    uid = auth.uid
+    uid = auth.extra&.raw_info&.sub if uid.blank?
+    uid.to_s
+  end
+
+  # Update from OmniAuth hash (for link/reauth scenarios)
+  def update_from_auth_hash!(auth)
+    attrs = {
+      email: auth.info.email,
+      token: auth.credentials.token,
+      refresh_token: auth.credentials.refresh_token.presence || refresh_token,
+      expires_at: auth.credentials.expires_at,
+      last_authenticated_at: Time.current,
+    }
+    attrs[:image] = auth.info.image if auth.info.respond_to?(:image)
+    update!(attrs)
   end
 end

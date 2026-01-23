@@ -23,13 +23,13 @@ _fixture:
   model_class: ComPreferenceCookie
 
 one:
-  preference_id: 6b24d11d-27f2-4210-96ff-5b6fdb8a663c
+  preference: one
   functional: false
   performant: false
   targetable: false
 
 two:
-  preference_id: c48be6b9-c06c-49a0-8fa5-d8bb2b4069dc
+  preference: two
   functional: false
   performant: false
   targetable: false
