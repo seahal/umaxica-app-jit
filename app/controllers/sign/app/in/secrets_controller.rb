@@ -5,6 +5,7 @@ module Sign
     module In
       class SecretsController < ApplicationController
         include Common::Redirect
+        include SessionLimitGate
 
         class SecretLoginForm
           include ActiveModel::Model
@@ -87,8 +88,13 @@ module Sign
                                              method: "secret", secret_id: secret.id,
           )
           clear_mfa_session!
-          log_in(user, require_totp_check: false)
-          redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
+          result = log_in(user, require_totp_check: false)
+          if result[:status] == :session_limit_exceeded
+            issue_session_limit_gate!(return_to: request.fullpath, flow: "in.secret.session")
+            redirect_to edit_sign_app_in_secret_session_path
+          else
+            redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
+          end
         end
 
         def handle_failed_mfa(user)
@@ -110,6 +116,9 @@ module Sign
           result = log_in(user, require_totp_check: true)
           if result[:status] == :totp_required
             redirect_to new_sign_app_in_totp_path, notice: t("sign.app.authentication.totp.required")
+          elsif result[:status] == :session_limit_exceeded
+            issue_session_limit_gate!(return_to: request.fullpath, flow: "in.secret.session")
+            redirect_to edit_sign_app_in_secret_session_path
           else
             redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
           end

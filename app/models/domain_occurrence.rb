@@ -3,15 +3,16 @@
 # == Schema Information
 #
 # Table name: domain_occurrences
+# Database name: occurrence
 #
 #  id         :uuid             not null, primary key
-#  public_id  :string(21)       default(""), not null
 #  body       :string(253)      default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  expires_at :datetime         not null
 #  memo       :string(1024)     default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  expires_at :datetime         not null
+#  public_id  :string(21)       default(""), not null
+#  status_id  :string(255)      default("NEYO"), not null
 #
 # Indexes
 #
@@ -19,6 +20,10 @@
 #  index_domain_occurrences_on_expires_at  (expires_at)
 #  index_domain_occurrences_on_public_id   (public_id) UNIQUE
 #  index_domain_occurrences_on_status_id   (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => domain_occurrence_statuses.id)
 #
 
 class DomainOccurrence < OccurrenceRecord

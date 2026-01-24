@@ -1,11 +1,12 @@
 # == Schema Information
 #
 # Table name: org_preference_timezone_options
+# Database name: preference
 #
 #  id         :string           not null, primary key
+#  position   :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  position   :integer          not null
 #
 # Indexes
 #
@@ -52,5 +53,11 @@ class OrgPreferenceTimezoneOptionTest < ActiveSupport::TestCase
     record = OrgPreferenceTimezoneOption.new(id: "A" * 256)
     assert_predicate record, :invalid?
     assert_predicate record.errors[:id], :any?
+  end
+
+  test "downcases id before validation" do
+    option = OrgPreferenceTimezoneOption.new(id: "ASIA/TOKYO")
+    option.valid?
+    assert_equal "asia/tokyo", option.id
   end
 end

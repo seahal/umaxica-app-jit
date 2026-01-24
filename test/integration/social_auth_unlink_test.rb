@@ -111,10 +111,12 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     # Should have success message
     assert_predicate flash[:notice], :present?, "Should have success message"
 
-    # Google identity should be deleted
-    assert_not UserSocialGoogle.exists?(id: google_identity.id), "Google identity should be deleted"
+    # Google identity should be soft-deleted (status changed to REVOKED)
+    google_identity.reload
+    assert_equal UserSocialGoogleStatus::REVOKED, google_identity.user_identity_social_google_status_id,
+                 "Google identity should be REVOKED"
 
-    # Apple identity should still exist
+    # Apple identity should still exist and be ACTIVE
     assert_equal 1, UserSocialApple.where(user: @user).count
   end
 
@@ -146,7 +148,11 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     assert_predicate flash[:notice], :present?
-    assert_not UserSocialApple.exists?(id: apple_identity.id)
+
+    # Apple identity should be soft-deleted (status changed to REVOKED)
+    apple_identity.reload
+    assert_equal UserSocialAppleStatus::REVOKED, apple_identity.user_identity_social_apple_status_id,
+                 "Apple identity should be REVOKED"
   end
 
   # ============================================================================
@@ -183,5 +189,89 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     assert flash[:alert].present? || request.path.include?("sign"), "Should redirect to login"
+  end
+
+  # ============================================================================
+  # REVOKED identities should not count as authentication methods
+  # ============================================================================
+  test "unlink succeeds when user has only REVOKED social identity and an active email" do
+    # User has REVOKED Google identity (doesn't count) and active email (counts)
+    UserSocialGoogle.create!(
+      user: @user,
+      uid: "revoked_google_#{SecureRandom.hex(4)}",
+      provider: "google_oauth2",
+      token: "token",
+      email: "revoked_google@example.com",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:revoked),
+    )
+
+    # Create an active email for the user
+    UserEmail.create!(
+      user: @user,
+      address: "active@example.com",
+      user_email_status_id: "VERIFIED",
+    )
+
+    # User also has ACTIVE Apple identity
+    apple_identity = UserSocialApple.create!(
+      user: @user,
+      uid: "active_apple_#{SecureRandom.hex(4)}",
+      provider: "apple",
+      token: "token",
+      email: "active_apple@example.com",
+      expires_at: 1.week.from_now.to_i,
+      user_social_apple_status: user_social_apple_statuses(:active),
+    )
+
+    # Try to unlink Apple - should succeed because user has email as backup
+    delete sign_app_social_unlink_url(provider: "apple", ri: "jp"),
+           headers: as_user_headers(@user, host: @host)
+
+    assert_response :redirect
+    follow_redirect!
+
+    # Should succeed (REVOKED Google doesn't count, but email does)
+    assert_predicate flash[:notice], :present?, "Should succeed with email as backup auth method"
+
+    apple_identity.reload
+    assert_equal UserSocialAppleStatus::REVOKED, apple_identity.user_identity_social_apple_status_id
+  end
+
+  test "unlink fails when only active identity is social and others are REVOKED" do
+    # User has REVOKED Apple and ACTIVE Google only
+    UserSocialApple.create!(
+      user: @user,
+      uid: "revoked_apple_#{SecureRandom.hex(4)}",
+      provider: "apple",
+      token: "token",
+      email: "revoked@example.com",
+      expires_at: 1.week.from_now.to_i,
+      user_social_apple_status: user_social_apple_statuses(:revoked),
+    )
+
+    google_identity = UserSocialGoogle.create!(
+      user: @user,
+      uid: "only_active_google_#{SecureRandom.hex(4)}",
+      provider: "google_oauth2",
+      token: "token",
+      email: "only@example.com",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:active),
+    )
+
+    # Try to unlink Google - should fail because it's the only ACTIVE identity
+    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+           headers: as_user_headers(@user, host: @host)
+
+    assert_response :redirect
+    follow_redirect!
+
+    # Should have error about last identity
+    assert_predicate flash[:alert], :present?, "Should have error about last identity"
+
+    # Google should still be ACTIVE (not unlinked)
+    google_identity.reload
+    assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.user_identity_social_google_status_id
   end
 end

@@ -1,11 +1,12 @@
 # == Schema Information
 #
 # Table name: com_preference_colortheme_options
+# Database name: preference
 #
 #  id         :string           not null, primary key
+#  position   :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  position   :integer          not null
 #
 # Indexes
 #

@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: workspace_statuses
+# Database name: operator
 #
 #  id         :string(255)      not null, primary key
 #  created_at :datetime         not null

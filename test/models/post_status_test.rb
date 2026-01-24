@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: post_statuses
+# Database name: avatar
 #
 #  id         :string           not null, primary key
 #  created_at :datetime         not null

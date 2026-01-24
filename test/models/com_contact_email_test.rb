@@ -3,24 +3,25 @@
 # == Schema Information
 #
 # Table name: com_contact_emails
+# Database name: guest
 #
 #  id                     :string           not null, primary key
-#  email_address          :string(1000)     default(""), not null
 #  activated              :boolean          default(FALSE), not null
 #  deletable              :boolean          default(FALSE), not null
-#  remaining_views        :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default("-infinity"), not null
-#  verifier_attempts_left :integer          default(0), not null
-#  token_digest           :string(255)      default(""), not null
-#  token_expires_at       :timestamptz      default("-infinity"), not null
-#  token_viewed           :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
 #  expires_at             :timestamptz      not null
+#  hotp_counter           :integer          default(0), not null
+#  hotp_secret            :string           default(""), not null
+#  remaining_views        :integer          default(0), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default(-Infinity), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  verifier_attempts_left :integer          default(0), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default(-Infinity), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  com_contact_id         :uuid             not null
-#  hotp_secret            :string           default(""), not null
-#  hotp_counter           :integer          default(0), not null
 #
 # Indexes
 #
@@ -29,6 +30,9 @@
 #  index_com_contact_emails_on_expires_at           (expires_at)
 #  index_com_contact_emails_on_verifier_expires_at  (verifier_expires_at)
 #
+# Foreign Keys
+#
+#  fk_rails_...  (com_contact_id => com_contacts.id)
 #
 
 require "test_helper"

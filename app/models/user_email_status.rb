@@ -3,8 +3,13 @@
 # == Schema Information
 #
 # Table name: user_email_statuses
+# Database name: principal
 #
-#  id :string(255)      default("UNVERIFIED"), not null, primary key
+#  id :string(255)      default("NEYO"), not null, primary key
+#
+# Indexes
+#
+#  index_user_identity_email_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 class UserEmailStatus < PrincipalRecord

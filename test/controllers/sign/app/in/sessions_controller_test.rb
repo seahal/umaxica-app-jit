@@ -3,13 +3,47 @@
 require "test_helper"
 
 class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
-  test "should get show" do
-    get sign_app_in_sessions_show_url
-    assert_response :success
+  test "edit without gate redirects to login with alert" do
+    get edit_sign_app_in_email_session_url, headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
+
+    assert_redirected_to new_sign_app_in_url
+    assert_equal I18n.t(
+      "session_limit.gate_expired",
+      default: "操作がタイムアウトしました。もう一度ログインしてください。",
+    ), flash[:alert]
   end
 
-  test "should get update" do
-    get sign_app_in_sessions_update_url
-    assert_response :success
+  test "update without gate redirects to login with alert" do
+    patch sign_app_in_email_session_url,
+          params: { revoke_session_ids: ["some-id"] },
+          headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
+
+    assert_redirected_to new_sign_app_in_url
+    assert_equal I18n.t(
+      "session_limit.gate_expired",
+      default: "操作がタイムアウトしました。もう一度ログインしてください。",
+    ), flash[:alert]
+  end
+
+  test "edit for secret session without gate redirects to login" do
+    get edit_sign_app_in_secret_session_url, headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
+
+    assert_redirected_to new_sign_app_in_url
+    assert_equal I18n.t(
+      "session_limit.gate_expired",
+      default: "操作がタイムアウトしました。もう一度ログインしてください。",
+    ), flash[:alert]
+  end
+
+  test "update for secret session without gate redirects to login" do
+    patch sign_app_in_secret_session_url,
+          params: { revoke_session_ids: ["some-id"] },
+          headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
+
+    assert_redirected_to new_sign_app_in_url
+    assert_equal I18n.t(
+      "session_limit.gate_expired",
+      default: "操作がタイムアウトしました。もう一度ログインしてください。",
+    ), flash[:alert]
   end
 end

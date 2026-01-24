@@ -86,9 +86,8 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
 
     valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
-         headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp", state: valid_state),
+        headers: { "Host" => @host }
 
     assert_equal user_count_before, User.count
   end
@@ -135,9 +134,8 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
 
     valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
 
-    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
-         headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp", state: valid_state),
+        headers: { "Host" => @host }
 
     assert_response :redirect
 

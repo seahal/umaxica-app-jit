@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: user_one_time_password_statuses
+# Database name: principal
+#
+#  id :string           default("NEYO"), not null, primary key
+#
+# Indexes
+#
+#  index_user_identity_otp_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
 require "test_helper"
 
 class UserOneTimePasswordStatusTest < ActiveSupport::TestCase

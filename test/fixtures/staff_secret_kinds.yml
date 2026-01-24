@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: staff_secret_kinds
+# Database name: operator
 #
 #  id :string(255)      not null, primary key
 #

@@ -41,7 +41,7 @@ module Sign::App::In
       post options_sign_app_in_passkeys_path(ri: "jp"), params: { email: "unknown@example.com" }
 
       assert_response :unprocessable_content
-      assert_includes response.body, "available"
+      assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
     end
 
     # Case F-2: Email exists but no passkey
@@ -52,7 +52,7 @@ module Sign::App::In
       post options_sign_app_in_passkeys_path(ri: "jp"), params: { email: user_no_passkey_email.address }
 
       assert_response :unprocessable_content
-      assert_includes response.body, "available"
+      assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
     end
 
     # Case F-3: Email exists and has passkey
@@ -84,6 +84,7 @@ module Sign::App::In
 
     # Case G-1: Verification success
     test "verification logs user in on success" do
+      assert_not_nil @passkey, "Passkey must exist"
       # Get challenge
       email = UserEmail.find_by(user: @user).address
       post options_sign_app_in_passkeys_path(ri: "jp"), params: { email: email }
@@ -92,7 +93,8 @@ module Sign::App::In
 
       # Mock WebAuthn verification
       mock_credential = Object.new
-      mock_credential.define_singleton_method(:id) { Base64.urlsafe_decode64(@passkey.webauthn_id) }
+      passkey_id = @passkey.webauthn_id
+      mock_credential.define_singleton_method(:id) { Base64.urlsafe_decode64(passkey_id) }
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 

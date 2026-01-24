@@ -14,7 +14,7 @@ class Sign::Org::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     get sign_org_configuration_passkeys_url(ri: "jp"), headers: @headers
 
     assert_response :success
-    assert_equal I18n.t("errors.not_implemented"), response.body
+    assert_select "h1", I18n.t("sign.org.configuration.passkeys.index.title")
   end
 
   # test "should get show" do
@@ -26,7 +26,7 @@ class Sign::Org::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     get new_sign_org_configuration_passkey_url(ri: "jp"), headers: @headers
 
     assert_response :success
-    assert_equal I18n.t("errors.not_implemented"), response.body
+    assert_select "h1", I18n.t("sign.org.configuration.passkeys.new.page_title")
   end
 
   test "redirects unauthenticated staff to login" do

@@ -3,18 +3,13 @@
 # == Schema Information
 #
 # Table name: org_contact_categories
+# Database name: guest
 #
-#  id          :string(255)      not null, primary key
-#  active      :boolean          default(TRUE), not null
-#  created_at  :datetime         not null
-#  description :string(255)      default(""), not null
-#  parent_id   :string(255)      default(""), not null
-#  position    :integer          default(0), not null
-#  updated_at  :datetime         not null
+#  id :string(255)      not null, primary key
 #
 # Indexes
 #
-#  index_org_contact_categories_on_parent_id  (parent_id)
+#  index_org_contact_categories_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 require "test_helper"

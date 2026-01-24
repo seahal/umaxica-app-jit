@@ -8,6 +8,14 @@
   <%= @pass_code %>
 </div>
 
+<% if @verification_token && @public_id %>
+  <p>
+    <%= link_to edit_sign_app_configuration_email_url(@public_id, token: @verification_token), target: "_blank" do %>
+      Verify Email
+    <% end %>
+  </p>
+<% end %>
+
 <p>
   <small><%= t('mail.email.app.registration_mailer.create.expiration_note') %></small>
 </p>

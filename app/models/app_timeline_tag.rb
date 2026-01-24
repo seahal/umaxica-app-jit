@@ -1,17 +1,23 @@
 # == Schema Information
 #
 # Table name: app_timeline_tags
+# Database name: news
 #
 #  id                         :uuid             not null, primary key
-#  app_timeline_id            :uuid             not null
-#  app_timeline_tag_master_id :string(255)      not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
+#  app_timeline_id            :uuid             not null
+#  app_timeline_tag_master_id :string(255)      not null
 #
 # Indexes
 #
 #  index_app_timeline_tags_on_app_timeline_tag_master_id  (app_timeline_tag_master_id)
 #  index_app_timeline_tags_unique                         (app_timeline_id,app_timeline_tag_master_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (app_timeline_id => app_timelines.id) ON DELETE => cascade
+#  fk_rails_...  (app_timeline_tag_master_id => app_timeline_tag_masters.id)
 #
 
 # frozen_string_literal: true

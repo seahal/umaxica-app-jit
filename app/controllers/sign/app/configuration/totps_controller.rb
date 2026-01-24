@@ -25,6 +25,12 @@ module Sign
 
         def create
           initialize_totp
+
+          if @totp.private_key.blank?
+            redirect_to new_sign_app_configuration_totp_path, notice: t("sign.app.registration.email.flow.invalid")
+            return
+          end
+
           last_otp_at = verify_totp(@totp.private_key, @totp.first_token)
 
           if last_otp_at

@@ -1,27 +1,32 @@
 # == Schema Information
 #
 # Table name: post_versions
+# Database name: avatar
 #
 #  id             :uuid             not null, primary key
-#  post_id        :string           not null
-#  permalink      :string(200)      not null
-#  response_mode  :string           not null
-#  redirect_url   :string
-#  title          :string
-#  description    :string
 #  body           :text
-#  published_at   :datetime         not null
-#  expires_at     :datetime         not null
+#  description    :string
 #  edited_by_type :string
-#  edited_by_id   :string
-#  public_id      :string           default(""), not null
+#  expires_at     :datetime         not null
+#  permalink      :string(200)      not null
+#  published_at   :datetime         not null
+#  redirect_url   :string
+#  response_mode  :string           not null
+#  title          :string
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  edited_by_id   :string
+#  post_id        :string           not null
+#  public_id      :string           default(""), not null
 #
 # Indexes
 #
-#  index_post_versions_on_post_id_and_created_at  (post_id,created_at)
+#  index_post_versions_on_post_id_and_created_at  (post_id,created_at DESC)
 #  index_post_versions_on_public_id               (public_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (post_id => posts.id)
 #
 
 # frozen_string_literal: true

@@ -3,8 +3,15 @@
 # == Schema Information
 #
 # Table name: app_timeline_statuses
+# Database name: news
 #
-#  id :string(255)      default("NONE"), not null, primary key
+#  id         :string(255)      not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_app_timeline_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 require "test_helper"

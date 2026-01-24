@@ -3,13 +3,13 @@
 # == Schema Information
 #
 # Table name: user_occurrence_statuses
+# Database name: occurrence
 #
-#  id         :string(255)      default("NONE"), not null, primary key
-#  expires_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 # Indexes
 #
-#  index_user_occurrence_statuses_on_expires_at  (expires_at)
+#  index_user_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 class UserOccurrenceStatus < OccurrenceRecord

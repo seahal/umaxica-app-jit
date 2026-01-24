@@ -3,22 +3,23 @@
 # == Schema Information
 #
 # Table name: app_document_audits
+# Database name: audit
 #
 #  id             :uuid             not null, primary key
-#  subject_id     :string           not null
-#  subject_type   :text             not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  actor_type     :text             default(""), not null
-#  event_id       :string(255)      default("NEYO"), not null
-#  level_id       :string(255)      default("NEYO"), not null
-#  occurred_at    :datetime         not null
-#  expires_at     :datetime         not null
-#  ip_address     :inet             default("0.0.0.0"), not null
-#  context        :jsonb            default("{}"), not null
-#  previous_value :text             default(""), not null
+#  context        :jsonb            not null
 #  current_value  :text             default(""), not null
+#  expires_at     :datetime         not null
+#  ip_address     :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
+#  occurred_at    :datetime         not null
+#  previous_value :text             default(""), not null
+#  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  event_id       :string(255)      default("NEYO"), not null
+#  level_id       :string(255)      default("NEYO"), not null
+#  subject_id     :string           not null
 #
 # Indexes
 #
@@ -29,6 +30,11 @@
 #  index_app_document_audits_on_level_id                  (level_id)
 #  index_app_document_audits_on_occurred_at               (occurred_at)
 #  index_app_document_audits_on_subject_id                (subject_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (event_id => app_document_audit_events.id)
+#  fk_rails_...  (level_id => app_document_audit_levels.id)
 #
 
 class AppDocumentAudit < AuditRecord

@@ -3,6 +3,13 @@
 # To AI assistants: This file is sensitive. Avoid modifying it unless you fully understand the impact.
 
 ENV["RAILS_ENV"] ||= "test"
+ENV["SIGN_SERVICE_URL"] = "sign.app.localhost"
+ENV["SIGN_STAFF_URL"] = "sign.org.localhost"
+ENV["CORE_SERVICE_URL"] = "www.app.localhost"
+ENV["CORE_STAFF_URL"] = "www.org.localhost"
+ENV["APEX_SERVICE_URL"] = "app.localhost"
+ENV["APEX_STAFF_URL"] = "org.localhost"
+ENV["APEX_CORPORATE_URL"] = "com.localhost"
 require_relative "../config/environment"
 
 if ENV["SKIP_DB"] == "1" && defined?(ActiveRecord::Migration)

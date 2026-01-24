@@ -11,7 +11,6 @@ Rails.application.routes.draw do
         resource :health, only: :show, defaults: { format: :html }
 
         # Edge API endpoint (browser/SPA)
-        resource :edge, only: :show
         namespace :edge do
           namespace :v1 do
             resource :health, only: :show
@@ -40,21 +39,22 @@ Rails.application.routes.draw do
         namespace :in do
           # TODO: added show delete methods for 2FA
           resource :email, only: %i(new create edit update) do
-            resource :sessions, only: %i(edit update)
+            resource :session, only: %i(edit update)
           end
           # Passkey authentication for sign-in
           # GET  /in/passkeys/new          -> new (login page with passkey button)
           # POST /in/passkeys/options      -> options for authentication challenge
           # POST /in/passkeys/verification -> verify authentication response
           resources :passkeys, only: [:new] do
-            resource :sessions, only: %i(edit update)
+            resource :session, only: %i(edit update)
+            # TODO: fix them and merget to passkeys.
             collection do
               post :options
               post :verification
             end
           end
           resource :secret, only: %i(new create) do
-            resource :sessions, only: %i(edit update)
+            resource :session, only: %i(edit update)
           end
         end
 
@@ -125,8 +125,8 @@ Rails.application.routes.draw do
 
           resources :emails
           resources :telephones
-          resource :apple, only: [:show]
-          resource :google, only: [:show, :update]
+          resource :apple, only: [:show, :destroy]
+          resource :google, only: %i(show update destroy)
           resources :secrets do
             post :regenerate, on: :member
           end
@@ -178,10 +178,10 @@ Rails.application.routes.draw do
               post :options
               post :verification
             end
-            resource :sessions, only: %i(edit update)
+            resource :session, only: %i(edit update)
           end
           resource :secret, only: %i(new create) do
-            resource :sessions, only: %i(edit update)
+            resource :session, only: %i(edit update)
           end
         end
 
@@ -190,13 +190,12 @@ Rails.application.routes.draw do
         namespace :configuration do
           resources :totps, only: %i(index new create edit update destroy)
 
-          # Passkey management (CRUD-based)
+          # TODO: Passkey management (CRUD-based)
           resources :passkeys do
             collection do
               post :options
               post :verification
             end
-            resource :sessions, only: %i(edit update)
           end
 
           resources :secrets

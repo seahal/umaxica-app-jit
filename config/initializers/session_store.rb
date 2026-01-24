@@ -1,8 +1,23 @@
 # frozen_string_literal: true
 
+# config/initializers/session_store.rb
+sign_service_host = ENV.fetch("SIGN_SERVICE_URL", "").to_s
+non_local_host =
+  sign_service_host.present? &&
+  sign_service_host.exclude?("localhost") &&
+  !sign_service_host.start_with?("127.") &&
+  !sign_service_host.start_with?("0.0.0.0")
+
+# Avoid secure-only cookies in test to keep session state across HTTP requests.
+force_secure_cookies =
+  (Rails.env.production? ||
+   ENV["FORCE_SECURE_COOKIES"] == "1" ||
+   non_local_host) &&
+  !Rails.env.test?
+
 Rails.application.config.session_store :cookie_store,
                                        expire_after: 14.days,
-                                       key: Rails.env.production? ? "__Secure-jit_session" : "jit_session",
-                                       secure: Rails.env.production?,
+                                       key: force_secure_cookies ? "__Secure-jit_session" : "jit_session",
+                                       secure: force_secure_cookies,
                                        httponly: true,
-                                       same_site: :lax
+                                       same_site: force_secure_cookies ? :none : :lax

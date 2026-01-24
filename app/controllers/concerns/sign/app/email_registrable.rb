@@ -11,16 +11,16 @@ module Sign
         include Common::Otp
       end
 
-      def initiate_email_verification(email_address)
+      def initiate_email_verification(email_address, confirm_policy: "1")
         # Validate Cloudflare Turnstile
         turnstile_result = cloudflare_turnstile_validation
         unless turnstile_result["success"]
-          @user_email = UserEmail.new(address: email_address)
+          @user_email = UserEmail.new(address: email_address, confirm_policy: confirm_policy)
           @user_email.errors.add(:base, t("sign.app.registration.email.create.turnstile_validation_failed"))
           return false
         end
 
-        @user_email = UserEmail.new(address: email_address)
+        @user_email = UserEmail.new(address: email_address, confirm_policy: confirm_policy)
         @user_email.user_email_status_id = "UNVERIFIED_WITH_SIGN_UP"
 
         # Rate limit check (TODO: Implement rate limiting)
@@ -41,21 +41,34 @@ module Sign
 
         @user_email.save!
 
+        token = @user_email.generate_verification_token
+
         Email::App::RegistrationMailer.with(
           hotp_token: num,
           email_address: @user_email.address,
+          verification_token: token,
+          public_id: @user_email.public_id,
         ).create.deliver_later
 
         true
       end
 
-      def complete_email_verification(id, submitted_code)
-        @user_email = UserEmail.find_by(id: id)
+      def complete_email_verification(id, submitted_code, token = nil)
+        @user_email = UserEmail.find_by(public_id: id)
+
         if @user_email.blank? ||
             @user_email.otp_expired? ||
             @user_email.user_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
           @error_redirect = new_sign_app_up_email_path # default, override in controller if needed
           return :session_expired
+        end
+
+        # Verify token if provided (strict verification)
+        if token.present?
+          unless @user_email.verify_verification_token(token)
+            @user_email.errors.add(:base, t("sign.app.registration.email.update.invalid_token"))
+            return :invalid_token
+          end
         end
 
         result = verify_otp_code(@user_email, submitted_code)

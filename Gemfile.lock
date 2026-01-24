@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 2449ea854b2836eb0ad52ff3f482750ce436621d
+  revision: 038c3ededefb7242e444d886714d87fe4feeee71
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -109,16 +109,16 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     aes_key_wrap (1.1.0)
     android_key_attestation (0.3.0)
-    annotate (2.6.5)
-      activerecord (>= 2.3.0)
-      rake (>= 0.8.7)
+    annotaterb (4.20.0)
+      activerecord (>= 6.0.0)
+      activesupport (>= 6.0.0)
     argon2 (2.3.3)
       ffi (~> 1.15)
       ffi-compiler (~> 1.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
     aws-partitions (1.1209.0)
-    aws-sdk-connect (1.236.0)
+    aws-sdk-connect (1.237.0)
       aws-sdk-core (~> 3, >= 3.241.4)
       aws-sigv4 (~> 1.5)
     aws-sdk-core (3.241.4)
@@ -584,7 +584,7 @@ GEM
     opentelemetry-semantic_conventions (1.36.0)
       opentelemetry-api (~> 1.0)
     ostruct (0.6.3)
-    pagy (43.2.7)
+    pagy (43.2.8)
       json
       yaml
     parallel (1.27.0)
@@ -866,7 +866,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  annotate
+  annotaterb
   argon2
   aws-sdk-connect
   aws-sdk-polly

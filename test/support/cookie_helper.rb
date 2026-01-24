@@ -3,7 +3,7 @@
 # Helper methods for working with cookies in integration tests
 module CookieHelper
   def preference_refresh_cookie_name
-    Rails.env.production? ? "__Secure-jit_preference" : "jit_preference_refresh"
+    Rails.env.production? ? "__Secure-jit_preference_refresh" : "jit_preference_refresh"
   end
 
   def preference_access_cookie_name

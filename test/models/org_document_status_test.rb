@@ -3,8 +3,15 @@
 # == Schema Information
 #
 # Table name: org_document_statuses
+# Database name: document
 #
-#  id :string(255)      default("NEYO"), not null, primary key
+#  id         :string(255)      not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_org_document_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 require "test_helper"

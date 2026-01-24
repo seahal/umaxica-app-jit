@@ -3,10 +3,15 @@
 # == Schema Information
 #
 # Table name: division_statuses
+# Database name: operator
 #
 #  id         :string(255)      not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_division_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 require "test_helper"

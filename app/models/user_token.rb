@@ -3,19 +3,20 @@
 # == Schema Information
 #
 # Table name: user_tokens
+# Database name: token
 #
 #  id                       :uuid             not null, primary key
 #  compromised_at           :datetime
-#  created_at               :datetime         not null
 #  last_used_at             :datetime
-#  public_id                :string(21)       default(""), not null
 #  refresh_expires_at       :datetime         not null
 #  refresh_token_digest     :binary
-#  refresh_token_family_id  :string
 #  refresh_token_generation :integer          default(0), not null
 #  revoked_at               :datetime
 #  rotated_at               :datetime
+#  created_at               :datetime         not null
 #  updated_at               :datetime         not null
+#  public_id                :string(21)       default(""), not null
+#  refresh_token_family_id  :string
 #  user_id                  :uuid             not null
 #  user_token_kind_id       :string           default("BROWSER_WEB"), not null
 #  user_token_status_id     :string           default("NEYO"), not null
@@ -31,6 +32,11 @@
 #  index_user_tokens_on_user_id                  (user_id)
 #  index_user_tokens_on_user_token_kind_id       (user_token_kind_id)
 #  index_user_tokens_on_user_token_status_id     (user_token_status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_token_kind_id => user_token_kinds.id)
+#  fk_rails_...  (user_token_status_id => user_token_statuses.id)
 #
 
 # Refresh tokens are persisted as digests only.

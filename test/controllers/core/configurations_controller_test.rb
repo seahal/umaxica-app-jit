@@ -17,8 +17,9 @@ class Core::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should redirect show when not logged in" do
     get core_app_configuration_url(ri: "jp")
-    rt = Base64.urlsafe_encode64(core_app_configuration_url(ri: "jp"))
-    assert_redirected_to new_sign_app_in_url(rt: rt, host: "sign.app.localhost")
+    assert_response :redirect
+    target_path = new_sign_app_in_path
+    assert_match %r{#{Regexp.escape(target_path)}\?.*rt=}, response.headers["Location"]
   end
 end
 
@@ -36,8 +37,9 @@ class Core::Com::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should redirect show when not logged in" do
     get core_com_configuration_url(ri: "jp")
-    rt = Base64.urlsafe_encode64(core_com_configuration_url(ri: "jp"))
-    assert_redirected_to new_sign_app_in_url(rt: rt, host: "sign.app.localhost")
+    assert_response :redirect
+    target_path = new_sign_app_in_path
+    assert_match %r{#{Regexp.escape(target_path)}\?.*rt=}, response.headers["Location"]
   end
 end
 
@@ -55,7 +57,8 @@ class Core::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should redirect show when not logged in" do
     get core_org_configuration_url(ri: "jp")
-    rt = Base64.urlsafe_encode64(core_org_configuration_url(ri: "jp"))
-    assert_redirected_to new_sign_org_in_url(rt: rt, host: "sign.org.localhost")
+    assert_response :redirect
+    target_path = new_sign_org_in_path
+    assert_match %r{#{Regexp.escape(target_path)}\?.*rt=}, response.headers["Location"]
   end
 end

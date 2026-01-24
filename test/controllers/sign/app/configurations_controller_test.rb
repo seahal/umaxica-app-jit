@@ -20,12 +20,14 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href^=?]", sign_app_configuration_apple_path(ri: "jp")
     assert_select "a[href^=?]", sign_app_configuration_sessions_path(ri: "jp")
     assert_select "a[href^=?]", sign_app_configuration_withdrawal_path(ri: "jp")
+    assert_select "a[href*=?]", edit_sign_app_out_path(ri: "jp"), text: "Logout"
     assert_select "a[href*=?]", sign_app_root_path(ri: "jp"), text: I18n.t("sign.app.configuration.show.back")
   end
 
   test "should redirect show when not logged in" do
     get sign_app_configuration_url(ri: "jp")
-    rt = Base64.strict_encode64(sign_app_configuration_url(ri: "jp"))
-    assert_redirected_to new_sign_app_in_url(rt: rt, host: "sign.app.localhost")
+    assert_response :redirect
+    target_path = new_sign_app_in_path
+    assert_match %r{#{Regexp.escape(target_path)}\?.*ri=jp}, response.headers["Location"]
   end
 end

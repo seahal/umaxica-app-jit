@@ -3,21 +3,26 @@
 # == Schema Information
 #
 # Table name: users
+# Database name: principal
 #
 #  id             :uuid             not null, primary key
+#  last_reauth_at :datetime
+#  lock_version   :integer          default(0), not null
+#  withdrawn_at   :datetime         default(Infinity)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  public_id      :string(255)      default("")
-#  status_id      :string(255)      default("NEYO"), not null
-#  withdrawn_at   :datetime         default("infinity")
-#  lock_version   :integer          default(0), not null
-#  last_reauth_at :datetime
+#  status_id      :string(255)      default("NONE"), not null
 #
 # Indexes
 #
 #  index_users_on_public_id     (public_id) UNIQUE
 #  index_users_on_status_id     (status_id)
-#  index_users_on_withdrawn_at  (withdrawn_at)
+#  index_users_on_withdrawn_at  (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => user_statuses.id)
 #
 
 class User < PrincipalRecord

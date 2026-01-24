@@ -3,23 +3,30 @@
 # == Schema Information
 #
 # Table name: user_telephones
+# Database name: principal
 #
 #  id                                :uuid             not null, primary key
-#  created_at                        :datetime         not null
-#  locked_at                         :datetime         default("-infinity"), not null
+#  locked_at                         :datetime         default(-Infinity), not null
 #  number                            :string           default(""), not null
 #  otp_attempts_count                :integer          default(0), not null
 #  otp_counter                       :text             default(""), not null
-#  otp_expires_at                    :datetime         default("-infinity"), not null
+#  otp_expires_at                    :datetime         default(-Infinity), not null
 #  otp_private_key                   :string           default(""), not null
+#  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
 #  user_id                           :uuid             not null
-#  user_telephone_status_id :string(255)      default("UNVERIFIED"), not null
+#  user_identity_telephone_status_id :string(255)      default("NEYO"), not null
 #
 # Indexes
 #
-#  idx_on_user_telephone_status_id_a15207191e  (user_telephone_status_id)
-#  index_user_telephones_on_user_id            (user_id)
+#  index_user_identity_telephones_on_lower_number              (lower((number)::text))
+#  index_user_telephones_on_user_id                            (user_id)
+#  index_user_telephones_on_user_identity_telephone_status_id  (user_identity_telephone_status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (user_identity_telephone_status_id => user_telephone_statuses.id)
 #
 
 class UserTelephone < PrincipalRecord

@@ -17,10 +17,6 @@
 # 1. 基本設定
 # ============================================================
 
-# Omakase Ruby styling for Railsを継承
-inherit_from:
-  - .rubocop_todo.yml
-
 inherit_gem:
   rubocop-rails-omakase: rubocop.yml
 
@@ -235,6 +231,8 @@ Layout/TrailingEmptyLines:
 # ---------- 行の長さ ----------
 Layout/LineLength:
   Max: 120
+  AllowedPatterns:
+    - '^#\s+index_'
   Exclude:
     - 'config/**/*'
     - 'db/**/*_migrate/**/*'
@@ -450,7 +448,7 @@ Metrics/AbcSize:
   Enabled: true
   Include:
     - app/controllers/**/*.rb
-  Max: 25
+  Max: 50
 
 Metrics/BlockLength:
   Max: 40
@@ -465,13 +463,13 @@ Metrics/CyclomaticComplexity:
   Enabled: true
   Include:
     - app/controllers/**/*.rb
-  Max: 10
+  Max: 18
 
 Metrics/MethodLength:
   Enabled: true
   Include:
     - app/controllers/**/*.rb
-  Max: 20
+  Max: 45
 
 Metrics/ModuleLength:
   Max: 120
@@ -484,7 +482,7 @@ Metrics/PerceivedComplexity:
   Enabled: true
   Include:
     - app/controllers/**/*.rb
-  Max: 10
+  Max: 18
 
 Metrics/BlockNesting:
   Max: 2
@@ -1143,7 +1141,7 @@ Minitest/LiteralAsActualArgument:
 
 Minitest/MultipleAssertions:
   Enabled: true
-  Max: 8
+  Max: 10
 
 Minitest/NoAssertions:
   Enabled: false

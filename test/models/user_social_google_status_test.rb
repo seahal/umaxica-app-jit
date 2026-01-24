@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: user_social_google_statuses
+# Database name: principal
+#
+#  id :string(255)      not null, primary key
+#
+# Indexes
+#
+#  index_user_identity_google_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
 require "test_helper"
 
 class UserSocialGoogleStatusTest < ActiveSupport::TestCase

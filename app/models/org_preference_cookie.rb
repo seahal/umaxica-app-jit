@@ -1,22 +1,27 @@
 # == Schema Information
 #
 # Table name: org_preference_cookies
+# Database name: preference
 #
 #  id                 :uuid             not null, primary key
-#  preference_id      :uuid             not null
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  targetable         :boolean          default(FALSE), not null
-#  performant         :boolean          default(FALSE), not null
-#  functional         :boolean          default(FALSE), not null
 #  consented          :boolean          default(FALSE), not null
 #  consented_at       :datetime
+#  functional         :boolean          default(FALSE), not null
+#  performant         :boolean          default(FALSE), not null
+#  targetable         :boolean          default(FALSE), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
 #  consent_version_id :uuid
+#  preference_id      :uuid             not null
 #
 # Indexes
 #
 #  index_org_preference_cookies_on_consent_version_id  (consent_version_id)
 #  index_org_preference_cookies_on_preference_id       (preference_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (preference_id => org_preferences.id)
 #
 
 # frozen_string_literal: true

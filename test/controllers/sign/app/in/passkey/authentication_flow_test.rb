@@ -7,6 +7,10 @@ module Sign::App::In::Passkey
   class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+      # Mock TRUSTED_ORIGINS
+      @original_trusted_origins = Webauthn.method(:trusted_origins)
+      Webauthn.define_singleton_method(:trusted_origins) { ["http://sign.app.localhost", "http://sign.org.localhost"] }
+
       @user = users(:one)
       UserEmail.create!(
         user: @user,
@@ -31,6 +35,10 @@ module Sign::App::In::Passkey
         description: "Test Passkey",
         external_id: SecureRandom.uuid,
       )
+    end
+
+    teardown do
+      Webauthn.define_singleton_method(:trusted_origins, @original_trusted_origins)
     end
 
     test "should generate authentication options and store challenge in session" do

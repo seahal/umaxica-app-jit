@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: user_token_kinds
+# Database name: token
 #
 #  id         :string           not null, primary key
 #  created_at :datetime         not null

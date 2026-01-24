@@ -1,17 +1,23 @@
 # == Schema Information
 #
 # Table name: org_document_tags
+# Database name: document
 #
 #  id                         :uuid             not null, primary key
-#  org_document_id            :uuid             not null
-#  org_document_tag_master_id :string(255)      not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
+#  org_document_id            :uuid             not null
+#  org_document_tag_master_id :string(255)      not null
 #
 # Indexes
 #
 #  index_org_document_taggers_on_document_and_tag         (org_document_id,org_document_tag_master_id) UNIQUE
 #  index_org_document_tags_on_org_document_tag_master_id  (org_document_tag_master_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (org_document_id => org_documents.id) ON DELETE => cascade
+#  fk_rails_...  (org_document_tag_master_id => org_document_tag_masters.id)
 #
 
 # frozen_string_literal: true

@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: app_preference_audit_events
+# Database name: audit
 #
 #  id         :string(255)      default("NEYO"), not null, primary key
 #  created_at :datetime         not null
@@ -31,5 +32,10 @@ class AppPreferenceAuditEventTest < ActiveSupport::TestCase
     record.valid?
     assert_nil record.id
     assert_predicate record.errors[:id], :any?
+  end
+
+  test "ordered scope sorts by id when position is absent" do
+    ordered_ids = AppPreferenceAuditEvent.ordered.pluck(:id)
+    assert_equal ordered_ids.sort, ordered_ids
   end
 end

@@ -3,25 +3,35 @@
 # == Schema Information
 #
 # Table name: user_emails
+# Database name: principal
 #
 #  id                            :uuid             not null, primary key
 #  address                       :string           default(""), not null
-#  created_at                    :datetime         not null
-#  locked_at                     :datetime         default("-infinity"), not null
+#  locked_at                     :datetime         default(-Infinity), not null
 #  otp_attempts_count            :integer          default(0), not null
 #  otp_counter                   :text             default(""), not null
-#  otp_expires_at                :datetime         default("-infinity"), not null
-#  otp_last_sent_at              :datetime         default("-infinity"), not null
+#  otp_expires_at                :datetime         default(-Infinity), not null
+#  otp_last_sent_at              :datetime         default(-Infinity), not null
 #  otp_private_key               :string           default(""), not null
+#  verification_token_digest     :binary
+#  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
+#  public_id                     :string(21)       not null
 #  user_id                       :uuid             not null
-#  user_email_status_id :string(255)      default("UNVERIFIED"), not null
+#  user_identity_email_status_id :string(255)      default("NEYO"), not null
 #
 # Indexes
 #
 #  index_user_emails_on_otp_last_sent_at               (otp_last_sent_at)
+#  index_user_emails_on_public_id                      (public_id) UNIQUE
 #  index_user_emails_on_user_id                        (user_id)
-#  index_user_emails_on_user_email_status_id  (user_email_status_id)
+#  index_user_emails_on_user_identity_email_status_id  (user_identity_email_status_id)
+#  index_user_identity_emails_on_lower_address         (lower((address)::text)) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (user_identity_email_status_id => user_email_statuses.id)
 #
 
 class UserEmail < PrincipalRecord
@@ -56,6 +66,25 @@ class UserEmail < PrincipalRecord
   end
 
   encrypts :address, deterministic: true
+
+  # Generates a new verification token and saves its digest
+  # Returns the raw token
+  def generate_verification_token
+    raw_token = SecureRandom.urlsafe_base64(32)
+    self.verification_token_digest = Digest::SHA256.hexdigest(raw_token)
+    save!
+    raw_token
+  end
+
+  def verify_verification_token(raw_token)
+    return false if raw_token.blank? || verification_token_digest.blank?
+
+    # Secure comparison of digests
+    ActiveSupport::SecurityUtils.secure_compare(
+      verification_token_digest,
+      Digest::SHA256.hexdigest(raw_token),
+    )
+  end
 
   private
 

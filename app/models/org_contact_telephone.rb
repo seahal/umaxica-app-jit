@@ -3,19 +3,20 @@
 # == Schema Information
 #
 # Table name: org_contact_telephones
+# Database name: guest
 #
 #  id                     :string           not null, primary key
-#  org_contact_id         :uuid             not null
-#  telephone_number       :string(1000)     default(""), not null
 #  activated              :boolean          default(FALSE), not null
 #  deletable              :boolean          default(FALSE), not null
-#  remaining_views        :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default("-infinity"), not null
-#  verifier_attempts_left :integer          default(0), not null
 #  expires_at             :timestamptz      not null
+#  remaining_views        :integer          default(0), not null
+#  telephone_number       :string(1000)     default(""), not null
+#  verifier_attempts_left :integer          default(0), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default(-Infinity), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  org_contact_id         :uuid             not null
 #
 # Indexes
 #
@@ -23,6 +24,10 @@
 #  index_org_contact_telephones_on_org_contact_id       (org_contact_id)
 #  index_org_contact_telephones_on_telephone_number     (telephone_number)
 #  index_org_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (org_contact_id => org_contacts.id)
 #
 
 class OrgContactTelephone < GuestRecord

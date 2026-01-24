@@ -23,7 +23,7 @@ module Email
                         presence: true,
                         uniqueness: { case_sensitive: false },
                         unless: Proc.new { |a| a.address.blank? && a.pass_code.present? }
-    validates :confirm_policy, acceptance: true,
+    validates :confirm_policy, acceptance: true, on: :create,
                                unless: Proc.new { |a| a.address.blank? && a.pass_code.present? }
     validates :pass_code, numericality: { only_integer: true },
                           length: { is: 6 },

@@ -3,17 +3,18 @@
 # == Schema Information
 #
 # Table name: user_secrets
+# Database name: principal
 #
 #  id                             :uuid             not null, primary key
-#  created_at                     :datetime         not null
-#  expires_at                     :datetime         default("infinity"), not null
-#  last_used_at                   :datetime         default("-infinity"), not null
+#  expires_at                     :datetime         default(Infinity), not null
+#  last_used_at                   :datetime         default(-Infinity), not null
 #  name                           :string           default(""), not null
 #  password_digest                :string           default(""), not null
+#  uses_remaining                 :integer          default(1), not null
+#  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  user_id                        :uuid             not null
 #  user_identity_secret_status_id :string(255)      default("ACTIVE"), not null
-#  uses_remaining                 :integer          default(1), not null
 #  user_secret_kind_id            :string(255)      not null
 #
 # Indexes
@@ -22,6 +23,12 @@
 #  index_user_secrets_on_user_id                         (user_id)
 #  index_user_secrets_on_user_identity_secret_status_id  (user_identity_secret_status_id)
 #  index_user_secrets_on_user_secret_kind_id             (user_secret_kind_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (user_identity_secret_status_id => user_secret_statuses.id)
+#  fk_rails_...  (user_secret_kind_id => user_secret_kinds.id)
 #
 
 class UserSecret < PrincipalRecord

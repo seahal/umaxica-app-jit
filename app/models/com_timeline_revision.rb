@@ -1,28 +1,33 @@
 # == Schema Information
 #
 # Table name: com_timeline_revisions
+# Database name: news
 #
 #  id              :uuid             not null, primary key
-#  com_timeline_id :uuid             not null
-#  permalink       :string(200)      not null
-#  response_mode   :string           not null
-#  redirect_url    :string
-#  title           :string
-#  description     :string
 #  body            :text
-#  published_at    :datetime         not null
-#  expires_at      :datetime         not null
+#  description     :string
 #  edited_by_type  :string
-#  edited_by_id    :integer
-#  public_id       :string(255)      default(""), not null
+#  expires_at      :datetime         not null
+#  permalink       :string(200)      not null
+#  published_at    :datetime         not null
+#  redirect_url    :string
+#  response_mode   :string           not null
+#  title           :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  com_timeline_id :uuid             not null
+#  edited_by_id    :bigint
+#  public_id       :string(255)      default(""), not null
 #
 # Indexes
 #
 #  index_com_timeline_revisions_on_com_timeline_id                 (com_timeline_id)
 #  index_com_timeline_revisions_on_com_timeline_id_and_created_at  (com_timeline_id,created_at)
 #  index_com_timeline_revisions_on_public_id                       (public_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (com_timeline_id => com_timelines.id)
 #
 
 # frozen_string_literal: true

@@ -1,15 +1,16 @@
 # == Schema Information
 #
 # Table name: org_preferences
+# Database name: preference
 #
 #  id           :uuid             not null, primary key
-#  public_id    :string
 #  expires_at   :datetime
+#  jti          :string
 #  token_digest :binary
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  public_id    :string
 #  status_id    :string(255)      default("NEYO"), not null
-#  jti          :string
 #
 # Indexes
 #

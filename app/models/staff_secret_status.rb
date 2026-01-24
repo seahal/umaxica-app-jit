@@ -3,8 +3,13 @@
 # == Schema Information
 #
 # Table name: staff_secret_statuses
+# Database name: operator
 #
 #  id :string(255)      not null, primary key
+#
+# Indexes
+#
+#  index_staff_identity_secret_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 class StaffSecretStatus < OperatorRecord

@@ -3,22 +3,28 @@
 # == Schema Information
 #
 # Table name: user_one_time_passwords
+# Database name: principal
 #
+#  id                                        :uuid             not null, primary key
+#  last_otp_at                               :datetime         default(-Infinity), not null
+#  private_key                               :string(1024)     default(""), not null
+#  title                                     :string(32)
 #  created_at                                :datetime         not null
 #  updated_at                                :datetime         not null
-#  private_key                               :string(1024)     default(""), not null
-#  last_otp_at                               :datetime         default("-infinity"), not null
-#  user_identity_one_time_password_status_id :string           default("NEYO"), not null
-#  id                                        :uuid             not null, primary key
-#  user_id                                   :uuid             not null
 #  public_id                                 :string(21)
-#  title                                     :string(32)
+#  user_id                                   :uuid             not null
+#  user_identity_one_time_password_status_id :string           default("NEYO"), not null
 #
 # Indexes
 #
 #  idx_on_user_identity_one_time_password_status_id_c03cdf0b39  (user_identity_one_time_password_status_id)
 #  index_user_one_time_passwords_on_public_id                   (public_id) UNIQUE
 #  index_user_one_time_passwords_on_user_id                     (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (user_identity_one_time_password_status_id => user_one_time_password_statuses.id)
 #
 
 class UserOneTimePassword < PrincipalRecord

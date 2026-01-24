@@ -3,27 +3,33 @@
 # == Schema Information
 #
 # Table name: user_social_apples
+# Database name: principal
 #
 #  id                                   :uuid             not null, primary key
+#  email                                :string           default(""), not null
+#  expires_at                           :integer          not null
+#  image                                :string           default(""), not null
+#  last_authenticated_at                :datetime
+#  provider                             :string           default("apple"), not null
+#  refresh_token                        :string           default(""), not null
 #  token                                :string           default(""), not null
+#  uid                                  :string           default(""), not null
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
-#  user_identity_social_apple_status_id :string(255)      default("ACTIVE"), not null
 #  user_id                              :uuid             not null
-#  uid                                  :string           default(""), not null
-#  email                                :string           default(""), not null
-#  image                                :string           default(""), not null
-#  refresh_token                        :string           default(""), not null
-#  expires_at                           :integer          not null
-#  provider                             :string           default("apple"), not null
-#  last_authenticated_at                :datetime
+#  user_identity_social_apple_status_id :string(255)      default("ACTIVE"), not null
 #
 # Indexes
 #
 #  idx_on_user_identity_social_apple_status_id_93441f369d  (user_identity_social_apple_status_id)
-#  index_user_identity_social_apples_on_user_id_unique     (user_id) UNIQUE
+#  index_user_identity_social_apples_on_user_id_unique     (user_id) UNIQUE WHERE (user_id IS NOT NULL)
 #  index_user_social_apples_on_expires_at                  (expires_at)
 #  index_user_social_apples_on_uid_and_provider            (uid,provider) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (user_identity_social_apple_status_id => user_social_apple_statuses.id)
 #
 
 require "test_helper"
@@ -85,7 +91,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     auth = MockAuth.new(
       uid: "new-uid",
       provider: "apple",
-      info: OpenStruct.new(email: "test@example.com"),
+      info: OpenStruct.new(email: "test@example.com", image: "http://example.com"),
       credentials: OpenStruct.new(token: "new-token", expires_at: 123),
     )
 
@@ -95,8 +101,22 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     assert_equal "new-uid", identity.uid
     assert_equal "apple", identity.provider
     assert_equal "test@example.com", identity.email
+    assert_equal "http://example.com", identity.image
     assert_equal "new-token", identity.token
     assert_equal 123, identity.expires_at
+  end
+
+  test "find_or_create_from_auth_hash handles missing image" do
+    auth = MockAuth.new(
+      uid: "no-image-uid",
+      provider: "apple",
+      info: OpenStruct.new(email: "test@example.com"),
+      credentials: OpenStruct.new(token: "new-token", expires_at: 123),
+    )
+
+    identity = UserSocialApple.find_or_create_from_auth_hash(auth)
+
+    assert_equal "", identity.image
   end
 
   test "find_or_create_from_auth_hash returns existing record with updated attributes" do
@@ -125,6 +145,74 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     # find_or_initialize returns the object. It modifies it but doesn't save.
     assert_equal "updated-token", identity.token
     assert identity.changes.key?("token") # Confirms it has unsaved changes
+  end
+
+  test "extract_uid falls back to extra raw_info sub" do
+    auth = MockAuth.new(
+      uid: "",
+      provider: "apple",
+      info: OpenStruct.new(email: "apple@example.com"),
+      credentials: OpenStruct.new(token: "apple-token", expires_at: 123),
+      extra: OpenStruct.new(raw_info: OpenStruct.new(sub: "apple-sub")),
+    )
+
+    assert_equal "apple-sub", UserSocialApple.extract_uid(auth)
+  end
+
+  test "update_from_auth_hash updates attributes and timestamp" do
+    identity = UserSocialApple.create!(
+      user: users(:one),
+      uid: "update-apple-uid",
+      token: "old-token",
+      refresh_token: "old-refresh",
+      expires_at: 123,
+      image: "old-image",
+    )
+
+    auth = MockAuth.new(
+      uid: "update-apple-uid",
+      provider: "apple",
+      info: OpenStruct.new(email: "new-apple@example.com"),
+      credentials: OpenStruct.new(token: "new-token", refresh_token: "new-refresh", expires_at: 456),
+    )
+
+    assert_nil identity.last_authenticated_at
+    identity.update_from_auth_hash!(auth)
+
+    assert_equal "new-apple@example.com", identity.email
+    assert_equal "old-image", identity.image
+    assert_equal "new-token", identity.token
+    assert_equal "new-refresh", identity.refresh_token
+    assert_equal 456, identity.expires_at
+    assert_predicate identity.last_authenticated_at, :present?
+  end
+
+  test "active scope and active? check status column" do
+    active = UserSocialApple.create!(
+      user: users(:two),
+      uid: "active-apple-uid",
+      token: "token",
+      expires_at: 123,
+      user_identity_social_apple_status_id: "ACTIVE",
+    )
+
+    inactive = UserSocialApple.create!(
+      user: User.create!,
+      uid: "inactive-apple-uid",
+      token: "token",
+      expires_at: 123,
+      user_identity_social_apple_status_id: "REVOKED",
+    )
+
+    assert_includes UserSocialApple.active, active
+    assert_not_includes UserSocialApple.active, inactive
+    assert_predicate active, :active?
+    assert_not inactive.active?
+  end
+
+  test "normalized_provider maps provider" do
+    identity = UserSocialApple.new(provider: "apple")
+    assert_equal "apple", identity.normalized_provider
   end
 
   class MockAuth < OpenStruct; end

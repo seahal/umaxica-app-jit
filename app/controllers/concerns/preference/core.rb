@@ -154,7 +154,7 @@ module Preference::Core
     token_value = refresh_token_value
     return if token_value.blank?
 
-    token_digest = refresh_token_digest(token_value)
+    token_digest = refresh_token_lookup_digest(token_value)
     preference = preference_class.find_by(token_digest: token_digest)
     return if preference.blank?
 

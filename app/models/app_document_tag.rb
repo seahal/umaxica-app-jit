@@ -1,17 +1,23 @@
 # == Schema Information
 #
 # Table name: app_document_tags
+# Database name: document
 #
 #  id                         :uuid             not null, primary key
-#  app_document_id            :uuid             not null
-#  app_document_tag_master_id :string(255)      not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
+#  app_document_id            :uuid             not null
+#  app_document_tag_master_id :string(255)      not null
 #
 # Indexes
 #
 #  index_app_document_tags_on_app_document_tag_master_id  (app_document_tag_master_id)
 #  index_app_document_tags_on_document_and_tag            (app_document_id,app_document_tag_master_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (app_document_id => app_documents.id) ON DELETE => cascade
+#  fk_rails_...  (app_document_tag_master_id => app_document_tag_masters.id)
 #
 
 # frozen_string_literal: true

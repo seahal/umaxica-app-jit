@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: com_document_audit_levels
+# Database name: audit
 #
 #  id :string(255)      default("NEYO"), not null, primary key
 #

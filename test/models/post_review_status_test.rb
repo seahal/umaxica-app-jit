@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: post_review_statuses
+# Database name: avatar
 #
 #  id         :string           not null, primary key
 #  key        :string           not null

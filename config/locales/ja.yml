@@ -1,4 +1,23 @@
 ja:
+  session_limit:
+    gate_expired: "操作がタイムアウトしました。もう一度ログインしてください。"
+    user_not_found: "ユーザーが見つかりません。もう一度ログインしてください。"
+    staff_not_found: "スタッフが見つかりません。もう一度ログインしてください。"
+    no_sessions_selected: "無効化するセッションを選択してください。"
+    sessions_revoked: "セッションを無効化しました。ログインを続行してください。"
+    edit:
+      title: "セッション上限に達しました"
+      description: "同時にログインできるセッション数の上限に達しています。ログインを続行するには、無効化するセッションを選択してください。"
+      active_sessions: "アクティブなセッション"
+      session_label: "セッション"
+      created_at: "作成日時"
+      last_used: "最終使用"
+      no_sessions: "アクティブなセッションがありません。"
+      submit: "選択したセッションを無効化してログイン"
+      cancel: "キャンセル"
+  languages:
+    japanese: "日本語"
+    english: "英語"
   activerecord:
     messages:
       too_long: "は%{count}文字以内で入力してください"
@@ -26,6 +45,8 @@ ja:
     destroy: "削除"
     save: "保存"
     actions: "アクション"
+    connect: "連携する"
+    disconnect: "連携を解除"
   messages:
     confirm_destroy: "本当に削除しますか？"
     passkey_successfully_updated: "パスキーを更新しました"
@@ -95,6 +116,9 @@ ja:
             email_label: "メールアドレス"
             email_placeholder: "example@email.com"
             submit: "パスキーでログイン"
+      outs:
+        destroy:
+          success: "ログアウトしました"
       configuration:
         passkey:
           index:
@@ -118,11 +142,15 @@ ja:
             back: "一覧に戻る"
           edit:
             title: "パスキーを編集"
+        email:
+          update:
+            success: "メールアドレスの確認が完了しました"
       social:
         sessions:
           invalid_provider: "無効なプロバイダーが指定されました"
           create:
             success: "%{provider}でログインしました"
+            already_registered: "おかえりなさい！%{provider}でログインしました"
             failure: "ログインに失敗しました。もう一度お試しください。"
           link:
             success: "%{provider}アカウントを連携しました"
@@ -159,6 +187,9 @@ ja:
             identifier_label: "メールアドレスまたはスタッフコード"
             identifier_placeholder: "メールアドレスまたはスタッフコード"
             submit: "パスキーでログイン"
+      outs:
+        destroy:
+          success: "ログアウトしました"
       configuration:
         passkeys:
           new:
@@ -178,6 +209,133 @@ ja:
             back: "一覧に戻る"
           edit:
             title: "パスキーを編集"
+  apex:
+    org:
+      preferences:
+        update_success: "設定を更新しました"
+        submitting: "更新中..."
+        update_settings: "設定を更新"
+        back_to_settings: "設定に戻る"
+        regions:
+          title: "地域の編集"
+          region_section: "地域設定"
+          select_region: "地域を選択"
+          select_region_prompt: "地域を選択してください"
+          select_region_selector:
+            US: "アメリカ合衆国"
+            JP: "日本"
+        region:
+          timezone:
+            link: "タイムゾーン設定"
+          language:
+            link: "言語設定"
+        region_settings: "地域設定に戻る"
+        language_settings: "言語設定"
+        timezone_settings: "タイムゾーン設定"
+      preference:
+        language:
+          edit:
+            heading: "言語設定"
+            description: "アプリケーションの表示言語を変更します"
+            language_label: "言語"
+        timezone:
+          edit:
+            heading: "タイムゾーン設定"
+            description: "表示日時のタイムゾーンを変更します"
+            timezone_label: "タイムゾーン"
+        locale:
+          edit:
+            title: "地域設定"
+            description: "地域設定を変更します"
+            language_label: "言語"
+            timezone_label: "タイムゾーン"
+            timezone_options:
+              UTC: "協定世界時 (UTC)"
+              JST: "日本標準時 (JST)"
+    app:
+      preferences:
+        update_success: "設定を更新しました"
+        submitting: "更新中..."
+        update_settings: "設定を更新"
+        back_to_settings: "設定に戻る"
+        regions:
+          title: "地域の編集"
+          region_section: "地域設定"
+          select_region: "地域を選択"
+          select_region_prompt: "地域を選択してください"
+          select_region_selector:
+            US: "アメリカ合衆国"
+            JP: "日本"
+        region:
+          timezone:
+            link: "タイムゾーン設定"
+          language:
+            link: "言語設定"
+        region_settings: "地域設定に戻る"
+        language_settings: "言語設定"
+        timezone_settings: "タイムゾーン設定"
+      preference:
+        language:
+          edit:
+            heading: "言語設定"
+            description: "アプリケーションの表示言語を変更します"
+            language_label: "言語"
+        timezone:
+          edit:
+            heading: "タイムゾーン設定"
+            description: "表示日時のタイムゾーンを変更します"
+            timezone_label: "タイムゾーン"
+        locale:
+          edit:
+            title: "地域設定"
+            description: "地域設定を変更します"
+            language_label: "言語"
+            timezone_label: "タイムゾーン"
+            timezone_options:
+              UTC: "協定世界時 (UTC)"
+              JST: "日本標準時 (JST)"
+    com:
+      preferences:
+        update_success: "設定を更新しました"
+        submitting: "更新中..."
+        update_settings: "設定を更新"
+        back_to_settings: "設定に戻る"
+        regions:
+          title: "地域の編集"
+          region_section: "地域設定"
+          select_region: "地域を選択"
+          select_region_prompt: "地域を選択してください"
+          select_region_selector:
+            US: "アメリカ合衆国"
+            JP: "日本"
+        region:
+          timezone:
+            link: "タイムゾーン設定"
+          language:
+            link: "言語設定"
+        region_settings: "地域設定に戻る"
+        language_settings: "言語設定"
+        timezone_settings: "タイムゾーン設定"
+      preference:
+        language:
+          edit:
+            heading: "言語設定"
+            description: "アプリケーションの表示言語を変更します"
+            language_label: "言語"
+        timezone:
+          edit:
+            heading: "タイムゾーン設定"
+            description: "表示日時のタイムゾーンを変更します"
+            timezone_label: "タイムゾーン"
+        locale:
+          edit:
+            title: "地域設定"
+            description: "地域設定を変更します"
+            language_label: "言語"
+            timezone_label: "タイムゾーン"
+            timezone_options:
+              UTC: "協定世界時 (UTC)"
+              JST: "日本標準時 (JST)"
   mail:
     common:
       greeting: "こんにちは"

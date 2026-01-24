@@ -3,12 +3,13 @@
 # == Schema Information
 #
 # Table name: staff_messages
+# Database name: message
 #
 #  id         :uuid             not null, primary key
-#  staff_id   :uuid
-#  public_id  :uuid
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  public_id  :uuid
+#  staff_id   :uuid
 #
 # Indexes
 #

@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: avatar_membership_statuses
+# Database name: avatar
 #
 #  id         :string           not null, primary key
 #  created_at :datetime         not null

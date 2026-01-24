@@ -69,7 +69,16 @@ class SocialAuthService
         raise SocialAuth::LastIdentityError.new("errors.social_auth.last_identity")
       end
 
-      identity.destroy!
+      # Soft delete: set status to REVOKED instead of destroying
+      revoked_status =
+        case identity_class.name
+        when "UserSocialGoogle"
+          UserSocialGoogleStatus::REVOKED
+        when "UserSocialApple"
+          UserSocialAppleStatus::REVOKED
+        end
+
+      identity.update!(identity_class.status_column => revoked_status)
 
       Rails.event.notify(
         "social_auth.unlinked",
@@ -161,17 +170,17 @@ class SocialAuthService
       end
 
       identity.update_from_auth_hash!(@auth_hash)
-      build_result(user, identity, reauthenticated: false)
+      build_result(user, identity, reauthenticated: false, existing_account: true)
     else
       # New identity - create user and identity
-      user = User.new
+      user = User.new(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
       identity = build_identity_for_user(identity_class, user, provider, uid)
 
       user.save!
       identity.save!
       identity.touch_authenticated!
 
-      build_result(user, identity, reauthenticated: false)
+      build_result(user, identity, reauthenticated: false, existing_account: false)
     end
   rescue ActiveRecord::RecordNotUnique => e
     # Race condition: identity was created between check and insert
@@ -187,7 +196,7 @@ class SocialAuthService
   # Intent: link
   # - Requires current_user
   # - If identity exists and belongs to another user -> 409 Conflict
-  # - If identity exists and belongs to current_user -> update and return
+  # - If identity exists and belongs to current_user -> update and return (reactivate if REVOKED)
   # - If identity doesn't exist -> create and link to current_user
   def handle_link(identity_class, provider, uid)
     raise SocialAuth::UnauthorizedError.new("errors.social_auth.not_logged_in") unless @current_user
@@ -195,8 +204,19 @@ class SocialAuthService
     # Check if user already has this provider linked
     existing_for_user = identity_for_user(identity_class, provider)
     if existing_for_user
-      # User already has this provider - just update
+      # User already has this provider - update and ensure it's ACTIVE
       existing_for_user.update_from_auth_hash!(@auth_hash)
+
+      # Reactivate if it was REVOKED
+      active_status =
+        case identity_class.name
+        when "UserSocialGoogle"
+          UserSocialGoogleStatus::ACTIVE
+        when "UserSocialApple"
+          UserSocialAppleStatus::ACTIVE
+        end
+
+      existing_for_user.update!(identity_class.status_column => active_status)
       return build_result(@current_user, existing_for_user, reauthenticated: false)
     end
 
@@ -271,7 +291,7 @@ class SocialAuthService
   end
 
   def create_user_for_identity(identity, identity_class, provider)
-    user = User.new
+    user = User.new(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
     assign_identity_to_user(user, identity, identity_class, provider)
     user.save!
     identity.update!(user: user)
@@ -318,13 +338,23 @@ class SocialAuthService
   def last_authentication_method?
     auth_methods_count = 0
 
-    # Count social identities
-    auth_methods_count += 1 if @current_user.user_social_google.present?
-    auth_methods_count += 1 if @current_user.user_social_apple.present?
+    # Count social identities (only ACTIVE ones)
+    google = @current_user.user_social_google
+    if google&.user_identity_social_google_status_id == UserSocialGoogleStatus::ACTIVE
+      auth_methods_count += 1
+    end
+
+    apple = @current_user.user_social_apple
+    if apple&.user_identity_social_apple_status_id == UserSocialAppleStatus::ACTIVE
+      auth_methods_count += 1
+    end
 
     # Count other auth methods (email, telephone, passkey, secret)
     if @current_user.respond_to?(:user_emails)
-      auth_methods_count += @current_user.user_emails.where(user_email_status_id: "ACTIVE").count
+      # UserEmailStatus uses VERIFIED/VERIFIED_WITH_SIGN_UP, not ACTIVE
+      auth_methods_count += @current_user.user_emails.where(
+        user_email_status_id: %w(ACTIVE VERIFIED VERIFIED_WITH_SIGN_UP),
+      ).count
     end
 
     if @current_user.respond_to?(:user_telephones)
@@ -342,7 +372,7 @@ class SocialAuthService
     auth_methods_count <= 1
   end
 
-  def build_result(user, identity, reauthenticated:, reauth_at: nil)
+  def build_result(user, identity, reauthenticated:, reauth_at: nil, existing_account: nil)
     jwt_payload = { user_id: user.id }
     jwt_payload[:reauthenticated_at] = reauth_at.iso8601 if reauthenticated && reauth_at
 
@@ -351,6 +381,7 @@ class SocialAuthService
       identity: identity,
       jwt_payload: jwt_payload,
       reauthenticated: reauthenticated,
+      existing_account: existing_account,
     }
   end
 end

@@ -3,8 +3,13 @@
 # == Schema Information
 #
 # Table name: user_one_time_password_statuses
+# Database name: principal
 #
-#  id :string           not null, primary key
+#  id :string           default("NEYO"), not null, primary key
+#
+# Indexes
+#
+#  index_user_identity_otp_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 class UserOneTimePasswordStatus < PrincipalRecord

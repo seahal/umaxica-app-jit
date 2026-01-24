@@ -158,14 +158,23 @@ module Preference
       end
 
       def decode_options
-        {
+        options = {
           algorithms: [JWT_ALGORITHM],
           verify_exp: true,
           verify_iss: true,
           iss: JwtConfiguration.issuer,
-          verify_aud: true,
-          aud: JwtConfiguration.audiences,
         }
+
+        # Only verify audience if configured
+        audiences = JwtConfiguration.audiences
+        if audiences.present?
+          options[:verify_aud] = true
+          options[:aud] = audiences
+        else
+          options[:verify_aud] = false
+        end
+
+        options
       end
 
       def resolve_audiences
@@ -639,7 +648,8 @@ module Preference
       return digest_refresh_token(parsed.last) if parsed
 
       # Legacy tokens were stored as a flat base64 string without the public_id prefix.
-      # TODO (Apr 1, 2026): once every client has rotated, remove this branch and purge digests that still match legacy SHA3 values.
+      # TODO (Apr 1, 2026): once every client has rotated, remove this branch and
+      # purge digests that still match legacy SHA3 values.
       return legacy_refresh_token_digest(token) unless token.include?(refresh_token_separator)
 
       nil

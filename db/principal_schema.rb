@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_22_100002) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_24_174000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -169,6 +169,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_22_100002) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.string "user_identity_email_status_id", limit: 255, default: "NEYO", null: false
+    t.binary "verification_token_digest"
     t.index "lower((address)::text)", name: "index_user_identity_emails_on_lower_address", unique: true
     t.index ["otp_last_sent_at"], name: "index_user_emails_on_otp_last_sent_at"
     t.index ["public_id"], name: "index_user_emails_on_public_id", unique: true

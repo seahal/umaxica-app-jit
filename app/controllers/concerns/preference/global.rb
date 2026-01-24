@@ -174,6 +174,7 @@ module Preference::Global
 
   def set_region
     return if params[:ri].present?
+    return unless request.get? || request.head?
 
     redirect_params = request.query_parameters.merge(ri: get_region)
 

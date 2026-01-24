@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: user_audit_levels
+# Database name: audit
 #
 #  id         :string(255)      default("NEYO"), not null, primary key
 #  created_at :datetime         not null

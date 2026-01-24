@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: app_preference_audit_levels
+# Database name: audit
 #
 #  id         :string(255)      default("NEYO"), not null, primary key
 #  created_at :datetime         not null

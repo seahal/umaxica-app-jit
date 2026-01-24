@@ -3,25 +3,34 @@
 # == Schema Information
 #
 # Table name: staff_emails
+# Database name: operator
 #
 #  id                             :uuid             not null, primary key
 #  address                        :string           default(""), not null
-#  created_at                     :datetime         not null
-#  locked_at                      :datetime         default("-infinity"), not null
+#  locked_at                      :datetime         default(-Infinity), not null
 #  otp_attempts_count             :integer          default(0), not null
 #  otp_counter                    :text             default(""), not null
-#  otp_expires_at                 :datetime         default("-infinity"), not null
-#  otp_last_sent_at               :datetime         default("-infinity"), not null
+#  otp_expires_at                 :datetime         default(-Infinity), not null
+#  otp_last_sent_at               :datetime         default(-Infinity), not null
 #  otp_private_key                :string           default(""), not null
-#  staff_id                       :uuid             not null
-#  staff_email_status_id :string(255)      default("UNVERIFIED"), not null
+#  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
+#  public_id                      :string(21)       not null
+#  staff_id                       :uuid             not null
+#  staff_identity_email_status_id :string(255)      default("UNVERIFIED"), not null
 #
 # Indexes
 #
 #  index_staff_emails_on_otp_last_sent_at                (otp_last_sent_at)
+#  index_staff_emails_on_public_id                       (public_id) UNIQUE
 #  index_staff_emails_on_staff_id                        (staff_id)
-#  index_staff_emails_on_staff_email_status_id  (staff_email_status_id)
+#  index_staff_emails_on_staff_identity_email_status_id  (staff_identity_email_status_id)
+#  index_staff_identity_emails_on_lower_address          (lower((address)::text))
+#
+# Foreign Keys
+#
+#  fk_rails_...  (staff_id => staffs.id)
+#  fk_rails_...  (staff_identity_email_status_id => staff_email_statuses.id)
 #
 
 require "test_helper"
@@ -110,6 +119,19 @@ class StaffEmailTest < ActiveSupport::TestCase
     query = "SELECT address FROM #{StaffEmail.table_name} WHERE id = '#{staff_email.id}'"
     raw_data = StaffEmail.connection.execute(query).first
     assert_not_equal @valid_attributes[:address], raw_data["address"] if raw_data
+  end
+
+  test "assigns placeholder staff_id when missing" do
+    staff_email = StaffEmail.new(@valid_attributes.except(:staff))
+    staff_email.valid?
+
+    assert_equal "00000000-0000-0000-0000-000000000000", staff_email.staff_id
+  end
+
+  test "to_param uses public_id" do
+    staff_email = StaffEmail.create!(@valid_attributes)
+
+    assert_equal staff_email.public_id, staff_email.to_param
   end
 
   test "enforces maximum emails per staff" do

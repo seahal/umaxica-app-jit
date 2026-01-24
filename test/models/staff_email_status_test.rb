@@ -3,8 +3,13 @@
 # == Schema Information
 #
 # Table name: staff_email_statuses
+# Database name: operator
 #
 #  id :string(255)      default("UNVERIFIED"), not null, primary key
+#
+# Indexes
+#
+#  index_staff_identity_email_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 require "test_helper"

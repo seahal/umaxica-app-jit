@@ -11,7 +11,7 @@ module Sign
 
       def destroy
         log_out
-        redirect_to sign_org_root_path, notice: t(".destroy.success")
+        redirect_to sign_org_root_path, notice: t(".success")
       end
     end
   end

@@ -10,6 +10,8 @@ module Email::App
     #
     def create
       @pass_code = params[:hotp_token]
+      @verification_token = params[:verification_token]
+      @public_id = params[:public_id]
       mail(
         to: params[:email_address],
         subject: I18n.t("mail.email.app.registration_mailer.create.subject"),

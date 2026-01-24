@@ -14,7 +14,7 @@ module Sign
         # ==========================================================================
 
         def show
-          @user_email = UserEmail.find_by(id: params["id"])
+          @user_email = UserEmail.find_by(public_id: params["id"])
 
           # TODO: 2FA setup hook
           # When implementing 2FA:
@@ -23,10 +23,10 @@ module Sign
           #   - On success, complete registration flow
           prepare_two_factor_auth_options
         end
+
         # ==========================================================================
         # Step 1: Email Input
         # ==========================================================================
-
         def new
           @user_email = UserEmail.new
         end
@@ -36,7 +36,7 @@ module Sign
         # ==========================================================================
 
         def edit
-          @user_email = UserEmail.find_by(id: params["id"])
+          @user_email = UserEmail.find_by(public_id: params["id"])
           if @user_email.blank? ||
               @user_email.otp_expired? ||
               @user_email.user_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
@@ -49,12 +49,12 @@ module Sign
 
         def create
           email_params = params.expect(user_email: [:address, :confirm_policy])
-          if initiate_email_verification(email_params[:address])
+          if initiate_email_verification(email_params[:address], confirm_policy: email_params[:confirm_policy])
             progress_email_flow!(:create)
             redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
             flash[:notice] = redirect_params.delete(:notice)
             sanitize_redirect_params!(redirect_params)
-            redirect_to edit_sign_app_up_email_path(@user_email.id, redirect_params)
+            redirect_to edit_sign_app_up_email_path(@user_email, redirect_params)
           else
             render :new, status: :unprocessable_content
           end

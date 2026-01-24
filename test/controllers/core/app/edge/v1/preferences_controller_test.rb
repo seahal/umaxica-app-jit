@@ -124,32 +124,28 @@ module Core
             end
           end
 
-          test "legacy refresh token migrates to public_id.verifier format" do
+          test "legacy refresh token is accepted without rotation" do
             legacy_token = "legacy_refresh_#{SecureRandom.hex(8)}"
             legacy_digest = SHA3::Digest::SHA3_384.digest(legacy_token)
             legacy_preference =
               AppPreference.create!(
-                public_id: "legacy_pref_#{SecureRandom.hex(6)}",
+                public_id: SecureRandom.hex(10),
                 status_id: "NEYO",
                 expires_at: 1.day.from_now,
                 token_digest: legacy_digest,
                 jti: SecureRandom.uuid,
               )
 
+            cookies.delete(preference_access_cookie_name)
             cookies[preference_refresh_cookie_name] = legacy_token
             get core_app_edge_v1_preference_url
             assert_response :success
 
             new_token = cookies[preference_refresh_cookie_name]
-            assert_includes new_token, "."
-            assert new_token.start_with?("#{legacy_preference.public_id}.")
+            assert_equal legacy_token, new_token
 
             legacy_preference.reload
-            verifier = new_token.split(".", 2).last
-            assert_not_nil verifier
-            new_digest = SHA3::Digest::SHA3_384.digest(verifier)
-            assert_equal new_digest, legacy_preference.token_digest
-            assert_not_equal legacy_digest, legacy_preference.token_digest
+            assert_equal legacy_digest, legacy_preference.token_digest
           end
 
           test "should return JSON with correct structure" do

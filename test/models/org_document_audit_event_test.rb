@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: org_document_audit_events
+# Database name: audit
 #
 #  id :string(255)      default("NEYO"), not null, primary key
 #
@@ -20,5 +21,11 @@ class OrgDocumentAuditEventTest < ActiveSupport::TestCase
     record = OrgDocumentAuditEvent.new(id: "A" * 256)
     assert_predicate record, :invalid?
     assert_predicate record.errors[:id], :any?
+  end
+
+  test "upcases id before validation" do
+    record = OrgDocumentAuditEvent.new(id: "lower_case")
+    record.valid?
+    assert_equal "LOWER_CASE", record.id
   end
 end

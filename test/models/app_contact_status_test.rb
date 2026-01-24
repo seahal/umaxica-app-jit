@@ -3,12 +3,13 @@
 # == Schema Information
 #
 # Table name: app_contact_statuses
+# Database name: guest
 #
-#  id           :string(255)      not null, primary key
-#  active       :boolean          default(TRUE), not null
-#  description  :string(255)      default(""), not null
-#  parent_title :string(255)      default(""), not null
-#  position     :integer          default(0), not null
+#  id :string(255)      not null, primary key
+#
+# Indexes
+#
+#  index_app_contact_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 require "test_helper"

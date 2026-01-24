@@ -3,22 +3,23 @@
 # == Schema Information
 #
 # Table name: com_timeline_audits
+# Database name: audit
 #
 #  id             :uuid             not null, primary key
-#  subject_id     :string           not null
-#  subject_type   :text             not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  actor_type     :text             default(""), not null
-#  event_id       :string(255)      default("NEYO"), not null
-#  level_id       :string(255)      default("NEYO"), not null
-#  occurred_at    :datetime         not null
-#  expires_at     :datetime         not null
-#  ip_address     :inet             default("0.0.0.0"), not null
-#  context        :jsonb            default("{}"), not null
-#  previous_value :text             default(""), not null
+#  context        :jsonb            not null
 #  current_value  :text             default(""), not null
+#  expires_at     :datetime         not null
+#  ip_address     :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
+#  occurred_at    :datetime         not null
+#  previous_value :text             default(""), not null
+#  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  event_id       :string(255)      default("NEYO"), not null
+#  level_id       :string(255)      default("NEYO"), not null
+#  subject_id     :string           not null
 #
 # Indexes
 #
@@ -30,10 +31,16 @@
 #  index_com_timeline_audits_on_occurred_at               (occurred_at)
 #  index_com_timeline_audits_on_subject_id                (subject_id)
 #
+# Foreign Keys
+#
+#  fk_rails_...  (event_id => com_timeline_audit_events.id)
+#  fk_rails_...  (level_id => com_timeline_audit_levels.id)
+#
 
 require "test_helper"
 
 class ComTimelineAuditTest < ActiveSupport::TestCase
+  fixtures :com_timelines, :com_timeline_audit_events, :com_timeline_audit_levels
   test "loads model and associations" do
     assert_equal "com_timeline_audits", ComTimelineAudit.table_name
 
@@ -55,6 +62,20 @@ class ComTimelineAuditTest < ActiveSupport::TestCase
       expires_at: 1.year.from_now,
     )
     assert_nil audit.com_timeline
+  end
+
+  test "com_timeline helper method resolves when subject_type is ComTimeline" do
+    timeline = com_timelines(:one)
+    audit = ComTimelineAudit.new(
+      subject_id: timeline.id,
+      subject_type: "ComTimeline",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: com_timeline_audit_events(:created).id,
+      level_id: com_timeline_audit_levels(:neyo).id,
+    )
+
+    assert_equal timeline, audit.com_timeline
   end
 
   test "com_timeline= helper method sets subject_id and subject_type" do

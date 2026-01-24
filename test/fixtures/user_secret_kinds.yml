@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: user_secret_kinds
+# Database name: principal
 #
 #  id :string(255)      not null, primary key
 #

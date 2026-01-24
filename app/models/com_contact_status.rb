@@ -3,8 +3,13 @@
 # == Schema Information
 #
 # Table name: com_contact_statuses
+# Database name: guest
 #
-#  id          :string(255)      not null, primary key
+#  id :string(255)      not null, primary key
+#
+# Indexes
+#
+#  index_com_contact_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 class ComContactStatus < GuestRecord

@@ -3,8 +3,13 @@
 # == Schema Information
 #
 # Table name: user_token_statuses
+# Database name: token
 #
-#  id :string(255)      default("NONE"), not null, primary key
+#  id :string(255)      default(""), not null, primary key
+#
+# Indexes
+#
+#  index_user_token_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 class UserTokenStatus < TokenRecord

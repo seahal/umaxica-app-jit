@@ -3,19 +3,20 @@
 # == Schema Information
 #
 # Table name: com_contacts
+# Database name: guest
 #
 #  id               :uuid             not null, primary key
-#  category_id      :string(255)      default("NEYO"), not null
-#  created_at       :datetime         not null
-#  ip_address       :inet             default("0.0.0.0"), not null
-#  public_id        :string(21)       default(""), not null
-#  status_id        :string(255)      default("NEYO"), not null
+#  ip_address       :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
+#  lock_version     :integer          default(0), not null
 #  token            :string(32)       default(""), not null
 #  token_digest     :string(255)      default(""), not null
-#  token_expires_at :timestamptz      default("-infinity"), not null
+#  token_expires_at :timestamptz      default(-Infinity), not null
 #  token_viewed     :boolean          default(FALSE), not null
+#  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  lock_version     :integer          default(0), not null
+#  category_id      :string(255)      default("NEYO"), not null
+#  public_id        :string(21)       default(""), not null
+#  status_id        :string(255)      default("NEYO"), not null
 #
 # Indexes
 #
@@ -25,6 +26,11 @@
 #  index_com_contacts_on_token             (token)
 #  index_com_contacts_on_token_digest      (token_digest)
 #  index_com_contacts_on_token_expires_at  (token_expires_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (category_id => com_contact_categories.id) ON DELETE => cascade
+#  fk_rails_...  (status_id => com_contact_statuses.id) ON DELETE => cascade
 #
 
 class ComContact < GuestRecord

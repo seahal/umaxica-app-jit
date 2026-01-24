@@ -143,7 +143,7 @@ group :development do
   # ERB lint
   gem "erb_lint", require: false
   # Annotate models, routes, fixtures, etc.
-  gem "annotate"
+  gem "annotaterb"
   # License finder
   gem "license_finder", require: false
   # Ruby LSP

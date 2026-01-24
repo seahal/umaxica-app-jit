@@ -3,27 +3,33 @@
 # == Schema Information
 #
 # Table name: user_social_googles
+# Database name: principal
 #
 #  id                                    :uuid             not null, primary key
+#  email                                 :string           default(""), not null
+#  expires_at                            :integer          not null
+#  image                                 :string           default(""), not null
+#  last_authenticated_at                 :datetime
+#  provider                              :string           default("google_oauth2"), not null
+#  refresh_token                         :string           default(""), not null
 #  token                                 :string           default(""), not null
+#  uid                                   :string           default(""), not null
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
-#  user_identity_social_google_status_id :string(255)      default("ACTIVE"), not null
 #  user_id                               :uuid             not null
-#  uid                                   :string           default(""), not null
-#  email                                 :string           default(""), not null
-#  image                                 :string           default(""), not null
-#  refresh_token                         :string           default(""), not null
-#  expires_at                            :integer          not null
-#  provider                              :string           default("google_oauth2"), not null
-#  last_authenticated_at                 :datetime
+#  user_identity_social_google_status_id :string(255)      default("ACTIVE"), not null
 #
 # Indexes
 #
 #  idx_on_user_identity_social_google_status_id_f4bfb6ffdd  (user_identity_social_google_status_id)
-#  index_user_identity_social_googles_on_user_id_unique     (user_id) UNIQUE
+#  index_user_identity_social_googles_on_user_id_unique     (user_id) UNIQUE WHERE (user_id IS NOT NULL)
 #  index_user_social_googles_on_expires_at                  (expires_at)
 #  index_user_social_googles_on_uid_and_provider            (uid,provider) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (user_identity_social_google_status_id => user_social_google_statuses.id)
 #
 
 class UserSocialGoogle < PrincipalRecord
@@ -51,8 +57,8 @@ class UserSocialGoogle < PrincipalRecord
     identity = find_or_initialize_by(uid: auth.uid, provider: auth.provider)
 
     # Update attributes
-    identity.email = auth.info.email
-    identity.image = auth.info.image
+    identity.email = auth.info.email.presence || ""
+    identity.image = auth.info.image.presence || ""
     identity.token = auth.credentials.token
     identity.refresh_token = auth.credentials.refresh_token if auth.credentials.refresh_token.present?
     identity.expires_at = auth.credentials.expires_at
@@ -70,8 +76,8 @@ class UserSocialGoogle < PrincipalRecord
   # Update from OmniAuth hash (for link/reauth scenarios)
   def update_from_auth_hash!(auth)
     update!(
-      email: auth.info.email,
-      image: auth.info.image,
+      email: auth.info.email.presence || email.presence || "",
+      image: auth.info.image.presence || image.presence || "",
       token: auth.credentials.token,
       refresh_token: auth.credentials.refresh_token.presence || refresh_token,
       expires_at: auth.credentials.expires_at,

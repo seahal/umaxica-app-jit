@@ -1,17 +1,23 @@
 # == Schema Information
 #
 # Table name: com_timeline_categories
+# Database name: news
 #
 #  id                              :uuid             not null, primary key
-#  com_timeline_id                 :uuid             not null
-#  com_timeline_category_master_id :string(255)      not null
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
+#  com_timeline_category_master_id :string(255)      not null
+#  com_timeline_id                 :uuid             not null
 #
 # Indexes
 #
 #  idx_on_com_timeline_category_master_id_3ab8427d3a  (com_timeline_category_master_id)
 #  index_com_timeline_categories_unique               (com_timeline_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (com_timeline_category_master_id => com_timeline_category_masters.id)
+#  fk_rails_...  (com_timeline_id => com_timelines.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

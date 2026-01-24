@@ -3,15 +3,16 @@
 # == Schema Information
 #
 # Table name: handles
+# Database name: avatar
 #
 #  id               :string           not null, primary key
-#  public_id        :string           not null
+#  cooldown_until   :timestamptz      not null
 #  handle           :string           not null
 #  is_system        :boolean          default(FALSE), not null
-#  cooldown_until   :timestamptz      not null
-#  handle_status_id :string
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
+#  handle_status_id :string
+#  public_id        :string           not null
 #
 # Indexes
 #
@@ -19,7 +20,11 @@
 #  index_handles_on_handle_status_id  (handle_status_id)
 #  index_handles_on_is_system         (is_system)
 #  index_handles_on_public_id         (public_id) UNIQUE
-#  uniq_handles_handle_non_system     (handle) UNIQUE
+#  uniq_handles_handle_non_system     (handle) UNIQUE WHERE (is_system = false)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (handle_status_id => handle_statuses.id)
 #
 
 class Handle < AvatarRecord

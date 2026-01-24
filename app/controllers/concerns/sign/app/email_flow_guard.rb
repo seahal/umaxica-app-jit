@@ -5,19 +5,24 @@ module Sign
     module EmailFlowGuard
       extend ActiveSupport::Concern
 
+      STATE_INIT = "init"
+      STATE_EMAIL_CREATED = "email_created"
+      STATE_EMAIL_VERIFIED = "email_verified"
+      VALID_STATES = [STATE_INIT, STATE_EMAIL_CREATED, STATE_EMAIL_VERIFIED].freeze
+
       FLOW_REQUIREMENTS = {
-        new: :init,
-        create: :init,
-        edit: :email_created,
-        update: :email_created,
-        show: :email_verified,
-        destroy: :email_verified,
+        new: STATE_INIT,
+        create: STATE_INIT,
+        edit: STATE_EMAIL_CREATED,
+        update: STATE_EMAIL_CREATED,
+        show: STATE_EMAIL_VERIFIED,
+        destroy: STATE_EMAIL_VERIFIED,
       }.freeze
 
       FLOW_PROGRESSIONS = {
-        create: :email_created,
-        update: :email_verified,
-        destroy: :init,
+        create: STATE_EMAIL_CREATED,
+        update: STATE_EMAIL_VERIFIED,
+        destroy: STATE_INIT,
       }.freeze
 
       SESSION_KEY = :sign_up_email_flow_state
@@ -39,7 +44,10 @@ module Sign
       end
 
       def email_flow_state
-        session[SESSION_KEY] ||= :init
+        current_state = session[SESSION_KEY]
+        current_state = current_state.to_s if current_state.present?
+        current_state = STATE_INIT unless VALID_STATES.include?(current_state)
+        session[SESSION_KEY] = current_state
       end
 
       def progress_email_flow!(action)
@@ -48,7 +56,7 @@ module Sign
       end
 
       def reset_email_flow!
-        session[SESSION_KEY] = :init
+        session[SESSION_KEY] = STATE_INIT
       end
 
       def redirect_flow_violation

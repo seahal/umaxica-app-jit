@@ -3,13 +3,13 @@
 # == Schema Information
 #
 # Table name: zip_occurrence_statuses
+# Database name: occurrence
 #
-#  id         :string(255)      default("NONE"), not null, primary key
-#  expires_at :datetime         not null
+#  id :string(255)      default("NONE"), not null, primary key
 #
 # Indexes
 #
-#  index_zip_occurrence_statuses_on_expires_at  (expires_at)
+#  index_zip_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 require "test_helper"

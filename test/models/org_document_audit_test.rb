@@ -3,22 +3,23 @@
 # == Schema Information
 #
 # Table name: org_document_audits
+# Database name: audit
 #
 #  id             :uuid             not null, primary key
-#  subject_id     :string           not null
-#  subject_type   :text             not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  actor_type     :text             default(""), not null
-#  event_id       :string(255)      default("NEYO"), not null
-#  level_id       :string(255)      default("NEYO"), not null
-#  occurred_at    :datetime         not null
-#  expires_at     :datetime         not null
-#  ip_address     :inet             default("0.0.0.0"), not null
-#  context        :jsonb            default("{}"), not null
-#  previous_value :text             default(""), not null
+#  context        :jsonb            not null
 #  current_value  :text             default(""), not null
+#  expires_at     :datetime         not null
+#  ip_address     :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
+#  occurred_at    :datetime         not null
+#  previous_value :text             default(""), not null
+#  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  event_id       :string(255)      default("NEYO"), not null
+#  level_id       :string(255)      default("NEYO"), not null
+#  subject_id     :string           not null
 #
 # Indexes
 #
@@ -30,10 +31,16 @@
 #  index_org_document_audits_on_occurred_at               (occurred_at)
 #  index_org_document_audits_on_subject_id                (subject_id)
 #
+# Foreign Keys
+#
+#  fk_rails_...  (event_id => org_document_audit_events.id)
+#  fk_rails_...  (level_id => org_document_audit_levels.id)
+#
 
 require "test_helper"
 
 class OrgDocumentAuditTest < ActiveSupport::TestCase
+  fixtures :org_documents, :org_document_audit_events, :org_document_audit_levels
   test "loads model and associations" do
     assert_equal "org_document_audits", OrgDocumentAudit.table_name
 
@@ -55,6 +62,20 @@ class OrgDocumentAuditTest < ActiveSupport::TestCase
       expires_at: 1.year.from_now,
     )
     assert_nil audit.org_document
+  end
+
+  test "org_document helper method resolves when subject_type is OrgDocument" do
+    doc = org_documents(:one)
+    audit = OrgDocumentAudit.new(
+      subject_id: doc.id,
+      subject_type: "OrgDocument",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: org_document_audit_events(:created).id,
+      level_id: org_document_audit_levels(:neyo).id,
+    )
+
+    assert_equal doc, audit.org_document
   end
 
   test "org_document= helper method sets subject_id and subject_type" do

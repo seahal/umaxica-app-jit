@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: staff_one_time_password_statuses
+# Database name: operator
 #
 #  id         :string           not null, primary key
 #  created_at :datetime         not null

@@ -3,11 +3,12 @@
 # == Schema Information
 #
 # Table name: avatar_capabilities
+# Database name: avatar
 #
 #  id          :string           not null, primary key
+#  description :text
 #  key         :string           not null
 #  name        :string           not null
-#  description :text
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #

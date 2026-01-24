@@ -1,17 +1,23 @@
 # == Schema Information
 #
 # Table name: com_preference_timezones
+# Database name: preference
 #
 #  id            :uuid             not null, primary key
-#  preference_id :uuid             not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  option_id     :string
+#  preference_id :uuid             not null
 #
 # Indexes
 #
 #  index_com_preference_timezones_on_option_id      (option_id)
 #  index_com_preference_timezones_on_preference_id  (preference_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (option_id => com_preference_timezone_options.id)
+#  fk_rails_...  (preference_id => com_preferences.id)
 #
 
 # frozen_string_literal: true

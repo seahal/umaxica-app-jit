@@ -15,7 +15,8 @@ module Sign
         end
 
         def edit
-          @user_email = UserEmail.find_by(id: params[:id])
+          @user_email = UserEmail.find_by(public_id: params[:id])
+          @verification_token = params[:token]
         end
 
         def create
@@ -29,10 +30,16 @@ module Sign
 
         def update
           submitted_code = params[:user_email][:pass_code]
+          token = params[:user_email][:token]
           status =
-            complete_email_verification(params[:id], submitted_code) do |user_email|
+            complete_email_verification(params[:id], submitted_code, token) do |user_email|
               user_email.user = current_user
               user_email.save!
+
+              if current_user.status_id == "UNVERIFIED_WITH_SIGN_UP"
+                current_user.status_id = "VERIFIED_WITH_SIGN_UP"
+                current_user.save!
+              end
             end
 
           if status == :success

@@ -477,6 +477,12 @@ module Auth
         return totp_result if totp_result
       end
 
+      # Check session limit before creating token
+      if session_limit_exceeded?(resource)
+        store_pending_login_resource(resource)
+        return { status: :session_limit_exceeded, resource: resource }
+      end
+
       token_record = create_login_token_record(resource, token_kind_id)
 
       # Generate SHA3-based refresh token
@@ -600,7 +606,11 @@ module Auth
       return if refresh_plain.blank?
 
       refreshed = refresh_access_token(refresh_plain)
-      return unless refreshed
+      unless refreshed
+        cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
+        cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
+        return
+      end
 
       remove_instance_variable(:@current_resource) if defined?(@current_resource)
     end
@@ -1024,6 +1034,46 @@ module Auth
 
       session[:mfa_user_id] = resource.id
       { status: :totp_required }
+    end
+
+    # Check if the resource has reached their concurrent session limit
+    def session_limit_exceeded?(resource)
+      max_sessions = max_sessions_for_resource(resource)
+      active_count = count_active_sessions(resource)
+      active_count >= max_sessions
+    end
+
+    # Returns the maximum allowed concurrent sessions for a resource
+    def max_sessions_for_resource(resource)
+      if resource.is_a?(User)
+        UserToken::MAX_SESSIONS_PER_USER
+      elsif resource.is_a?(Staff)
+        StaffToken::MAX_SESSIONS_PER_STAFF
+      else
+        2 # Default fallback
+      end
+    end
+
+    # Count active (non-revoked) sessions for a resource
+    def count_active_sessions(resource)
+      TokenRecord.connected_to(role: :reading) do
+        if resource.is_a?(User)
+          UserToken.where(user_id: resource.id, revoked_at: nil).count
+        elsif resource.is_a?(Staff)
+          StaffToken.where(staff_id: resource.id, revoked_at: nil).count
+        else
+          0
+        end
+      end
+    end
+
+    # Store the pending login resource ID for session management
+    def store_pending_login_resource(resource)
+      if resource.is_a?(User)
+        session[:pending_login_user_id] = resource.id
+      elsif resource.is_a?(Staff)
+        session[:pending_login_staff_id] = resource.id
+      end
     end
 
     def handle_auth_required_json(options)

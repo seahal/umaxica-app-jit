@@ -3,22 +3,23 @@
 # == Schema Information
 #
 # Table name: app_contact_emails
+# Database name: guest
 #
 #  id                     :string           not null, primary key
-#  app_contact_id         :uuid             not null
-#  email_address          :string(1000)     default(""), not null
 #  activated              :boolean          default(FALSE), not null
 #  deletable              :boolean          default(FALSE), not null
-#  remaining_views        :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default("-infinity"), not null
-#  verifier_attempts_left :integer          default(0), not null
-#  token_digest           :string(255)      default(""), not null
-#  token_expires_at       :timestamptz      default("-infinity"), not null
-#  token_viewed           :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
 #  expires_at             :timestamptz      not null
+#  remaining_views        :integer          default(0), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default(-Infinity), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  verifier_attempts_left :integer          default(0), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default(-Infinity), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  app_contact_id         :uuid             not null
 #
 # Indexes
 #
@@ -26,6 +27,10 @@
 #  index_app_contact_emails_on_email_address        (email_address)
 #  index_app_contact_emails_on_expires_at           (expires_at)
 #  index_app_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (app_contact_id => app_contacts.id)
 #
 
 class AppContactEmail < GuestRecord

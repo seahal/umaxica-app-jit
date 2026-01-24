@@ -3,6 +3,7 @@
 # == Schema Information
 #
 # Table name: avatar_ownership_statuses
+# Database name: avatar
 #
 #  id         :string           not null, primary key
 #  created_at :datetime         not null

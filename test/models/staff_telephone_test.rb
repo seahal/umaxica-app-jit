@@ -3,23 +3,30 @@
 # == Schema Information
 #
 # Table name: staff_telephones
+# Database name: operator
 #
 #  id                                 :uuid             not null, primary key
-#  created_at                         :datetime         not null
-#  locked_at                          :datetime         default("-infinity"), not null
+#  locked_at                          :datetime         default(-Infinity), not null
 #  number                             :string           default(""), not null
 #  otp_attempts_count                 :integer          default(0), not null
 #  otp_counter                        :text             default(""), not null
-#  otp_expires_at                     :datetime         default("-infinity"), not null
+#  otp_expires_at                     :datetime         default(-Infinity), not null
 #  otp_private_key                    :string           default(""), not null
-#  staff_id                           :uuid             not null
-#  staff_telephone_status_id :string(255)      default("UNVERIFIED"), not null
+#  created_at                         :datetime         not null
 #  updated_at                         :datetime         not null
+#  staff_id                           :uuid             not null
+#  staff_identity_telephone_status_id :string(255)      default("UNVERIFIED"), not null
 #
 # Indexes
 #
-#  idx_on_staff_telephone_status_id_f2b1a32f7a  (staff_telephone_status_id)
-#  index_staff_telephones_on_staff_id           (staff_id)
+#  index_staff_identity_telephones_on_lower_number               (lower((number)::text))
+#  index_staff_telephones_on_staff_id                            (staff_id)
+#  index_staff_telephones_on_staff_identity_telephone_status_id  (staff_identity_telephone_status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (staff_id => staffs.id)
+#  fk_rails_...  (staff_identity_telephone_status_id => staff_telephone_statuses.id)
 #
 
 require "test_helper"

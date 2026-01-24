@@ -20,7 +20,13 @@ module Apex
           end
 
           delete_preference_cookie
-          redirect_to edit_apex_app_preference_reset_path, notice: t("apex.app.preference.resets.destroyed")
+
+          # Preserve ri parameter on redirect
+          redirect_params = {}
+          redirect_params[:ri] = params[:ri] if params[:ri].present?
+
+          redirect_to edit_apex_app_preference_reset_path(redirect_params),
+                      notice: t("apex.app.preference.resets.destroyed")
         end
       end
     end

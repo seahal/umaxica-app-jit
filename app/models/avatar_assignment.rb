@@ -1,20 +1,25 @@
 # == Schema Information
 #
 # Table name: avatar_assignments
+# Database name: avatar
 #
 #  id         :uuid             not null, primary key
-#  avatar_id  :string(255)      not null
-#  user_id    :uuid             not null
 #  role       :string(50)       default("viewer"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  avatar_id  :string(255)      not null
+#  user_id    :uuid             not null
 #
 # Indexes
 #
 #  index_avatar_assignments_on_user_id          (user_id)
 #  index_avatar_assignments_unique              (avatar_id,user_id,role) UNIQUE
-#  index_avatar_assignments_unique_affiliation  (avatar_id) UNIQUE
-#  index_avatar_assignments_unique_owner        (avatar_id) UNIQUE
+#  index_avatar_assignments_unique_affiliation  (avatar_id) UNIQUE WHERE ((role)::text = 'affiliation'::text)
+#  index_avatar_assignments_unique_owner        (avatar_id) UNIQUE WHERE ((role)::text = 'owner'::text)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (avatar_id => avatars.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

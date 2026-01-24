@@ -3,23 +3,29 @@
 # == Schema Information
 #
 # Table name: avatar_memberships
+# Database name: avatar
 #
 #  id                          :string           not null, primary key
-#  avatar_id                   :string           not null
-#  actor_id                    :string           not null
-#  role_id                     :string           not null
 #  valid_from                  :timestamptz      not null
-#  valid_to                    :timestamptz      default("infinity"), not null
-#  avatar_membership_status_id :string
-#  granted_by_actor_id         :string
+#  valid_to                    :timestamptz      default(Infinity), not null
 #  created_at                  :datetime         not null
 #  updated_at                  :datetime         not null
+#  actor_id                    :string           not null
+#  avatar_id                   :string           not null
+#  avatar_membership_status_id :string
+#  granted_by_actor_id         :string
+#  role_id                     :string           not null
 #
 # Indexes
 #
-#  index_avatar_memberships_on_actor_id                     (actor_id)
-#  index_avatar_memberships_on_avatar_id_and_actor_id       (avatar_id,actor_id) UNIQUE
+#  index_avatar_memberships_on_actor_id                     (actor_id) WHERE (valid_to = 'infinity'::timestamp with time zone)
+#  index_avatar_memberships_on_avatar_id_and_actor_id       (avatar_id,actor_id) UNIQUE WHERE (valid_to = 'infinity'::timestamp with time zone)
 #  index_avatar_memberships_on_avatar_membership_status_id  (avatar_membership_status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (avatar_id => avatars.id)
+#  fk_rails_...  (avatar_membership_status_id => avatar_membership_statuses.id)
 #
 
 require "test_helper"

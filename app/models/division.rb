@@ -3,19 +3,26 @@
 # == Schema Information
 #
 # Table name: divisions
+# Database name: operator
 #
 #  id                 :uuid             not null, primary key
-#  division_status_id :string(255)      not null
-#  parent_id          :uuid
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  division_status_id :string(255)      not null
 #  organization_id    :uuid
+#  parent_id          :uuid
 #
 # Indexes
 #
 #  index_divisions_on_division_status_id  (division_status_id)
 #  index_divisions_on_organization_id     (organization_id)
 #  index_divisions_unique                 (parent_id,division_status_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (division_status_id => division_statuses.id)
+#  fk_rails_...  (organization_id => organizations.id)
+#  fk_rails_...  (parent_id => divisions.id)
 #
 
 class Division < OperatorRecord

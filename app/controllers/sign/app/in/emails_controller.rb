@@ -8,6 +8,7 @@ module Sign
         include EmailValidation
         include Common::Redirect
         include Common::Otp
+        include SessionLimitGate
 
         guest_only! status: :bad_request,
                     message: I18n.t("sign.app.authentication.email.new.you_have_already_logged_in")
@@ -155,6 +156,10 @@ module Sign
             result = log_in(user)
             if result[:status] == :totp_required
               { success: true, redirect_path: new_sign_app_in_totp_path }
+            elsif result[:status] == :session_limit_exceeded
+              # Issue gate and redirect to session management
+              issue_session_limit_gate!(return_to: request.fullpath, flow: "in.email.session")
+              { success: true, redirect_path: edit_sign_app_in_email_session_path }
             else
               { success: true, tokens: result }
             end

@@ -3,8 +3,13 @@
 # == Schema Information
 #
 # Table name: user_passkey_statuses
+# Database name: principal
 #
 #  id :string(255)      not null, primary key
+#
+# Indexes
+#
+#  index_user_identity_passkey_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 
 class UserPasskeyStatus < PrincipalRecord

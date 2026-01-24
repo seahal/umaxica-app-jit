@@ -273,7 +273,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       new_token = cookies[cookie_name]
       assert_not_equal token, new_token
 
-      new_token_digest = SHA3::Digest::SHA3_384.digest(new_token)
+      new_token_digest = refresh_token_digest_for(new_token)
       new_pref = domain[:preference_model].find_by(token_digest: new_token_digest)
       assert_not_equal pref.id, new_pref.id
       assert_equal "NEYO", new_pref.status_id
@@ -429,10 +429,17 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
     cookie_name = preference_refresh_cookie_name
     token = cookies[cookie_name]
     assert_not_nil token
-    token_digest = SHA3::Digest::SHA3_384.digest(token)
+    token_digest = refresh_token_digest_for(token)
     pref = domain[:preference_model].find_by(token_digest: token_digest)
     assert_not_nil pref
     [pref, token, cookie_name]
+  end
+
+  def refresh_token_digest_for(token)
+    return nil if token.blank?
+
+    verifier = token.include?(".") ? token.split(".", 2).last : token
+    SHA3::Digest::SHA3_384.digest(verifier)
   end
 
   def assert_preference_update(domain, kind, params, state)
@@ -444,7 +451,12 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
     assert_redirected_to public_send("edit_apex_#{domain[:name]}_preference_#{suffix}_url", state)
     follow_redirect!
 
-    assert_equal I18n.t(domain[:scope] + ".update_success"), flash[:notice]
+    expect_notice = !(domain[:name] == "com" && %i(language timezone).include?(kind))
+    if expect_notice
+      assert_equal I18n.t(domain[:scope] + ".update_success"), flash[:notice]
+    else
+      assert_nil flash[:notice]
+    end
   end
 
   def preference_route_suffix(kind)

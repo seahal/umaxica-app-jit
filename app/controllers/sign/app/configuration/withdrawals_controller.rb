@@ -45,6 +45,17 @@ module Sign
           end
         end
 
+        def destroy
+          # Log intent and perform destroy inside a transaction. Prefer background job
+          # for heavy deletions; here we attempt synchronous destroy with graceful handling.
+          user_id = current_user.id
+          begin
+            process_deletion(user_id)
+          rescue StandardError => e
+            handle_deletion_failure(user_id, e)
+          end
+        end
+
         private
 
         def process_withdrawal_success
@@ -103,17 +114,6 @@ module Sign
             ip_address: request.remote_ip,
           )
           redirect_to sign_app_root_path, alert: t("sign.app.configuration.withdrawal.update.cannot_recover")
-        end
-
-        def destroy
-          # Log intent and perform destroy inside a transaction. Prefer background job
-          # for heavy deletions; here we attempt synchronous destroy with graceful handling.
-          user_id = current_user.id
-          begin
-            process_deletion(user_id)
-          rescue StandardError => e
-            handle_deletion_failure(user_id, e)
-          end
         end
 
         def process_deletion(user_id)

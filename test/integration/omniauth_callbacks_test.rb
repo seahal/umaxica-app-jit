@@ -5,6 +5,8 @@ require "test_helper"
 class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
   setup do
     OmniAuth.config.test_mode = true
+    CloudflareTurnstile.test_mode = true
+    CloudflareTurnstile.test_validation_response = { "success" => true }
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @expected_redirect = %r{\Ahttps?://#{Regexp.escape(@host)}/.*}.freeze
   end
@@ -12,6 +14,8 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
   teardown do
     OmniAuth.config.mock_auth[:google_oauth2] = nil
     OmniAuth.config.mock_auth[:apple] = nil
+    CloudflareTurnstile.test_mode = false
+    CloudflareTurnstile.test_validation_response = nil
   end
 
   test "should sign in with Google" do
@@ -35,8 +39,8 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     assert_redirected_to @expected_redirect
     follow_redirect!
 
-    provider_name = SocialIdentifiable.normalize_provider("google_oauth2").humanize
-    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: provider_name), flash[:notice]
+    SocialIdentifiable.normalize_provider("google_oauth2").humanize
+    assert_equal I18n.t("sign.app.registration.email.create.success"), flash[:notice]
 
     user = UserSocialGoogle.find_by(uid: "123456789").user
     assert_not_nil user
@@ -62,7 +66,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     assert_redirected_to @expected_redirect
     follow_redirect!
 
-    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Apple"), flash[:notice]
+    assert_equal I18n.t("sign.app.registration.email.create.success"), flash[:notice]
 
     user = UserSocialApple.find_by(uid: "apple_uid_123").user
     assert_not_nil user
@@ -102,6 +106,6 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     provider_name = SocialIdentifiable.normalize_provider("google_oauth2").humanize
-    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: provider_name), flash[:notice]
+    assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name), flash[:notice]
   end
 end

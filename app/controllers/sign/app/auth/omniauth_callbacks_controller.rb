@@ -17,6 +17,7 @@ module Sign
       # Both are accessible via params[:state].
       class OmniauthCallbacksController < Sign::App::ApplicationController
         include SocialAuthConcern
+        include Sign::App::EmailRegistrable
 
         # Allow unauthenticated access for login intent
         # For link/reauth, auth is checked in prepare_social_auth_intent!
@@ -24,6 +25,9 @@ module Sign
 
         # CSRF protection is handled by state parameter, not token
         skip_forgery_protection only: %i(omniauth failure)
+
+        # Skip preference before_actions that may interfere with OmniAuth callback
+        skip_before_action :set_region, :set_locale, :set_timezone, :set_color_theme, only: %i(omniauth failure)
 
         # GET/POST /auth/:provider/callback
         # Handles successful OmniAuth authentication
@@ -44,11 +48,12 @@ module Sign
             result = process_social_auth_callback
             user = result[:user]
             intent = current_social_auth_intent
+            existing_account = result[:existing_account]
 
             provider_name = SocialIdentifiable.normalize_provider(auth.provider).humanize
             intent = intent.presence || "login"
 
-            handle_successful_auth(user, intent, provider_name)
+            handle_successful_auth(user, intent, provider_name, result[:identity], existing_account: existing_account)
           end
         rescue SocialAuth::BaseError => e
           handle_social_auth_error(e)
@@ -80,7 +85,7 @@ module Sign
 
         private
 
-        def handle_successful_auth(user, intent, provider_name)
+        def handle_successful_auth(user, intent, provider_name, identity, existing_account: nil)
           case intent
           when "link"
             redirect_to sign_app_configuration_path,
@@ -91,8 +96,23 @@ module Sign
                         notice: I18n.t("sign.app.social.sessions.reauth.success", provider: provider_name)
           else
             sign_in(user)
-            redirect_to social_auth_success_redirect_path,
-                        notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name)
+            if existing_account
+              redirect_to social_auth_success_redirect_path,
+                          notice: I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name)
+            elsif user.status_id == "UNVERIFIED_WITH_SIGN_UP"
+              initiate_email_verification(identity.email)
+              if @user_email&.persisted?
+                redirect_to edit_sign_app_configuration_email_path(@user_email),
+                            notice: I18n.t("sign.app.registration.email.create.success")
+              else
+                # Fallback if verification init failed (e.g. invalid email)
+                redirect_to social_auth_success_redirect_path,
+                            alert: I18n.t("sign.app.registration.email.create.failure")
+              end
+            else
+              redirect_to social_auth_success_redirect_path,
+                          notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name)
+            end
           end
         end
 
@@ -137,7 +157,7 @@ module Sign
         end
 
         def social_auth_success_redirect_path
-          sign_app_root_path
+          sign_app_configuration_path
         end
       end
     end

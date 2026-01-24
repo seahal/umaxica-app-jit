@@ -192,6 +192,83 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     assert_predicate flash[:alert], :present?, "Should require login for link intent"
   end
 
+  # ============================================================================
+  # Re-linking REVOKED identity (idempotency test)
+  # ============================================================================
+  test "re-link REVOKED Google identity reactivates it" do
+    revoked_uid = "revoked_google_#{SecureRandom.hex(4)}"
+
+    # Create a REVOKED identity for user_one
+    revoked_identity = UserSocialGoogle.create!(
+      user: @user_one,
+      uid: revoked_uid,
+      provider: "google_oauth2",
+      token: "old_token",
+      email: "revoked@example.com",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:revoked),
+    )
+
+    # Setup mock auth with the same uid but updated info
+    setup_google_mock_auth(uid: revoked_uid, email: "reactivated@example.com")
+
+    # User tries to link again
+    get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
+        headers: as_user_headers(@user_one, host: @host)
+
+    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
+
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+        headers: as_user_headers(@user_one, host: @host)
+
+    assert_response :redirect
+    follow_redirect!
+
+    # Should succeed
+    assert_predicate flash[:notice], :present?, "Should have success flash"
+
+    # Identity should be reactivated (status changed to ACTIVE)
+    revoked_identity.reload
+    assert_equal UserSocialGoogleStatus::ACTIVE, revoked_identity.user_identity_social_google_status_id,
+                 "Identity should be ACTIVE"
+    assert_equal "reactivated@example.com", revoked_identity.email, "Email should be updated"
+  end
+
+  test "re-link REVOKED Apple identity reactivates it" do
+    revoked_uid = "revoked_apple_#{SecureRandom.hex(4)}"
+
+    revoked_identity = UserSocialApple.create!(
+      user: @user_one,
+      uid: revoked_uid,
+      provider: "apple",
+      token: "old_token",
+      email: "revoked_apple@example.com",
+      expires_at: 1.week.from_now.to_i,
+      user_social_apple_status: user_social_apple_statuses(:revoked),
+    )
+
+    setup_apple_mock_auth(uid: revoked_uid, email: "reactivated_apple@example.com")
+
+    get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
+        headers: as_user_headers(@user_one, host: @host)
+
+    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
+
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         params: { state: valid_state },
+         headers: as_user_headers(@user_one, host: @host)
+
+    assert_response :redirect
+    follow_redirect!
+
+    assert_predicate flash[:notice], :present?, "Should have success flash for Apple reactivation"
+
+    revoked_identity.reload
+    assert_equal UserSocialAppleStatus::ACTIVE, revoked_identity.user_identity_social_apple_status_id,
+                 "Apple identity should be ACTIVE"
+    assert_equal "reactivated_apple@example.com", revoked_identity.email, "Email should be updated"
+  end
+
   private
 
   def setup_google_mock_auth(uid:, email: "test@example.com")

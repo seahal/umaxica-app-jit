@@ -73,6 +73,15 @@ module Jit
     config.autoload_paths << Rails.root.join("app/errors")
 
     ### Added by user
+    # Trust X-Forwarded-* headers from reverse proxy (Cloudflare Tunnel, Nginx, etc.)
+    # This allows Rails to correctly determine the protocol (HTTP/HTTPS) and host
+    config.action_dispatch.trusted_proxies =
+      (ENV["TRUSTED_PROXIES"]&.split(",") || []).filter_map do |proxy|
+        IPAddr.new(proxy.strip)
+      rescue IPAddr::InvalidAddressError
+        nil
+      end
+
     # Rack Attack Middleware
     config.middleware.use Rack::Attack
     # Active Record Encryption Configuration

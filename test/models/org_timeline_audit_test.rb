@@ -3,22 +3,23 @@
 # == Schema Information
 #
 # Table name: org_timeline_audits
+# Database name: audit
 #
 #  id             :uuid             not null, primary key
-#  subject_id     :string           not null
-#  subject_type   :text             not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
 #  actor_type     :text             default(""), not null
-#  event_id       :string(255)      default("NEYO"), not null
-#  level_id       :string(255)      default("NEYO"), not null
-#  occurred_at    :datetime         not null
-#  expires_at     :datetime         not null
-#  ip_address     :inet             default("0.0.0.0"), not null
-#  context        :jsonb            default("{}"), not null
-#  previous_value :text             default(""), not null
+#  context        :jsonb            not null
 #  current_value  :text             default(""), not null
+#  expires_at     :datetime         not null
+#  ip_address     :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
+#  occurred_at    :datetime         not null
+#  previous_value :text             default(""), not null
+#  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  event_id       :string(255)      default("NEYO"), not null
+#  level_id       :string(255)      default("NEYO"), not null
+#  subject_id     :string           not null
 #
 # Indexes
 #
@@ -30,10 +31,16 @@
 #  index_org_timeline_audits_on_occurred_at               (occurred_at)
 #  index_org_timeline_audits_on_subject_id                (subject_id)
 #
+# Foreign Keys
+#
+#  fk_rails_...  (event_id => org_timeline_audit_events.id)
+#  fk_rails_...  (level_id => org_timeline_audit_levels.id)
+#
 
 require "test_helper"
 
 class OrgTimelineAuditTest < ActiveSupport::TestCase
+  fixtures :org_timelines
   test "loads model and associations" do
     assert_equal "org_timeline_audits", OrgTimelineAudit.table_name
 
@@ -55,6 +62,20 @@ class OrgTimelineAuditTest < ActiveSupport::TestCase
       expires_at: 1.year.from_now,
     )
     assert_nil audit.org_timeline
+  end
+
+  test "org_timeline helper method resolves when subject_type is OrgTimeline" do
+    timeline = org_timelines(:one)
+    audit = OrgTimelineAudit.new(
+      subject_id: timeline.id,
+      subject_type: "OrgTimeline",
+      occurred_at: Time.current,
+      expires_at: 1.year.from_now,
+      event_id: "NEYO",
+      level_id: "NEYO",
+    )
+
+    assert_equal timeline, audit.org_timeline
   end
 
   test "org_timeline= helper method sets subject_id and subject_type" do

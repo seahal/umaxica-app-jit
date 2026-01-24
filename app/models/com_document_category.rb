@@ -1,17 +1,23 @@
 # == Schema Information
 #
 # Table name: com_document_categories
+# Database name: document
 #
 #  id                              :uuid             not null, primary key
-#  com_document_id                 :uuid             not null
-#  com_document_category_master_id :string(255)      not null
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
+#  com_document_category_master_id :string(255)      not null
+#  com_document_id                 :uuid             not null
 #
 # Indexes
 #
 #  idx_on_com_document_category_master_id_dc650e897c  (com_document_category_master_id)
 #  index_com_document_categories_on_com_document_id   (com_document_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (com_document_category_master_id => com_document_category_masters.id)
+#  fk_rails_...  (com_document_id => com_documents.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

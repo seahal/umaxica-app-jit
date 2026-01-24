@@ -19,6 +19,7 @@ module Sign
       # the user's registered passkeys.
       class PasskeysController < ApplicationController
         include Webauthn::Config
+        include SessionLimitGate
 
         before_action :reject_logged_in_session
 
@@ -186,6 +187,12 @@ module Sign
           case result[:status]
           when :totp_required
             render json: { status: "totp_required", redirect_url: new_sign_app_in_totp_path }, status: :ok
+          when :session_limit_exceeded
+            issue_session_limit_gate!(return_to: request.fullpath, flow: "in.passkeys.session")
+            render json: {
+              status: "session_limit_exceeded",
+              redirect_url: edit_sign_app_in_passkey_sessions_path(passkey_id: "_"),
+            }, status: :ok
           when :success
             render_success(result)
           else

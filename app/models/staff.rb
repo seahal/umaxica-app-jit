@@ -3,20 +3,25 @@
 # == Schema Information
 #
 # Table name: staffs
+# Database name: operator
 #
 #  id           :uuid             not null, primary key
+#  lock_version :integer          default(0), not null
+#  withdrawn_at :datetime         default(Infinity)
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string(8)        not null
 #  status_id    :string(255)      default("NEYO"), not null
-#  withdrawn_at :datetime         default("infinity")
-#  lock_version :integer          default(0), not null
 #
 # Indexes
 #
 #  index_staffs_on_public_id     (public_id) UNIQUE
 #  index_staffs_on_status_id     (status_id)
-#  index_staffs_on_withdrawn_at  (withdrawn_at)
+#  index_staffs_on_withdrawn_at  (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => staff_statuses.id)
 #
 
 class Staff < OperatorRecord

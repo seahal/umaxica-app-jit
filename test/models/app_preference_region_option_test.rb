@@ -1,11 +1,12 @@
 # == Schema Information
 #
 # Table name: app_preference_region_options
+# Database name: preference
 #
 #  id         :string           not null, primary key
+#  position   :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  position   :integer          not null
 #
 # Indexes
 #
