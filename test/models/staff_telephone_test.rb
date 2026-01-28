@@ -1,0 +1,145 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: staff_telephones
+# Database name: operator
+#
+#  id                                 :uuid             not null, primary key
+#  locked_at                          :datetime         default(-Infinity), not null
+#  number                             :string           default(""), not null
+#  otp_attempts_count                 :integer          default(0), not null
+#  otp_counter                        :text             default(""), not null
+#  otp_expires_at                     :datetime         default(-Infinity), not null
+#  otp_private_key                    :string           default(""), not null
+#  created_at                         :datetime         not null
+#  updated_at                         :datetime         not null
+#  staff_id                           :uuid             not null
+#  staff_identity_telephone_status_id :string(255)      default("UNVERIFIED"), not null
+#
+# Indexes
+#
+#  index_staff_identity_telephones_on_lower_number               (lower((number)::text))
+#  index_staff_telephones_on_staff_id                            (staff_id)
+#  index_staff_telephones_on_staff_identity_telephone_status_id  (staff_identity_telephone_status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (staff_id => staffs.id)
+#  fk_rails_...  (staff_identity_telephone_status_id => staff_telephone_statuses.id)
+#
+
+require "test_helper"
+
+class StaffTelephoneTest < ActiveSupport::TestCase
+  setup do
+    @staff = staffs(:none_staff)
+    @valid_attributes = {
+      number: "+1234567890",
+      confirm_policy: true,
+      confirm_using_mfa: true,
+      staff: @staff
+    }.freeze
+  end
+
+  # Basic model structure tests
+  test "should inherit from PrincipalRecord" do
+    assert_operator StaffTelephone, :<, OperatorRecord
+  end
+
+  test "should include Telephone concern" do
+    assert_includes StaffTelephone.included_modules, Telephone
+  end
+
+  test "should include SetId concern" do
+    assert_includes StaffTelephone.included_modules, SetId
+  end
+
+  # Telephone concern validation tests
+  test "should be valid with valid phone number and policy confirmations" do
+    staff_telephone = StaffTelephone.new(@valid_attributes)
+
+    assert_predicate staff_telephone, :valid?
+  end
+
+  test "should require valid phone number format" do
+    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "invalid!@#"))
+
+    assert_not staff_telephone.valid?
+    assert_predicate staff_telephone.errors[:number], :any?
+  end
+
+  test "should accept phone number with country code" do
+    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "+81-90-1234-5678"))
+
+    assert_predicate staff_telephone, :valid?
+  end
+
+  test "should accept phone number with parentheses" do
+    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "+1 (555) 123-4567"))
+
+    assert_predicate staff_telephone, :valid?
+  end
+
+  test "should reject phone number that is too short" do
+    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "12"))
+
+    assert_not staff_telephone.valid?
+    assert_predicate staff_telephone.errors[:number], :any?
+  end
+
+  test "should reject phone number that is too long" do
+    staff_telephone = StaffTelephone.new(@valid_attributes.merge(number: "+1234567890123456789012"))
+
+    assert_not staff_telephone.valid?
+    assert_predicate staff_telephone.errors[:number], :any?
+  end
+
+  test "should require policy confirmation" do
+    staff_telephone = StaffTelephone.new(@valid_attributes.merge(confirm_policy: false))
+
+    assert_not staff_telephone.valid?
+    assert_predicate staff_telephone.errors[:confirm_policy], :any?
+  end
+
+  test "should require MFA confirmation" do
+    staff_telephone = StaffTelephone.new(@valid_attributes.merge(confirm_using_mfa: false))
+
+    assert_not staff_telephone.valid?
+    assert_predicate staff_telephone.errors[:confirm_using_mfa], :any?
+  end
+
+  # SetId concern tests
+  test "should generate UUID v7 before creation" do
+    staff_telephone = StaffTelephone.new(@valid_attributes)
+
+    assert_nil staff_telephone.id
+    staff_telephone.save!
+
+    assert_not_nil staff_telephone.id
+    # UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
+    assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, staff_telephone.id)
+  end
+
+  test "enforces maximum telephones per staff" do
+    staff = Staff.create!(staff_status: StaffStatus.find("NEYO"))
+    StaffTelephone::MAX_TELEPHONES_PER_STAFF.times do |i|
+      StaffTelephone.create!(
+        number: "+1234567890#{i}",
+        confirm_policy: true,
+        confirm_using_mfa: true,
+        staff: staff,
+      )
+    end
+
+    extra_telephone = StaffTelephone.new(
+      number: "+19876543210",
+      confirm_policy: true,
+      confirm_using_mfa: true,
+      staff: staff,
+    )
+
+    assert_not extra_telephone.valid?
+    assert_includes extra_telephone.errors[:base], "exceeds maximum telephones per staff (#{StaffTelephone::MAX_TELEPHONES_PER_STAFF})"
+  end
+end

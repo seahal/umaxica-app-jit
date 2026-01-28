@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Health
   extend ActiveSupport::Concern
 
@@ -8,6 +10,7 @@ module Health
     rescue ArgumentError
       # Callback doesn't exist, ignore
     end
+    public_strict! if respond_to?(:public_strict!)
   end
 
   private
@@ -52,7 +55,7 @@ module Health
     def show_html
       @status, @body, @errors = get_status
       if @errors
-        render html: "#{@body}: #{@errors.join(', ')}", status: @status
+        render html: "#{@body}: #{@errors.join(", ")}", status: @status
       else
         render html: @body, status: @status
       end

@@ -1,10 +1,20 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
+  include RootThemeCookieHelper
+
   test "should get show" do
     get help_com_root_url
 
     assert_response :success
+  end
+
+  test "redirects to canonical path by stripping ri=jp" do
+    get help_com_root_url(ri: "jp")
+    assert_redirected_to help_com_root_url
+    assert_nil request.path_parameters[:ri]
   end
 
   test "sets lang attribute on html element" do
@@ -19,12 +29,13 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_com_root_url
 
     assert_response :success
-    assert_select "a[href^=?]", new_help_com_contact_path
+    assert_select "a[href*=?]", "/contacts/new"
   end
   # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get help_com_root_url
 
+    assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "title", text: "#{brand_name} (com) Help Center"
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
@@ -38,6 +49,19 @@ class Help::Com::RootsControllerTest < ActionDispatch::IntegrationTest
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  test "generates sha3-384 token digest on root" do
+    get help_com_root_url
+    assert_response :success
+    assert_equal 48, ComPreference.order(:created_at).last.token_digest.bytesize
+  end
+
+  test "sets theme cookie" do
+    host! "com.localhost"
+    get help_com_root_path
+    assert_redirected_to help_com_root_url(ri: "jp", host: "com.localhost")
+    assert_not_nil cookies["jit_preference_access"]
+  end
 
   private
 

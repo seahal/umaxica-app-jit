@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class RedirectConcernTest < ActiveSupport::TestCase
-  include Redirect
+  include Common::Redirect
 
   # Mock ENV variables for testing by overriding the method
   def allowed_hosts

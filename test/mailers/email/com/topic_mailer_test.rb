@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "ostruct"
 require "test_helper"
 
@@ -10,11 +12,11 @@ class Email::Com::TopicMailerTest < ActionMailer::TestCase
     mail = Email::Com::TopicMailer.with(
       contact: contact,
       topic: topic,
-      email_address: recipient
+      email_address: recipient,
     ).notice
 
     assert_equal [
-      "#{ENV.fetch('BRAND_NAME', 'Umaxica')} - We received your inquiry",
+      "#{ENV.fetch("BRAND_NAME", "Umaxica")} - We received your inquiry",
       [ recipient ]
     ], [ mail.subject, mail.to ]
     body_text = mail.text_part&.decoded || mail.body.decoded

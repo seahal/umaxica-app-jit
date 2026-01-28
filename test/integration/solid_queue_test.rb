@@ -1,4 +1,20 @@
+# frozen_string_literal: true
+
 require "test_helper"
+
+class TestJob < ApplicationJob
+  def self.last_performed_value
+    Thread.current[:test_job_last_performed_value]
+  end
+
+  def self.last_performed_value=(value)
+    Thread.current[:test_job_last_performed_value] = value
+  end
+
+  def perform(value)
+    self.class.last_performed_value = value
+  end
+end
 
 class SolidQueueTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper

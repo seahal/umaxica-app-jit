@@ -1,4 +1,11 @@
 en:
+  reproduce_issue:
+    missing_position: "Attempting to create AppPreferenceStatus without position..."
+    duplicate_position: "\nAttempting to create AppPreferenceStatus with duplicate position..."
+    success_created: "Success: Created with id %{id}, position: %{position}"
+    expected_error: "Expected Error: %{message}"
+    expected_db_error: "Expected DB Error: %{message}"
+    check_positions: "\nChecking existing positions:"
   turnstile_error: "Security verification failed. Please try again."
   hello: "Hello world 2"
   messages:
@@ -25,6 +32,9 @@ en:
   test_data:
     contact_topic_description: "Details about the topic."
     inquiry_detail: "Detail of inquiry."
+  scripts:
+    update_contact_fixtures:
+      done: "Done updating contact statuses/categories."
   controller:
     help:
       com:
@@ -42,17 +52,318 @@ en:
             cancel: "Cancel"
           create:
             success: "Your inquiry has been received. Please check your email address."
-  auth:
+  sign:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
     app:
+      common:
+        cancel: "Cancel"
       layout:
         nav:
           sign_up: "Sign Up"
           log_in: "Log In"
-          setting: "Settings"
+          configuration: "Settings"
           logout: "Log Out"
+      authentication:
+        new:
+          page_title: "Choose how to sign in"
+          description: "Select the method that fits your current session."
+          back: "Prefer a different method?"
+          back_link: "Back"
+          links:
+            email: "Email"
+            telephone: "Telephone"
+            passkey: "Passkey"
+            recovery: "Recovery code"
+            secret: "Secret"
+            google: "Sign in with Google"
+            apple: "Sign in with Apple"
+            registration: "Need an account?"
+        secret:
+          new:
+            page_title: "Sign in with a secret"
+            description: "Enter one of your saved secrets to continue."
+            hints: "Secrets are single-use strings you saved when prompted."
+            pii_label: "Identification"
+            pii_placeholder: "Email address or phone number"
+            secret_label: "Secret"
+            confirm_label: "I have saved my secret"
+            confirm_hint: "Store this secret securely; you will need it if other methods fail."
+            use_totp: "Use TOTP instead"
+        passkey:
+          new:
+            page_title: "Sign in with a passkey"
+            description: "Use your device's security features for a faster and safer login."
+            submit: "Sign in using passkey"
+        email:
+          new:
+            page_title: "Sign in with email"
+            you_have_already_logged_in: "You are already signed in."
+            registration: "Need an account?"
+          create:
+            you_have_already_logged_in: "You are already signed in."
+            email_not_found: "We couldn't find an account matching that email address."
+            verification_code_sent: "Verification code has been sent to your email address."
+            turnstile_error: "Security verification failed. Please refresh and try again."
+        telephone:
+          new:
+            page_title: "Sign in with telephone"
+            description: "This feature is coming soon."
+            you_have_already_logged_in: "You are already signed in."
+        recovery:
+          new:
+            page_title: "Use a recovery code"
+            description: "Enter one of your saved recovery codes to regain access to your account."
+      registration:
+        new:
+          page_title: "Create your account"
+          page_description: "Choose the sign-up method that works best for your %{product} account."
+          methods:
+            title: "Choose how to get started"
+            email:
+              title: "Email address"
+              description: "Receive a verification link by email and finish registration in a few minutes."
+              cta: "Sign up with email"
+            telephone:
+              title: "Mobile phone number"
+              description: "Verify your phone with a one-time SMS code before creating your account."
+              cta: "Sign up with telephone"
+          social:
+            title: "Use an existing account"
+            description: "Link a new %{product} account with the provider you already trust."
+            buttons:
+              google: "Continue with Google"
+              apple: "Continue with Apple"
+            disclaimer: "We will never post or share anything without your permission."
+        links:
+          sign_in_prompt: "Already have an account?"
+          sign_in_html: "Already registered? %{link}"
+          sign_in_text: "Sign in"
+        email:
+          new:
+            page_title: "UMAXICA (sign, app)"
+          already_logged_in: "You are already logged in."
+          create:
+            verification_code_sent: "Verification code has been sent to your email address."
+            success: "Registration is complete."
+            failure: "Registration failed. Please try again."
+            turnstile_validation_failed: "Security verification failed. Please try again."
+          edit:
+            return_page: "Back"
+            session_expired: "Your session has expired. Please start over."
+          update:
+            success: "Email address has been verified."
+            failed: "Registration failed. Please try again."
+            invalid_code: "Invalid verification code."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
+            session_expired: "Your session has expired. Please start over."
+            already_verified: "This verification code has already been used. Please start over."
+        telephone:
+          create:
+            verification_code_sent: "Verification code has been sent via SMS."
+            locked: "Your account is locked. Please try again later."
+            turnstile_validation_failed: "Security verification failed. Please try again."
+          edit:
+            return_page: "Back"
+            session_expired: "Your session has expired. Please start over."
+          update:
+            success: "Phone number has been verified."
+            invalid_code: "Invalid verification code."
+            session_expired: "Your session has expired. Please start over."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
+            already_verified: "This verification code has already been used. Please start over."
+          complete:
+            page_title: "Registration Complete"
+            description: "Your account registration has been successfully completed. You can now continue to use our services."
+            link_to_home: "Back to Home"
+            link_to_sign_in: "Go to Sign In"
+      configuration:
+        show:
+          page_title: "Configuration"
+          description: "Manage advanced security controls for your account."
+          withdrawal: "Withdrawal"
+          back: "Back"
+        index:
+          totp: "TOTP"
+          passkey: "Passkeys"
+          secret: "Recovery codes"
+          email: "Email addresses"
+          telephone: "Phone numbers"
+          session: "Sessions"
+          google: "Google"
+          apple: "Apple"
+        recovery:
+          index:
+            description: "Review existing recovery codes and ensure they stay up to date."
+            edit_link: "Edit"
+            new_link: "Create a new recovery code"
+          new:
+            page_title: "Generate a recovery code"
+            description: "Create a fresh recovery code to regain access if you lose your primary factors."
+            confirm_label: "I understand a new recovery code will be generated"
+            submit: "Generate recovery code"
+        totp:
+          index:
+            page_title: "TOTP credentials"
+            description: "Manage time-based one-time passwords linked to your account."
+            new_link: "Create a new TOTP credential"
+            return_page: "Back"
+          new:
+            page_title: "Set up TOTP"
+            description: "Scan the QR code with your authenticator app and enter the generated code to finish setup."
+            title_hint: "Give it an easy-to-remember name (e.g., Personal iPhone)."
+        email:
+          index:
+            title: "Email settings"
+            description: "Manage email addresses linked to your account."
+            new_link: "Add an email address"
+          new:
+            page_title: "Add an email address"
+            description: "Add a new email address to manage your account more flexibly."
+            help_text: "We will send a verification code to the email address you enter."
+          edit:
+            title: "Verify email address"
+            description: "Enter the verification code we sent to your email."
+            link_verified: "Email address verified."
+            pass_code_label: "Verification code"
+            pass_code_hint: "Enter the 6-digit verification code."
+        passkey:
+          index:
+            title: "Passkeys"
+            description: "Manage passkeys registered to your account."
+        passkeys:
+          new:
+            page_title: "Register a passkey"
+        telephone:
+          index:
+            title: "Phone numbers"
+            description: "Manage phone numbers linked to your account."
+            new_link: "Add a phone number"
+            verified: "Verified"
+            unverified: "Unverified"
+            empty: "No phone numbers registered."
+          new:
+            title: "Add a phone number"
+            description: "Add a phone number to make your account more secure."
+            help_text: "We will send a verification code via SMS."
+          create:
+            verification_code_sent: "A verification code has been sent to your phone."
+            already_registered: "This phone number is already registered."
+            turnstile_validation_failed: "Bot verification failed. Please try again."
+          edit:
+            title: "Verify phone number"
+            description: "Enter the verification code we sent to your phone."
+            pass_code_label: "Verification code"
+            pass_code_hint: "Enter the 6-digit verification code."
+            sms_sent: "A verification code has been sent to %{number}."
+            session_expired: "Your session has expired. Please start again."
+          update:
+            success: "Phone number verified successfully."
+            invalid_code: "Invalid verification code. Please try again."
+            session_expired: "Your session has expired. Please start again."
+            attempts_exceeded: "Too many failed attempts. Please start again."
+          show:
+            title: "Phone number verified"
+            description: "Your phone number has been successfully verified."
+            verified: "Verified"
+            back_to_list: "Back to phone numbers"
+            not_found: "Phone number not found."
+          destroy:
+            success: "Phone number removed successfully."
+            not_found: "Phone number not found."
+            confirm: "Are you sure you want to remove this phone number?"
+            last_telephone: "Cannot remove the last verified phone number."
+        secrets:
+          index:
+            title: "Secrets"
+            description: "Manage secret keys associated with your account."
+            new: "Create a new secret"
+            last_issued_prefix: "Prefix:"
+            last_issued_secret: "Secret:"
+            last_issued_notice: "This value will only be displayed once. Please store it in a secure location."
+          new:
+            title: "Create a secret"
+            description: "Create a new secret key."
+            acknowledgement_label: "I have saved the secret (it cannot be displayed again)"
+            secret_display_notice: "This value will only be displayed once."
+          edit:
+            title: "Edit a secret"
+            description: "Update the secret name."
+          show:
+            title: "Secret details"
+            description: "Review the details of this secret."
+          errors:
+            acknowledgement_required: "Please confirm that you have saved the secret"
+        sessions:
+          index:
+            title: "Active sessions"
+            description: "Sessions listed here can be revoked immediately. The session marked as \"current\" is the browser you are using."
+            table:
+              session: "Session"
+              kind: "Kind"
+              last_activity: "Last activity"
+              created: "Created"
+              refresh_expires: "Refresh expires"
+              action: "Action"
+            current: "Current"
+            revoke: "Revoke"
+            revoke_confirm: "Revoke this session?"
+            empty: "No active sessions were found."
+        google:
+          show:
+            title: "Google"
+            description: "Use your Google account to sign in to this account."
+            linked: "Linked"
+            unlinked: "Not linked"
+        apple:
+          show:
+            title: "Apple"
+            description: "Use your Apple ID to sign in to this account."
+            linked: "Linked"
+            unlinked: "Not linked"
+        withdrawal:
+          show:
+            title: "Withdrawal status"
+            description: "Pause or permanently delete your account."
+            withdrawn: "Your account has been withdrawn"
+            withdrawn_date: "Withdrawn at: %{date}"
+            recovery: "Account recovery"
+            recovery_notice: "Your account can be recovered within the recovery period."
+            recover_button: "Recover account"
+            recovery_expired: "The recovery period has expired."
+            active: "Your account is active"
+            withdrawal_actions: "Withdrawal options"
+            temporary_withdrawal: "Temporary withdrawal"
+            temporary_notice: "Your account will be temporarily withdrawn and can be recovered within the grace period."
+            temporary_warning: "While withdrawn, all service features are restricted."
+            withdraw_button: "Withdraw account"
+            confirm_withdrawal: "Are you sure you want to withdraw?"
+            permanent_deletion: "Permanent deletion"
+            permanent_notice: "Your account and all associated data will be permanently deleted. This action cannot be undone."
+            permanent_warning: "Warning: This cannot be undone."
+            delete_button: "Permanently delete account"
+            confirm_deletion: "This cannot be undone. Are you sure?"
+          new:
+            title: "Withdrawal"
+            description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
+            recovery_code_label: "Confirm recovery code"
+            submit: "Withdraw account"
+          edit:
+            title: "Recover account"
+            description: "Your account is currently withdrawn. Click the button below to recover it."
+            recovery_code_label: "Confirm recovery code"
+            submit: "Recover account"
+        sessions:
+          revoke:
+            success: "Session revoked."
+            failure: "Cannot revoke current session."
+      preferences:
+        title: "Preference settings"
+        footer:
+          home: "home"
+          preference: "Preferences"
+          configuration: "Settings"
       root:
         title: "Welcome to Sign"
         description: "Choose an action to get started"
@@ -62,23 +373,50 @@ en:
         sessions:
           create:
             success: "Account created and signed in with %{provider}."
+            failure: "Authentication failed. Please try again."
+    org:
+      preferences:
+        footer:
+          preference: "Preferences"
+      layout:
+        nav:
+          sign_up: "Sign Up"
+          log_in: "Log In"
+          configuration: "Settings"
+          logout: "Log Out"
+      ups:
+        new:
+          heading: "Create your org account"
+          description: "Get started with team workflows by creating an organization account."
+          recruit_prompt_html: "Interested in joining the team? %{link}"
+          recruit_link_text: "Contact recruiting"
+          back_to_root: "up"
       authentication:
         new:
           page_title: "Choose how to sign in"
           description: "Select the method that fits your current session."
           back: "Prefer a different method?"
+          back_link: "Back"
           links:
             email: "Email"
             telephone: "Telephone"
             passkey: "Passkey"
             recovery: "Recovery code"
+            secret: "Secret"
             google: "Sign in with Google"
             apple: "Sign in with Apple"
             registration: "Need an account?"
+        secret:
+          new:
+            page_title: "Sign in with a secret"
+            pii_label: "Account identifiable information"
+            secret_label: "Secret"
+            confirm_label: "I have saved the secret"
         passkey:
           new:
-            page_title: "Register a passkey"
-            description: "Use one of your trusted devices to add a passkey for passwordless sign-in."
+            page_title: "Sign in with passkey"
+            description: "Use your passkey to sign in securely."
+            submit: "Sign in with passkey"
         telephone:
           new:
             page_title: "Sign in with your phone number"
@@ -112,9 +450,12 @@ en:
         new:
           page_title: "Use a recovery code"
           description: "Enter one of your saved recovery codes to regain access to your account."
-      setting:
+      configuration:
         show:
+          page_title: "Configuration"
           description: "Manage advanced security controls for your account."
+          withdrawal: "Withdrawal"
+          back: "Back"
         recovery:
           index:
             description: "Review existing recovery codes and ensure they stay up to date."
@@ -151,6 +492,7 @@ en:
               apple: "Continue with Apple"
             disclaimer: "We will never post or share anything without your permission."
         links:
+          sign_in_prompt: "Already have an account?"
           sign_in_html: "Already registered? %{link}"
           sign_in_text: "Sign in"
         email:
@@ -178,46 +520,53 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
-        withdrawal:
-          show:
-            title: "Withdrawal Status"
-            withdrawn: "Your account has been withdrawn"
-            withdrawn_date: "Withdrawn at: %{date}"
-            recovery: "Account Recovery"
-            recovery_notice: "Your account can be recovered within the recovery period."
-            recover_button: "Recover Account"
-            recovery_expired: "The recovery period has expired."
-            active: "Your account is active"
-            withdrawal_actions: "Withdrawal Options"
-            temporary_withdrawal: "Temporary Withdrawal"
-            temporary_notice: "Your account will be temporarily withdrawn and can be recovered within the grace period."
-            withdraw_button: "Withdraw Account"
-            confirm_withdrawal: "Are you sure?"
-            permanent_deletion: "Permanent Deletion"
-            permanent_notice: "Your account and all associated data will be permanently deleted. This action cannot be undone."
-            delete_button: "Permanently Delete Account"
-            confirm_deletion: "This cannot be undone. Are you sure?"
-          new:
-            title: "Withdrawal"
-            description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
-            recovery_code_label: "Confirm recovery code"
-            submit: "Withdraw Account"
-          edit:
-            title: "Recover Account"
-            description: "Your account is currently in withdrawal status. Click the button below to recover your account."
-            recovery_code_label: "Confirm recovery code"
-            submit: "Recover Account"
-          create:
-            already_withdrawn: "You have already withdrawn your account."
-            success: "Your account has been withdrawn. Thank you for using our service."
-            failed: "Failed to process withdrawal. Please try again later."
-          update:
-            recovered: "Your account has been recovered. You can log in now."
-            cannot_recover: "Recovery period has expired. Please contact support."
-            failed: "Failed to recover account. Please try again later."
-          destroy:
-            deleted: "Account has been permanently deleted."
-            not_withdrawn: "Account is not withdrawn; cannot delete."
+        configuration:
+          withdrawal:
+            show:
+              title: "Withdrawal Status"
+              withdrawn: "Your account has been withdrawn"
+              withdrawn_date: "Withdrawn at: %{date}"
+              recovery: "Account Recovery"
+              recovery_notice: "Your account can be recovered within the recovery period."
+              recover_button: "Recover Account"
+              recovery_expired: "The recovery period has expired."
+              active: "Your account is active"
+              withdrawal_actions: "Withdrawal Options"
+              temporary_withdrawal: "Temporary Withdrawal"
+              temporary_notice: "Your account will be temporarily withdrawn and can be recovered within the grace period."
+              withdraw_button: "Withdraw Account"
+              confirm_withdrawal: "Are you sure?"
+              permanent_deletion: "Permanent Deletion"
+              permanent_notice: "Your account and all associated data will be permanently deleted. This action cannot be undone."
+              delete_button: "Permanently Delete Account"
+              confirm_deletion: "This cannot be undone. Are you sure?"
+            new:
+              title: "Withdrawal"
+              description: "You are about to withdraw your account. This action will temporarily disable your account for a recovery period."
+              recovery_code_label: "Confirm recovery code"
+              submit: "Withdraw Account"
+            edit:
+              title: "Recover Account"
+              description: "Your account is currently in withdrawal status. Click the button below to recover your account."
+              recovery_code_label: "Confirm recovery code"
+              submit: "Recover Account"
+            create:
+              already_withdrawn: "You have already withdrawn your account."
+              success: "Your account has been withdrawn. Thank you for using our service."
+              failed: "Failed to process withdrawal. Please try again later."
+            update:
+              recovered: "Your account has been recovered. You can log in now."
+              cannot_recover: "Recovery period has expired. Please contact support."
+              failed: "Failed to recover account. Please try again later."
+            destroy:
+              deleted: "Account has been permanently deleted."
+              not_withdrawn: "Account is not withdrawn; cannot delete."
+            errors:
+              cooldown_active: "Withdrawal cooldown is still active."
+              recovery_not_available: "Account recovery is not available."
+              invalid_state: "Cannot perform this action. Your account is in an invalid state: %{current_status}"
+              finalized: "Your account withdrawal has been finalized."
+              deletion_failed: "Failed to delete account."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -240,6 +589,8 @@ en:
           select_region_selector:
             USA: "United States"
             JAPAN: "Japan"
+            US: "United States"
+            JP: "Japan"
           select_language_selector:
             JAPANESE: "Japanese"
             ENGLISH: "English"
@@ -284,11 +635,31 @@ en:
           confirm: "This action deletes saved preference data for this browser. Continue?"
           back: "Back to Preferences"
     org:
+      preferences:
+        footer:
+          preference: "Preferences"
+          configuration: "Settings"
+          home: "home"
+      configuration:
+        show:
+          page_title: "Configuration"
+          description: "Manage advanced security controls for your account."
+          withdrawal: "Withdrawal"
+          back: "Back"
+        withdrawal:
+          show:
+            title: "Withdrawal"
+            description: "Review your withdrawal status."
+      root:
+        title: "Welcome"
+        description: "Choose an action below"
+        registration: "Sign Up"
+        authentication: "Sign In"
       layout:
         nav:
           sign_up: "Sign Up"
           log_in: "Log In"
-          setting: "Settings"
+          configuration: "Settings"
           logout: "Log Out"
       exits:
         edit:
@@ -306,7 +677,19 @@ en:
             google: "Google"
             passkey: "Passkey"
             recovery: "Recovery code"
+            secret: "Secret"
             registration: "Need an account?"
+        passkey:
+          new:
+            page_title: "Sign in with passkey"
+            description: "Use your passkey to sign in securely."
+            submit: "Sign in with passkey"
+        secret:
+          new:
+            page_title: "Sign in with a secret"
+            pii_label: "Account identifiable information"
+            secret_label: "Secret"
+            confirm_label: "I have saved the secret"
       registration:
         new:
           page_title: "Staff Registration"
@@ -336,6 +719,8 @@ en:
           select_region_selector:
             USA: "United States"
             JAPAN: "Japan"
+            US: "United States"
+            JP: "Japan"
           select_language_selector:
             JAPANESE: "Japanese"
             ENGLISH: "English"
@@ -383,6 +768,9 @@ en:
     system: "System Theme"
   root:
     app:
+      layout:
+        nav:
+          contact: "Contact"
       preferences:
         up_link: "Back to top"
         title: "Preferences"
@@ -408,6 +796,8 @@ en:
           select_region_selector:
             USA: "United States"
             JAPAN: "Japan"
+            US: "United States"
+            JP: "Japan"
           select_language_selector:
             JAPANESE: "Japanese"
             ENGLISH: "English"
@@ -486,6 +876,8 @@ en:
           select_region_selector:
             USA: "United States"
             JAPAN: "Japan"
+            US: "United States"
+            JP: "Japan"
           select_language_selector:
             JAPANESE: "Japanese"
             ENGLISH: "English"
@@ -615,6 +1007,11 @@ en:
       user_identity_email:
         address: Email address
     errors:
+      models:
+        org_document_tagger:
+          attributes:
+            org_document_tag_id:
+              already_tagged: "is already tagged to this document"
       messages:
         record_invalid: 'Validation failed: %{errors}'
         restrict_dependent_destroy:
@@ -833,36 +1230,150 @@ en:
       short: "%d %b %H:%M"
     pm: pm
   controller:
-    auth:
+    sign:
       app:
-        setting:
+        configuration:
           show:
             page_title: "Settings"
+          security:
+            edit:
+              title: "Security settings"
+              description: "Review your authentication factors, active sessions, and recovery codes."
+            cards:
+              totp:
+                title: "Two-factor authentication"
+                description: "TOTP apps generate rotating codes that add a second layer to your login."
+              passkeys:
+                title: "Passkeys"
+                description: "Manage your registered WebAuthn credentials."
+                stats_label: "registered"
+              secrets:
+                title: "Recovery codes"
+                description: "Single-use codes that restore access if your main factors fail."
+                stats_label: "stored"
+              sessions:
+                title: "Active sessions"
+                description: "Device sessions that are currently signed into your account."
+                stats_label: "active"
+            states:
+              enabled: "Enabled"
+              disabled: "Not configured"
+            actions:
+              manage: "Manage"
+              review: "Mark as reviewed"
+            review:
+              heading: "Security review"
+              last_reauth: "Last reauthentication:"
+              last_review: "Last review refreshed:"
+            never: "Not yet recorded"
+            update:
+              success: "Security dashboard refreshed."
           index:
             totp: "TOTP"
             passkey: "Passkey"
             secret: "Recovery Code"
             google: "Google"
             apple: "Apple"
+        setting:
+          index:
+            totp: "TOTP"
+            passkey: "Passkey"
+            secret: "Recovery Code"
+            email: "Email"
+            telephone: "Phone"
+            session: "Sessions"
+            google: "Google"
+            apple: "Apple"
+          passkey:
+            index:
+              return_page: "Back"
+          totp:
+            index:
+              page_title: "TOTP credentials"
+              return_page: "Back"
+        v1:
+          passkey:
+            new: "Register passkey"
+            index:
+              page_title: "Passkeys"
+              return_page: "Back"
+          recovery:
+            index:
+              page_title: "Recovery codes"
+              return_page: "Back"
+          totp:
+            index:
+              page_title: "TOTP credentials"
+              return_page: "Back"
+              passkey: "Passkey"
+              totp: "TOTP"
+              recovery: "Recovery"
         registration:
           email: "registration with email address???"
           telephone: "registration with telephone."
-  peak:
+      org:
+        configuration:
+          security:
+            edit:
+              title: "Security settings"
+              description: "Monitor your organization's passkeys, recovery codes, and session history."
+            cards:
+              passkeys:
+                title: "Passkeys"
+                description: "Staff passkeys simplify passwordless authentication."
+                stats_label: "registered"
+              secrets:
+                title: "Recovery codes"
+                description: "Single-use secrets that restore access if your primary keys fail."
+                stats_label: "stored"
+              sessions:
+                title: "Active sessions"
+                description: "Signed-in sessions for your staff account."
+                stats_label: "active"
+            states:
+              enabled: "Enabled"
+              disabled: "Not configured"
+            actions:
+              manage: "Manage"
+              review: "Refresh review"
+            review:
+              heading: "Security review"
+              last_review: "Last review refreshed:"
+            never: "Not yet recorded"
+            update:
+              success: "Security dashboard refreshed."
+    apex:
     app:
+      configurations:
+        title: Configuration
+        description: Review and adjust your application settings.
+        i18n_settings: Language & region
+        i18n_settings_description: Change default language and region preferences.
+        email_settings: Email settings
+        email_settings_description: Manage notification email sender and content.
       preferences:
         footer:
           privacy: "Privacy"
+        languages:
+          unsupported: "Unsupported language selected"
+        language_settings: "Language Settings"
+        update_success: "Preferences updated successfully"
+        submitting: "Submitting..."
     com:
       preferences:
         footer:
           privacy: "Privacy"
+        update_success: "Preferences updated successfully"
+        submitting: "Submitting..."
       preference:
         up_link: "up to"
     org:
       preferences:
         footer:
           privacy: "Privacy"
+        update_success: "Preferences updated successfully"
         reset_settings: "Reset Settings"
+        submitting: "Submitting..."
   core:
     shared:
       preference_emails:
@@ -870,6 +1381,9 @@ en:
         turnstile_error: "Turnstile verification failed. Please refresh and try again."
         update_failure: "We could not save your preferences. Please try again."
     app:
+      layout:
+        nav:
+          contact: "Contact"
       preferences:
         title: "Email Preferences"
         description: "Request a secure link to manage your email notifications without signing in."
@@ -949,12 +1463,18 @@ en:
       contacts:
         new:
           page_title: "Contact Us"
+          badge: "Contact"
           heading: "Send us a message"
           description: "Please fill out the form below to contact us."
           email_address: "Email Address"
           telephone_number: "Telephone Number"
           contact_category_title: "Inquiry Category"
+          category_id: "Inquiry Category"
           confirm_policy: "I agree to the privacy policy"
+          confirm_policy_note: "You must agree to the privacy policy before submitting."
+          error_heading:
+            one: "1 error prohibited this contact from being saved."
+            other: "%{count} errors prohibited this contact from being saved."
           submit: "Continue"
           cancel: "Cancel"
         create:
@@ -964,6 +1484,9 @@ en:
           confirm_policy_error: "You must agree to the privacy policy to continue."
         update:
           success: "Your inquiry has been received."
+      preferences:
+        footer:
+          preference: "Preferences"
       contact:
         emails:
           new:
@@ -994,6 +1517,38 @@ en:
             invalid_code: "Invalid verification code. %{attempts_left} attempts remaining."
             max_attempts: "Maximum verification attempts exceeded. Please request a new code."
             expired: "Verification code has expired. Please request a new code."
+    org:
+      contacts:
+        new:
+          page_title: "Contact Us"
+          badge: "Contact"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          category_id: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          confirm_policy_note: "You must agree to the privacy policy before submitting."
+          error_heading:
+            one: "1 error prohibited this contact from being saved."
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: "Continue"
+          cancel: "Cancel"
+    app:
+      contacts:
+        new:
+          page_title: "Contact Us"
+          badge: "Contact"
+          description: "Please fill out the form below to contact us."
+          email_address: "Email Address"
+          telephone_number: "Telephone Number"
+          category_id: "Inquiry Category"
+          confirm_policy: "I agree to the privacy policy"
+          confirm_policy_note: "You must agree to the privacy policy before submitting."
+          error_heading:
+            one: "1 error prohibited this contact from being saved."
+            other: "%{count} errors prohibited this contact from being saved."
+          submit: "Continue"
+          cancel: "Cancel"
         telephones:
           new:
             page_title: "Verify Phone Number"
@@ -1038,67 +1593,375 @@ en:
           confirm_policy_error: "You must agree to the privacy policy to continue."
         update:
           success: "Your inquiry has been received."
+      preferences:
+        footer:
+          preference: "Preferences"
     contact:
       errors:
         id_required: "Contact ID is required"
         not_found: "Contact not found"
         invalid_status: "Invalid contact status: expected SET_UP, got %{current_status}"
-  peak:
     app:
+      preferences:
+        footer:
+          preference: "Preferences"
+  apex:
+    app:
+      configurations:
+        title: "Configuration"
+        description: "Review and adjust your service settings."
+        i18n_settings: "Locale settings"
+        i18n_settings_description: "Update the default language and region for this browser."
+        email_settings: "Email settings"
+        email_settings_description: "Manage notification senders and descriptions."
       preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+            accept_consent_cookies: "Allow consent cookies"
         resets:
-          title: "設定のリセット"
-          description: "reset your preference setting."
-          confirm: "RESET"
-          button: "RESET"
-          back: "Back???"
-  peak:
-    app:
+          title: "Reset Preferences"
+          description: "Remove saved preference data for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          destroyed: "Preferences have been reset"
+          back: "Back to preferences"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
         region_settings: "Region & Language Settings"
         theme_settings: "Theme Settings"
+        reset_settings: "Reset Settings"
         up_link: "Back to top"
         footer:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+          privacy: "Privacy"
         themes:
           updated: "Theme updated to %{theme}"
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
     com:
+      configurations:
+        title: "Configuration"
+        description: "Review and adjust your service settings."
+        i18n_settings: "Locale settings"
+        i18n_settings_description: "Update the default language and region for this browser."
+        email_settings: "Email settings"
+        email_settings_description: "Manage notification senders and descriptions."
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+            accept_consent_cookies: "Allow consent cookies"
+        language:
+          edit:
+            language_label: "Language Select"
+            h1: "Language Select"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference data for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          destroyed: "Preferences have been reset"
+          back: "Back to preferences"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
         region_settings: "Region & Language Settings"
         theme_settings: "Theme Settings"
+        reset_settings: "Reset Settings"
         up_link: "Back to top"
         footer:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+          privacy: "Privacy"
         themes:
           updated: "Corporate theme updated to %{theme}"
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
     org:
+      configurations:
+        title: "Configuration"
+        description: "Review and adjust your organization settings."
+        i18n_settings: "Locale settings"
+        i18n_settings_description: "Update the default language and region for this organization."
+        email_settings: "Email settings"
+        email_settings_description: "Manage notification senders and descriptions."
+      preference:
+        cookie:
+          edit:
+            h1: "Cookie Preferences"
+            accept_necessary_cookies: "Allow necessary cookies (required)"
+            accept_functional_cookies: "Allow functional cookies"
+            accept_performance_cookies: "Allow performance cookies"
+            accept_targeting_cookies: "Allow targeting cookies"
+            accept_consent_cookies: "Allow consent cookies"
+        resets:
+          title: "Reset Preferences"
+          description: "Remove saved preference data for this browser."
+          button: "Clear preference data"
+          confirm: "This action deletes saved preference data for this browser. Continue?"
+          destroyed: "Preferences have been reset"
+          back: "Back to preferences"
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
         region_settings: "Region & Language Settings"
         theme_settings: "Theme Settings"
+        reset_settings: "Reset Settings"
         up_link: "Back to top"
         footer:
           home: "Home"
           cookie: "Cookie"
           preference: "Preference"
+          privacy: "Privacy"
         themes:
           updated: "Theme updated to %{theme}"
           invalid: "Invalid theme selected"
         timezones:
           invalid: "Invalid timezone selected"
   description: "Withdrawal"
+  org_document_tags:
+    technology: "Technology"
+    business: "Business"
+    design: "Design"
+    marketing: "Marketing"
+    development: "Development"
+    frontend: "Frontend"
+    backend: "Backend"
+    database: "Database"
+    security: "Security"
+    none: "None"
+  org_document_categories:
+    tutorial: "Tutorial"
+    guide: "Guide"
+    reference: "Reference"
+    article: "Article"
+    news: "News"
+    announcement: "Announcement"
+    release_note: "Release Note"
+    faq: "FAQ"
+  app_document_tags:
+    technology: "Technology"
+    business: "Business"
+    design: "Design"
+    marketing: "Marketing"
+    development: "Development"
+    frontend: "Frontend"
+    backend: "Backend"
+    database: "Database"
+    security: "Security"
+    none: "None"
+  app_document_categories:
+    tutorial: "Tutorial"
+    guide: "Guide"
+    reference: "Reference"
+    article: "Article"
+    news: "News"
+    announcement: "Announcement"
+    release_note: "Release Note"
+    faq: "FAQ"
+  com_document_tags:
+    technology: "Technology"
+    business: "Business"
+    design: "Design"
+    marketing: "Marketing"
+    development: "Development"
+    frontend: "Frontend"
+    backend: "Backend"
+    database: "Database"
+    security: "Security"
+    none: "None"
+  com_document_categories:
+    tutorial: "Tutorial"
+    guide: "Guide"
+    reference: "Reference"
+    article: "Article"
+    news: "News"
+    announcement: "Announcement"
+    release_note: "Release Note"
+    faq: "FAQ"
+  org_timeline_tags:
+    technology: "Technology"
+    business: "Business"
+    design: "Design"
+    marketing: "Marketing"
+    development: "Development"
+    frontend: "Frontend"
+    backend: "Backend"
+    database: "Database"
+    security: "Security"
+    none: "None"
+  org_timeline_categories:
+    tutorial: "Tutorial"
+    guide: "Guide"
+    reference: "Reference"
+    article: "Article"
+    news: "News"
+    announcement: "Announcement"
+    release_note: "Release Note"
+    faq: "FAQ"
+  app_timeline_tags:
+    technology: "Technology"
+    business: "Business"
+    design: "Design"
+    marketing: "Marketing"
+    development: "Development"
+    frontend: "Frontend"
+    backend: "Backend"
+    database: "Database"
+    security: "Security"
+    none: "None"
+  app_timeline_categories:
+    tutorial: "Tutorial"
+    guide: "Guide"
+    reference: "Reference"
+    article: "Article"
+    news: "News"
+    announcement: "Announcement"
+    release_note: "Release Note"
+    faq: "FAQ"
+  com_timeline_tags:
+    technology: "Technology"
+    business: "Business"
+    design: "Design"
+    marketing: "Marketing"
+    development: "Development"
+    frontend: "Frontend"
+    backend: "Backend"
+    database: "Database"
+    security: "Security"
+    none: "None"
+  com_timeline_categories:
+    tutorial: "Tutorial"
+    guide: "Guide"
+    reference: "Reference"
+    article: "Article"
+    news: "News"
+    announcement: "Announcement"
+    release_note: "Release Note"
+    faq: "FAQ"
+  core:
+    com:
+      layout:
+        nav:
+          contact: "Contact"
+      preferences:
+        footer:
+          preference: "Preferences"
+    app:
+      preferences:
+        footer:
+          preference: "Preferences"
+    org:
+      preferences:
+        footer:
+          preference: "Preferences"
+  shared:
+    links:
+      apex_preference: "Apex preferences"
+
+  docs:
+    posts:
+      index:
+        title: "Documents"
+        count: "%{count} documents"
+        search_placeholder: "Search..."
+        search_button: "Search"
+        search_found: "%{count} found"
+        search_all: "All"
+        empty: "No documents found"
+        select_title: "Select a document"
+        select_description: "Click on a document from the list to view its details"
+    versions:
+      index:
+        title: "Versions"
+        description: "Document versions list"
+      show:
+        title: "Version"
+        description: "Document version details"
+    com:
+      preferences:
+        footer:
+          preference: "Preferences"
+    app:
+      preferences:
+        footer:
+          preference: "Preferences"
+    org:
+      preferences:
+        footer:
+          preference: "Preferences"
+  news:
+    posts:
+      index:
+        title: "News"
+        count: "%{count} posts"
+        empty: "No posts found"
+        select_title: "Select a post"
+        select_description: "Click on a post from the list to view its details"
+    versions:
+      index:
+        title: "Versions"
+        description: "News versions list"
+      show:
+        title: "Version"
+        description: "News version details"
+    com:
+      preferences:
+        footer:
+          preference: "Preferences"
+    app:
+      preferences:
+        footer:
+          preference: "Preferences"
+    org:
+      preferences:
+        footer:
+          preference: "Preferences"
+  controller:
+    sign:
+      app:
+        configuration:
+          security:
+            edit:
+              title: "Security overview"
+              description: "Review the protections on your account and jump straight to each management page."
+            cards:
+              passkeys:
+                title: "Passkeys"
+                description: "Manage the passkeys registered to this account."
+                stats_label: "registered"
+              secrets:
+                title: "Recovery codes"
+                description: "Check your recovery codes and generate new ones."
+                stats_label: "available"
+              sessions:
+                title: "Sessions"
+                description: "Inspect active sessions and sign out of unused devices."
+                stats_label: "active now"
+            states:
+              enabled: "Enabled"
+              disabled: "Disabled"
+            actions:
+              manage: "Manage"
+              review: "Mark as reviewed"
+            review:
+              heading: "Security review"
+              last_review: "Last reviewed"
+              never: "Never reviewed"
+            update:
+              success: "Security review timestamp saved."

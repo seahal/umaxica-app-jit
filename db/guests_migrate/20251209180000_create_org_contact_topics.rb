@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateOrgContactTopics < ActiveRecord::Migration[8.2]
   def change
     create_table :org_contact_topics, id: :uuid, default: -> { "uuidv7()" } do |t|

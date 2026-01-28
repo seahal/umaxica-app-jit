@@ -1,8 +1,20 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: domain_occurrence_statuses
+# Database name: occurrence
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+# Indexes
+#
+#  index_domain_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
 require "test_helper"
 
 class DomainOccurrenceStatusTest < ActiveSupport::TestCase
-  include OccurrenceStatusTestHelper
-
   test "upcases id before validation" do
     assert_upcases_id(DomainOccurrenceStatus)
   end
@@ -35,9 +47,9 @@ class DomainOccurrenceStatusTest < ActiveSupport::TestCase
     assert_status_association(DomainOccurrenceStatus, :domain_occurrences)
   end
 
-  test "expires_at default" do
-    record = DomainOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
-
-    assert_expires_at_default(record)
-  end
+  #   test "expires_at default" do
+  #     record = DomainOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
+  #
+  #     assert_expires_at_default(record)
+  #   end
 end

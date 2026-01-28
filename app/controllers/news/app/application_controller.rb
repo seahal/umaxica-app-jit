@@ -1,12 +1,15 @@
+# frozen_string_literal: true
+
 module News
   module App
     class ApplicationController < ActionController::Base
-      include ::DefaultUrlOptions
+      include ::Preference::Regional
 
       protect_from_forgery with: :exception
       include ::RateLimit
+      include ::Auth::Base
 
-      protect_from_forgery with: :exception
+      public_strict!
 
       allow_browser versions: :modern
     end

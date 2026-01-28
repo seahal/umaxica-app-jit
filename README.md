@@ -7,16 +7,20 @@
 
 - Ruby 4.0+ (see `Gemfile` for the exact version)
   - Bundler 4.0+ (shipped with modern Ruby installations)
-- Bun 1.3.x
+- pnpm 10.x + Node 20+ (for JavaScript tooling)
 - Docker (local infrastructure parity)
   - Access to PostgreSQL, Valkey (Redis-compatible), and Kafka instances
 
 ## Initial Setup
 0. Set up Docker compose and run it: `docker compoe up`
 1. Install Ruby dependencies: `bundle install`
-2. Install JavaScript/TypeScript dependencies: `bun install`
+2. Install JavaScript/TypeScript dependencies: `pnpm install`
 3. Prepare the database (creates, migrates, seeds as`
 4. ... run `bin/dev`
+
+## WebAuthn configuration
+- WebAuthn requires a `TRUSTED_ORIGINS` environment variable that enumerates every allowed origin. Without it, Rails commands such as `bin/rails db:migrate` cannot start.
+- For local development we already set `TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000` inside `docker/core/env`. If you run Ruby commands outside the container, set the same value (or other hosts you use) beforehand.
 
 ## Database IDs
 - PostgreSQL 18 UUID primary keys default to `uuidv7()` so inserts remain time-ordered.
@@ -28,7 +32,7 @@
 ## Linting & Formatting
 - Ruby style checks: `bundle exec rubocop`
 - ERB templates: `bundle exec erb_lint .`
-- Frontend formatting and linting: `bun run check`
+- Frontend formatting and linting: `pnpm run check`
 
 ## Logging
 - Rails emits structured logs via `Rails.event` (ActiveSupport::Notifications) rather than `Rails.logger`.
@@ -66,26 +70,24 @@
 
 ## Environments & Endpoints
   - Corporate site:
-    - `www.umaxica.app`
-    - `[jp|us].news.umaxica.com`
-    - `[jp|us].help.umaxica.com`
-    - `[jp|us].docs.umaxica.com`
+    - `www.umaxica.com`
+    - `www.[jp|us].news.umaxica.com`
+    - `www.[jp|us].help.umaxica.com`
+    - `www.[jp|us].docs.umaxica.com`
   - Service endpoints:
     - `www.umaxica.app`
     - `sign.umaxica.app`
-    - `[jp|us].docs.umaxica.app`
-    - `[jp|us].help.umaxica.app`
-    - `[jp|us].news.umaxica.app`
+    - `www.[jp|us].docs.umaxica.app`
+    - `www.[jp|us].help.umaxica.app`
+    - `www.[jp|us].news.umaxica.app`
   - Staff site:
     - `www.umaxica.org`
     - `sign.umaxica.org`
-    - `[jp|us].docs.umaxica.org`
-    - `[jp|us].help.umaxica.org`
-    - `[jp|us].news.umaxica.org`
+    - `www.[jp|us].docs.umaxica.org`
+    - `www.[jp|us].help.umaxica.org`
+    - `www.[jp|us].news.umaxica.org`
   - Network endpoints:
-    - `asset-[jp|us].umaxica.net`
-    - `css.umaxica.net`
-      - NOTE: This endopoints are not run on Ruby on Rails
+    - `a[jp|us].umaxica.net`
 
 ## Secrets & Credentials
 - Store sensitive configuration in Rails credentials. Development and test credentials are available to team members as needed.
@@ -107,3 +109,4 @@
 - This is a work in progress.
 - The public availability of this repository is not guaranteed permanently.
 - No warranty is provided, and the authors shall not be held liable for any damages arising from the use of this repository.
+- **Development Environment Cookie Limitation**: In the development environment using `localhost`, cookies cannot be shared across subdomains (e.g., between `app.localhost:3000` and `help.app.localhost:3000`) due to browser security restrictions. This limitation does not affect test or production environments. If subdomain cookie sharing is required during development, consider using a `.test` domain with `/etc/hosts` configuration.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OrgContactEmailPolicy < ApplicationPolicy
   # NOTE: Up to Pundit v2.3.1, the inheritance was declared as
   # `Scope < Scope` rather than `Scope < ApplicationPolicy::Scope`.

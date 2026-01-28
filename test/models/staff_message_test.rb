@@ -1,3 +1,21 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: staff_messages
+# Database name: message
+#
+#  id         :uuid             not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  public_id  :uuid
+#  staff_id   :uuid
+#
+# Indexes
+#
+#  index_staff_messages_on_staff_id  (staff_id)
+#
+
 require "test_helper"
 
 class StaffMessageTest < ActiveSupport::TestCase

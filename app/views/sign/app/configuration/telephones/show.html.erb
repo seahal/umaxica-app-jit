@@ -1,0 +1,43 @@
+<div class="max-w-md mx-auto py-10 px-4 sm:px-6 lg:px-8">
+  <div class="text-center mb-8">
+    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 mb-4">
+      <svg class="h-8 w-8 text-emerald-600 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <h1 class="text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight font-outfit">
+      <%= t("sign.app.configuration.telephone.show.title") %>
+    </h1>
+    <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+      <%= t("sign.app.configuration.telephone.show.description") %>
+    </p>
+  </div>
+
+  <div class="bg-white dark:bg-zinc-900 shadow rounded-lg p-6 border border-zinc-200 dark:border-zinc-800">
+    <div class="text-center space-y-4">
+      <div class="rounded-xl bg-zinc-50 dark:bg-zinc-800/50 p-4">
+        <p class="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1">
+          <%= t("activerecord.attributes.user_telephone.number") %>
+        </p>
+        <p class="text-lg font-medium text-zinc-900 dark:text-white">
+          <%= @user_telephone.number %>
+        </p>
+      </div>
+
+      <div class="flex items-center justify-center gap-2">
+        <span class="inline-flex items-center rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 text-sm font-medium text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+          <svg class="mr-1.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <%= t("sign.app.configuration.telephone.show.verified") %>
+        </span>
+      </div>
+    </div>
+
+    <div class="mt-8">
+      <%= link_to t("sign.app.configuration.telephone.show.back_to_list"),
+                  sign_app_configuration_telephones_path,
+                  class: "w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-lg shadow-blue-500/25 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300" %>
+    </div>
+  </div>
+</div>

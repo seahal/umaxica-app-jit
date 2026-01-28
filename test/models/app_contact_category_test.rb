@@ -1,8 +1,22 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: app_contact_categories
+# Database name: guest
+#
+#  id :string(255)      not null, primary key
+#
+# Indexes
+#
+#  index_app_contact_categories_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
 require "test_helper"
 
 class AppContactCategoryTest < ActiveSupport::TestCase
-  test "should inherit from GuestsRecord" do
-    assert_operator AppContactCategory, :<, GuestsRecord
+  test "should inherit from GuestRecord" do
+    assert_operator AppContactCategory, :<, GuestRecord
   end
 
   test "should use id as primary key" do
@@ -33,14 +47,92 @@ class AppContactCategoryTest < ActiveSupport::TestCase
     end
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
-  test "should have timestamps" do
-    category = AppContactCategory.create!(id: "test_app_category")
+  test "id is invalid when nil or blank" do
+    category = AppContactCategory.new(id: nil)
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
 
-    assert_respond_to category, :created_at
-    assert_respond_to category, :updated_at
-    assert_not_nil category.created_at
-    assert_not_nil category.updated_at
+    category = AppContactCategory.new(id: "")
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+
+    category = AppContactCategory.new(id: " ")
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
   end
+
+  test "id enforces length and format boundaries" do
+    category = AppContactCategory.new(id: "A" * 255)
+    assert_predicate category, :valid?
+
+    category = AppContactCategory.new(id: "A" * 256)
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+
+    category = AppContactCategory.new(id: "BAD-ID")
+    assert_not category.valid?
+    assert_predicate category.errors[:id], :any?
+  end
+
+  test "id uniqueness is case-insensitive" do
+    AppContactCategory.create!(id: "CASE_CHECK")
+
+    duplicate = AppContactCategory.new(id: "case_check")
+    assert_not duplicate.valid?
+    assert_predicate duplicate.errors[:id], :any?
+  end
+
+  # parent_id column has been removed from app_contact_categories
+  # test "parent_id is required" do
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: nil)
+  #   assert_not category.valid?
+  #   assert_predicate category.errors[:parent_id], :any?
+  #
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "")
+  #   assert_not category.valid?
+  #   assert_predicate category.errors[:parent_id], :any?
+  #
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: " ")
+  #   assert_not category.valid?
+  #   assert_predicate category.errors[:parent_id], :any?
+  # end
+
+  # parent_id column has been removed from app_contact_categories
+  # test "parent_id respects length bounds" do
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "A" * 255)
+  #   assert_predicate category, :valid?
+  #
+  #   category = AppContactCategory.new(id: "REQUIRES_PARENT", parent_id: "A" * 256)
+  #   assert_not category.valid?
+  #   assert_predicate category.errors[:parent_id], :any?
+  # end
+
+  # parent_id column has been removed from app_contact_categories
+  # test "destroy is restricted when children exist" do
+  #   parent = AppContactCategory.create!(id: "PARENT")
+  #   AppContactCategory.create!(id: "CHILD", parent_id: parent.id)
+  #
+  #   assert_not parent.destroy
+  #   assert_predicate parent.errors[:base], :any?
+  # end
+
+  test "destroy is restricted when contacts exist" do
+    category = AppContactCategory.create!(id: "CONTACT_PARENT")
+    status = AppContactStatus.find_or_create_by!(id: "ACTIVE")
+    AppContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
+
+    assert_not category.destroy
+    assert_predicate category.errors[:base], :any?
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  # test "should have timestamps" do
+  #   category = AppContactCategory.create!(id: "test_app_category")
+  #
+  #   assert_respond_to category, :created_at
+  #   assert_respond_to category, :updated_at
+  #   assert_not_nil category.created_at
+  #   assert_not_nil category.updated_at
+  # end
   # rubocop:enable Minitest/MultipleAssertions
 end

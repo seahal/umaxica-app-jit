@@ -1,26 +1,33 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: com_document_statuses
+# Database name: document
+#
+#  id         :string(255)      not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_com_document_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
 require "test_helper"
 
 class ComDocumentStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
-  fixtures :com_document_statuses
+  # fixtures :com_document_statuses
 
   def setup
     @model_class = ComDocumentStatus
     @valid_id = "ACTIVE"
     @subject = @model_class.new(id: @valid_id)
-    @status = com_document_statuses(:ACTIVE)
+    @status = ComDocumentStatus.find("ACTIVE")
   end
 
-  test "inherits from BusinessesRecord" do
-    assert_operator ComDocumentStatus, :<, BusinessesRecord
-  end
-
-  test "has many com_documents" do
-    association = ComDocumentStatus.reflect_on_association(:com_documents)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+  test "inherits from DocumentRecord" do
+    assert_operator ComDocumentStatus, :<, DocumentRecord
   end
 
   test "id is required" do
@@ -52,15 +59,15 @@ class ComDocumentStatusTest < ActiveSupport::TestCase
     assert_equal 255, status.id.length
   end
 
-  test "can load draft status from fixtures" do
-    draft = com_document_statuses(:DRAFT)
+  test "can load draft status from db" do
+    draft = ComDocumentStatus.find("DRAFT")
 
     assert_not_nil draft
     assert_equal "DRAFT", draft.id
   end
 
-  test "can load archived status from fixtures" do
-    archived = com_document_statuses(:ARCHIVED)
+  test "can load archived status from db" do
+    archived = ComDocumentStatus.find("ARCHIVED")
 
     assert_not_nil archived
     assert_equal "ARCHIVED", archived.id

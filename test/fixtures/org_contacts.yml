@@ -1,23 +1,43 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# == Schema Information
+#
+# Table name: org_contacts
+# Database name: guest
+#
+#  id               :uuid             not null, primary key
+#  ip_address       :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
+#  lock_version     :integer          default(0), not null
+#  token            :string(32)       default(""), not null
+#  token_digest     :string(255)      default(""), not null
+#  token_expires_at :timestamptz      default(-Infinity), not null
+#  token_viewed     :boolean          default(FALSE), not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  category_id      :string(255)      default("NEYO"), not null
+#  public_id        :string(21)       default(""), not null
+#  status_id        :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_org_contacts_on_category_id       (category_id)
+#  index_org_contacts_on_public_id         (public_id)
+#  index_org_contacts_on_status_id         (status_id)
+#  index_org_contacts_on_token             (token)
+#  index_org_contacts_on_token_digest      (token_digest)
+#  index_org_contacts_on_token_expires_at  (token_expires_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (category_id => org_contact_categories.id) ON DELETE => cascade
+#  fk_rails_...  (status_id => org_contact_statuses.id) ON DELETE => cascade
+#
 
 one:
-  contact_category_title: ORGANIZATION_INQUIRY
-  contact_status_id: NULL_ORG_STATUS
-  token: ''
-  token_digest: null
-  token_expires_at: null
+  id: 019b6f92-3030-7624-883a-064372edcf28
+  public_id: test_org_contact_0001
+  ip_address: 127.0.0.1
+  token: abcdefghijklmnopqrstuvwx
+  token_digest: ""
+  token_expires_at: <%= 1.day.from_now %>
   token_viewed: false
-  created_at: 2025-10-27 09:00:00
-  updated_at: 2025-10-27 09:00:00
-  public_id: "97463105827291840539"
-
-two:
-  contact_category_title: ORGANIZATION_PARTNERSHIP
-  contact_status_id: NULL_ORG_STATUS
-  token: ''
-  token_digest: null
-  token_expires_at: null
-  token_viewed: false
-  created_at: 2025-10-27 10:00:00
-  updated_at: 2025-10-27 10:00:00
-  public_id: "97463105827291840540"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

@@ -1,60 +1,81 @@
+# frozen_string_literal: true
+
 # Shared refresh-token behavior for token models.
 # Keeps raw tokens out of the database by storing only digests.
+# Required gem: sha3
+
 module RefreshTokenable
   extend ActiveSupport::Concern
+  include RefreshTokenShared
 
-  REFRESH_TOKEN_SEPARATOR = "."
-  REFRESH_VERIFIER_BYTES = 32
-  REFRESH_TTL = 1.year
+  REFRESH_TTL = 30.days
 
   included do
-    has_secure_password :refresh_token, validations: false
     before_validation :ensure_refresh_expires_at, on: :create
+    before_validation :ensure_refresh_token_family_id, on: :create
+    before_validation :ensure_refresh_token_generation, on: :create
+    validates :refresh_token_digest, uniqueness: true, allow_nil: true
   end
 
-  class_methods do
-    def parse_refresh_token(token)
-      return nil if token.blank?
-
-      public_id, verifier = token.split(REFRESH_TOKEN_SEPARATOR, 2)
-      return nil if public_id.blank? || verifier.blank?
-
-      [ public_id, verifier ]
-    end
-  end
-
+  # Whether the token is revoked.
   def revoked?
     revoked_at.present?
   end
 
+  # Whether the refresh token has expired.
   def expired_refresh?
     refresh_expires_at <= Time.current
   end
 
+  # Whether the token is active.
   def active?
     !revoked? && !expired_refresh?
   end
 
+  # Rotate (refresh) the token and return the raw token for the client.
   def rotate_refresh_token!(expires_at: nil)
-    verifier = SecureRandom.urlsafe_base64(REFRESH_VERIFIER_BYTES)
-    self.refresh_token = verifier
-    self.refresh_expires_at = expires_at || default_refresh_expires_at
-    self.rotated_at = Time.current
-    self.last_used_at = Time.current
-    save!
+    # Use a transaction to keep token state consistent.
+    transaction do
+      token, verifier = generate_refresh_token(public_id: public_id)
 
-    build_refresh_token(verifier)
+      self.refresh_token_digest = digest_refresh_token(verifier)
+      self.refresh_expires_at = expires_at || default_refresh_expires_at
+      self.last_used_at = Time.current
+      self.refresh_token_generation = refresh_token_generation.to_i + 1
+      save!
+
+      # Return the combined token for the client.
+      token
+    end
   end
 
-  def revoke!
-    update!(revoked_at: Time.current)
+  # Revoke the token.
+  def revoke!(reason: nil)
+    attributes = { revoked_at: Time.current }
+    attributes[:revoked_reason] = reason if reason.present? && has_attribute?(:revoked_reason)
+    update!(attributes)
+  end
+
+  def refresh_token=(verifier)
+    self.refresh_token_digest = verifier.blank? ? nil : digest_refresh_token(verifier)
+  end
+
+  # Authenticate the refresh token.
+  def authenticate_refresh_token(verifier)
+    return false unless active?
+
+    refresh_token_digest_matches?(verifier)
+  end
+
+  def refresh_token_digest_matches?(verifier)
+    return false if verifier.blank? || refresh_token_digest.blank?
+
+    candidate = digest_refresh_token(verifier)
+
+    secure_compare?(refresh_token_digest, candidate)
   end
 
   private
-
-    def build_refresh_token(verifier)
-      "#{public_id}#{REFRESH_TOKEN_SEPARATOR}#{verifier}"
-    end
 
     def default_refresh_expires_at
       Time.current + REFRESH_TTL
@@ -62,5 +83,13 @@ module RefreshTokenable
 
     def ensure_refresh_expires_at
       self.refresh_expires_at ||= default_refresh_expires_at
+    end
+
+    def ensure_refresh_token_family_id
+      self.refresh_token_family_id ||= SecureRandom.uuid
+    end
+
+    def ensure_refresh_token_generation
+      self.refresh_token_generation ||= 0
     end
 end

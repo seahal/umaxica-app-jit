@@ -1,0 +1,35 @@
+# == Schema Information
+#
+# Table name: app_preference_timezones
+# Database name: preference
+#
+#  id            :uuid             not null, primary key
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  option_id     :string           not null
+#  preference_id :uuid             not null
+#
+# Indexes
+#
+#  index_app_preference_timezones_on_option_id      (option_id)
+#  index_app_preference_timezones_on_preference_id  (preference_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (option_id => app_preference_timezone_options.id)
+#  fk_rails_...  (preference_id => app_preferences.id)
+#
+
+_fixture:
+  model_class: AppPreferenceTimezone
+
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# This fixture is for the preference database
+# Load explicitly in tests that need it
+
+# one:
+#   preference: one
+#
+# two:
+#   preference: two

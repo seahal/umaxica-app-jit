@@ -14,7 +14,7 @@ This DDS translates the high-level design of the Umaxica App (JIT) into implemen
 - Front-end bundles in `app/javascript`
 - Data models spanning the multi-database setup defined in `config/database.yml`
 - Supporting services (`app/services`, `app/consumers`, ActionMailer, Sms providers)
-- Observability, configuration, and deployment mechanisms (Bun, Compose, Foreman, CI)
+- Observability, configuration, and deployment mechanisms (pnpm-managed JS tooling, Compose, Foreman, CI)
 
 ### 1.3 References
 - `docs/srs.md`, `docs/hld.md`
@@ -44,7 +44,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 | Presentation | Namespaced controllers and Turbo/React views under `app/javascript` |
 | Domain Logic | Concerns in `app/controllers/concerns`, services in `app/services`, models per DB |
 | Integration | `app/mailers`, `app/consumers`, `AwsSmsService`, `Karafka`, OTEL instrumentation |
-| Infrastructure | Compose services (Postgres, Valkey, Kafka, MinIO, Loki, Tempo, Grafana), Bun/Tailwind build chain |
+| Infrastructure | Compose services (Postgres, Valkey, Kafka, MinIO, Loki, Tempo, Grafana), pnpm/Tailwind toolchain |
 
 ---
 
@@ -98,7 +98,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 
 ### 3.5 Help Namespace
 - `Help::Com::ContactsController` handles `new/create/show`.
-- `ServiceSiteContact` (GuestsRecord) encrypts email, phone, title, description; requires either email or telephone plus policy consent.
+- `ServiceSiteContact` (GuestRecord) encrypts email, phone, title, description; requires either email or telephone plus policy consent.
 - Turnstile integration ensures bot mitigation; errors are logged via `Rails.logger`.
 - OTP dispatch uses `Email::App::ContactMailer` and `AwsSmsService`.
 
@@ -114,14 +114,14 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 
 ### 3.8 BFF Namespace
 - Targets non-authenticated clients needing preference/email operations without hitting the full Rails views.
-- `Bff::Concerns::Regionalization` overrides `default_url_options`, `set_locale`, and `set_timezone` using session or query params.
+- The preference concerns override `default_url_options`, `set_locale`, and `set_timezone` using session or query params.
 - Email preference controllers share translation scopes: e.g., `Bff::App::Preference::EmailsController#translation_scope => "bff.app.preferences"`.
 
 ### 3.9 Front-End Bundles
 - `app/javascript/application.js` imports Turbo and each surface-specific entrypoint.
 - Directory structure: `app/javascript/views/<surface>/<domain>/application.(ts|js)` plus shared scripts (`views/passkey.js`, `views/passkey_helpers.js`, `views/www/app/inquiry/before_submit.js`).
-- Bun build pipeline (`bun bun.config.js`) discovers `application.js/ts` entries and writes compiled files to `app/assets/builds/**`.
-- Tailwind CSS compiled via CLI (`@tailwindcss/cli`) invoked from the same Bun script.
+- JavaScript is served via importmap/Turbo; pnpm manages tooling (Biome) for linting/formatting the sources.
+- Tailwind CSS is compiled through Rails' Tailwind CLI (`bin/rails tailwindcss:watch`).
 
 ### 3.10 Services & Integrations
 - `AwsSmsService` delegates to provider classes under `app/services/sms_providers` (AWS SNS, Infobip, Test). Providers validate parameters and call respective APIs with credentials loaded from Rails credentials.
@@ -179,11 +179,11 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 |-------|---------|-------|
 | `User`, `Staff` | `IdentitiesRecord` | `has_many :emails`, `:phones`, `webauthn_id` stored |
 | `UserIdentityEmail` | `IdentitiesRecord` | Includes `Email` concern, encrypts `address`, `before_create` sets UUID v7 |
-| `ServiceSiteContact` | `GuestsRecord` | Encrypts email/phone/title/description, validates OTP codes, stores `ip_address` |
-| `TimeBasedOneTimePassword` | `UniversalRecord` | Encrypts `private_key`, stores `last_otp_at`, `first_token` virtual attr |
+| `ServiceSiteContact` | `GuestRecord` | Encrypts email/phone/title/description, validates OTP codes, stores `ip_address` |
+| `TimeBasedOneTimePassword` | `OccurrenceRecord` | Encrypts `private_key`, stores `last_otp_at`, `first_token` virtual attr |
 | `UserPasskey` | `ApplicationRecord` | Validates `webauthn_id`, `public_key`, `description`, `sign_count` |
 | `UserToken`, `StaffToken` | `TokensRecord` | Reference tokens for JWT refresh handling |
-| `IdentifierRegionCode` and join tables | `UniversalRecord` | Future mapping for personas/staff region codes |
+| `IdentifierRegionCode` and join tables | `OccurrenceRecord` | Future mapping for personas/staff region codes |
 
 ### 5.2 Cookies & Sessions
 - Preference cookie: `__Secure-root_app_preferences` (JSON: `lx`, `ri`, `tz`, `ct`).
@@ -216,15 +216,15 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ---
 
 ## 7. Configuration & Environment
-- `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`, `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Kafka brokers (`KAFKA_BROKERS`), Cloudflare Turnstile keys, JWT keys, AWS/Infobip credentials, OTLP endpoint.
+- `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`, `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`, including the new `POSTGRESQL_AUDIT_PUB/SUB` pair), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Kafka brokers (`KAFKA_BROKERS`), Cloudflare Turnstile keys, JWT keys, AWS/Infobip credentials, OTLP endpoint.
 - `compose.yml` launches all infra dependencies with sensible defaults; volumes store data per service.
-- `Procfile.dev` ensures Rails server + Bun watcher (and optionally Karafka) run concurrently.
+- `Procfile.dev` ensures the Rails server (and optionally Karafka) run concurrently; Tailwind watcher runs via `bin/rails tailwindcss:watch`.
 - Build/test commands:
-  - `bundle install`, `bun install`
+  - `bundle install`, `pnpm install`
   - `bin/rails db:prepare`
   - `foreman start -f Procfile.dev`
-  - Tests: `bin/rails test`, `bun test`
-  - Lint: `bundle exec rubocop`, `bundle exec erb_lint .`, `bun run lint`, `bun run format`, `bun run typecheck`
+  - Tests: `bin/rails test`
+  - Lint: `bundle exec rubocop`, `bundle exec erb_lint .`, `pnpm run lint`, `pnpm run format`, `pnpm run check`
 
 ---
 
@@ -252,8 +252,8 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ---
 
 ## 10. Deployment & Operations
-- **Local**: Compose + Foreman; `bun run build --watch` rebuilds assets; `karafka server` can run concurrently.
-- **CI**: GitHub Actions pipeline runs bundler install, database setup, Rails tests, Bun tests, linting, Brakeman, Bundler Audit, Biome (via `lefthook.yml`).
+- **Local**: Compose + Foreman; pnpm handles JS lint/format tasks; `karafka server` can run concurrently.
+- **CI**: GitHub Actions pipeline runs bundler install, database setup, Rails tests, pnpm linting, Brakeman, Bundler Audit, Biome (via `lefthook.yml`).
 - **Staging/Production**:
   - Rails server deployed to Google Cloud Run (per README) or equivalent.
   - Fastly/Cloudflare handle DNS & TLS; `EDGE_*` hostnames define redirect targets.

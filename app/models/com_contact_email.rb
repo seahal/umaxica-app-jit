@@ -1,12 +1,51 @@
-class ComContactEmail < GuestsRecord
-  belongs_to :com_contact
+# frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: com_contact_emails
+# Database name: guest
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  expires_at             :timestamptz      not null
+#  hotp_counter           :integer          default(0), not null
+#  hotp_secret            :string(255)      default(""), not null
+#  remaining_views        :integer          default(0), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default(-Infinity), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  verifier_attempts_left :integer          default(0), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  com_contact_id         :uuid             not null
+#
+# Indexes
+#
+#  index_com_contact_emails_on_com_contact_id       (com_contact_id) UNIQUE
+#  index_com_contact_emails_on_email_address        (email_address)
+#  index_com_contact_emails_on_expires_at           (expires_at)
+#  index_com_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (com_contact_id => com_contacts.id)
+#
+
+class ComContactEmail < GuestRecord
+  belongs_to :com_contact, inverse_of: :com_contact_email
+
+  # Validations
+  validates :email_address, presence: true, length: { maximum: 1000 }, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :token_digest, length: { maximum: 255 }
+  validates :verifier_digest, length: { maximum: 255 }
+  validates :com_contact_id, uniqueness: true
   before_create :generate_id
   before_save { self.email_address&.downcase! }
   encrypts :email_address, downcase: true, deterministic: true
-
-  # Validations
-  validates :email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   # Encryptions
   encrypts :hotp_secret
@@ -14,7 +53,7 @@ class ComContactEmail < GuestsRecord
   # Generate and store email verification code
   # TODO: Rewrite this code to otp generator
   def generate_verifier!
-    raw_code = SecureRandom.random_number(100000..999999).to_s # 6-digit code
+    raw_code = SecureRandom.random_number(100_000..999_999).to_s # 6-digit code
     self.verifier_digest = Argon2::Password.create(raw_code)
     self.verifier_expires_at = 15.minutes.from_now
     self.verifier_attempts_left = 3

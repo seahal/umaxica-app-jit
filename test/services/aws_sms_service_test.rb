@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require "minitest/mock"
 
@@ -7,9 +9,10 @@ class AwsSmsServiceTest < ActiveSupport::TestCase
     Aws::SNS::Client.stub :new, Object.new do
       service = AwsSmsService.new
 
-      error = assert_raises(ArgumentError) do
-        service.send_message(to: "", message: "Test message")
-      end
+      error =
+        assert_raises(ArgumentError) do
+          service.send_message(to: "", message: "Test message")
+        end
       assert_match(/Phone number is required/, error.message)
     end
   end
@@ -19,13 +22,14 @@ class AwsSmsServiceTest < ActiveSupport::TestCase
     Aws::SNS::Client.stub :new, Object.new do
       service = AwsSmsService.new
 
-      error = assert_raises(ArgumentError) do
+      assert_raises(ArgumentError) do
         service.send_message(to: "", message: "Test message")
       end
 
-      error = assert_raises(ArgumentError) do
-        service.send_message(to: "+1234567890", message: "")
-      end
+      error =
+        assert_raises(ArgumentError) do
+          service.send_message(to: "+1234567890", message: "")
+        end
       assert_match(/Message is required/, error.message)
     end
   end

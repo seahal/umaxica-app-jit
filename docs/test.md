@@ -28,7 +28,7 @@ This TS defines how the Rails-based Umaxica App (JIT) will be verified across ev
 - API & BFF endpoints (health, inquiry validation, preference APIs)
 - Security controls (JWT issuance, rate limiting, Turnstile, redirect whitelist, encryption)
 - Observability (OpenTelemetry traces, health endpoints, Karafka metrics)
-- Build/test automation (Bun builds, `bin/rails test`, `bun test`, linting)
+- Build/test automation (pnpm-managed JS tooling for linting/formatting and `bin/rails test`)
 
 ### 2.2 Out of Scope
 - Non-Rails-hosted network endpoints (e.g., `asset-jp.umaxica.net`)
@@ -54,13 +54,13 @@ This TS defines how the Rails-based Umaxica App (JIT) will be verified across ev
 
 ## 4. Test Approach
 - **Unit tests (Ruby)**: `bin/rails test` covers models (e.g., `ServiceSiteContact`, `UserIdentityEmail`, `TimeBasedOneTimePassword`), controllers, concerns, services, consumers. Fixtures stored under `test/fixtures`; multi-database fixtures split by context.
-- **Unit tests (JS/TS)**: `bun test` targets helpers (`views/passkey_helpers.js`, React utility modules) and ensures Bun bundles remain deterministic.
+- **Unit tests (JS/TS)**: `pnpm test` (when added) targets helpers (`views/passkey_helpers.js`, React utility modules) and ensures bundles remain deterministic.
 - **Integration/system tests**: Rails system tests or Playwright scripts simulate flows (preference edits, registration, help contact).
 - **API/contract tests**: Rswag (planned) or request specs verify `/api/v1/inquiry/*`, `/bff/*` payloads and headers.
 - **Security tests**: RSpec/Minitest cases for rate limiting, JWT signature validation, redirect sanitization, Turnstile failure handling, PII encryption.
 - **Performance tests**: k6 or wrk for `/sign` and `/help` flows; Lighthouse (or WebPageTest) for marketing pages. Target 300 ms p95 for health endpoints.
 - **Observability verification**: OTEL traces appear in Tempo; Loki logs capture Turnstile failures; Grafana dashboards show request rate and Kafka lag.
-- **Automation**: CI pipeline runs all tests plus linting (`bun run lint`, `bun run format`, `bun run typecheck`, `bundle exec rubocop`, `bundle exec erb_lint`, `bundle exec brakeman`, `bundle exec bundler-audit`).
+- **Automation**: CI pipeline runs all tests plus linting (`pnpm run lint`, `pnpm run format`, `pnpm run check`, `bundle exec rubocop`, `bundle exec erb_lint`, `bundle exec brakeman`, `bundle exec bundler-audit`).
 
 ---
 
@@ -68,7 +68,7 @@ This TS defines how the Rails-based Umaxica App (JIT) will be verified across ev
 
 | Env | Purpose | Stack |
 |-----|---------|-------|
-| Local | Developer loop | Docker Compose (Postgres primaries/replicas, Valkey, Kafka+UI, MinIO, Loki, Tempo, Grafana), Foreman with Rails + Bun watcher |
+| Local | Developer loop | Docker Compose (Postgres primaries/replicas, Valkey, Kafka+UI, MinIO, Loki, Tempo, Grafana), Foreman with Rails + pnpm-managed JS tooling |
 | Staging | Integrated QA, performance & regression | Mirrors production hostnames, uses managed Postgres/Valkey/Kafka, OTEL exports to staging Tempo |
 | Production Verification | Smoke tests post-deploy | Fastly/Cloudflare fronted hosts, managed infra |
 
@@ -122,7 +122,7 @@ This TS defines how the Rails-based Umaxica App (JIT) will be verified across ev
 - **TC-API-401** Email validation endpoint: GET `/api/app/v1/inquiry/valid_email_addresses/:id` with Base64 email; expect JSON body with `valid`.
 - **TC-API-402** Telephone validation: POST JSON to `/api/app/v1/inquiry/valid_telephone_numbers`; expects `valid` key and proper status codes.
 - **TC-API-403** Health JSON: `/api/*/v1/health` returns `{ status: "OK" }`.
-- **TC-BFF-404** Preference email edit: hitting `/bff/app/preference/emails` retains locale/timezone query params normalized by `Regionalization` concern.
+- **TC-BFF-404** Preference email edit: hitting `/bff/app/preference/emails` retains locale/timezone query params normalized by the preference concerns.
 
 ### 7.6 Docs/News/Help health
 - **TC-DOC-501** GET `/` on docs/news hosts returns 200 with placeholder markup and hydration dataset.
@@ -154,7 +154,7 @@ This TS defines how the Rails-based Umaxica App (JIT) will be verified across ev
 ---
 
 ## 9. Tooling, Data, and Automation
-- **Tools**: Minitest, Rswag (future), Bun test, Playwright or Capybara, k6, curl scripts, Postman, Brakeman, Bundler Audit.
+- **Tools**: Minitest, Rswag (future), pnpm-run JS tests/tooling, Playwright or Capybara, k6, curl scripts, Postman, Brakeman, Bundler Audit.
 - **Fixtures**: Stored per DB context; use `ActiveRecord::FixtureSet.create_fixtures` per database connection. Sensitive examples anonymized.
 - **Data cleanup**: Multi-DB tests must wrap in transactions (Rails 8 multi-db test helpers) or rely on DatabaseCleaner configured per DB.
 - **Secrets**: Tests requiring Turnstile should use test keys; OTP mailers configure `letter_opener` in development/test.

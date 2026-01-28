@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   scope module: :docs, as: :docs do
     constraints host: ENV["DOCS_CORPORATE_URL"] do
@@ -5,9 +7,16 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1, defaults: { format: :json } do
+            resource :health, only: :show
+            resources :posts, only: [ :index, :show ] do
+              resources :versions, only: [ :index, :show ]
+            end
+            resources :tags, only: :index
+            resources :categories, only: :index
+          end
         end
       end
     end
@@ -17,9 +26,16 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1, defaults: { format: :json } do
+            resource :health, only: :show
+            resources :posts, only: [ :index, :show ] do
+              resources :versions, only: [ :index, :show ]
+            end
+            resources :tags, only: :index
+            resources :categories, only: :index
+          end
         end
       end
     end
@@ -30,9 +46,16 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1, defaults: { format: :json } do
+            resource :health, only: :show
+            resources :posts, only: [ :index, :show ] do
+              resources :versions, only: [ :index, :show ]
+            end
+            resources :tags, only: :index
+            resources :categories, only: :index
+          end
         end
       end
     end

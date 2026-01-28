@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Authorization policy for ComContact resources (Corporate contact inquiries)
 # Staff members handle contacts, users can only see their own
 class ComContactPolicy < ApplicationPolicy

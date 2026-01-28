@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateSolidQueueSchema < ActiveRecord::Migration[8.2]
   def change
     create_table :solid_queue_blocked_executions do |t|

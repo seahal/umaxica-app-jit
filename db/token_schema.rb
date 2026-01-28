@@ -10,49 +10,89 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_22_223000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_27_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
-  create_table "staff_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "staff_token_kinds", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "staff_token_statuses", id: { type: :string, limit: 255, default: "" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_staff_token_statuses_on_lower_id", unique: true
+    t.check_constraint "id IS NULL OR id::text = ''::text OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_token_statuses_id_format"
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "staff_token_statuses_id_format_check"
   end
 
   create_table "staff_tokens", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.datetime "compromised_at"
     t.datetime "created_at", null: false
     t.datetime "last_used_at"
-    t.string "public_id", limit: 21, null: false
+    t.string "public_id", limit: 21, default: "", null: false
     t.datetime "refresh_expires_at", null: false
-    t.string "refresh_token_digest"
+    t.binary "refresh_token_digest"
+    t.string "refresh_token_family_id"
+    t.integer "refresh_token_generation", default: 0, null: false
     t.datetime "revoked_at"
     t.datetime "rotated_at"
     t.uuid "staff_id", null: false
-    t.string "staff_token_status_id", default: "NONE", null: false
+    t.string "staff_token_kind_id", default: "BROWSER_WEB", null: false
+    t.string "staff_token_status_id", default: "NEYO", null: false
     t.datetime "updated_at", null: false
+    t.index ["compromised_at"], name: "index_staff_tokens_on_compromised_at"
     t.index ["public_id"], name: "index_staff_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_staff_tokens_on_refresh_expires_at"
+    t.index ["refresh_token_digest"], name: "index_staff_tokens_on_refresh_token_digest", unique: true
+    t.index ["refresh_token_family_id"], name: "index_staff_tokens_on_refresh_token_family_id"
     t.index ["revoked_at"], name: "index_staff_tokens_on_revoked_at"
+    t.index ["staff_id"], name: "index_staff_tokens_on_staff_id"
+    t.index ["staff_token_kind_id"], name: "index_staff_tokens_on_staff_token_kind_id"
+    t.index ["staff_token_status_id"], name: "index_staff_tokens_on_staff_token_status_id"
+    t.check_constraint "staff_token_status_id IS NULL OR staff_token_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_staff_tokens_staff_token_status_id_format"
   end
 
-  create_table "user_token_statuses", id: { type: :string, limit: 255, default: "NONE" }, force: :cascade do |t|
+  create_table "user_token_kinds", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_token_statuses", id: { type: :string, limit: 255, default: "" }, force: :cascade do |t|
+    t.index "lower((id)::text)", name: "index_user_token_statuses_on_lower_id", unique: true
+    t.check_constraint "id IS NULL OR id::text = ''::text OR id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_token_statuses_id_format"
+    t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "user_token_statuses_id_format_check"
   end
 
   create_table "user_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "compromised_at"
     t.datetime "created_at", null: false
     t.datetime "last_used_at"
-    t.string "public_id", limit: 21, null: false
+    t.string "public_id", limit: 21, default: "", null: false
     t.datetime "refresh_expires_at", null: false
-    t.string "refresh_token_digest"
+    t.binary "refresh_token_digest"
+    t.string "refresh_token_family_id"
+    t.integer "refresh_token_generation", default: 0, null: false
     t.datetime "revoked_at"
     t.datetime "rotated_at"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.string "user_token_status_id", default: "NONE", null: false
+    t.string "user_token_kind_id", default: "BROWSER_WEB", null: false
+    t.string "user_token_status_id", default: "NEYO", null: false
+    t.index ["compromised_at"], name: "index_user_tokens_on_compromised_at"
     t.index ["public_id"], name: "index_user_tokens_on_public_id", unique: true
     t.index ["refresh_expires_at"], name: "index_user_tokens_on_refresh_expires_at"
+    t.index ["refresh_token_digest"], name: "index_user_tokens_on_refresh_token_digest", unique: true
+    t.index ["refresh_token_family_id"], name: "index_user_tokens_on_refresh_token_family_id"
     t.index ["revoked_at"], name: "index_user_tokens_on_revoked_at"
+    t.index ["user_id"], name: "index_user_tokens_on_user_id"
+    t.index ["user_token_kind_id"], name: "index_user_tokens_on_user_token_kind_id"
+    t.index ["user_token_status_id"], name: "index_user_tokens_on_user_token_status_id"
+    t.check_constraint "user_token_status_id IS NULL OR user_token_status_id::text ~ '^[A-Z0-9_]+$'::text", name: "chk_user_tokens_user_token_status_id_format"
   end
 
+  add_foreign_key "staff_tokens", "staff_token_kinds"
   add_foreign_key "staff_tokens", "staff_token_statuses"
+  add_foreign_key "user_tokens", "user_token_kinds"
   add_foreign_key "user_tokens", "user_token_statuses"
 end

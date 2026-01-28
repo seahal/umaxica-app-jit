@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CloudflareTurnstile
   extend ActiveSupport::Concern
 
@@ -12,14 +14,14 @@ module CloudflareTurnstile
     def cloudflare_turnstile_validation
       # In test mode, return the mock response
       if CloudflareTurnstile.test_mode
+        Jit::Security::TurnstileVerifier.test_mode = true
+        Jit::Security::TurnstileVerifier.test_response = CloudflareTurnstile.test_validation_response
         return CloudflareTurnstile.test_validation_response || { "success" => true }
       end
 
-      res = Net::HTTP.post_form(URI.parse("https://challenges.cloudflare.com/turnstile/v0/siteverify"),
-                                { "secret" => Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SECRET_KEY),
-                                  "response" => params["cf-turnstile-response"],
-                                  "remoteip" => request.remote_ip })
-
-      JSON.parse(res.body)
+      Jit::Security::TurnstileVerifier.verify(
+        token: params["cf-turnstile-response"].to_s,
+        remote_ip: request.remote_ip,
+      )
     end
 end

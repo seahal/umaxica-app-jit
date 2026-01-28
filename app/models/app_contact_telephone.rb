@@ -1,6 +1,42 @@
-class AppContactTelephone < GuestsRecord
-  belongs_to :app_contact
+# frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: app_contact_telephones
+# Database name: guest
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
+#  expires_at             :timestamptz      not null
+#  remaining_views        :integer          default(0), not null
+#  telephone_number       :string(1000)     default(""), not null
+#  verifier_attempts_left :integer          default(0), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  app_contact_id         :uuid             not null
+#
+# Indexes
+#
+#  index_app_contact_telephones_on_app_contact_id       (app_contact_id)
+#  index_app_contact_telephones_on_expires_at           (expires_at)
+#  index_app_contact_telephones_on_telephone_number     (telephone_number)
+#  index_app_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (app_contact_id => app_contacts.id)
+#
+
+class AppContactTelephone < GuestRecord
+  belongs_to :app_contact, inverse_of: :app_contact_telephones
+
+  # Validations
+  validates :telephone_number, presence: true, length: { maximum: 1000 },
+                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+  validates :verifier_digest, length: { maximum: 255 }
   before_create :generate_id
   encrypts :telephone_number, deterministic: true
   # Bridge OTP helpers to stored verifier_* columns
@@ -8,13 +44,9 @@ class AppContactTelephone < GuestsRecord
   alias_attribute :otp_expires_at, :verifier_expires_at
   alias_attribute :otp_attempts_left, :verifier_attempts_left
 
-  # Validations
-  validates :telephone_number, presence: true,
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
-
   # Generate and store OTP
   def generate_otp!
-    raw_otp = SecureRandom.random_number(100000..999999).to_s # 6-digit OTP
+    raw_otp = SecureRandom.random_number(100_000..999_999).to_s # 6-digit OTP
     self.otp_digest = Argon2::Password.create(raw_otp)
     self.otp_expires_at = 10.minutes.from_now
     self.otp_attempts_left = 3

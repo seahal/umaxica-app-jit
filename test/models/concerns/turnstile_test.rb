@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class TurnstileTest < ActiveSupport::TestCase
@@ -9,6 +11,8 @@ class TurnstileTest < ActiveSupport::TestCase
   setup do
     @original_test_response = Turnstile.test_response
     Turnstile.test_response = nil
+    Jit::Security::TurnstileVerifier.test_mode = false
+    Jit::Security::TurnstileVerifier.test_response = nil
   end
 
   teardown do
@@ -57,7 +61,7 @@ class TurnstileTest < ActiveSupport::TestCase
   test "verify_turnstile returns missing response error" do
     result = DummyTurnstile.verify_turnstile(turnstile_response: nil, remote_ip: "127.0.0.1")
 
-    assert_equal DummyTurnstile.missing_response_error, result
+    assert_equal({ "success" => false, "error" => "missing cf-turnstile-response" }, result)
   end
 
   test "verify_turnstile returns missing secret error" do
@@ -67,9 +71,38 @@ class TurnstileTest < ActiveSupport::TestCase
     Rails.application.credentials.stub(:dig, nil) do
       result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
 
-      assert_equal DummyTurnstile.missing_secret_error, result
+      assert_equal({ "success" => false, "error" => "missing turnstile secret" }, result)
     end
   ensure
     ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"] = old_env
+  end
+
+  test "verify_turnstile returns error result on exception" do
+    Net::HTTP.stub(:post_form, ->(_uri, _params) { raise StandardError, "Network error" }) do
+      # Set a dummy secret so it doesn't fail on missing secret
+      ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"] = "dummy"
+      result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
+      assert_not result["success"]
+      assert_equal "Network error", result["error"]
+    end
+  ensure
+    ENV.delete("CLOUDFLARE_TURNSTILE_SECRET_KEY")
+  end
+
+  test "verify_turnstile returns parsed response on success" do
+    response = Struct.new(:body).new('{"success":true}')
+
+    Rails.application.credentials.stub(:dig, "secret") do
+      Net::HTTP.stub(:post_form, response) do
+        result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
+
+        assert_equal({ "success" => true }, result)
+      end
+    end
+  end
+
+  test "turnstile_error_message uses default when none provided" do
+    model = DummyTurnstile.new
+    assert_equal I18n.t("turnstile_error"), model.turnstile_error_message
   end
 end

@@ -1,8 +1,20 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: area_occurrence_statuses
+# Database name: occurrence
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+# Indexes
+#
+#  index_area_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
 require "test_helper"
 
 class AreaOccurrenceStatusTest < ActiveSupport::TestCase
-  include OccurrenceStatusTestHelper
-
   test "upcases id before validation" do
     assert_upcases_id(AreaOccurrenceStatus)
   end
@@ -35,9 +47,10 @@ class AreaOccurrenceStatusTest < ActiveSupport::TestCase
     assert_status_association(AreaOccurrenceStatus, :area_occurrences)
   end
 
-  test "expires_at default" do
-    record = AreaOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
-
-    assert_expires_at_default(record)
-  end
+  # expires_at column does not exist on area_occurrence_statuses table
+  # test "expires_at default" do
+  #   record = AreaOccurrenceStatus.new(id: "EXPIRES_AT_TEST")
+  #
+  #   assert_expires_at_default(record)
+  # end
 end

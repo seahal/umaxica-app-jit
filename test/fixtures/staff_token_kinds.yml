@@ -1,0 +1,16 @@
+# == Schema Information
+#
+# Table name: staff_token_kinds
+# Database name: token
+#
+#  id         :string           not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
+browser_web:
+  id: BROWSER_WEB
+client_ios:
+  id: CLIENT_IOS
+client_android:
+  id: CLIENT_ANDROID

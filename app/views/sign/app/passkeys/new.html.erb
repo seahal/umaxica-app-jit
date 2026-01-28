@@ -1,0 +1,120 @@
+<% title "Manage Passkey" %>
+
+<div class="flex flex-col items-center justify-center min-h-[60vh]">
+  <div class="w-full max-w-md p-8 bg-white dark:bg-zinc-900 rounded-3xl shadow-xl">
+    <h1 class="text-2xl font-bold mb-2 text-zinc-900 dark:text-white">Passkey Settings</h1>
+    <p class="text-sm text-zinc-500 mb-6">Domain: <code class="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded"><%= @current_host %></code></p>
+
+    <div id="passkey-status" class="mb-6">
+      <% if @passkey_exists %>
+        <p class="text-green-600 dark:text-green-400 mb-2">✅ Passkey is registered.</p>
+        <button id="register-btn" data-update="true" class="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors">
+          Update Passkey (Replace)
+        </button>
+        <button id="delete-btn" class="w-full mt-2 py-3 px-6 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 font-bold rounded-xl transition-colors">
+          Remove Passkey
+        </button>
+      <% else %>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-2">No passkey registered.</p>
+        <button id="register-btn" data-update="false" class="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors">
+          Register Passkey
+        </button>
+      <% end %>
+    </div>
+
+    <div id="message" class="text-sm font-mono mt-4 hidden"></div>
+  </div>
+</div>
+
+<script>
+  function showMessage(text, isError = false) {
+    const msg = document.getElementById('message');
+    if (msg) {
+      msg.textContent = text;
+      msg.className = `text-sm font-mono mt-4 block ${isError ? 'text-red-500' : 'text-zinc-500'}`;
+      msg.style.display = 'block';
+    }
+  }
+
+  function bufferDecode(value) {
+    return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+  }
+
+  function bufferEncode(value) {
+    return btoa(String.fromCharCode(...new Uint8Array(value)))
+      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+  }
+
+  const registerBtn = document.getElementById('register-btn');
+  if (registerBtn) {
+    registerBtn.addEventListener('click', async () => {
+      try {
+        showMessage("Getting options...");
+        const optionsRes = await fetch('/sign/passkey/options', { method: 'POST' });
+        if (!optionsRes.ok) throw new Error('Failed to get options');
+        const options = await optionsRes.json();
+
+        options.challenge = bufferDecode(options.challenge);
+        options.user.id = bufferDecode(options.user.id);
+        if (options.excludeCredentials) {
+          options.excludeCredentials.forEach(cred => {
+            cred.id = bufferDecode(cred.id);
+          });
+        }
+
+        showMessage("Waiting for user interaction...");
+        const credential = await navigator.credentials.create({ publicKey: options });
+
+        showMessage("Verifying...");
+        const body = {
+          id: credential.id,
+          rawId: bufferEncode(credential.rawId),
+          type: credential.type,
+          response: {
+            attestationObject: bufferEncode(credential.response.attestationObject),
+            clientDataJSON: bufferEncode(credential.response.clientDataJSON),
+          }
+        };
+
+        const isUpdate = registerBtn.dataset.update === 'true';
+        const method = isUpdate ? 'PATCH' : 'POST';
+        const url = '/sign/passkey';
+
+        const verifyRes = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        if (verifyRes.ok) {
+          showMessage("Success! Reloading...");
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          const err = await verifyRes.json();
+          throw new Error(err.error || 'Verification failed');
+        }
+      } catch (e) {
+        showMessage(e.message, true);
+        console.error(e);
+      }
+    });
+  }
+
+  const deleteBtn = document.getElementById('delete-btn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      if (!confirm("Are you sure?")) return;
+      try {
+        const res = await fetch('/sign/passkey', { method: 'DELETE' });
+        if (res.ok) {
+          window.location.reload();
+        } else {
+          const err = await res.json();
+          showMessage(err.error || "Failed to delete", true);
+        }
+      } catch (e) {
+        showMessage(e.message, true);
+      }
+    });
+  }
+</script>

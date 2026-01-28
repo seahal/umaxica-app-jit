@@ -1,11 +1,27 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_timeline_statuses
+# Database name: news
 #
-#  id :string           not null, primary key
+#  id         :string(255)      not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
-class AppTimelineStatus < BusinessesRecord
-  include UppercaseId
+# Indexes
+#
+#  index_app_timeline_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
 
-  has_many :app_timelines, dependent: :restrict_with_error, inverse_of: :app_timeline_status
+class AppTimelineStatus < NewsRecord
+  include StringPrimaryKey
+
+  has_many :app_timelines,
+           foreign_key: :status_id,
+           inverse_of: :app_timeline_status,
+           dependent: :restrict_with_error
+  validates :id, uniqueness: { case_sensitive: false }
+
+  validates :description, length: { maximum: 255 }
 end

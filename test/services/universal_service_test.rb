@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class UniversalServiceTest < ActiveSupport::TestCase
@@ -72,8 +74,8 @@ class UniversalServiceTest < ActiveSupport::TestCase
 
   # test "should integrate with multi-database architecture (placeholder)" do
   #   # Future implementation should test:
-  #   # - Integration with IdentitiesRecord
-  #   # - Integration with UniversalRecord
+  #   # - Integration with PrincipalRecord
+  #   # - Integration with OccurrenceRecord
   #   # - Database transaction coordination
   #   # - Data consistency across databases
   #

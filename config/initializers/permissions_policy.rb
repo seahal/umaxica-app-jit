@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # config/initializers/permissions_policy.rb
 
 Rails.application.config.permissions_policy do |policy|

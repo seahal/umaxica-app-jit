@@ -1,6 +1,45 @@
-class ComContactTelephone < GuestsRecord
-  belongs_to :com_contact
+# frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: com_contact_telephones
+# Database name: guest
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
+#  expires_at             :timestamptz      not null
+#  hotp_counter           :integer          default(0), not null
+#  hotp_secret            :string(255)      default(""), not null
+#  remaining_views        :integer          default(10), not null
+#  telephone_number       :string(1000)     default(""), not null
+#  verifier_attempts_left :integer          default(0), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  com_contact_id         :uuid             not null
+#
+# Indexes
+#
+#  index_com_contact_telephones_on_com_contact_id       (com_contact_id) UNIQUE
+#  index_com_contact_telephones_on_expires_at           (expires_at)
+#  index_com_contact_telephones_on_telephone_number     (telephone_number)
+#  index_com_contact_telephones_on_verifier_expires_at  (verifier_expires_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (com_contact_id => com_contacts.id)
+#
+
+class ComContactTelephone < GuestRecord
+  belongs_to :com_contact, inverse_of: :com_contact_telephone
+
+  # Validations
+  validates :telephone_number, presence: true, length: { maximum: 1000 },
+                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+  validates :verifier_digest, length: { maximum: 255 }
+  validates :com_contact_id, uniqueness: true
   before_create :generate_id
   encrypts :telephone_number, deterministic: true
   encrypts :hotp_secret
@@ -9,13 +48,9 @@ class ComContactTelephone < GuestsRecord
   alias_attribute :otp_expires_at, :verifier_expires_at
   alias_attribute :otp_attempts_left, :verifier_attempts_left
 
-  # Validations
-  validates :telephone_number, presence: true,
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
-
   # Generate and store OTP
   def generate_otp!
-    raw_otp = SecureRandom.random_number(100000..999999).to_s # 6-digit OTP
+    raw_otp = SecureRandom.random_number(100_000..999_999).to_s # 6-digit OTP
     self.otp_digest = Argon2::Password.create(raw_otp)
     self.otp_expires_at = 10.minutes.from_now
     self.otp_attempts_left = 3

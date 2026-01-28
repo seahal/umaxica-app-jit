@@ -1,13 +1,25 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  public_id: "EEEEEEEEEEEEEEEEEEEEE"
-  body: "email-body-one"
-  status_id: ACTIVE
-  memo: "Email occurrence one"
-
-two:
-  public_id: "FFFFFFFFFFFFFFFFFFFFF"
-  body: "email-body-two"
-  status_id: INACTIVE
-  memo: "Email occurrence two"
+# == Schema Information
+#
+# Table name: email_occurrences
+# Database name: occurrence
+#
+#  id         :uuid             not null, primary key
+#  body       :string(255)      default(""), not null
+#  expires_at :datetime         not null
+#  memo       :string(1024)     default(""), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  public_id  :string(21)       default(""), not null
+#  status_id  :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_email_occurrences_on_body        (body) UNIQUE
+#  index_email_occurrences_on_expires_at  (expires_at)
+#  index_email_occurrences_on_public_id   (public_id) UNIQUE
+#  index_email_occurrences_on_status_id   (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => email_occurrence_statuses.id)
+#

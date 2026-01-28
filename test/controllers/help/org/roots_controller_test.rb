@@ -1,6 +1,10 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
+  include RootThemeCookieHelper
+
   test "should get show" do
     get help_org_root_url
 
@@ -19,20 +23,21 @@ class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     get help_org_root_url
 
     assert_response :success
-    assert_select "a[href^=?]", new_help_org_contact_path
+    assert_select "a[href*=?]", "/contacts/new"
   end
 
   # rubocop:disable Minitest/MultipleAssertions
   test "renders expected layout structure" do
     get help_org_root_url
 
+    assert_layout_contract
     assert_select "head", count: 1 do
-      assert_select "title", count: 1, text: "#{brand_name} (org) Help Center"
+      assert_select "title", count: 1, text: /#{brand_name}.*\(org\) Help Center/
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do
       assert_select "header", count: 1 do
-        assert_select "h1", text: "#{brand_name} (help, org)"
+        assert_select "h1", text: /#{brand_name}.*\(org\)/
       end
       assert_select "main", count: 1
       assert_select "footer", count: 1 do
@@ -41,6 +46,21 @@ class Help::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  test "generates sha3-384 token digest on root" do
+    get help_org_root_url
+    assert_response :success
+    assert_equal 48, OrgPreference.order(:created_at).last.token_digest.bytesize
+  end
+
+  test "sets theme cookie" do
+    assert_theme_cookie_for(
+      host: "org.localhost",
+      path: :help_org_root_path,
+      label: "help org root",
+      ri: "jp",
+    )
+  end
 
   private
 

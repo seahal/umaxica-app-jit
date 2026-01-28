@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddPublicIdToTokens < ActiveRecord::Migration[8.2]
   def up
     add_column :user_tokens, :public_id, :string, limit: 21

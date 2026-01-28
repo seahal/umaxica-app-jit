@@ -1,13 +1,20 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class AuthorizationAuditTest < ActiveSupport::TestCase
-  class DummyPolicy; end
+  class DummyPolicy
+    def initialize
+    end
+  end
 
   class DummyAudit
+    # rubocop:disable Layout/ClassStructure
     def self.rescue_from(*)
     end
 
     include AuthorizationAudit
+    # rubocop:enable Layout/ClassStructure
 
     attr_accessor :current_user, :current_staff, :request, :action_name, :controller_name
 
@@ -20,11 +27,17 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
       @flash = {}
     end
 
+    attr_reader :redirected_to, :rendered
+
     def flash
       @flash
     end
 
     def redirect_back_or_to(path)
+      @redirected_to = path
+    end
+
+    def redirect_to(path, **_options)
       @redirected_to = path
     end
 
@@ -51,8 +64,6 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
 
       yield format
     end
-
-    attr_reader :redirected_to, :rendered
   end
 
   test "current_user_or_staff prefers current_user" do
@@ -172,11 +183,11 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     exception = build_exception(record: users(:two))
     audit = DummyAudit.new(current_user: user)
 
-    assert_difference "UserIdentityAudit.count", 1 do
+    assert_difference "UserAudit.count", 1 do
       audit.send(:log_authorization_failure, exception)
     end
 
-    record = UserIdentityAudit.last
+    record = UserAudit.last
     assert_equal user, record.user
     assert_equal "AUTHORIZATION_FAILED", record.event_id
   end
@@ -186,11 +197,11 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     exception = build_exception(record: staff)
     audit = DummyAudit.new(current_staff: staff)
 
-    assert_difference "StaffIdentityAudit.count", 1 do
+    assert_difference "StaffAudit.count", 1 do
       audit.send(:log_authorization_failure, exception)
     end
 
-    record = StaffIdentityAudit.last
+    record = StaffAudit.last
     assert_equal staff, record.staff
     assert_equal "AUTHORIZATION_FAILED", record.event_id
   end
@@ -203,8 +214,15 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     # We need to stub respond_to to only execute html block to simulate html request
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
-      def format.html; yield; end
-      def format.json; end # Do nothing for json
+
+      def format.html
+        yield
+      end
+
+      def format.json
+      end
+
+      # Do nothing for json
       block.call(format)
     end
 
@@ -222,8 +240,16 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
     # We need to stub respond_to to only execute json block to simulate json request
     audit.define_singleton_method(:respond_to) do |&block|
       format = OpenStruct.new
-      def format.html; end # Do nothing for html
-      def format.json; yield; end
+
+      def format.html
+      end
+
+      # Do nothing for html
+
+      def format.json
+        yield
+      end
+
       block.call(format)
     end
 
@@ -251,11 +277,12 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
         result[:log_data] = log_data
       end
 
-      notifier = Struct.new(:events) do
-        def notify(name, payload)
-          events << [ name, payload ]
+      notifier =
+        Struct.new(:events) do
+          def notify(name, payload)
+            events << [ name, payload ]
+          end
         end
-      end
 
       Rails.stub(:event, notifier.new(result[:events])) do
         audit.send(:log_authorization_failure, exception)

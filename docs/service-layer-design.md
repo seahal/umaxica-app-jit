@@ -75,11 +75,11 @@ storage        - ファイルストレージメタデータ
    end
    ```
 
-2. **UniversalRecord** (Universal データベース)
+2. **OccurrenceRecord** (Occurrence データベース)
    ```ruby
-   class UniversalRecord < ApplicationRecord
+   class OccurrenceRecord < ApplicationRecord
      self.abstract_class = true
-     connects_to database: { writing: :universal, reading: :universal_replica }
+     connects_to database: { writing: :occurrence, reading: :occurrence_replica }
    end
    ```
 
@@ -136,11 +136,11 @@ end
 
 ```ruby
 # Universal データベース - OTP 用
-class UniversalUserIdentity < UniversalRecord
+class UniversalUserIdentity < OccurrenceRecord
   self.table_name = "universal_user_identifiers"
 end
 
-class UniversalStaffIdentity < UniversalRecord
+class UniversalStaffIdentity < OccurrenceRecord
   self.table_name = "universal_staff_identifiers"
 end
 ```
@@ -327,9 +327,9 @@ end
 ### 関連ファイル
 
 - モデル: `app/models/user.rb`, `app/models/staff.rb`
-- Base クラス: `app/models/identities_record.rb`, `app/models/universal_record.rb`, `app/models/profiles_record.rb`
+- Base クラス: `app/models/identities_record.rb`, `app/models/occurrence_record.rb`, `app/models/profiles_record.rb`
 - データベース設定: `config/database.yml`
-- マイグレーション: `db/identity_migrate/`, `db/universal_migrate/`, `db/profile_migrate/`
+- マイグレーション: `db/identity_migrate/`, `db/occurrences_migrate/`, `db/profile_migrate/`
 
 ## まとめ
 

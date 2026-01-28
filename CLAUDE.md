@@ -2,433 +2,373 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Architecture Overview
+## Project Overview
 
-This is a Rails 8.0 application with a sophisticated multi-domain, multi-database architecture:
-
-### Domain Structure
-アプリケーションは複数のエンドポイントで構成され、各エンドポイントが3つのドメイン(com/app/org)を持ちます:
-
-- **APEX** (旧TOP): トップページとプリファレンス管理
-  - `PEAK_CORPORATE_URL` (com): コーポレートサイトトップ
-  - `PEAK_SERVICE_URL` (app): サービスアプリトップ
-  - `PEAK_STAFF_URL` (org): スタッフ管理画面トップ
-
-- **SIGN**: 認証・登録・ログイン・退会
-  - `AUTH_SERVICE_URL` (app): ユーザー認証ページ（完全実装済み）
-  - `AUTH_STAFF_URL` (org): スタッフ認証ページ（基本機能のみ、認証フロー未実装）
-  - WebAuthn, TOTP, Apple/Google OAuth対応
-
-- **BACK** (旧BFF): Backend for Frontend
-  - `CORE_CORPORATE_URL` (com): クライアント向けBFF
-  - `CORE_SERVICE_URL` (app): サービス向けBFF
-  - `CORE_STAFF_URL` (org): スタッフ向けBFF
-
-- **HELP**: ヘルプ・問い合わせページ
-  - `HELP_CORPORATE_URL`, `HELP_SERVICE_URL`, `HELP_STAFF_URL`
-
-- **DOCS**: ドキュメントページ
-  - `DOCS_CORPORATE_URL`, `DOCS_SERVICE_URL`, `DOCS_STAFF_URL`
-
-- **NEWS**: ニュースページ
-  - `NEWS_CORPORATE_URL`, `NEWS_SERVICE_URL`, `NEWS_STAFF_URL`
-
-### Multi-Database Setup
-The application uses 10 separate PostgreSQL databases with primary/replica configurations:
-
-**マイグレーション管理されているDB** (migration paths: `db/{database_name}_migrate/`):
-- `universal` (universals_migrate) - Universal identifiers and user data
-- `identity` (identities_migrate) - Authentication and identity management
-- `guest` (guests_migrate) - Guest contact information and communication
-- `profile` (profiles_migrate) - User profiles and preferences
-- `token` (tokens_migrate) - Session and authentication tokens
-- `business` (businesses_migrate) - Business logic and entities
-- `speciality` (specialities_migrate) - Domain-specific features
-- `primary` (migrate) - Primary database
-
-**スキーマのみ管理されているDB** (schema files exist, no migration directory):
-- `notification` (notification_schema.rb) - Notification management
-- `cache` (cache_schema.rb) - Application caching (Solid Cache)
-- `queue` (queue_schema.rb) - Background job queue (Solid Queue)
-- `storage` (storage_schema.rb) - File storage metadata
-
-**注意**:
-- 各データベースは`config/database.yml`でプライマリ/レプリカペアとして構成されています
-- データベース接続名: `{db_name}` (primary), `{db_name}_replica` (replica)
-- ドキュメントに記載されていた`message`データベースは実際には存在しません
-
-### Controller Organization
-Controllers are organized by endpoint module and domain:
-- `app/controllers/apex/{com,app,org}/` - トップページコントローラー
-- `app/controllers/sign/{app,org}/` - 認証・登録コントローラー
-- `app/controllers/back/{com,app,org}/` - BFFコントローラー
-- `app/controllers/help/{com,app,org}/` - ヘルプ・問い合わせコントローラー
-- `app/controllers/docs/{com,app,org}/` - ドキュメントコントローラー
-- `app/controllers/news/{com,app,org}/` - ニュースコントローラー
-- `app/controllers/concerns/` - 共通コントローラーロジック
-- `app/controllers/{endpoint}/concerns/` - エンドポイント固有のConcerns
-
-### Key Technologies
-- **Authentication**: WebAuthn, TOTP, Apple/Google OAuth, recovery codes
-- **Authorization**: Pundit
-- **Background Jobs**: Solid Queue (DB-based queue), Karafka (Kafka-based, currently disabled)
-- **Frontend**: Rails with Bun.js for asset bundling
-- **File Uploads**: Shrine + Active Storage with Google Cloud Storage
-- **Security**: Rack::Attack for rate limiting, argon2 for password hashing
-- **Monitoring**: OpenTelemetry instrumentation
-- **Logging**: Structured logging with Rails.event (ActiveSupport::Notifications)
+**Umaxica App (JIT)** is a Rails 8 monolithic web application serving as a comprehensive identity, authentication, and communication platform. The application serves multiple business domains (corporate, service, staff) through a single codebase using namespace isolation.
 
 ## Development Commands
 
-### Setup and Dependencies
+### Setup
 ```bash
-# Install Ruby dependencies
+# Start Docker infrastructure (PostgreSQL, Valkey, Kafka, monitoring stack)
+docker compose up
+
+# Install dependencies
 bundle install
+pnpm install
 
-# Install JavaScript dependencies (requires Bun)
-bun install
+# Database setup (create, migrate, seed)
+bin/rails db:prepare
 
-# Database setup (requires Docker Compose)
-docker compose up -d  # Start PostgreSQL containers
-bundle exec rails db:create
-bundle exec rails db:migrate
-```
-
-### Development Server
-```bash
-# Start all services (web server, asset building)
-foreman start -f Procfile.dev
-
-# Or individually:
-bundle exec rails server -p 3000 -b '0.0.0.0'
-bun run build --watch
-# bundle exec karafka server  # 現在は無効化されています
+# Start development server (web, CSS, background jobs)
+bin/dev
 ```
 
 ### Testing
 ```bash
-# Run all tests
+# Run full test suite (parallelized)
 bundle exec rails test
+
+# Run tests with coverage (SimpleCov)
+COVERAGE=true bin/rails test
 
 # Run specific test file
 bundle exec rails test test/models/user_test.rb
 
-# Run tests for specific controller
-bundle exec rails test test/controllers/sign/app/authentications_controller_test.rb
-
-# Continuous testing with Guard
-bundle exec guard
+# Run single test by line number
+bundle exec rails test test/models/user_test.rb:42
 ```
 
-### Code Quality
+### Linting & Formatting
 ```bash
-# Ruby linting
+# Ruby style checks
 bundle exec rubocop
-bundle exec rubocop --fix
+
+# Auto-fix Ruby style issues
+bundle exec rubocop -a
 
 # ERB template linting
-bundle exec erb_lint app/views/
+bundle exec erb_lint .
 
-# JavaScript/TypeScript linting and formatting
-bun run lint
-bun run format
-bun run type
-
-# Security scanning
-bundle exec brakeman
-bundle exec bundler-audit
+# JavaScript/TypeScript formatting and linting (Biome)
+pnpm run check
 ```
 
 ### Database Operations
 ```bash
-# Create migration for specific database (use the database key name from database.yml)
-bundle exec rails generate migration CreateUsers --database=identity
+# Create databases
+bin/rails db:create
 
-# Run migrations for specific database
-bundle exec rails db:migrate:identity
+# Run migrations
+bin/rails db:migrate
 
-# Run all database migrations
-bundle exec rails db:migrate
+# Rollback last migration
+bin/rails db:rollback
 
-# Reset all databases
-bundle exec rails db:drop db:create db:migrate
+# Reset database (drop, create, migrate, seed)
+bin/rails db:reset
 
-# 注意: データベース名は database.yml のキー名を使用
-# 例: identity, universal, guest, profile, token, business, speciality
+# View pending TODOs and deployment tasks
+bin/rails notes
 ```
 
-## Structured Logging
+### Asset Management
+```bash
+# Clear compiled assets
+bin/rails assets:clobber
 
-このアプリケーションは構造化ログを使用しています。従来の`Rails.logger.info`ではなく、`Rails.event`（ActiveSupport::Notifications）を使用してログを出力します。
+# Watch and compile Tailwind CSS
+bin/rails tailwindcss:watch
+```
 
-### 構造化ログの利点
-- **解析可能**: ログがJSON形式で構造化され、ログ集約ツールで簡単に検索・分析可能
-- **コンテキスト情報**: リクエストID、ユーザーID、セッション情報などを自動的に含む
-- **一貫性**: すべてのログが同じフォーマットに従う
-- **OpenTelemetry統合**: トレーシングとログが自動的に関連付けられる
+## Architecture & Design Patterns
 
-### Rails.eventの使い方
+### Namespace Isolation Strategy
 
-#### 基本的な使用方法
+The application uses **namespace isolation** to serve multiple hosts from a single Rails application. Each public host maps to dedicated controller namespaces:
+
+- **Apex** (`Top::Com/App/Org`) - Marketing and preference management (www.umaxica.{com,app,org})
+- **Sign** (`Sign::App/Org`) - Identity and authentication services (sign.umaxica.{app,org})
+- **Core** (`Core::*`) - Regional edge endpoints and API (a{jp,us}.umaxica.net)
+- **Help** (`Help::Com/App/Org`) - Contact and support forms
+- **Docs** (`Docs::*`) - Documentation platform
+- **News** (`News::*`) - Newsroom
+
+Routes are organized in separate files under `config/routes/` and drawn in `config/routes.rb` using `draw :namespace`.
+
+### Multi-Database Architecture
+
+The application uses **multiple PostgreSQL databases** to isolate data by domain, with primary/replica support:
+
+| Base Class | Databases | Purpose |
+|------------|-----------|---------|
+| `IdentitiesRecord` | identity, identity_replica | Users, staff, authentication |
+| `GuestRecord` | guest, guest_replica | Anonymous contacts |
+| `OccurrenceRecord` | occurrence, occurrence_replica | OTPs, identifiers |
+| `TokensRecord` | token, token_replica | JWT tokens, sessions |
+| `ProfilesRecord` | profile, profile_replica | User preferences |
+| `BusinessesRecord` | business, business_replica | Business data |
+
+Models inherit from the appropriate base class to target specific databases. All tables use **UUIDv7 primary keys** for time-ordered inserts.
+
+### Authentication Architecture
+
+The application supports multiple authentication methods:
+
+1. **WebAuthn (Passkeys)** - FIDO2 passkeys via webauthn gem
+   - Challenge/verify endpoints in `Sign::App::Setting::PasskeysController`
+   - Challenges stored in session, credentials in `UserPasskey` model
+
+2. **JWT (Token-based)** - For native mobile apps
+   - Handled via `Authn` concern (`generate_access_token`, `log_in`, `log_out`)
+   - Access/refresh tokens stored as secure cookies
+
+3. **OTP (One-Time Password)** - Email and SMS verification
+   - HOTP tokens generated via ROTP gem
+   - `AwsSmsService` handles SMS delivery (AWS SNS, Infobip, test driver)
+
+4. **TOTP (Time-based OTP)** - Authenticator apps
+   - QR code generation via RQRCode
+   - Encrypted secrets in `TimeBasedOneTimePassword` model
+
+5. **OAuth** - Social login (Google, Apple)
+   - OmniAuth integration
+
+All authentication flows reset sessions and validate bot mitigation (Cloudflare Turnstile).
+
+### Shared Concerns
+
+Cross-cutting functionality lives in controller concerns under `app/controllers/concerns/`:
+
+- `Auth::Base`, `Auth::User`, `Auth::Staff` - Authentication logic
+- `PreferenceRegions` - Language, region, timezone preferences
+- `Theme` - Dark/light/system theme management
+- `Cookie` - ePrivacy cookie consent
+- `Redirect` - Safe redirect validation
+- `OTP` - One-time password flows
+- `CSRF` - CSRF token handling
+- `CloudflareTurnstile` - Bot mitigation
+- `SessionLimitGate` - Concurrent session limits
+- `WebAuthn::Config`, `WebAuthn::SessionChallenge` - Passkey flows
+- `RateLimit` - Rate limiting via Rack::Attack
+
+### Service Layer
+
+Business logic is encapsulated in service objects under `app/services/`:
+
+- `AccountService` - Account lifecycle management
+- `SocialAuthService` - OAuth flow orchestration
+- `AwsSmsService` - SMS delivery provider abstraction
+- `AvatarService` - Profile picture management
+- `TaxonomyBuilder` - Category/tag management
+- `TokenEmergencyService` - Emergency token recovery
+- `DocumentVersionWriter`, `TimelineVersionWriter` - Versioning logic
+
+## Configuration & Environment
+
+### Critical Environment Variables
+
+The application is **heavily environment-driven**. Key variables:
+
+```bash
+# WebAuthn configuration (REQUIRED for all Rails commands)
+TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000
+
+# Host mappings (examples)
+TOP_CORPORATE_URL=https://www.umaxica.com
+TOP_SERVICE_URL=https://www.umaxica.app
+AUTH_SERVICE_URL=https://sign.umaxica.app
+
+# Database URLs for each cluster
+DATABASE_URL=postgresql://...
+IDENTITY_DATABASE_URL=postgresql://...
+GUEST_DATABASE_URL=postgresql://...
+# (and more for token, profile, business, etc.)
+
+# Redis/Valkey
+VALKEY_HOST_PORT=56379
+
+# Kafka/Karafka
+KAFKA_BROKERS=localhost:9092
+```
+
+See `docker/core/env` for local development defaults.
+
+### Important Configuration Files
+
+- `config/database.yml` - Multi-database configuration with primary/replica support
+- `config/initializers/` - 26+ initializers including:
+  - `webauthn.rb` - WebAuthn/FIDO2 configuration
+  - `omniauth.rb` - OAuth strategy configuration
+  - `jwt.rb` - JWT token settings
+  - `opentelemetry.rb` - Observability instrumentation
+  - `rack_attack.rb` - Rate limiting rules
+  - `session_store.rb` - Session configuration
+  - `cors.rb` - CORS policy
+- `karafka.rb` - Kafka consumer configuration
+- `Procfile.dev` - Foreman process definitions (web, css, job worker)
+
+## Logging & Observability
+
+The application uses **structured logging** via ActiveSupport::Notifications:
+
 ```ruby
-# イベントの発行
-Rails.event.notify("user.login", user_id: user.id, ip_address: request.remote_ip)
+# DO use Rails.event for structured logging
+Rails.event.record("event.name", { key: "value" })
+Rails.event.error("error.message", error: exception)
 
-# エラーイベント（errorメソッドは存在しないため、notifyを使用）
-Rails.event.notify("authentication.failed",
-  error_class: error.class.name,
-  error_message: error.message,
-  user_id: user&.id
-)
-
-# デバッグモードのみでログ出力
-Rails.event.debug("api.request",
-  endpoint: request.path,
-  method: request.method,
-  params: filtered_params
-)
+# DON'T use Rails.logger for application logs
+Rails.logger.info "Something happened"  # Avoid this
 ```
 
-#### イベント名の命名規則
-イベント名は `{domain}.{action}` の形式を使用:
-- `user.login`, `user.logout` - ユーザー認証関連
-- `staff.login`, `staff.logout` - スタッフ認証関連
-- `api.request`, `api.response` - APIリクエスト関連
-- `database.query` - データベースクエリ関連
-- `job.enqueue`, `job.perform` - バックグラウンドジョブ関連
-- `security.rate_limit`, `security.suspicious_activity` - セキュリティ関連
+Logs are machine-parseable and flow to Loki. OpenTelemetry instrumentation sends traces to Tempo.
 
-#### コントローラーでの使用例
-```ruby
-class Sign::App::AuthenticationsController < Sign::App::BaseController
-  def create
-    user = authenticate_user(params)
+Health check endpoints exist for all namespaces: `/health` and `/v1/health`
 
-    if user
-      Rails.event.notify("user.login.success",
-        user_id: user.id,
-        authentication_method: params[:method],
-        ip_address: request.remote_ip,
-        user_agent: request.user_agent
-      )
-      redirect_to root_path
-    else
-      Rails.event.notify("user.login.failed",
-        email: params[:email],
-        reason: "invalid_credentials",
-        ip_address: request.remote_ip
-      )
-      render :new, status: :unauthorized
-    end
-  end
-end
+## Security Practices
+
+### Defense in Depth
+
+- **Session Security** - Signed cookies, JWT tokens, session limits
+- **CSRF Protection** - Token validation on state-changing requests
+- **Bot Mitigation** - Cloudflare Turnstile integration
+- **Rate Limiting** - Rack::Attack (1,000 req/hour per client default)
+- **Encryption** - Active Record encryption for sensitive columns
+- **Password Hashing** - Argon2 and Bcrypt
+- **Modern Browsers Only** - `allow_browser versions: :modern` enforced
+- **Input Validation** - Strong params, model validations
+- **Secret Scanning** - git-secrets via Lefthook pre-commit hooks
+
+### Credentials Management
+
+```bash
+# Edit credentials (requires master key)
+bin/rails credentials:edit
+
+# Credentials key is shared separately (not in git)
+# Cryptographic keys stored in Cloud KMS
 ```
 
-#### モデルでの使用例
-```ruby
-class User < UniversalRecord
-  after_create do
-    Rails.event.notify("user.created",
-      user_id: id,
-      email: email,
-      registration_method: registration_method
-    )
-  end
+## Frontend Architecture
 
-  def perform_sensitive_action
-    Rails.event.notify("user.sensitive_action",
-      user_id: id,
-      action: "data_export",
-      timestamp: Time.current
-    )
+### Asset Pipeline
 
-    # アクション実行
-  rescue StandardError => e
-    Rails.event.notify("user.action_failed",
-      user_id: id,
-      action: "data_export",
-      error_class: e.class.name,
-      error_message: e.message,
-      backtrace: e.backtrace.first(5)
-    )
-    raise
-  end
-end
-```
+- **Propshaft** - Modern asset pipeline (no Sprockets)
+- **Import Maps** - ESM imports without bundlers
+- **Tailwind CSS** - Utility-first CSS framework
+- **Stimulus** - Lightweight JavaScript framework
+- **Turbo** - AJAX/SPA-like navigation with morphdom
+- **Biome** - Fast JavaScript linter/formatter
 
-#### バックグラウンドジョブでの使用例
-```ruby
-class UserNotificationJob < ApplicationJob
-  def perform(user_id, notification_type)
-    Rails.event.notify("job.started",
-      job_class: self.class.name,
-      user_id: user_id,
-      notification_type: notification_type
-    )
+### JavaScript Organization
 
-    # ジョブ実行
+Entry point: `app/javascript/application.js`
 
-    Rails.event.notify("job.completed",
-      job_class: self.class.name,
-      user_id: user_id,
-      duration: duration
-    )
-  end
-end
-```
+View-specific scripts organized under `app/javascript/views/`:
+- `views/sign/app/application.ts` - Sign-in flows
+- `views/passkey.js` - WebAuthn integration
+- `views/www/**` - Marketing site interactions
 
-### 重要な注意事項
-- **機密情報を含めない**: パスワード、トークン、クレジットカード番号などをログに出力しない
-- **正しいメソッド**: `Rails.event.notify`を使用（`record`や`error`メソッドは存在しない）
-- **デバッグ用**: デバッグモードのみでログ出力する場合は`Rails.event.debug`を使用
-- **従来のロガーは使わない**: `Rails.logger.info`の代わりに`Rails.event.notify`を使用
-- **パフォーマンス**: 大量のデータをログに出力する場合は注意（必要な情報のみ）
+Stimulus controllers in `app/javascript/controllers/`
 
-## Key Patterns
+## Testing Strategy
 
-### Model Concerns
-Shared model logic is in `app/models/concerns/`:
-- `Email` - Email validation and normalization
-- `Telephone` - Phone number handling
-- `SetId` - ID generation patterns
-- `RecoverCode` - Recovery code management
+### Test Organization
 
-### Authentication Flow
-- Multi-factor authentication with WebAuthn, TOTP, recovery codes
-- Social login via Apple/Google OAuth
-- Session management across multiple domains
-- Email/telephone verification workflows
+Tests organized by layer:
+- `test/models/` - Model unit tests
+- `test/controllers/` - Controller integration tests
+- `test/services/` - Service object tests
+- `test/policies/` - Pundit authorization tests
+- `test/integration/` - End-to-end tests
+- `test/fixtures/` - Test data
 
-### Database Connections
-Models inherit from database-specific base classes:
-- `UniversalRecord` - Universal database
-- `IdentityRecord` - Identity database (認証・識別情報)
-- `GuestRecord` - Guest database (ゲスト連絡情報)
-- `ProfileRecord` - Profile database (ユーザープロフィール)
-- `TokenRecord` - Token database (セッション・認証トークン)
-- `BusinessRecord` - Business database (ビジネスロジック)
-- `SpecialityRecord` - Speciality database (特殊機能)
-- `NotificationRecord` - Notification database (通知管理)
-- `CacheRecord` - Cache database (Solid Cache用)
-- `QueueRecord` - Queue database (Solid Queue用)
-- `StorageRecord` - Storage database (ストレージメタデータ)
+### Test Configuration
 
-### View Components
-Uses ViewComponent gem for reusable UI components. Components are in `app/components/`.
+- Framework: **Minitest** (Rails default)
+- Coverage: **SimpleCov** with branch coverage enabled
+- Database: Transactional tests (can disable with `SKIP_DB=1`)
+- Tools: Test Prof (profiling), Prosopite (N+1 detection), Committee (OpenAPI contracts)
 
-### Route Organization
-Routes are split by endpoint in `config/routes/`:
-- `apex.rb` - トップページルート (com/app/org)
-- `sign.rb` - 認証・登録ルート (app/org)
-- `back.rb` - BFFルート (com/app/org)
-- `help.rb` - ヘルプ・問い合わせルート (com/app/org)
-- `docs.rb` - ドキュメントルート (com/app/org)
-- `news.rb` - ニュースルート (com/app/org)
+Coverage reports generated in `coverage/` directory.
 
-各ルートファイルは、ホスト制約(`constraints host:`)で3つのドメイン(com/app/org)に分岐し、
-それぞれに対応するコントローラーモジュールにルーティングします。
+## Development Environment Limitations
 
-#### 主要なルート構成
+**Subdomain Cookie Limitation**: In development using `localhost`, cookies cannot be shared across subdomains (e.g., between `app.localhost:3000` and `help.app.localhost:3000`) due to browser security restrictions. This does not affect test or production environments. Consider using `.test` domain with `/etc/hosts` for subdomain cookie sharing.
 
-**APEX** (`config/routes/apex.rb`):
-- `root` - トップページ (`roots#index`)
-- `resource :health` - ヘルスチェック
-- `namespace :v1` - API v1エンドポイント
-- `resource :preference` - プリファレンス表示
-- `resource :privacy` - プライバシー表示
-- `namespace :privacy` - Cookie設定
-- `namespace :preference` - Region, Locale, Theme, Reset設定
-- `resource :configuration` (appのみ) - 設定表示
-- `namespace :configuration` - Email設定 (appのみ)
+## Deployment & Infrastructure
 
-**SIGN** (`config/routes/sign.rb`):
-- **app** (完全実装):
-  - `root` - サインページトップ
-  - `resource :registration` - ユーザー登録
-    - `resources :emails` - メールアドレス登録
-    - `resources :telephones` - 電話番号登録
-    - `resources :googles` - Google OAuth登録
-  - `resource :authentication` - 認証・ログイン
-    - `resource :email`, `resource :telephone` - メール/電話認証
-    - `resource :apple`, `resource :google` - OAuth認証
-  - `namespace :oauth` - OAuthコールバック処理
-    - `apple/callback`, `google/callback`
-  - `resource :withdrawal` - 退会処理
-  - `resource :setting` - ログインユーザー設定
-    - `resources :passkeys` - WebAuthn設定
-    - `resources :totps` - TOTP設定
-    - `resources :secrets` - リカバリーコード管理
-- **org** (基本機能のみ):
-  - `root` - サインページトップ
-  - `resource :registration` - スタッフ登録（基本のみ）
-    - `resources :emails`, `resources :telephones`
-  - `resource :authentication` - 認証（newのみ）
-  - `namespace :setting` - 設定
-    - `resources :passkeys`, `resources :secrets`
-  - `resource :withdrawal` - 退会処理
+### Docker Compose Stack
 
-**BACK** (`config/routes/back.rb`):
-- `root` - BFFトップ
-- `resource :health` - ヘルスチェック
-- `namespace :v1` - API v1
-- `resource :preference` - プリファレンス (app/orgのみ)
-- `namespace :preference` - Email設定 (app/orgのみ)
+The `compose.yml` defines local infrastructure:
+- **PostgreSQL 18** (primary + replica)
+- **Valkey 8.0** (Redis-compatible)
+- **Kafka + Zookeeper** (message streaming)
+- **SeaweedFS** (S3-compatible storage)
+- **Grafana, Loki, Tempo** (observability stack)
 
-**HELP** (`config/routes/help.rb`):
-- `root` - ヘルプトップ
-- `resource :health` - ヘルスチェック
-- `resources :contacts` - 問い合わせ
-  - `scope module: :contact`:
-    - `resource :email` - メール問い合わせ
-    - `resource :telephone` - 電話問い合わせ
+### Cloud Platforms
 
-**DOCS** / **NEWS** (`config/routes/docs.rb` / `news.rb`):
-- `root` - ドキュメント/ニューストップ
-- `resource :health` - ヘルスチェック
-- `namespace :v1` - API v1
+- **Google Cloud** - Cloud Run, Cloud Build, Cloud Storage, Artifact Registry
+- **Cloudflare** - R2 storage, CDN, Tunnel, Turnstile
+- **Fastly** - CDN and edge caching
+- **AWS** - SNS (SMS), Connect, Polly, SES (email)
 
-## Environment Variables
+### Infrastructure as Code
 
-Key environment variables required:
+Terraform manages infrastructure. Lefthook pre-commit hooks include:
+- YAML formatting (yamlfmt)
+- Terraform linting (tflint)
+- Dockerfile linting (hadolint)
+- Secret scanning (git-secrets)
 
-### Domain URLs (各エンドポイント × 3ドメイン)
-- `PEAK_CORPORATE_URL`, `PEAK_SERVICE_URL`, `PEAK_STAFF_URL`
-- `AUTH_SERVICE_URL`, `AUTH_STAFF_URL` (AUTHはcomなし)
-- `CORE_CORPORATE_URL`, `CORE_SERVICE_URL`, `CORE_STAFF_URL`
-- `HELP_CORPORATE_URL`, `HELP_SERVICE_URL`, `HELP_STAFF_URL`
-- `DOCS_CORPORATE_URL`, `DOCS_SERVICE_URL`, `DOCS_STAFF_URL`
-- `NEWS_CORPORATE_URL`, `NEWS_SERVICE_URL`, `NEWS_STAFF_URL`
+## Common Patterns
 
-### Database Settings
-- `POSTGRESQL_USER`, `POSTGRESQL_PASSWORD` - DB認証情報
-- `POSTGRESQL_*_PUB`, `POSTGRESQL_*_SUB` - 各DBのプライマリ/レプリカホスト
-  - 例: `POSTGRESQL_UNIVERSAL_PUB`, `POSTGRESQL_UNIVERSAL_SUB`
+### Creating a New Controller Namespace
 
-### Application Settings
-- `RAILS_MAX_THREADS` - Threading configuration
-- `RACK_ATTACK_API_KEY` - API key for Rack::Attack authentication
+1. Add route file in `config/routes/namespace.rb`
+2. Draw it in `config/routes.rb` with `draw :namespace`
+3. Create controller under `app/controllers/namespace/`
+4. Add views under `app/views/namespace/`
+5. Add host constraint and URL environment variable
+6. Add helper module in `app/helpers/namespace/`
 
-## Important Notes
+### Adding a New Database Cluster
 
-- Always run `bundle install` after pulling changes due to frequent gem updates
-- Use domain-specific controllers and routes - check the constraint blocks in routes
-- Database migrations must specify the correct database with `--database` flag
-- Test files follow the endpoint/domain structure: `test/controllers/{endpoint}/{domain}/{version}/`
-  - 例: `test/controllers/apex/app/`, `test/controllers/sign/app/`
-- Asset compilation uses Bun - ensure Bun is installed locally
-- The application expects Docker Compose for local database setup
-- **注意**: 実際のコントローラー構造とルートファイル名は `apex`, `back` を使用（環境変数は従来の命名を維持）
+1. Create base class inheriting from `ApplicationRecord` (e.g., `XyzRecord`)
+2. Configure `connects_to` with primary and replica
+3. Add database URLs to `config/database.yml`
+4. Create migrations under `db/xyz_migrate/`
+5. Update `db:prepare` and `db:migrate` tasks
 
-### 禁止事項
-- `.env`ファイルの作成・変更
-- `node_modules`内のファイル編集
-- テストを実行せずにコミット
-- 承認なしでのPRマージ
-- test/test_helper.rb の操作は駄目です。
-- config/ の操作は許可を取ること。
+### Working with Preferences
 
-### コーディング規約
-- **ログ出力**: 従来の`Rails.logger.info`は使用せず、必ず`Rails.event.notify`を使用する
-- **構造化ログ**: すべてのログは構造化されたイベントとして記録する
-- **機密情報**: ログに機密情報（パスワード、トークン、APIキーなど）を含めない
-- **リフレッシュトークンローテーション**: リフレッシュトークンを使用する際は必ず新しいトークンを発行し、古いトークンを無効化する
+User preferences (language, region, timezone, theme) are stored in:
+1. Signed cookies (`__Secure-root_app_preferences`)
+2. Session data (for current request)
+3. Database (for authenticated users)
+
+The `PreferenceRegions` and `Theme` concerns handle normalization and persistence.
+
+## Ruby & Rails Version
+
+- **Ruby 4.0.1** (latest major version)
+- **Rails 8.x** (main branch from GitHub - bleeding edge)
+
+This uses unreleased Rails features. Be aware of potential API changes.
+
+## Package Management
+
+- **Backend**: Bundler 4.0+ (ships with Ruby 4.0)
+- **Frontend**: pnpm 10.27.0 (specified in package.json)
+
+Always use `pnpm` for JavaScript dependencies, not npm or yarn.
+
+## Process Management
+
+Local development uses **Foreman** (`bin/dev`) which runs:
+- Web server (Puma on port 3000)
+- CSS compilation (Tailwind watch mode)
+- Background job worker (Solid Queue)
+
+In production, these run as separate services.

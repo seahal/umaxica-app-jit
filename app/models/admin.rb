@@ -1,0 +1,51 @@
+# == Schema Information
+#
+# Table name: admins
+# Database name: operator
+#
+#  id            :uuid             not null, primary key
+#  lock_version  :integer          default(0), not null
+#  moniker       :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  department_id :uuid
+#  public_id     :string
+#  staff_id      :uuid             not null
+#  status_id     :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_admins_on_department_id  (department_id)
+#  index_admins_on_public_id      (public_id) UNIQUE
+#  index_admins_on_staff_id       (staff_id)
+#  index_admins_on_status_id      (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (department_id => departments.id) ON DELETE => nullify
+#  fk_rails_...  (staff_id => staffs.id)
+#  fk_rails_...  (status_id => admin_statuses.id)
+#
+
+# frozen_string_literal: true
+
+class Admin < OperatorRecord
+  include ::PublicId
+
+  self.ignored_columns += [ "workspace_id" ]
+
+  attribute :status_id, default: AdminStatus::NEYO
+
+  belongs_to :admin_status,
+             foreign_key: :status_id,
+             inverse_of: :admins
+  belongs_to :staff, inverse_of: :admins
+  belongs_to :department, optional: true, inverse_of: :admins
+  has_many :staff_admins,
+           dependent: :destroy,
+           inverse_of: :admin
+  has_many :staffs,
+           through: :staff_admins
+  validates :public_id, uniqueness: true, allow_nil: true
+  validates :status_id, length: { maximum: 255 }
+end

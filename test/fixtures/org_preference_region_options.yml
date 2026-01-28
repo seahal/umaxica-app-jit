@@ -1,0 +1,22 @@
+# == Schema Information
+#
+# Table name: org_preference_region_options
+# Database name: preference
+#
+#  id         :string           not null, primary key
+#  position   :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  org_preference_region_options_position_unique  (position) UNIQUE
+#
+
+us:
+  id: "US"
+  position: 1
+
+jp:
+  id: "JP"
+  position: 2

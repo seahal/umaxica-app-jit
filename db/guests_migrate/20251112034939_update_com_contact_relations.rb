@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdateComContactRelations < ActiveRecord::Migration[8.2]
   def up
     add_column :com_contact_emails, :com_contact_id, :uuid

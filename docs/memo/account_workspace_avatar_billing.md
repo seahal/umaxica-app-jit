@@ -84,6 +84,14 @@ Account -> Membership -> Workspace -> Team
 - `BillingAccount` / `Subscription` / `Invoice` / `Entitlement` / `billing_webhook_events` を追加
 - webhook で `Subscription` と `Entitlement` を更新し、アプリは `Entitlement` を参照して制御する
 
+### Billing DB セットアップ（ローカル/CI）
+
+```
+bin/rails db:create:billing
+bin/rails db:migrate:billing
+bin/rails db:prepare
+```
+
 ## 命名メモ
 
 - `Stakeholder` は `Account` にリネーム済み（`User` / `Staff` が include する concern）

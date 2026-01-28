@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   scope module: :help, as: :help do
     constraints host: ENV["HELP_CORPORATE_URL"] do
@@ -5,15 +7,10 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
-        end
-        # contact page
-        resources :contacts, only: [ :new, :create, :show, :edit, :update ] do
-          scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :health, only: :show
           end
         end
       end
@@ -24,15 +21,10 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
-        end
-        # contact page
-        resources :contacts, only: [ :new, :create, :edit, :create, :show ] do
-          scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :health, only: :show
           end
         end
       end
@@ -43,15 +35,10 @@ Rails.application.routes.draw do
         root to: "roots#index"
         # health check for html/json
         resource :health, only: :show
-        # api endpoint
-        namespace :v1 do
-          resource :health, only: :show
-        end
-        # contact page
-        resources :contacts, only: [ :new, :create, :edit, :update, :show ] do
-          scope module: :contact do
-            resource :email, only: [ :new, :create ]
-            resource :telephone, only: [ :new, :create ]
+        # Edge API endpoint (browser/SPA)
+        namespace :edge do
+          namespace :v1 do
+            resource :health, only: :show
           end
         end
       end

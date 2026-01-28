@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module EmailValidation
   extend ActiveSupport::Concern
 
@@ -6,17 +8,12 @@ module EmailValidation
     # Validates and normalizes email address
     # Returns normalized email or nil if invalid
     def validate_and_normalize_email(email)
-      return nil if email.blank?
-
-      normalized = email.strip.downcase
-      return nil unless valid_email_format?(normalized)
-
-      normalized
+      Jit::Utils::EmailValidator.normalize(email)
     end
 
     # Validates email format according to RFC 5322 basic rules
     def valid_email_format?(email)
-      email.match?(URI::MailTo::EMAIL_REGEXP)
+      Jit::Utils::EmailValidator.valid?(email)
     end
 
     # Prevents timing attacks on email lookups
@@ -25,7 +22,7 @@ module EmailValidation
       target_seconds = 0.05
       start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-      result = UserIdentityEmail.find_by(address: email)
+      result = UserEmail.find_by(address: email)
 
       elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
       remaining = target_seconds - elapsed

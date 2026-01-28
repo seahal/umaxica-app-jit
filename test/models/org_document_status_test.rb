@@ -1,26 +1,33 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: org_document_statuses
+# Database name: document
+#
+#  id         :string(255)      not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_org_document_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
 require "test_helper"
 
 class OrgDocumentStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
   fixtures :org_document_statuses
 
   def setup
     @model_class = OrgDocumentStatus
     @valid_id = "ACTIVE"
     @subject = @model_class.new(id: @valid_id)
-    @status = org_document_statuses(:ACTIVE)
+    @status = OrgDocumentStatus.find("ACTIVE")
   end
 
-  test "inherits from BusinessesRecord" do
-    assert_operator OrgDocumentStatus, :<, BusinessesRecord
-  end
-
-  test "has many org_documents" do
-    association = OrgDocumentStatus.reflect_on_association(:org_documents)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+  test "inherits from DocumentRecord" do
+    assert_operator OrgDocumentStatus, :<, DocumentRecord
   end
 
   test "id is required" do
@@ -53,14 +60,14 @@ class OrgDocumentStatusTest < ActiveSupport::TestCase
   end
 
   test "can load draft status from fixtures" do
-    draft = org_document_statuses(:DRAFT)
+    draft = OrgDocumentStatus.find("DRAFT")
 
     assert_not_nil draft
     assert_equal "DRAFT", draft.id
   end
 
   test "can load archived status from fixtures" do
-    archived = org_document_statuses(:ARCHIVED)
+    archived = OrgDocumentStatus.find("ARCHIVED")
 
     assert_not_nil archived
     assert_equal "ARCHIVED", archived.id

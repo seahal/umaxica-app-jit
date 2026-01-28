@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserWebauthnCredentialPolicy < ApplicationPolicy
   def index?
     user.present?

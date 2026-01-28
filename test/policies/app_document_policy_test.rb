@@ -1,7 +1,12 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class AppDocumentPolicyTest < ActiveSupport::TestCase
-  class MockDocument; end
+  class MockDocument
+    def initialize
+    end
+  end
 
   def setup
     @user = nil

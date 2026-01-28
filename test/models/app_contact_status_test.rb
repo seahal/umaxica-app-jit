@@ -1,13 +1,25 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: app_contact_statuses
+# Database name: guest
+#
+#  id :string(255)      not null, primary key
+#
+# Indexes
+#
+#  index_app_contact_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
 require "test_helper"
 
 class AppContactStatusTest < ActiveSupport::TestCase
-  include ContactStatusModelTestHelper
-
   def setup
     @model_class = AppContactStatus
-    @status = AppContactStatus.create!(id: "ACTIVE")
+    @status = AppContactStatus.find_or_create_by!(id: "ACTIVE")
     @contact = AppContact.create!(
-      app_contact_status: @status
+      app_contact_status: @status,
     )
   end
 
@@ -15,13 +27,15 @@ class AppContactStatusTest < ActiveSupport::TestCase
     assert_includes @status.app_contacts, @contact
   end
 
-  test "should nullify app_contact_status_id when destroyed" do
-    # The model says `dependent: :nullify`
-    # Foreign key is `contact_status_id`
+  test "should restrict destroy when app_contacts exist" do
+    assert_raises(ActiveRecord::DeleteRestrictionError) do
+      @status.destroy
+    end
+  end
 
-    @status.destroy
-    @contact.reload
-
-    assert_nil @contact.contact_status_id
+  test "validates length of id" do
+    record = AppContactStatus.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
   end
 end

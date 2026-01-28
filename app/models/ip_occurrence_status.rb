@@ -1,11 +1,27 @@
-class IpOccurrenceStatus < UniversalRecord
-  include UppercaseId
+# frozen_string_literal: true
 
-  has_many :ip_occurrences, foreign_key: :status_id, dependent: :restrict_with_error, inverse_of: :ip_occurrence_status
+# == Schema Information
+#
+# Table name: ip_occurrence_statuses
+# Database name: occurrence
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+# Indexes
+#
+#  index_ip_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
+class IpOccurrenceStatus < OccurrenceRecord
+  include StringPrimaryKey
+
+  include OccurrenceStatus
 
   # Status constants
-  NONE = "NONE"
+  NEYO = "NEYO"
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"
+  has_many :ip_occurrences, foreign_key: :status_id, dependent: :restrict_with_error, inverse_of: :ip_occurrence_status
+  validates :id, uniqueness: { case_sensitive: false }
 end

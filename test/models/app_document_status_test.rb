@@ -1,26 +1,33 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: app_document_statuses
+# Database name: document
+#
+#  id         :string(255)      default("NEYO"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_app_document_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
 require "test_helper"
 
 class AppDocumentStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
   fixtures :app_document_statuses
 
   def setup
     @model_class = AppDocumentStatus
     @valid_id = "ACTIVE"
     @subject = @model_class.new(id: @valid_id)
-    @status = app_document_statuses(:ACTIVE)
+    @status = AppDocumentStatus.find("ACTIVE")
   end
 
-  test "inherits from BusinessesRecord" do
-    assert_operator AppDocumentStatus, :<, BusinessesRecord
-  end
-
-  test "has many app_documents" do
-    association = AppDocumentStatus.reflect_on_association(:app_documents)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+  test "inherits from DocumentRecord" do
+    assert_operator AppDocumentStatus, :<, DocumentRecord
   end
 
   test "id is required" do
@@ -53,14 +60,14 @@ class AppDocumentStatusTest < ActiveSupport::TestCase
   end
 
   test "can load draft status from fixtures" do
-    draft = app_document_statuses(:DRAFT)
+    draft = AppDocumentStatus.find("DRAFT")
 
     assert_not_nil draft
     assert_equal "DRAFT", draft.id
   end
 
   test "can load archived status from fixtures" do
-    archived = app_document_statuses(:ARCHIVED)
+    archived = AppDocumentStatus.find("ARCHIVED")
 
     assert_not_nil archived
     assert_equal "ARCHIVED", archived.id

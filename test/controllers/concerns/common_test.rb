@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class CommonTest < ActiveSupport::TestCase
   class DummyClass
-    include Common
+    include Common::Core
   end
 
   setup do

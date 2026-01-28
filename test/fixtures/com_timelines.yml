@@ -1,11 +1,45 @@
+# == Schema Information
+#
+# Table name: com_timelines
+# Database name: news
+#
+#  id            :uuid             not null, primary key
+#  expires_at    :datetime         default(Infinity), not null
+#  lock_version  :integer          default(0), not null
+#  position      :integer          default(0), not null
+#  published_at  :datetime         default(Infinity), not null
+#  redirect_url  :string
+#  response_mode :string           default("html"), not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  slug_id       :string(32)       default(""), not null
+#  status_id     :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_com_timelines_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_com_timelines_on_slug_id                      (slug_id)
+#  index_com_timelines_on_status_id                    (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => com_timeline_statuses.id)
+#
+
 one:
-  title: Com Timeline One
-  description: First com timeline
-  com_timeline_status_id: ACTIVE
-  public_id: "PHZ--7IwttndBgvN71NIv"
+  status_id: "NEYO"
+  slug_id: "one-com-timeline-0001"
+  response_mode: "html"
+  published_at: <%= Time.current %>
+  expires_at: <%= 1.day.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
 
 two:
-  title: Com Timeline Two
-  description: Second com timeline
-  com_timeline_status_id: ACTIVE
-  public_id: "2I1_WvMgLv5q9LXgKkiYN"
+  status_id: "NEYO"
+  slug_id: "two-com-timeline-0002"
+  response_mode: "html"
+  published_at: <%= Time.current %>
+  expires_at: <%= 1.day.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

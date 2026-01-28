@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+return if Rails.env.test?
+
 require "opentelemetry/sdk"
 require "opentelemetry/exporter/otlp"
 require "opentelemetry/instrumentation/all"

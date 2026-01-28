@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InvalidUserStatusError < StandardError
   # Define a reader to read the invalid status value
   attr_reader :invalid_status

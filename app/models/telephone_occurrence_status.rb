@@ -1,12 +1,28 @@
-class TelephoneOccurrenceStatus < UniversalRecord
-  include UppercaseId
+# frozen_string_literal: true
 
-  has_many :telephone_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
-                                   inverse_of: :telephone_occurrence_status
+# == Schema Information
+#
+# Table name: telephone_occurrence_statuses
+# Database name: occurrence
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+# Indexes
+#
+#  index_telephone_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
+class TelephoneOccurrenceStatus < OccurrenceRecord
+  include StringPrimaryKey
+
+  include OccurrenceStatus
 
   # Status constants
-  NONE = "NONE"
+  NEYO = "NEYO"
   ACTIVE = "ACTIVE"
   INACTIVE = "INACTIVE"
   BLOCKED = "BLOCKED"
+  has_many :telephone_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
+                                   inverse_of: :telephone_occurrence_status
+  validates :id, uniqueness: { case_sensitive: false }
 end

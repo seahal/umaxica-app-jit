@@ -1,13 +1,33 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
+# == Schema Information
+#
+# Table name: domain_occurrences
+# Database name: occurrence
+#
+#  id         :uuid             not null, primary key
+#  body       :string(253)      default(""), not null
+#  expires_at :datetime         not null
+#  memo       :string(1024)     default(""), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  public_id  :string(21)       default(""), not null
+#  status_id  :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_domain_occurrences_on_body        (body) UNIQUE
+#  index_domain_occurrences_on_expires_at  (expires_at)
+#  index_domain_occurrences_on_public_id   (public_id) UNIQUE
+#  index_domain_occurrences_on_status_id   (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => domain_occurrence_statuses.id)
+#
 one:
-  public_id: "CCCCCCCCCCCCCCCCCCCCC"
-  body: "domain-body-one"
-  status_id: ACTIVE
-  memo: "Domain occurrence one"
-
-two:
-  public_id: "DDDDDDDDDDDDDDDDDDDDD"
-  body: "domain-body-two"
-  status_id: INACTIVE
-  memo: "Domain occurrence two"
+  status_id: "NEYO"
+  public_id: "one_domain_occ_id_001"
+  body: "example.com"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

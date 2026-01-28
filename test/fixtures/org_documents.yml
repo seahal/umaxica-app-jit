@@ -1,11 +1,42 @@
+# == Schema Information
+#
+# Table name: org_documents
+# Database name: document
+#
+#  id            :uuid             not null, primary key
+#  expires_at    :datetime         default(Infinity), not null
+#  lock_version  :integer          default(0), not null
+#  permalink     :string(200)      default(""), not null
+#  position      :integer          default(0), not null
+#  published_at  :datetime         default(Infinity), not null
+#  redirect_url  :string
+#  response_mode :string           default("html"), not null
+#  revision_key  :string           default(""), not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  slug_id       :string(32)       default(""), not null
+#  status_id     :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_org_documents_on_permalink                    (permalink) UNIQUE
+#  index_org_documents_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_org_documents_on_slug_id                      (slug_id)
+#  index_org_documents_on_status_id                    (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => org_document_statuses.id)
+#
+
 one:
-  title: Org Document One
-  description: First org document
-  org_document_status_id: ACTIVE
-  public_id: "5J463qD4KLqScsdUczJET"
+  slug_id: "org-documents-0000001"
+  status_id: "NEYO"
+  permalink: "org_document_one"
+  revision_key: "rev_org_document_one"
 
 two:
-  title: Org Document Two
-  description: Second org document
-  org_document_status_id: ACTIVE
-  public_id: "J8l4MCSJmh-rxPnKu-B3F"
+  slug_id: "org-documents-0000002"
+  status_id: "NEYO"
+  permalink: "org_document_two"
+  revision_key: "rev_org_document_two"

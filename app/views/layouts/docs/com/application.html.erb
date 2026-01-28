@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= get_language %>">
+<html lang="<%= get_language %>" data-theme="<%= theme_cookie_value %>" class="<%= theme_html_class %>">
 <head>
   <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (com) Documents" %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,38 +7,50 @@
   <meta name="turbo-refresh-scroll" content="preserve">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "docs/com/main" %>
   <%= javascript_importmap_tags %>
-  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <link rel="icon" href="https://perm.umaxica.com/favicon.ico" sizes="32x32">
 </head>
 
-<body class="px-4">
-<%= render "concern/flash_messages" %>
-<header>
-  <h1>
-    <a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/"><%= ENV.fetch('BRAND_NAME') { ENV.fetch('NAME') } %> (docs,
-      com)</a></h1></header>
+<body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+<% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
+<% edge_host = ENV["EDGE_CORPORATE_URL"].presence %>
 
-<hr>
+<div class="min-h-screen">    <%= render "concern/flash_messages" %>
+  <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
 
-<main class="container mx-auto mt-28 px-5 block">
-  <%= yield %>
-</main>
+    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
+      <div class="flex flex-col">
+        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">Docs</span>
+        <h1 class="text-2xl font-semibold tracking-tight">
+          <% if edge_host.present? %>
+            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>:4444/"><%= code_name %></a>
+          <% else %>
+            <%= code_name %>
+          <% end %>
+          <span class="text-[hsl(var(--muted-foreground))]">(com)</span>
+        </h1>
+      </div>
+    </header>
 
-<hr>
+    <main class="flex-1 py-10">
+      <%= yield %>
+    </main>
 
-<footer>
-  <ul>
-    <li><a href="http://<%= ENV['EDGE_CORPORATE_URL'] %>:4444/">Umaxica</a></li>
-    <li>Support</li>
-    <li>Terms</li>
-    <li>Privacy</li>
-    <li>Security</li>
-    <li>Accessibility</li>
-  </ul>
-  <%= render "concern/copyright" %>
-</footer>
-
+    <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
+      <nav class="flex flex-wrap items-center gap-4">
+        <% if edge_host.present? %>
+          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>:4444/">Umaxica</a>
+        <% end %>
+        <%= link_to t("docs.com.preferences.footer.preference"), apex_com_preference_url, class: "transition hover:text-[hsl(var(--primary))]" %>
+      </nav>
+      <div class="mt-4">
+        <%= render "concern/copyright" %>
+      </div>
+    </footer>
+  </div>
+</div>
 </body>
 </html>

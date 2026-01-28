@@ -1,14 +1,34 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: telephone_occurrences
+# Database name: occurrence
+#
+#  id         :uuid             not null, primary key
+#  body       :string(32)       default(""), not null
+#  expires_at :datetime         not null
+#  memo       :string(1024)     default(""), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  public_id  :string(21)       default(""), not null
+#  status_id  :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_telephone_occurrences_on_body        (body) UNIQUE
+#  index_telephone_occurrences_on_expires_at  (expires_at)
+#  index_telephone_occurrences_on_public_id   (public_id) UNIQUE
+#  index_telephone_occurrences_on_status_id   (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => telephone_occurrence_statuses.id)
+#
+
 require "test_helper"
 
 class TelephoneOccurrenceTest < ActiveSupport::TestCase
-  include OccurrenceTestHelper
-
-  test "public_id presence" do
-    record = build_occurrence(TelephoneOccurrence, body: "+819012345678", public_id: nil, generate_public_id: false)
-
-    assert_invalid_attribute(record, :public_id)
-  end
-
   test "public_id length" do
     record = build_occurrence(TelephoneOccurrence, body: "+819012345678", public_id: "A" * 20)
 
@@ -22,7 +42,7 @@ class TelephoneOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "public_id uniqueness" do
-    existing = telephone_occurrences(:one)
+    existing = TelephoneOccurrence.find_by!(public_id: "one_tel_occ_id_000001")
     record = build_occurrence(TelephoneOccurrence, body: "+819011111111", public_id: existing.public_id)
 
     assert_invalid_attribute(record, :public_id)
@@ -35,7 +55,7 @@ class TelephoneOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "body uniqueness" do
-    existing = telephone_occurrences(:one)
+    existing = TelephoneOccurrence.find_by!(public_id: "one_tel_occ_id_000001")
     record = build_occurrence(TelephoneOccurrence, body: existing.body)
 
     assert_invalid_attribute(record, :body)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class PublicIdTest < ActiveSupport::TestCase
@@ -24,7 +26,7 @@ class PublicIdTest < ActiveSupport::TestCase
     end
     # Mock Nanoid so that it always returns the same ID for stability
     @original_nanoid_generate = Nanoid.method(:generate)
-    Nanoid.define_singleton_method(:generate) { |**args| "testpublicid123456789" }
+    Nanoid.define_singleton_method(:generate) { |**_args| "testpublicid123456789" }
   end
 
   teardown do

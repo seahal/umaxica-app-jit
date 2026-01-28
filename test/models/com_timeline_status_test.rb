@@ -1,26 +1,31 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: com_timeline_statuses
+# Database name: news
+#
+#  id         :string(255)      not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_com_timeline_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
 require "test_helper"
 
 class ComTimelineStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
-  fixtures :com_timeline_statuses
-
   def setup
     @model_class = ComTimelineStatus
     @valid_id = "ACTIVE"
     @subject = @model_class.new(id: @valid_id)
-    @status = com_timeline_statuses(:ACTIVE)
+    @status = ComTimelineStatus.find("ACTIVE")
   end
 
-  test "inherits from BusinessesRecord" do
-    assert_operator ComTimelineStatus, :<, BusinessesRecord
-  end
-
-  test "has many com_timelines" do
-    association = ComTimelineStatus.reflect_on_association(:com_timelines)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+  test "inherits from NewsRecord" do
+    assert_operator ComTimelineStatus, :<, NewsRecord
   end
 
   test "id is required" do
@@ -52,15 +57,15 @@ class ComTimelineStatusTest < ActiveSupport::TestCase
     assert_equal 255, status.id.length
   end
 
-  test "can load draft status from fixtures" do
-    draft = com_timeline_statuses(:DRAFT)
+  test "can load draft status from db" do
+    draft = ComTimelineStatus.find("DRAFT")
 
     assert_not_nil draft
     assert_equal "DRAFT", draft.id
   end
 
-  test "can load archived status from fixtures" do
-    archived = com_timeline_statuses(:ARCHIVED)
+  test "can load archived status from db" do
+    archived = ComTimelineStatus.find("ARCHIVED")
 
     assert_not_nil archived
     assert_equal "ARCHIVED", archived.id

@@ -1,74 +1,83 @@
 <%# Generate unique ID for this widget instance %>
 <% widget_id = "cf-turnstile-#{SecureRandom.hex(4)}" %>
-<div id="<%= widget_id %>"></div>
+<% site_key = Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY) || ENV["CLOUDFLARE_TURNSTILE_SITE_KEY"] %>
 
-<script nonce="<%= content_security_policy_nonce %>">
-    (function () {
-        const widgetId = <%= widget_id.to_json %>;
-        const container = document.getElementById(widgetId);
+<% if site_key.blank? %>
+  <div class="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+    Cloudflare Turnstile site key is missing. Set credentials or CLOUDFLARE_TURNSTILE_SITE_KEY.
+  </div>
+<% else %>
+  <div id="<%= widget_id %>"></div>
 
-        if (!container) {
-            console.error('Turnstile container not found:', widgetId);
-            return;
-        }
+  <script nonce="<%= content_security_policy_nonce %>">
+      (function () {
+          const widgetId = <%== widget_id.to_json %>;
+          const container = document.getElementById(widgetId);
 
-        function renderWidget() {
-            if (typeof turnstile === 'undefined') {
-                console.debug('Turnstile API not loaded yet, retrying...');
-                setTimeout(renderWidget, 100);
-                return;
-            }
+          if (!container) {
+              console.error('Turnstile container not found:', widgetId);
+              return;
+          }
 
-            console.debug('Rendering Turnstile widget in:', widgetId);
+          function renderWidget() {
+              if (typeof turnstile === 'undefined') {
+                  console.debug('Turnstile API not loaded yet, retrying...');
+                  setTimeout(renderWidget, 100);
+                  return;
+              }
 
-            try {
-                turnstile.render('#' + widgetId, {
-                    sitekey: <%= Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY).to_json %>,
-                    callback: function (token) {
-                        console.debug('Turnstile verified:', token.substring(0, 20) + '...');
-                    },
-                    'error-callback': function () {
-                        console.error('Turnstile error occurred');
-                    },
-                    'expired-callback': function () {
-                        console.debug('Turnstile token expired');
-                    },
-                });
-            } catch (e) {
-                console.error('Turnstile render error:', e);
-            }
-        }
+              console.debug('Rendering Turnstile widget in:', widgetId);
 
-        // Load script if not already loaded
-        if (!window.turnstileScriptLoading && !window.turnstileScriptLoaded) {
-            console.debug('Loading Turnstile script...');
-            window.turnstileScriptLoading = true;
+              try {
+                  turnstile.render('#' + widgetId, {
+                      sitekey: <%== site_key.to_json %>,
+                      callback: function (token) {
+                          console.debug('Turnstile verified:', token.substring(0, 20) + '...');
+                      },
+                      'error-callback': function () {
+                          console.error('Turnstile error occurred');
+                      },
+                      'expired-callback': function () {
+                          console.debug('Turnstile token expired');
+                      },
+                  });
+              } catch (e) {
+                  console.error('Turnstile render error:', e);
+              }
+          }
 
-            const script = document.createElement('script');
-            script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-            script.async = true;
-            script.onload = function () {
-                console.debug('Turnstile script loaded');
-                window.turnstileScriptLoaded = true;
-                window.turnstileScriptLoading = false;
-                renderWidget();
-            };
-            script.onerror = function () {
-                console.error('Failed to load Turnstile script');
-                window.turnstileScriptLoading = false;
-            };
-            document.head.appendChild(script);
-        } else if (window.turnstileScriptLoaded) {
-            console.debug('Turnstile script already loaded');
-            renderWidget();
-        } else {
-            console.debug('Turnstile script loading in progress, waiting...');
-            const checkInterval = setInterval(function () {
-                if (window.turnstileScriptLoaded) {
-                    clearInterval(checkInterval);
-                    renderWidget();
-                }
-            }, 100);
-        }
-    })();
-</script>
+          // Load script if not already loaded
+          if (!window.turnstileScriptLoading && !window.turnstileScriptLoaded) {
+              console.debug('Loading Turnstile script...');
+              window.turnstileScriptLoading = true;
+
+              const script = document.createElement('script');
+              script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+              script.nonce = '<%= content_security_policy_nonce %>';
+              script.async = true;
+              script.onload = function () {
+                  console.debug('Turnstile script loaded');
+                  window.turnstileScriptLoaded = true;
+                  window.turnstileScriptLoading = false;
+                  renderWidget();
+              };
+              script.onerror = function () {
+                  console.error('Failed to load Turnstile script');
+                  window.turnstileScriptLoading = false;
+              };
+              document.head.appendChild(script);
+          } else if (window.turnstileScriptLoaded) {
+              console.debug('Turnstile script already loaded');
+              renderWidget();
+          } else {
+              console.debug('Turnstile script loading in progress, waiting...');
+              const checkInterval = setInterval(function () {
+                  if (window.turnstileScriptLoaded) {
+                      clearInterval(checkInterval);
+                      renderWidget();
+                  }
+              }, 100);
+          }
+      })();
+  </script>
+<% end %>

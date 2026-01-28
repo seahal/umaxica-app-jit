@@ -1,0 +1,40 @@
+# == Schema Information
+#
+# Table name: org_preference_cookies
+# Database name: preference
+#
+#  id                 :uuid             not null, primary key
+#  consented          :boolean          default(FALSE), not null
+#  consented_at       :datetime
+#  functional         :boolean          default(FALSE), not null
+#  performant         :boolean          default(FALSE), not null
+#  targetable         :boolean          default(FALSE), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  consent_version_id :uuid
+#  preference_id      :uuid             not null
+#
+# Indexes
+#
+#  index_org_preference_cookies_on_consent_version_id  (consent_version_id)
+#  index_org_preference_cookies_on_preference_id       (preference_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (preference_id => org_preferences.id)
+#
+
+_fixture:
+  model_class: OrgPreferenceCookie
+
+one:
+  preference_id: 6731e56e-6d99-4433-8a0c-3c83a0b22cfb
+  functional: false
+  performant: false
+  targetable: false
+
+two:
+  preference_id: 152a2e50-27c1-405b-a2c4-199126d9951d
+  functional: false
+  performant: false
+  targetable: false

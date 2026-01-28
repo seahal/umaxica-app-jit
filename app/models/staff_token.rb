@@ -1,6 +1,47 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: staff_tokens
+# Database name: token
+#
+#  id                       :uuid             not null, primary key
+#  compromised_at           :datetime
+#  last_used_at             :datetime
+#  refresh_expires_at       :datetime         not null
+#  refresh_token_digest     :binary
+#  refresh_token_generation :integer          default(0), not null
+#  revoked_at               :datetime
+#  rotated_at               :datetime
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  public_id                :string(21)       default(""), not null
+#  refresh_token_family_id  :string
+#  staff_id                 :uuid             not null
+#  staff_token_kind_id      :string           default("BROWSER_WEB"), not null
+#  staff_token_status_id    :string           default("NEYO"), not null
+#
+# Indexes
+#
+#  index_staff_tokens_on_compromised_at           (compromised_at)
+#  index_staff_tokens_on_public_id                (public_id) UNIQUE
+#  index_staff_tokens_on_refresh_expires_at       (refresh_expires_at)
+#  index_staff_tokens_on_refresh_token_digest     (refresh_token_digest) UNIQUE
+#  index_staff_tokens_on_refresh_token_family_id  (refresh_token_family_id)
+#  index_staff_tokens_on_revoked_at               (revoked_at)
+#  index_staff_tokens_on_staff_id                 (staff_id)
+#  index_staff_tokens_on_staff_token_kind_id      (staff_token_kind_id)
+#  index_staff_tokens_on_staff_token_status_id    (staff_token_status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (staff_token_kind_id => staff_token_kinds.id)
+#  fk_rails_...  (staff_token_status_id => staff_token_statuses.id)
+#
+
 # Refresh tokens are persisted as digests only.
 # The public_id is used as the session identifier (sid).
-class StaffToken < TokensRecord
+class StaffToken < TokenRecord
   include ::PublicId
   include ::RefreshTokenable
 
@@ -8,6 +49,11 @@ class StaffToken < TokensRecord
 
   belongs_to :staff
   belongs_to :staff_token_status
+  belongs_to :staff_token_kind, optional: true
+  attribute :staff_token_status_id, default: "NEYO"
+
+  validates :public_id, uniqueness: true, length: { maximum: 21 }
+  validates :refresh_expires_at, presence: true
 
   validate :enforce_concurrent_session_limit, on: :create
 

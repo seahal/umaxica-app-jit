@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module Core::App
@@ -6,8 +8,7 @@ module Core::App
       controller = ApplicationController.new
 
       assert_includes controller.class, RateLimit
-      assert_includes controller.class, DefaultUrlOptions
-      assert_includes controller.class, Core::Concerns::Regionalization
+      assert_includes controller.class, Preference::Regional
     end
   end
 end

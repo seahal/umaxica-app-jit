@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # AccountService provides a polymorphic interface for User and Staff models
 # This allows treating both types uniformly while maintaining their distinct behaviors
 #
@@ -15,25 +17,15 @@ class AccountService
   attr_reader :accountable, :type
 
   # Delegate common methods to the underlying User or Staff model
-  delegate :id, :created_at, :updated_at, :webauthn_id,
+  delegate :id, :created_at, :updated_at,
            :persisted?, :new_record?, :destroyed?,
            to: :accountable
 
-  # Initialize a new AccountService wrapper
+  # Override class method to return the underlying model's class
+  # This ensures JWT generation and type checks continue to lean on the wrapped model.
   #
-  # @param accountable [User, Staff] The underlying model instance
-  # @raise [ArgumentError] if accountable is not User or Staff
-  def initialize(accountable)
-    raise ArgumentError,
-          "accountable must be User or Staff, got #{accountable.class}" unless valid_accountable?(accountable)
-
-    @accountable = accountable
-    @type = accountable.class.name.downcase.to_sym # :user or :staff
-  end
-
-  # Factory Methods
-  # ---------------
-
+  # @return [Class] User or Staff class
+  delegate :class, to: :accountable
   # Find an account by ID
   #
   # @param id [String, Integer] The UUID of the user or staff
@@ -79,8 +71,8 @@ class AccountService
   def self.find_by_email(email)
     return nil if email.blank?
 
-    user = User.joins(:user_identity_emails).find_by(user_identity_emails: { address: email })
-    staff = Staff.joins(:staff_identity_emails).find_by(staff_identity_emails: { address: email }) unless user
+    user = User.joins(:user_emails).find_by(user_emails: { address: email })
+    staff = Staff.joins(:staff_emails).find_by(staff_emails: { address: email }) unless user
 
     accountable = user || staff
     new(accountable) if accountable
@@ -93,10 +85,43 @@ class AccountService
   def self.find_by_telephone(number)
     return nil if number.blank?
 
-    user = User.joins(:user_identity_telephones).find_by(user_identity_telephones: { number: number })
+    user = User.joins(:user_telephones).find_by(user_telephones: { number: number })
     # Staff doesn't have phone authentication in current implementation
     new(user) if user
   end
+
+  # Find a record by ID and optional type
+  #
+  # @param id [String, Integer] The record ID
+  # @param type [Symbol, String, nil] Optional type hint
+  # @return [User, Staff, nil] The found record or nil
+  def self.find_record(id, type)
+    case type&.to_sym
+    when :user
+      User.find_by(id: id)
+    when :staff
+      Staff.find_by(id: id)
+    when nil
+      User.find_by(id: id) || Staff.find_by(id: id)
+    else
+      raise ArgumentError, "Invalid type: #{type}. Must be :user or :staff"
+    end
+  end
+
+  # Initialize a new AccountService wrapper
+  #
+  # @param accountable [User, Staff] The underlying model instance
+  # @raise [ArgumentError] if accountable is not User or Staff
+  def initialize(accountable)
+    raise ArgumentError,
+          "accountable must be User or Staff, got #{accountable.class}" unless valid_accountable?(accountable)
+
+    @accountable = accountable
+    @type = accountable.class.name.downcase.to_sym # :user or :staff
+  end
+
+  # Factory Methods
+  # ---------------
 
   # Type Checking Methods
   # ---------------------
@@ -117,12 +142,6 @@ class AccountService
 
   # Duck Typing Support
   # -------------------
-
-  # Override class method to return the underlying model's class
-  # This ensures JWT generation and type checks continue to lean on the wrapped model.
-  #
-  # @return [Class] User or Staff class
-  delegate :class, to: :accountable
 
   # Override is_a? to check against the underlying model
   # This ensures Pundit and other type checks work correctly
@@ -178,8 +197,8 @@ class AccountService
   # @return [ActiveRecord::Relation, Array] Collection of email records
   def emails
     return accountable.emails if accountable.respond_to?(:emails)
-    return accountable.user_identity_emails if accountable.respond_to?(:user_identity_emails)
-    return accountable.staff_identity_emails if accountable.respond_to?(:staff_identity_emails)
+    return accountable.user_emails if accountable.respond_to?(:user_emails)
+    return accountable.staff_emails if accountable.respond_to?(:staff_emails)
 
     []
   end
@@ -191,7 +210,7 @@ class AccountService
   def phones
     return [] unless user?
     return accountable.phones if accountable.respond_to?(:phones)
-    return accountable.user_identity_telephones if accountable.respond_to?(:user_identity_telephones)
+    return accountable.user_telephones if accountable.respond_to?(:user_telephones)
 
     []
   end
@@ -226,7 +245,7 @@ class AccountService
     when :phone
       user? && collection_present?(phones)
     when :webauthn
-      webauthn_id.present?
+      passkeys_present?
     when :oauth
       user? && oauth_configured?
     when :totp
@@ -243,7 +262,7 @@ class AccountService
     methods = []
     methods << :email if collection_present?(emails)
     methods << :phone if user? && collection_present?(phones)
-    methods << :webauthn if webauthn_id.present?
+    methods << :webauthn if passkeys_present?
     methods << :oauth if user? && oauth_configured?
     methods << :totp if totp_configured?
     methods
@@ -258,8 +277,8 @@ class AccountService
   def oauth_configured?
     return false unless user?
 
-    accountable.user_identity_social_apple.present? ||
-      accountable.user_identity_social_google.present?
+    accountable.user_social_apple.present? ||
+      accountable.user_social_google.present?
   end
 
   # TOTP Support
@@ -318,27 +337,19 @@ class AccountService
       obj.is_a?(User) || obj.is_a?(Staff)
     end
 
-    # Find a record by ID and optional type
-    #
-    # @param id [String, Integer] The record ID
-    # @param type [Symbol, String, nil] Optional type hint
-    # @return [User, Staff, nil] The found record or nil
-    def self.find_record(id, type)
-      case type&.to_sym
-      when :user
-        User.find_by(id: id)
-      when :staff
-        Staff.find_by(id: id)
-      when nil
-        User.find_by(id: id) || Staff.find_by(id: id)
-      else
-        raise ArgumentError, "Invalid type: #{type}. Must be :user or :staff"
-      end
-    end
-
     private_class_method :find_record
 
     def collection_present?(collection)
       collection.respond_to?(:exists?) ? collection.exists? : collection.any?
+    end
+
+    def passkeys_present?
+      if user?
+        accountable.user_passkeys.exists?
+      elsif staff?
+        accountable.staff_passkeys.exists?
+      else
+        false
+      end
     end
 end

@@ -1,0 +1,22 @@
+# == Schema Information
+#
+# Table name: com_preference_language_options
+# Database name: preference
+#
+#  id         :string           not null, primary key
+#  position   :integer          not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  com_preference_language_options_position_unique  (position) UNIQUE
+#
+
+ja:
+  id: "JA"
+  position: 1
+
+en:
+  id: "EN"
+  position: 2

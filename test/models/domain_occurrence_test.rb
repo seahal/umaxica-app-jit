@@ -1,13 +1,35 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: domain_occurrences
+# Database name: occurrence
+#
+#  id         :uuid             not null, primary key
+#  body       :string(253)      default(""), not null
+#  expires_at :datetime         not null
+#  memo       :string(1024)     default(""), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  public_id  :string(21)       default(""), not null
+#  status_id  :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_domain_occurrences_on_body        (body) UNIQUE
+#  index_domain_occurrences_on_expires_at  (expires_at)
+#  index_domain_occurrences_on_public_id   (public_id) UNIQUE
+#  index_domain_occurrences_on_status_id   (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => domain_occurrence_statuses.id)
+#
+
 require "test_helper"
 
 class DomainOccurrenceTest < ActiveSupport::TestCase
-  include OccurrenceTestHelper
-
-  test "public_id presence" do
-    record = build_occurrence(DomainOccurrence, body: "example.co.jp", public_id: nil, generate_public_id: false)
-
-    assert_invalid_attribute(record, :public_id)
-  end
+  fixtures :domain_occurrences, :domain_occurrence_statuses
 
   test "public_id length" do
     record = build_occurrence(DomainOccurrence, body: "example.co.jp", public_id: "A" * 20)

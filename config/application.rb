@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "boot"
 
 require "rails/all"
@@ -71,10 +73,19 @@ module Jit
     config.autoload_paths << Rails.root.join("app/errors")
 
     ### Added by user
+    # Trust X-Forwarded-* headers from reverse proxy (Cloudflare Tunnel, Nginx, etc.)
+    # This allows Rails to correctly determine the protocol (HTTP/HTTPS) and host
+    config.action_dispatch.trusted_proxies =
+      (ENV["TRUSTED_PROXIES"]&.split(",") || []).filter_map do |proxy|
+        IPAddr.new(proxy.strip)
+      rescue IPAddr::InvalidAddressError
+        nil
+      end
+
     # Rack Attack Middleware
     config.middleware.use Rack::Attack
     # Active Record Encryption Configuration
-    if [ "test", "production", "development" ].include? Rails.env
+    if %w[test production development].include? Rails.env
       config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
       config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
       config.active_record.encryption.key_derivation_salt = Rails.application.credentials.active_record_encryption.key_derivation_salt
@@ -95,10 +106,14 @@ module Jit
 
     # Load translations from nested locale directories (e.g., config/locales/jp/**/*.yml)
     config.i18n.load_path += Rails.root.glob("config/locales/**/*.{rb,yml}")
+    config.i18n.default_locale = :ja
 
     # Set UUID as default primary key for new tables
     config.generators do |g|
       g.orm :active_record, primary_key_type: :uuid
     end
+
+    # Enable structured logging in all environments.
+    config.active_support.structured_logging = true
   end
 end

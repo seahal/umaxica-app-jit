@@ -1,12 +1,16 @@
+# frozen_string_literal: true
+
 module Docs
   module App
     class ApplicationController < ActionController::Base
-      include ::DefaultUrlOptions
-
-      protect_from_forgery with: :exception
+      include ::Preference::Regional
       include ::RateLimit
+      include ::Auth::Base
+
+      public_strict!
 
       protect_from_forgery with: :exception
+
       allow_browser versions: :modern
     end
   end

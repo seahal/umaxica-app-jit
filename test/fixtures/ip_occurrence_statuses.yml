@@ -1,11 +1,15 @@
-NONE:
-  id: NONE
-
-ACTIVE:
+# == Schema Information
+#
+# Table name: ip_occurrence_statuses
+# Database name: occurrence
+#
+#  id :string(255)      default("NONE"), not null, primary key
+#
+# Indexes
+#
+#  index_ip_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+neyo:
+  id: NEYO
+active:
   id: ACTIVE
-
-INACTIVE:
-  id: INACTIVE
-
-BLOCKED:
-  id: BLOCKED

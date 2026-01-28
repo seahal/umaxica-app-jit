@@ -1,9 +1,0 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# Fixture is intentionally empty. These child table fixtures reference parent records
-# that are loaded after them (due to alphabetical fixture loading). This causes
-# foreign key constraint violations. Load child records dynamically in tests instead.
-#
-# Example:
-#   staff = staffs(:one)
-#   staff.staff_identity_passkeys.create!(description: "key1", external_id: SecureRandom.uuid, public_key: "pk", webauthn_id: SecureRandom.random_bytes(32))

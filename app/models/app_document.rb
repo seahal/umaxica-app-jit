@@ -1,29 +1,82 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_documents
+# Database name: document
 #
-#  id               :uuid             not null, primary key
-#  description      :string
-#  title            :string
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  app_document_status_id :string
-#  parent_id        :uuid
-#  prev_id          :uuid
-#  staff_id         :uuid
-#  succ_id          :uuid
+#  id                 :uuid             not null, primary key
+#  expires_at         :datetime         default(Infinity), not null
+#  lock_version       :integer          default(0), not null
+#  permalink          :string(200)      default(""), not null
+#  position           :integer          default(0), not null
+#  published_at       :datetime         default(Infinity), not null
+#  redirect_url       :string
+#  response_mode      :string           default("html"), not null
+#  revision_key       :string           default(""), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  latest_revision_id :uuid
+#  latest_version_id  :uuid
+#  slug_id            :string(32)       default(""), not null
+#  status_id          :string(255)      default("NEYO"), not null
 #
-class AppDocument < BusinessesRecord
-  include ::PublicId
+# Indexes
+#
+#  index_app_documents_on_latest_revision_id           (latest_revision_id)
+#  index_app_documents_on_latest_version_id            (latest_version_id)
+#  index_app_documents_on_permalink                    (permalink) UNIQUE
+#  index_app_documents_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_app_documents_on_slug_id                      (slug_id)
+#  index_app_documents_on_status_id                    (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (latest_revision_id => app_document_revisions.id)
+#  fk_rails_...  (latest_version_id => app_document_versions.id)
+#  fk_rails_...  (status_id => app_document_statuses.id)
+#
 
-  belongs_to :app_document_status, optional: true
+class AppDocument < DocumentRecord
+  include ::SlugId
+  include Document
 
+  belongs_to :app_document_status,
+             class_name: "AppDocumentStatus",
+             foreign_key: :status_id,
+             inverse_of: :app_documents
+  belongs_to :latest_version_record,
+             class_name: "AppDocumentVersion",
+             foreign_key: :latest_version_id,
+             inverse_of: :latest_document,
+             optional: true
+  belongs_to :latest_revision_record,
+             class_name: "AppDocumentRevision",
+             foreign_key: :latest_revision_id,
+             inverse_of: :latest_document,
+             optional: true
+
+  has_many :app_document_versions, dependent: :delete_all, inverse_of: :app_document
+  has_many :app_document_revisions, dependent: :delete_all, inverse_of: :app_document
   has_many :app_document_audits,
            class_name: "AppDocumentAudit",
-           primary_key: "id",
+           foreign_key: :subject_id,
            inverse_of: :app_document,
-           dependent: :restrict_with_error
+           dependent: :delete_all
+  has_many :app_document_tags, dependent: :delete_all, inverse_of: :app_document
+  has_many :tag_masters,
+           through: :app_document_tags,
+           source: :app_document_tag_master
+  has_one :category,
+          class_name: "AppDocumentCategory",
+          dependent: :delete,
+          inverse_of: :app_document
+  has_one :category_master,
+          through: :category,
+          source: :app_document_category_master
+  validates :status_id, length: { maximum: 255 }
 
-  encrypts :title
-  encrypts :description
+  def latest_version
+    app_document_versions.order(created_at: :desc).first!
+  end
 end

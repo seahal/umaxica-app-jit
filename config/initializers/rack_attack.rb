@@ -1,19 +1,22 @@
+# frozen_string_literal: true
+
 require "ipaddr"
 
 class Rack::Attack
   ############################################################
   # 0) Rack::Attack dedicated Redis (required)
   ############################################################
-  Rack::Attack.cache.store = if Rails.env.test?
-    ActiveSupport::Cache::MemoryStore.new
-  else
-    ActiveSupport::Cache::RedisCacheStore.new(
-      url: ENV.fetch("VALKEY_RACK_ATTACK_URL"),
-      namespace: "rack_attack",
-      reconnect_attempts: 3,
-      timeout: 1.0
-    )
-  end
+  Rack::Attack.cache.store =
+    if Rails.env.test?
+      ActiveSupport::Cache::MemoryStore.new
+    else
+      ActiveSupport::Cache::RedisCacheStore.new(
+        url: ENV.fetch("VALKEY_RACK_ATTACK_URL"),
+        namespace: "rack_attack",
+        reconnect_attempts: 3,
+        timeout: 1.0,
+      )
+    end
 
   ############################################################
   # 1) disable throttling in test env
@@ -40,6 +43,22 @@ class Rack::Attack
   end
 
   ############################################################
+  # 6) expensive paths (only what's needed)
+  ############################################################
+  HEAVY_PATHS = [
+    %r{\A/api/search},
+    %r{\A/api/reports},
+    %r{\A/api/exports},
+    %r{\A/documents/export}
+  ].freeze
+
+  ############################################################
+  # 6.1) auth endpoints (credential stuffing / token abuse)
+  ############################################################
+  AUTH_TOKEN_REFRESH_PATH = %r{\A/edge/v1/token/refresh\z}.freeze
+  AUTH_TOKEN_CHECK_PATH = %r{\A/edge/v1/token/check\z}.freeze
+  AUTH_LOGIN_PATH = %r{\A/in/(email|passkey|secret)\z}.freeze
+  ############################################################
   # 3) tenant_key (multi-domain support)
   ############################################################
   def self.tenant_key(req)
@@ -60,18 +79,26 @@ class Rack::Attack
     "#{tenant_key(req)}:#{req.ip}"
   end
 
-  ############################################################
-  # 6) expensive paths (only what's needed)
-  ############################################################
-  HEAVY_PATHS = [
-    %r{\A/api/search},
-    %r{\A/api/reports},
-    %r{\A/api/exports},
-    %r{\A/documents/export}
-  ].freeze
-
   throttle("req/heavy/tenant/ip", limit: 60, period: 1.minute) do |req|
     next unless HEAVY_PATHS.any? { |re| re.match?(req.path) }
+
+    "#{tenant_key(req)}:#{req.ip}"
+  end
+
+  throttle("auth/token_refresh/tenant/ip", limit: 30, period: 1.minute) do |req|
+    next unless req.post? && AUTH_TOKEN_REFRESH_PATH.match?(req.path)
+
+    "#{tenant_key(req)}:#{req.ip}"
+  end
+
+  throttle("auth/token_check/tenant/ip", limit: 300, period: 1.minute) do |req|
+    next unless req.get? && AUTH_TOKEN_CHECK_PATH.match?(req.path)
+
+    "#{tenant_key(req)}:#{req.ip}"
+  end
+
+  throttle("auth/login/tenant/ip", limit: 30, period: 1.minute) do |req|
+    next unless req.post? && AUTH_LOGIN_PATH.match?(req.path)
 
     "#{tenant_key(req)}:#{req.ip}"
   end
@@ -89,13 +116,14 @@ class Rack::Attack
   ############################################################
   # 8) blocked response (simple)
   ############################################################
-  self.throttled_responder = lambda do |request|
-    [
-      429,
-      { "Content-Type" => "application/json" },
-      [ { error: "rate_limited", host: request.host }.to_json ]
-    ]
-  end
+  self.throttled_responder =
+    lambda do |request|
+      [
+        429,
+        { "Content-Type" => "application/json" },
+        [ { error: "rate_limited", host: request.host }.to_json ]
+      ]
+    end
 end
 
 ##############################################################
@@ -109,6 +137,6 @@ ActiveSupport::Notifications.subscribe("rack.attack") do |_name, _start, _finish
     match_type: payload[:match_type],
     host: req&.host,
     ip: req&.ip,
-    path: req&.path
+    path: req&.path,
   )
 end

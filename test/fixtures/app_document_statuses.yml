@@ -1,8 +1,44 @@
-ACTIVE:
+# Auto-generated minimal fixture
+# == Schema Information
+#
+# Table name: app_document_statuses
+# Database name: document
+#
+#  id         :string(255)      default("NEYO"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_app_document_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+neyo:
+  id: NEYO
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
+active:
   id: ACTIVE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
+inactive:
+  id: INACTIVE
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
+pending:
+  id: PENDING
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
+deleted:
+  id: DELETED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 
-DRAFT:
+draft:
   id: DRAFT
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 
-ARCHIVED:
+archived:
   id: ARCHIVED
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>

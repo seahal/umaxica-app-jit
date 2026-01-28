@@ -180,7 +180,7 @@ bundle exec rails test
 ## Verification
 
 All changes follow existing codebase patterns:
-- ✅ Using `GuestsRecord` base class
+- ✅ Using `GuestRecord` base class
 - ✅ Using Argon2 for password hashing
 - ✅ Using ActiveRecord encryption with deterministic mode
 - ✅ Using Minitest for testing

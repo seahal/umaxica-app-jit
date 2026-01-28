@@ -1,7 +1,15 @@
-class AppTimelineAuditEvent < BusinessesRecord
-  include UppercaseId
+# frozen_string_literal: true
 
-  self.table_name = "app_timeline_audit_events"
+# == Schema Information
+#
+# Table name: app_timeline_audit_events
+# Database name: audit
+#
+#  id :string(255)      default("NEYO"), not null, primary key
+#
+
+class AppTimelineAuditEvent < AuditRecord
+  include StringPrimaryKey
 
   has_many :app_timeline_audits,
            class_name: "AppTimelineAudit",

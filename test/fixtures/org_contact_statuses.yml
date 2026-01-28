@@ -1,25 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-none:
-  id: 'NULL_ORG_STATUS'
-  description: 'ROOT'
-
-organization_root:
-  id: 'ORGANIZATION_SITE_STATUS'
-  description: 'ROOT'
-
+# == Schema Information
+#
+# Table name: org_contact_statuses
+# Database name: guest
+#
+#  id :string(255)      not null, primary key
+#
+# Indexes
+#
+#  index_org_contact_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+neyo:
+  id: NEYO
 set_up:
-  id: 'SET_UP'
-  description: 'first step completed'
-
-email_verified:
-  id: 'CHECKED_EMAIL_ADDRESS'
-  description: 'second step completed'
-
-phone_verified:
-  id: 'CHECKED_TELEPHONE_NUMBER'
-  description: 'third step completed'
-
-completed:
-  id: 'COMPLETED_CONTACT_ACTION'
-  description: 'contact completed'
+  id: SET_UP

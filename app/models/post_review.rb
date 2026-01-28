@@ -1,0 +1,37 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: post_reviews
+# Database name: avatar
+#
+#  id                    :string           not null, primary key
+#  comment               :text
+#  decided_at            :timestamptz
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  post_id               :string           not null
+#  post_review_status_id :string           not null
+#  reviewer_actor_id     :string           not null
+#
+# Indexes
+#
+#  index_post_reviews_on_post_id_and_reviewer_actor_id  (post_id,reviewer_actor_id) UNIQUE
+#  index_post_reviews_on_post_review_status_id          (post_review_status_id)
+#  index_post_reviews_on_reviewer_actor_id              (reviewer_actor_id) WHERE (decided_at IS NULL)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (post_id => posts.id)
+#  fk_rails_...  (post_review_status_id => post_review_statuses.id)
+#
+
+class PostReview < AvatarRecord
+  include UuidV7PrimaryKey
+
+  belongs_to :post, inverse_of: :post_reviews
+  belongs_to :post_review_status
+
+  validates :post_id, uniqueness: { scope: :reviewer_actor_id }
+  validates :reviewer_actor_id, presence: true
+end

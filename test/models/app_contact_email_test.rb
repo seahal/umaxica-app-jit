@@ -1,11 +1,58 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: app_contact_emails
+# Database name: guest
+#
+#  id                     :string           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  expires_at             :timestamptz      not null
+#  remaining_views        :integer          default(0), not null
+#  token_digest           :string(255)      default(""), not null
+#  token_expires_at       :timestamptz      default(-Infinity), not null
+#  token_viewed           :boolean          default(FALSE), not null
+#  verifier_attempts_left :integer          default(0), not null
+#  verifier_digest        :string(255)      default(""), not null
+#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  app_contact_id         :uuid             not null
+#
+# Indexes
+#
+#  index_app_contact_emails_on_app_contact_id       (app_contact_id)
+#  index_app_contact_emails_on_email_address        (email_address)
+#  index_app_contact_emails_on_expires_at           (expires_at)
+#  index_app_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (app_contact_id => app_contacts.id)
+#
+
 require "test_helper"
 
 class AppContactEmailTest < ActiveSupport::TestCase
-  def setup
-    @app_contact = app_contacts(:one) # Assuming fixtures exist, otherwise we'll create one
+  setup do
+    # Seed necessary reference data for tests
+    %w[APPLICATION_INQUIRY NEYO].each do |id|
+      AppContactCategory.create_with(created_at: Time.current, updated_at: Time.current).find_or_create_by(id: id)
+    end
+    %w[NEYO SET_UP CHECKED_EMAIL_ADDRESS CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION].each do |id|
+      AppContactStatus.find_or_create_by(id: id)
+    end
+
+    @app_contact = AppContact.create!(
+      public_id: "test_contact_1",
+      confirm_policy: "1",
+    )
+
     @email = AppContactEmail.new(
       app_contact: @app_contact,
-      email_address: "test@example.com"
+      email_address: "test@example.com",
     )
   end
 
@@ -90,41 +137,47 @@ class AppContactEmailTest < ActiveSupport::TestCase
     end
   end
 
-  # rubocop:disable Minitest/MultipleAssertions
-  test "can_resend_verifier? logic" do
-    # Fresh new record
-    assert_not @email.can_resend_verifier? # nil verifier_expires_at is not expired but !activated is true. Wait, logic check:
-    # Logic: !activated && (verifier_expired? || verifier_attempts_left <= 0)
-    # New record: activated=false, verifier_expires_at=nil (expired?=false), left=nil (fail comparison?).
-    # Let's check implementation behavior for nil.
-    # Ruby: nil <= 0 raises ArgumentError.
-    # If verifier_attempts_left is nil, we might have an issue.
-    # Let's save first to set defaults if any? No default in migration usually implies nil.
-    # Let's look at the model: `verifier_attempts_left` is set in `generate_verifier!`.
-
-    # If it's a new record that never had a code generated, `verifier_attempts_left` is likely nil.
-    # The code `verifier_attempts_left <= 0` will crash if nil.
-    # BUT, if we assume this method is called after generation or we handle nil gracefully.
-    # Actually, looking at the code: `return false if verifier_attempts_left <= 0` in verify_code.
-    # So we should probably ensure generate_verifier! is called or defaults are set.
-
+  test "verifier_expired? returns true when verifier has expired" do
     @email.generate_verifier!
 
-    assert_not @email.can_resend_verifier? # valid and fresh
+    travel 16.minutes do
+      assert_predicate @email, :verifier_expired?
+    end
+  end
 
-    @email.update!(verifier_attempts_left: 0)
+  test "verifier_expired? returns false when verifier has not expired" do
+    @email.generate_verifier!
 
-    assert_predicate @email, :can_resend_verifier?
+    travel 10.minutes do
+      assert_not @email.verifier_expired?
+    end
+  end
 
+  test "can_resend_verifier? returns true when not activated and expired" do
     @email.generate_verifier!
 
     travel 16.minutes do
       assert_predicate @email, :can_resend_verifier?
     end
+  end
 
+  test "can_resend_verifier? returns true when not activated and no attempts left" do
+    @email.generate_verifier!
+    @email.update!(verifier_attempts_left: 0)
+
+    assert_predicate @email, :can_resend_verifier?
+  end
+
+  test "can_resend_verifier? returns false when already activated" do
+    @email.generate_verifier!
     @email.update!(activated: true)
 
     assert_not @email.can_resend_verifier?
   end
-  # rubocop:enable Minitest/MultipleAssertions
+
+  test "can_resend_verifier? returns false when not activated but still has attempts and not expired" do
+    @email.generate_verifier!
+
+    assert_not @email.can_resend_verifier?
+  end
 end

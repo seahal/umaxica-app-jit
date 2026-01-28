@@ -1,11 +1,45 @@
+# == Schema Information
+#
+# Table name: org_timelines
+# Database name: news
+#
+#  id            :uuid             not null, primary key
+#  expires_at    :datetime         default(Infinity), not null
+#  lock_version  :integer          default(0), not null
+#  position      :integer          default(0), not null
+#  published_at  :datetime         default(Infinity), not null
+#  redirect_url  :string
+#  response_mode :string           default("html"), not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  slug_id       :string(32)       default(""), not null
+#  status_id     :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_org_timelines_on_published_at_and_expires_at  (published_at,expires_at)
+#  index_org_timelines_on_slug_id                      (slug_id)
+#  index_org_timelines_on_status_id                    (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => org_timeline_statuses.id)
+#
+
 one:
-  title: Org Timeline One
-  description: First org timeline
-  org_timeline_status_id: ACTIVE
-  public_id: "fwaWyhV2cuzxdcc-AoV6s"
+  status_id: "NEYO"
+  slug_id: "one-org-timeline-0001"
+  response_mode: "html"
+  published_at: <%= Time.current %>
+  expires_at: <%= 1.day.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
 
 two:
-  title: Org Timeline Two
-  description: Second org timeline
-  org_timeline_status_id: ACTIVE
-  public_id: "ZRe2gUG0LDfVJ_vx0sSdH"
+  status_id: "NEYO"
+  slug_id: "two-org-timeline-0002"
+  response_mode: "html"
+  published_at: <%= Time.current %>
+  expires_at: <%= 1.day.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

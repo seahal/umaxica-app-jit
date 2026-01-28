@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameComContactHistoriesToComContactAudits < ActiveRecord::Migration[8.2]
   def change
     # Rename the table from com_contact_histories to com_contact_audits

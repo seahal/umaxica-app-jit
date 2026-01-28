@@ -1,0 +1,27 @@
+# frozen_string_literal: true
+
+module Sign
+  module Org
+    module Edge
+      module V1
+        class BaseController < Sign::Org::ApplicationController
+          public_strict!
+          before_action :ensure_json_request
+          skip_before_action :set_region
+
+          private
+
+            def authenticate!
+              return if logged_in?
+
+              render json: { error: "Unauthorized" }, status: :unauthorized
+            end
+
+            def ensure_json_request
+              request.format = :json
+            end
+        end
+      end
+    end
+  end
+end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdatePublicIdConstraintsOnContacts < ActiveRecord::Migration[8.2]
   def up
     change_column :app_contacts, :public_id, :string, limit: 21, null: false

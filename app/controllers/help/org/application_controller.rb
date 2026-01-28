@@ -1,17 +1,21 @@
+# frozen_string_literal: true
+
 module Help
   module Org
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Auth::Base
 
-      protect_from_forgery with: :exception
-      include ::DefaultUrlOptions
-
-      protect_from_forgery with: :exception
+      public_strict!
+      include ::Preference::Regional
       include Pundit::Authorization
 
       protect_from_forgery with: :exception
 
       allow_browser versions: :modern
+
+      before_action :set_locale
+      before_action :set_timezone
 
       rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 

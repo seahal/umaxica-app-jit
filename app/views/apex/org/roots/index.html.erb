@@ -1,0 +1,28 @@
+<section class="mx-auto mb-10 max-w-2xl rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-sm">
+  <h1 class="text-2xl font-semibold text-slate-900">
+    Welcome to <%= ENV["BRAND_NAME"] %> (org)
+  </h1>
+  <p class="mt-2 text-sm text-slate-600">
+    <%= t("apex.org.preferences.footer.preference") %> へすぐ移動できます。
+  </p>
+
+  <ul class="mt-6 space-y-2 text-sm">
+    <li>
+      <a class="block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+         href="https://<%= ENV['EDGE_STAFF_URL'] %>"
+         data-turbo-frame="_top">
+        <%= t("apex.org.preferences.footer.home") %>
+      </a>
+    </li>
+    <li>
+      <%= link_to t("apex.org.configurations.title"), apex_org_configuration_path,
+                  class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50",
+                  data: { turbo_frame: "_top" } %>
+    </li>
+    <li>
+      <%= link_to t("apex.org.preferences.footer.preference"), apex_org_preference_url,
+                  class: "block rounded-lg border border-slate-200 px-4 py-3 text-slate-700 transition hover:border-slate-300 hover:bg-slate-50",
+                  data: { turbo_frame: "_top" } %>
+    </li>
+  </ul>
+</section>

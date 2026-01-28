@@ -1,12 +1,13 @@
+# frozen_string_literal: true
+
 module Help
   module App
     class ApplicationController < ActionController::Base
       include ::RateLimit
+      include ::Auth::Base
 
-      protect_from_forgery with: :exception
-      include ::DefaultUrlOptions
-
-      protect_from_forgery with: :exception
+      public_strict!
+      include ::Preference::Regional
       include Pundit::Authorization
 
       protect_from_forgery with: :exception

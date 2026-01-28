@@ -1,17 +1,53 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: users
+# Database name: principal
 #
-#  id          :uuid             not null, primary key
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  webauthn_id :string
+#  id                      :uuid             not null, primary key
+#  last_reauth_at          :datetime
+#  lock_version            :integer          default(0), not null
+#  withdraw_cooldown_until :datetime
+#  withdraw_requested_at   :datetime
+#  withdraw_scheduled_at   :datetime
+#  withdrawn_at            :datetime         default(Infinity)
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  public_id               :string(255)      default("")
+#  status_id               :string(255)      default("ACTIVE"), not null
 #
+# Indexes
+#
+#  index_users_on_public_id                (public_id) UNIQUE
+#  index_users_on_status_id                (status_id)
+#  index_users_on_withdraw_cooldown_until  (withdraw_cooldown_until)
+#  index_users_on_withdraw_scheduled_at    (withdraw_scheduled_at)
+#  index_users_on_withdrawn_at             (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => user_statuses.id)
+#
+
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
+  NIL_UUID = "00000000-0000-0000-0000-000000000000"
+
   def setup
-    @user = users(:one)
+    UserStatus.find_or_create_by!(id: "ACTIVE")
+    UserTokenStatus.find_or_create_by!(id: "NONE")
+    UserTelephoneStatus.find_or_create_by!(id: "NONE")
+    UserEmailStatus.find_or_create_by!(id: "NONE")
+    UserPasskeyStatus.find_or_create_by!(id: "NONE")
+    UserSecretStatus.find_or_create_by!(id: "NONE")
+    UserSocialAppleStatus.find_or_create_by!(id: "NONE")
+    UserSocialGoogleStatus.find_or_create_by!(id: "NONE")
+    @user =
+      User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
+        u.status_id = "ACTIVE"
+      end
   end
 
   test "should be valid" do
@@ -23,14 +59,14 @@ class UserTest < ActiveSupport::TestCase
     assert_not_nil @user.updated_at
   end
 
-  test "should have one user_identity_social_apple association" do
-    assert_respond_to @user, :user_identity_social_apple
-    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_social_apple).macro
+  test "should have one user_social_apple association" do
+    assert_respond_to @user, :user_social_apple
+    assert_equal :has_one, @user.class.reflect_on_association(:user_social_apple).macro
   end
 
-  test "should have one user_identity_social_google association" do
-    assert_respond_to @user, :user_identity_social_google
-    assert_equal :has_one, @user.class.reflect_on_association(:user_identity_social_google).macro
+  test "should have one user_social_google association" do
+    assert_respond_to @user, :user_social_google
+    assert_equal :has_one, @user.class.reflect_on_association(:user_social_google).macro
   end
 
   test "staff? should return false" do
@@ -44,33 +80,85 @@ class UserTest < ActiveSupport::TestCase
   test "should set default status before creation" do
     user = User.create!
 
-    assert_equal UserIdentityStatus::NONE, user.user_identity_status_id
+    assert_equal UserStatus::ACTIVE, user.status_id
   end
 
-  test "should have many user_identity_emails association" do
-    assert_respond_to @user, :user_identity_emails
-    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_emails).macro
+  test "should have many user_emails association" do
+    assert_respond_to @user, :user_emails
+    assert_equal :has_many, @user.class.reflect_on_association(:user_emails).macro
   end
 
-  test "should have many user_identity_secrets association" do
-    assert_respond_to @user, :user_identity_secrets
-    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_secrets).macro
+  test "should have many user_secrets association" do
+    assert_respond_to @user, :user_secrets
+    assert_equal :has_many, @user.class.reflect_on_association(:user_secrets).macro
   end
 
-  test "should have many user_identity_passkeys association" do
-    assert_respond_to @user, :user_identity_passkeys
-    assert_equal :has_many, @user.class.reflect_on_association(:user_identity_passkeys).macro
+  test "should have many user_passkeys association" do
+    assert_respond_to @user, :user_passkeys
+    assert_equal :has_many, @user.class.reflect_on_association(:user_passkeys).macro
   end
 
-  test "has_role? should correctly identify assigned roles" do
-    workspace = Workspace.create!(name: "Test Workspace")
-    editor_role = Role.create!(key: "editor", name: "Editor", organization: workspace)
-    Role.create!(key: "viewer", name: "Viewer", organization: workspace)
+  test "boundary values: public_id must be unique" do
+    @user.public_id = "duplicate-id"
+    @user.save!
 
-    # Assign editor role to the user
-    RoleAssignment.create!(user: @user, role: editor_role)
-
-    assert @user.has_role?("editor")
-    assert_not @user.has_role?("viewer")
+    duplicate_user = User.new(public_id: "duplicate-id")
+    assert_not duplicate_user.valid?
+    assert_not_empty duplicate_user.errors[:public_id]
   end
+
+  test "boundary values: public_id length" do
+    @user.public_id = "a" * 22
+    assert_not @user.valid?
+    assert_not_empty @user.errors[:public_id]
+  end
+
+  test "association deletion: destroys dependent user_emails" do
+    email = UserEmail.create!(user: @user, address: "delete_test@example.com")
+    assert_difference("UserEmail.count", -1) do
+      @user.destroy
+    end
+    assert_raise(ActiveRecord::RecordNotFound) { email.reload }
+  end
+
+  test "association deletion: destroys dependent user_telephones" do
+    phone = UserTelephone.create!(user: @user, number: "+15551234567")
+    assert_difference("UserTelephone.count", -1) do
+      @user.destroy
+    end
+    assert_raise(ActiveRecord::RecordNotFound) { phone.reload }
+  end
+
+  test "association deletion: destroys dependent user_tokens" do
+    token = UserToken.create!(
+      user: @user,
+      refresh_expires_at: 1.day.from_now,
+    )
+    assert_difference("UserToken.count", -@user.user_tokens.count) do
+      @user.destroy
+    end
+    assert_raise(ActiveRecord::RecordNotFound) { token.reload }
+  end
+
+  test "owned_avatars association" do
+    capability = AvatarCapability.create!(key: "user-owned-#{SecureRandom.hex(4)}", name: "User")
+    handle = Handle.create!(
+      handle: "owned_handle-#{SecureRandom.hex(4)}",
+      cooldown_until: Time.current,
+    )
+    avatar = Avatar.create!(capability: capability, active_handle: handle, moniker: "Owned")
+    avatar.avatar_assignments.create!(user: @user, role: "owner")
+
+    assert_includes @user.owned_avatars, avatar
+  end
+
+  private
+
+    def root_workspace
+      Workspace.find_or_create_by!(id: NIL_UUID) do |workspace|
+        workspace.name = "Root Workspace"
+        workspace.domain = "root.example.com"
+        workspace.parent_organization = NIL_UUID
+      end
+    end
 end

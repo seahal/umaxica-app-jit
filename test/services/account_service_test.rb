@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class AccountServiceTest < ActiveSupport::TestCase
@@ -84,7 +86,7 @@ class AccountServiceTest < ActiveSupport::TestCase
 
   test "find_by with email should find user" do
     email = "find_user@example.com"
-    @user.user_identity_emails.create!(address: email, confirm_policy: true)
+    @user.user_emails.create!(address: email, confirm_policy: true)
 
     account = AccountService.find_by(email: email)
 
@@ -94,7 +96,7 @@ class AccountServiceTest < ActiveSupport::TestCase
 
   test "find_by with email should find staff" do
     email = "find_staff@example.com"
-    @staff.staff_identity_emails.create!(address: email, confirm_policy: true)
+    @staff.staff_emails.create!(address: email, confirm_policy: true)
 
     account = AccountService.find_by(email: email)
 
@@ -104,10 +106,10 @@ class AccountServiceTest < ActiveSupport::TestCase
 
   test "find_by with telephone should find user" do
     number = "1234567890"
-    @user.user_identity_telephones.create!(
+    @user.user_telephones.create!(
       number: number,
       confirm_policy: true,
-      confirm_using_mfa: true
+      confirm_using_mfa: true,
     )
 
     account = AccountService.find_by(telephone: number)
@@ -260,8 +262,8 @@ class AccountServiceTest < ActiveSupport::TestCase
 
     assert_nil account.primary_email
 
-    @user.user_identity_emails.create!(address: "first@example.com", confirm_policy: true)
-    @user.user_identity_emails.create!(address: "second@example.com", confirm_policy: true)
+    @user.user_emails.create!(address: "first@example.com", confirm_policy: true)
+    @user.user_emails.create!(address: "second@example.com", confirm_policy: true)
 
     assert_equal "first@example.com", account.primary_email
   end
@@ -271,15 +273,15 @@ class AccountServiceTest < ActiveSupport::TestCase
 
     assert_nil account.primary_phone
 
-    @user.user_identity_telephones.create!(
+    @user.user_telephones.create!(
       number: "111",
       confirm_policy: true,
-      confirm_using_mfa: true
+      confirm_using_mfa: true,
     )
-    @user.user_identity_telephones.create!(
+    @user.user_telephones.create!(
       number: "222",
       confirm_policy: true,
-      confirm_using_mfa: true
+      confirm_using_mfa: true,
     )
 
     assert_equal "111", account.primary_phone
@@ -336,7 +338,7 @@ class AccountServiceTest < ActiveSupport::TestCase
 
     add_user_identities(@user)
 
-    assert_equal [ :email, :oauth, :phone ], account.available_authentication_methods.sort
+    assert_equal %i[email oauth phone], account.available_authentication_methods.sort
   end
 
   test "staff authenticatable_with? supports email only" do
@@ -353,9 +355,11 @@ class AccountServiceTest < ActiveSupport::TestCase
     account = AccountService.new(@user)
 
     assert_not account.oauth_configured?
-    @user.create_user_identity_social_apple!(uid: "testval",
-                                             token: "test_oauth_token",
-                                             expires_at: 1.week.from_now.to_i)
+    @user.create_user_social_apple!(
+      uid: "testval",
+      token: "test_oauth_token",
+      expires_at: 1.week.from_now.to_i,
+    )
 
     assert_predicate account, :oauth_configured?
   end
@@ -394,7 +398,7 @@ class AccountServiceTest < ActiveSupport::TestCase
 
   test "inspect should return detailed string representation" do
     account = AccountService.new(@user)
-    @user.user_identity_emails.create!(address: "inspect@example.com", confirm_policy: true)
+    @user.user_emails.create!(address: "inspect@example.com", confirm_policy: true)
 
     string = account.inspect
 
@@ -406,21 +410,23 @@ class AccountServiceTest < ActiveSupport::TestCase
 
     # Helper method to add various identities to a user for testing
     def add_user_identities(user)
-      user.user_identity_emails.create!(address: "test@example.com", confirm_policy: true)
-      user.user_identity_telephones.create!(
+      user.user_emails.create!(address: "test@example.com", confirm_policy: true)
+      user.user_telephones.create!(
         number: "123-456-7890",
         confirm_policy: true,
-        confirm_using_mfa: true
+        confirm_using_mfa: true,
       )
-      unless user.user_identity_social_apple
-        user.create_user_identity_social_apple!(uid: "testval_#{SecureRandom.hex(8)}",
-                                                token: "test_apple_token_#{SecureRandom.hex(8)}",
-                                                expires_at: 1.week.from_now.to_i)
+      unless user.user_social_apple
+        user.create_user_social_apple!(
+          uid: "testval_#{SecureRandom.hex(8)}",
+          token: "test_apple_token_#{SecureRandom.hex(8)}",
+          expires_at: 1.week.from_now.to_i,
+        )
       end
     end
 
     # Helper method to add email to staff for testing
     def add_staff_email(staff)
-      staff.staff_identity_emails.create!(address: "staff@example.com", confirm_policy: true)
+      staff.staff_emails.create!(address: "staff@example.com", confirm_policy: true)
     end
 end

@@ -1,15 +1,30 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: app_timeline_audit_levels
+# Database name: audit
+#
+#  id :string(255)      default("NEYO"), not null, primary key
+#
+
 require "test_helper"
 
 class AppTimelineAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = app_timeline_audit_levels(:none)
-    timeline = AppTimeline.new
-    timeline.save!(validate: false)
+    level = AppTimelineAuditLevel.find_or_create_by!(id: "TEST_LEVEL")
+    AppTimelineAuditEvent.find_or_create_by!(id: "CREATED")
+    timeline = AppTimeline.create!(
+      response_mode: "html",
+      published_at: 1.hour.ago,
+      expires_at: 1.hour.from_now,
+      position: 0,
+    )
 
     AppTimelineAudit.create!(
       app_timeline: timeline,
-      app_timeline_audit_event: app_timeline_audit_events(:CREATED),
-      app_timeline_audit_level: level
+      app_timeline_audit_event: AppTimelineAuditEvent.find("CREATED"),
+      app_timeline_audit_level: level,
     )
 
     assert_no_difference "AppTimelineAuditLevel.count" do
@@ -25,5 +40,11 @@ class AppTimelineAuditLevelTest < ActiveSupport::TestCase
     assert_difference "AppTimelineAuditLevel.count", -1 do
       assert level.destroy
     end
+  end
+
+  test "validates length of id" do
+    record = AppTimelineAuditLevel.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
   end
 end

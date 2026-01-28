@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 module News::App
@@ -5,7 +7,7 @@ module News::App
     test "includes expected concerns" do
       controller = ApplicationController.new
 
-      assert_includes controller.class, DefaultUrlOptions
+      assert_includes controller.class, Preference::Regional
       assert_includes controller.class, RateLimit
     end
 

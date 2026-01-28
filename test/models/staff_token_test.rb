@@ -1,14 +1,56 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: staff_tokens
+# Database name: token
+#
+#  id                       :uuid             not null, primary key
+#  compromised_at           :datetime
+#  last_used_at             :datetime
+#  refresh_expires_at       :datetime         not null
+#  refresh_token_digest     :binary
+#  refresh_token_generation :integer          default(0), not null
+#  revoked_at               :datetime
+#  rotated_at               :datetime
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  public_id                :string(21)       default(""), not null
+#  refresh_token_family_id  :string
+#  staff_id                 :uuid             not null
+#  staff_token_kind_id      :string           default("BROWSER_WEB"), not null
+#  staff_token_status_id    :string           default("NEYO"), not null
+#
+# Indexes
+#
+#  index_staff_tokens_on_compromised_at           (compromised_at)
+#  index_staff_tokens_on_public_id                (public_id) UNIQUE
+#  index_staff_tokens_on_refresh_expires_at       (refresh_expires_at)
+#  index_staff_tokens_on_refresh_token_digest     (refresh_token_digest) UNIQUE
+#  index_staff_tokens_on_refresh_token_family_id  (refresh_token_family_id)
+#  index_staff_tokens_on_revoked_at               (revoked_at)
+#  index_staff_tokens_on_staff_id                 (staff_id)
+#  index_staff_tokens_on_staff_token_kind_id      (staff_token_kind_id)
+#  index_staff_tokens_on_staff_token_status_id    (staff_token_status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (staff_token_kind_id => staff_token_kinds.id)
+#  fk_rails_...  (staff_token_status_id => staff_token_statuses.id)
+#
+
 require "test_helper"
 
 # Covers refresh token behavior and session constraints for staff.
 class StaffTokenTest < ActiveSupport::TestCase
   def setup
-    @staff = staffs(:one)
-    @token = StaffToken.create!(staff: @staff)
+    @staff = Staff.find_by!(public_id: "bcde3456")
+
+    @token = StaffToken.create!(staff: @staff, staff_token_status_id: "ACTIVE")
   end
 
-  test "inherits from TokensRecord" do
-    assert_operator StaffToken, :<, TokensRecord
+  test "inherits from TokenRecord" do
+    assert_operator StaffToken, :<, TokenRecord
   end
 
   test "belongs to staff" do
@@ -45,25 +87,23 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "can load one fixture" do
-    token_one = staff_tokens(:one)
+    token_one = StaffToken.find_by!(public_id: "one_staff_token_00001")
 
     assert_not_nil token_one
     assert_not_nil token_one.staff_id
   end
 
   test "can load two fixture" do
-    token_two = staff_tokens(:two)
+    token_two = StaffToken.find_by!(public_id: "two_staff_token_00001")
 
     assert_not_nil token_two
     assert_not_nil token_two.staff_id
   end
 
   test "timestamp is set on creation" do
-    token = StaffToken.create!(staff: @staff)
-
-    assert_not_nil token.created_at
-    assert_not_nil token.updated_at
-    assert_operator token.created_at, :<=, token.updated_at
+    assert_not_nil @token.created_at
+    assert_not_nil @token.updated_at
+    assert_operator @token.created_at, :<=, @token.updated_at
   end
 
   test "timestamp updates on save" do
@@ -75,7 +115,7 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum concurrent sessions per staff" do
-    staff = Staff.create!(staff_identity_status: staff_identity_statuses(:none))
+    staff = Staff.create!(staff_status: StaffStatus.find("NEYO"))
     StaffToken::MAX_SESSIONS_PER_STAFF.times do
       StaffToken.create!(staff: staff)
     end
@@ -87,49 +127,59 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "refresh token digest updates and authenticates" do
-    token = StaffToken.create!(staff: @staff)
+    @token.refresh_token = "verifier-value"
+    @token.save!
 
-    token.refresh_token = "verifier-value"
-    token.save!
-
-    assert_predicate token.refresh_token_digest, :present?
-    assert token.authenticate_refresh_token("verifier-value")
-    assert_not token.authenticate_refresh_token("wrong-value")
+    assert_predicate @token.refresh_token_digest, :present?
+    assert @token.authenticate_refresh_token("verifier-value")
+    assert_not @token.authenticate_refresh_token("wrong-value")
   end
 
   test "active state reflects revoked and expired refresh tokens" do
-    token = StaffToken.create!(staff: @staff)
+    assert_predicate @token, :active?
 
-    assert_predicate token, :active?
+    @token.update!(revoked_at: Time.current)
+    assert_predicate @token, :revoked?
+    assert_not @token.active?
 
-    token.update!(revoked_at: Time.current)
-    assert_predicate token, :revoked?
-    assert_not token.active?
-
-    token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
-    assert_predicate token, :expired_refresh?
-    assert_not token.active?
+    @token.update!(revoked_at: nil, refresh_expires_at: 1.day.ago)
+    assert_predicate @token, :expired_refresh?
+    assert_not @token.active?
   end
 
   test "rotate_refresh_token! updates digest and timestamps" do
-    token = StaffToken.create!(staff: @staff)
-    old_digest = token.refresh_token_digest
+    old_digest = @token.refresh_token_digest
 
-    new_token = token.rotate_refresh_token!
+    new_token = @token.rotate_refresh_token!
 
-    assert_match(/\A#{token.public_id}\./, new_token)
-    assert_not_equal old_digest, token.refresh_token_digest
-    assert_predicate token.rotated_at, :present?
-    assert_predicate token.last_used_at, :present?
+    assert_match(/\A#{@token.public_id}\./, new_token)
+    assert_not_equal old_digest, @token.refresh_token_digest
+    assert_predicate @token.last_used_at, :present?
   end
 
-  test "parse_refresh_token splits public_id and verifier" do
-    token = StaffToken.create!(staff: @staff)
-    raw = token.rotate_refresh_token!
+  test "rotate_refresh_token! generates token that authenticates" do
+    raw = @token.rotate_refresh_token!
 
     public_id, verifier = StaffToken.parse_refresh_token(raw)
 
-    assert_equal token.public_id, public_id
+    assert_equal @token.public_id, public_id
+    assert @token.authenticate_refresh_token(verifier)
+    assert_not @token.authenticate_refresh_token("wrong-value")
+  end
+
+  test "parse_refresh_token splits public_id and verifier" do
+    raw = @token.rotate_refresh_token!
+
+    public_id, verifier = StaffToken.parse_refresh_token(raw)
+
+    assert_equal @token.public_id, public_id
     assert_predicate verifier, :present?
+  end
+  test "sha3 digest matches hexdigest packed bytes" do
+    raw1 = @token.send(:digest_refresh_token, "B")
+    hex = SHA3::Digest::SHA3_384.hexdigest("B")
+    raw2 = [ hex ].pack("H*")
+
+    assert ActiveSupport::SecurityUtils.secure_compare(raw1, raw2)
   end
 end

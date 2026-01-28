@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class News::App::HealthsControllerTest < ActionDispatch::IntegrationTest

@@ -1,0 +1,127 @@
+# frozen_string_literal: true
+
+module Core
+  module App
+    class ContactsController < Core::App::ApplicationController
+      include ::RateLimit
+      include CloudflareTurnstile
+      include Common::Otp
+
+      before_action :set_contact, only: %i[show edit]
+
+      def show
+      end
+
+      def new
+        category_id = validate_category_id(params[:category])
+        @contact = AppContact.new(category_id: category_id)
+        @email_address = ""
+        @telephone_number = ""
+        @contact_categories = AppContactCategory.all
+      end
+
+      def edit
+        @contact_categories = AppContactCategory.all
+      end
+
+      def create
+        # Cloudflare Turnstile validation
+        turnstile_result = cloudflare_turnstile_validation
+
+        # Create contact with nested associations
+        @contact = AppContact.new(
+          category_id: params.dig(:app_contact, :category_id),
+          confirm_policy: params.dig(:app_contact, :confirm_policy),
+        )
+
+        # Build associated email and telephone
+        @email = @contact.app_contact_emails.build(
+          email_address: params.dig(:app_contact, :email_address),
+        )
+
+        @telephone = @contact.app_contact_telephones.build(
+          telephone_number: params.dig(:app_contact, :telephone_number),
+        )
+
+        # TODO: Inject error into @contact here and display error message.
+        unless turnstile_result["success"]
+          @contact.errors.add(:base, "ロボットではないことの確認に失敗しました。もう一度お試しください。")
+          @email_address = params.dig(:app_contact, :email_address) || ""
+          @telephone_number = params.dig(:app_contact, :telephone_number) || ""
+          @contact_categories = AppContactCategory.all
+          render :new, status: :unprocessable_content
+          return
+        end
+
+        if @contact.save
+          # Update status to SET_UP
+          @contact.update!(status_id: "SET_UP")
+
+          # Generate HOTP and save to email record
+          token = @email.generate_hotp!
+
+          # Send email with HOTP code
+          Email::App::ContactMailer.with(
+            email_address: @email.email_address,
+            pass_code: token,
+          ).create.deliver_later
+
+          # Redirect with proper host options
+          redirect_to new_core_app_contact_email_url(
+            contact_id: @contact.public_id,
+            **core_service_redirect_options,
+          ), notice: I18n.t("help.app.contacts.create.success")
+        else
+          # Validation failed: re-render form with errors
+          @email_address = params.dig(:app_contact, :email_address) || ""
+          @telephone_number = params.dig(:app_contact, :telephone_number) || ""
+          @contact_categories = AppContactCategory.all
+          render :new, status: :unprocessable_content
+        end
+      end
+
+      private
+
+        def validate_category_id(category_param)
+          return nil if category_param.blank?
+
+          if AppContactCategory.exists?(id: category_param)
+            category_param
+          else
+            Rails.event.notify(
+              "contact.invalid_category",
+              category_param: category_param,
+              controller: "core/app/contacts",
+            )
+            nil
+          end
+        end
+
+        def core_service_redirect_options
+          {
+            host: core_service_host,
+            port: request.port,
+            protocol: request.protocol.delete_suffix("://")
+          }.compact
+        end
+
+        def core_service_host
+          host_value = ENV["CORE_SERVICE_URL"].presence || request.host
+          return request.host if host_value.blank?
+
+          # Extract hostname from URL or host string, removing port if present
+          begin
+            uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
+            uri.host || host_value.split(":").first
+          rescue URI::InvalidURIError
+            # If parsing fails, try to extract hostname by removing port
+            host_value.split(":").first
+          end
+        end
+
+        def set_contact
+          @contact = AppContact.find_by!(public_id: params[:id])
+        end
+    end
+  end
+end

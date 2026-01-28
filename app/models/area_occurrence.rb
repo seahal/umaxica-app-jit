@@ -1,14 +1,51 @@
-class AreaOccurrence < UniversalRecord
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: area_occurrences
+# Database name: occurrence
+#
+#  id         :uuid             not null, primary key
+#  body       :string(255)      default(""), not null
+#  expires_at :datetime         not null
+#  memo       :string(1024)     default(""), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  public_id  :string(21)       default(""), not null
+#  status_id  :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_area_occurrences_on_body        (body) UNIQUE
+#  index_area_occurrences_on_expires_at  (expires_at)
+#  index_area_occurrences_on_public_id   (public_id) UNIQUE
+#  index_area_occurrences_on_status_id   (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => area_occurrence_statuses.id)
+#
+
+class AreaOccurrence < OccurrenceRecord
   include PublicId
+  include Occurrence
 
   belongs_to :area_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :area_occurrences
+  has_many :area_domain_occurrences, dependent: :destroy, inverse_of: :area_occurrence
+  has_many :domain_occurrences, through: :area_domain_occurrences
+  has_many :area_email_occurrences, dependent: :destroy, inverse_of: :area_occurrence
+  has_many :email_occurrences, through: :area_email_occurrences
+  has_many :area_ip_occurrences, dependent: :destroy, inverse_of: :area_occurrence
+  has_many :ip_occurrences, through: :area_ip_occurrences
+  has_many :area_staff_occurrences, dependent: :destroy, inverse_of: :area_occurrence
+  has_many :staff_occurrences, through: :area_staff_occurrences
+  has_many :area_telephone_occurrences, dependent: :destroy, inverse_of: :area_occurrence
+  has_many :telephone_occurrences, through: :area_telephone_occurrences
+  has_many :area_user_occurrences, dependent: :destroy, inverse_of: :area_occurrence
+  has_many :user_occurrences, through: :area_user_occurrences
+  has_many :area_zip_occurrences, dependent: :destroy, inverse_of: :area_occurrence
+  has_many :zip_occurrences, through: :area_zip_occurrences
 
-  validates :public_id,
-            presence: true,
-            length: { is: 21 },
-            format: { with: /\A[A-Za-z0-9_-]{21}\z/ },
-            uniqueness: true
-  validates :body, presence: true, uniqueness: true
-  validates :status_id, presence: true
-  validates :memo, length: { maximum: 1024 }, allow_nil: true
+  validates :body, length: { maximum: 255 }
+  validates :status_id, length: { maximum: 255 }
 end

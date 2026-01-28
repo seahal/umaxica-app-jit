@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddActorFieldsToComContactHistories < ActiveRecord::Migration[8.2]
   def change
     change_table :com_contact_histories, bulk: true do |t|

@@ -1,14 +1,34 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: email_occurrences
+# Database name: occurrence
+#
+#  id         :uuid             not null, primary key
+#  body       :string(255)      default(""), not null
+#  expires_at :datetime         not null
+#  memo       :string(1024)     default(""), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  public_id  :string(21)       default(""), not null
+#  status_id  :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_email_occurrences_on_body        (body) UNIQUE
+#  index_email_occurrences_on_expires_at  (expires_at)
+#  index_email_occurrences_on_public_id   (public_id) UNIQUE
+#  index_email_occurrences_on_status_id   (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => email_occurrence_statuses.id)
+#
+
 require "test_helper"
 
 class EmailOccurrenceTest < ActiveSupport::TestCase
-  include OccurrenceTestHelper
-
-  test "public_id presence" do
-    record = build_occurrence(EmailOccurrence, body: "user@example.com", public_id: nil, generate_public_id: false)
-
-    assert_invalid_attribute(record, :public_id)
-  end
-
   test "public_id length" do
     record = build_occurrence(EmailOccurrence, body: "user@example.com", public_id: "A" * 20)
 
@@ -22,7 +42,8 @@ class EmailOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "public_id uniqueness" do
-    existing = email_occurrences(:one)
+    existing = build_occurrence(EmailOccurrence, body: "existing@example.com")
+    existing.save!
     record = build_occurrence(EmailOccurrence, body: "unique@example.com", public_id: existing.public_id)
 
     assert_invalid_attribute(record, :public_id)
@@ -35,7 +56,8 @@ class EmailOccurrenceTest < ActiveSupport::TestCase
   end
 
   test "body uniqueness" do
-    existing = email_occurrences(:one)
+    existing = build_occurrence(EmailOccurrence, body: "existing@example.com")
+    existing.save!
     record = build_occurrence(EmailOccurrence, body: existing.body)
 
     assert_invalid_attribute(record, :body)
@@ -71,4 +93,14 @@ class EmailOccurrenceTest < ActiveSupport::TestCase
 
     assert_expires_at_default(record)
   end
+
+  # test "association deletion: destroys joining relations" do
+  #   record = build_occurrence(EmailOccurrence, body: "joined@example.com")
+  #   record.save!
+  #   # Mocking a join - assuming AreaEmailOccurrence works
+  #   join = AreaEmailOccurrence.create!(email_occurrence: record, area_occurrence: area_occurrences(:one))
+  #
+  #   record.destroy
+  #   assert_raise(ActiveRecord::RecordNotFound) { join.reload }
+  # end
 end

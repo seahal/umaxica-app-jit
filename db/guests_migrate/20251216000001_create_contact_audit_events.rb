@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Rails/CreateTableWithTimestamps
 class CreateContactAuditEvents < ActiveRecord::Migration[8.2]
   def change
@@ -5,15 +7,6 @@ class CreateContactAuditEvents < ActiveRecord::Migration[8.2]
     create_table :com_contact_audit_events, id: :string, limit: 255
     create_table :app_contact_audit_events, id: :string, limit: 255
     create_table :org_contact_audit_events, id: :string, limit: 255
-
-    # Insert default records to satisfy FK constraints
-    reversible do |dir|
-      dir.up do
-        execute "INSERT INTO com_contact_audit_events (id) VALUES ('NONE')"
-        execute "INSERT INTO app_contact_audit_events (id) VALUES ('NONE')"
-        execute "INSERT INTO org_contact_audit_events (id) VALUES ('NONE')"
-      end
-    end
 
     # Add event_id to History Tables
     add_column :com_contact_histories, :event_id, :string, limit: 255, null: false, default: "NONE"

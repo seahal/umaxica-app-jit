@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class StaffWithdrawalTest < ActiveSupport::TestCase
   test "staff can be marked withdrawn and permanently destroyed" do
-    staff = Staff.create!(public_id: "eG8Bx3UDMOE60vxn_SR44")
+    staff = Staff.create!
 
     staff.update!(withdrawn_at: 31.days.ago)
 

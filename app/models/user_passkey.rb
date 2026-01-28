@@ -1,0 +1,74 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: user_passkeys
+# Database name: principal
+#
+#  id                     :uuid             not null, primary key
+#  description            :string           default(""), not null
+#  public_key             :text             not null
+#  sign_count             :bigint           default(0), not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  external_id            :uuid             not null
+#  public_id              :string(255)      default(""), not null
+#  user_id                :uuid             not null
+#  user_passkey_status_id :string(255)      default("ACTIVE"), not null
+#  webauthn_id            :string           default(""), not null
+#
+# Indexes
+#
+#  idx_on_user_identity_passkey_status_id_f979a7d699  (user_passkey_status_id)
+#  index_user_identity_passkeys_on_user_id            (user_id)
+#  index_user_identity_passkeys_on_webauthn_id        (webauthn_id) UNIQUE
+#  index_user_passkeys_on_public_id                   (public_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (user_passkey_status_id => user_passkey_statuses.id)
+#
+
+class UserPasskey < PrincipalRecord
+  include PublicId
+
+  MAX_PASSKEYS_PER_USER = 4
+
+  belongs_to :user, inverse_of: :user_passkeys
+  belongs_to :user_passkey_status, optional: true
+
+  scope :active, -> { where(user_passkey_status_id: "ACTIVE") }
+
+  validates :webauthn_id, presence: true, uniqueness: true
+  validates :external_id, presence: true
+  validates :public_key, presence: true
+  validates :description, presence: true
+  validates :user_passkey_status_id, length: { maximum: 255 }
+  validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validate :enforce_user_passkey_limit, on: :create
+
+  before_validation :set_defaults
+
+  # Use public_id for URL generation
+  def to_param
+    public_id
+  end
+
+  private
+
+    def enforce_user_passkey_limit
+      return unless user_id
+
+      count = self.class.where(user_id: user_id).count
+      return if count < MAX_PASSKEYS_PER_USER
+
+      errors.add(:base, :too_many, message: "exceeds maximum passkeys per user (#{MAX_PASSKEYS_PER_USER})")
+    end
+
+    def set_defaults
+      self.external_id ||= SecureRandom.uuid
+      self.sign_count ||= 0
+      self.description = I18n.t("sign.default_passkey_description") if description.blank?
+    end
+end

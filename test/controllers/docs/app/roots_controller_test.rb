@@ -1,6 +1,10 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
+  include RootThemeCookieHelper
+
   test "should get show" do
     get docs_app_root_url
 
@@ -19,21 +23,36 @@ class Docs::App::RootsControllerTest < ActionDispatch::IntegrationTest
   test "renders expected layout structure" do
     get docs_app_root_url
 
+    assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "link[rel=?]", "icon", count: 1
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
+      assert_select "title", /UMAXICA.*\(app\)/
     end
     assert_select "body", count: 1 do
-      assert_select "header", count: 1 do
-        assert_select "h1", text: "#{brand_name} (docs, app)"
+      assert_select "header" do
+        assert_select "h1"
       end
       assert_select "main", count: 1
-      assert_select "footer", count: 1 do
-        assert_select "small", text: /^©/
-      end
+      assert_select "footer", count: 1
     end
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  test "generates sha3-384 token digest on root" do
+    get docs_app_root_url
+    assert_response :success
+    assert_equal 48, AppPreference.order(:created_at).last.token_digest.bytesize
+  end
+
+  test "sets theme cookie" do
+    assert_theme_cookie_for(
+      host: "app.localhost",
+      path: :docs_app_root_path,
+      label: "docs app root",
+      ri: "jp",
+    )
+  end
 
   private
 

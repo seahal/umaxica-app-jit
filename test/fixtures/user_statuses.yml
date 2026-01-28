@@ -1,0 +1,36 @@
+# Auto-generated minimal fixture
+# == Schema Information
+#
+# Table name: user_statuses
+# Database name: principal
+#
+#  id :string(255)      default("NEYO"), not null, primary key
+#
+# Indexes
+#
+#  index_user_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+neyo:
+  id: NEYO
+none:
+  id: NONE
+ghost:
+  id: GHOST
+active:
+  id: ACTIVE
+inactive:
+  id: INACTIVE
+pending:
+  id: PENDING
+deleted:
+  id: DELETED
+withdrawn:
+  id: WITHDRAWN
+pre_withdrawal_condition:
+  id: PRE_WITHDRAWAL_CONDITION
+unverified_with_sign_up:
+  id: UNVERIFIED_WITH_SIGN_UP
+verified_with_sign_up:
+  id: VERIFIED_WITH_SIGN_UP
+pending_deletion:
+  id: PENDING_DELETION

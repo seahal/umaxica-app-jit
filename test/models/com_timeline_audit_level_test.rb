@@ -1,15 +1,30 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: com_timeline_audit_levels
+# Database name: audit
+#
+#  id :string(255)      default("NEYO"), not null, primary key
+#
+
 require "test_helper"
 
 class ComTimelineAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = com_timeline_audit_levels(:none)
-    timeline = ComTimeline.new
-    timeline.save!(validate: false)
+    level = ComTimelineAuditLevel.find("NEYO")
+    timeline = ComTimeline.create!(
+      response_mode: "html",
+      published_at: 1.hour.ago,
+      expires_at: 1.hour.from_now,
+      position: 0,
+      status_id: "NEYO",
+    )
 
     ComTimelineAudit.create!(
       com_timeline: timeline,
-      com_timeline_audit_event: com_timeline_audit_events(:CREATED),
-      com_timeline_audit_level: level
+      com_timeline_audit_event: ComTimelineAuditEvent.find("CREATED"),
+      com_timeline_audit_level: level,
     )
 
     assert_no_difference "ComTimelineAuditLevel.count" do
@@ -25,5 +40,11 @@ class ComTimelineAuditLevelTest < ActiveSupport::TestCase
     assert_difference "ComTimelineAuditLevel.count", -1 do
       assert level.destroy
     end
+  end
+
+  test "validates length of id" do
+    record = ComTimelineAuditLevel.new(id: "A" * 256)
+    assert_predicate record, :invalid?
+    assert_predicate record.errors[:id], :any?
   end
 end

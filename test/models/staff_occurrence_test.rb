@@ -1,8 +1,34 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: staff_occurrences
+# Database name: occurrence
+#
+#  id         :uuid             not null, primary key
+#  body       :string(36)       default(""), not null
+#  expires_at :datetime         not null
+#  memo       :string(1024)     default(""), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  public_id  :string(21)       default(""), not null
+#  status_id  :string(255)      default("NEYO"), not null
+#
+# Indexes
+#
+#  index_staff_occurrences_on_body        (body) UNIQUE
+#  index_staff_occurrences_on_expires_at  (expires_at)
+#  index_staff_occurrences_on_public_id   (public_id) UNIQUE
+#  index_staff_occurrences_on_status_id   (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => staff_occurrence_statuses.id)
+#
+
 require "test_helper"
 
 class StaffOccurrenceTest < ActiveSupport::TestCase
-  include OccurrenceTestHelper
-
   test "expires_at default" do
     record = build_occurrence(StaffOccurrence, body: "staff-occur-1", public_id: "Y" * 21)
 

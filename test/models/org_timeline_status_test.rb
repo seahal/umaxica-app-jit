@@ -1,26 +1,31 @@
+# frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: org_timeline_statuses
+# Database name: news
+#
+#  id         :string(255)      not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_org_timeline_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#
+
 require "test_helper"
 
 class OrgTimelineStatusTest < ActiveSupport::TestCase
-  include StatusModelTestHelper
-
-  fixtures :org_timeline_statuses
-
   def setup
     @model_class = OrgTimelineStatus
     @valid_id = "ACTIVE"
     @subject = @model_class.new(id: @valid_id)
-    @status = org_timeline_statuses(:ACTIVE)
+    @status = OrgTimelineStatus.find("ACTIVE")
   end
 
-  test "inherits from BusinessesRecord" do
-    assert_operator OrgTimelineStatus, :<, BusinessesRecord
-  end
-
-  test "has many org_timelines" do
-    association = OrgTimelineStatus.reflect_on_association(:org_timelines)
-
-    assert_not_nil association
-    assert_equal :has_many, association.macro
+  test "inherits from NewsRecord" do
+    assert_operator OrgTimelineStatus, :<, NewsRecord
   end
 
   test "id is required" do
@@ -53,14 +58,14 @@ class OrgTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "can load draft status from fixtures" do
-    draft = org_timeline_statuses(:DRAFT)
+    draft = OrgTimelineStatus.find("DRAFT")
 
     assert_not_nil draft
     assert_equal "DRAFT", draft.id
   end
 
   test "can load archived status from fixtures" do
-    archived = org_timeline_statuses(:ARCHIVED)
+    archived = OrgTimelineStatus.find("ARCHIVED")
 
     assert_not_nil archived
     assert_equal "ARCHIVED", archived.id

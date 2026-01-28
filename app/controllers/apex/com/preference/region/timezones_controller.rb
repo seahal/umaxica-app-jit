@@ -1,0 +1,25 @@
+# frozen_string_literal: true
+
+module Apex
+  module Com
+    module Preference
+      module Region
+        class TimezonesController < ApplicationController
+          include ::Preference::Core
+
+          def edit
+            set_timezone_preferences_edit
+          end
+
+          def update
+            set_timezone_preferences_update
+            redirect_to edit_apex_com_preference_region_timezone_url
+          rescue PreferenceOperationError
+            redirect_to edit_apex_com_preference_region_timezone_url,
+                        alert: I18n.t("errors.messages.preference_operation_failed")
+          end
+        end
+      end
+    end
+  end
+end
