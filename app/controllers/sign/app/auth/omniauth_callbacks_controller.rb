@@ -100,11 +100,11 @@ module Sign
               redirect_to social_auth_success_redirect_path,
                           notice: I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name)
             elsif user.status_id == "UNVERIFIED_WITH_SIGN_UP"
-              initiate_email_verification(identity.email)
-              if @user_email&.persisted?
+              begin
+                initiate_email_verification!(identity.email)
                 redirect_to edit_sign_app_configuration_email_path(@user_email),
                             notice: I18n.t("sign.app.registration.email.create.success")
-              else
+              rescue ActiveRecord::RecordInvalid
                 # Fallback if verification init failed (e.g. invalid email)
                 redirect_to social_auth_success_redirect_path,
                             alert: I18n.t("sign.app.registration.email.create.failure")

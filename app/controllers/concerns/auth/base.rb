@@ -499,6 +499,16 @@ module Auth
       # Always set cookies (even for JSON responses - required for Edge/SPA)
       set_auth_cookies(access_token: access_token, refresh_token: refresh_plain)
 
+      Sign::Risk::Emitter.emit(
+        "session_issued",
+        user_id: resource.id,
+        user_token_id: token_record.public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { auth_method: token_kind_id },
+      )
+
       record_audit(AUDIT_EVENTS[:logged_in], resource: resource) if record_login_audit
 
       {
@@ -515,74 +525,18 @@ module Auth
       result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
       token_record = result[:token]
       new_refresh_plain = result[:refresh_token]
+      resource = nil
 
-      unless token_record.is_a?(token_class)
-        Rails.event.notify(
-          "#{resource_type}.token.refresh.failed",
-          refresh_token_id: refresh_public_id,
-          reason: "token_not_found",
-          ip_address: request_ip_address,
-        )
-        return nil
-      end
+      return handle_missing_refresh_token(refresh_public_id) unless token_record.is_a?(token_class)
 
       resource = token_record.public_send(resource_type)
+      return handle_inactive_resource(resource, refresh_public_id, token_record) unless resource&.active?
 
-      unless resource&.active?
-        Rails.event.notify(
-          "#{resource_type}.token.refresh.failed",
-          "#{resource_type}_id": resource&.id,
-          refresh_token_id: refresh_public_id,
-          reason: "#{resource_type}_inactive",
-          ip_address: request_ip_address,
-        )
-        TokenRecord.connected_to(role: :writing) { token_record.destroy! }
-        return nil
-      end
-
-      new_access_token = Token.encode(
-        resource,
-        host: request.host,
-        session_public_id: token_record.public_id,
-        resource_type: resource_type,
-      )
-
-      # Always set cookies (even for JSON responses - required for Edge/SPA)
-      set_auth_cookies(access_token: new_access_token, refresh_token: new_refresh_plain)
-
-      Rails.event.notify(
-        "#{resource_type}.token.refreshed",
-        "#{resource_type}_id": resource.id,
-        old_refresh_token_id: token_record.public_id,
-        new_refresh_token_id: token_record.public_id,
-        ip_address: request_ip_address,
-      )
-      record_audit(AUDIT_EVENTS[:token_refreshed], resource: resource)
-
-      {
-        access_token: new_access_token,
-        refresh_token: new_refresh_plain,
-        token_type: "Bearer",
-        expires_in: ACCESS_TOKEN_TTL.to_i,
-      }
+      build_refreshed_session(resource, token_record, new_refresh_plain)
     rescue Sign::InvalidRefreshToken => e
-      Rails.event.notify(
-        "#{resource_type}.token.refresh.failed",
-        refresh_token_id: refresh_public_id,
-        reason: e.class.name,
-        ip_address: request_ip_address,
-      )
-      nil
+      handle_invalid_refresh_token(e, refresh_public_id)
     rescue StandardError => e
-      Rails.event.notify(
-        "#{resource_type}.token.refresh.error",
-        "#{resource_type}_id": resource&.id,
-        refresh_token_id: refresh_public_id,
-        error_class: e.class.name,
-        error_message: e.message,
-        ip_address: request_ip_address,
-      )
-      nil
+      handle_refresh_error(e, refresh_public_id, resource)
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
@@ -616,11 +570,22 @@ module Auth
     end
 
     def authenticate!
-      return if logged_in?
+      if logged_in?
+        Sign::Risk::Enforcer.call(current_resource)
+        return
+      end
 
       if request.format.json?
         render json: { error: "Unauthorized" }, status: :unauthorized
       else
+        Sign::Risk::Emitter.emit(
+          "auth_required",
+          ip: request&.remote_ip,
+          user_agent: request&.user_agent,
+          request_id: request&.request_id,
+          path: request&.fullpath,
+          method: request&.request_method,
+        )
         rt = Base64.urlsafe_encode64(request.original_url)
         redirect_to(
           sign_in_url_with_return(rt),
@@ -819,8 +784,130 @@ module Auth
       audit.save!
     end
 
+    def handle_missing_refresh_token(refresh_public_id)
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        refresh_token_id: refresh_public_id,
+        reason: "token_not_found",
+        ip_address: request_ip_address,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "refresh_failed",
+        user_token_id: refresh_public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { reason: "token_not_found" },
+      )
+
+      nil
+    end
+
+    def handle_inactive_resource(resource, refresh_public_id, token_record)
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        "#{resource_type}_id": resource&.id,
+        refresh_token_id: refresh_public_id,
+        reason: "#{resource_type}_inactive",
+        ip_address: request_ip_address,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "refresh_failed",
+        user_id: resource&.id,
+        user_token_id: refresh_public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { reason: "#{resource_type}_inactive" },
+      )
+
+      TokenRecord.connected_to(role: :writing) { token_record.destroy! }
+      nil
+    end
+
+    def build_refreshed_session(resource, token_record, new_refresh_plain)
+      new_access_token = Token.encode(
+        resource,
+        host: request.host,
+        session_public_id: token_record.public_id,
+        resource_type: resource_type,
+      )
+
+      set_auth_cookies(access_token: new_access_token, refresh_token: new_refresh_plain)
+
+      Sign::Risk::Emitter.emit(
+        "refresh_rotated",
+        user_id: resource.id,
+        user_token_id: token_record.public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+      )
+
+      Rails.event.notify(
+        "#{resource_type}.token.refreshed",
+        "#{resource_type}_id": resource.id,
+        old_refresh_token_id: token_record.public_id,
+        new_refresh_token_id: token_record.public_id,
+        ip_address: request_ip_address,
+      )
+      record_audit(AUDIT_EVENTS[:token_refreshed], resource: resource)
+      Sign::Risk::Enforcer.call(resource)
+
+      {
+        access_token: new_access_token,
+        refresh_token: new_refresh_plain,
+        token_type: "Bearer",
+        expires_in: ACCESS_TOKEN_TTL.to_i,
+      }
+    end
+
     def request_ip_address
       (respond_to?(:request, true) && request) ? request.remote_ip : nil
+    end
+
+    def handle_invalid_refresh_token(exception, refresh_public_id)
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        refresh_token_id: refresh_public_id,
+        reason: exception.class.name,
+        ip_address: request_ip_address,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "refresh_failed",
+        user_token_id: refresh_public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { reason: exception.class.name },
+      )
+
+      nil
+    end
+
+    def handle_refresh_error(exception, refresh_public_id, resource)
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.error",
+        "#{resource_type}_id": resource&.id,
+        refresh_token_id: refresh_public_id,
+        error_message: exception.message,
+        ip_address: request_ip_address,
+      )
+
+      Sign::Risk::Emitter.emit(
+        "refresh_failed",
+        user_id: resource&.id,
+        user_token_id: refresh_public_id,
+        ip: request&.remote_ip,
+        user_agent: request&.user_agent,
+        request_id: request&.request_id,
+        meta: { error_class: exception.class.name },
+      )
+
+      nil
     end
 
     def load_current_resource
@@ -842,7 +929,11 @@ module Auth
       return nil unless test_id
 
       resource = resource_class.find_by(id: test_id)
-      @bypass_withdrawn_check = true if resource
+      if resource
+        @bypass_withdrawn_check = true
+        test_session_id = request.headers["X-TEST-SESSION-PUBLIC-ID"]
+        @current_session_public_id = test_session_id if test_session_id.present?
+      end
       resource
     end
 

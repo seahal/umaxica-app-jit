@@ -5,8 +5,10 @@ module Sign
     module Configuration
       class TelephonesController < ApplicationController
         include Sign::App::TelephoneRegistrable
+        include ::Auth::StepUp
 
         before_action :authenticate_user!
+        before_action -> { require_step_up!(scope: "configuration_telephone") }
 
         def index
           @user_telephones = current_user.user_telephones

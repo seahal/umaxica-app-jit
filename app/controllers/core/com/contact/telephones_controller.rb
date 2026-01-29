@@ -102,14 +102,14 @@ module Core
         end
 
         def core_corporate_host
-          host_value = ENV["CORE_CORPORATE_URL"].presence || request.host
-          return request.host if host_value.blank?
+          env_url = ENV["CORE_CORPORATE_URL"].presence
+          return request.host unless env_url
 
           begin
-            uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
-            uri.host || host_value.split(":").first
+            uri = URI.parse(env_url.start_with?("http") ? env_url : "http://#{env_url}")
+            uri.host || env_url.split(":").first
           rescue URI::InvalidURIError
-            host_value.split(":").first
+            env_url.split(":").first
           end
         end
 

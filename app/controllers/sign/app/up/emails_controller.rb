@@ -49,21 +49,22 @@ module Sign
 
         def create
           email_params = params.expect(user_email: [:address, :confirm_policy])
-          if initiate_email_verification(email_params[:address], confirm_policy: email_params[:confirm_policy])
+          begin
+            initiate_email_verification!(email_params[:address], confirm_policy: email_params[:confirm_policy])
             progress_email_flow!(:create)
             redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
             flash[:notice] = redirect_params.delete(:notice)
             sanitize_redirect_params!(redirect_params)
             redirect_to edit_sign_app_up_email_path(@user_email, redirect_params)
-          else
+          rescue ActiveRecord::RecordInvalid
             render :new, status: :unprocessable_content
           end
         end
 
         def update
           submitted_code = params["user_email"]["pass_code"]
-          status =
-            complete_email_verification(params["id"], submitted_code) do |user_email|
+          begin
+            complete_email_verification!(params["id"], submitted_code) do |user_email|
               ActiveRecord::Base.transaction do
                 @user = User.create!(status_id: "VERIFIED_WITH_SIGN_UP")
                 user_email.user = @user
@@ -79,25 +80,16 @@ module Sign
               # Return success to let the caller handle the redirect
               login_result
             end
-
-          case status
-          when :success
             progress_email_flow!(:update)
-            # TODO: Redirect to show for 2FA setup instead of home
-            # redirect_to sign_app_up_email_path(@user_email.id)
-            redirect_with_notice("/", t("sign.app.registration.email.update.success"))
-          when :session_expired
-            reset_email_flow! # Reset to step 1
-            redirect_params = build_alert_params(t("sign.app.registration.email.update.session_expired"))
-            flash[:alert] = redirect_params.delete(:alert)
-            redirect_to new_sign_app_up_email_path(redirect_params)
-          when :locked
-            reset_email_flow! # Reset to step 1
-            redirect_params = build_alert_params(t("sign.app.registration.email.update.attempts_exceeded"))
-            flash[:alert] = redirect_params.delete(:alert)
-            redirect_to new_sign_app_up_email_path(redirect_params)
-          when :invalid_code
+            # Use direct redirect to configuration to avoid potential "Already logged in" bounce
+            # if rd points to a guest-only page, and to avoid 401 on root path.
+            redirect_to sign_app_configuration_path, notice: t("sign.app.registration.email.update.success")
+          rescue ActiveRecord::RecordInvalid
             render :edit, status: :unprocessable_content
+          rescue ApplicationError => e
+            reset_email_flow! # Reset to step 1
+            flash[:alert] = e.message
+            redirect_to new_sign_app_up_email_path
           end
         end
 

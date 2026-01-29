@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: org_preference_audit_events
+# Database name: audit
+#
+#  id         :string(255)      default("NEYO"), not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 require "test_helper"
 
 class OrgPreferenceAuditEventTest < ActiveSupport::TestCase

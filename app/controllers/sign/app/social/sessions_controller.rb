@@ -12,9 +12,8 @@ module Sign
       # The actual OmniAuth callbacks are handled by:
       #   Sign::App::Auth::OmniauthCallbacksController
       class SessionsController < Sign::App::ApplicationController
+        include ::Auth::StepUp
         include SocialAuthConcern
-
-        REQUIRE_REAUTH_FOR_UNLINK = true
 
         SUPPORTED_PROVIDERS = %w(google_oauth2 apple).freeze
 
@@ -22,6 +21,7 @@ module Sign
         # For link/reauth intents, auth is checked in prepare_social_auth_intent!
         public_strict! only: %i(start)
         auth_required! only: %i(unlink)
+        before_action -> { require_step_up!(scope: "social_unlink") }, only: :unlink
 
         # GET /social/start?provider=google_oauth2&intent=login
         # Entry point for social auth flow.
@@ -49,7 +49,7 @@ module Sign
 
           # Redirect to OmniAuth with state parameter
           # OmniAuth will handle the redirect to the provider
-          redirect_to omniauth_authorize_path(provider, state: state), allow_other_host: true
+          redirect_to omniauth_authorize_path(provider, state: state)
         rescue SocialAuth::BaseError => e
           handle_social_auth_error(e)
         end
@@ -62,8 +62,6 @@ module Sign
         #   - Optionally requires recent re-authentication (REQUIRE_REAUTH_FOR_UNLINK)
         #   - Cannot unlink last remaining identity
         def unlink
-          require_recent_reauth! if REQUIRE_REAUTH_FOR_UNLINK
-
           provider = params[:provider]
           normalized_provider = SocialIdentifiable.normalize_provider(provider)
 

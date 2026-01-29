@@ -106,16 +106,16 @@ module Core
       end
 
       def core_service_host
-        host_value = ENV["CORE_SERVICE_URL"].presence || request.host
-        return request.host if host_value.blank?
+        env_url = ENV["CORE_SERVICE_URL"].presence
+        return request.host unless env_url
 
         # Extract hostname from URL or host string, removing port if present
         begin
-          uri = URI.parse(host_value.start_with?("http") ? host_value : "http://#{host_value}")
-          uri.host || host_value.split(":").first
+          uri = URI.parse(env_url.start_with?("http") ? env_url : "http://#{env_url}")
+          uri.host || env_url.split(":").first
         rescue URI::InvalidURIError
           # If parsing fails, try to extract hostname by removing port
-          host_value.split(":").first
+          env_url.split(":").first
         end
       end
 

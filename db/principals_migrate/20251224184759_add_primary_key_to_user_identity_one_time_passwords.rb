@@ -3,7 +3,7 @@
 class AddPrimaryKeyToUserIdentityOneTimePasswords < ActiveRecord::Migration[8.2]
   def up
     # Add UUID primary key column with uuidv7() default
-    execute <<-SQL.squish
+    execute <<~SQL.squish
       ALTER TABLE user_identity_one_time_passwords
       ADD COLUMN id uuid DEFAULT uuidv7() PRIMARY KEY;
     SQL

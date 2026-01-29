@@ -4,7 +4,11 @@ module Sign
   module App
     module Configuration
       class TotpsController < ApplicationController
+        include ::Auth::StepUp
+
         MAX_TOTPS = 2
+        before_action :authenticate_user!
+        before_action -> { require_step_up!(scope: "manage_totp") }
 
         def index
           @totps = current_user.user_one_time_passwords
@@ -63,10 +67,11 @@ module Sign
 
         def update
           @totp = find_totp
-          if @totp.update(update_params)
+          begin
+            @totp.update!(update_params)
             redirect_to sign_app_configuration_totps_path,
                         notice: t("messages.totp_successfully_updated")
-          else
+          rescue ActiveRecord::RecordInvalid
             render :edit, status: :unprocessable_content
           end
         end

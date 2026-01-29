@@ -95,6 +95,12 @@ module Sign
         actor.update!(revoked_at: now, compromised_at: now)
       end
 
+      Sign::Risk::Emitter.emit(
+        "refresh_reuse_detected",
+        user_id: actor_identifier(token),
+        user_token_id: token.public_id,
+      )
+
       Rails.event.notify(
         "authentication.refresh.reuse_detected",
         token_id: token.public_id,

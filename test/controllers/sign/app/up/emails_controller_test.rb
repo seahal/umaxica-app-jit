@@ -305,8 +305,8 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           },
           headers: default_headers
 
-    # Should redirect to the encoded URL
-    assert_redirected_to redirect_url
+    # Should redirect to configuration page (ignoring rd to avoid bounce loops)
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -351,7 +351,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           headers: default_headers
 
     # Verify success response
-    assert_redirected_to "/"
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
 
     # Verify User was created
     assert_equal initial_user_count + 1, User.count

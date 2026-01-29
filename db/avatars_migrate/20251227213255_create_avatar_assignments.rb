@@ -23,20 +23,20 @@ class CreateAvatarAssignments < ActiveRecord::Migration[8.2]
     # Conditional unique indexes for owner and affiliation (only one per avatar)
     reversible do |dir|
       dir.up do
-        execute <<-SQL.squish
+        execute <<~SQL.squish
           CREATE UNIQUE INDEX index_avatar_assignments_unique_owner
           ON avatar_assignments (avatar_id)
           WHERE role = 'owner';
         SQL
 
-        execute <<-SQL.squish
+        execute <<~SQL.squish
           CREATE UNIQUE INDEX index_avatar_assignments_unique_affiliation
           ON avatar_assignments (avatar_id)
           WHERE role = 'affiliation';
         SQL
 
         # CHECK constraint for valid roles
-        execute <<-SQL.squish
+        execute <<~SQL.squish
           ALTER TABLE avatar_assignments
           ADD CONSTRAINT check_avatar_assignment_role
           CHECK (role IN ('owner', 'affiliation', 'administrator', 'editor', 'reviewer', 'viewer'));

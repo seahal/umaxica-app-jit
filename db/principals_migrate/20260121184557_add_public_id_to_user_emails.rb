@@ -9,7 +9,7 @@ class AddPublicIdToUserEmails < ActiveRecord::Migration[8.2]
     reversible do |dir|
       dir.up do
         safety_assured do
-          execute <<-SQL.squish
+          execute <<~SQL.squish
             UPDATE user_emails
             SET public_id = REPLACE(REPLACE(SUBSTRING(ENCODE(gen_random_bytes(16), 'base64') FROM 1 FOR 21), '+', '-'), '/', '_')
             WHERE public_id IS NULL

@@ -9,11 +9,16 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
     @user = users(:one)
+    @token = UserToken.create!(user_id: @user.id)
     @telephone = OpenStruct.new(id: "1")
   end
 
   def request_headers
-    { "Host" => @host, "X-TEST-CURRENT-USER" => @user.id }
+    {
+      "Host" => @host,
+      "X-TEST-CURRENT-USER" => @user.id,
+      "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
+    }
   end
 
   test "should get index" do

@@ -9,7 +9,7 @@ class AddUserSecretKindIdToUserSecrets < ActiveRecord::Migration[8.2]
     reversible do |dir|
       dir.up do
         safety_assured do
-          execute <<-SQL.squish
+          execute <<~SQL.squish
             UPDATE user_secrets
             SET user_secret_kind_id = 'LOGIN'
             WHERE user_secret_kind_id IS NULL

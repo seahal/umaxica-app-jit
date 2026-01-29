@@ -5,6 +5,10 @@ module Sign
     module Configuration
       class EmailsController < ApplicationController
         include Sign::App::EmailRegistrable
+        include ::Auth::StepUp
+
+        before_action :authenticate_user!
+        before_action -> { require_step_up!(scope: "configuration_email") }
 
         def index
           @user_emails = current_user.user_emails
@@ -21,9 +25,10 @@ module Sign
 
         def create
           email_params = params.expect(user_email: [:email])
-          if initiate_email_verification(email_params[:email])
+          begin
+            initiate_email_verification!(email_params[:email])
             redirect_to edit_sign_app_configuration_email_path(@user_email.id)
-          else
+          rescue ActiveRecord::RecordInvalid
             render :new, status: :unprocessable_content
           end
         end
@@ -31,22 +36,25 @@ module Sign
         def update
           submitted_code = params[:user_email][:pass_code]
           token = params[:user_email][:token]
-          status =
-            complete_email_verification(params[:id], submitted_code, token) do |user_email|
-              user_email.user = current_user
-              user_email.save!
+          begin
+            complete_email_verification!(params[:id], submitted_code, token) do |user_email|
+              ActiveRecord::Base.transaction do
+                user_email.user = current_user
+                user_email.save!
 
-              if current_user.status_id == "UNVERIFIED_WITH_SIGN_UP"
-                current_user.status_id = "VERIFIED_WITH_SIGN_UP"
-                current_user.save!
+                if current_user.status_id == "UNVERIFIED_WITH_SIGN_UP"
+                  current_user.status_id = "VERIFIED_WITH_SIGN_UP"
+                  current_user.save!
+                end
               end
             end
-
-          if status == :success
             redirect_to sign_app_configuration_emails_path,
                         notice: t("sign.app.configuration.email.update.success")
-          else
+          rescue ActiveRecord::RecordInvalid
             render :edit, status: :unprocessable_content
+          rescue ApplicationError => e
+            flash[:alert] = e.message
+            redirect_to @error_redirect || sign_app_configuration_emails_path
           end
         end
       end

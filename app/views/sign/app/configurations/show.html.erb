@@ -7,7 +7,7 @@
   <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
     <!-- Security Section -->
     <section>
-      <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1">セキュリティ設定</h2>
+      <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1"><%= t("sign.app.configuration.show.security_settings") %></h2>
       <div class="space-y-3">
         <%= link_to sign_app_configuration_totps_path, class: "group block bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 transform hover:-translate-y-0.5" do %>
           <div class="flex items-center">
@@ -18,7 +18,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"><%= t("controller.sign.app.setting.index.totp") %></p>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">2段階認証を設定します</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= t("sign.app.configuration.show.totp_desc") %></p>
             </div>
           </div>
         <% end %>
@@ -32,7 +32,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"><%= t("controller.sign.app.setting.index.passkey") %></p>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">パスキーを管理します</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= t("sign.app.configuration.show.passkey_desc") %></p>
             </div>
           </div>
         <% end %>
@@ -46,7 +46,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"><%= t("controller.sign.app.setting.index.secret") %></p>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">シークレットキーの管理</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= t("sign.app.configuration.show.secret_desc") %></p>
             </div>
           </div>
         <% end %>
@@ -55,7 +55,7 @@
 
     <!-- Account Section -->
     <section>
-      <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1">アカウント設定</h2>
+      <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1"><%= t("sign.app.configuration.show.account_settings") %></h2>
       <div class="space-y-3">
         <%= link_to sign_app_configuration_emails_path, class: "group block bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 transform hover:-translate-y-0.5" do %>
           <div class="flex items-center">
@@ -66,7 +66,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"><%= t("controller.sign.app.setting.index.email") %></p>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">連絡用メールを管理します</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= t("sign.app.configuration.show.email_desc") %></p>
             </div>
           </div>
         <% end %>
@@ -80,7 +80,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"><%= t("controller.sign.app.setting.index.telephone") %></p>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">連絡用電話番号の管理</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= t("sign.app.configuration.show.telephone_desc") %></p>
             </div>
           </div>
         <% end %>
@@ -94,7 +94,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"><%= t("controller.sign.app.setting.index.session") %></p>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">ログイン中の端末を管理します</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= t("sign.app.configuration.show.session_desc") %></p>
             </div>
           </div>
         <% end %>
@@ -103,7 +103,7 @@
 
     <!-- Connected Accounts Section -->
     <section>
-      <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1">外部連携</h2>
+      <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1"><%= t("sign.app.configuration.show.external_services") %></h2>
       <div class="space-y-3">
         <%= link_to sign_app_configuration_google_path, class: "group block bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 hover:border-zinc-500 dark:hover:border-zinc-400 transition-all duration-200" do %>
           <div class="flex items-center">
@@ -117,7 +117,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-zinc-900 dark:text-white group-hover:underline"><%= t("controller.sign.app.setting.index.google") %></p>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">Googleアカウントとの連携</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= t("sign.app.configuration.show.google_desc") %></p>
             </div>
           </div>
         <% end %>
@@ -131,7 +131,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-zinc-900 dark:text-white group-hover:underline"><%= t("controller.sign.app.setting.index.apple") %></p>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">Apple IDとの連携</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= t("sign.app.configuration.show.apple_desc") %></p>
             </div>
           </div>
         <% end %>
@@ -140,7 +140,7 @@
 
     <!-- Danger Zone Section -->
     <section>
-      <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1">その他</h2>
+      <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1"><%= t("sign.app.configuration.show.others") %></h2>
       <div class="space-y-3">
         <%= link_to sign_app_configuration_withdrawal_path, class: "group block bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-900/30 p-4 hover:border-red-500 dark:hover:border-red-500 hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 transform hover:-translate-y-0.5" do %>
           <div class="flex items-center">
@@ -151,7 +151,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-red-700 dark:text-red-400 group-hover:text-red-800 dark:group-hover:text-red-300 transition-colors"><%= t("sign.app.configuration.show.withdrawal") %></p>
-              <p class="text-xs text-red-500 dark:text-red-400/70">アカウントの削除はこちら</p>
+              <p class="text-xs text-red-500 dark:text-red-400/70"><%= t("sign.app.configuration.show.withdrawal_desc") %></p>
             </div>
           </div>
         <% end %>
@@ -168,13 +168,13 @@
   </div>
 
   <div class="mt-8 border-t border-zinc-200 dark:border-zinc-800 pt-8">
-    <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1">セッション</h2>
+    <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4 px-1"><%= t("sign.app.configuration.show.session_header") %></h2>
     <%= link_to edit_sign_app_out_path(ri: "jp"), class: "group block w-full bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 hover:border-indigo-500 dark:hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300" do %>
       <div class="flex items-center justify-center">
         <svg class="h-6 w-6 text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
         </svg>
-        <span class="ml-2 text-sm font-bold text-zinc-600 dark:text-zinc-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Logout</span>
+        <span class="ml-2 text-sm font-bold text-zinc-600 dark:text-zinc-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"><%= t("sign.app.configuration.show.logout") %></span>
       </div>
     <% end %>
   </div>

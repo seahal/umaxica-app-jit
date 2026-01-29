@@ -26,7 +26,15 @@ module AuthHelpers
   end
 
   def as_user_headers(user, host: nil, headers: {})
-    host_headers(host).merge(headers).merge(TEST_USER_HEADER => user.id.to_s)
+    base = host_headers(host).merge(headers).merge(TEST_USER_HEADER => user.id.to_s)
+
+    if user.respond_to?(:persisted?) && user.persisted? && user.class.name == "User"
+      token = UserToken.where(user_id: user.id, revoked_at: nil).order(created_at: :desc).first
+      token ||= UserToken.create!(user_id: user.id)
+      base["X-TEST-SESSION-PUBLIC-ID"] = token.public_id
+    end
+
+    base
   end
 
   def as_staff_headers(staff, host: nil, headers: {})

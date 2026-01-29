@@ -20,7 +20,7 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href^=?]", sign_app_configuration_apple_path(ri: "jp")
     assert_select "a[href^=?]", sign_app_configuration_sessions_path(ri: "jp")
     assert_select "a[href^=?]", sign_app_configuration_withdrawal_path(ri: "jp")
-    assert_select "a[href*=?]", edit_sign_app_out_path(ri: "jp"), text: "Logout"
+    assert_select "a[href*=?]", edit_sign_app_out_path(ri: "jp"), text: I18n.t("sign.app.configuration.show.logout")
     assert_select "a[href*=?]", sign_app_root_path(ri: "jp"), text: I18n.t("sign.app.configuration.show.back")
   end
 

@@ -15,6 +15,9 @@ en:
       no_sessions: "No active sessions found."
       submit: "Revoke Selected Sessions and Log In"
       cancel: "Cancel"
+  auth:
+    step_up:
+      required: "Re-authentication is required to continue."
   activerecord:
     attributes:
       user_passkey:
@@ -112,6 +115,26 @@ en:
         destroy:
           success: "You have been signed out."
       configuration:
+        show:
+          page_title: "Settings"
+          description: "Account settings and security management"
+          security_settings: "Security Settings"
+          totp_desc: "Configure 2FA"
+          passkey_desc: "Manage passkeys"
+          secret_desc: "Manage secret keys"
+          account_settings: "Account Settings"
+          email_desc: "Manage contact emails"
+          telephone_desc: "Manage contact phone numbers"
+          session_desc: "Manage active sessions"
+          external_services: "External Services"
+          google_desc: "Connect Google account"
+          apple_desc: "Connect Apple ID"
+          others: "Others"
+          withdrawal_desc: "Delete account"
+          withdrawal: "Withdrawal"
+          back: "Back to top"
+          session_header: "Session"
+          logout: "Logout"
         passkey:
           index:
             title: "Passkey Management"
@@ -134,6 +157,43 @@ en:
             back: "Back to list"
           edit:
             title: "Edit Passkey"
+      reauth_sessions:
+        index:
+          title: "Re-authentication Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Re-authentication"
+          description: "Re-authentication is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        show:
+          title: "Re-authentication Session"
+          list: "List"
+          to_edit: "To input screen"
+          cancel: "Cancel"
+          confirm_cancel: "Are you sure?"
+        edit:
+          title: "Re-authentication"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          cancel: "Cancel"
+          confirm_cancel: "Are you sure?"
+        success:
+          complete: "Re-authentication completed."
     social:
         sessions:
           invalid_provider: "Invalid provider specified"

@@ -8,14 +8,21 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
     @user = users(:one)
+    login_user
   end
 
   def request_headers
-    { "Host" => @host }
+    headers = { "Host" => @host }
+    if @user && @token
+      headers["X-TEST-CURRENT-USER"] = @user.id
+      headers["X-TEST-SESSION-PUBLIC-ID"] = @token.public_id
+    end
+    headers["Authorization"] = "Bearer #{@jwt_token}" if @jwt_token
+    headers
   end
 
   def login_user
-    UserToken.create!(user_id: @user.id)
+    @token = UserToken.create!(user_id: @user.id)
 
     # Generate a valid JWT token
     payload = {
@@ -26,19 +33,11 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
       aud: "umaxica-api",
       sub: @user.id,
       type: "user",
+      sid: @token.public_id,
     }
 
     key = jwt_private_key
-    jwt_token = JWT.encode(payload, key, "ES256")
-
-    # Set the cookie
-    @cookie_jar = HTTP::CookieJar.new
-    cookie = HTTP::Cookie.new("access_token", jwt_token, domain: @host)
-    @cookie_jar.add(cookie)
-
-    # Use the JWT token in cookies
-    # For integration tests, we need to set it via headers or direct cookie manipulation
-    jwt_token
+    @jwt_token = JWT.encode(payload, key, "ES384")
   end
 
   def jwt_private_key
@@ -50,8 +49,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   test "should get new withdrawal page" do
     @user.update!(status_id: "NEYO")
     get new_sign_app_configuration_withdrawal_url(ri: "jp"),
-        headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
-
+        headers: request_headers
     assert_response :success
   end
 
@@ -59,7 +57,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(status_id: "NEYO")
 
     post sign_app_configuration_withdrawal_url(ri: "jp"),
-         headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+         headers: request_headers
 
     assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
@@ -71,9 +69,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
   #   assert_raises(Sign::InvalidWithdrawalStateError) do
   #     post sign_app_configuration_withdrawal_url(ri: "jp"),
-  #          headers: request_headers.merge(
-  #            "X-TEST-CURRENT-USER" => @user.id,
-  #          )
+  #          headers: request_headers
   #   end
   # end
 
@@ -81,7 +77,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(withdrawn_at: 15.days.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
     patch sign_app_configuration_withdrawal_url(ri: "jp"),
-          headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+          headers: request_headers
 
     assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_nil @user.reload.withdrawn_at
@@ -92,7 +88,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(withdrawn_at: 45.days.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
     patch sign_app_configuration_withdrawal_url(ri: "jp"),
-          headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+          headers: request_headers
 
     assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
@@ -103,7 +99,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(withdrawn_at: 1.day.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
     get sign_app_configuration_withdrawal_url(ri: "jp"),
-        headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+        headers: request_headers
 
     assert_response :success
   end
@@ -119,7 +115,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
     assert_raises(InvalidUserStatusError) do
       get new_sign_app_configuration_withdrawal_url(ri: "jp"),
-          headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+          headers: request_headers
     end
   end
 
@@ -128,9 +124,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   #
   #   assert_raises(ActionController::RoutingError) do
   #     get sign_app_configuration_withdrawal_url(ri: "jp"),
-  #         headers: request_headers.merge(
-  #           "X-TEST-CURRENT-USER" => @user.id,
-  #         )
+  #         headers: request_headers
   #   end
   # end
 
@@ -139,9 +133,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
   #   assert_raises(InvalidUserStatusError) do
   #     patch sign_app_configuration_withdrawal_url(ri: "jp"),
-  #           headers: request_headers.merge(
-  #             "X-TEST-CURRENT-USER" => @user.id,
-  #           )
+  #           headers: request_headers
   #   end
   # end
 
@@ -150,9 +142,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   #
   #   assert_raises(InvalidUserStatusError) do
   #     delete sign_app_configuration_withdrawal_url(ri: "jp"),
-  #            headers: request_headers.merge(
-  #              "X-TEST-CURRENT-USER" => @user.id,
-  #            )
+  #            headers: request_headers
   #   end
   # end
 
@@ -161,7 +151,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(status_id: "NEYO")
 
     get new_sign_app_configuration_withdrawal_url(ri: "jp"),
-        headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+        headers: request_headers
 
     assert_response :success
     assert_select "div[id^='cf-turnstile-']", count: 1
@@ -170,12 +160,10 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   # Checkbox visibility tests
   # test "new withdrawal page renders confirm_create_recovery_code checkbox" do
   #   @user.update!(status_id: "NEYO")
-
+  #
   #   get new_sign_app_configuration_withdrawal_url(ri: "jp"),
-  #       headers: request_headers.merge(
-  #         "X-TEST-CURRENT-USER" => @user.id,
-  #       )
-
+  #       headers: request_headers
+  #
   #   assert_response :success
   #   assert_select "input[type='text'][name='confirm_withdrawal']"
   #   expected_label = I18n.t("sign.app.configuration.withdrawal.new.recovery_code_label")
@@ -187,9 +175,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(withdrawn_at: 1.day.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
     get edit_sign_app_configuration_withdrawal_url(ri: "jp"),
-        headers: request_headers.merge(
-          "X-TEST-CURRENT-USER" => @user.id,
-        )
+        headers: request_headers
 
     assert_response :success
     assert_select "input[type='checkbox'][name='confirm_create_recovery_code']"
@@ -202,9 +188,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(status_id: "NEYO")
 
     post sign_app_configuration_withdrawal_url(ri: "jp"), params: { confirm_create_recovery_code: "1" },
-                                                          headers: request_headers.merge(
-                                                            "X-TEST-CURRENT-USER" => @user.id,
-                                                          )
+                                                          headers: request_headers
 
     assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_not_nil @user.reload.withdrawn_at
@@ -214,9 +198,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(withdrawn_at: 15.days.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
     patch sign_app_configuration_withdrawal_url(ri: "jp"), params: { confirm_create_recovery_code: "1" },
-                                                           headers: request_headers.merge(
-                                                             "X-TEST-CURRENT-USER" => @user.id,
-                                                           )
+                                                           headers: request_headers
 
     assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
     assert_nil @user.reload.withdrawn_at
@@ -230,9 +212,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     User.stub(:find, user_mock) do
       User.stub(:find_by, user_mock) do
         delete sign_app_configuration_withdrawal_url(ri: "jp"),
-               headers: request_headers.merge(
-                 "X-TEST-CURRENT-USER" => @user.id,
-               )
+               headers: request_headers
       end
     end
 
@@ -248,7 +228,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     User.stub(:transaction, -> { raise StandardError.new("Boom") }) do
       assert_no_difference("User.count") do
         delete sign_app_configuration_withdrawal_url(ri: "jp"),
-               headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+               headers: request_headers
       end
     end
 
@@ -281,19 +261,14 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     # If application controller uses that header to find user (likely User.find(id)), we can stub User.find.
 
     user_mock = @user
-    user_mock.define_singleton_method(:save) { false }
-
-    # Assuming integration test mechanism: ApplicationController likely does User.find(headers['X-TEST-CURRENT-USER'])
-
-    user_mock = @user
-    user_mock.define_singleton_method(:save) { false }
+    user_mock.define_singleton_method(:save!) { raise ActiveRecord::RecordInvalid.new(User.new) }
     user_mock.define_singleton_method(:status_id) { "NEYO" } # Ensure checking status works
 
     # Stub finding methods likely used by authentication
     User.stub(:find, user_mock) do
       User.stub(:find_by, user_mock) do
         post sign_app_configuration_withdrawal_url(ri: "jp"),
-             headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+             headers: request_headers
       end
     end
 
@@ -304,13 +279,13 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     @user.update!(withdrawn_at: 15.days.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
 
     user_mock = @user
-    # Mock update to return false
-    user_mock.define_singleton_method(:update) { |_| false }
+    # Mock update to raise error
+    user_mock.define_singleton_method(:update!) { |_| raise ActiveRecord::RecordInvalid.new(User.new) }
 
     User.stub(:find, user_mock) do
       User.stub(:find_by, user_mock) do
         patch sign_app_configuration_withdrawal_url(ri: "jp"),
-              headers: request_headers.merge("X-TEST-CURRENT-USER" => @user.id)
+              headers: request_headers
       end
     end
 

@@ -100,6 +100,9 @@ Rails.application.routes.draw do
                 via: %i(get post)
         end
 
+        # TODO: rename :reauth
+        resources :reauth_sessions, only: %i(index show new create edit update destroy)
+
         # Settings with logged-in user
         resource :configuration, only: :show
         namespace :configuration do

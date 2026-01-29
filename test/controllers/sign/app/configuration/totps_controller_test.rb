@@ -7,7 +7,11 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
-    @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
+    @token = UserToken.create!(user_id: @user.id)
+    @headers = {
+      "X-TEST-CURRENT-USER" => @user.id,
+      "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
+    }.freeze
   end
 
   test "should get index" do

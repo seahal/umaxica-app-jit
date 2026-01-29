@@ -16,7 +16,7 @@ class SocialLinkUnlinkTest < ActionDispatch::IntegrationTest
     UserSecret.create!(user: @user, user_secret_kind_id: secret_kind.id, password_digest: "digest", name: "default")
 
     # Login as user
-    @headers = { "X-TEST-CURRENT-USER" => @user.id }
+    @headers = as_user_headers(@user, host: @host)
   end
 
   test "should unlink apple account when another identity exists" do

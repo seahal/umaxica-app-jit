@@ -144,7 +144,8 @@ module Sign
 
         # PATCH/PUT /configuration/passkeys/:id
         def update
-          if @passkey.update(update_params)
+          begin
+            @passkey.update!(update_params)
             respond_to do |format|
               format.html do
                 redirect_to sign_org_configuration_passkey_path(@passkey),
@@ -152,7 +153,7 @@ module Sign
               end
               format.json { render json: { status: "ok" }, status: :ok }
             end
-          else
+          rescue ActiveRecord::RecordInvalid
             respond_to do |format|
               format.html { render :edit, status: :unprocessable_content }
               format.json { render json: { errors: @passkey.errors.full_messages }, status: :unprocessable_content }

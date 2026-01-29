@@ -107,6 +107,7 @@ end
 # - GET: Used by our custom /social/start entry point (CSRF protected by state validation)
 # - POST: Traditional form submission (CSRF protected by Rails token)
 # State validation in SocialAuthConcern provides CSRF protection for both methods
+OmniAuth.config.silence_get_warning = true
 OmniAuth.config.allowed_request_methods = %i(get post)
 
 # =============================================================================
