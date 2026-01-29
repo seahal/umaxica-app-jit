@@ -26,21 +26,21 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
     }.freeze
   end
 
-  test "GET sensitive page redirects to reauth_sessions/new when step-up is not satisfied" do
+  test "GET sensitive page redirects to reauth/new when step-up is not satisfied" do
     get new_sign_app_configuration_email_url(ri: "jp"), headers: @headers
 
     assert_response :redirect
     uri = URI.parse(response.location)
     query = Rack::Utils.parse_query(uri.query)
 
-    assert_equal new_sign_app_reauth_session_path, uri.path
+    assert_equal new_sign_app_reauth_path, uri.path
     assert_equal "configuration_email", query["scope"]
     assert_equal "jp", query["ri"]
     assert_equal new_sign_app_configuration_email_path(ri: "jp"),
                  Base64.urlsafe_decode64(query["return_to"]).force_encoding("UTF-8")
   end
 
-  test "POST sensitive action redirects to reauth_sessions/new when step-up is not satisfied" do
+  test "POST sensitive action redirects to reauth/new when step-up is not satisfied" do
     post sign_app_configuration_emails_url(ri: "jp"),
          params: { user_email: { email: "new@example.com" } },
          headers: @headers
@@ -49,7 +49,7 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
     uri = URI.parse(response.location)
     query = Rack::Utils.parse_query(uri.query)
 
-    assert_equal new_sign_app_reauth_session_path, uri.path
+    assert_equal new_sign_app_reauth_path, uri.path
     assert_equal "configuration_email", query["scope"]
     assert_equal "jp", query["ri"]
     assert_equal sign_app_configuration_emails_path(ri: "jp"),

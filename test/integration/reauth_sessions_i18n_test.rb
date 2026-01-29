@@ -25,20 +25,20 @@ class ReauthSessionsI18nTest < ActionDispatch::IntegrationTest
   test "index view displays translated strings in Japanese" do
     ReauthSession.delete_all
 
-    get sign_app_reauth_sessions_url(ri: "jp"), headers: @headers
+    get sign_app_reauth_index_url(ri: "jp"), headers: @headers
     assert_response :success
     puts "DEBUG: Locale=#{I18n.locale}"
-    puts "DEBUG: Key check=#{I18n.t("sign.app.reauth_sessions.index.title", locale: :ja)}"
-    assert_select "h1", text: I18n.t("sign.app.reauth_sessions.index.title", locale: :ja)
-    assert_select "td", text: I18n.t("sign.app.reauth_sessions.index.empty", locale: :ja)
+    puts "DEBUG: Key check=#{I18n.t("sign.app.reauth.index.title", locale: :ja)}"
+    assert_select "h1", text: I18n.t("sign.app.reauth.index.title", locale: :ja)
+    assert_select "td", text: I18n.t("sign.app.reauth.index.empty", locale: :ja)
   end
 
   test "index view displays translated strings in English" do
     ReauthSession.delete_all
 
-    get sign_app_reauth_sessions_url(ri: "us"), headers: @headers
+    get sign_app_reauth_index_url(ri: "us"), headers: @headers
     assert_response :success
-    assert_select "h1", text: I18n.t("sign.app.reauth_sessions.index.title", locale: :en)
-    assert_select "td", text: I18n.t("sign.app.reauth_sessions.index.empty", locale: :en)
+    assert_select "h1", text: I18n.t("sign.app.reauth.index.title", locale: :en)
+    assert_select "td", text: I18n.t("sign.app.reauth.index.empty", locale: :en)
   end
 end

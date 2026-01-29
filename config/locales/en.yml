@@ -157,7 +157,7 @@ en:
             back: "Back to list"
           edit:
             title: "Edit Passkey"
-      reauth_sessions:
+      reauth:
         index:
           title: "Re-authentication Sessions"
           new: "New"
@@ -219,6 +219,43 @@ en:
             invalid_redirect_uri: "Apple Sign In redirect URL is misconfigured."
             user_cancelled_authorize: "You cancelled the Apple Sign In. Please try again if needed."
     org:
+      reauth:
+        index:
+          title: "Re-authentication Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Re-authentication"
+          description: "Re-authentication is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        show:
+          title: "Re-authentication Session"
+          list: "List"
+          to_edit: "To input screen"
+          cancel: "Cancel"
+          confirm_cancel: "Are you sure?"
+        edit:
+          title: "Re-authentication"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          cancel: "Cancel"
+          confirm_cancel: "Are you sure?"
+        success:
+          complete: "Re-authentication completed."
       authentication:
         new:
           back: "Back"

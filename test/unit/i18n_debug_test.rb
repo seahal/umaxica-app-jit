@@ -10,7 +10,7 @@ class I18nDebugTest < ActiveSupport::TestCase
     end
 
     I18n.with_locale(:en) do
-      puts "DEBUG: en.sign.app.reauth_sessions.index.title = #{I18n.t("sign.app.reauth_sessions.index.title")}"
+      puts "DEBUG: en.sign.app.reauth.index.title = #{I18n.t("sign.app.reauth.index.title")}"
     end
   end
 end

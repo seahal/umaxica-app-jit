@@ -179,7 +179,7 @@ ja:
             description: あなたのアカウントは現在退会状態です。下のボタンをクリックしてアカウントを復旧してください。
             recovery_code_label: リカバリーコード確認
             submit: アカウントを復旧する
-      reauth_sessions:
+      reauth:
         index:
           title: "再認証セッション"
           new: "新規"
@@ -226,6 +226,43 @@ ja:
         missing_refresh_token: リフレッシュトークンが必要です
         invalid_refresh_token: 無効または期限切れのリフレッシュトークンです
     org:
+      reauth:
+        index:
+          title: "再認証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "再認証"
+          description: "続行するには再認証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+            email_otp: "メール（ワンタイムコード）"
+          submit: "続行"
+          back: "戻る"
+        show:
+          title: "再認証セッション"
+          list: "一覧"
+          to_edit: "入力画面へ"
+          cancel: "キャンセル"
+          confirm_cancel: "キャンセルしますか？"
+        edit:
+          title: "再認証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          cancel: "キャンセル"
+          confirm_cancel: "キャンセルしますか？"
+        success:
+          complete: "再認証が完了しました"
       layout:
         nav:
           sign_up: 新規登録

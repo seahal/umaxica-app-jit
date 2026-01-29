@@ -4,7 +4,7 @@ require "json"
 
 module Sign
   module App
-    class ReauthSessionsController < ApplicationController
+    class ReauthController < ApplicationController
       include Common::Otp
       include Webauthn::Config
 
@@ -52,7 +52,7 @@ module Sign
 
         if @reauth_session.save
           prepare_method_side_effects!(@reauth_session)
-          redirect_to edit_sign_app_reauth_session_path(@reauth_session, ri: params[:ri])
+          redirect_to edit_sign_app_reauth_path(@reauth_session, ri: params[:ri])
         else
           render :new, status: :unprocessable_content
         end
@@ -76,7 +76,7 @@ module Sign
 
       def destroy
         @reauth_session.update!(status: "CANCELLED")
-        redirect_to new_sign_app_reauth_session_path(
+        redirect_to new_sign_app_reauth_path(
           scope: @reauth_session.scope,
           return_to: @reauth_session.return_to,
           ri: params[:ri],
@@ -262,7 +262,7 @@ module Sign
           @actor_token.update!(last_step_up_at: now, last_step_up_scope: @reauth_session.scope)
         end
 
-        flash[:notice] = I18n.t("sign.app.reauth_sessions.success.complete")
+        flash[:notice] = I18n.t("sign.app.reauth.success.complete")
         jump_to_generated_url(@reauth_session.return_to, fallback: sign_app_configuration_path(ri: params[:ri]))
       end
     end
