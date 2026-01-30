@@ -6,7 +6,7 @@ module Sign
   module Org
     class ReauthController < ApplicationController
       include Common::Otp
-      include Webauthn::Config
+      include Sign::Webauthn
 
       auth_required!
       REAUTH_EMAIL_OTP_SESSION_KEY = :reauth_email_otp
@@ -245,9 +245,9 @@ module Sign
           passkey.update!(sign_count: credential.sign_count)
           true
         end
-      rescue Webauthn::Config::ChallengeNotFoundError,
-             Webauthn::Config::ChallengeExpiredError,
-             Webauthn::Config::ChallengePurposeMismatchError
+      rescue Sign::Webauthn::ChallengeNotFoundError,
+             Sign::Webauthn::ChallengeExpiredError,
+             Sign::Webauthn::ChallengePurposeMismatchError
         @reauth_session.errors.add(:base, I18n.t("errors.webauthn.challenge_invalid"))
         false
       rescue WebAuthn::Error, JSON::ParserError

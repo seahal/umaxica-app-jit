@@ -121,7 +121,10 @@ module Sign
             session[:user_email_authentication_id] = existing_email.id
             session[:user_email_authentication_address] = nil
 
-            return if otp_request_rate_limited?(existing_email)
+            if otp_request_rate_limited?(existing_email)
+              flash[:alert] = t("sign.app.authentication.email.create.rate_limited")
+              return
+            end
 
             otp_code = generate_otp_for(existing_email)
 

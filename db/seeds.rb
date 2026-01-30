@@ -20,4 +20,14 @@ Rails.logger.debug I18n.t("seeds.preference_statuses.start")
   end
 end
 
+if defined?(UserAuditEvent)
+  UserAuditEvent.ensure_defaults!
+  Rails.logger.debug "Created UserAuditEvent defaults"
+end
+
+if defined?(UserAuditLevel)
+  UserAuditLevel.ensure_defaults!
+  Rails.logger.debug "Created UserAuditLevel defaults"
+end
+
 Rails.logger.debug I18n.t("seeds.preference_statuses.complete")

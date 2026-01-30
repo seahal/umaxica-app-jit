@@ -15,3 +15,11 @@ unless File.respond_to?(:exists?)
     exist?(path)
   end
 end
+
+# String#drop is not a standard Ruby method but is used in this codebase.
+# Adding it here to ensure compatibility and solve NoMethodError fundamentally.
+class String
+  def drop(n)
+    self[n..] || ""
+  end
+end

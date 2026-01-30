@@ -1,30 +1,7 @@
 # frozen_string_literal: true
 
-module Webauthn
-  # Config provides WebAuthn configuration helpers for controllers.
-  #
-  # This concern implements:
-  # - Dynamic rp_id based on request.host (separate service/staff contexts)
-  # - Origin validation against TRUSTED_ORIGINS
-  # - Multi-tab challenge management using session[:passkey_challenges][challenge_id]
-  #
-  # Usage:
-  #   class PasskeysController < ApplicationController
-  #     include Webauthn::Config
-  #
-  #     def options
-  #       # For registration
-  #       challenge_id, options = create_registration_challenge(user: current_user)
-  #       render json: { challenge_id: challenge_id, options: options }
-  #     end
-  #
-  #     def verification
-  #       with_challenge(params[:challenge_id], purpose: :registration) do |challenge|
-  #         # Verify credential...
-  #       end
-  #     end
-  #   end
-  module Config
+module Sign
+  module Webauthn
     extend ActiveSupport::Concern
 
     CHALLENGE_SESSION_KEY = :passkey_challenges

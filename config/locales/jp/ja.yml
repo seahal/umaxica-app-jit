@@ -124,6 +124,7 @@ ja:
           edit:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
+            code_required: 確認コードを入力してください。
             invalid_code: パスコードが正しくありません
             attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
             success: 登録が完了しました。
@@ -152,6 +153,15 @@ ja:
           back: もどる
           logout: ログアウト
           logout_desc: アカウントからログアウトします
+        email:
+          index:
+            title: "メールアドレス"
+            description: "メールアドレスを管理します"
+            new_link: "メールアドレスを追加"
+          update:
+            success: "メールアドレスが認証されました。"
+            code_required: "確認コードを入力してください。"
+            attempts_exceeded: "試行回数の上限を超えました。最初からやり直してください。"
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
@@ -415,6 +425,7 @@ ja:
           edit:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
+            code_required: 確認コードを入力してください。
             invalid_code: パスコードが正しくありません
             attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
             success: 登録が完了しました。

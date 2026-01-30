@@ -17,7 +17,8 @@ module Sign
       # Both are accessible via params[:state].
       class OmniauthCallbacksController < Sign::App::ApplicationController
         include SocialAuthConcern
-        include Sign::App::EmailRegistrable
+
+
 
         # Allow unauthenticated access for login intent
         # For link/reauth, auth is checked in prepare_social_auth_intent!
@@ -99,16 +100,6 @@ module Sign
             if existing_account
               redirect_to social_auth_success_redirect_path,
                           notice: I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name)
-            elsif user.status_id == "UNVERIFIED_WITH_SIGN_UP"
-              begin
-                initiate_email_verification!(identity.email)
-                redirect_to edit_sign_app_configuration_email_path(@user_email),
-                            notice: I18n.t("sign.app.registration.email.create.success")
-              rescue ActiveRecord::RecordInvalid
-                # Fallback if verification init failed (e.g. invalid email)
-                redirect_to social_auth_success_redirect_path,
-                            alert: I18n.t("sign.app.registration.email.create.failure")
-              end
             else
               redirect_to social_auth_success_redirect_path,
                           notice: I18n.t("sign.app.social.sessions.create.success", provider: provider_name)

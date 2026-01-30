@@ -5,12 +5,12 @@ require "test_helper"
 class I18nDebugTest < ActiveSupport::TestCase
   test "lookup debug" do
     I18n.with_locale(:ja) do
-      puts "DEBUG: ja.errors.otp_locked = #{I18n.t("errors.otp_locked")}"
-      puts "DEBUG: ja.sign.app.configuration.show.logout = #{I18n.t("sign.app.configuration.show.logout")}"
+      assert I18n.exists?("errors.otp_locked"), "ja.errors.otp_locked missing"
+      assert I18n.exists?("sign.app.configuration.show.logout"), "ja.sign.app.configuration.show.logout missing"
     end
 
     I18n.with_locale(:en) do
-      puts "DEBUG: en.sign.app.reauth.index.title = #{I18n.t("sign.app.reauth.index.title")}"
+      assert I18n.exists?("sign.app.reauth.index.title"), "en.sign.app.reauth.index.title missing"
     end
   end
 end

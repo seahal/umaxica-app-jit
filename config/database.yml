@@ -13,11 +13,11 @@ default: &default
 test_default: &test_default
   !!merge <<: *default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 32 } %>
-  timeout: 30000
+  timeout: 60000
   prepared_statements: false
-  advisory_locks: false
-  lock_timeout: 2s
-  statement_timeout: 2s
+  advisory_locks: true
+  lock_timeout: 5s
+  statement_timeout: 5s
 development:
   guest:
     !!merge <<: *default

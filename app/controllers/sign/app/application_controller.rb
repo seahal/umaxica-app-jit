@@ -16,7 +16,7 @@ module Sign
       guest_only!
 
       # Note: set_locale and set_timezone are already defined in Preference::Global
-      before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
+      prepend_before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
 
       private
 

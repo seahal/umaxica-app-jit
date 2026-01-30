@@ -41,7 +41,6 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
       uid: @google_uid,
       provider: "google_oauth2",
       token: "old_token",
-      email: "reauth@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
       last_authenticated_at: 1.day.ago,
@@ -87,7 +86,6 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
       uid: @apple_uid,
       provider: "apple",
       token: "old_token",
-      email: "reauth_apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
       last_authenticated_at: 1.day.ago,
@@ -128,7 +126,6 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
       uid: @google_uid,
       provider: "google_oauth2",
       token: "token",
-      email: "original@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )

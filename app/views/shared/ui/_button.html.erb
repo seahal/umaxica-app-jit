@@ -2,7 +2,7 @@
   variant ||= :primary
   type ||= :button
   classes = "inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50 disabled:pointer-events-none min-h-[44px] min-w-[44px]"
-  
+
   variant_classes = {
     primary: "bg-primary text-primary-fg hover:opacity-90",
     secondary: "bg-muted text-muted-fg hover:bg-muted/80",
@@ -19,9 +19,9 @@
     <%= local_assigns[:label] || yield %>
   <% end %>
 <% else %>
-  <button type="<%= type %>" 
-          class="<%= classes %> <%= variant_classes %> <%= local_assigns[:class] %>" 
-          <%= "disabled" if local_assigns[:disabled] %> 
+  <button type="<%= type %>"
+          class="<%= classes %> <%= variant_classes %> <%= local_assigns[:class] %>"
+          <%= "disabled" if local_assigns[:disabled] %>
           <% if local_assigns[:data] %>
             <% data.each do |k, v| %>
               data-<%= k %>="<%= v %>"

@@ -302,7 +302,6 @@ class SocialAuthService
     identity = identity_class.new(
       uid: uid,
       provider: provider,
-      email: @auth_hash.dig("info", "email") || @auth_hash.dig(:info, :email) || "",
       image: @auth_hash.dig("info", "image") || @auth_hash.dig(:info, :image) || "",
       token: @auth_hash.dig("credentials", "token") || @auth_hash.dig(:credentials, :token) || "",
       refresh_token: @auth_hash.dig(

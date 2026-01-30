@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_24_174000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_30_114404) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -293,7 +293,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_24_174000) do
 
   create_table "user_social_apples", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
     t.integer "expires_at", null: false
     t.string "image", default: "", null: false
     t.datetime "last_authenticated_at"
@@ -318,7 +317,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_24_174000) do
 
   create_table "user_social_googles", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
     t.integer "expires_at", null: false
     t.string "image", default: "", null: false
     t.datetime "last_authenticated_at"

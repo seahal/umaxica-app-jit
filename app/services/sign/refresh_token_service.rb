@@ -30,9 +30,16 @@ module Sign
       reused_token = nil
       execution_proc =
         -> {
-          TokenRecord.transaction do
+          ActiveRecord::Base.transaction do
             token = find_and_lock_token(public_id)
-            raise InvalidRefreshToken, "token_not_found" unless token
+            unless token
+              Rails.logger.debug { "[Service] Token not found! public_id: #{public_id}" }
+              # Debug connection info
+              Rails.logger.debug {
+                "[Service] DB Name: #{TokenRecord.connection.current_database}, Role: #{TokenRecord.connection_role}, Write? #{TokenRecord.connection.messages.include?("read_only") rescue false}"
+              }
+              raise InvalidRefreshToken, "token_not_found"
+            end
             raise InvalidRefreshToken, "inactive_token" unless token.active?
 
             if token.refresh_token_digest_matches?(verifier)
@@ -40,17 +47,15 @@ module Sign
               new_refresh_token = token.rotate_refresh_token!
               result = { token: token, refresh_token: new_refresh_token }
             else
+              Rails.logger.debug "[Service] Digest mismatch!"
               reused_token = token
               raise ActiveRecord::Rollback
             end
           end
         }
 
-      if Rails.env.test?
-        execution_proc.call
-      else
-        TokenRecord.connected_to(role: :writing, &execution_proc)
-      end
+      # Always use writing role for locking and updates
+      ActiveRecord::Base.connected_to(role: :writing, &execution_proc)
 
       return result if result
 

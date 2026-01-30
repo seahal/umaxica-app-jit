@@ -40,11 +40,10 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     SocialIdentifiable.normalize_provider("google_oauth2").humanize
-    assert_equal I18n.t("sign.app.registration.email.create.success"), flash[:notice]
+    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Google"), flash[:notice]
 
     user = UserSocialGoogle.find_by(uid: "123456789").user
     assert_not_nil user
-    assert_equal "test@example.com", user.user_social_google.email
   end
 
   test "should sign in with Apple" do
@@ -66,11 +65,10 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     assert_redirected_to @expected_redirect
     follow_redirect!
 
-    assert_equal I18n.t("sign.app.registration.email.create.success"), flash[:notice]
+    assert_equal I18n.t("sign.app.social.sessions.create.success", provider: "Apple"), flash[:notice]
 
     user = UserSocialApple.find_by(uid: "apple_uid_123").user
     assert_not_nil user
-    assert_equal "apple@example.com", user.user_social_apple.email
   end
 
   test "should sign in with existing Google user" do
@@ -80,7 +78,6 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       uid: "existing_uid",
       provider: "google_oauth2",
       token: "existing_token",
-      email: "existing@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )

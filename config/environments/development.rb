@@ -100,18 +100,9 @@ Rails.application.configure do
   config.hosts << "news.app.localhost"
   config.hosts << "news.com.localhost"
   config.hosts << "news.org.localhost"
+  # TODO: dele them
   config.hosts << "sign.umaxica.app"
   config.hosts << "sign.umaxica.org"
-
-  # Bullet, a gem to help you avoid N+1 queries and unused eager loading.
-  # config.after_initialize do
-  #   Bullet.enable = true
-  #   Bullet.alert = true
-  #   Bullet.bullet_logger = true
-  #   Bullet.console = true
-  #   Bullet.rails_logger = true
-  #   Bullet.add_footer = true
-  # end
 
   ## file watcher
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker

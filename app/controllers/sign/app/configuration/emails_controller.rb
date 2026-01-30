@@ -4,8 +4,11 @@ module Sign
   module App
     module Configuration
       class EmailsController < ApplicationController
-        include Sign::App::EmailRegistrable
+        include Sign::EmailRegistrable
         include ::Auth::StepUp
+
+        # Skip email flow enforcement - configuration flow is separate from signup flow
+        skip_before_action :enforce_email_flow!
 
         before_action :authenticate_user!
         before_action -> { require_step_up!(scope: "configuration_email") }
@@ -25,18 +28,29 @@ module Sign
 
         def create
           email_params = params.expect(user_email: [:email])
-          begin
-            initiate_email_verification!(email_params[:email])
-            redirect_to edit_sign_app_configuration_email_path(@user_email.id)
-          rescue ActiveRecord::RecordInvalid
+
+          unless initiate_email_verification!(email_params[:email])
             render :new, status: :unprocessable_content
+            return
           end
+
+          redirect_to edit_sign_app_configuration_email_path(@user_email.id)
         end
 
         def update
-          submitted_code = params[:user_email][:pass_code]
-          token = params[:user_email][:token]
-          begin
+          @user_email = UserEmail.find_by(public_id: params[:id])
+          submitted_code = params.dig(:user_email, :pass_code)
+          token = params.dig(:user_email, :token)
+
+          # Validate submitted code presence
+          if submitted_code.blank?
+            @user_email.errors.add(:pass_code, t("sign.app.configuration.email.update.code_required"))
+            render :edit, status: :unprocessable_content
+            return
+          end
+
+          # Complete email verification
+          result =
             complete_email_verification!(params[:id], submitted_code, token) do |user_email|
               ActiveRecord::Base.transaction do
                 user_email.user = current_user
@@ -48,14 +62,18 @@ module Sign
                 end
               end
             end
-            redirect_to sign_app_configuration_emails_path,
-                        notice: t("sign.app.configuration.email.update.success")
-          rescue ActiveRecord::RecordInvalid
+
+          if result == :locked
+            flash[:alert] = t("sign.app.configuration.email.update.attempts_exceeded")
+            redirect_to sign_app_configuration_emails_path
+            return
+          elsif !result
             render :edit, status: :unprocessable_content
-          rescue ApplicationError => e
-            flash[:alert] = e.message
-            redirect_to @error_redirect || sign_app_configuration_emails_path
+            return
           end
+
+          redirect_to sign_app_configuration_emails_path,
+                      notice: t("sign.app.configuration.email.update.success")
         end
       end
     end

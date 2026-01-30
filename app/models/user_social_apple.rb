@@ -6,7 +6,6 @@
 # Database name: principal
 #
 #  id                                   :uuid             not null, primary key
-#  email                                :string           default(""), not null
 #  expires_at                           :integer          not null
 #  image                                :string           default(""), not null
 #  last_authenticated_at                :datetime
@@ -57,7 +56,6 @@ class UserSocialApple < PrincipalRecord
     identity = find_or_initialize_by(uid: auth.uid, provider: auth.provider)
 
     # Update attributes
-    identity.email = auth.info.email.presence || ""
     # Apple might not provide image in the same way, but keeping consistency
     identity.image = auth.info.respond_to?(:image) ? (auth.info.image.presence || "") : ""
     identity.token = auth.credentials.token
@@ -77,7 +75,6 @@ class UserSocialApple < PrincipalRecord
   # Update from OmniAuth hash (for link/reauth scenarios)
   def update_from_auth_hash!(auth)
     attrs = {
-      email: auth.info.email.presence || email.presence || "",
       token: auth.credentials.token,
       refresh_token: auth.credentials.refresh_token.presence || refresh_token,
       expires_at: auth.credentials.expires_at,

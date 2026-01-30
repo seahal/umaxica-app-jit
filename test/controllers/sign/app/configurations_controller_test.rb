@@ -31,4 +31,55 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     target_path = new_sign_app_in_path
     assert_match %r{#{Regexp.escape(target_path)}\?.*ri=jp}, response.headers["Location"]
   end
+
+  test "should succeed with valid refresh cookie (transparent refresh)" do
+    # Create a user token
+    token = UserToken.create!(user_id: @user.id)
+    refresh_plain = token.rotate_refresh_token!
+
+    # Set only refresh cookie (no access token)
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    get sign_app_configuration_url(ri: "jp")
+
+    # Should succeed (200) after transparent refresh, not redirect to /in/new
+    assert_response :success
+    assert_select "a[href^=?]", sign_app_configuration_emails_path(ri: "jp")
+  end
+
+  test "should not raise ReadOnlyError during transparent refresh" do
+    # Create a user token
+    token = UserToken.create!(user_id: @user.id)
+    refresh_plain = token.rotate_refresh_token!
+
+    # Set only refresh cookie
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    # Should not raise any ReadOnlyError
+    assert_nothing_raised do
+      get sign_app_configuration_url(ri: "jp")
+    end
+
+    assert_response :success
+  end
+
+  test "should succeed even when audit fails during transparent refresh" do
+    # Create a user token
+    token = UserToken.create!(user_id: @user.id)
+    refresh_plain = token.rotate_refresh_token!
+
+    # Set only refresh cookie
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    # Simulate audit failure by overriding record_audit to raise an error
+    @controller.define_singleton_method(:record_audit) do |*_args|
+      raise StandardError, "Simulated audit failure"
+    end
+
+    get sign_app_configuration_url(ri: "jp")
+
+    # Should still succeed (200) - audit failure should not fail refresh
+    assert_response :success
+    assert_select "a[href^=?]", sign_app_configuration_emails_path(ri: "jp")
+  end
 end

@@ -41,7 +41,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: existing_uid,
       provider: "google_oauth2",
       token: "token",
-      email: "user_one@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
@@ -81,7 +80,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: existing_uid,
       provider: "apple",
       token: "token",
-      email: "apple_user_one@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
     )
@@ -119,7 +117,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: old_uid,
       provider: "google_oauth2",
       token: "old_token",
-      email: "old@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
@@ -144,7 +141,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     # Identity should still exist
     existing_identity.reload
-    assert_equal "updated@example.com", existing_identity.email
   end
 
   # ============================================================================
@@ -204,7 +200,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: revoked_uid,
       provider: "google_oauth2",
       token: "old_token",
-      email: "revoked@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:revoked),
     )
@@ -231,7 +226,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     revoked_identity.reload
     assert_equal UserSocialGoogleStatus::ACTIVE, revoked_identity.user_identity_social_google_status_id,
                  "Identity should be ACTIVE"
-    assert_equal "reactivated@example.com", revoked_identity.email, "Email should be updated"
   end
 
   test "re-link REVOKED Apple identity reactivates it" do
@@ -242,7 +236,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       uid: revoked_uid,
       provider: "apple",
       token: "old_token",
-      email: "revoked_apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:revoked),
     )
@@ -266,7 +259,6 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     revoked_identity.reload
     assert_equal UserSocialAppleStatus::ACTIVE, revoked_identity.user_identity_social_apple_status_id,
                  "Apple identity should be ACTIVE"
-    assert_equal "reactivated_apple@example.com", revoked_identity.email, "Email should be updated"
   end
 
   private

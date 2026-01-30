@@ -50,4 +50,41 @@ class Sign::RefreshTokenServiceTest < ActiveSupport::TestCase
 
     assert_nil token.reload.compromised_at
   end
+
+  test "S2: service uses writing role for lock and update operations" do
+    # Verify that ActiveRecord::Base.connected_to is called with role: :writing
+    # This ensures SELECT ... FOR UPDATE and UPDATE go to primary database
+    original_method = ActiveRecord::Base.method(:connected_to)
+
+    connection_calls = []
+    ActiveRecord::Base.define_singleton_method(:connected_to) do |**options, &block|
+      connection_calls << options
+      original_method.call(**options, &block)
+    end
+
+    token = UserToken.create!(user: users(:one))
+    refresh = token.rotate_refresh_token!
+
+    Sign::RefreshTokenService.call(refresh_token: refresh)
+
+    # Verify that connected_to was called with role: :writing
+    assert connection_calls.any? { |opts| opts[:role] == :writing },
+           "RefreshTokenService should use writing role for lock/update operations"
+  ensure
+    # Restore original method
+    ActiveRecord::Base.define_singleton_method(:connected_to, original_method)
+  end
+
+  test "S2: no ReadOnlyError occurs during refresh" do
+    # This test verifies that refresh operations do not trigger ReadOnlyError
+    # even when using SELECT ... FOR UPDATE
+    token = UserToken.create!(user: users(:one))
+    refresh = token.rotate_refresh_token!
+
+    assert_nothing_raised do
+      result = Sign::RefreshTokenService.call(refresh_token: refresh)
+      assert_kind_of Hash, result
+      assert_equal token, result[:token]
+    end
+  end
 end

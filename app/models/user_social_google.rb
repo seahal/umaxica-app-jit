@@ -6,7 +6,6 @@
 # Database name: principal
 #
 #  id                                    :uuid             not null, primary key
-#  email                                 :string           default(""), not null
 #  expires_at                            :integer          not null
 #  image                                 :string           default(""), not null
 #  last_authenticated_at                 :datetime
@@ -57,7 +56,6 @@ class UserSocialGoogle < PrincipalRecord
     identity = find_or_initialize_by(uid: auth.uid, provider: auth.provider)
 
     # Update attributes
-    identity.email = auth.info.email.presence || ""
     identity.image = auth.info.image.presence || ""
     identity.token = auth.credentials.token
     identity.refresh_token = auth.credentials.refresh_token if auth.credentials.refresh_token.present?
@@ -76,7 +74,6 @@ class UserSocialGoogle < PrincipalRecord
   # Update from OmniAuth hash (for link/reauth scenarios)
   def update_from_auth_hash!(auth)
     update!(
-      email: auth.info.email.presence || email.presence || "",
       image: auth.info.image.presence || image.presence || "",
       token: auth.credentials.token,
       refresh_token: auth.credentials.refresh_token.presence || refresh_token,

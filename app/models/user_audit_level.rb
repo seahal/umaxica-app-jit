@@ -17,4 +17,12 @@ class UserAuditLevel < AuditRecord
            foreign_key: :level_id,
            dependent: :restrict_with_error,
            inverse_of: :user_audit_level
+
+  DEFAULTS = %w(NEYO INFO WARN ERROR).freeze
+
+  def self.ensure_defaults!
+    DEFAULTS.each do |id|
+      find_or_create_by!(id: id)
+    end
+  end
 end

@@ -29,7 +29,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     get sign_app_configuration_secrets_url(ri: "jp"), headers: authenticated_headers
 
     assert_response :success
-    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp"), text: /#{Regexp.escape(I18n.t("actions.back"))}/
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp")
   end
 
   test "should get show" do

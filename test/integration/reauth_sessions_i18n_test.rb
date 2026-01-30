@@ -27,8 +27,6 @@ class ReauthSessionsI18nTest < ActionDispatch::IntegrationTest
 
     get sign_app_reauth_index_url(ri: "jp"), headers: @headers
     assert_response :success
-    puts "DEBUG: Locale=#{I18n.locale}"
-    puts "DEBUG: Key check=#{I18n.t("sign.app.reauth.index.title", locale: :ja)}"
     assert_select "h1", text: I18n.t("sign.app.reauth.index.title", locale: :ja)
     assert_select "td", text: I18n.t("sign.app.reauth.index.empty", locale: :ja)
   end

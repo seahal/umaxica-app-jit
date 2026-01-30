@@ -6,7 +6,6 @@
 # Database name: principal
 #
 #  id                                   :uuid             not null, primary key
-#  email                                :string           default(""), not null
 #  expires_at                           :integer          not null
 #  image                                :string           default(""), not null
 #  last_authenticated_at                :datetime
@@ -100,7 +99,6 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     assert_predicate identity, :new_record?
     assert_equal "new-uid", identity.uid
     assert_equal "apple", identity.provider
-    assert_equal "test@example.com", identity.email
     assert_equal "http://example.com", identity.image
     assert_equal "new-token", identity.token
     assert_equal 123, identity.expires_at
@@ -179,7 +177,6 @@ class UserSocialAppleTest < ActiveSupport::TestCase
     assert_nil identity.last_authenticated_at
     identity.update_from_auth_hash!(auth)
 
-    assert_equal "new-apple@example.com", identity.email
     assert_equal "old-image", identity.image
     assert_equal "new-token", identity.token
     assert_equal "new-refresh", identity.refresh_token

@@ -147,6 +147,7 @@ en:
           update:
             success: "Email address has been verified."
             failed: "Registration failed. Please try again."
+            code_required: "Verification code is required."
             invalid_code: "Invalid verification code."
             attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
             session_expired: "Your session has expired. Please start over."
@@ -172,6 +173,15 @@ en:
           back: "Back"
           logout: "Logout"
           logout_desc: "Sign out of your account"
+        email:
+          index:
+            title: "Email Addresses"
+            description: "Manage your email addresses"
+            new_link: "Add Email Address"
+          update:
+            success: "Email address has been verified."
+            code_required: "Verification code is required."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
         recovery:
           index:
             description: "Review existing recovery codes and ensure they stay up to date."
@@ -414,6 +424,7 @@ en:
           update:
             success: "Email address has been verified."
             failed: "Registration failed. Please try again."
+            code_required: "Verification code is required."
             invalid_code: "Invalid verification code."
             attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
             session_expired: "Your session has expired. Please start over."

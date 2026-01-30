@@ -36,7 +36,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "last_google_identity_#{SecureRandom.hex(4)}",
       provider: "google_oauth2",
       token: "token",
-      email: "last@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
@@ -62,7 +61,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "last_apple_identity_#{SecureRandom.hex(4)}",
       provider: "apple",
       token: "token",
-      email: "last_apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
     )
@@ -87,7 +85,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "google_to_unlink_#{SecureRandom.hex(4)}",
       provider: "google_oauth2",
       token: "token",
-      email: "google@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
@@ -97,7 +94,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "apple_backup_#{SecureRandom.hex(4)}",
       provider: "apple",
       token: "token",
-      email: "apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
     )
@@ -126,7 +122,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "google_backup_#{SecureRandom.hex(4)}",
       provider: "google_oauth2",
       token: "token",
-      email: "google@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
@@ -136,7 +131,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "apple_to_unlink_#{SecureRandom.hex(4)}",
       provider: "apple",
       token: "token",
-      email: "apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
     )
@@ -165,7 +159,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "apple_only_#{SecureRandom.hex(4)}",
       provider: "apple",
       token: "token",
-      email: "apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
     )
@@ -201,7 +194,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "revoked_google_#{SecureRandom.hex(4)}",
       provider: "google_oauth2",
       token: "token",
-      email: "revoked_google@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:revoked),
     )
@@ -219,7 +211,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "active_apple_#{SecureRandom.hex(4)}",
       provider: "apple",
       token: "token",
-      email: "active_apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
     )
@@ -245,7 +236,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "revoked_apple_#{SecureRandom.hex(4)}",
       provider: "apple",
       token: "token",
-      email: "revoked@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:revoked),
     )
@@ -255,7 +245,6 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
       uid: "only_active_google_#{SecureRandom.hex(4)}",
       provider: "google_oauth2",
       token: "token",
-      email: "only@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )

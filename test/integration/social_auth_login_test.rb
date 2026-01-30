@@ -34,7 +34,6 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
       uid: existing_uid,
       provider: "google_oauth2",
       token: "old_token",
-      email: "existing@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
     )
@@ -72,7 +71,6 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
       uid: existing_uid,
       provider: "apple",
       token: "old_token",
-      email: "existing_apple@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_apple_status: user_social_apple_statuses(:active),
     )
@@ -185,7 +183,6 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
       uid: existing_uid,
       provider: "google_oauth2",
       token: "old_token",
-      email: "authtime@example.com",
       expires_at: 1.week.from_now.to_i,
       user_social_google_status: user_social_google_statuses(:active),
       last_authenticated_at: old_auth_time,

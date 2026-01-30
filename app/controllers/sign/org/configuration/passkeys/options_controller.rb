@@ -5,58 +5,33 @@ module Sign
     module Configuration
       module Passkeys
         class OptionsController < ApplicationController
-          include Webauthn::SessionChallenge
+          include Sign::Webauthn
 
           auth_required!
 
           # POST /configuration/passkeys/options
           # Generate WebAuthn registration options for creating a new staff passkey
           def create
-            creation_options = WebAuthn::Credential.options_for_create(
-              user: {
-                id: current_staff.public_id,
-                name: primary_staff_email || "staff@example.com",
-                display_name: primary_staff_name || I18n.t("sign.default_staff_name"),
-              },
-              authenticator_selection: {
-                user_verification: "preferred",
-                resident_key: "preferred",
-              },
-              attestation: "none",
-              rp: {
-                id: webauthn_rp_id,
-                name: webauthn_rp_name,
-              },
+            existing_credentials =
+              current_staff.staff_passkeys.map do |passkey|
+                { id: passkey.webauthn_id }
+              end
+
+            challenge_id, creation_options = create_registration_challenge(
+              resource: current_staff,
+              exclude_credentials: existing_credentials,
             )
 
-            store_webauthn_challenge!(
-              purpose: "registration",
-              scope: "sign/org/configuration/passkeys",
-              challenge: creation_options.challenge,
-            )
-
-            render json: creation_options, status: :ok
-          rescue WebAuthn::Error => e
+            render json: {
+              challenge_id: challenge_id,
+              options: creation_options,
+            }, status: :ok
+          rescue Sign::Webauthn::OriginValidationError => e
+            Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
+            render json: { error: I18n.t("errors.webauthn.origin_invalid") }, status: :forbidden
+          rescue StandardError => e
             Rails.logger.error("WebAuthn options generation failed: #{e.message}")
             render json: { error: e.message }, status: :unprocessable_content
-          end
-
-          private
-
-          def primary_staff_email
-            current_staff.staff_emails.first&.address
-          end
-
-          def primary_staff_name
-            current_staff.try(:name) || primary_staff_email
-          end
-
-          def webauthn_rp_id
-            ENV.fetch("WEBAUTHN_RP_ID_ORG") { URI.parse(ENV.fetch("SIGN_STAFF_URL", "localhost")).host }
-          end
-
-          def webauthn_rp_name
-            ENV.fetch("WEBAUTHN_RP_NAME_ORG", "Umaxica Org")
           end
         end
       end

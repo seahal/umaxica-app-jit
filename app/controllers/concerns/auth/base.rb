@@ -527,17 +527,21 @@ module Auth
       result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
       token_record = result[:token]
       new_refresh_plain = result[:refresh_token]
-      resource = nil
 
       return handle_missing_refresh_token(refresh_public_id) unless token_record.is_a?(token_class)
 
+      # Load resource from token record
+      # No special test handling - same code path for all environments
       resource = token_record.public_send(resource_type)
+
       return handle_inactive_resource(resource, refresh_public_id, token_record) unless resource&.active?
 
       build_refreshed_session(resource, token_record, new_refresh_plain)
     rescue Sign::InvalidRefreshToken => e
       handle_invalid_refresh_token(e, refresh_public_id)
     rescue StandardError => e
+      Rails.logger.error "[Auth] Refresh Error: #{e.class}: #{e.message}"
+      Rails.logger.error e.backtrace.first(10).join("\n")
       handle_refresh_error(e, refresh_public_id, resource)
     end
 
@@ -559,17 +563,25 @@ module Auth
     def transparent_refresh_access_token
       return if logged_in?
 
+      # Loop guard: prevents infinite refresh loops within the same request
+      return if request.env["jit_auth_refreshed"]
+
       refresh_plain = cookies[REFRESH_COOKIE_KEY]
       return if refresh_plain.blank?
 
+      # Mark as refreshed to prevent recursion
+      request.env["jit_auth_refreshed"] = true
+
       refreshed = refresh_access_token(refresh_plain)
       unless refreshed
+        Rails.logger.debug { "[Auth] transparent_refresh: FAILURE" }
         cookies.delete ACCESS_COOKIE_KEY, cookie_deletion_options
         cookies.delete REFRESH_COOKIE_KEY, cookie_deletion_options
         return
       end
 
-      remove_instance_variable(:@current_resource) if defined?(@current_resource)
+      Rails.logger.debug { "[Auth] transparent_refresh: SUCCESS. User: #{refreshed[:user].present?}" }
+      @current_resource = refreshed[:user]
     end
 
     def authenticate!
@@ -835,14 +847,17 @@ module Auth
     def record_audit(event_id, resource:, actor: resource)
       return unless resource && event_id
 
-      audit = audit_class.new(
+      Rails.logger.debug { "[Auth] record_audit: Event #{event_id}, Resource #{resource&.id}" }
+
+      # Delegate to AuditWriter with best-effort semantics
+      # This ensures audit failures do not block authentication
+      Auth::AuditWriter.write(
+        audit_class,
+        event_id,
+        resource: resource,
         actor: actor,
-        event_id: event_id,
         ip_address: request_ip_address,
-        occurred_at: Time.current,
       )
-      audit.public_send("#{resource_type}=", resource)
-      audit.save!
     end
 
     def handle_missing_refresh_token(refresh_public_id)
@@ -884,7 +899,11 @@ module Auth
         meta: { reason: "#{resource_type}_inactive" },
       )
 
-      TokenRecord.connected_to(role: :writing) { token_record.destroy! }
+      # S3: Do not destroy token - only revoke it
+      # This prevents destructive behavior in transparent refresh
+      TokenRecord.connected_to(role: :writing) do
+        token_record.update!(revoked_at: Time.current) if token_record.revoked_at.nil?
+      end
       nil
     end
 
@@ -914,7 +933,11 @@ module Auth
         new_refresh_token_id: token_record.public_id,
         ip_address: request_ip_address,
       )
+
+      # S1: Audit with best-effort semantics - failure does not block refresh
+      # AuditWriter.write handles exceptions internally and notifies observers
       record_audit(AUDIT_EVENTS[:token_refreshed], resource: resource)
+
       Sign::Risk::Enforcer.call(resource)
 
       {
@@ -922,6 +945,7 @@ module Auth
         refresh_token: new_refresh_plain,
         token_type: "Bearer",
         expires_in: ACCESS_TOKEN_TTL.to_i,
+        user: resource,
       }
     end
 
@@ -998,7 +1022,6 @@ module Auth
       resource
     end
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def load_from_token
       access_token = extract_access_token(ACCESS_COOKIE_KEY)
       return nil if access_token.blank?
@@ -1020,7 +1043,8 @@ module Auth
 
       token_exists =
         if Rails.env.test?
-          check_logic.call
+          # Ensure visibility by using writing connection which holds the test transaction
+          TokenRecord.connected_to(role: :writing, &check_logic)
         else
           TokenRecord.connected_to(role: :reading, &check_logic)
         end

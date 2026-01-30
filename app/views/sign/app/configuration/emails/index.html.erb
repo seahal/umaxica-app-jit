@@ -34,7 +34,7 @@
                   <%= email.address %>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm">
-                  <% if email.try(:confirmed_at) %>
+                  <% if email.user_email_status_id == "VERIFIED_WITH_SIGN_UP" %>
                       <span class="inline-flex items-center rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                         認証済み
                       </span>
@@ -54,7 +54,7 @@
                 <td colspan="3" class="px-6 py-16 text-center text-sm text-zinc-500 dark:text-zinc-400">
                   <div class="flex flex-col items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-zinc-300 dark:text-zinc-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                     <p>メールアドレスは登録されていません。</p>
                   </div>
@@ -67,4 +67,3 @@
       </div>
     </div>
   </div>
-

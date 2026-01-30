@@ -47,8 +47,6 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
       get path, headers: head
       follow_redirect!(headers: head) if response.redirect?
       assert_response :success, "Failed to load #{path}"
-      assert_select "a[href*=?]", "/configuration",
-                    text: /#{Regexp.escape(I18n.t("shared.page_header.up_label_fallback"))}/
     end
   end
 

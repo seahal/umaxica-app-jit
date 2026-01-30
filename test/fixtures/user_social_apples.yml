@@ -4,7 +4,6 @@
 # Database name: principal
 #
 #  id                                   :uuid             not null, primary key
-#  email                                :string           default(""), not null
 #  expires_at                           :integer          not null
 #  image                                :string           default(""), not null
 #  last_authenticated_at                :datetime

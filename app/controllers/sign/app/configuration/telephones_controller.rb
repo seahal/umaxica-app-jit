@@ -4,7 +4,7 @@ module Sign
   module App
     module Configuration
       class TelephonesController < ApplicationController
-        include Sign::App::TelephoneRegistrable
+        include Sign::TelephoneRegistrable
         include ::Auth::StepUp
 
         before_action :authenticate_user!

@@ -19,7 +19,7 @@ module Sign
       # - PATCH /configuration/passkeys/:id (update - description only)
       # - DELETE /configuration/passkeys/:id (destroy)
       class PasskeysController < ApplicationController
-        include Webauthn::Config
+        include Sign::Webauthn
 
         before_action :authenticate_staff!
         before_action :set_passkey, only: %i(show edit update destroy)
@@ -68,7 +68,7 @@ module Sign
             challenge_id: challenge_id,
             options: creation_options,
           }, status: :ok
-        rescue Webauthn::Config::OriginValidationError => e
+        rescue Sign::Webauthn::OriginValidationError => e
           Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
           render json: { error: I18n.t("errors.webauthn.origin_invalid") }, status: :forbidden
         rescue StandardError => e
@@ -127,11 +127,11 @@ module Sign
               redirect_url: sign_org_configuration_passkeys_path,
             }, status: :created
           end
-        rescue Webauthn::Config::ChallengeNotFoundError,
-               Webauthn::Config::ChallengeExpiredError => e
+        rescue Sign::Webauthn::ChallengeNotFoundError,
+               Sign::Webauthn::ChallengeExpiredError => e
           Rails.logger.warn("WebAuthn challenge error: #{e.message}")
           render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
-        rescue Webauthn::Config::ChallengePurposeMismatchError => e
+        rescue Sign::Webauthn::ChallengePurposeMismatchError => e
           Rails.logger.warn("WebAuthn challenge purpose mismatch: #{e.message}")
           render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
         rescue WebAuthn::Error => e

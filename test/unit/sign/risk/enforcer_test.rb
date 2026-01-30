@@ -27,6 +27,7 @@ module Sign
           # We can spy on Enforcer.revoke!
           Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
             Enforcer.call(@user)
+            pass
           end
         end
       end
@@ -57,6 +58,7 @@ module Sign
           Enforcer.stub :revoke!, ->(_) { raise "Should not be called" } do
             Enforcer.stub :require_step_up!, ->(_) { raise "Should not be called" } do
               Enforcer.call(@user)
+              pass
             end
           end
         end

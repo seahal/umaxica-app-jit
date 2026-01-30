@@ -16,7 +16,7 @@ module Sign
       # planned for a future phase. Currently, identifier is required to look up
       # the staff's registered passkeys.
       class PasskeysController < ApplicationController
-        include Webauthn::Config
+        include Sign::Webauthn
         include SessionLimitGate
 
         before_action :reject_logged_in_session
@@ -56,7 +56,7 @@ module Sign
             challenge_id: challenge_id,
             options: request_options,
           }, status: :ok
-        rescue Webauthn::Config::OriginValidationError => e
+        rescue Sign::Webauthn::OriginValidationError => e
           Rails.logger.error("WebAuthn origin validation failed: #{e.message}")
           render_error("errors.webauthn.origin_invalid", :forbidden)
         rescue StandardError => e
@@ -96,10 +96,10 @@ module Sign
           with_challenge(challenge_id, purpose: :authentication) do |challenge|
             verify_and_login(challenge, staff_id)
           end
-        rescue Webauthn::Config::ChallengeNotFoundError, Webauthn::Config::ChallengeExpiredError => e
+        rescue Sign::Webauthn::ChallengeNotFoundError, Sign::Webauthn::ChallengeExpiredError => e
           Rails.logger.warn("WebAuthn challenge error: #{e.message}")
           render_error("errors.webauthn.challenge_invalid", :bad_request)
-        rescue Webauthn::Config::ChallengePurposeMismatchError => e
+        rescue Sign::Webauthn::ChallengePurposeMismatchError => e
           Rails.logger.warn("WebAuthn challenge purpose mismatch: #{e.message}")
           render_error("errors.webauthn.challenge_invalid", :bad_request)
         rescue WebAuthn::SignCountVerificationError => e

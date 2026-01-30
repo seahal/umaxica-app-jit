@@ -6,7 +6,6 @@
 # Database name: principal
 #
 #  id                                    :uuid             not null, primary key
-#  email                                 :string           default(""), not null
 #  expires_at                            :integer          not null
 #  image                                 :string           default(""), not null
 #  last_authenticated_at                 :datetime
@@ -100,7 +99,6 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     assert_predicate identity, :new_record?
     assert_equal "new-google-uid", identity.uid
     assert_equal "google_oauth2", identity.provider
-    assert_equal "google@example.com", identity.email
     assert_equal "http://image.com", identity.image
     assert_equal "google-token", identity.token
     assert_equal 123, identity.expires_at
@@ -176,7 +174,6 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     assert_nil identity.last_authenticated_at
     identity.update_from_auth_hash!(auth)
 
-    assert_equal "new-google@example.com", identity.email
     assert_equal "new-image", identity.image
     assert_equal "new-token", identity.token
     assert_equal "new-refresh", identity.refresh_token

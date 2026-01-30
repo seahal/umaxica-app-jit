@@ -142,6 +142,65 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(%r{/up/emails/[^/]+/edit}, path)
   end
+
+  test "create enqueues exactly one email" do
+    email = "enqueue_test@example.com"
+
+    assert_enqueued_emails 1 do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    assert_response :redirect
+  end
+
+  test "create with validation failure enqueues no emails and returns 422" do
+    email = "invalid_email"
+
+    assert_enqueued_emails 0 do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    assert_response :unprocessable_content
+  end
+
+  test "create with turnstile failure enqueues no emails and returns 422" do
+    CloudflareTurnstile.test_validation_response = { "success" => false }
+
+    email = "turnstile_fail@example.com"
+
+    assert_enqueued_emails 0 do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    assert_response :unprocessable_content
+    assert_includes @response.body, I18n.t("sign.app.registration.email.create.turnstile_validation_failed")
+  ensure
+    CloudflareTurnstile.test_validation_response = { "success" => true }
+  end
   # rubocop:enable Minitest/MultipleAssertions
 
   test "rejects wrong OTP codes with error message" do
@@ -178,6 +237,75 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_content
     assert_includes @response.body, "正しくありません"
+  end
+
+  test "update with blank code returns 422 and renders edit" do
+    email = "blank_code_test@example.com"
+
+    # Create registration record
+    perform_enqueued_jobs do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    user_email = UserEmail.find_by(public_id: email_id)
+
+    # Attempt with blank code
+    patch sign_app_up_email_url(user_email, ri: "jp"),
+          params: {
+            id: user_email.id,
+            user_email: {
+              pass_code: "",
+            },
+          },
+          headers: default_headers
+
+    assert_response :unprocessable_content
+    assert_includes @response.body, I18n.t("sign.app.registration.email.update.code_required")
+  end
+
+  test "update with expired session redirects to new" do
+    email = "expired_test@example.com"
+
+    # Create registration record
+    perform_enqueued_jobs do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    user_email = UserEmail.find_by(public_id: email_id)
+
+    # Travel to expire OTP
+    travel 16.minutes do
+      patch sign_app_up_email_url(user_email, ri: "jp"),
+            params: {
+              id: user_email.id,
+              user_email: {
+                pass_code: "123456",
+              },
+            },
+            headers: default_headers
+
+      assert_response :redirect
+      assert_includes response.location, "/up/emails/new"
+      assert_equal I18n.t("sign.app.registration.email.edit.session_expired"), flash[:notice]
+    end
   end
 
   test "deletes email record after max OTP attempts" do

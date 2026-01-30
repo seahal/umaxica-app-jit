@@ -4,14 +4,9 @@ module Sign
   module App
     module Up
       class EmailsController < ApplicationController
-        include Sign::App::EmailRegistrable
-        include Sign::App::EmailFlowGuard
+        include Sign::EmailRegistrable
 
         guest_only! message: I18n.t("sign.app.registration.email.already_logged_in")
-
-        # ==========================================================================
-        # Step 3: Confirmation / 2FA Setup (Future)
-        # ==========================================================================
 
         def show
           @user_email = UserEmail.find_by(public_id: params["id"])
@@ -24,73 +19,73 @@ module Sign
           prepare_two_factor_auth_options
         end
 
-        # ==========================================================================
-        # Step 1: Email Input
-        # ==========================================================================
         def new
           @user_email = UserEmail.new
         end
 
-        # ==========================================================================
-        # Step 2: OTP Verification
-        # ==========================================================================
-
         def edit
           @user_email = UserEmail.find_by(public_id: params["id"])
-          if @user_email.blank? ||
-              @user_email.otp_expired? ||
-              @user_email.user_email_status_id != "UNVERIFIED_WITH_SIGN_UP"
-            reset_email_flow! # Reset to step 1
-            redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
-            flash[:notice] = redirect_params.delete(:notice)
-            redirect_to new_sign_app_up_email_path(redirect_params)
-          end
+          return if valid_email_session?
+
+          reset_email_flow!
+          redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
+          flash[:notice] = redirect_params.delete(:notice)
+          redirect_to new_sign_app_up_email_path(redirect_params)
         end
 
         def create
           email_params = params.expect(user_email: [:address, :confirm_policy])
-          begin
-            initiate_email_verification!(email_params[:address], confirm_policy: email_params[:confirm_policy])
-            progress_email_flow!(:create)
-            redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
-            flash[:notice] = redirect_params.delete(:notice)
-            sanitize_redirect_params!(redirect_params)
-            redirect_to edit_sign_app_up_email_path(@user_email, redirect_params)
-          rescue ActiveRecord::RecordInvalid
+
+          unless initiate_email_verification!(email_params[:address], confirm_policy: email_params[:confirm_policy])
             render :new, status: :unprocessable_content
+            return
           end
+
+          progress_email_flow!(:create)
+          redirect_params = build_notice_params(t("sign.app.registration.email.create.verification_code_sent"))
+          flash[:notice] = redirect_params.delete(:notice)
+          sanitize_redirect_params!(redirect_params)
+          redirect_to edit_sign_app_up_email_path(@user_email, redirect_params)
         end
 
         def update
-          submitted_code = params["user_email"]["pass_code"]
-          begin
-            complete_email_verification!(params["id"], submitted_code) do |user_email|
-              ActiveRecord::Base.transaction do
-                @user = User.create!(status_id: "VERIFIED_WITH_SIGN_UP")
-                user_email.user = @user
-                audit = UserAudit.new(actor: @user, event_id: "SIGNED_UP_WITH_EMAIL")
-                audit.user = @user
-                audit.save!
-                user_email.save!
-              end
-              # Bypass standard log_in which might trigger guest_only filters on next request
-              # Instead, we'll manually set the cookies and return success
-              login_result = log_in(@user, record_login_audit: false)
+          @user_email = UserEmail.find_by(public_id: params["id"])
 
-              # Return success to let the caller handle the redirect
-              login_result
-            end
-            progress_email_flow!(:update)
-            # Use direct redirect to configuration to avoid potential "Already logged in" bounce
-            # if rd points to a guest-only page, and to avoid 401 on root path.
-            redirect_to sign_app_configuration_path, notice: t("sign.app.registration.email.update.success")
-          rescue ActiveRecord::RecordInvalid
-            render :edit, status: :unprocessable_content
-          rescue ApplicationError => e
-            reset_email_flow! # Reset to step 1
-            flash[:alert] = e.message
-            redirect_to new_sign_app_up_email_path
+          # Validate email session before processing
+          unless valid_email_session?
+            reset_email_flow!
+            redirect_params = build_notice_params(t("sign.app.registration.email.edit.session_expired"))
+            flash[:notice] = redirect_params.delete(:notice)
+            redirect_to new_sign_app_up_email_path(redirect_params)
+            return
           end
+
+          # Validate submitted code presence
+          submitted_code = params.dig("user_email", "pass_code")
+          if submitted_code.blank?
+            @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.code_required"))
+            render :edit, status: :unprocessable_content
+            return
+          end
+
+          # Complete email verification
+          result =
+            complete_email_verification!(params["id"], submitted_code) do |user_email|
+              create_user_and_login(user_email)
+            end
+
+          if result == :locked
+            reset_email_flow!
+            flash[:alert] = t("sign.app.registration.email.update.attempts_exceeded")
+            redirect_to new_sign_app_up_email_path
+            return
+          elsif !result
+            render :edit, status: :unprocessable_content
+            return
+          end
+
+          progress_email_flow!(:update)
+          redirect_to sign_app_configuration_path, notice: t("sign.app.registration.email.update.success")
         end
 
         def destroy
@@ -146,14 +141,30 @@ module Sign
           decoded_url = Base64.urlsafe_decode64(encoded_url)
           safe_path = safe_internal_path(decoded_url)
 
-          case
-          when safe_path
+          if safe_path
             Base64.urlsafe_encode64(safe_path)
-          when safe_external_url?(decoded_url)
+          elsif safe_external_url?(decoded_url)
             Base64.urlsafe_encode64(decoded_url)
           end
         rescue ArgumentError, URI::InvalidURIError
           nil
+        end
+
+        def valid_email_session?
+          @user_email.present? &&
+            !@user_email.otp_expired? &&
+            @user_email.user_email_status_id == "UNVERIFIED_WITH_SIGN_UP"
+        end
+
+        def create_user_and_login(user_email)
+          ActiveRecord::Base.transaction do
+            @user = User.create!(status_id: "VERIFIED_WITH_SIGN_UP")
+            user_email.user = @user
+            audit = UserAudit.new(actor: @user, event_id: "SIGNED_UP_WITH_EMAIL", user: @user)
+            audit.save!
+            user_email.save!
+          end
+          log_in(@user, record_login_audit: false)
         end
       end
     end

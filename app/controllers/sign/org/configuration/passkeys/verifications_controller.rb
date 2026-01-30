@@ -5,19 +5,31 @@ module Sign
     module Configuration
       module Passkeys
         class VerificationsController < ApplicationController
-          include Webauthn::SessionChallenge
+          include Sign::Webauthn
 
           auth_required!
 
           # POST /configuration/passkeys/verification
           # Verify and complete WebAuthn registration for staff
           def create
-            with_webauthn_challenge(purpose: "registration", scope: "sign/org/configuration/passkeys") do |challenge|
+            challenge_id = params[:challenge_id]
+
+            if challenge_id.blank?
+              return render json: {
+                error: I18n.t("errors.webauthn.challenge_id_required"),
+              }, status: :bad_request
+            end
+
+            with_challenge(challenge_id, purpose: :registration) do |challenge|
               credential = WebAuthn::Credential.from_create(credential_params.to_h)
-              credential.verify(challenge, expected_origin: webauthn_origin)
+              credential.verify(
+                challenge,
+                rp_id: webauthn_rp_id,
+                expected_origin: webauthn_origin,
+              )
 
               passkey = current_staff.staff_passkeys.new(
-                webauthn_id: credential.id,
+                webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false),
                 public_key: credential.public_key,
                 sign_count: credential.sign_count,
                 external_id: SecureRandom.uuid,
@@ -33,7 +45,8 @@ module Sign
                 redirect_url: sign_org_configuration_passkeys_path,
               }, status: :created
             end
-          rescue Webauthn::SessionChallenge::ChallengeError => e
+          rescue Sign::Webauthn::ChallengeNotFoundError,
+                 Sign::Webauthn::ChallengeExpiredError => e
             Rails.logger.warn("WebAuthn challenge error: #{e.message}")
             render json: { error: I18n.t("errors.webauthn.challenge_invalid") }, status: :bad_request
           rescue WebAuthn::Error => e
@@ -61,10 +74,6 @@ module Sign
 
           def passkey_description
             params[:description].presence || I18n.t("sign.default_passkey_description")
-          end
-
-          def webauthn_origin
-            ENV.fetch("WEBAUTHN_ORIGIN_ORG") { "https://#{ENV.fetch("SIGN_STAFF_URL", "localhost")}" }
           end
         end
       end

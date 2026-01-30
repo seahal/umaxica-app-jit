@@ -29,12 +29,12 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
     )
 
     get sign_app_auth_callback_url(provider: "apple", ri: "jp"), headers: { "Host" => @host }
-    assert_redirected_to edit_sign_app_configuration_email_url(UserEmail.last.public_id, ri: "jp")
+    assert_redirected_to sign_app_configuration_url(ri: "jp")
     follow_redirect!
 
     user = UserSocialApple.find_by(uid: "apple_uid_new").user
     assert_equal "UNVERIFIED_WITH_SIGN_UP", user.status_id
-    assert_equal "UNVERIFIED_WITH_SIGN_UP", UserEmail.last.user_email_status_id
+    assert_nil UserEmail.find_by(user: user)
   end
 
   test "should sign in existing user normally" do
@@ -44,7 +44,6 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
       uid: "apple_uid_existing",
       provider: "apple",
       token: "existing_token",
-      email: "existing@example.com",
       expires_at: 1.week.from_now.to_i,
     )
 

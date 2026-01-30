@@ -73,7 +73,14 @@ class StaffAudit < AuditRecord
 
   def event_id_must_exist
     return if event_id.blank?
-    return if StaffAuditEvent.exists?(id: event_id)
+
+    # Always use writing role to check event existence (avoid read replica lag)
+    exists =
+      AuditRecord.connected_to(role: :writing) do
+        StaffAuditEvent.exists?(id: event_id)
+      end
+
+    return if exists
 
     errors.add(:event_id, "must reference a valid staff audit event")
   end
