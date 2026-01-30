@@ -29,6 +29,10 @@
 class TelephoneOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
+  include TelephoneNormalization
+
+  # E.164 normalization and validation for body field
+  normalize_telephone_field :body
 
   belongs_to :telephone_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :telephone_occurrences
   has_many :area_telephone_occurrences, dependent: :destroy, inverse_of: :telephone_occurrence
@@ -46,6 +50,6 @@ class TelephoneOccurrence < OccurrenceRecord
   has_many :telephone_zip_occurrences, dependent: :destroy, inverse_of: :telephone_occurrence
   has_many :zip_occurrences, through: :telephone_zip_occurrences
 
-  validates :body, length: { maximum: 32 }
+  # Note: body validation is now handled by TelephoneNormalization (E.164 format)
   validates :status_id, length: { maximum: 255 }
 end

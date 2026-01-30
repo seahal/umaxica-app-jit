@@ -9,29 +9,29 @@
   <div class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
     <table class="min-w-full divide-y divide-slate-200">
       <thead class="bg-slate-50">
-        <tr>
-          <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.reauth.index.table.scope") %></th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.reauth.index.table.method") %></th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.reauth.index.table.status") %></th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.reauth.index.table.expires") %></th>
-        </tr>
+      <tr>
+        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.reauth.index.table.scope") %></th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.reauth.index.table.method") %></th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.reauth.index.table.status") %></th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.reauth.index.table.expires") %></th>
+      </tr>
       </thead>
       <tbody class="divide-y divide-slate-100">
-        <% @reauth_sessions.each do |s| %>
-          <tr class="hover:bg-slate-50">
-            <td class="px-4 py-3 text-sm text-slate-900">
-              <%= link_to s.scope, sign_org_reauth_path(s), class: "text-indigo-600 hover:text-indigo-500" %>
-            </td>
-            <td class="px-4 py-3 text-sm text-slate-700"><%= s.method %></td>
-            <td class="px-4 py-3 text-sm text-slate-700"><%= s.status %></td>
-            <td class="px-4 py-3 text-sm text-slate-700"><%= l(s.expires_at, format: :short) %></td>
-          </tr>
-        <% end %>
-        <% if @reauth_sessions.empty? %>
-          <tr>
-            <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500"><%= t("sign.org.reauth.index.empty") %></td>
-          </tr>
-        <% end %>
+      <% @reauth_sessions.each do |s| %>
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 text-sm text-slate-900">
+            <%= link_to s.scope, sign_org_reauth_path(s), class: "text-indigo-600 hover:text-indigo-500" %>
+          </td>
+          <td class="px-4 py-3 text-sm text-slate-700"><%= s.method %></td>
+          <td class="px-4 py-3 text-sm text-slate-700"><%= s.status %></td>
+          <td class="px-4 py-3 text-sm text-slate-700"><%= l(s.expires_at, format: :short) %></td>
+        </tr>
+      <% end %>
+      <% if @reauth_sessions.empty? %>
+        <tr>
+          <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500"><%= t("sign.org.reauth.index.empty") %></td>
+        </tr>
+      <% end %>
       </tbody>
     </table>
   </div>

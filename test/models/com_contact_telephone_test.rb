@@ -222,7 +222,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     end
 
     # Valid telephone formats
-    valid_phones = ["+1234567890", "123-456-7890", "(123) 456-7890", "+81 90 1234 5678"]
+    valid_phones = ["+1234567890", "+1-123-456-7890", "+1 (123) 456-7890", "+81 90 1234 5678"]
     valid_phones.each_with_index do |valid_phone, i|
       telephone = ComContactTelephone.new(
         com_contact: ComContact.create!(

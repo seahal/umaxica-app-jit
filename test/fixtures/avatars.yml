@@ -31,3 +31,6 @@
 #  fk_rails_...  (active_handle_id => handles.id)
 #  fk_rails_...  (capability_id => avatar_capabilities.id)
 #
+#  fk_rails_...  (active_handle_id => handles.id)
+#  fk_rails_...  (capability_id => avatar_capabilities.id)
+  #

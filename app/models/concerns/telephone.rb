@@ -2,6 +2,7 @@
 
 module Telephone
   extend ActiveSupport::Concern
+  include TelephoneNormalization
 
   attr_accessor :confirm_policy, :confirm_using_mfa, :pass_code
 
@@ -14,9 +15,12 @@ module Telephone
 
     encrypts :number, deterministic: true
 
-    validates :number, length: { in: 3..20 },
-                       format: { with: /\A\+?[\d\s\-\(\)]+\z/ },
-                       uniqueness: { case_sensitive: false }
+    # E.164 normalization and validation (from TelephoneNormalization)
+    normalize_telephone_field :number
+
+    # Uniqueness check on normalized E.164 number
+    validates :number, uniqueness: { case_sensitive: false }
+
     validates :confirm_policy, acceptance: true,
                                unless: Proc.new { |a| a.number.blank? && a.pass_code.present? }
     validates :confirm_using_mfa, acceptance: true,

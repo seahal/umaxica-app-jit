@@ -52,6 +52,7 @@ class OrgDocumentAudit < AuditRecord
 
   validates :event_id, length: { maximum: 255 }
   validates :level_id, length: { maximum: 255 }
+
   def org_document
     OrgDocument.find(subject_id) if subject_type == "OrgDocument"
   end

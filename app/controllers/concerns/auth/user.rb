@@ -15,6 +15,7 @@ module Auth
       alias_method :current_user, :current_resource
       alias_method :authenticate_user!, :authenticate!
       alias_method :logged_in_user?, :logged_in?
+      before_action :enforce_withdrawal_gate! if respond_to?(:before_action)
     end
 
     def audit_user_login_failed(user)

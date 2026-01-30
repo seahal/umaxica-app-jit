@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_30_030719) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -38,7 +38,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
     t.index ["blocker_avatar_id"], name: "index_avatar_blocks_on_blocker_avatar_id"
   end
 
-  create_table "avatar_capabilities", id: :string, force: :cascade do |t|
+  create_table "avatar_capabilities", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.string "key", null: false
@@ -61,7 +61,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "avatar_memberships", id: :string, force: :cascade do |t|
+  create_table "avatar_memberships", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
     t.string "actor_id", null: false
     t.string "avatar_id", null: false
     t.string "avatar_membership_status_id"
@@ -81,7 +81,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "avatar_monikers", id: :string, force: :cascade do |t|
+  create_table "avatar_monikers", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
     t.string "avatar_id", null: false
     t.string "avatar_moniker_status_id"
     t.datetime "created_at", null: false
@@ -105,7 +105,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
     t.index ["muter_avatar_id"], name: "index_avatar_mutes_on_muter_avatar_id"
   end
 
-  create_table "avatar_ownership_periods", id: :string, force: :cascade do |t|
+  create_table "avatar_ownership_periods", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
     t.string "avatar_id", null: false
     t.string "avatar_ownership_status_id"
     t.datetime "created_at", null: false
@@ -151,7 +151,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
     t.index ["key"], name: "index_avatar_roles_on_key", unique: true
   end
 
-  create_table "avatars", id: :string, force: :cascade do |t|
+  create_table "avatars", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
     t.string "active_handle_id", null: false
     t.string "avatar_status_id"
     t.string "capability_id", null: false
@@ -247,7 +247,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "handle_assignments", id: :string, force: :cascade do |t|
+  create_table "handle_assignments", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
     t.string "assigned_by_actor_id"
     t.string "avatar_id", null: false
     t.datetime "created_at", null: false
@@ -268,7 +268,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "handles", id: :string, force: :cascade do |t|
+  create_table "handles", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
     t.timestamptz "cooldown_until", null: false
     t.datetime "created_at", null: false
     t.string "handle", null: false
@@ -291,7 +291,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
     t.index ["key"], name: "index_post_review_statuses_on_key", unique: true
   end
 
-  create_table "post_reviews", id: :string, force: :cascade do |t|
+  create_table "post_reviews", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
     t.text "comment"
     t.datetime "created_at", null: false
     t.timestamptz "decided_at"
@@ -328,7 +328,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_02_100007) do
     t.index ["public_id"], name: "index_post_versions_on_public_id", unique: true
   end
 
-  create_table "posts", id: :string, force: :cascade do |t|
+  create_table "posts", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
     t.string "author_avatar_id", null: false
     t.text "body", null: false
     t.datetime "created_at", null: false

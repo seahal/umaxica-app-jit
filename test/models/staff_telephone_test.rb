@@ -51,10 +51,6 @@ class StaffTelephoneTest < ActiveSupport::TestCase
     assert_includes StaffTelephone.included_modules, Telephone
   end
 
-  test "should include SetId concern" do
-    assert_includes StaffTelephone.included_modules, SetId
-  end
-
   # Telephone concern validation tests
   test "should be valid with valid phone number and policy confirmations" do
     staff_telephone = StaffTelephone.new(@valid_attributes)
@@ -109,7 +105,6 @@ class StaffTelephoneTest < ActiveSupport::TestCase
     assert_predicate staff_telephone.errors[:confirm_using_mfa], :any?
   end
 
-  # SetId concern tests
   test "should generate UUID v7 before creation" do
     staff_telephone = StaffTelephone.new(@valid_attributes)
 

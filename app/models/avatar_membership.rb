@@ -29,8 +29,6 @@
 #
 
 class AvatarMembership < AvatarRecord
-  include UuidV7PrimaryKey
-
   belongs_to :avatar
   belongs_to :avatar_membership_status, optional: true
 
@@ -38,4 +36,5 @@ class AvatarMembership < AvatarRecord
   validates :actor_id, presence: true
   validates :role_id, presence: true
   validates :valid_from, presence: true
+  validates :id, length: { maximum: 255 }
 end

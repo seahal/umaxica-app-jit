@@ -44,6 +44,7 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
     add_filter "docker/"
   end
 end
+
 class ActiveSupport::TestCase
   include ActiveJob::TestHelper
 

@@ -17,13 +17,13 @@
 
 <body class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 px-4 text-slate-900">
 <div class="mx-auto max-w-6xl px-6">
-  <%= render "concern/flash_messages" %>
+  <%= render "shared/flash_messages" %>
   <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
     <div class="flex flex-col">
       <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
       <h1 class="text-3xl font-semibold tracking-tight text-slate-900">
 
-          Umaxica (com)
+        Umaxica (com)
 
       </h1>
     </div>
@@ -47,7 +47,7 @@
       <%= link_to t('apex.com.preferences.footer.preference'), apex_com_preference_url, class: "font-semibold text-[hsl(var(--foreground))]" %>
     </nav>
     <div class="mt-4">
-      <%= render "concern/copyright" %>
+      <%= render "shared/copyright" %>
     </div>
   </footer>
 </div>

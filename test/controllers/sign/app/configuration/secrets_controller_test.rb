@@ -25,6 +25,13 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_response :success
   end
 
+  test "should show back link on index page" do
+    get sign_app_configuration_secrets_url(ri: "jp"), headers: authenticated_headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp"), text: /#{Regexp.escape(I18n.t("actions.back"))}/
+  end
+
   test "should get show" do
     get sign_app_configuration_secret_url(@user_secret, ri: "jp"), headers: authenticated_headers
 
@@ -37,10 +44,24 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_response :success
   end
 
+  test "should show back link on new page" do
+    get new_sign_app_configuration_secret_url(ri: "jp"), headers: authenticated_headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp"), text: /#{Regexp.escape(I18n.t("actions.back"))}/
+  end
+
   test "should get edit" do
     get edit_sign_app_configuration_secret_url(@user_secret, ri: "jp"), headers: authenticated_headers
 
     assert_response :success
+  end
+
+  test "should show back link on edit page" do
+    get edit_sign_app_configuration_secret_url(@user_secret, ri: "jp"), headers: authenticated_headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp"), text: /#{Regexp.escape(I18n.t("actions.back"))}/
   end
 
   test "should get destroy" do

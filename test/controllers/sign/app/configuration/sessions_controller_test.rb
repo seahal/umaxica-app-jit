@@ -38,4 +38,11 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
 
     assert_response :redirect
   end
+
+  test "should show back link on index page" do
+    get sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp"), text: /#{Regexp.escape(I18n.t("actions.back"))}/
+  end
 end

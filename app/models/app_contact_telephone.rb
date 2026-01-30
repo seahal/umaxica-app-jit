@@ -31,11 +31,13 @@
 #
 
 class AppContactTelephone < GuestRecord
+  include TelephoneNormalization
+
   belongs_to :app_contact, inverse_of: :app_contact_telephones
 
-  # Validations
-  validates :telephone_number, presence: true, length: { maximum: 1000 },
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+  # E.164 normalization and validation
+  normalize_telephone_field :telephone_number
+
   validates :verifier_digest, length: { maximum: 255 }
   before_create :generate_id
   encrypts :telephone_number, deterministic: true

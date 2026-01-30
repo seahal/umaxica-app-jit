@@ -54,6 +54,7 @@ class AppDocumentAudit < AuditRecord
 
   validates :event_id, length: { maximum: 255 }
   validates :level_id, length: { maximum: 255 }
+
   def app_document
     AppDocument.find(subject_id) if subject_type == "AppDocument"
   end

@@ -32,14 +32,13 @@
 class StaffTelephone < OperatorRecord
   alias_attribute :staff_telephone_status_id, :staff_identity_telephone_status_id
   include Telephone
-  include SetId
 
   MAX_TELEPHONES_PER_STAFF = 4
 
   belongs_to :staff_telephone_status, inverse_of: :staff_telephones, foreign_key: :staff_identity_telephone_status_id
   belongs_to :staff
 
-  validates :number, presence: true, length: { maximum: 255 }
+  # Note: :number validation is now handled by Telephone concern (E.164 normalization)
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
@@ -53,7 +52,7 @@ class StaffTelephone < OperatorRecord
     self.number ||= ""
   end
 
-  encrypts :number, deterministic: true
+  # Note: :number encryption is handled by Telephone concern
 
   private
 

@@ -17,7 +17,7 @@
 <% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
 <% edge_host = ENV["EDGE_STAFF_URL"].presence %>
 
-<div class="min-h-screen">    <%= render "concern/flash_messages" %>
+<div class="min-h-screen">    <%= render "shared/flash_messages" %>
   <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
 
     <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
@@ -46,7 +46,7 @@
         <%= link_to t("docs.org.preferences.footer.preference"), apex_org_preference_url, class: "transition hover:text-[hsl(var(--primary))]" %>
       </nav>
       <div class="mt-4">
-        <%= render "concern/copyright" %>
+        <%= render "shared/copyright" %>
       </div>
     </footer>
   </div>

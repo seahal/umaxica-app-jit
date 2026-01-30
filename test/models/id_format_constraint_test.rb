@@ -13,6 +13,7 @@ class IdFormatConstraintTest < ActiveSupport::TestCase
 
   def teardown_fixtures
   end
+
   setup do
     # Initialize to empty array in case of errors
     @target_models = [].freeze

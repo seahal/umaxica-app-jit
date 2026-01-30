@@ -18,10 +18,9 @@
 #
 
 class AvatarCapability < AvatarRecord
-  include UuidV7PrimaryKey
-
   has_many :avatars, foreign_key: :capability_id, inverse_of: :capability, dependent: :restrict_with_error
 
   validates :key, presence: true, uniqueness: true
   validates :name, presence: true
+  validates :id, length: { maximum: 255 }
 end

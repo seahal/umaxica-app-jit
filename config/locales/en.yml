@@ -30,6 +30,10 @@ en:
         created_at: "Registered"
         sign_count: "Usage count"
     errors:
+      messages:
+        invalid_e164_format: "must be in E.164 format (e.g., +819012345678)"
+        exceeds_e164_length: "exceeds E.164 maximum length of %{max} digits"
+        country_code_cannot_start_with_zero: "country code cannot start with zero"
       models:
         staff:
           attributes:
@@ -39,6 +43,7 @@ en:
     edit: "Edit"
     destroy: "Delete"
     save: "Save"
+    back: "Back"
     actions: "Actions"
     connect: "Connect"
     disconnect: "Disconnect"
@@ -46,6 +51,9 @@ en:
     confirm_destroy: "Are you sure you want to delete this?"
     passkey_successfully_updated: "Passkey updated successfully"
     passkey_successfully_destroyed: "Passkey deleted successfully"
+  uuid_pk:
+    report:
+      action_required: "Action required: Run migration to set DEFAULT uuidv7() for all tables."
   errors:
     login_failed: "Login failed"
     webauthn:
@@ -103,7 +111,16 @@ en:
     app:
       authentication:
         new:
+          page_title: "Sign in"
+          description: "Select a method to sign in"
           back: "Back"
+          links:
+            email: "Email"
+            passkey: "Passkey"
+            secret: "Secret Key"
+            google: "Google"
+            apple: "Apple"
+            registration: "Sign Up"
         passkey:
           new:
             page_title: "Sign in with Passkey"
@@ -195,29 +212,29 @@ en:
         success:
           complete: "Re-authentication completed."
     social:
-        sessions:
-          invalid_provider: "Invalid provider specified"
-          create:
-            success: "Successfully signed in with %{provider}"
-            already_registered: "Welcome back! Signed in with %{provider}"
-            failure: "Failed to sign in. Please try again."
-          link:
-            success: "Successfully linked %{provider} account"
-          unlink:
-            success: "Successfully unlinked %{provider} account"
-          reauth:
-            success: "Successfully re-authenticated with %{provider}"
-          failure:
-            unknown_error: "An unknown error occurred"
-            invalid_credentials: "Invalid credentials"
-            access_denied: "Access was denied"
-            timeout: "Request timed out"
-            # Apple-specific errors
-            invalid_client: "Apple Sign In configuration error. Please contact support."
-            invalid_grant: "Apple authorization expired. Please try again."
-            invalid_request: "Invalid request to Apple. Please try again."
-            invalid_redirect_uri: "Apple Sign In redirect URL is misconfigured."
-            user_cancelled_authorize: "You cancelled the Apple Sign In. Please try again if needed."
+      sessions:
+        invalid_provider: "Invalid provider specified"
+        create:
+          success: "Successfully signed in with %{provider}"
+          already_registered: "Welcome back! Signed in with %{provider}"
+          failure: "Failed to sign in. Please try again."
+        link:
+          success: "Successfully linked %{provider} account"
+        unlink:
+          success: "Successfully unlinked %{provider} account"
+        reauth:
+          success: "Successfully re-authenticated with %{provider}"
+        failure:
+          unknown_error: "An unknown error occurred"
+          invalid_credentials: "Invalid credentials"
+          access_denied: "Access was denied"
+          timeout: "Request timed out"
+          # Apple-specific errors
+          invalid_client: "Apple Sign In configuration error. Please contact support."
+          invalid_grant: "Apple authorization expired. Please try again."
+          invalid_request: "Invalid request to Apple. Please try again."
+          invalid_redirect_uri: "Apple Sign In redirect URL is misconfigured."
+          user_cancelled_authorize: "You cancelled the Apple Sign In. Please try again if needed."
     org:
       reauth:
         index:

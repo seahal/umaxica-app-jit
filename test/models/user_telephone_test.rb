@@ -51,10 +51,6 @@ class UserTelephoneTest < ActiveSupport::TestCase
     assert_includes UserTelephone.included_modules, Telephone
   end
 
-  test "should include SetId concern" do
-    assert_includes UserTelephone.included_modules, SetId
-  end
-
   test "should include Turnstile concern" do
     assert_includes UserTelephone.included_modules, Turnstile
   end
@@ -88,7 +84,7 @@ class UserTelephoneTest < ActiveSupport::TestCase
     I18n.with_locale(:ja) do
       assert_not user_telephone.valid?
       # Error message will be in the current locale (Japanese)
-      assert_includes user_telephone.errors[:number], "は不正な値です"
+      assert_includes user_telephone.errors[:number], "はE.164形式（例：+819012345678）である必要があります"
     end
   end
 
@@ -132,7 +128,6 @@ class UserTelephoneTest < ActiveSupport::TestCase
     assert_predicate user_telephone.errors[:confirm_using_mfa], :any?
   end
 
-  # SetId concern tests
   test "should generate UUID v7 before creation" do
     user_telephone = UserTelephone.new(@valid_attributes)
 
@@ -201,5 +196,98 @@ class UserTelephoneTest < ActiveSupport::TestCase
     extra_phone = UserTelephone.new(@valid_attributes.merge(number: "+15559999999"))
     assert_not extra_phone.valid?
     assert_includes extra_phone.errors[:base], "exceeds maximum telephones per user (#{UserTelephone::MAX_TELEPHONES_PER_USER})"
+  end
+
+  # E.164 normalization tests
+  test "normalizes domestic Japanese number to E.164 format" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "090-1234-5678"))
+    assert_predicate user_telephone, :valid?
+    assert_equal "+819012345678", user_telephone.number
+  end
+
+  test "normalizes number with spaces to E.164 format" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "090 1234 5678"))
+    assert_predicate user_telephone, :valid?
+    assert_equal "+819012345678", user_telephone.number
+  end
+
+  test "normalizes number with parentheses to E.164 format" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "(090)1234-5678"))
+    assert_predicate user_telephone, :valid?
+    assert_equal "+819012345678", user_telephone.number
+  end
+
+  test "normalizes international prefix 00 to E.164 format" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "0081 90 1234 5678"))
+    assert_predicate user_telephone, :valid?
+    assert_equal "+819012345678", user_telephone.number
+  end
+
+  test "normalizes international prefix 010 to E.164 format" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "010 81 90 1234 5678"))
+    assert_predicate user_telephone, :valid?
+    assert_equal "+819012345678", user_telephone.number
+  end
+
+  test "removes domestic 0 after country code from international prefix" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "0081(0)90-1234-5678"))
+    assert_predicate user_telephone, :valid?
+    assert_equal "+819012345678", user_telephone.number
+  end
+
+  test "preserves already E.164 formatted number" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "+819012345678"))
+    assert_predicate user_telephone, :valid?
+    assert_equal "+819012345678", user_telephone.number
+  end
+
+  # E.164 validation error tests
+  test "rejects number without leading 0 or + (ambiguous domestic)" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "9012345678"))
+    assert_not user_telephone.valid?
+    assert_includes user_telephone.errors[:number], I18n.t("activerecord.errors.messages.invalid_e164_format")
+  end
+
+  test "rejects number with country code starting with 0" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "+0123456789"))
+    assert_not user_telephone.valid?
+    expected_error = I18n.t("activerecord.errors.messages.country_code_cannot_start_with_zero")
+    assert_includes user_telephone.errors[:number], expected_error
+  end
+
+  test "rejects number exceeding E.164 maximum length" do
+    # E.164 allows max 15 digits (excluding +)
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "+1234567890123456")) # 16 digits
+    assert_not user_telephone.valid?
+    assert_predicate user_telephone.errors[:number], :any?
+  end
+
+  test "rejects number with only formatting characters" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "(---)"))
+    assert_not user_telephone.valid?
+    assert_predicate user_telephone.errors[:number], :any?
+  end
+
+  test "accepts maximum length E.164 number" do
+    # E.164 max: +[15 digits]
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "+999999999999999"))
+    assert_predicate user_telephone, :valid?
+    assert_equal "+999999999999999", user_telephone.number
+  end
+
+  test "handles full-width characters in normalization" do
+    user_telephone = UserTelephone.new(@valid_attributes.merge(number: "（090）1234　5678"))
+    assert_predicate user_telephone, :valid?
+    assert_equal "+819012345678", user_telephone.number
+  end
+
+  test "uniqueness validation on normalized number" do
+    # Create first telephone
+    UserTelephone.create!(@valid_attributes.merge(number: "+819012345678"))
+
+    # Try to create with same number but different formatting
+    duplicate = UserTelephone.new(@valid_attributes.merge(number: "090-1234-5678"))
+    assert_not duplicate.valid?
+    assert_predicate duplicate.errors[:number], :any?
   end
 end

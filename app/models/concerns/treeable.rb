@@ -122,7 +122,7 @@ module Treeable
       quoted_root_id = connection.quote(root_id)
       where_anchor = include_self ? "id = #{quoted_root_id}" : "#{parent} = #{quoted_root_id}"
       where_anchor = "(#{where_anchor} AND #{exclude_sentinels})"
-      depth_guard  = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
+      depth_guard = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
 
       # rubocop:disable I18n/RailsI18n/DecorateString
       sql = <<~SQL.squish
@@ -159,7 +159,7 @@ module Treeable
           "id = (SELECT #{parent} FROM #{table_name} WHERE id = #{quoted_node_id})"
         end
       where_anchor = "(#{where_anchor} AND #{exclude_sentinels})"
-      depth_guard  = max_depth ? " AND tree.depth < #{Integer(max_depth)}" : ""
+      depth_guard = max_depth ? " AND tree.depth < #{Integer(max_depth)}" : ""
       # rubocop:disable I18n/RailsI18n/DecorateString
       step_where = "WHERE tree.#{parent} NOT IN (#{quoted_root_vals})#{depth_guard}"
       # rubocop:enable I18n/RailsI18n/DecorateString
@@ -194,7 +194,7 @@ module Treeable
     # - Returns a Relation preserving the `ids` order
     def subtree_in_tree_order(root_id, include_self: true, max_depth: nil)
       parent = tree_parent_column
-      order  = tree_order_column
+      order = tree_order_column
       root_vals = tree_root_parent_values
       quoted_root_vals = root_vals.map { |v| connection.quote(v) }.join(",")
       exclude_sentinels = "id NOT IN (#{quoted_root_vals})"
@@ -203,7 +203,7 @@ module Treeable
       include_self = false if include_self && root_vals.include?(root_id)
       where_anchor = include_self ? "id = #{quoted_root_id}" : "#{parent} = #{quoted_root_id}"
       where_anchor = "(#{where_anchor} AND #{exclude_sentinels})"
-      depth_guard  = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
+      depth_guard = max_depth ? "WHERE tree.depth < #{Integer(max_depth)}" : ""
 
       anchor_path =
         if order

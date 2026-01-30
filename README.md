@@ -9,7 +9,9 @@
   - Bundler 4.0+ (shipped with modern Ruby installations)
 - pnpm 10.x + Node 20+ (for JavaScript tooling)
 - Docker (local infrastructure parity)
-  - Access to PostgreSQL, Valkey (Redis-compatible), and Kafka instances
+  - **PostgreSQL 18+** (required for native `uuidv7()` function)
+  - Valkey (Redis-compatible)
+  - Kafka instances
 
 ## Initial Setup
 0. Set up Docker compose and run it: `docker compoe up`
@@ -23,7 +25,14 @@
 - For local development we already set `TRUSTED_ORIGINS=http://sign.app.localhost:3000,http://sign.org.localhost:3000` inside `docker/core/env`. If you run Ruby commands outside the container, set the same value (or other hosts you use) beforehand.
 
 ## Database IDs
-- PostgreSQL 18 UUID primary keys default to `uuidv7()` so inserts remain time-ordered.
+
+**PostgreSQL 18+ Required**: This application requires PostgreSQL 18 or later for native `uuidv7()` support.
+
+- All UUID primary keys use PostgreSQL's native `uuidv7()` function for time-ordered, sortable IDs.
+- UUIDv7 provides chronological ordering while maintaining UUID compatibility.
+- No Rails-side ID generation (`SecureRandom.uuid`) is used for primary keys.
+- Database DEFAULT expressions handle all UUID generation automatically.
+- Verification: Run `rake uuid:pk:report` to audit UUID primary key configurations.
 
 ## Testing
 - Rails test suite (parallelized): `bundle exec rails test`

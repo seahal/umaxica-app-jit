@@ -1,44 +1,57 @@
 <!DOCTYPE html>
-<html lang="<%= get_language %>" data-theme="<%= theme_cookie_value %>" class="<%= theme_html_class %>">
-<%= render "layouts/shared/head",
-      namespace: "app",
-      stylesheets: ["sign/main", "sign/app/main"],
-      title: "#{ENV['BRAND_NAME']} (app)" %>
+<html lang="<%= get_language %>" class="<%= theme_html_class %>" data-controller="theme">
+<head>
+  <%= render "layouts/shared/head",
+             namespace: "app",
+             stylesheets: ["sign/main", "sign/app/main"],
+             title: "#{ENV['BRAND_NAME']} (app)" %>
+</head>
 
-<body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-<div class="min-h-screen">
-  <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
-    <%= render "concern/flash_messages" %>
+<body class="min-h-screen bg-bg text-fg antialiased selection:bg-primary/10">
+  <div class="mx-auto flex w-full max-w-screen-sm flex-col min-h-screen px-4">
+    <header class="flex h-16 items-center justify-between border-b border-border">
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl font-bold tracking-tight">
+           <%= link_to ENV.fetch("BRAND_NAME", "Umaxica"), sign_app_root_path, class: "hover:opacity-80 transition-opacity" %>
+        </h1>
+        <span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-fg leading-none">
+          App
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <nav class="flex items-center gap-1">
+          <% if logged_in? %>
+             <%= link_to sign_app_configuration_path, class: "flex h-10 w-10 items-center justify-center rounded-lg hover:bg-muted transition-colors", title: t("sign.app.layout.nav.configuration") do %>
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+             <% end %>
+          <% else %>
+            <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_up_path, class: "text-sm font-medium hover:text-primary transition-colors" %>
+            <%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_in_url, class: "text-sm font-medium hover:text-primary transition-colors" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
 
-    <%= render "layouts/shared/header",
-          service_name: "Sign",
-          namespace: "app",
-          home_path: (ENV["EDGE_SERVICE_URL"].present? ? "http://#{ENV["EDGE_SERVICE_URL"]}/" : nil) do %>
-      <% unless logged_in? %>
-        <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_up_url,
-                    class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-        <%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_in_url,
-                    class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-      <% else %>
-        <%= link_to t("sign.app.layout.nav.configuration"), sign_app_configuration_url,
-                    class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
-        <%= link_to t("sign.app.layout.nav.logout"), edit_sign_app_out_url,
-                    class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
-      <% end %>
-    <% end %>
+    <div class="mt-4">
+      <%= render "shared/flash_messages" %>
+    </div>
 
-    <main class="flex-1 py-10">
+    <main class="flex-1 py-8">
       <%= yield %>
     </main>
 
-    <%= render "layouts/shared/footer" do %>
-        <% if ENV["EDGE_SERVICE_URL"].present? %>
-          <%= link_to t("sign.app.preferences.footer.home"), sign_app_root_path, class: "transition hover:text-[hsl(var(--primary))]" %>
-        <% end %>
-        <%= link_to t("sign.app.preferences.footer.preference"), apex_app_preference_url, class: "transition hover:text-[hsl(var(--primary))]" %>
-        <%= link_to t("sign.app.preferences.footer.configuration"), sign_app_configuration_path, class: "transition hover:text-[hsl(var(--primary))]" %>
-    <% end %>
+    <footer class="mt-auto border-t border-border py-8 text-sm text-muted-fg">
+      <div class="flex flex-col gap-6">
+        <nav class="flex flex-wrap gap-x-6 gap-y-2">
+          <%= link_to t("sign.app.preferences.footer.home"), sign_app_root_path, class: "hover:text-fg transition-colors" %>
+          <%= link_to t("sign.app.preferences.footer.preference"), apex_app_preference_url, class: "hover:text-fg transition-colors" %>
+          <%= link_to t("sign.app.preferences.footer.configuration"), sign_app_configuration_path, class: "hover:text-fg transition-colors" %>
+        </nav>
+        <div class="flex items-center justify-between">
+          <%= render "shared/copyright" %>
+        </div>
+      </div>
+    </footer>
   </div>
-</div>
 </body>
 </html>

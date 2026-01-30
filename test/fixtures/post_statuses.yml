@@ -7,3 +7,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+#  id         :string           not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+  #

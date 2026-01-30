@@ -144,6 +144,7 @@ ja:
           back: "トップに戻る"
           session_header: "セッション"
           logout: "ログアウト"
+          logout_desc: "アカウントからログアウトします"
         passkey:
           index:
             title: "パスキー管理"

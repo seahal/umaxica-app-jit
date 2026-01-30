@@ -192,6 +192,7 @@ ja:
               cannot_recover: "復旧期間が終了しています。サポートにお問い合わせください。"
               failed: "復旧処理に失敗しました。後でもう一度お試しください。"
             destroy:
+              permanent_unavailable: 永久消去機能は現在利用できません。
               success: "アカウントを完全に削除しました。"
               deleted: "アカウントを完全に削除しました。"
               not_withdrawn: "退会済みでないため、削除できません。"

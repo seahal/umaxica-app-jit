@@ -21,7 +21,7 @@
 </div>
 
 <div class="mx-auto max-w-6xl px-6">
-  <%= render "concern/flash_messages" %>
+  <%= render "shared/flash_messages" %>
 
   <header class="border-b border-[hsl(var(--border))] py-6">
     <div class="flex flex-wrap items-center justify-between gap-4">
@@ -29,7 +29,7 @@
         <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">APEX</span>
         <h1 class="text-3xl font-semibold tracking-tight text-slate-900">
 
-            <a class="transition hover:text-[hsl(var(--primary))]" href="http://org.localhost:3000/">Umaxica (org)</a>
+          <a class="transition hover:text-[hsl(var(--primary))]" href="http://org.localhost:3000/">Umaxica (org)</a>
         </h1>
       </div>
       <nav class="flex flex-wrap items-center justify-end gap-3 text-sm">
@@ -66,7 +66,7 @@
       <%= link_to t("apex.org.configurations.title"), apex_org_configuration_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
     </nav>
     <div class="mt-4">
-      <%= render "concern/copyright" %>
+      <%= render "shared/copyright" %>
     </div>
   </footer>
 </div>

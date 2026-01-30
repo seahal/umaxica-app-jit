@@ -28,12 +28,11 @@
 #
 
 class AvatarMoniker < AvatarRecord
-  include UuidV7PrimaryKey
-
   belongs_to :avatar
   belongs_to :avatar_moniker_status, optional: true
 
   validates :avatar_id, uniqueness: true
   validates :moniker, presence: true
   validates :valid_from, presence: true
+  validates :id, length: { maximum: 255 }
 end

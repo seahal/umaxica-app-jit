@@ -2,6 +2,7 @@
 
 class Core::Org::DocsController < Core::Org::ApplicationController
   public_strict!
+
   def show
   end
 end

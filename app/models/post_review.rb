@@ -27,11 +27,10 @@
 #
 
 class PostReview < AvatarRecord
-  include UuidV7PrimaryKey
-
   belongs_to :post, inverse_of: :post_reviews
   belongs_to :post_review_status
 
   validates :post_id, uniqueness: { scope: :reviewer_actor_id }
   validates :reviewer_actor_id, presence: true
+  validates :id, length: { maximum: 255 }
 end

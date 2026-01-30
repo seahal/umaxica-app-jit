@@ -224,13 +224,14 @@ module Preference
 
     def set_color_theme
       theme = normalize_colortheme(params[:ct].presence)
+      theme ||= normalize_colortheme(cookies[THEME_COOKIE_KEY])
+      theme ||= normalize_colortheme(cookies[LEGACY_THEME_COOKIE_KEY])
       theme ||= normalize_colortheme(preference_payload_value("ct"))
       if theme.blank? && @preferences.present?
         theme = normalize_colortheme(@preferences.public_send(preference_colortheme_association)&.option_id)
       end
       # Rails must not trust this value; use jit_preference_access instead.
-      theme ||= normalize_colortheme(cookies[THEME_COOKIE_KEY])
-      theme ||= normalize_colortheme(cookies[LEGACY_THEME_COOKIE_KEY])
+      # However, for theme, we allow cookie to override stored preference to support local toggling/anonymous.
       theme ||= "sy"
 
       write_preference_cookie(THEME_COOKIE_KEY, theme)

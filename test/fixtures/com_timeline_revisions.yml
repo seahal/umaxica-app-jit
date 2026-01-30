@@ -43,7 +43,7 @@ one:
   published_at: 2026-01-12 18:05:06
   expires_at: 2026-01-12 18:05:06
   edited_by_type: MyString
-  edited_by_id: 
+  edited_by_id:
   public_id: MyStringOne
 
 two:
@@ -57,5 +57,5 @@ two:
   published_at: 2026-01-12 18:05:06
   expires_at: 2026-01-12 18:05:06
   edited_by_type: MyString
-  edited_by_id: 
+  edited_by_id:
   public_id: MyStringTwo

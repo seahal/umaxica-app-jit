@@ -11,11 +11,6 @@ ja:
 
       既存のpositionを確認しています:'
   turnstile_error: セキュリティ検証に失敗しました。もう一度お試しください。
-  errors:
-    otp_locked: 試行回数の上限を超えました。最初からやり直してください。
-    webauthn:
-      origin_invalid: "このサイトからの認証は許可されていません"
-      challenge_id_required: "チャレンジIDが必要です"
   common:
     ok: OK
     unsaved_changes: 変更は保存されていません。移動しますか？
@@ -23,6 +18,7 @@ ja:
     submit: 送信
     cancel: キャンセル
     save: 保存
+    back: もどる
   sign:
     default_user_name: ユーザー
     default_staff_name: スタッフ
@@ -154,6 +150,8 @@ ja:
           description: アカウントの高度なセキュリティ設定を管理します。
           withdrawal: 退会
           back: もどる
+          logout: ログアウト
+          logout_desc: アカウントからログアウトします
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
@@ -540,6 +538,7 @@ ja:
               cannot_recover: 復旧期間が終了しています。サポートにお問い合わせください。
               failed: 復旧処理に失敗しました。後でもう一度お試しください。
             destroy:
+              permanent_unavailable: 永久消去機能は現在利用できません。
               success: アカウントを完全に削除しました。
               deleted: アカウントを完全に削除しました。
               not_withdrawn: 退会済みでないため、削除できません。
@@ -796,6 +795,8 @@ ja:
         not_found: お問い合わせが見つかりません
         invalid_status: '無効なお問い合わせステータス: SET_UPが予想されていますが、%{current_status}です'
   shared:
+    page_header:
+      up_label_fallback: もどる
     links:
       apex_preference: Apexの設定
   root:
@@ -970,59 +971,62 @@ ja:
           has_one: '%{record}が存在しているので削除できません'
           has_many: '%{record}が存在しているので削除できません'
         identity_audit_event_format_invalid: は大文字とアンダースコアのみで構成される必要があります
+        invalid_e164_format: はE.164形式（例：+819012345678）である必要があります
+        exceeds_e164_length: はE.164形式の最大桁数（%{max}桁）を超えています
+        country_code_cannot_start_with_zero: の国番号は0から始めることができません
   date:
     abbr_day_names:
-    - 日
-    - 月
-    - 火
-    - 水
-    - 木
-    - 金
-    - 土
+      - 日
+      - 月
+      - 火
+      - 水
+      - 木
+      - 金
+      - 土
     abbr_month_names:
-    - null
-    - 1月
-    - 2月
-    - 3月
-    - 4月
-    - 5月
-    - 6月
-    - 7月
-    - 8月
-    - 9月
-    - 10月
-    - 11月
-    - 12月
+      - null
+      - 1月
+      - 2月
+      - 3月
+      - 4月
+      - 5月
+      - 6月
+      - 7月
+      - 8月
+      - 9月
+      - 10月
+      - 11月
+      - 12月
     day_names:
-    - 日曜日
-    - 月曜日
-    - 火曜日
-    - 水曜日
-    - 木曜日
-    - 金曜日
-    - 土曜日
+      - 日曜日
+      - 月曜日
+      - 火曜日
+      - 水曜日
+      - 木曜日
+      - 金曜日
+      - 土曜日
     formats:
       default: '%Y/%m/%d'
       long: '%Y年%m月%d日(%a)'
       short: '%m/%d'
     month_names:
-    - null
-    - 1月
-    - 2月
-    - 3月
-    - 4月
-    - 5月
-    - 6月
-    - 7月
-    - 8月
-    - 9月
-    - 10月
-    - 11月
-    - 12月
+      - null
+      - 1月
+      - 2月
+      - 3月
+      - 4月
+      - 5月
+      - 6月
+      - 7月
+      - 8月
+      - 9月
+      - 10月
+      - 11月
+      - 12月
     order:
-    - :year
-    - :month
-    - :day
+      - :year
+      - :month
+      - :day
   datetime:
     distance_in_words:
       about_x_hours: 約%{count}時間
@@ -1046,9 +1050,12 @@ ja:
       month: 月
       year: 年
   errors:
+    otp_locked: 試行回数の上限を超えました。最初からやり直してください。
     unauthorized: 不正なアクセスです
     not_implemented: 機能はまだ実装されていません
     webauthn:
+      origin_invalid: "このサイトからの認証は許可されていません"
+      challenge_id_required: "チャレンジIDが必要です"
       challenge_invalid: WebAuthn認証に失敗しました。もう一度やり直してください。
       credential_not_found: パスキーが見つかりませんでした。
       verification_failed: パスキーの検証に失敗しました。

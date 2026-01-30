@@ -19,3 +19,6 @@
 #  fk_rails_...  (client_id => clients.id)
 #  fk_rails_...  (user_id => users.id)
 #
+#  fk_rails_...  (client_id => clients.id)
+#  fk_rails_...  (user_id => users.id)
+  #

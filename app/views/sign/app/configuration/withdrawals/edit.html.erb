@@ -1,11 +1,14 @@
-<h1><%= t("sign.app.configuration.withdrawal.edit.title") %></h1>
-<p><%= t("sign.app.configuration.withdrawal.edit.description") %></p>
+<%= render "shared/page_header",
+           title: t("sign.app.configuration.withdrawal.edit.title"),
+           description: t("sign.app.configuration.withdrawal.edit.description"),
+           up_to: sign_app_configuration_path %>
+
 
 <%= form_with url: sign_app_configuration_withdrawal_path, method: :patch, local: true do |f| %>
   <div>
     <%= f.check_box :confirm_create_recovery_code %>
     <%= f.label :confirm_create_recovery_code, t("sign.app.configuration.withdrawal.edit.recovery_code_label") %>
   </div>
-  <%= render "concern/cloudflare_turnstile" %>
+  <%= render "shared/cloudflare_turnstile" %>
   <%= f.submit t("sign.app.configuration.withdrawal.edit.submit"), class: "btn btn-primary" %>
 <% end %>

@@ -105,7 +105,7 @@ class AccountServiceTest < ActiveSupport::TestCase
   end
 
   test "find_by with telephone should find user" do
-    number = "1234567890"
+    number = "+819012345678"
     @user.user_telephones.create!(
       number: number,
       confirm_policy: true,
@@ -274,17 +274,17 @@ class AccountServiceTest < ActiveSupport::TestCase
     assert_nil account.primary_phone
 
     @user.user_telephones.create!(
-      number: "111",
+      number: "+819011111111",
       confirm_policy: true,
       confirm_using_mfa: true,
     )
     @user.user_telephones.create!(
-      number: "222",
+      number: "+819022222222",
       confirm_policy: true,
       confirm_using_mfa: true,
     )
 
-    assert_equal "111", account.primary_phone
+    assert_equal "+819011111111", account.primary_phone
   end
 
   # Authentication Tests
@@ -412,7 +412,7 @@ class AccountServiceTest < ActiveSupport::TestCase
   def add_user_identities(user)
     user.user_emails.create!(address: "test@example.com", confirm_policy: true)
     user.user_telephones.create!(
-      number: "123-456-7890",
+      number: "+819012345678",
       confirm_policy: true,
       confirm_using_mfa: true,
     )

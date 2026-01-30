@@ -27,7 +27,7 @@ module Sign
         get new_sign_app_in_url(lx: "en", ri: "jp"), headers: { "Host" => @host }
         assert_response :success
         assert_select "html[lang=en]"
-        assert_select "a", text: "Sign Up"
+        assert_select "a", text: /Need an account/
       end
     end
   end

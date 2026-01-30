@@ -52,6 +52,7 @@ class ComTimelineAudit < AuditRecord
 
   validates :event_id, length: { maximum: 255 }
   validates :level_id, length: { maximum: 255 }
+
   def com_timeline
     ComTimeline.find(subject_id) if subject_type == "ComTimeline"
   end

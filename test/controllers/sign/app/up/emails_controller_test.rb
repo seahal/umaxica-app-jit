@@ -35,7 +35,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
 
-    assert_select "a[href=?]", new_sign_app_up_path(ri: "jp"), count: 1
+    assert_select "a[href=?]", new_sign_app_up_path(ri: "jp"), count: 2
     assert_select "a[href=?]", new_sign_app_in_email_path(ri: "jp"), count: 1
   end
 

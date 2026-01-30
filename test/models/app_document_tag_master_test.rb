@@ -70,10 +70,10 @@ class AppDocumentTagMasterTest < ActiveSupport::TestCase
     token = SecureRandom.hex(4).upcase
 
     root = create_master!(id: "ROOT_#{token}", parent_id: ROOT_SENTINEL, position: 0)
-    a    = create_master!(id: "A_#{token}", parent: root, position: 2)
-    b    = create_master!(id: "B_#{token}", parent: root, position: 1)
-    c    = create_master!(id: "C_#{token}", parent: root, position: 1)
-    c1   = create_master!(id: "C1_#{token}", parent: c, position: 1)
+    a = create_master!(id: "A_#{token}", parent: root, position: 2)
+    b = create_master!(id: "B_#{token}", parent: root, position: 1)
+    c = create_master!(id: "C_#{token}", parent: root, position: 1)
+    c1 = create_master!(id: "C1_#{token}", parent: c, position: 1)
 
     { root: root, a: a, b: b, c: c, c1: c1 }
   end

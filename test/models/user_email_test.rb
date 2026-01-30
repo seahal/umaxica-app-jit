@@ -55,10 +55,6 @@ class UserEmailTest < ActiveSupport::TestCase
     assert_includes UserEmail.included_modules, Email
   end
 
-  test "should include SetId concern" do
-    assert_includes UserEmail.included_modules, SetId
-  end
-
   test "should include Turnstile concern" do
     assert_includes UserEmail.included_modules, Turnstile
   end
@@ -141,7 +137,6 @@ class UserEmailTest < ActiveSupport::TestCase
     assert_not user_email.errors[:confirm_policy].any?
   end
 
-  # SetId concern tests
   # test "should generate UUID v7 before creation" do
   #   user_email = UserEmail.new(@valid_attributes)
   #   assert_nil user_email.id

@@ -20,7 +20,7 @@
 
 <div class="min-h-screen">
   <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
-    <%= render "concern/flash_messages" %>
+    <%= render "shared/flash_messages" %>
 
     <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
       <div class="flex flex-col">
@@ -62,7 +62,7 @@
         <%= link_to t("sign.org.preferences.footer.configuration"), sign_org_configuration_path, class: "transition hover:text-[hsl(var(--primary))]" %>
       </nav>
       <div class="mt-4">
-        <%= render "concern/copyright" %>
+        <%= render "shared/copyright" %>
       </div>
     </footer>
   </div>

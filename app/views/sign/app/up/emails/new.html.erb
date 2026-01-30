@@ -11,7 +11,8 @@
         <div class="rounded-md bg-red-50 dark:bg-red-900/50 p-4">
           <div class="flex">
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800 dark:text-red-200"><%= pluralize(@user_email.errors.count, "error") %> prohibited this sample from being saved:</h3>
+              <h3 class="text-sm font-medium text-red-800 dark:text-red-200"><%= pluralize(@user_email.errors.count, "error") %>
+                prohibited this sample from being saved:</h3>
               <div class="mt-2 text-sm text-red-700 dark:text-red-300">
                 <ul role="list" class="list-disc pl-5 space-y-1">
                   <% @user_email.errors.each do |error| %>
@@ -41,7 +42,7 @@
       </div>
 
       <div>
-        <%= render "concern/cloudflare_turnstile" %>
+        <%= render "shared/cloudflare_turnstile" %>
       </div>
 
       <div>

@@ -5,3 +5,5 @@
 #
 #  id :string(255)      default("NEYO"), not null, primary key
 #
+#  id :string(255)      default("NEYO"), not null, primary key
+  #

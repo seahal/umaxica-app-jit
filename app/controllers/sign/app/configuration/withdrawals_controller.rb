@@ -84,29 +84,21 @@ module Sign
         end
 
         def destroy
-          # Log intent and perform destroy inside a transaction. Prefer background job
-          # for heavy deletions; here we attempt synchronous destroy with graceful handling.
-          user_id = current_user.id
-          begin
-            User.transaction do
-              current_user.destroy!
-              Rails.event.notify(
-                "user.deletion.completed",
-                user_id: user_id,
-                ip_address: request.remote_ip,
-              )
-              log_out
-            end
-            redirect_to sign_app_root_path, notice: t("sign.app.configuration.withdrawal.destroy.success")
-          rescue StandardError => e
-            Rails.event.notify(
-              "user.deletion.failed",
-              user_id: user_id,
-              error_class: e.class.name,
-              error_message: e.message,
-              ip_address: request.remote_ip,
-            )
-            redirect_to sign_app_root_path, alert: t("sign.app.configuration.withdrawal.destroy.failed")
+          # BLOCKED: Step2 (permanent deletion) is not available in this implementation.
+          # Only Step1 (logical withdrawal via PRE_WITHDRAWAL_CONDITION) is supported.
+          # Permanent deletion will be implemented separately as a future feature.
+          Rails.event.notify(
+            "user.deletion.blocked",
+            user_id: current_user.id,
+            ip_address: request.remote_ip,
+            reason: "step2_not_implemented",
+          )
+
+          if request.format.json?
+            render json: { error: "PERMANENT_DELETION_NOT_AVAILABLE" }, status: :forbidden
+          else
+            redirect_to edit_sign_app_configuration_withdrawal_path,
+                        alert: t("sign.app.configuration.withdrawal.destroy.permanent_unavailable")
           end
         end
 

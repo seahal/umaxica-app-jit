@@ -54,10 +54,6 @@ class StaffEmailTest < ActiveSupport::TestCase
     assert_includes StaffEmail.included_modules, Email
   end
 
-  test "should include SetId concern" do
-    assert_includes StaffEmail.included_modules, SetId
-  end
-
   # Email concern validation tests
   test "should be valid with valid email and policy confirmation" do
     staff_email = StaffEmail.new(@valid_attributes)
@@ -101,7 +97,6 @@ class StaffEmailTest < ActiveSupport::TestCase
     assert_equal "staff@example.com", staff_email.address
   end
 
-  # SetId concern tests
   test "should generate UUID v7 before creation" do
     staff_email = StaffEmail.new(@valid_attributes)
 

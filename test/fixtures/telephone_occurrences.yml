@@ -25,7 +25,7 @@
 #
 one:
   public_id: "one_tel_occ_id_000001"
-  body: "09012345678"
+  body: "+819000000001"
   status_id: NEYO
   memo: ""
   created_at: <%= Time.current %>

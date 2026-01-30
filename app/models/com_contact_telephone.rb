@@ -33,11 +33,13 @@
 #
 
 class ComContactTelephone < GuestRecord
+  include TelephoneNormalization
+
   belongs_to :com_contact, inverse_of: :com_contact_telephone
 
-  # Validations
-  validates :telephone_number, presence: true, length: { maximum: 1000 },
-                               format: { with: /\A\+?[\d\s\-\(\)]+\z/ }
+  # E.164 normalization and validation
+  normalize_telephone_field :telephone_number
+
   validates :verifier_digest, length: { maximum: 255 }
   validates :com_contact_id, uniqueness: true
   before_create :generate_id

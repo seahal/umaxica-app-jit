@@ -32,7 +32,6 @@
 class UserTelephone < PrincipalRecord
   alias_attribute :user_telephone_status_id, :user_identity_telephone_status_id
   include Telephone
-  include SetId
   include Turnstile
 
   MAX_TELEPHONES_PER_USER = 4
@@ -40,7 +39,7 @@ class UserTelephone < PrincipalRecord
   belongs_to :user_telephone_status, inverse_of: :user_telephones, foreign_key: :user_identity_telephone_status_id
   belongs_to :user, inverse_of: :user_telephones
 
-  validates :number, presence: true, length: { maximum: 255 }
+  # Note: :number validation is now handled by Telephone concern (E.164 normalization)
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
@@ -54,7 +53,7 @@ class UserTelephone < PrincipalRecord
     self.number ||= ""
   end
 
-  encrypts :number, deterministic: true
+  # Note: :number encryption is handled by Telephone concern
 
   private
 

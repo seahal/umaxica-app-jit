@@ -314,6 +314,7 @@ en:
             cannot_recover: "Recovery period has expired. Please contact support."
             failed: "Failed to recover account. Please try again later."
           destroy:
+            permanent_unavailable: "Permanent deletion is currently unavailable."
             deleted: "Account has been permanently deleted."
             not_withdrawn: "Account is not withdrawn; cannot delete."
           errors:

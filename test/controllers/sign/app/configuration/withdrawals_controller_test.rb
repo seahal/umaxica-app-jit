@@ -204,38 +204,19 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     assert_nil @user.reload.withdrawn_at
   end
 
-  test "should destroy user account" do
-    # Verify destroy works (mocking to ensure controller flow is tested without flaky DB checks)
-    user_mock = @user
-    user_mock.define_singleton_method(:destroy!) { true }
-
-    User.stub(:find, user_mock) do
-      User.stub(:find_by, user_mock) do
-        delete sign_app_configuration_withdrawal_url(ri: "jp"),
-               headers: request_headers
-      end
-    end
+  test "should block destroy user account" do
+    delete sign_app_configuration_withdrawal_url(ri: "jp"),
+           headers: request_headers
 
     assert_response :redirect
-    # Match path ignoring query params
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
-    assert_equal I18n.t("sign.app.configuration.withdrawal.destroy.success"), flash[:notice]
+    # Match path ignoring query params - should redirect to edit (recovery/status) page
+    assert_match %r{\A#{Regexp.escape(edit_sign_app_configuration_withdrawal_url(ri: "jp"))}}, @response.location
+    assert_equal I18n.t("sign.app.configuration.withdrawal.destroy.permanent_unavailable"), flash[:alert]
   end
 
-  test "should handle failure during destroy" do
-    # Stub User.transaction to raise error
-    # We stub transaction on User class.
-    User.stub(:transaction, -> { raise StandardError.new("Boom") }) do
-      assert_no_difference("User.count") do
-        delete sign_app_configuration_withdrawal_url(ri: "jp"),
-               headers: request_headers
-      end
-    end
-
-    assert_response :redirect
-    assert_match %r{\A#{Regexp.escape(sign_app_root_url(ri: "jp"))}}, @response.location
-    assert_equal I18n.t("sign.app.configuration.withdrawal.destroy.failed"), flash[:alert]
-  end
+  # test "should handle failure during destroy" do
+  #   # This test is irrelevant while destroy is blocked
+  # end
 
   test "should handle creation failure" do
     @user.update!(status_id: "NEYO")

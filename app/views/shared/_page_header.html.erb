@@ -1,0 +1,39 @@
+<%#
+  title (必須)
+  description (任意)
+  up_to (任意)
+  up_label (任意)
+  up_fallback (任意)
+%>
+
+<div class="mb-8" data-controller="history-back">
+  <div class="flex flex-col gap-2">
+    <% if local_assigns[:up_to] %>
+      <%= link_to up_to, class: "inline-flex items-center gap-1 text-sm font-medium text-muted-fg hover:text-fg transition-colors" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <span><%= local_assigns[:up_label] || t("shared.page_header.up_label_fallback", default: "Back") %></span>
+      <% end %>
+    <% elsif local_assigns[:up_fallback] %>
+      <%= link_to up_fallback,
+                  class: "inline-flex items-center gap-1 text-sm font-medium text-muted-fg hover:text-fg transition-colors",
+                  data: { action: "click->history-back#back" } do %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <span><%= local_assigns[:up_label] || t("shared.page_header.up_label_fallback", default: "Back") %></span>
+      <% end %>
+    <% else %>
+      <button type="button"
+              class="inline-flex items-center gap-1 text-sm font-medium text-muted-fg hover:text-fg transition-colors"
+              data-action="click->history-back#back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <span><%= local_assigns[:up_label] || t("shared.page_header.up_label_fallback", default: "Back") %></span>
+      </button>
+    <% end %>
+
+    <div class="mt-2 space-y-1">
+      <h1 class="text-2xl font-bold tracking-tight text-fg"><%= title %></h1>
+      <% if local_assigns[:description] %>
+        <p class="text-muted-fg text-sm leading-relaxed"><%= description %></p>
+      <% end %>
+    </div>
+  </div>
+</div>

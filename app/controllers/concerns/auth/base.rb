@@ -117,6 +117,7 @@ module Auth
           )
           nil
         end
+
         # rubocop:enable Metrics/MethodLength
 
         def extract_subject(payload)
@@ -452,6 +453,7 @@ module Auth
 
       record
     end
+
     # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
     def current_account
@@ -538,6 +540,7 @@ module Auth
     rescue StandardError => e
       handle_refresh_error(e, refresh_public_id, resource)
     end
+
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def log_out
@@ -709,6 +712,64 @@ module Auth
     end
 
     private
+
+    # ======================================================================
+    # Withdrawal Gate - Confines PRE_WITHDRAWAL users to withdrawal page
+    # ======================================================================
+
+    def enforce_withdrawal_gate!
+      return unless logged_in?
+      return unless current_resource
+      return unless current_resource.respond_to?(:status_id)
+      return unless current_resource.status_id == "PRE_WITHDRAWAL_CONDITION"
+
+      # Allowlist: withdrawal controller and logout
+      return if withdrawal_gate_allowlisted?
+
+      # API/JSON: return 403 Forbidden
+      if request.format.json? || !request.format.html?
+        render json: { error: "WITHDRAWAL_REQUIRED" }, status: :forbidden
+        return
+      end
+
+      # HTML: redirect to withdrawal edit page
+      withdrawal_edit_path = resolve_withdrawal_edit_path
+      return if withdrawal_edit_path.nil?
+
+      redirect_to withdrawal_edit_path, status: :found
+    end
+
+    def withdrawal_gate_allowlisted?
+      # Allowlist: withdrawal controller actions
+      return true if controller_path.end_with?("configuration/withdrawals")
+
+      # Allowlist: logout actions (outs controller)
+      return true if controller_path.end_with?("/outs")
+
+      # Allowlist: health/assets (rarely needed but safe)
+      return true if controller_path == "rails/health"
+
+      false
+    end
+
+    def resolve_withdrawal_edit_path
+      # Try to resolve the edit_*_configuration_withdrawal_path helper
+      # Format: edit_sign_app_configuration_withdrawal_path or edit_sign_org_configuration_withdrawal_path
+      if respond_to?(:edit_sign_app_configuration_withdrawal_path, true)
+        edit_sign_app_configuration_withdrawal_path
+      elsif respond_to?(:edit_sign_org_configuration_withdrawal_path, true)
+        edit_sign_org_configuration_withdrawal_path
+      elsif respond_to?(:sign_app_configuration_withdrawal_path, true)
+        # Fallback: try the show path and append /edit
+        "#{sign_app_configuration_withdrawal_path}/edit"
+      else
+        # Last resort: construct path manually
+        "/configuration/withdrawal/edit"
+      end
+    rescue StandardError => e
+      Rails.logger.error("Failed to resolve withdrawal edit path: #{e.message}")
+      "/configuration/withdrawal/edit"
+    end
 
     def cookie_options
       opts = {
@@ -969,6 +1030,7 @@ module Auth
 
       resource_class.find_by(id: Token.extract_subject(payload))
     end
+
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def resource_withdrawn?(resource)
@@ -1101,6 +1163,11 @@ module Auth
     def enforce_guest_only!(options = {})
       # Guest-only policy: block logged-in users.
       return true unless respond_to?(:logged_in?) && logged_in?
+
+      # Exception: PRE_WITHDRAWAL users should be handled by withdrawal gate, not guest_only
+      if current_resource.respond_to?(:status_id) && current_resource.status_id == "PRE_WITHDRAWAL_CONDITION"
+        return true
+      end
 
       if request.format.json? || options[:request_format] == :json
         handle_guest_only_json(options)

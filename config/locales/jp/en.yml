@@ -170,6 +170,8 @@ en:
           description: "Manage advanced security controls for your account."
           withdrawal: "Withdrawal"
           back: "Back"
+          logout: "Logout"
+          logout_desc: "Sign out of your account"
         recovery:
           index:
             description: "Review existing recovery codes and ensure they stay up to date."
@@ -462,9 +464,10 @@ en:
               recovered: "Your account has been recovered. You can log in now."
               cannot_recover: "Recovery period has expired. Please contact support."
               failed: "Failed to recover account. Please try again later."
-            destroy:
-              deleted: "Account has been permanently deleted."
-              not_withdrawn: "Account is not withdrawn; cannot delete."
+          destroy:
+            permanent_unavailable: "Permanent deletion is currently unavailable."
+            deleted: "Account has been permanently deleted."
+            not_withdrawn: "Account is not withdrawn; cannot delete."
       preferences:
         title: "Preferences"
         cookie_settings: "Cookie Settings"
@@ -1671,6 +1674,8 @@ en:
         footer:
           preference: "Preferences"
   shared:
+    page_header:
+      up_label_fallback: "Back"
     links:
       apex_preference: "Apex preferences"
 

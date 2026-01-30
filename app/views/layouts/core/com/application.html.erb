@@ -17,7 +17,7 @@
 
 <body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
 
-<div class="min-h-screen">    <%= render "concern/flash_messages" %>
+<div class="min-h-screen">    <%= render "shared/flash_messages" %>
   <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
 
     <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
@@ -25,7 +25,7 @@
         <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">Core</span>
         <h1 class="text-2xl font-semibold tracking-tight">
 
-            <a class="transition hover:text-[hsl(var(--primary))]" href="http://localhost:4444/">Umaxica</a>
+          <a class="transition hover:text-[hsl(var(--primary))]" href="http://localhost:4444/">Umaxica</a>
 
           <span class="text-[hsl(var(--muted-foreground))]">(com)</span>
         </h1>
@@ -43,7 +43,7 @@
         <%= link_to t("core.com.layout.nav.contact"), new_core_com_contact_path, class: "transition hover:text-[hsl(var(--primary))]" %>
       </nav>
       <div class="mt-4">
-        <%= render "concern/copyright" %>
+        <%= render "shared/copyright" %>
       </div>
     </footer>
   </div>

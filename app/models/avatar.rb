@@ -35,7 +35,6 @@
 #
 
 class Avatar < AvatarRecord
-  include UuidV7PrimaryKey
   include PublicId
 
   belongs_to :client, optional: true, inverse_of: :avatars
@@ -167,6 +166,7 @@ class Avatar < AvatarRecord
 
   validates :public_id, presence: true, uniqueness: true
   validates :moniker, presence: true
+  validates :id, length: { maximum: 255 }
 
   # Create avatar with owner assigned in a transaction
   def self.create_with_owner(attributes, user)

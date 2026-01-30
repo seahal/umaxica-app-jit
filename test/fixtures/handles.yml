@@ -24,3 +24,5 @@
 #
 #  fk_rails_...  (handle_status_id => handle_statuses.id)
 #
+#  fk_rails_...  (handle_status_id => handle_statuses.id)
+  #

@@ -29,7 +29,6 @@
 #
 
 class Post < AvatarRecord
-  include UuidV7PrimaryKey
   include PublicId
 
   belongs_to :author_avatar, class_name: "Avatar", inverse_of: :posts
@@ -41,6 +40,7 @@ class Post < AvatarRecord
   validates :public_id, presence: true, uniqueness: true
   validates :body, presence: true
   validates :created_by_actor_id, presence: true
+  validates :id, length: { maximum: 255 }
 
   def latest_version
     post_versions.order(created_at: :desc).first!

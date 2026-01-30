@@ -70,8 +70,8 @@ module SequentialFlow
 
     def initialize(name)
       @name = name
-      @steps = {}             # { step_number => [actions] }
-      @action_to_step = {}    # { action_sym => step_number }
+      @steps = {} # { step_number => [actions] }
+      @action_to_step = {} # { action_sym => step_number }
     end
 
     def add_step(number, actions)

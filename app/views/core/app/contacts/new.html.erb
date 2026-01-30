@@ -71,16 +71,16 @@
                             class: "w-full rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-2 text-sm text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:border-[hsl(var(--primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))/0.3]" %>
       </div>
 
-    <div class="mt-6">
-      <%= render "concern/cloudflare_turnstile" %>
-    </div>
+      <div class="mt-6">
+        <%= render "shared/cloudflare_turnstile" %>
+      </div>
     </div>
 
     <div class="mt-6 flex flex-wrap items-center gap-3">
       <%= form.submit t('help.app.contacts.new.submit', default: t('helpers.submit.create')),
                       class: "rounded-full bg-[hsl(var(--primary))] px-6 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))] shadow-[0_10px_30px_-18px_hsl(var(--primary))] transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[hsl(var(--primary))]" %> <%= link_to t('help.app.contacts.new.cancel'),
-                  core_app_root_path,
-                  class: "text-sm font-semibold text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]" %>
+                                                                                                                                                                                                                                                                                                                                                                                    core_app_root_path,
+                                                                                                                                                                                                                                                                                                                                                                                    class: "text-sm font-semibold text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]" %>
 
     </div>
   <% end %>

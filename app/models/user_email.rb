@@ -36,7 +36,6 @@
 
 class UserEmail < PrincipalRecord
   alias_attribute :user_email_status_id, :user_identity_email_status_id
-  include SetId
   include PublicId
   include Email
 
@@ -57,6 +56,7 @@ class UserEmail < PrincipalRecord
   before_validation do
     self.user_id ||= "00000000-0000-0000-0000-000000000000"
   end
+
   def to_param
     public_id
   end

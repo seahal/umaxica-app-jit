@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 931401f0603522d21d6ec2e52c1fd1a048bed63b
+  revision: e50f232402239391c9680d861a6ba9aa543503f8
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -109,7 +109,7 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     aes_key_wrap (1.1.0)
     android_key_attestation (0.3.0)
-    annotaterb (4.20.0)
+    annotaterb (4.21.0)
       activerecord (>= 6.0.0)
       activesupport (>= 6.0.0)
     argon2 (2.3.3)
@@ -152,7 +152,7 @@ GEM
     bindex (0.8.1)
     bootsnap (1.21.1)
       msgpack (~> 1.2)
-    brakeman (7.1.2)
+    brakeman (8.0.1)
       racc
     builder (3.3.0)
     bundler-audit (0.9.3)
@@ -821,7 +821,7 @@ GEM
       openssl (> 2.0)
       openssl-signature_algorithm (~> 1.0)
     tsort (0.2.0)
-    turbo-rails (2.0.22)
+    turbo-rails (2.0.23)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
     typhoeus (1.5.0)

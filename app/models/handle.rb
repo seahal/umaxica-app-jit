@@ -28,7 +28,6 @@
 #
 
 class Handle < AvatarRecord
-  include UuidV7PrimaryKey
   include PublicId
 
   belongs_to :handle_status, optional: true
@@ -46,4 +45,5 @@ class Handle < AvatarRecord
   validates :handle, uniqueness: { conditions: -> { where(is_system: false) } },
                      unless: :is_system?
   validates :cooldown_until, presence: true
+  validates :id, length: { maximum: 255 }
 end

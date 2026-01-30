@@ -4,6 +4,7 @@ module Core
   module Org
     class RootsController < ApplicationController
       public_strict!
+
       def index
       end
     end

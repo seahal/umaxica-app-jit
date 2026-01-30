@@ -12,3 +12,5 @@
 #
 #  index_division_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
+#  index_division_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+  #

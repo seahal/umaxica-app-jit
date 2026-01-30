@@ -1,30 +1,30 @@
 <section class="mx-auto mt-8 max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
   <h1 class="text-2xl font-semibold text-slate-900">
     <%= t(
-      "apex.org.preference.language.edit.heading",
-      default: t(
-        "apex.org.preference.locale.edit.title",
-        default: t("apex.org.preferences.language_settings"),
-      ),
-    ) %>
+          "apex.org.preference.language.edit.heading",
+          default: t(
+            "apex.org.preference.locale.edit.title",
+            default: t("apex.org.preferences.language_settings"),
+          ),
+        ) %>
   </h1>
   <p class="mt-2 text-sm text-slate-600">
     <%= t(
-      "apex.org.preference.language.edit.description",
-      default: t(
-        "apex.org.preference.locale.edit.description",
-      ),
-    ) %>
+          "apex.org.preference.language.edit.description",
+          default: t(
+            "apex.org.preference.locale.edit.description",
+          ),
+        ) %>
   </p>
 
   <%= form_with model: @preference_language, scope: :preference_language, url: apex_org_preference_region_language_path, method: :patch, class: "mt-6 space-y-5" do |f| %>
     <div>
       <%= f.label :option_id,
-                   t(
-                     "apex.org.preference.language.edit.language_label",
-                     default: t("apex.org.preference.locale.edit.language_label"),
-                   ),
-                   class: "block text-sm font-semibold text-slate-700" %>
+                  t(
+                    "apex.org.preference.language.edit.language_label",
+                    default: t("apex.org.preference.locale.edit.language_label"),
+                  ),
+                  class: "block text-sm font-semibold text-slate-700" %>
       <div class="mt-1">
         <%= f.select :option_id,
                      options_for_select([[t("languages.japanese"), 'JA'], [t("languages.english"), 'EN']], @preference_language.option_id),

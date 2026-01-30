@@ -28,12 +28,11 @@
 #
 
 class AvatarOwnershipPeriod < AvatarRecord
-  include UuidV7PrimaryKey
-
   belongs_to :avatar
   belongs_to :avatar_ownership_status, optional: true
 
   validates :avatar_id, uniqueness: true
   validates :owner_organization_id, presence: true
   validates :valid_from, presence: true
+  validates :id, length: { maximum: 255 }
 end

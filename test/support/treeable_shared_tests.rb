@@ -48,10 +48,10 @@ module TreeableSharedTests
     token = SecureRandom.hex(4).upcase
 
     root = create_master!(klass, id: "ROOT_#{token}", parent_id: ROOT_SENTINEL, position: 0)
-    a    = create_master!(klass, id: "A_#{token}", parent: root, position: 2)
-    b    = create_master!(klass, id: "B_#{token}", parent: root, position: 1)
-    c    = create_master!(klass, id: "C_#{token}", parent: root, position: 1)
-    c1   = create_master!(klass, id: "C1_#{token}", parent: c, position: 1)
+    a = create_master!(klass, id: "A_#{token}", parent: root, position: 2)
+    b = create_master!(klass, id: "B_#{token}", parent: root, position: 1)
+    c = create_master!(klass, id: "C_#{token}", parent: root, position: 1)
+    c1 = create_master!(klass, id: "C1_#{token}", parent: c, position: 1)
 
     { root: root, a: a, b: b, c: c, c1: c1 }
   end

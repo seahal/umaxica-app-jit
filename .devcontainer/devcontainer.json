@@ -38,8 +38,7 @@
 				"anthropic.claude-code",
 				"-sorbet.sorbet-vscode-extension",
 				"-GitHub.copilot",
-				"-GitHub.copilot-chat",
-				"coderabbit.coderabbit-vscode"
+				"-GitHub.copilot-chat"
 			],
 			"settings": {
 				"claude.allowDangerouslySkipPermissions": true,

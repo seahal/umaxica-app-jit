@@ -35,7 +35,6 @@
 
 class StaffEmail < OperatorRecord
   alias_attribute :staff_email_status_id, :staff_identity_email_status_id
-  include SetId
   include PublicId
   include Email
 
@@ -51,6 +50,7 @@ class StaffEmail < OperatorRecord
   before_validation do
     self.staff_id ||= "00000000-0000-0000-0000-000000000000"
   end
+
   def to_param
     public_id
   end

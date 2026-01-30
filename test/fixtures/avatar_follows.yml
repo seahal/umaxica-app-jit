@@ -19,3 +19,6 @@
 #  fk_rails_...  (followed_avatar_id => avatars.id)
 #  fk_rails_...  (follower_avatar_id => avatars.id)
 #
+#  fk_rails_...  (followed_avatar_id => avatars.id)
+#  fk_rails_...  (follower_avatar_id => avatars.id)
+  #

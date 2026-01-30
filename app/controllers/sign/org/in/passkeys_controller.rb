@@ -63,6 +63,7 @@ module Sign
           Rails.logger.error("WebAuthn authentication options failed: #{e.message}")
           render_error("errors.webauthn.options_failed", :unprocessable_content)
         end
+
         # rubocop:enable Metrics/AbcSize
 
         # POST /in/passkeys/verification
@@ -108,6 +109,7 @@ module Sign
           Rails.logger.warn("WebAuthn authentication failed: #{e.message}")
           render_error("errors.webauthn.verification_failed", :unauthorized)
         end
+
         # rubocop:enable Metrics/AbcSize
 
         private

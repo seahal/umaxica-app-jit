@@ -6,6 +6,7 @@ module Core
       module Com
         class ContactsController < ApplicationController
           public_strict!
+
           def index
             head :ok
           end
