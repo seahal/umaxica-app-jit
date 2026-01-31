@@ -6,7 +6,7 @@
 #  id                              :uuid             not null, primary key
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
-#  com_timeline_category_master_id :string(255)      not null
+#  com_timeline_category_master_id :integer          default(0), not null
 #  com_timeline_id                 :uuid             not null
 #
 # Indexes
@@ -29,5 +29,5 @@ class ComTimelineCategory < NewsRecord
              inverse_of: :com_timeline_categories
 
   validates :com_timeline_id, uniqueness: true
-  validates :com_timeline_category_master_id, length: { maximum: 255 }
+  validates :com_timeline_category_master_id, presence: true
 end

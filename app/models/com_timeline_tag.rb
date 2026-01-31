@@ -7,12 +7,11 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  com_timeline_id            :uuid             not null
-#  com_timeline_tag_master_id :string(255)      not null
+#  com_timeline_tag_master_id :integer          default(0), not null
 #
 # Indexes
 #
 #  index_com_timeline_tags_on_com_timeline_tag_master_id  (com_timeline_tag_master_id)
-#  index_com_timeline_tags_unique                         (com_timeline_id,com_timeline_tag_master_id) UNIQUE
 #
 # Foreign Keys
 #
@@ -29,7 +28,7 @@ class ComTimelineTag < NewsRecord
              inverse_of: :com_timeline_tags
 
   validates :com_timeline_tag_master_id,
-            length: { maximum: 255 },
+            presence: true,
             uniqueness: { scope: :com_timeline_id,
                           message: :already_tagged, }
 end

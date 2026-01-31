@@ -6,7 +6,7 @@
 #  id            :uuid             not null, primary key
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  option_id     :string
+#  option_id     :integer
 #  preference_id :uuid             not null
 #
 # Indexes

@@ -5,7 +5,11 @@
 # Table name: staff_audit_levels
 # Database name: audit
 #
-#  id :string(255)      default("NEYO"), not null, primary key
+#  id :integer          default(0), not null, primary key
+#
+# Indexes
+#
+#  index_staff_audit_levels_on_id  (id) UNIQUE
 #
 
 class StaffAuditLevel < AuditRecord

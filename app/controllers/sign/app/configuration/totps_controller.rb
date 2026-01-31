@@ -48,7 +48,7 @@ module Sign
           @totp = UserOneTimePassword.new(totp_params)
           @totp.private_key = session[:private_key]
           @totp.user = current_user
-          @totp.user_one_time_password_status_id = "ACTIVE"
+          @totp.user_one_time_password_status_id = UserOneTimePasswordStatus::ACTIVE
         end
 
         def handle_success(last_otp_at)

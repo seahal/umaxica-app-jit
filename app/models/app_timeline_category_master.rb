@@ -3,14 +3,11 @@
 # Table name: app_timeline_category_masters
 # Database name: news
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  parent_id  :string(255)      default("NEYO"), not null
+#  id        :integer          default(0), not null, primary key
+#  parent_id :integer          default(0), not null
 #
 # Indexes
 #
-#  index_app_timeline_category_masters_on_lower_id   (lower((id)::text)) UNIQUE
 #  index_app_timeline_category_masters_on_parent_id  (parent_id)
 #
 # Foreign Keys
@@ -21,7 +18,6 @@
 # frozen_string_literal: true
 
 class AppTimelineCategoryMaster < NewsRecord
-  include StringPrimaryKey
   include Treeable
 
   belongs_to :parent,
@@ -37,19 +33,25 @@ class AppTimelineCategoryMaster < NewsRecord
            dependent: :restrict_with_error,
            inverse_of: :app_timeline_category_master
   has_many :app_timelines, through: :app_timeline_categories
-  validates :id, uniqueness: { case_sensitive: false }
-
   self.primary_key = "id"
 
-  attribute :parent_id, default: "NEYO"
+  validates :id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
-  validates :parent_id, presence: true, length: { maximum: 255 }
+  attribute :parent_id, default: 0
+
+  validates :parent_id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
+  def self.tree_root_parent_value = 0
+
+  def self.tree_root_parent_values
+    [tree_root_parent_value, "NEYO", "none"].uniq
+  end
 
   def name
     I18n.t("app_timeline_categorys.%{id}", id: id)
   end
 
   def root?
-    parent_id == "NEYO"
+    parent_id.zero?
   end
 end

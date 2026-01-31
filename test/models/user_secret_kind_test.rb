@@ -3,7 +3,8 @@
 # Table name: user_secret_kinds
 # Database name: principal
 #
-#  id :string(255)      not null, primary key
+#  id :integer          not null, primary key
+#
 #
 
 # frozen_string_literal: true
@@ -12,42 +13,35 @@ require "test_helper"
 
 class UserSecretKindTest < ActiveSupport::TestCase
   test "valid kind" do
-    kind = UserSecretKind.new(id: "TEST_KIND")
+    kind = UserSecretKind.new(id: 99)
     assert_predicate kind, :valid?
     assert kind.save
-    assert_equal "TEST_KIND", kind.id
-  end
-
-  test "upcases id" do
-    kind = UserSecretKind.new(id: "lower")
-    kind.valid?
-    assert_equal "LOWER", kind.id
-  end
-
-  test "validates length of id" do
-    record = UserSecretKind.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+    assert_equal 99, kind.id
   end
 
   test "validates uniqueness of id" do
-    UserSecretKind.create!(id: "UNIQUE_TEST")
-    duplicate = UserSecretKind.new(id: "UNIQUE_TEST")
+    UserSecretKind.create!(id: 99)
+    duplicate = UserSecretKind.new(id: 99)
     assert_predicate duplicate, :invalid?
     assert_predicate duplicate.errors[:id], :any?
   end
 
-  test "validates format of id" do
-    record = UserSecretKind.new(id: "invalid-chars")
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "constants are defined" do
+    assert_equal 1, UserSecretKind::LOGIN
+    assert_equal 2, UserSecretKind::TOTP
+    assert_equal 3, UserSecretKind::RECOVERY
+    assert_equal 4, UserSecretKind::API
+    assert_equal [1, 2, 3, 4], UserSecretKind::ALL
   end
 
-  test "constants are defined" do
-    assert_equal "LOGIN", UserSecretKind::LOGIN
-    assert_equal "TOTP", UserSecretKind::TOTP
-    assert_equal "RECOVERY", UserSecretKind::RECOVERY
-    assert_equal "API", UserSecretKind::API
-    assert_equal %w(LOGIN TOTP RECOVERY API), UserSecretKind::ALL
+  test "validates id is non-negative" do
+    record = UserSecretKind.new(id: -1)
+    assert_predicate record, :invalid?
+    assert_includes record.errors[:id], "must be greater than or equal to 0"
+  end
+
+  test "validates id is an integer" do
+    record = UserSecretKind.new(id: 1.5)
+    assert_predicate record, :invalid?
   end
 end

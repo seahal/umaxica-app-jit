@@ -52,7 +52,7 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     email = UserEmail.create!(
       address: "verified@example.com",
       user: @user,
-      user_email_status_id: "VERIFIED_WITH_SIGN_UP",
+      user_email_status_id: UserEmailStatus::VERIFIED,
     )
 
     get sign_app_configuration_emails_url(ri: "jp"), headers: request_headers
@@ -67,7 +67,7 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     email = UserEmail.create!(
       address: "unverified@example.com",
       user: @user,
-      user_email_status_id: "UNVERIFIED_WITH_SIGN_UP",
+      user_email_status_id: UserEmailStatus::UNVERIFIED,
     )
 
     get sign_app_configuration_emails_url(ri: "jp"), headers: request_headers
@@ -145,14 +145,14 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     email1 = UserEmail.create!(
       address: "email1@example.com",
       user: @user,
-      user_email_status_id: "VERIFIED_WITH_SIGN_UP",
+      user_email_status_id: UserEmailStatus::VERIFIED,
     )
 
     # Create another unverified email
     email2 = UserEmail.create!(
       address: "email2@example.com",
       user: @user,
-      user_email_status_id: "UNVERIFIED_WITH_SIGN_UP",
+      user_email_status_id: UserEmailStatus::UNVERIFIED,
     )
 
     # Verify both emails are displayed with correct status

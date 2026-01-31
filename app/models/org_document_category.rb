@@ -6,7 +6,7 @@
 #  id                              :uuid             not null, primary key
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
-#  org_document_category_master_id :string(255)      not null
+#  org_document_category_master_id :integer          default(0), not null
 #  org_document_id                 :uuid             not null
 #
 # Indexes

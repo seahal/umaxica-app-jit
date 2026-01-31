@@ -5,11 +5,11 @@
 # Table name: app_contact_statuses
 # Database name: guest
 #
-#  id :string(255)      not null, primary key
+#  id :integer          not null, primary key
 #
 # Indexes
 #
-#  index_app_contact_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  index_app_contact_statuses_on_id  (id) UNIQUE
 #
 
 class AppContactStatus < GuestRecord

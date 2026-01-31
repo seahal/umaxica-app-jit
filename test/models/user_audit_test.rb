@@ -17,18 +17,18 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  event_id       :string(255)      default("NEYO"), not null
-#  level_id       :string(255)      default("NEYO"), not null
+#  event_id       :integer          default(0), not null
+#  level_id       :integer          default(0), not null
 #  subject_id     :string           not null
 #
 # Indexes
 #
 #  idx_on_subject_type_subject_id_occurred_at_a29eb711dd   (subject_type,subject_id,occurred_at)
+#  index_user_audits_on_event_id                           (event_id)
+#  index_user_audits_on_level_id                           (level_id)
 #  index_user_identity_audits_on_actor                     (actor_type,actor_id)
 #  index_user_identity_audits_on_actor_id_and_occurred_at  (actor_id,occurred_at)
-#  index_user_identity_audits_on_event_id                  (event_id)
 #  index_user_identity_audits_on_expires_at                (expires_at)
-#  index_user_identity_audits_on_level_id                  (level_id)
 #  index_user_identity_audits_on_occurred_at               (occurred_at)
 #  index_user_identity_audits_on_subject_id                (subject_id)
 #

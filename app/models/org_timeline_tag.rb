@@ -7,12 +7,11 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  org_timeline_id            :uuid             not null
-#  org_timeline_tag_master_id :string(255)      not null
+#  org_timeline_tag_master_id :integer          default(0), not null
 #
 # Indexes
 #
 #  index_org_timeline_tags_on_org_timeline_tag_master_id  (org_timeline_tag_master_id)
-#  index_org_timeline_tags_unique                         (org_timeline_id,org_timeline_tag_master_id) UNIQUE
 #
 # Foreign Keys
 #
@@ -31,7 +30,7 @@ class OrgTimelineTag < NewsRecord
              inverse_of: :org_timeline_tags
 
   validates :org_timeline_tag_master_id,
-            length: { maximum: 255 },
+            presence: true,
             uniqueness: { scope: :org_timeline_id,
                           message: :already_tagged, }
 end

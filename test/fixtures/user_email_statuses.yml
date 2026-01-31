@@ -11,16 +11,16 @@
 #  index_user_identity_email_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 neyo:
-  id: NEYO
-unverified:
-  id: UNVERIFIED
-verified:
-  id: VERIFIED
-suspended:
-  id: SUSPENDED
+  id: 0
 deleted:
-  id: DELETED
+  id: 1
+suspended:
+  id: 2
+unverified:
+  id: 3
 unverified_with_sign_up:
-  id: UNVERIFIED_WITH_SIGN_UP
+  id: 4
+verified:
+  id: 5
 verified_with_sign_up:
-  id: VERIFIED_WITH_SIGN_UP
+  id: 6

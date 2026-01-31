@@ -10,12 +10,16 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string
-#  status_id    :string(255)      default("NEYO"), not null
+#  status_id    :integer          default(0), not null
 #
 # Indexes
 #
 #  index_com_preferences_on_jti        (jti) UNIQUE
 #  index_com_preferences_on_status_id  (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => com_preference_statuses.id)
 #
 
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

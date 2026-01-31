@@ -74,15 +74,15 @@ class SecretConcernTest < ActiveSupport::TestCase
   end
 
   test "status predicates" do
-    record = DummySecret.new(user_secret_status_id: "ACTIVE")
+    record = DummySecret.new(user_secret_status_id: UserSecretStatus::ACTIVE)
     assert_predicate record, :active?
-    record.user_secret_status_id = "USED"
+    record.user_secret_status_id = UserSecretStatus::USED
     assert_predicate record, :used?
-    record.user_secret_status_id = "REVOKED"
+    record.user_secret_status_id = UserSecretStatus::REVOKED
     assert_predicate record, :revoked?
-    record.user_secret_status_id = "EXPIRED"
+    record.user_secret_status_id = UserSecretStatus::EXPIRED
     assert_predicate record, :expired?
-    record.user_secret_status_id = "DELETED"
+    record.user_secret_status_id = UserSecretStatus::DELETED
     assert_predicate record, :deleted?
   end
 

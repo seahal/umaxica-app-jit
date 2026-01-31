@@ -78,23 +78,23 @@ module Secret
   end
 
   def active?
-    secret_status_id == "ACTIVE"
+    secret_status_id == self.class.identity_secret_status_class::ACTIVE
   end
 
   def used?
-    secret_status_id == "USED"
+    secret_status_id == self.class.identity_secret_status_class::USED
   end
 
   def revoked?
-    secret_status_id == "REVOKED"
+    secret_status_id == self.class.identity_secret_status_class::REVOKED
   end
 
   def expired?
-    secret_status_id == "EXPIRED"
+    secret_status_id == self.class.identity_secret_status_class::EXPIRED
   end
 
   def deleted?
-    secret_status_id == "DELETED"
+    secret_status_id == self.class.identity_secret_status_class::DELETED
   end
 
   private

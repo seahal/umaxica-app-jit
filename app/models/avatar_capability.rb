@@ -5,12 +5,10 @@
 # Table name: avatar_capabilities
 # Database name: avatar
 #
-#  id          :string           not null, primary key
+#  id          :integer          not null, primary key, limit: 2
 #  description :text
 #  key         :string           not null
 #  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
 #
 # Indexes
 #
@@ -18,9 +16,10 @@
 #
 
 class AvatarCapability < AvatarRecord
+  self.record_timestamps = false
+
   has_many :avatars, foreign_key: :capability_id, inverse_of: :capability, dependent: :restrict_with_error
 
   validates :key, presence: true, uniqueness: true
   validates :name, presence: true
-  validates :id, length: { maximum: 255 }
 end

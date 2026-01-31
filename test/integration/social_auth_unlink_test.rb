@@ -202,7 +202,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     UserEmail.create!(
       user: @user,
       address: "active@example.com",
-      user_email_status_id: "VERIFIED",
+      user_email_status_id: UserEmailStatus::VERIFIED,
     )
 
     # User also has ACTIVE Apple identity

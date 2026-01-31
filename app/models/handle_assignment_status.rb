@@ -5,11 +5,9 @@
 # Table name: handle_assignment_statuses
 # Database name: avatar
 #
-#  id :string           not null, primary key
+#  id :integer          not null, primary key, limit: 2
 #
 class HandleAssignmentStatus < AvatarRecord
-  include StringPrimaryKey
-
   self.record_timestamps = false
 
   has_many :handle_assignments, dependent: :restrict_with_error

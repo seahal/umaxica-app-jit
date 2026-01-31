@@ -7,12 +7,11 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  app_document_id            :uuid             not null
-#  app_document_tag_master_id :string(255)      not null
+#  app_document_tag_master_id :integer          default(0), not null
 #
 # Indexes
 #
 #  index_app_document_tags_on_app_document_tag_master_id  (app_document_tag_master_id)
-#  index_app_document_tags_on_document_and_tag            (app_document_id,app_document_tag_master_id) UNIQUE
 #
 # Foreign Keys
 #

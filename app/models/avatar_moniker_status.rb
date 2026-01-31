@@ -5,11 +5,9 @@
 # Table name: avatar_moniker_statuses
 # Database name: avatar
 #
-#  id :string           not null, primary key
+#  id :integer          not null, primary key, limit: 2
 #
 class AvatarMonikerStatus < AvatarRecord
-  include StringPrimaryKey
-
   self.record_timestamps = false
 
   has_many :avatar_monikers, dependent: :restrict_with_error

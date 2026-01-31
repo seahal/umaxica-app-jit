@@ -733,7 +733,7 @@ module Auth
       return unless logged_in?
       return unless current_resource
       return unless current_resource.respond_to?(:status_id)
-      return unless current_resource.status_id == "PRE_WITHDRAWAL_CONDITION"
+      return unless current_resource.status_id == UserStatus::PRE_WITHDRAWAL_CONDITION
 
       # Allowlist: withdrawal controller and logout
       return if withdrawal_gate_allowlisted?
@@ -1189,7 +1189,7 @@ module Auth
       return true unless respond_to?(:logged_in?) && logged_in?
 
       # Exception: PRE_WITHDRAWAL users should be handled by withdrawal gate, not guest_only
-      if current_resource.respond_to?(:status_id) && current_resource.status_id == "PRE_WITHDRAWAL_CONDITION"
+      if current_resource.respond_to?(:status_id) && current_resource.status_id == UserStatus::PRE_WITHDRAWAL_CONDITION
         return true
       end
 

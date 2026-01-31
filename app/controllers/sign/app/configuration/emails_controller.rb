@@ -56,8 +56,8 @@ module Sign
                 user_email.user = current_user
                 user_email.save!
 
-                if current_user.status_id == "UNVERIFIED_WITH_SIGN_UP"
-                  current_user.status_id = "VERIFIED_WITH_SIGN_UP"
+                if current_user.status_id == UserStatus::UNVERIFIED_WITH_SIGN_UP
+                  current_user.status_id = UserStatus::VERIFIED_WITH_SIGN_UP
                   current_user.save!
                 end
               end

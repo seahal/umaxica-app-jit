@@ -3,47 +3,51 @@
 # Table name: user_audit_events
 # Database name: audit
 #
-#  id :string(255)      default("NEYO"), not null, primary key
+#  id :integer          default(0), not null, primary key
+#
+# Indexes
+#
+#  index_user_audit_events_on_id  (id) UNIQUE
 #
 neyo:
-  id: NEYO
-login_success:
-  id: LOGIN_SUCCESS
-login_failed:
-  id: LOGIN_FAILED
-logout:
-  id: LOGOUT
-logged_in:
-  id: LOGGED_IN
-logged_out:
-  id: LOGGED_OUT
-signed_up_with_email:
-  id: SIGNED_UP_WITH_EMAIL
-signed_up_with_telephone:
-  id: SIGNED_UP_WITH_TELEPHONE
-signed_up_with_google:
-  id: SIGNED_UP_WITH_GOOGLE
-signed_up_with_apple:
-  id: SIGNED_UP_WITH_APPLE
-token_refreshed:
-  id: TOKEN_REFRESHED
-account_withdrawn:
-  id: ACCOUNT_WITHDRAWN
+  id: 0
 account_recovered:
-  id: ACCOUNT_RECOVERED
-passkey_registered:
-  id: PASSKEY_REGISTERED
-passkey_removed:
-  id: PASSKEY_REMOVED
-totp_enabled:
-  id: TOTP_ENABLED
-totp_disabled:
-  id: TOTP_DISABLED
-recovery_code_used:
-  id: RECOVERY_CODE_USED
-recovery_codes_generated:
-  id: RECOVERY_CODES_GENERATED
+  id: 1
+account_withdrawn:
+  id: 2
 authorization_failed:
-  id: AUTHORIZATION_FAILED
+  id: 3
+logged_in:
+  id: 4
+logged_out:
+  id: 5
+login_failed:
+  id: 6
+login_success:
+  id: 7
+logout:
+  id: 8
 non_existent_event:
-  id: NON_EXISTENT_EVENT
+  id: 9
+passkey_registered:
+  id: 10
+passkey_removed:
+  id: 11
+recovery_code_used:
+  id: 12
+recovery_codes_generated:
+  id: 13
+signed_up_with_apple:
+  id: 14
+signed_up_with_email:
+  id: 15
+signed_up_with_google:
+  id: 16
+signed_up_with_telephone:
+  id: 17
+token_refreshed:
+  id: 18
+totp_disabled:
+  id: 19
+totp_enabled:
+  id: 20

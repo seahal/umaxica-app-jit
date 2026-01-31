@@ -18,7 +18,7 @@ module Sign::App::In
         external_id: SecureRandom.uuid,
         public_key: "login_key",
         description: "Login Key",
-        user_passkey_status_id: "ACTIVE",
+        user_passkey_status_id: UserPasskeyStatus::ACTIVE,
       )
 
       # Mock TRUSTED_ORIGINS

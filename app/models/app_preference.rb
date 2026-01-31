@@ -10,12 +10,16 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string
-#  status_id    :string(255)      default("NEYO"), not null
+#  status_id    :integer          default(0), not null
 #
 # Indexes
 #
 #  index_app_preferences_on_jti        (jti) UNIQUE
 #  index_app_preferences_on_status_id  (status_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (status_id => app_preference_statuses.id)
 #
 
 # frozen_string_literal: true

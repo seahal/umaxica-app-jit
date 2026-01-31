@@ -5,11 +5,9 @@
 # Table name: post_review_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  key        :string           not null
-#  name       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id   :integer          not null, primary key, limit: 2
+#  key  :string           not null
+#  name :string           not null
 #
 # Indexes
 #
@@ -17,7 +15,7 @@
 #
 
 class PostReviewStatus < AvatarRecord
-  include StringPrimaryKey
+  self.record_timestamps = false
 
   has_many :post_reviews, dependent: :restrict_with_error
 

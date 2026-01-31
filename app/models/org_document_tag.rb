@@ -7,11 +7,10 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  org_document_id            :uuid             not null
-#  org_document_tag_master_id :string(255)      not null
+#  org_document_tag_master_id :integer          default(0), not null
 #
 # Indexes
 #
-#  index_org_document_taggers_on_document_and_tag         (org_document_id,org_document_tag_master_id) UNIQUE
 #  index_org_document_tags_on_org_document_tag_master_id  (org_document_tag_master_id)
 #
 # Foreign Keys

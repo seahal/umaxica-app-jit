@@ -5,23 +5,13 @@
 # Table name: com_timeline_statuses
 # Database name: news
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_com_timeline_statuses_on_lower_id  (lower((id)::text)) UNIQUE
-#
+#  id :integer          default(0), not null, primary key
+# 
 
 class ComTimelineStatus < NewsRecord
-  include StringPrimaryKey
-
   has_many :com_timelines,
            foreign_key: :status_id,
            inverse_of: :com_timeline_status,
            dependent: :restrict_with_error
-  validates :id, uniqueness: { case_sensitive: false }
-
-  validates :description, length: { maximum: 255 }
+  validates :id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

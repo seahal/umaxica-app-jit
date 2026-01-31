@@ -5,31 +5,44 @@
 # Table name: user_social_google_statuses
 # Database name: principal
 #
-#  id :string(255)      not null, primary key
+#  id :integer          default(0), not null, primary key
 #
 # Indexes
 #
-#  index_user_identity_google_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  index_user_social_google_statuses_on_id  (id) UNIQUE
 #
 require "test_helper"
 
 class UserSocialGoogleStatusTest < ActiveSupport::TestCase
   test "valid status" do
-    status = UserSocialGoogleStatus.new(id: "TEST_STATUS")
+    status = UserSocialGoogleStatus.new(id: 99)
     assert_predicate status, :valid?
     assert status.save
-    assert_equal "TEST_STATUS", status.id
+    assert_equal 99, status.id
   end
 
-  test "upcases id" do
-    status = UserSocialGoogleStatus.new(id: "lower")
-    status.valid?
-    assert_equal "LOWER", status.id
+  test "status constants are defined" do
+    assert_equal 0, UserSocialGoogleStatus::NEYO
+    assert_equal 1, UserSocialGoogleStatus::ACTIVE
+    assert_equal 2, UserSocialGoogleStatus::REVOKED
+    assert_equal 3, UserSocialGoogleStatus::DELETED
   end
 
-  test "validates length of id" do
-    record = UserSocialGoogleStatus.new(id: "A" * 256)
+  test "validates id is non-negative" do
+    record = UserSocialGoogleStatus.new(id: -1)
     assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+    assert_includes record.errors[:id], "must be greater than or equal to 0"
+  end
+
+  test "validates id is an integer" do
+    record = UserSocialGoogleStatus.new(id: 1.5)
+    assert_predicate record, :invalid?
+  end
+
+  test "validates uniqueness of id" do
+    UserSocialGoogleStatus.create!(id: 99)
+    duplicate = UserSocialGoogleStatus.new(id: 99)
+    assert_predicate duplicate, :invalid?
+    assert_predicate duplicate.errors[:id], :any?
   end
 end

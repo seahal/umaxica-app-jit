@@ -3,11 +3,11 @@
 # Table name: client_statuses
 # Database name: principal
 #
-#  id :string(255)      default("NEYO"), not null, primary key
+#  id :integer          default(0), not null, primary key
 #
 # Indexes
 #
-#  index_client_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  index_client_statuses_on_id  (id) UNIQUE
 #
 
 # frozen_string_literal: true
@@ -15,13 +15,25 @@
 require "test_helper"
 
 class ClientStatusTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "NEYO constant" do
+    assert_equal 0, ClientStatus::NEYO
+  end
 
-  test "validates length of id" do
-    record = ClientStatus.new(id: "A" * 256)
+  test "validates id is non-negative" do
+    record = ClientStatus.new(id: -1)
     assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+    assert_includes record.errors[:id], "must be greater than or equal to 0"
+  end
+
+  test "validates id is an integer" do
+    record = ClientStatus.new(id: 1.5)
+    assert_predicate record, :invalid?
+  end
+
+  test "validates uniqueness of id" do
+    ClientStatus.create!(id: 99)
+    duplicate = ClientStatus.new(id: 99)
+    assert_predicate duplicate, :invalid?
+    assert_predicate duplicate.errors[:id], :any?
   end
 end

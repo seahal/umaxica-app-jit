@@ -11,14 +11,14 @@
 #  index_user_identity_google_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 neyo:
-  id: NEYO
+  id: 0
 active:
-  id: ACTIVE
-inactive:
-  id: INACTIVE
-pending:
-  id: PENDING
+  id: 1
 deleted:
-  id: DELETED
+  id: 2
+inactive:
+  id: 3
+pending:
+  id: 4
 revoked:
-  id: REVOKED
+  id: 5

@@ -16,7 +16,7 @@
 #  updated_at       :datetime         not null
 #  category_id      :string(255)      default("NEYO"), not null
 #  public_id        :string(21)       default(""), not null
-#  status_id        :string(255)      default("NEYO"), not null
+#  status_id        :integer          default(0), not null
 #
 # Indexes
 #
@@ -30,7 +30,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (category_id => app_contact_categories.id) ON DELETE => cascade
-#  fk_rails_...  (status_id => app_contact_statuses.id) ON DELETE => cascade
+#  fk_rails_...  (status_id => app_contact_statuses.id)
 #
 
 require "test_helper"

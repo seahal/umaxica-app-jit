@@ -14,7 +14,7 @@ module Sign
 
         def new
           # NOTE: change this status check according to your business logic
-          unless current_user.status_id == "NEYO"
+          unless current_user.status_id == UserStatus::NEYO
             raise InvalidUserStatusError.new(invalid_status: "new is not implemented")
           end
         end
@@ -24,7 +24,7 @@ module Sign
 
         def create
           # NOTE: change this status check according to your business logic
-          unless current_user.status_id == "NEYO"
+          unless current_user.status_id == UserStatus::NEYO
             raise InvalidUserStatusError.new(invalid_status: "new is not implemented")
           end
 

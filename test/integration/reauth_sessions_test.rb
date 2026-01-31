@@ -49,7 +49,7 @@ class ReauthSessionsTest < ActionDispatch::IntegrationTest
     UserOneTimePassword.create!(
       user: @user,
       private_key: private_key,
-      user_one_time_password_status_id: "ACTIVE",
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
       last_otp_at: Time.zone.at(0),
     )
 

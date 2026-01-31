@@ -1,25 +1,15 @@
 # frozen_string_literal: true
 
-# == Schema Information
-#
-# Table name: user_secret_kinds
-# Database name: principal
-#
-#  id :string(255)      not null, primary key
-#
-
 class UserSecretKind < PrincipalRecord
-  include StringPrimaryKey
-
-  # Kind constants
-  LOGIN = "LOGIN"
-  TOTP = "TOTP"
-  RECOVERY = "RECOVERY"
-  API = "API"
+  LOGIN = 1
+  TOTP = 2
+  RECOVERY = 3
+  API = 4
 
   ALL = [LOGIN, TOTP, RECOVERY, API].freeze
 
   has_many :user_secrets, inverse_of: :user_secret_kind, dependent: :restrict_with_exception
 
-  validates :id, uniqueness: { case_sensitive: false }
+  validates :id, uniqueness: true
+  validates :id, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

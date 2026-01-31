@@ -3,7 +3,11 @@
 # Table name: app_preference_audit_events
 # Database name: audit
 #
-#  id :string(255)      default("NEYO"), not null, primary key
+#  id :integer          default(0), not null, primary key
+#
+# Indexes
+#
+#  index_app_preference_audit_events_on_id  (id) UNIQUE
 #
 
 # frozen_string_literal: true

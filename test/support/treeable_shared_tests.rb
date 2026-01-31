@@ -1,27 +1,37 @@
 # frozen_string_literal: true
 
+require "ostruct"
 require "securerandom"
 
 module TreeableSharedTests
-  ROOT_SENTINEL = "none"
-
   private
 
   def treeable_class
     raise NotImplementedError, "define `treeable_class` in the including test class"
   end
 
-  def ensure_root_sentinel!(klass)
-    return if klass.exists?(id: ROOT_SENTINEL)
+  def tree_root_sentinel
+    if treeable_class.respond_to?(:tree_root_parent_value)
+      treeable_class.tree_root_parent_value
+    else
+      "none"
+    end
+  end
 
+  def string_id_column?
+    treeable_class.columns_hash.fetch("id", OpenStruct.new(type: :string)).type == :string
+  end
+
+  def ensure_root_sentinel!(klass)
+    return if klass.exists?(id: tree_root_sentinel)
+
+    attributes = { id: tree_root_sentinel, parent_id: tree_root_sentinel }
     now = Time.current
-    # We need a row whose `id` and `parent_id` are the sentinel value to satisfy the
-    # self-referential FK on `parent_id`. This sentinel id is intentionally lowercase
-    # and would fail `StringPrimaryKey` validations/callbacks, so we insert directly.
+    attributes[:created_at] = now if klass.column_names.include?("created_at")
+    attributes[:updated_at] = now if klass.column_names.include?("updated_at")
+
     # rubocop:disable Rails/SkipsModelValidations
-    klass.insert_all!(
-      [{ id: ROOT_SENTINEL, parent_id: ROOT_SENTINEL, created_at: now, updated_at: now }],
-    )
+    klass.insert_all!([attributes])
     # rubocop:enable Rails/SkipsModelValidations
   end
 
@@ -33,7 +43,7 @@ module TreeableSharedTests
     elsif parent_id
       attributes[:parent_id] = parent_id
     else
-      attributes[:parent_id] = ROOT_SENTINEL
+      attributes[:parent_id] = tree_root_sentinel
     end
 
     if klass.column_names.include?("position")
@@ -74,6 +84,8 @@ module TreeableSharedTests
   end
 
   def test_upcases_id_before_validation
+    return unless string_id_column?
+
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
@@ -83,6 +95,8 @@ module TreeableSharedTests
   end
 
   def test_validates_id_format
+    return unless string_id_column?
+
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
@@ -101,6 +115,8 @@ module TreeableSharedTests
   end
 
   def test_validates_length_of_id
+    return unless string_id_column?
+
     klass = treeable_class
     ensure_root_sentinel!(klass)
 

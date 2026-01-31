@@ -153,12 +153,12 @@ module Sign
         def valid_email_session?
           @user_email.present? &&
             !@user_email.otp_expired? &&
-            @user_email.user_email_status_id == "UNVERIFIED_WITH_SIGN_UP"
+            @user_email.user_email_status_id == UserEmailStatus::UNVERIFIED
         end
 
         def create_user_and_login(user_email)
           ActiveRecord::Base.transaction do
-            @user = User.create!(status_id: "VERIFIED_WITH_SIGN_UP")
+            @user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
             user_email.user = @user
             audit = UserAudit.new(actor: @user, event_id: "SIGNED_UP_WITH_EMAIL", user: @user)
             audit.save!

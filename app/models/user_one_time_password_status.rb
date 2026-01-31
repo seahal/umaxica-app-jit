@@ -1,26 +1,14 @@
 # frozen_string_literal: true
 
-# == Schema Information
-#
-# Table name: user_one_time_password_statuses
-# Database name: principal
-#
-#  id :string           default("NEYO"), not null, primary key
-#
-# Indexes
-#
-#  index_user_identity_otp_statuses_on_lower_id  (lower((id)::text)) UNIQUE
-#
-
 class UserOneTimePasswordStatus < PrincipalRecord
-  include StringPrimaryKey
+  NEYO = 0
+  ACTIVE = 1
+  INACTIVE = 2
+  REVOKED = 3
+  DELETED = 4
 
-  # Status constants
-  ACTIVE = "ACTIVE"
-  INACTIVE = "INACTIVE"
-  REVOKED = "REVOKED"
-  DELETED = "DELETED"
   has_many :user_one_time_passwords, dependent: :restrict_with_error,
                                      inverse_of: :user_one_time_password_status
-  validates :id, uniqueness: { case_sensitive: false }
+  validates :id, uniqueness: true
+  validates :id, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

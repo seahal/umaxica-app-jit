@@ -5,18 +5,18 @@
 # Table name: user_telephone_statuses
 # Database name: principal
 #
-#  id :string(255)      default("NEYO"), not null, primary key
+#  id :integer          default(0), not null, primary key
 #
 # Indexes
 #
-#  index_user_identity_telephone_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  index_user_telephone_statuses_on_id  (id) UNIQUE
 #
 
 require "test_helper"
 
 class UserTelephoneStatusTest < ActiveSupport::TestCase
   test "valid status with id" do
-    status = UserTelephoneStatus.find("UNVERIFIED")
+    status = UserTelephoneStatus.find(UserTelephoneStatus::UNVERIFIED)
 
     assert_predicate status, :valid?
   end
@@ -32,15 +32,8 @@ class UserTelephoneStatusTest < ActiveSupport::TestCase
     assert_predicate status.errors[:id], :any?
   end
 
-  test "validates length of id" do
-    status = UserTelephoneStatus.new(id: "a" * 256)
-
-    assert_predicate status, :invalid?
-    assert_predicate status.errors[:id], :any?
-  end
-
   test "validates uniqueness of id" do
-    existing = UserTelephoneStatus.find("UNVERIFIED")
+    existing = UserTelephoneStatus.find(UserTelephoneStatus::UNVERIFIED)
     duplicate = UserTelephoneStatus.new(id: existing.id)
 
     assert_predicate duplicate, :invalid?
@@ -48,17 +41,26 @@ class UserTelephoneStatusTest < ActiveSupport::TestCase
   end
 
   test "status constants are defined" do
-    assert_equal "UNVERIFIED", UserTelephoneStatus::UNVERIFIED
-    assert_equal "VERIFIED", UserTelephoneStatus::VERIFIED
+    assert_equal 0, UserTelephoneStatus::NEYO
+    assert_equal 1, UserTelephoneStatus::UNVERIFIED
+    assert_equal 2, UserTelephoneStatus::VERIFIED
+    assert_equal 3, UserTelephoneStatus::SUSPENDED
+    assert_equal 4, UserTelephoneStatus::DELETED
   end
 
-  test "additional status constants are defined" do
-    assert_equal "SUSPENDED", UserTelephoneStatus::SUSPENDED
-    assert_equal "DELETED", UserTelephoneStatus::DELETED
+  test "validates id is non-negative" do
+    record = UserTelephoneStatus.new(id: -1)
+    assert_predicate record, :invalid?
+    assert_includes record.errors[:id], "must be greater than or equal to 0"
+  end
+
+  test "validates id is an integer" do
+    record = UserTelephoneStatus.new(id: 1.5)
+    assert_predicate record, :invalid?
   end
 
   test "restrict_with_error prevents deletion when telephones exist" do
-    status = UserTelephoneStatus.find("VERIFIED")
+    status = UserTelephoneStatus.find(UserTelephoneStatus::VERIFIED)
     # Create a user identity telephone with this status
     user = User.find_by!(public_id: "one_id")
     UserTelephone.create!(

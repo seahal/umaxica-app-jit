@@ -28,14 +28,14 @@
 
 one:
   user_id: "e7a2f1e2-4a54-4ca8-826f-b60117925854"
-  status_id: "NEYO"
+  status_id: 0
   public_id: "client_one"
   moniker: "Client One"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
   user_id: "fac3e5c2-b101-4fe6-9af1-b0f8bc5f4210"
-  status_id: "NEYO"
+  status_id: 0
   public_id: "client_two"
   moniker: "Client Two"
   created_at: <%= Time.current %>

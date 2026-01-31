@@ -18,8 +18,8 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     # We need to ensure the status exists too? UserStatus::ACTIVE might need seeding?
     # Just in case, create ACTIVE status.
     if defined?(UserStatus)
-      UserStatus.find_or_create_by!(id: "ACTIVE")
-      @user.update!(status_id: "ACTIVE", withdrawn_at: nil)
+      UserStatus.find_or_create_by!(id: UserStatus::ACTIVE)
+      @user.update!(status_id: UserStatus::ACTIVE, withdrawn_at: nil)
     end
   end
 

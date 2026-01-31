@@ -5,20 +5,13 @@
 # Table name: app_timeline_statuses
 # Database name: news
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_app_timeline_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :integer          default(0), not null, primary key
 #
 
 require "test_helper"
 
 class AppTimelineStatusTest < ActiveSupport::TestCase
   def setup
-    @status = AppTimelineStatus.find("ACTIVE")
     @model_class = AppTimelineStatus
   end
 
@@ -27,45 +20,30 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
   end
 
   test "id is required" do
-    status = AppTimelineStatus.new(id: nil)
+    status = @model_class.new(id: nil)
 
     assert_not status.valid?
     assert_not_empty status.errors[:id]
   end
 
   test "id must be unique" do
-    status = AppTimelineStatus.new(id: "ACTIVE")
+    existing = @model_class.first!
+    duplicate = @model_class.new(id: existing.id)
+
+    assert_not duplicate.valid?
+    assert_not_empty duplicate.errors[:id]
+  end
+
+  test "id must be a non-negative integer" do
+    status = @model_class.new(id: -1)
 
     assert_not status.valid?
     assert_not_empty status.errors[:id]
   end
 
-  test "id must have maximum length of 255" do
-    status = AppTimelineStatus.new(id: "A" * 256)
+  test "can find statuses by numeric id" do
+    status = @model_class.find(0)
 
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id can have maximum length of 255" do
-    long_id = "A" * 255
-    status = AppTimelineStatus.create!(id: long_id)
-
-    assert_predicate status, :valid?
-    assert_equal 255, status.id.length
-  end
-
-  test "can load draft status from db" do
-    draft = AppTimelineStatus.find("DRAFT")
-
-    assert_not_nil draft
-    assert_equal "DRAFT", draft.id
-  end
-
-  test "can load archived status from db" do
-    archived = AppTimelineStatus.find("ARCHIVED")
-
-    assert_not_nil archived
-    assert_equal "ARCHIVED", archived.id
+    assert_equal 0, status.id
   end
 end

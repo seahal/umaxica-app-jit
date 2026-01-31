@@ -3,7 +3,7 @@
 # Table name: com_preference_timezone_options
 # Database name: preference
 #
-#  id         :string           not null, primary key
+#  id         :integer          not null, primary key
 #  position   :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null

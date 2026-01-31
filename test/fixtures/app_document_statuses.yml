@@ -4,41 +4,21 @@
 # Table name: app_document_statuses
 # Database name: document
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_app_document_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :integer          default(0), not null, primary key
 #
 neyo:
-  id: NEYO
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 0
 active:
-  id: ACTIVE
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 1
 inactive:
-  id: INACTIVE
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 2
 pending:
-  id: PENDING
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 3
 deleted:
-  id: DELETED
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 4
 
 draft:
-  id: DRAFT
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 5
 
 archived:
-  id: ARCHIVED
-  created_at: <%= 1.day.ago %>
-  updated_at: <%= 1.day.ago %>
+  id: 6

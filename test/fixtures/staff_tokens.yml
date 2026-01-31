@@ -18,8 +18,8 @@
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
 #  staff_id                 :uuid             not null
-#  staff_token_kind_id      :string           default("BROWSER_WEB"), not null
-#  staff_token_status_id    :string           default("NEYO"), not null
+#  staff_token_kind_id      :integer          default(1), not null
+#  staff_token_status_id    :integer          default(0), not null
 #
 # Indexes
 #

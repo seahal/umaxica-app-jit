@@ -3,7 +3,7 @@
 # Table name: staff_token_kinds
 # Database name: token
 #
-#  id :string           not null, primary key
+#  id :integer          not null, primary key
 #
 # frozen_string_literal: true
 

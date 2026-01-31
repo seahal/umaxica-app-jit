@@ -129,8 +129,7 @@ module Sign
       def send_email_otp!(reauth_session)
         user_email =
           current_user.user_emails.where(
-            user_email_status_id: %w(VERIFIED
-                                     VERIFIED_WITH_SIGN_UP),
+            user_email_status_id: UserEmailStatus::VERIFIED,
           ).order(created_at: :desc).first
         unless user_email
           reauth_session.update!(status: "CANCELLED")
@@ -177,7 +176,7 @@ module Sign
 
         totps =
           current_user.user_one_time_passwords
-            .where(user_one_time_password_status_id: "ACTIVE")
+            .where(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
             .order(created_at: :desc)
 
         totps.any? do |totp|

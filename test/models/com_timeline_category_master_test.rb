@@ -3,14 +3,11 @@
 # Table name: com_timeline_category_masters
 # Database name: news
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  parent_id  :string(255)      default("NEYO"), not null
+#  id        :integer          default(0), not null, primary key
+#  parent_id :integer          default(0), not null
 #
 # Indexes
 #
-#  index_com_timeline_category_masters_on_lower_id   (lower((id)::text)) UNIQUE
 #  index_com_timeline_category_masters_on_parent_id  (parent_id)
 #
 # Foreign Keys
@@ -23,7 +20,7 @@
 require "test_helper"
 
 class ComTimelineCategoryMasterTest < ActiveSupport::TestCase
-  include TreeableSharedTests
+  include TimelineIntegerTreeTests
 
   private
 

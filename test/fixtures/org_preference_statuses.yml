@@ -3,7 +3,7 @@
 # Table name: org_preference_statuses
 # Database name: preference
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
+#  id         :integer          default(0), not null, primary key
 #  position   :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null

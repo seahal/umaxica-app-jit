@@ -15,7 +15,7 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  slug_id       :string(32)       default(""), not null
-#  status_id     :string(255)      default("NEYO"), not null
+#  status_id     :integer          default(0), not null
 #
 # Indexes
 #
@@ -67,7 +67,7 @@ class AppTimeline < NewsRecord
   has_one :category_master,
           through: :category,
           source: :app_timeline_category_master
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, presence: true
 
   def latest_version
     app_timeline_versions.order(created_at: :desc).first!

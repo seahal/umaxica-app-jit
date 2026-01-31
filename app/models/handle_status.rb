@@ -5,11 +5,9 @@
 # Table name: handle_statuses
 # Database name: avatar
 #
-#  id :string           not null, primary key
+#  id :integer          not null, primary key, limit: 2
 #
 class HandleStatus < AvatarRecord
-  include StringPrimaryKey
-
   self.record_timestamps = false
 
   has_many :handles, dependent: :restrict_with_error

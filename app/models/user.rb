@@ -119,7 +119,7 @@ class User < PrincipalRecord
   validates :status_id, length: { maximum: 255 }
 
   def totp_enabled?
-    user_one_time_passwords.exists?(user_one_time_password_status_id: "ACTIVE")
+    user_one_time_passwords.exists?(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
   end
 
   def staff?

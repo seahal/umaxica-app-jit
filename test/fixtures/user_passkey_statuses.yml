@@ -9,11 +9,13 @@
 #
 #  index_user_identity_passkey_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
+neyo:
+  id: 0
 active:
-  id: ACTIVE
-disabled:
-  id: DISABLED
+  id: 1
 deleted:
-  id: DELETED
+  id: 2
+disabled:
+  id: 3
 revoked:
-  id: REVOKED
+  id: 4
