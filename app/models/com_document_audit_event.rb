@@ -9,6 +9,8 @@
 #
 
 class ComDocumentAuditEvent < AuditRecord
+  self.record_timestamps = false
+
   has_many :com_document_audits,
            class_name: "ComDocumentAudit",
            foreign_key: "event_id",

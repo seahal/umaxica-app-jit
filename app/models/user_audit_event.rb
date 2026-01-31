@@ -5,13 +5,12 @@
 # Table name: user_audit_events
 # Database name: audit
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
-
 class UserAuditEvent < AuditRecord
   include StringPrimaryKey
+
+  self.record_timestamps = false
 
   # Association with user_audits
   has_many :user_audits,

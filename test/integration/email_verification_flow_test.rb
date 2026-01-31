@@ -27,11 +27,11 @@ class EmailVerificationFlowTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-    follow_redirect! 
+    follow_redirect!
 
     # Verify we are on configuration page, NOT email verification page
     assert_equal sign_app_configuration_path, path
-    
+
     # User status should still be UNVERIFIED_WITH_SIGN_UP if it was new,
     # but no UserEmail should have been created from the IdP info
     user = UserSocialApple.find_by(uid: "flow_uid").user

@@ -11,6 +11,8 @@
 class ComTimelineAuditEvent < AuditRecord
   include StringPrimaryKey
 
+  self.record_timestamps = false
+
   has_many :com_timeline_audits,
            class_name: "ComTimelineAudit",
            foreign_key: "event_id",

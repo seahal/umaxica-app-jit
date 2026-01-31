@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class RemoveTimestampsFromAuditReferenceTables < ActiveRecord::Migration[8.2]
+class LegacyAuditReferenceTableTimestampsRemoval < ActiveRecord::Migration[8.2]
   def change
     safety_assured do
       remove_timestamps :app_document_audit_events

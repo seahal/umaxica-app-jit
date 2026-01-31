@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_22_130001) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_30_130001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -51,8 +51,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_22_130001) do
   end
 
   create_table "division_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_division_statuses_on_lower_id", unique: true
   end
 
@@ -68,8 +66,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_22_130001) do
   end
 
   create_table "organization_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.index "lower((id)::text)", name: "index_department_statuses_on_lower_id", unique: true
   end
 
@@ -294,8 +290,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_22_130001) do
   end
 
   create_table "workspace_statuses", id: { type: :string, limit: 255 }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "admins", "admin_statuses", column: "status_id"

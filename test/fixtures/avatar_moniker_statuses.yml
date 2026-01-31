@@ -3,8 +3,6 @@
 # Table name: avatar_moniker_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string           not null, primary key
 #
-  # Auto-generated minimal fixture
+# Auto-generated minimal fixture

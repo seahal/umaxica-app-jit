@@ -1,17 +1,16 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: app_preference_audit_events
 # Database name: audit
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
-
-# frozen_string_literal: true
-
 class AppPreferenceAuditEvent < AuditRecord
   include StringPrimaryKey
+
+  self.record_timestamps = false
 
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')
   has_many :app_preference_audits,

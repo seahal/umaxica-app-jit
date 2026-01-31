@@ -9,6 +9,8 @@
 #
 
 class OrgDocumentAuditEvent < AuditRecord
+  self.record_timestamps = false
+
   has_many :org_document_audits,
            class_name: "OrgDocumentAudit",
            foreign_key: "event_id",

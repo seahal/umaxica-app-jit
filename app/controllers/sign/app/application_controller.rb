@@ -6,8 +6,8 @@ module Sign
       include ::RateLimit
       include ::Preference::Global
       include ::Auth::User
+      include ::Sign::ErrorResponses
       include Pundit::Authorization
-      include Sign::ErrorResponses
 
       protect_from_forgery with: :exception
 
@@ -28,9 +28,8 @@ module Sign
 
         # Redirect to the configuration page
         sign_app_configuration_path(redirect_params)
-      rescue StandardError => e
+      rescue StandardError
         # On error, keep the ri parameter and fall back to the root path
-        Rails.logger.warn("after_login_path error: #{e.message}")
         params[:ri].present? ? "/?ri=#{params[:ri]}" : "/"
       end
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_29_060000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_30_130003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -32,8 +32,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_29_060000) do
   end
 
   create_table "staff_token_kinds", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "staff_token_statuses", id: { type: :string, limit: 255, default: "" }, force: :cascade do |t|
@@ -72,8 +70,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_29_060000) do
   end
 
   create_table "user_token_kinds", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "user_token_statuses", id: { type: :string, limit: 255, default: "" }, force: :cascade do |t|

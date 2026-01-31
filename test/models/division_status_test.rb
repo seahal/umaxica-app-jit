@@ -5,9 +5,7 @@
 # Table name: division_statuses
 # Database name: operator
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      not null, primary key
 #
 # Indexes
 #

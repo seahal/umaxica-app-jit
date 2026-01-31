@@ -5,13 +5,12 @@
 # Table name: avatar_moniker_statuses
 # Database name: avatar
 #
-#  id         :string           not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string           not null, primary key
 #
-
 class AvatarMonikerStatus < AvatarRecord
   include StringPrimaryKey
+
+  self.record_timestamps = false
 
   has_many :avatar_monikers, dependent: :restrict_with_error
 end

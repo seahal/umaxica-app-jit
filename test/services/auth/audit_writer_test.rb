@@ -22,7 +22,7 @@ module Auth
         ip_address: "127.0.0.1",
       )
 
-      assert audit.persisted?
+      assert_predicate audit, :persisted?
       assert_equal "LOGGED_IN", audit.event_id
       assert_equal @user.id.to_s, audit.subject_id
       assert_equal "User", audit.subject_type
@@ -53,7 +53,7 @@ module Auth
         ip_address: "127.0.0.1",
       )
 
-      assert_equal true, result
+      assert result
       assert UserAudit.exists?(event_id: "LOGGED_IN", subject_id: @user.id.to_s)
     end
 
@@ -74,7 +74,7 @@ module Auth
         ip_address: "127.0.0.1",
       )
 
-      assert_equal false, result, "write should return false when audit save fails"
+      assert_not result, "write should return false when audit save fails"
 
       # Verify audit was not saved
       assert_not UserAudit.exists?(event_id: invalid_event_id, subject_id: @user.id.to_s),
@@ -101,7 +101,7 @@ module Auth
         ip_address: "127.0.0.1",
       )
 
-      assert_equal false, result, "write should return false to indicate failure (observable)"
+      assert_not result, "write should return false to indicate failure (observable)"
       # Note: Rails.event.notify is called internally but not easily testable in unit tests
       # Observability is verified through integration tests and manual testing
     end
@@ -117,7 +117,7 @@ module Auth
           actor: @user,
           ip_address: "127.0.0.1",
         )
-        assert_equal false, result
+        assert_not result
       end
     end
 

@@ -5,9 +5,7 @@
 # Table name: organization_statuses
 # Database name: operator
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      not null, primary key
 #
 # Indexes
 #
@@ -15,6 +13,8 @@
 #
 class OrganizationStatus < OperatorRecord
   include StringPrimaryKey
+
+  self.record_timestamps = false
 
   has_many :organizations,
            class_name: "Organization",

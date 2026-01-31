@@ -5,13 +5,12 @@
 # Table name: workspace_statuses
 # Database name: operator
 #
-#  id         :string(255)      not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      not null, primary key
 #
-
 class WorkspaceStatus < OperatorRecord
   include StringPrimaryKey
+
+  self.record_timestamps = false
 
   self.primary_key = "id"
 

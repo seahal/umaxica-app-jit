@@ -35,8 +35,11 @@ module Sign
             unless token
               Rails.logger.debug { "[Service] Token not found! public_id: #{public_id}" }
               # Debug connection info
+              connection = TokenRecord.connection
+              write_mode = connection.messages.include?("read_only") rescue false
               Rails.logger.debug {
-                "[Service] DB Name: #{TokenRecord.connection.current_database}, Role: #{TokenRecord.connection_role}, Write? #{TokenRecord.connection.messages.include?("read_only") rescue false}"
+                "[Service] DB Name: #{connection.current_database}, " \
+                  "Role: #{TokenRecord.connection_role}, Write? #{write_mode}"
               }
               raise InvalidRefreshToken, "token_not_found"
             end

@@ -10,18 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_16_122000) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_30_130004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "app_contact_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "app_contact_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "app_contact_histories", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -54,8 +50,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_16_122000) do
   end
 
   create_table "app_document_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "app_document_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -83,14 +77,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_16_122000) do
   end
 
   create_table "app_preference_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "app_preference_audit_events_id_format_check"
   end
 
   create_table "app_preference_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "app_preference_audit_levels_id_format_check"
   end
 
@@ -149,13 +139,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_16_122000) do
   end
 
   create_table "com_contact_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_contact_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "com_contact_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -215,14 +201,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_16_122000) do
   end
 
   create_table "com_preference_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "com_preference_audit_events_id_format_check"
   end
 
   create_table "com_preference_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "com_preference_audit_levels_id_format_check"
   end
 
@@ -281,13 +263,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_16_122000) do
   end
 
   create_table "org_contact_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_contact_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_contact_histories", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -347,14 +325,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_16_122000) do
   end
 
   create_table "org_preference_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "org_preference_audit_events_id_format_check"
   end
 
   create_table "org_preference_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.check_constraint "id::text ~ '^[A-Z0-9_]+$'::text", name: "org_preference_audit_levels_id_format_check"
   end
 
@@ -386,8 +360,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_16_122000) do
   end
 
   create_table "org_timeline_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "org_timeline_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
@@ -446,13 +418,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_16_122000) do
   end
 
   create_table "user_audit_events", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "user_audit_levels", id: { type: :string, limit: 255, default: "NEYO" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "user_audits", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|

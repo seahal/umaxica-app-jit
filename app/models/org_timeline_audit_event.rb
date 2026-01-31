@@ -11,6 +11,8 @@
 class OrgTimelineAuditEvent < AuditRecord
   include StringPrimaryKey
 
+  self.record_timestamps = false
+
   has_many :org_timeline_audits,
            class_name: "OrgTimelineAudit",
            foreign_key: "event_id",

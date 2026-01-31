@@ -18,8 +18,6 @@ module Sign
       class OmniauthCallbacksController < Sign::App::ApplicationController
         include SocialAuthConcern
 
-
-
         # Allow unauthenticated access for login intent
         # For link/reauth, auth is checked in prepare_social_auth_intent!
         public_strict! only: %i(omniauth failure)
@@ -86,7 +84,7 @@ module Sign
 
         private
 
-        def handle_successful_auth(user, intent, provider_name, identity, existing_account: nil)
+        def handle_successful_auth(user, intent, provider_name, _identity, existing_account: nil)
           case intent
           when "link"
             redirect_to sign_app_configuration_path,

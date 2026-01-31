@@ -11,6 +11,8 @@
 class AppDocumentAuditEvent < AuditRecord
   include StringPrimaryKey
 
+  self.record_timestamps = false
+
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')
   has_many :app_document_audits,
            class_name: "AppDocumentAudit",

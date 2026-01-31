@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_30_030719) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_30_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,8 +57,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_30_030719) do
   end
 
   create_table "avatar_membership_statuses", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "avatar_memberships", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
@@ -77,8 +75,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_30_030719) do
   end
 
   create_table "avatar_moniker_statuses", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "avatar_monikers", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
@@ -120,8 +116,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_30_030719) do
   end
 
   create_table "avatar_ownership_statuses", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "avatar_permissions", id: :string, force: :cascade do |t|
@@ -243,8 +237,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_30_030719) do
   end
 
   create_table "handle_assignment_statuses", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "handle_assignments", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
@@ -264,8 +256,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_30_030719) do
   end
 
   create_table "handle_statuses", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "handles", id: :string, default: -> { "(uuidv7())::text" }, force: :cascade do |t|
@@ -305,8 +295,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_30_030719) do
   end
 
   create_table "post_statuses", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "post_versions", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|

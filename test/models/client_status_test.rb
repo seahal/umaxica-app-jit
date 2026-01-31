@@ -3,9 +3,7 @@
 # Table name: client_statuses
 # Database name: principal
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 # Indexes
 #

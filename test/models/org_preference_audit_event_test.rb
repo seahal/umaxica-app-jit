@@ -5,9 +5,7 @@
 # Table name: org_preference_audit_events
 # Database name: audit
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id :string(255)      default("NEYO"), not null, primary key
 #
 require "test_helper"
 
