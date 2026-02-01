@@ -3,7 +3,7 @@
 # Table name: com_preference_audits
 # Database name: audit
 #
-#  id             :uuid             not null, primary key
+#  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
 #  context        :jsonb            not null
 #  current_value  :text             default(""), not null
@@ -44,6 +44,10 @@ class ComPreferenceAuditTest < ActiveSupport::TestCase
     @audit = com_preference_audits(:one)
     @preference = com_preferences(:one)
     @audit.update!(subject_id: @preference.id) # Ensure valid link
+  end
+
+  test "uses bigint primary key" do
+    assert_kind_of Integer, @audit.id
   end
 
   test "belongs to com_preference" do

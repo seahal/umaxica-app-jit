@@ -3,11 +3,7 @@
 # Table name: client_statuses
 # Database name: principal
 #
-#  id :integer          default(0), not null, primary key
-#
-# Indexes
-#
-#  index_client_statuses_on_id  (id) UNIQUE
+#  id :integer          not null, primary key
 #
 
 # frozen_string_literal: true

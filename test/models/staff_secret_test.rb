@@ -5,30 +5,23 @@
 # Table name: staff_secrets
 # Database name: operator
 #
-#  id                              :uuid             not null, primary key
-#  expires_at                      :datetime         default(Infinity), not null
-#  last_used_at                    :datetime         default(-Infinity), not null
-#  name                            :string           default(""), not null
-#  password_digest                 :string           default(""), not null
-#  uses_remaining                  :integer          default(1), not null
-#  created_at                      :datetime         not null
-#  updated_at                      :datetime         not null
-#  staff_id                        :uuid             not null
-#  staff_identity_secret_status_id :string(255)      default("ACTIVE"), not null
-#  staff_secret_kind_id            :string(255)      not null
+#  id              :bigint           not null, primary key
+#  last_used_at    :datetime
+#  name            :string
+#  password_digest :string
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  staff_id        :bigint           not null
+#  status_id       :string           default("ACTIVE"), not null
 #
 # Indexes
 #
-#  index_staff_secrets_on_expires_at                       (expires_at)
-#  index_staff_secrets_on_staff_id                         (staff_id)
-#  index_staff_secrets_on_staff_identity_secret_status_id  (staff_identity_secret_status_id)
-#  index_staff_secrets_on_staff_secret_kind_id             (staff_secret_kind_id)
+#  index_staff_secrets_on_staff_id  (staff_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (staff_id => staffs.id)
-#  fk_rails_...  (staff_identity_secret_status_id => staff_secret_statuses.id)
-#  fk_rails_...  (staff_secret_kind_id => staff_secret_kinds.id)
+#  fk_rails_...  (status_id => staff_secret_statuses.id)
 #
 
 require "test_helper"

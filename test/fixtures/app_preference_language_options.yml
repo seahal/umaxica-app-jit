@@ -14,13 +14,13 @@
 #
 
 ja:
-  id: "JA"
+  code: "11 # was 11 # was JA"
   position: 1
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 
 en:
-  id: "EN"
+  code: "12 # was 12 # was EN"
   position: 2
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

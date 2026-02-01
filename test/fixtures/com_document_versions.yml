@@ -3,7 +3,7 @@
 # Table name: com_document_versions
 # Database name: document
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  body            :text
 #  description     :string
 #  edited_by_type  :string
@@ -15,7 +15,7 @@
 #  title           :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  com_document_id :uuid             not null
+#  com_document_id :bigint           not null
 #  edited_by_id    :bigint
 #  public_id       :string(255)      default(""), not null
 #
@@ -29,15 +29,15 @@
 #  fk_rails_...  (com_document_id => com_documents.id) ON DELETE => cascade
 #
 one:
-  com_document: one
-  permalink: test-doc-one
-  response_mode: html
-  title: Test Document
-  description: Test description
-  body: Test body
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>
   edited_by_type: Staff
-  public_id: one_com_doc_ver_000001
+  public_id: 493 # was one_com_doc_ver_000001
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

@@ -5,16 +5,16 @@
 # Table name: avatar_memberships
 # Database name: avatar
 #
-#  id                          :string           not null, primary key
+#  id                          :bigint           not null, primary key
 #  valid_from                  :timestamptz      not null
 #  valid_to                    :timestamptz      default(Infinity), not null
 #  created_at                  :datetime         not null
 #  updated_at                  :datetime         not null
 #  actor_id                    :string           not null
-#  avatar_id                   :string           not null
-#  avatar_membership_status_id :string
+#  avatar_id                   :bigint           not null
+#  avatar_membership_status_id :integer
 #  granted_by_actor_id         :string
-#  role_id                     :string           not null
+#  role_id                     :integer          default(0), not null
 #
 # Indexes
 #
@@ -26,15 +26,16 @@
 #
 #  fk_rails_...  (avatar_id => avatars.id)
 #  fk_rails_...  (avatar_membership_status_id => avatar_membership_statuses.id)
+#  fk_rails_...  (role_id => avatar_roles.id)
 #
 
 class AvatarMembership < AvatarRecord
   belongs_to :avatar
   belongs_to :avatar_membership_status, optional: true
+  belongs_to :avatar_role, foreign_key: :role_id, inverse_of: :avatar_memberships
 
   validates :avatar_id, uniqueness: { scope: :actor_id }
   validates :actor_id, presence: true
-  validates :role_id, presence: true
   validates :valid_from, presence: true
   validates :id, length: { maximum: 255 }
 end

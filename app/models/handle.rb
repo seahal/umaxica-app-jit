@@ -5,13 +5,13 @@
 # Table name: handles
 # Database name: avatar
 #
-#  id               :string           not null, primary key
+#  id               :bigint           not null, primary key
 #  cooldown_until   :timestamptz      not null
 #  handle           :string           not null
 #  is_system        :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  handle_status_id :string
+#  handle_status_id :integer
 #  public_id        :string           not null
 #
 # Indexes
@@ -45,5 +45,4 @@ class Handle < AvatarRecord
   validates :handle, uniqueness: { conditions: -> { where(is_system: false) } },
                      unless: :is_system?
   validates :cooldown_until, presence: true
-  validates :id, length: { maximum: 255 }
 end

@@ -5,13 +5,13 @@
 # Table name: avatar_ownership_periods
 # Database name: avatar
 #
-#  id                         :string           not null, primary key
+#  id                         :bigint           not null, primary key
 #  valid_from                 :timestamptz      not null
 #  valid_to                   :timestamptz      default(Infinity), not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
-#  avatar_id                  :string           not null
-#  avatar_ownership_status_id :string
+#  avatar_id                  :bigint           not null
+#  avatar_ownership_status_id :integer
 #  owner_organization_id      :string           not null
 #  transferred_by_actor_id    :string
 #

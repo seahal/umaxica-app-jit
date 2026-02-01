@@ -3,11 +3,11 @@
 # Table name: avatar_assignments
 # Database name: avatar
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  role       :string(50)       default("viewer"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  avatar_id  :string(255)      not null
+#  avatar_id  :bigint           not null
 #  user_id    :uuid             not null
 #
 # Indexes

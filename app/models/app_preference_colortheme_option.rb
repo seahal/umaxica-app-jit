@@ -16,7 +16,7 @@
 # frozen_string_literal: true
 
 class AppPreferenceColorthemeOption < PreferenceRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   has_many :app_preference_colorthemes,
            class_name: "AppPreferenceColortheme",
@@ -24,8 +24,6 @@ class AppPreferenceColorthemeOption < PreferenceRecord
            inverse_of: :option,
            dependent: :restrict_with_error
   scope :ordered, -> { order(:position, :id) }
-
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Za-z0-9_]+\z/ }
 
   validates :position,

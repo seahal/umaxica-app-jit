@@ -37,7 +37,9 @@ module MigrationHelpers
         drop_primary_key_constraint(table_name)
         remove_column table_name, :id if column_exists?(table_name, :id)
 
+        # rubocop:disable Rails/DangerousColumnNames
         rename_column table_name, :id_small, :id
+        # rubocop:enable Rails/DangerousColumnNames
         change_column_default table_name, :id, from: 0, to: 0
         change_column_null table_name, :id, false
 

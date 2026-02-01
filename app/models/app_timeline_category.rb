@@ -3,11 +3,11 @@
 # Table name: app_timeline_categories
 # Database name: news
 #
-#  id                              :uuid             not null, primary key
+#  id                              :bigint           not null, primary key
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
 #  app_timeline_category_master_id :integer          default(0), not null
-#  app_timeline_id                 :uuid             not null
+#  app_timeline_id                 :bigint           not null
 #
 # Indexes
 #
@@ -29,5 +29,4 @@ class AppTimelineCategory < NewsRecord
              inverse_of: :app_timeline_categories
 
   validates :app_timeline_id, uniqueness: true
-  validates :app_timeline_category_master_id, presence: true
 end

@@ -5,14 +5,14 @@
 # Table name: avatar_monikers
 # Database name: avatar
 #
-#  id                       :string           not null, primary key
+#  id                       :bigint           not null, primary key
 #  moniker                  :string           not null
 #  valid_from               :timestamptz      not null
 #  valid_to                 :timestamptz      default(Infinity), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
-#  avatar_id                :string           not null
-#  avatar_moniker_status_id :string
+#  avatar_id                :bigint           not null
+#  avatar_moniker_status_id :integer
 #  set_by_actor_id          :string
 #
 # Indexes

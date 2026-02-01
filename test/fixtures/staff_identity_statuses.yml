@@ -1,0 +1,13 @@
+# == Schema Information
+#
+# Table name: staff_identity_statuses
+# Database name: operator
+#
+#  id :string           not null, primary key
+#
+neyo:
+  code: "NEYO"
+active:
+  code: "ACTIVE"
+inactive:
+  code: "INACTIVE"

@@ -5,14 +5,15 @@
 # Table name: email_user_occurrences
 # Database name: occurrence
 #
-#  id                  :uuid             not null, primary key
+#  id                  :bigint           not null, primary key
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  email_occurrence_id :uuid             not null
-#  user_occurrence_id  :uuid             not null
+#  email_occurrence_id :bigint           not null
+#  user_occurrence_id  :bigint           not null
 #
 # Indexes
 #
+#  idx_email_user_occ_on_ids                            (email_occurrence_id,user_occurrence_id) UNIQUE
 #  index_email_user_occurrences_on_email_occurrence_id  (email_occurrence_id)
 #  index_email_user_occurrences_on_user_occurrence_id   (user_occurrence_id)
 #
@@ -25,4 +26,6 @@
 class EmailUserOccurrence < OccurrenceRecord
   belongs_to :email_occurrence, inverse_of: :email_user_occurrences
   belongs_to :user_occurrence, inverse_of: :email_user_occurrences
+
+  validates :email_occurrence_id, uniqueness: { scope: :user_occurrence_id }
 end

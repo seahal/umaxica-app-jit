@@ -5,7 +5,7 @@
 # Table name: user_social_googles
 # Database name: principal
 #
-#  id                                    :uuid             not null, primary key
+#  id                                    :bigint           not null, primary key
 #  expires_at                            :integer          not null
 #  image                                 :string           default(""), not null
 #  last_authenticated_at                 :datetime
@@ -15,8 +15,8 @@
 #  uid                                   :string           default(""), not null
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
-#  user_id                               :uuid             not null
-#  user_identity_social_google_status_id :string(255)      default("ACTIVE"), not null
+#  user_id                               :bigint           not null
+#  user_identity_social_google_status_id :integer          default(1), not null
 #
 # Indexes
 #

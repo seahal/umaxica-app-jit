@@ -5,7 +5,7 @@
 # Table name: org_timeline_versions
 # Database name: news
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  body            :text
 #  description     :string
 #  edited_by_type  :string
@@ -18,7 +18,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  edited_by_id    :bigint
-#  org_timeline_id :uuid             not null
+#  org_timeline_id :bigint           not null
 #  public_id       :string(255)      default(""), not null
 #
 # Indexes

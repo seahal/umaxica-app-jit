@@ -10,44 +10,44 @@
 #  index_user_audit_events_on_id  (id) UNIQUE
 #
 neyo:
-  id: 0
+  code: "NEYO"
 account_recovered:
-  id: 1
+  code: "ACCOUNT_RECOVERED"
 account_withdrawn:
-  id: 2
+  code: "ACCOUNT_WITHDRAWN"
 authorization_failed:
-  id: 3
+  code: "AUTHORIZATION_FAILED"
 logged_in:
-  id: 4
+  code: "LOGGED_IN"
 logged_out:
-  id: 5
+  code: "LOGGED_OUT"
 login_failed:
-  id: 6
+  code: "LOGIN_FAILED"
 login_success:
-  id: 7
+  code: "LOGIN_SUCCESS"
 logout:
-  id: 8
+  code: "LOGOUT"
 non_existent_event:
-  id: 9
+  code: "NON_EXISTENT_EVENT"
 passkey_registered:
-  id: 10
+  code: "PASSKEY_REGISTERED"
 passkey_removed:
-  id: 11
+  code: "PASSKEY_REMOVED"
 recovery_code_used:
-  id: 12
+  code: "RECOVERY_CODE_USED"
 recovery_codes_generated:
-  id: 13
+  code: "RECOVERY_CODES_GENERATED"
 signed_up_with_apple:
-  id: 14
+  code: "SIGNED_UP_WITH_APPLE"
 signed_up_with_email:
-  id: 15
+  code: "SIGNED_UP_WITH_EMAIL"
 signed_up_with_google:
-  id: 16
+  code: "SIGNED_UP_WITH_GOOGLE"
 signed_up_with_telephone:
-  id: 17
+  code: "SIGNED_UP_WITH_TELEPHONE"
 token_refreshed:
-  id: 18
+  code: "TOKEN_REFRESHED"
 totp_disabled:
-  id: 19
+  code: "TOTP_DISABLED"
 totp_enabled:
-  id: 20
+  code: "TOTP_ENABLED"

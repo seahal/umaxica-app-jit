@@ -5,19 +5,14 @@
 # Table name: division_statuses
 # Database name: operator
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_division_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 class DivisionStatus < OperatorRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 
   has_many :divisions, dependent: :restrict_with_error
-  validates :id, uniqueness: { case_sensitive: false }
 
   self.primary_key = "id"
 end

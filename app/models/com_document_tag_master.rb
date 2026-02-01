@@ -18,7 +18,7 @@
 # frozen_string_literal: true
 
 class ComDocumentTagMaster < DocumentRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
   include Treeable
 
   belongs_to :parent,
@@ -32,7 +32,6 @@ class ComDocumentTagMaster < DocumentRecord
            dependent: :restrict_with_error
   has_many :com_document_tags, dependent: :restrict_with_error
   has_many :com_documents, through: :com_document_tags
-  validates :id, uniqueness: { case_sensitive: false }
 
   self.primary_key = "id"
 

@@ -62,7 +62,9 @@ class MigrateOrgContactStatusesToSmallint < ActiveRecord::Migration[8.2]
       remove_column :org_contact_statuses, :id
 
       # 8. Rename columns
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :org_contact_statuses, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       rename_column :org_contacts, :status_id_small, :status_id
 
       # 9. Set Primary Key

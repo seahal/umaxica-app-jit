@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: user_secret_kinds
+# Database name: principal
+#
+#  id :integer          not null, primary key
+#
 class UserSecretKind < PrincipalRecord
-  LOGIN = 1
-  TOTP = 2
-  RECOVERY = 3
-  API = 4
+  include CodeIdentifiable
 
-  ALL = [LOGIN, TOTP, RECOVERY, API].freeze
+  LOGIN = "LOGIN"
+  TOTP = "TOTP"
+  RECOVERY = "RECOVERY"
+  API = "API"
 
   has_many :user_secrets, inverse_of: :user_secret_kind, dependent: :restrict_with_exception
-
-  validates :id, uniqueness: true
-  validates :id, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

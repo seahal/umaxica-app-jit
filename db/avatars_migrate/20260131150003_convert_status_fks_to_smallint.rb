@@ -23,18 +23,22 @@ class ConvertStatusFksToSmallint < ActiveRecord::Migration[8.2]
         add_column table, fk_small, :integer, limit: 2, default: 0
 
         # 2. Backfill: Join with reference table on old string id
+        # rubocop:disable I18n/RailsI18n/DecorateString
         execute <<~SQL.squish
           UPDATE #{table} t
           SET #{fk_small} = r.id
           FROM #{ref_table} r
           WHERE t.#{fk} = r.id_old_string
         SQL
+        # rubocop:enable I18n/RailsI18n/DecorateString
 
         # 3. Remove old index
         remove_index table, fk, if_exists: true
 
         # 4. Remove old check constraint if exists
+        # rubocop:disable I18n/RailsI18n/DecorateString
         execute "ALTER TABLE #{table} DROP CONSTRAINT IF EXISTS chk_#{table}_#{fk}_format"
+        # rubocop:enable I18n/RailsI18n/DecorateString
 
         # 5. Drop old column
         remove_column table, fk
@@ -45,15 +49,13 @@ class ConvertStatusFksToSmallint < ActiveRecord::Migration[8.2]
         # 7. Handle optional/nullable FKs
         # Some FKs are optional (e.g., avatar_memberships.avatar_membership_status_id)
         # Check schema for nullability
-        is_nullable = case table
-                      when 'avatar_memberships', 'avatar_monikers', 'avatar_ownership_periods',
-                           'handle_assignments', 'handles'
-                        true
-                      when 'posts', 'post_reviews'
-                        false
-                      else
-                        true
-                      end
+        is_nullable =
+          case table
+          when 'posts', 'post_reviews'
+            false
+          else
+            true
+          end
 
         if is_nullable
           # Set default to NULL for optional FKs
@@ -71,7 +73,9 @@ class ConvertStatusFksToSmallint < ActiveRecord::Migration[8.2]
         add_index table, fk
 
         # 10. Add CHECK constraint for positive values
+        # rubocop:disable I18n/RailsI18n/DecorateString
         execute "ALTER TABLE #{table} ADD CONSTRAINT chk_#{table}_#{fk}_positive CHECK (#{fk} IS NULL OR #{fk} >= 0)"
+        # rubocop:enable I18n/RailsI18n/DecorateString
       end
     end
   end

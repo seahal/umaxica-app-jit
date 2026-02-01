@@ -3,15 +3,15 @@
 # Table name: clients
 # Database name: principal
 #
-#  id           :uuid             not null, primary key
+#  id           :bigint           not null, primary key
 #  lock_version :integer          default(0), not null
 #  moniker      :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  division_id  :uuid
+#  division_id  :bigint
 #  public_id    :string
-#  status_id    :string(255)      default("NEYO"), not null
-#  user_id      :uuid
+#  status_id    :integer          default(0), not null
+#  user_id      :bigint
 #
 # Indexes
 #

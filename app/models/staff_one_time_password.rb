@@ -3,26 +3,16 @@
 # Table name: staff_one_time_passwords
 # Database name: operator
 #
-#  id                                :uuid             not null, primary key
-#  last_otp_at                       :datetime         default(-Infinity), not null
-#  private_key                       :string(1024)     default(""), not null
-#  title                             :string(32)
+#  id                                :bigint           not null, primary key
+#  secret_key                        :string
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
-#  public_id                         :string(21)
-#  staff_id                          :uuid             not null
-#  staff_one_time_password_status_id :string           default("NEYO"), not null
+#  staff_id                          :bigint           not null
+#  staff_one_time_password_status_id :string
 #
 # Indexes
 #
-#  idx_on_staff_one_time_password_status_id_8958a1c9bf  (staff_one_time_password_status_id)
-#  index_staff_one_time_passwords_on_public_id          (public_id) UNIQUE
-#  index_staff_one_time_passwords_on_staff_id           (staff_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (staff_id => staffs.id)
-#  fk_rails_...  (staff_one_time_password_status_id => staff_one_time_password_statuses.id)
+#  idx_staff_otps_on_staff_id  (staff_id)
 #
 
 # frozen_string_literal: true

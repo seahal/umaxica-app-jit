@@ -18,7 +18,7 @@
 # frozen_string_literal: true
 
 class OrgDocumentCategoryMaster < DocumentRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
   include Treeable
 
   belongs_to :parent,
@@ -34,7 +34,6 @@ class OrgDocumentCategoryMaster < DocumentRecord
            dependent: :restrict_with_error,
            inverse_of: :org_document_category_master
   has_many :org_documents, through: :org_document_categories
-  validates :id, uniqueness: { case_sensitive: false }
 
   self.primary_key = "id"
 

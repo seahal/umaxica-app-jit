@@ -14,9 +14,9 @@
 #
 
 us:
-  id: "US"
+  code: "11 # was 11 # was US"
   position: 1
 
 jp:
-  id: "JP"
+  code: "12 # was 12 # was JP"
   position: 2

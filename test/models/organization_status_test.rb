@@ -5,11 +5,7 @@
 # Table name: organization_statuses
 # Database name: operator
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_department_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 require "test_helper"
 

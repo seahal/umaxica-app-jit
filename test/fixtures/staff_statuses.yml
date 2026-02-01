@@ -11,6 +11,6 @@
 #  index_staff_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
 #
 neyo:
-  id: NEYO
+  code: "NEYO"
 active:
-  id: ACTIVE
+  code: "ACTIVE"

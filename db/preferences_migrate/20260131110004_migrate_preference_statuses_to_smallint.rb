@@ -25,7 +25,9 @@ class MigratePreferenceStatusesToSmallint < ActiveRecord::Migration[8.2]
         execute "ALTER TABLE #{table} DROP CONSTRAINT IF EXISTS #{table}_id_format_check"
 
         rename_column table, :id, :id_old
+        # rubocop:disable Rails/DangerousColumnNames
         rename_column table, :id_small, :id
+        # rubocop:enable Rails/DangerousColumnNames
         execute "ALTER TABLE #{table} ADD PRIMARY KEY (id)"
 
         change_column_null table, :id, false

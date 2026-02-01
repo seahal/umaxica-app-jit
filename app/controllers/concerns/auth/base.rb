@@ -485,7 +485,12 @@ module Auth
         return { status: :session_limit_exceeded, resource: resource }
       end
 
-      token_record = create_login_token_record(resource, token_kind_id)
+      kind_id = token_kind_id
+      if kind_id == "BROWSER_WEB" && token_class.columns_hash["#{resource_type}_token_kind_id"]&.type == :integer
+        kind_id = 1
+      end
+
+      token_record = create_login_token_record(resource, kind_id)
 
       # Generate SHA3-based refresh token
       refresh_plain = token_record.rotate_refresh_token!

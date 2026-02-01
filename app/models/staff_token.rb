@@ -5,7 +5,7 @@
 # Table name: staff_tokens
 # Database name: token
 #
-#  id                       :uuid             not null, primary key
+#  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
 #  last_step_up_at          :datetime
 #  last_step_up_scope       :string
@@ -19,7 +19,7 @@
 #  updated_at               :datetime         not null
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
-#  staff_id                 :uuid             not null
+#  staff_id                 :bigint           not null
 #  staff_token_kind_id      :integer          default(1), not null
 #  staff_token_status_id    :integer          default(0), not null
 #

@@ -8,6 +8,8 @@
 # frozen_string_literal: true
 
 class StaffTokenKind < TokenRecord
+  include CodeIdentifiable
+
   # id is a string, manually managed
   self.primary_key = :id
   self.record_timestamps = false

@@ -5,7 +5,11 @@
 # Table name: avatar_membership_statuses
 # Database name: avatar
 #
-#  id :string           not null, primary key
+#  id :integer          not null, primary key
+#
+# Indexes
+#
+#  index_avatar_membership_statuses_on_id  (id) UNIQUE
 #
 
 require "test_helper"

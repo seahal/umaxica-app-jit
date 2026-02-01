@@ -3,7 +3,7 @@
 # Table name: app_documents
 # Database name: document
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  expires_at    :datetime         default(Infinity), not null
 #  lock_version  :integer          default(0), not null
 #  permalink     :string(200)      default(""), not null
@@ -30,17 +30,17 @@
 #
 
 one:
-  status_id: "NEYO"
-  slug_id: "one-app-document-0001"
-  revision_key: "rev_app_document_one"
-  permalink: "one-app-document"
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 
 two:
-  status_id: "NEYO"
-  slug_id: "two-app-document-0002"
-  revision_key: "rev_app_document_two"
-  permalink: "two-app-document"
+_id: 10 # was 
+  slug_id: 30 # was two-app-document-0002"
+_id: 10 # was 
+_id: 10 # was 
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

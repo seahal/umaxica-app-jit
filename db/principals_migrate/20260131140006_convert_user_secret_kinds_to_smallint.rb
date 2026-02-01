@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class ConvertUserSecretKindsToSmallint < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
       add_column :user_secret_kinds, :id_small, :integer, limit: 2
 
-      %w[LOGIN TOTP RECOVERY API].each do |kind|
+      %w(LOGIN TOTP RECOVERY API).each do |kind|
         execute("INSERT INTO user_secret_kinds (id) VALUES ('#{kind}') ON CONFLICT DO NOTHING")
       end
 
@@ -27,7 +29,9 @@ class ConvertUserSecretKindsToSmallint < ActiveRecord::Migration[8.2]
       execute "ALTER TABLE user_secret_kinds DROP CONSTRAINT user_secret_kinds_pkey CASCADE"
 
       rename_column :user_secret_kinds, :id, :id_old_string
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :user_secret_kinds, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       execute "ALTER TABLE user_secret_kinds ADD PRIMARY KEY (id)"
       add_check_constraint :user_secret_kinds, "id >= 0", name: "user_secret_kinds_id_non_negative"
 

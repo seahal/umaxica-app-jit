@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ConvertClientStatusesToSmallint < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
@@ -17,10 +19,12 @@ class ConvertClientStatusesToSmallint < ActiveRecord::Migration[8.2]
       change_column_null :client_statuses, :id_small, false, 0
 
       remove_index :client_statuses, name: "index_client_identity_statuses_on_lower_id"
-      execute "ALTER TABLE client_statuses DROP CONSTRAINT client_statuses_pkey CASCADE"
+      drop_primary_key("client_statuses")
 
       rename_column :client_statuses, :id, :id_old_string
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :client_statuses, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       execute "ALTER TABLE client_statuses ADD PRIMARY KEY (id)"
       add_check_constraint :client_statuses, "id >= 0", name: "client_statuses_id_non_negative"
 
@@ -46,5 +50,23 @@ class ConvertClientStatusesToSmallint < ActiveRecord::Migration[8.2]
 
   def down
     raise ActiveRecord::IrreversibleMigration
+  end
+
+  private
+
+  def drop_primary_key(table_name)
+    constraint_name = select_value(<<~SQL.squish)
+      SELECT constraint_name
+      FROM information_schema.table_constraints
+      WHERE table_schema = 'public'
+        AND table_name = #{connection.quote(table_name)}
+        AND constraint_type = 'PRIMARY KEY'
+    SQL
+    return unless constraint_name
+
+    execute <<~SQL.squish
+      ALTER TABLE #{connection.quote_table_name(table_name)}
+      DROP CONSTRAINT #{connection.quote_column_name(constraint_name)} CASCADE
+    SQL
   end
 end

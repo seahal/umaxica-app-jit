@@ -5,32 +5,28 @@
 # Table name: staff_emails
 # Database name: operator
 #
-#  id                             :uuid             not null, primary key
-#  address                        :string           default(""), not null
-#  locked_at                      :datetime         default(-Infinity), not null
-#  otp_attempts_count             :integer          default(0), not null
-#  otp_counter                    :text             default(""), not null
-#  otp_expires_at                 :datetime         default(-Infinity), not null
-#  otp_last_sent_at               :datetime         default(-Infinity), not null
-#  otp_private_key                :string           default(""), not null
-#  created_at                     :datetime         not null
-#  updated_at                     :datetime         not null
-#  public_id                      :string(21)       not null
-#  staff_id                       :uuid             not null
-#  staff_identity_email_status_id :string(255)      default("UNVERIFIED"), not null
+#  id                 :bigint           not null, primary key
+#  address            :string
+#  locked_at          :datetime
+#  otp_attempts_count :integer          default(0), not null
+#  otp_counter        :text
+#  otp_expires_at     :datetime
+#  otp_last_sent_at   :datetime
+#  otp_private_key    :string
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  staff_id           :bigint
+#  status_id          :string           default("UNVERIFIED"), not null
 #
 # Indexes
 #
-#  index_staff_emails_on_otp_last_sent_at                (otp_last_sent_at)
-#  index_staff_emails_on_public_id                       (public_id) UNIQUE
-#  index_staff_emails_on_staff_id                        (staff_id)
-#  index_staff_emails_on_staff_identity_email_status_id  (staff_identity_email_status_id)
-#  index_staff_identity_emails_on_lower_address          (lower((address)::text))
+#  index_staff_emails_on_staff_id   (staff_id)
+#  index_staff_emails_on_status_id  (status_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (staff_id => staffs.id)
-#  fk_rails_...  (staff_identity_email_status_id => staff_email_statuses.id)
+#  fk_rails_...  (status_id => staff_email_statuses.id)
 #
 
 require "test_helper"

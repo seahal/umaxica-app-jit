@@ -6,6 +6,6 @@
 #  id :integer          not null, primary key
 #
 neyo:
-  id: NEYO
+  code: "0 # was NEYO"
 active:
-  id: ACTIVE
+  code: "1 # was ACTIVE"

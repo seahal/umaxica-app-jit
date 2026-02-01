@@ -3,12 +3,10 @@
 # Table name: avatar_capabilities
 # Database name: avatar
 #
-#  id          :string           not null, primary key
+#  id          :integer          not null, primary key
 #  description :text
 #  key         :string           not null
 #  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
 #
 # Indexes
 #

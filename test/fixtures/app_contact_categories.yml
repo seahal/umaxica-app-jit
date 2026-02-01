@@ -10,6 +10,6 @@
 #  index_app_contact_categories_on_lower_id  (lower((id)::text)) UNIQUE
 #
 application_inquiry:
-  id: APPLICATION_INQUIRY
+_id: 10 # was 
 neyo:
-  id: NEYO
+  code: "NEYO"

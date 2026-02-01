@@ -5,7 +5,7 @@
 # Table name: app_timelines
 # Database name: news
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  expires_at    :datetime         default(Infinity), not null
 #  lock_version  :integer          default(0), not null
 #  position      :integer          default(0), not null
@@ -67,7 +67,6 @@ class AppTimeline < NewsRecord
   has_one :category_master,
           through: :category,
           source: :app_timeline_category_master
-  validates :status_id, presence: true
 
   def latest_version
     app_timeline_versions.order(created_at: :desc).first!

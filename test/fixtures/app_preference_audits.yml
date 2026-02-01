@@ -39,7 +39,7 @@ one:
   id: 018eb261-1234-7000-8000-000000000001
   subject_id: <%= ActiveRecord::FixtureSet.identify(:one, :uuid) %>
   subject_type: AppPreference
-  event_id: CREATE_NEW_PREFERENCE_TOKEN
-  level_id: INFO
+_id: 10 # was 
+_id: 10 # was 
   occurred_at: <%= Time.current %>
   expires_at: <%= 20.years.from_now %>

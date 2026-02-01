@@ -5,13 +5,13 @@
 # Table name: post_reviews
 # Database name: avatar
 #
-#  id                    :string           not null, primary key
+#  id                    :bigint           not null, primary key
 #  comment               :text
 #  decided_at            :timestamptz
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  post_id               :string           not null
-#  post_review_status_id :string           not null
+#  post_id               :bigint           not null
+#  post_review_status_id :integer          default(0), not null
 #  reviewer_actor_id     :string           not null
 #
 # Indexes

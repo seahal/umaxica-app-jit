@@ -160,7 +160,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_19_120000) do
     t.integer "verifier_attempts_left", limit: 2, default: 5, null: false
     t.string "verifier_digest", limit: 255
     t.timestamptz "verifier_expires_at"
-    t.index ["com_contact_id"], name: "index_com_contact_emails_on_com_contact_id"
+    t.index ["com_contact_id"], name: "index_com_contact_emails_on_com_contact_id", unique: true
     t.index ["email_address"], name: "index_com_contact_emails_on_email_address"
     t.index ["expires_at"], name: "index_com_contact_emails_on_expires_at"
     t.index ["verifier_expires_at"], name: "index_com_contact_emails_on_verifier_expires_at"
@@ -187,7 +187,7 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_19_120000) do
     t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
     t.string "verifier_digest", limit: 255
     t.timestamptz "verifier_expires_at"
-    t.index ["com_contact_id"], name: "index_com_contact_telephones_on_com_contact_id"
+    t.index ["com_contact_id"], name: "index_com_contact_telephones_on_com_contact_id", unique: true
     t.index ["expires_at"], name: "index_com_contact_telephones_on_expires_at"
     t.index ["telephone_number"], name: "index_com_contact_telephones_on_telephone_number"
     t.index ["verifier_expires_at"], name: "index_com_contact_telephones_on_verifier_expires_at"

@@ -45,7 +45,9 @@ class MigrateStaffTokenStatusesToSmallint < ActiveRecord::Migration[8.2]
       execute "ALTER TABLE staff_token_statuses DROP CONSTRAINT IF EXISTS chk_staff_token_statuses_id_format"
 
       rename_column :staff_token_statuses, :id, :id_old_string
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :staff_token_statuses, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       execute "ALTER TABLE staff_token_statuses ADD PRIMARY KEY (id)"
 
       # Optional constraint

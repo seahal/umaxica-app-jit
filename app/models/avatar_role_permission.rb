@@ -5,13 +5,14 @@
 # Table name: avatar_role_permissions
 # Database name: avatar
 #
-#  id                   :string           not null, primary key
-#  avatar_permission_id :integer          not null, limit: 2
-#  avatar_role_id       :integer          not null, limit: 2
+#  id                   :bigint           not null, primary key
+#  avatar_permission_id :integer          default(0), not null
+#  avatar_role_id       :integer          default(0), not null
 #
 # Indexes
 #
 #  index_avatar_role_permissions_on_avatar_permission_id  (avatar_permission_id)
+#  index_avatar_role_permissions_on_avatar_role_id        (avatar_role_id)
 #  uniq_avatar_role_permissions                           (avatar_role_id,avatar_permission_id) UNIQUE
 #
 # Foreign Keys
@@ -26,7 +27,5 @@ class AvatarRolePermission < AvatarRecord
   belongs_to :avatar_role
   belongs_to :avatar_permission
 
-  validates :avatar_role_id, presence: true
-  validates :avatar_permission_id, presence: true
   validates :avatar_role_id, uniqueness: { scope: :avatar_permission_id }
 end

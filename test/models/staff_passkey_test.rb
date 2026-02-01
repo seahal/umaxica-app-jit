@@ -5,27 +5,27 @@
 # Table name: staff_passkeys
 # Database name: operator
 #
-#  id                      :uuid             not null, primary key
-#  description             :string           default(""), not null
-#  public_key              :text             not null
-#  sign_count              :bigint           default(0), not null
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  external_id             :uuid             not null
-#  staff_id                :uuid             not null
-#  staff_passkey_status_id :string(255)      default("ACTIVE"), not null
-#  webauthn_id             :string           default(""), not null
+#  id          :bigint           not null, primary key
+#  name        :string
+#  public_key  :text
+#  sign_count  :integer
+#  transports  :string
+#  user_handle :string
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  external_id :string
+#  staff_id    :bigint           not null
+#  status_id   :string           default("ACTIVE"), not null
 #
 # Indexes
 #
-#  idx_on_staff_identity_passkey_status_id_159c890738  (staff_passkey_status_id)
-#  index_staff_identity_passkeys_on_staff_id           (staff_id)
-#  index_staff_identity_passkeys_on_webauthn_id        (webauthn_id) UNIQUE
+#  index_staff_passkeys_on_external_id  (external_id)
+#  index_staff_passkeys_on_staff_id     (staff_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (staff_id => staffs.id)
-#  fk_rails_...  (staff_passkey_status_id => staff_passkey_statuses.id)
+#  fk_rails_...  (status_id => staff_passkey_statuses.id)
 #
 
 require "test_helper"

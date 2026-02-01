@@ -12,7 +12,7 @@
 #  index_com_preference_audit_events_on_id  (id) UNIQUE
 #
 class ComPreferenceAuditEvent < AuditRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 
@@ -30,8 +30,6 @@ class ComPreferenceAuditEvent < AuditRecord
             numericality: { only_integer: true, greater_than: 0 },
             uniqueness: true,
             if: -> { self.class.column_names.include?("position") }
-
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Z0-9_]+\z/ }
   before_validation { self.id = id&.upcase }
 end

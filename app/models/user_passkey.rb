@@ -5,15 +5,15 @@
 # Table name: user_passkeys
 # Database name: principal
 #
-#  id                     :uuid             not null, primary key
+#  id                     :bigint           not null, primary key
 #  description            :string           default(""), not null
 #  public_key             :text             not null
 #  sign_count             :bigint           default(0), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  external_id            :uuid             not null
-#  user_id                :uuid             not null
-#  user_passkey_status_id :string(255)      default("ACTIVE"), not null
+#  user_id                :bigint           not null
+#  user_passkey_status_id :integer          default(1), not null
 #  webauthn_id            :string           default(""), not null
 #
 # Indexes

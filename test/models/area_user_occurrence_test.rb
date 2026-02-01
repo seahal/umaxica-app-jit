@@ -5,14 +5,15 @@
 # Table name: area_user_occurrences
 # Database name: occurrence
 #
-#  id                 :uuid             not null, primary key
+#  id                 :bigint           not null, primary key
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
-#  area_occurrence_id :uuid             not null
-#  user_occurrence_id :uuid             not null
+#  area_occurrence_id :bigint           not null
+#  user_occurrence_id :bigint           not null
 #
 # Indexes
 #
+#  idx_area_user_occ_on_ids                           (area_occurrence_id,user_occurrence_id) UNIQUE
 #  index_area_user_occurrences_on_area_occurrence_id  (area_occurrence_id)
 #  index_area_user_occurrences_on_user_occurrence_id  (user_occurrence_id)
 #

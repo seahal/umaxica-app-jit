@@ -42,7 +42,9 @@ class MigrateUserTokenKindsToSmallint < ActiveRecord::Migration[8.2]
       execute "ALTER TABLE user_token_kinds DROP CONSTRAINT user_token_kinds_pkey CASCADE"
 
       rename_column :user_token_kinds, :id, :id_old_string
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :user_token_kinds, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       execute "ALTER TABLE user_token_kinds ADD PRIMARY KEY (id)"
     end
   end

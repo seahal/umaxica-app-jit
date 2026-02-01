@@ -3,7 +3,7 @@
 # Table name: com_documents
 # Database name: document
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  expires_at    :datetime         default(Infinity), not null
 #  lock_version  :integer          default(0), not null
 #  permalink     :string(200)      default(""), not null
@@ -30,15 +30,15 @@
 #
 
 one:
-  permalink: "test-doc-one"
-  status_id: "ACTIVE"
-  response_mode: "html"
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>
 
 two:
-  permalink: "test-doc-two"
-  status_id: "ACTIVE"
-  response_mode: "html"
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>

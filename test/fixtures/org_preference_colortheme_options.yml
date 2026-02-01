@@ -14,13 +14,13 @@
 #
 
 light:
-  id: "light"
+  code: "11 # was 11 # was light"
   position: 1
 
 dark:
-  id: "dark"
+  code: "12 # was 12 # was dark"
   position: 2
 
 system:
-  id: "system"
+  code: "13 # was 13 # was system"
   position: 3

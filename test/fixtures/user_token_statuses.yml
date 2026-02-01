@@ -6,4 +6,4 @@
 #  id :integer          not null, primary key
 #
 NEYO:
-  id: NEYO
+  id: 0

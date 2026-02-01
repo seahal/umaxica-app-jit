@@ -3,7 +3,7 @@
 # Table name: app_preference_audits
 # Database name: audit
 #
-#  id             :uuid             not null, primary key
+#  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
 #  context        :jsonb            not null
 #  current_value  :text             default(""), not null

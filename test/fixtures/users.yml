@@ -3,14 +3,14 @@
 # Table name: users
 # Database name: principal
 #
-#  id             :uuid             not null, primary key
+#  id             :bigint           not null, primary key
 #  last_reauth_at :datetime
 #  lock_version   :integer          default(0), not null
 #  withdrawn_at   :datetime         default(Infinity)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  public_id      :string(255)      default("")
-#  status_id      :string(255)      default("NONE"), not null
+#  status_id      :integer          default(1), not null
 #
 # Indexes
 #
@@ -24,25 +24,22 @@
 #
 
 placeholder:
-  id: "00000000-0000-0000-0000-000000000000"
-  status_id: 0
+  status: neyo
   public_id: "placeholder_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 one:
-  id: "e7a2f1e2-4a54-4ca8-826f-b60117925854"
-  status_id: 0
+  status: neyo
   public_id: "one_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 none_user:
-  status_id: 0
+  status: neyo
   public_id: "none_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
-  id: "fac3e5c2-b101-4fe6-9af1-b0f8bc5f4210"
-  status_id: 0
+  status: neyo
   public_id: "two_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

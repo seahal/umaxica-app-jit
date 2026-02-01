@@ -3,7 +3,7 @@
 # Table name: post_versions
 # Database name: avatar
 #
-#  id             :uuid             not null, primary key
+#  id             :bigint           not null, primary key
 #  body           :text
 #  description    :string
 #  edited_by_type :string
@@ -16,7 +16,7 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  edited_by_id   :string
-#  post_id        :string           not null
+#  post_id        :bigint           not null
 #  public_id      :string           default(""), not null
 #
 # Indexes

@@ -12,7 +12,7 @@
 #  index_user_audit_events_on_id  (id) UNIQUE
 #
 class UserAuditEvent < AuditRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 

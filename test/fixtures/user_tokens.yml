@@ -3,7 +3,7 @@
 # Table name: user_tokens
 # Database name: token
 #
-#  id                       :uuid             not null, primary key
+#  id                       :bigint           not null, primary key
 #  compromised_at           :datetime
 #  last_step_up_at          :datetime
 #  last_step_up_scope       :string
@@ -17,7 +17,7 @@
 #  updated_at               :datetime         not null
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
-#  user_id                  :uuid             not null
+#  user_id                  :bigint           not null
 #  user_token_kind_id       :integer          default(1), not null
 #  user_token_status_id     :integer          default(0), not null
 #
@@ -41,18 +41,18 @@
 #
 
 one:
-  user_id: "e7a2f1e2-4a54-4ca8-826f-b60117925854"
-  user_token_status_id: NEYO
-  user_token_kind_id: BROWSER_WEB
-  public_id: one_user_token_000001
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
+  public_id: 651 # was one_user_token_000001
   refresh_expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
-  user_id: "fac3e5c2-b101-4fe6-9af1-b0f8bc5f4210"
-  user_token_status_id: NEYO
-  user_token_kind_id: BROWSER_WEB
-  public_id: two_user_token_000001
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
+  public_id: 615 # was two_user_token_000001
   refresh_expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

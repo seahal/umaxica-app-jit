@@ -1,13 +1,6 @@
-# == Schema Information
-#
-# Table name: staff_token_kinds
-# Database name: token
-#
-#  id :integer          not null, primary key
-#
 browser_web:
-  id: BROWSER_WEB
+  code: "BROWSER_WEB"
 client_ios:
-  id: CLIENT_IOS
+  code: "CLIENT_IOS"
 client_android:
-  id: CLIENT_ANDROID
+  code: "CLIENT_ANDROID"

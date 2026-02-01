@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 class ConvertAvatarHandlePostStatusesToSmallint < ActiveRecord::Migration[8.2]
-  TABLES = %w[
+  TABLES = %w(
     avatar_membership_statuses
     avatar_moniker_statuses
     avatar_ownership_statuses
     handle_assignment_statuses
     handle_statuses
     post_statuses
-  ].freeze
+  ).freeze
 
   def up
     TABLES.each do |table|
@@ -38,7 +38,9 @@ class ConvertAvatarHandlePostStatusesToSmallint < ActiveRecord::Migration[8.2]
         rename_column table, :id, :id_old_string
 
         # 6. Promote smallint to id
+        # rubocop:disable Rails/DangerousColumnNames
         rename_column table, :id_small, :id
+        # rubocop:enable Rails/DangerousColumnNames
 
         # 7. Add new PK
         execute "ALTER TABLE #{table} ADD PRIMARY KEY (id)"

@@ -18,6 +18,8 @@
 # frozen_string_literal: true
 
 class OrgTimelineTagMaster < NewsRecord
+  include CodeIdentifiable
+
   include Treeable
 
   belongs_to :parent,
@@ -32,8 +34,6 @@ class OrgTimelineTagMaster < NewsRecord
   has_many :org_timeline_tags, dependent: :restrict_with_error
   has_many :org_timelines, through: :org_timeline_tags
   self.primary_key = "id"
-
-  validates :id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   attribute :parent_id, default: 0
 

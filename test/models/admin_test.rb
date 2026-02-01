@@ -3,15 +3,15 @@
 # Table name: admins
 # Database name: operator
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  lock_version  :integer          default(0), not null
 #  moniker       :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  department_id :uuid
+#  department_id :bigint
 #  public_id     :string
-#  staff_id      :uuid             not null
-#  status_id     :string(255)      default("NEYO"), not null
+#  staff_id      :bigint           not null
+#  status_id     :string           default("NEYO"), not null
 #
 # Indexes
 #

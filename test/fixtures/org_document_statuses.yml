@@ -7,16 +7,16 @@
 #  id :integer          default(0), not null, primary key
 #
 neyo:
-  id: 0
+  code: "NEYO"
 active:
-  id: 1
+  code: "ACTIVE"
 inactive:
-  id: 2
+  code: "INACTIVE"
 pending:
-  id: 3
+  code: "PENDING"
 deleted:
-  id: 4
+  code: "DELETED"
 draft:
-  id: 5
+  code: "DRAFT"
 archived:
-  id: 6
+  code: "ARCHIVED"

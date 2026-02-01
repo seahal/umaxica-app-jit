@@ -11,25 +11,25 @@
 #
 
 create_new_preference_token:
-  id: CREATE_NEW_PREFERENCE_TOKEN
+  code: "830 # was CREATE_NEW_PREFERENCE_TOKEN"
 
 refresh_token_rotated:
-  id: REFRESH_TOKEN_ROTATED
+  code: "1031 # was REFRESH_TOKEN_ROTATED"
 
 update_preference_cookie:
-  id: UPDATE_PREFERENCE_COOKIE
+  code: "1037 # was UPDATE_PREFERENCE_COOKIE"
 
 update_preference_language:
-  id: UPDATE_PREFERENCE_LANGUAGE
+  code: "759 # was UPDATE_PREFERENCE_LANGUAGE"
 
 update_preference_timezone:
-  id: UPDATE_PREFERENCE_TIMEZONE
+  code: "342 # was UPDATE_PREFERENCE_TIMEZONE"
 
 reset_by_user_decision:
-  id: RESET_BY_USER_DECISION
+  code: "204 # was RESET_BY_USER_DECISION"
 
 update_preference_region:
-  id: UPDATE_PREFERENCE_REGION
+  code: "612 # was UPDATE_PREFERENCE_REGION"
 
 update_preference_colortheme:
-  id: UPDATE_PREFERENCE_COLORTHEME
+  code: "1092 # was UPDATE_PREFERENCE_COLORTHEME"

@@ -62,7 +62,9 @@ class MigrateAppContactStatusesToSmallint < ActiveRecord::Migration[8.2]
       remove_column :app_contact_statuses, :id
 
       # 8. Rename columns
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :app_contact_statuses, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       rename_column :app_contacts, :status_id_small, :status_id
 
       # 9. Set Primary Key

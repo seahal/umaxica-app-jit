@@ -5,7 +5,7 @@
 # Table name: reauth_sessions
 # Database name: token
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  actor_type    :string           not null
 #  attempt_count :integer          default(0), not null
 #  expires_at    :datetime         not null
@@ -16,7 +16,7 @@
 #  verified_at   :datetime
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  actor_id      :uuid             not null
+#  actor_id      :bigint           not null
 #
 # Indexes
 #

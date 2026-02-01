@@ -15,5 +15,5 @@
 #  fk_rails_...  (parent_id => org_timeline_category_masters.id)
 #
 neyo:
-  id: 0
-  parent_id: 0
+  code: "NEYO"
+_id: 10 # was 

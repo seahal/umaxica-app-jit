@@ -41,7 +41,7 @@ class ConvertOrgTimelineCategoryMastersToSmallint < ActiveRecord::Migration[8.2]
   private
 
   def remove_timestamps(table_name)
-    %i[created_at updated_at].each do |column|
+    %i(created_at updated_at).each do |column|
       safety_assured { remove_column table_name, column, :datetime } if column_exists?(table_name, column)
     end
   end

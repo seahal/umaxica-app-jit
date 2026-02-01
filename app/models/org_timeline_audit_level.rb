@@ -14,7 +14,7 @@
 #  id :string(255)      default("NEYO"), not null, primary key
 
 class OrgTimelineAuditLevel < AuditRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 

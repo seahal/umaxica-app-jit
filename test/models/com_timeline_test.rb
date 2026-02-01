@@ -5,7 +5,7 @@
 # Table name: com_timelines
 # Database name: news
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  expires_at    :datetime         default(Infinity), not null
 #  lock_version  :integer          default(0), not null
 #  position      :integer          default(0), not null

@@ -4,33 +4,29 @@
 # Table name: user_statuses
 # Database name: principal
 #
-#  id :string(255)      default("NEYO"), not null, primary key
-#
-# Indexes
-#
-#  index_user_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :integer          not null, primary key
 #
 neyo:
-  id: 0
+  code: "NEYO"
 none:
-  id: 1
+  code: "NONE"
 active:
-  id: 2
+  code: "ACTIVE"
 deleted:
-  id: 3
+  code: "DELETED"
 ghost:
-  id: 4
+  code: "GHOST"
 inactive:
-  id: 5
+  code: "INACTIVE"
 pending:
-  id: 6
+  code: "PENDING"
 pending_deletion:
-  id: 7
+  code: "PENDING_DELETION"
 pre_withdrawal_condition:
-  id: 8
+  code: "PRE_WITHDRAWAL_CONDITION"
 unverified_with_sign_up:
-  id: 9
+  code: "UNVERIFIED_WITH_SIGN_UP"
 verified_with_sign_up:
-  id: 10
+  code: "VERIFIED_WITH_SIGN_UP"
 withdrawn:
-  id: 11
+  code: "WITHDRAWN"

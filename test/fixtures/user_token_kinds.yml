@@ -6,8 +6,8 @@
 #  id :integer          not null, primary key
 #
 browser_web:
-  id: BROWSER_WEB
+  code: "11 # was 11 # was BROWSER_WEB"
 client_ios:
-  id: CLIENT_IOS
+  code: "12 # was 12 # was CLIENT_IOS"
 client_android:
-  id: CLIENT_ANDROID
+  code: "13 # was 13 # was CLIENT_ANDROID"

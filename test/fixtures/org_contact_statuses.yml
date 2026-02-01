@@ -10,6 +10,6 @@
 #  index_org_contact_statuses_on_id  (id) UNIQUE
 #
 neyo:
-  id: NEYO
+  code: "NEYO"
 set_up:
-  id: SET_UP
+  code: "SET_UP"

@@ -5,7 +5,7 @@
 # Table name: avatar_capabilities
 # Database name: avatar
 #
-#  id          :integer          not null, primary key, limit: 2
+#  id          :integer          not null, primary key
 #  description :text
 #  key         :string           not null
 #  name        :string           not null
@@ -16,6 +16,8 @@
 #
 
 class AvatarCapability < AvatarRecord
+  include CodeIdentifiable
+
   self.record_timestamps = false
 
   has_many :avatars, foreign_key: :capability_id, inverse_of: :capability, dependent: :restrict_with_error

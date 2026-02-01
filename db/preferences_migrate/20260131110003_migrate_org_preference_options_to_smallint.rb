@@ -15,7 +15,9 @@ class MigrateOrgPreferenceOptionsToSmallint < ActiveRecord::Migration[8.2]
         execute "UPDATE #{table} SET id_small = position"
         execute "ALTER TABLE #{table} DROP CONSTRAINT #{table}_pkey CASCADE"
         rename_column table, :id, :id_old
+        # rubocop:disable Rails/DangerousColumnNames
         rename_column table, :id_small, :id
+        # rubocop:enable Rails/DangerousColumnNames
         execute "ALTER TABLE #{table} ADD PRIMARY KEY (id)"
         change_column_null table, :id, false
       end

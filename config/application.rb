@@ -108,9 +108,9 @@ module Jit
     config.i18n.load_path += Rails.root.glob("config/locales/**/*.{rb,yml}")
     config.i18n.default_locale = :ja
 
-    # Set UUID as default primary key for new tables
+    # Set bigserial as default primary key for new tables
     config.generators do |g|
-      g.orm :active_record, primary_key_type: :uuid
+      g.orm :active_record, primary_key_type: :bigserial
     end
 
     # Enable structured logging in all environments.

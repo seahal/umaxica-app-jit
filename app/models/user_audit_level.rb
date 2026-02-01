@@ -12,7 +12,7 @@
 #  index_user_audit_levels_on_id  (id) UNIQUE
 #
 class UserAuditLevel < AuditRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 

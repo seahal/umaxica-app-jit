@@ -5,7 +5,7 @@
 # Table name: user_emails
 # Database name: principal
 #
-#  id                            :uuid             not null, primary key
+#  id                            :bigint           not null, primary key
 #  address                       :string           default(""), not null
 #  locked_at                     :datetime         default(-Infinity), not null
 #  otp_attempts_count            :integer          default(0), not null
@@ -17,8 +17,8 @@
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
 #  public_id                     :string(21)       not null
-#  user_id                       :uuid             not null
-#  user_identity_email_status_id :string(255)      default("NEYO"), not null
+#  user_id                       :bigint           not null
+#  user_identity_email_status_id :integer          default(0), not null
 #
 # Indexes
 #

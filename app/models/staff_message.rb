@@ -5,11 +5,11 @@
 # Table name: staff_messages
 # Database name: message
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :uuid
-#  staff_id   :uuid
+#  staff_id   :bigint           not null
 #
 # Indexes
 #
@@ -19,6 +19,6 @@
 class StaffMessage < MessageRecord
   include ::PublicId
 
-  belongs_to :staff, optional: true, inverse_of: :staff_messages
+  belongs_to :staff, optional: false, inverse_of: :staff_messages
   has_many :admin_messages, inverse_of: :staff_message, dependent: :delete_all
 end

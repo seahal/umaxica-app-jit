@@ -5,11 +5,7 @@
 # Table name: user_statuses
 # Database name: principal
 #
-#  id :integer          default(0), not null, primary key
-#
-# Indexes
-#
-#  index_user_statuses_on_id  (id) UNIQUE
+#  id :integer          not null, primary key
 #
 
 require "test_helper"
@@ -37,20 +33,29 @@ class UserStatusTest < ActiveSupport::TestCase
   end
 
   test "status constants are defined" do
-    assert_equal 0, UserStatus::NEYO
-    assert_equal 1, UserStatus::NONE
-    assert_equal 2, UserStatus::GHOST
-    assert_equal 3, UserStatus::ALIVE
-    assert_equal 4, UserStatus::ACTIVE
-    assert_equal 5, UserStatus::INACTIVE
-    assert_equal 6, UserStatus::PENDING
-    assert_equal 7, UserStatus::DELETED
-    assert_equal 8, UserStatus::WITHDRAWN
-    assert_equal 9, UserStatus::PRE_WITHDRAWAL_CONDITION
-    assert_equal 10, UserStatus::WITHDRAWAL_COMPLETED
-    assert_equal 11, UserStatus::UNVERIFIED_WITH_SIGN_UP
-    assert_equal 12, UserStatus::VERIFIED_WITH_SIGN_UP
-    assert_equal 13, UserStatus::PENDING_DELETION
+    expected_status_constants = {
+      NEYO: 0,
+      NONE: 1,
+      GHOST: 2,
+      ALIVE: 3,
+      ACTIVE: 4,
+      INACTIVE: 5,
+      PENDING: 6,
+      DELETED: 7,
+      WITHDRAWN: 8,
+      PRE_WITHDRAWAL_CONDITION: 9,
+      WITHDRAWAL_COMPLETED: 10,
+      UNVERIFIED_WITH_SIGN_UP: 11,
+      VERIFIED_WITH_SIGN_UP: 12,
+      PENDING_DELETION: 13,
+    }
+
+    actual_status_constants =
+      expected_status_constants.each_key.with_object({}) do |const_name, hash|
+        hash[const_name] = UserStatus.const_get(const_name)
+      end
+
+    assert_equal expected_status_constants, actual_status_constants
   end
 
   test "validates id is non-negative" do

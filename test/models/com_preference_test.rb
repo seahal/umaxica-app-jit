@@ -3,23 +3,17 @@
 # Table name: com_preferences
 # Database name: preference
 #
-#  id           :uuid             not null, primary key
+#  id           :bigint           not null, primary key
 #  expires_at   :datetime
-#  jti          :string
 #  token_digest :binary
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string
-#  status_id    :integer          default(0), not null
+#  status_id    :string           default("NEYO"), not null
 #
 # Indexes
 #
-#  index_com_preferences_on_jti        (jti) UNIQUE
 #  index_com_preferences_on_status_id  (status_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (status_id => com_preference_statuses.id)
 #
 
 # frozen_string_literal: true

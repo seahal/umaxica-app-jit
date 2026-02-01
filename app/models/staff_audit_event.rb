@@ -13,7 +13,7 @@
 #
 
 class StaffAuditEvent < AuditRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   # Association with staff_audits
   has_many :staff_audits,

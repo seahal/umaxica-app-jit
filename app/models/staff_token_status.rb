@@ -9,10 +9,9 @@
 #
 
 class StaffTokenStatus < TokenRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   # Status constants
   NEYO = "NEYO"
   has_many :staff_tokens, dependent: :restrict_with_error
-  validates :id, uniqueness: { case_sensitive: false }
 end

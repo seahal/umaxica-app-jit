@@ -5,7 +5,11 @@
 # Table name: handle_assignment_statuses
 # Database name: avatar
 #
-#  id :string           not null, primary key
+#  id :integer          not null, primary key
+#
+# Indexes
+#
+#  index_handle_assignment_statuses_on_id  (id) UNIQUE
 #
 
 require "test_helper"

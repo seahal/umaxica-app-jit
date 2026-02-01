@@ -5,15 +5,15 @@
 # Table name: handle_assignments
 # Database name: avatar
 #
-#  id                          :string           not null, primary key
+#  id                          :bigint           not null, primary key
 #  valid_from                  :timestamptz      not null
 #  valid_to                    :timestamptz      default(Infinity), not null
 #  created_at                  :datetime         not null
 #  updated_at                  :datetime         not null
 #  assigned_by_actor_id        :string
-#  avatar_id                   :string           not null
-#  handle_assignment_status_id :string
-#  handle_id                   :string           not null
+#  avatar_id                   :bigint           not null
+#  handle_assignment_status_id :integer
+#  handle_id                   :bigint           not null
 #
 # Indexes
 #

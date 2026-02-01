@@ -12,7 +12,7 @@
 #  index_com_preference_audit_levels_on_id  (id) UNIQUE
 #
 class ComPreferenceAuditLevel < AuditRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 

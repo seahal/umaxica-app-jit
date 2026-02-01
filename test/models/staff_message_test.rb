@@ -5,11 +5,11 @@
 # Table name: staff_messages
 # Database name: message
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :uuid
-#  staff_id   :uuid
+#  staff_id   :bigint           not null
 #
 # Indexes
 #

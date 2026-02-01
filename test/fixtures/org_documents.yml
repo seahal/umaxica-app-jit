@@ -3,7 +3,7 @@
 # Table name: org_documents
 # Database name: document
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  expires_at    :datetime         default(Infinity), not null
 #  lock_version  :integer          default(0), not null
 #  permalink     :string(200)      default(""), not null
@@ -30,13 +30,13 @@
 #
 
 one:
-  slug_id: "org-documents-0000001"
-  status_id: "NEYO"
-  permalink: "org_document_one"
-  revision_key: "rev_org_document_one"
+  slug_id: 164 # was org-documents-0000001"
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
 
 two:
-  slug_id: "org-documents-0000002"
-  status_id: "NEYO"
-  permalink: "org_document_two"
-  revision_key: "rev_org_document_two"
+  slug_id: 164 # was org-documents-0000002"
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class ConvertAvatarRolePermissionCapabilityToSmallint < ActiveRecord::Migration[8.2]
-  TABLES = %w[
+  TABLES = %w(
     avatar_capabilities
     avatar_permissions
     avatar_roles
     post_review_statuses
-  ].freeze
+  ).freeze
 
   def up
     TABLES.each do |table|
@@ -37,7 +37,9 @@ class ConvertAvatarRolePermissionCapabilityToSmallint < ActiveRecord::Migration[
         rename_column table, :id, :id_old_string
 
         # 6. Promote smallint to id
+        # rubocop:disable Rails/DangerousColumnNames
         rename_column table, :id_small, :id
+        # rubocop:enable Rails/DangerousColumnNames
 
         # 7. Add new PK
         execute "ALTER TABLE #{table} ADD PRIMARY KEY (id)"

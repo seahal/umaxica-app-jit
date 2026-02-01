@@ -10,6 +10,6 @@
 #  index_org_contact_categories_on_lower_id  (lower((id)::text)) UNIQUE
 #
 neyo:
-  id: NEYO
+  code: "NEYO"
 organization_inquiry:
-  id: ORGANIZATION_INQUIRY
+_id: 10 # was 

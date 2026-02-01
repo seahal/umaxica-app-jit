@@ -5,13 +5,7 @@
 # Table name: admin_statuses
 # Database name: operator
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_admin_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 require "test_helper"
 

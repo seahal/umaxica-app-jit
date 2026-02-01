@@ -5,14 +5,14 @@
 # Table name: users
 # Database name: principal
 #
-#  id             :uuid             not null, primary key
+#  id             :bigint           not null, primary key
 #  last_reauth_at :datetime
 #  lock_version   :integer          default(0), not null
 #  withdrawn_at   :datetime         default(Infinity)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  public_id      :string(255)      default("")
-#  status_id      :string(255)      default("NONE"), not null
+#  status_id      :integer          default(1), not null
 #
 # Indexes
 #

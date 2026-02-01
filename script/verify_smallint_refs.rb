@@ -6,11 +6,12 @@ require_relative "../config/environment"
 module VerifySmallintRefs
   extend self
 
-  NEWS_STATUS_TABLES = %w[app_timeline_statuses com_timeline_statuses org_timeline_statuses].freeze
-  NEWS_CATEGORY_MASTERS = %w[app_timeline_category_masters com_timeline_category_masters org_timeline_category_masters].freeze
-  NEWS_TAG_MASTERS = %w[app_timeline_tag_masters com_timeline_tag_masters org_timeline_tag_masters].freeze
-  NEWS_CATEGORY_TABLES = %w[app_timeline_categories com_timeline_categories org_timeline_categories].freeze
-  NEWS_TAG_TABLES = %w[app_timeline_tags com_timeline_tags org_timeline_tags].freeze
+  NEWS_STATUS_TABLES = %w(app_timeline_statuses com_timeline_statuses org_timeline_statuses).freeze
+  NEWS_CATEGORY_MASTERS = %w(app_timeline_category_masters com_timeline_category_masters
+                             org_timeline_category_masters).freeze
+  NEWS_TAG_MASTERS = %w(app_timeline_tag_masters com_timeline_tag_masters org_timeline_tag_masters).freeze
+  NEWS_CATEGORY_TABLES = %w(app_timeline_categories com_timeline_categories org_timeline_categories).freeze
+  NEWS_TAG_TABLES = %w(app_timeline_tags com_timeline_tags org_timeline_tags).freeze
   NEWS_CATEGORY_FOREIGN_KEYS = {
     "app_timeline_categories" => :app_timeline_category_master_id,
     "com_timeline_categories" => :com_timeline_category_master_id,
@@ -22,7 +23,7 @@ module VerifySmallintRefs
     "org_timeline_tags" => :org_timeline_tag_master_id,
   }.freeze
 
-  DOCUMENT_REFERENCE_TABLES = %w[
+  DOCUMENT_REFERENCE_TABLES = %w(
     app_document_statuses
     com_document_statuses
     org_document_statuses
@@ -32,7 +33,8 @@ module VerifySmallintRefs
     app_document_tag_masters
     com_document_tag_masters
     org_document_tag_masters
-  ].freeze
+  ).freeze
+  TIMESTAMP_COLUMNS = %i(created_at updated_at).freeze
 
   ERROR_PREFIX = "verify_smallint_refs".freeze
 
@@ -58,7 +60,7 @@ module VerifySmallintRefs
     end
     NEWS_CATEGORY_FOREIGN_KEYS.each { |table, column| assert_smallint_column(connection, table, column) }
     NEWS_TAG_FOREIGN_KEYS.each { |table, column| assert_smallint_column(connection, table, column) }
-    %w[app_timelines com_timelines org_timelines].each do |table|
+    %w(app_timelines com_timelines org_timelines).each do |table|
       assert_smallint_column(connection, table, :status_id)
     end
   end
@@ -66,7 +68,7 @@ module VerifySmallintRefs
   def verify_document_tables
     connection = DocumentRecord.connection
     DOCUMENT_REFERENCE_TABLES.each do |table|
-      %i[created_at updated_at].each do |column|
+      TIMESTAMP_COLUMNS.each do |column|
         next unless connection.column_exists?(table, column)
 
         raise_error("#{table} still has #{column}")

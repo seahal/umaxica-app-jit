@@ -5,14 +5,15 @@
 # Table name: telephone_user_occurrences
 # Database name: occurrence
 #
-#  id                      :uuid             not null, primary key
+#  id                      :bigint           not null, primary key
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
-#  telephone_occurrence_id :uuid             not null
-#  user_occurrence_id      :uuid             not null
+#  telephone_occurrence_id :bigint           not null
+#  user_occurrence_id      :bigint           not null
 #
 # Indexes
 #
+#  idx_telephone_user_occ_on_ids                                (telephone_occurrence_id,user_occurrence_id) UNIQUE
 #  index_telephone_user_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #  index_telephone_user_occurrences_on_user_occurrence_id       (user_occurrence_id)
 #
@@ -25,4 +26,6 @@
 class TelephoneUserOccurrence < OccurrenceRecord
   belongs_to :telephone_occurrence, inverse_of: :telephone_user_occurrences
   belongs_to :user_occurrence, inverse_of: :telephone_user_occurrences
+
+  validates :telephone_occurrence_id, uniqueness: { scope: :user_occurrence_id }
 end

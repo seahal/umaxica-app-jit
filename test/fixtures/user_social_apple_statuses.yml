@@ -4,21 +4,17 @@
 # Table name: user_social_apple_statuses
 # Database name: principal
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_user_identity_apple_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :integer          not null, primary key
 #
 neyo:
-  id: 0
+  code: "NEYO"
 active:
-  id: 1
+  code: "ACTIVE"
 deleted:
-  id: 2
+  code: "DELETED"
 inactive:
-  id: 3
+  code: "INACTIVE"
 pending:
-  id: 4
+  code: "PENDING"
 revoked:
-  id: 5
+  code: "REVOKED"

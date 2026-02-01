@@ -18,6 +18,8 @@
 # frozen_string_literal: true
 
 class ComTimelineCategoryMaster < NewsRecord
+  include CodeIdentifiable
+
   include Treeable
 
   belongs_to :parent,
@@ -34,8 +36,6 @@ class ComTimelineCategoryMaster < NewsRecord
            inverse_of: :com_timeline_category_master
   has_many :com_timelines, through: :com_timeline_categories
   self.primary_key = "id"
-
-  validates :id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   attribute :parent_id, default: 0
 

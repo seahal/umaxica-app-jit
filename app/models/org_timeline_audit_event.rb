@@ -13,7 +13,7 @@
 #
 
 class OrgTimelineAuditEvent < AuditRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 

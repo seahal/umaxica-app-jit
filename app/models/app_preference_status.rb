@@ -16,7 +16,7 @@
 # frozen_string_literal: true
 
 class AppPreferenceStatus < PreferenceRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   has_many :app_preferences,
            class_name: "AppPreference",

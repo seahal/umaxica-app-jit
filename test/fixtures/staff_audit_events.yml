@@ -11,22 +11,22 @@
 #
 
 login_success:
-  id: LOGIN_SUCCESS
+  code: "11 # was 11 # was LOGIN_SUCCESS"
 
 neyo:
-  id: NEYO
+  code: "NEYO"
 
 authorization_failed:
-  id: AUTHORIZATION_FAILED
+  code: "12 # was 12 # was AUTHORIZATION_FAILED"
 
 logged_in:
-  id: LOGGED_IN
+  code: "13 # was 13 # was LOGGED_IN"
 
 logged_out:
-  id: LOGGED_OUT
+  code: "14 # was 14 # was LOGGED_OUT"
 
 login_failed:
-  id: LOGIN_FAILED
+  code: "15 # was 15 # was LOGIN_FAILED"
 
 token_refreshed:
-  id: TOKEN_REFRESHED
+  code: "16 # was 16 # was TOKEN_REFRESHED"

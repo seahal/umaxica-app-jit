@@ -13,7 +13,7 @@
 #
 
 class ComTimelineAuditLevel < AuditRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 

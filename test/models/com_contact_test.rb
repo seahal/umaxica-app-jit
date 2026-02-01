@@ -5,32 +5,24 @@
 # Table name: com_contacts
 # Database name: guest
 #
-#  id               :uuid             not null, primary key
-#  ip_address       :inet             default(#<IPAddr: IPv4:0.0.0.0/255.255.255.255>), not null
-#  lock_version     :integer          default(0), not null
+#  id               :bigint           not null, primary key
+#  ip_address       :inet
 #  token            :string(32)       default(""), not null
-#  token_digest     :string(255)      default(""), not null
-#  token_expires_at :timestamptz      default(-Infinity), not null
+#  token_digest     :string
+#  token_expires_at :datetime
 #  token_viewed     :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string(255)      default("NEYO"), not null
-#  public_id        :string(21)       default(""), not null
-#  status_id        :integer          default(0), not null
+#  category_id      :string
+#  public_id        :string(21)       not null
+#  status_id        :integer
 #
 # Indexes
 #
-#  index_com_contacts_on_category_id       (category_id)
 #  index_com_contacts_on_public_id         (public_id)
-#  index_com_contacts_on_status_id         (status_id)
 #  index_com_contacts_on_token             (token)
 #  index_com_contacts_on_token_digest      (token_digest)
 #  index_com_contacts_on_token_expires_at  (token_expires_at)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (category_id => com_contact_categories.id) ON DELETE => cascade
-#  fk_rails_...  (status_id => com_contact_statuses.id)
 #
 
 require "test_helper"

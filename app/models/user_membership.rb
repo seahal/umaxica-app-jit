@@ -5,12 +5,12 @@
 # Table name: user_memberships
 # Database name: principal
 #
-#  id           :uuid             not null, primary key
+#  id           :bigint           not null, primary key
 #  joined_at    :datetime         not null
 #  left_at      :datetime         default(-Infinity), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  user_id      :uuid             not null
+#  user_id      :bigint           not null
 #  workspace_id :uuid             not null
 #
 # Indexes

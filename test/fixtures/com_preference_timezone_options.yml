@@ -14,9 +14,9 @@
 #
 
 utc:
-  id: "Etc/UTC"
+  code: "11 # was Etc/UTC"
   position: 1
 
 asia_tokyo:
-  id: "Asia/Tokyo"
+  code: "12 # was Asia/Tokyo"
   position: 2

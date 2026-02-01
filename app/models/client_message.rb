@@ -5,11 +5,11 @@
 # Table name: client_messages
 # Database name: message
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  public_id       :uuid
-#  user_message_id :uuid
+#  user_message_id :bigint
 #
 # Indexes
 #

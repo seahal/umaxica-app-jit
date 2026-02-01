@@ -5,15 +5,15 @@
 # Table name: avatars
 # Database name: avatar
 #
-#  id                           :string           not null, primary key
+#  id                           :bigint           not null, primary key
 #  image_data                   :jsonb            not null
 #  lock_version                 :integer          default(0), not null
 #  moniker                      :string           not null
 #  created_at                   :datetime         not null
 #  updated_at                   :datetime         not null
-#  active_handle_id             :string           not null
+#  active_handle_id             :bigint           not null
 #  avatar_status_id             :string
-#  capability_id                :string           not null
+#  capability_id                :integer          default(0), not null
 #  client_id                    :uuid
 #  owner_organization_id        :string
 #  public_id                    :string           not null
@@ -166,7 +166,6 @@ class Avatar < AvatarRecord
 
   validates :public_id, presence: true, uniqueness: true
   validates :moniker, presence: true
-  validates :id, length: { maximum: 255 }
 
   # Create avatar with owner assigned in a transaction
   def self.create_with_owner(attributes, user)

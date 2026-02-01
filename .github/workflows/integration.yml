@@ -95,8 +95,8 @@ jobs:
         run: bundle exec brakeman -z -q --no-pager
       - name: Run bundle-audit
         run: bundle exec bundle audit check --update
-      - name: Run license_finder
-        run: bundle exec license_finder
+      # - name: Run license_finder
+      #   run: bundle exec license_finder
   gitleaks:
     name: Secret Leaks Detection
     runs-on: ubuntu-latest

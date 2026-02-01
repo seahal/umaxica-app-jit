@@ -5,14 +5,15 @@
 # Table name: telephone_zip_occurrences
 # Database name: occurrence
 #
-#  id                      :uuid             not null, primary key
+#  id                      :bigint           not null, primary key
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
-#  telephone_occurrence_id :uuid             not null
-#  zip_occurrence_id       :uuid             not null
+#  telephone_occurrence_id :bigint           not null
+#  zip_occurrence_id       :bigint           not null
 #
 # Indexes
 #
+#  idx_telephone_zip_occ_on_ids                                (telephone_occurrence_id,zip_occurrence_id) UNIQUE
 #  index_telephone_zip_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #  index_telephone_zip_occurrences_on_zip_occurrence_id        (zip_occurrence_id)
 #

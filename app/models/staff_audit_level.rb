@@ -13,7 +13,7 @@
 #
 
 class StaffAuditLevel < AuditRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   has_many :staff_audits,
            foreign_key: :level_id,

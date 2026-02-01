@@ -5,28 +5,26 @@
 # Table name: staff_telephones
 # Database name: operator
 #
-#  id                                 :uuid             not null, primary key
-#  locked_at                          :datetime         default(-Infinity), not null
-#  number                             :string           default(""), not null
-#  otp_attempts_count                 :integer          default(0), not null
-#  otp_counter                        :text             default(""), not null
-#  otp_expires_at                     :datetime         default(-Infinity), not null
-#  otp_private_key                    :string           default(""), not null
-#  created_at                         :datetime         not null
-#  updated_at                         :datetime         not null
-#  staff_id                           :uuid             not null
-#  staff_identity_telephone_status_id :string(255)      default("UNVERIFIED"), not null
+#  id                 :bigint           not null, primary key
+#  locked_at          :datetime
+#  number             :string
+#  otp_attempts_count :integer          default(0), not null
+#  otp_counter        :text
+#  otp_expires_at     :datetime
+#  otp_private_key    :string
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  staff_id           :bigint
+#  status_id          :string           default("UNVERIFIED"), not null
 #
 # Indexes
 #
-#  index_staff_identity_telephones_on_lower_number               (lower((number)::text))
-#  index_staff_telephones_on_staff_id                            (staff_id)
-#  index_staff_telephones_on_staff_identity_telephone_status_id  (staff_identity_telephone_status_id)
+#  index_staff_telephones_on_staff_id  (staff_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (staff_id => staffs.id)
-#  fk_rails_...  (staff_identity_telephone_status_id => staff_telephone_statuses.id)
+#  fk_rails_...  (status_id => staff_telephone_statuses.id)
 #
 
 require "test_helper"

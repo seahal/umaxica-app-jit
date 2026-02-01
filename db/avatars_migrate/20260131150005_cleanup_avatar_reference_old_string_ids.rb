@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CleanupAvatarReferenceOldStringIds < ActiveRecord::Migration[8.2]
-  TABLES = %w[
+  TABLES = %w(
     avatar_membership_statuses
     avatar_moniker_statuses
     avatar_ownership_statuses
@@ -12,7 +12,7 @@ class CleanupAvatarReferenceOldStringIds < ActiveRecord::Migration[8.2]
     avatar_permissions
     avatar_roles
     post_review_statuses
-  ].freeze
+  ).freeze
 
   def up
     TABLES.each do |table|

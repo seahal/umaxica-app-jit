@@ -53,7 +53,7 @@ class ActiveSupport::TestCase
   # Load fixtures only when explicitly needed in individual test files
   # instead of loading all fixtures globally
   # To use fixtures in a specific test file, add:
-  fixtures :all unless ENV["SKIP_DB"] == "1"
+  # fixtures :all unless ENV["SKIP_DB"] == "1"
 end
 
 if ENV["SKIP_DB"] == "1"

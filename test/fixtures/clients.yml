@@ -3,15 +3,15 @@
 # Table name: clients
 # Database name: principal
 #
-#  id           :uuid             not null, primary key
+#  id           :bigint           not null, primary key
 #  lock_version :integer          default(0), not null
 #  moniker      :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  division_id  :uuid
+#  division_id  :bigint
 #  public_id    :string
-#  status_id    :string(255)      default("NEYO"), not null
-#  user_id      :uuid
+#  status_id    :integer          default(0), not null
+#  user_id      :bigint
 #
 # Indexes
 #
@@ -27,15 +27,15 @@
 #
 
 one:
-  user_id: "e7a2f1e2-4a54-4ca8-826f-b60117925854"
-  status_id: 0
+  user: one
+  status: neyo
   public_id: "client_one"
   moniker: "Client One"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
-  user_id: "fac3e5c2-b101-4fe6-9af1-b0f8bc5f4210"
-  status_id: 0
+  user: two
+  status: neyo
   public_id: "client_two"
   moniker: "Client Two"
   created_at: <%= Time.current %>

@@ -9,8 +9,16 @@ module MigrationHelpers
 
     DEFAULT_PARENT_COLUMN = "parent_id"
 
-    def convert_tree_reference_table(table_name:, id_sentinel_values: ["NEYO"], parent_sentinel_values:,
-                                     parent_column: DEFAULT_PARENT_COLUMN, lower_index:, check_constraint:, parent_index:, child_foreign_keys: [])
+    def convert_tree_reference_table(
+      table_name:,
+      id_sentinel_values: ["NEYO"],
+      parent_sentinel_values:,
+      parent_column: DEFAULT_PARENT_COLUMN,
+      lower_index:,
+      check_constraint:,
+      parent_index:,
+      child_foreign_keys: []
+    )
       safety_assured do
         add_column table_name, :id_small, :integer, limit: 2 unless column_exists?(table_name, :id_small)
         fill_tree_smallint_ids(table_name, id_sentinel_values)
@@ -36,7 +44,9 @@ module MigrationHelpers
         remove_column table_name, :id if column_exists?(table_name, :id)
         remove_column table_name, parent_column if column_exists?(table_name, parent_column)
 
+        # rubocop:disable Rails/DangerousColumnNames
         rename_column table_name, :id_small, :id
+        # rubocop:enable Rails/DangerousColumnNames
         rename_column table_name, :parent_id_small, parent_column
 
         change_column_default table_name, :id, from: 0, to: 0

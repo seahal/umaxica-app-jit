@@ -5,10 +5,10 @@
 # Table name: workspace_statuses
 # Database name: operator
 #
-#  id :string(255)      not null, primary key
+#  id :string           not null, primary key
 #
 class WorkspaceStatus < OperatorRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 

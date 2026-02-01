@@ -5,14 +5,10 @@
 # Table name: organization_statuses
 # Database name: operator
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_department_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 class OrganizationStatus < OperatorRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   self.record_timestamps = false
 
@@ -25,7 +21,6 @@ class OrganizationStatus < OperatorRecord
            class_name: "Department",
            dependent: :restrict_with_error,
            inverse_of: :department_status
-  validates :id, uniqueness: { case_sensitive: false }
 
   self.primary_key = "id"
 end

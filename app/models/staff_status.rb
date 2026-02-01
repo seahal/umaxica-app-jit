@@ -5,15 +5,11 @@
 # Table name: staff_statuses
 # Database name: operator
 #
-#  id :string(255)      default("NEYO"), not null, primary key
-#
-# Indexes
-#
-#  index_staff_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 
 class StaffStatus < OperatorRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   # Status constants
   NEYO = "NEYO"
@@ -22,5 +18,4 @@ class StaffStatus < OperatorRecord
            foreign_key: :status_id,
            dependent: :restrict_with_error,
            inverse_of: :staff_status
-  validates :id, uniqueness: { case_sensitive: false }
 end

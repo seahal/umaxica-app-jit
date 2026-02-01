@@ -5,14 +5,14 @@
 # Table name: email_occurrences
 # Database name: occurrence
 #
-#  id         :uuid             not null, primary key
-#  body       :string(255)      default(""), not null
+#  id         :bigint           not null, primary key
+#  body       :string           default(""), not null
 #  expires_at :datetime         not null
-#  memo       :string(1024)     default(""), not null
+#  memo       :string           default(""), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string(255)      default("NEYO"), not null
+#  status_id  :string           default("NONE"), not null
 #
 # Indexes
 #

@@ -3,10 +3,10 @@
 # Table name: app_document_tags
 # Database name: document
 #
-#  id                         :uuid             not null, primary key
+#  id                         :bigint           not null, primary key
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
-#  app_document_id            :uuid             not null
+#  app_document_id            :bigint           not null
 #  app_document_tag_master_id :integer          default(0), not null
 #
 # Indexes

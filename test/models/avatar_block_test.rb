@@ -3,13 +3,13 @@
 # Table name: avatar_blocks
 # Database name: avatar
 #
-#  id                :uuid             not null, primary key
+#  id                :bigint           not null, primary key
 #  expires_at        :datetime
 #  reason            :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  blocked_avatar_id :string           not null
-#  blocker_avatar_id :string           not null
+#  blocked_avatar_id :bigint           not null
+#  blocker_avatar_id :bigint           not null
 #
 # Indexes
 #

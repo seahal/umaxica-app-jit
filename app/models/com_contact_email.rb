@@ -9,19 +9,19 @@
 #  activated              :boolean          default(FALSE), not null
 #  deletable              :boolean          default(FALSE), not null
 #  email_address          :string(1000)     default(""), not null
-#  expires_at             :timestamptz      not null
-#  hotp_counter           :integer          default(0), not null
-#  hotp_secret            :string           default(""), not null
-#  remaining_views        :integer          default(0), not null
-#  token_digest           :string(255)      default(""), not null
-#  token_expires_at       :timestamptz      default(-Infinity), not null
+#  expires_at             :datetime         not null
+#  hotp_counter           :integer
+#  hotp_secret            :string
+#  remaining_views        :integer          default(10), not null
+#  token_digest           :string
+#  token_expires_at       :datetime
 #  token_viewed           :boolean          default(FALSE), not null
-#  verifier_attempts_left :integer          default(0), not null
-#  verifier_digest        :string(255)      default(""), not null
-#  verifier_expires_at    :timestamptz      default(-Infinity), not null
+#  verifier_attempts_left :integer          default(5), not null
+#  verifier_digest        :string
+#  verifier_expires_at    :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  com_contact_id         :uuid             not null
+#  com_contact_id         :bigint           not null
 #
 # Indexes
 #
@@ -36,6 +36,8 @@
 #
 
 class ComContactEmail < GuestRecord
+  include CodeIdentifiable
+
   belongs_to :com_contact, inverse_of: :com_contact_email
 
   # Validations

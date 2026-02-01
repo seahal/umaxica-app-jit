@@ -5,15 +5,11 @@
 # Table name: staff_secret_statuses
 # Database name: operator
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_staff_identity_secret_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 
 class StaffSecretStatus < OperatorRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   # Status constants
   ACTIVE = "ACTIVE"
@@ -22,5 +18,4 @@ class StaffSecretStatus < OperatorRecord
   REVOKED = "REVOKED"
   DELETED = "DELETED"
   has_many :staff_secrets, inverse_of: :staff_secret_status, dependent: :restrict_with_error
-  validates :id, uniqueness: { case_sensitive: false }
 end

@@ -3,10 +3,10 @@
 # Table name: org_timeline_tags
 # Database name: news
 #
-#  id                         :uuid             not null, primary key
+#  id                         :bigint           not null, primary key
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
-#  org_timeline_id            :uuid             not null
+#  org_timeline_id            :bigint           not null
 #  org_timeline_tag_master_id :integer          default(0), not null
 #
 # Indexes
@@ -30,7 +30,6 @@ class OrgTimelineTag < NewsRecord
              inverse_of: :org_timeline_tags
 
   validates :org_timeline_tag_master_id,
-            presence: true,
             uniqueness: { scope: :org_timeline_id,
                           message: :already_tagged, }
 end

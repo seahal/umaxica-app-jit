@@ -13,14 +13,13 @@
 #
 
 class AppContactCategory < GuestRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   has_many :app_contacts,
            foreign_key: :category_id,
            primary_key: :id,
            dependent: :restrict_with_error,
            inverse_of: :app_contact_category
-  validates :id, uniqueness: { case_sensitive: false }
 
   validates :description, length: { maximum: 255 }
 end

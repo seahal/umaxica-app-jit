@@ -11,12 +11,12 @@
 #
 
 neyo:
-  id: 0
+  code: "NEYO"
 debug:
-  id: 1
+  code: "DEBUG"
 error:
-  id: 2
+  code: "ERROR"
 info:
-  id: 3
+  code: "INFO"
 warn:
-  id: 4
+  code: "WARN"

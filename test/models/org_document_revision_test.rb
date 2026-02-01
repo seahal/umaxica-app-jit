@@ -3,7 +3,7 @@
 # Table name: org_document_revisions
 # Database name: document
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  body            :text
 #  description     :string
 #  edited_by_type  :string
@@ -16,7 +16,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  edited_by_id    :bigint
-#  org_document_id :uuid             not null
+#  org_document_id :bigint           not null
 #  public_id       :string(255)      default(""), not null
 #
 # Indexes

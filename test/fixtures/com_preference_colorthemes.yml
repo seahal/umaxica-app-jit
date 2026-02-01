@@ -3,11 +3,11 @@
 # Table name: com_preference_colorthemes
 # Database name: preference
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  option_id     :integer
-#  preference_id :uuid             not null
+#  preference_id :bigint           not null
 #
 # Indexes
 #
@@ -21,7 +21,7 @@
 #
 
 _fixture:
-  model_class: ComPreferenceColortheme
+_id: 10 # was 
 
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 

@@ -5,15 +5,11 @@
 # Table name: staff_telephone_statuses
 # Database name: operator
 #
-#  id :string(255)      default("UNVERIFIED"), not null, primary key
-#
-# Indexes
-#
-#  index_staff_identity_telephone_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 
 class StaffTelephoneStatus < OperatorRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   # Status constants
   UNVERIFIED = "UNVERIFIED"
@@ -21,5 +17,4 @@ class StaffTelephoneStatus < OperatorRecord
   SUSPENDED = "SUSPENDED"
   DELETED = "DELETED"
   has_many :staff_telephones, inverse_of: :staff_telephone_status, dependent: :restrict_with_error
-  validates :id, uniqueness: { case_sensitive: false }
 end

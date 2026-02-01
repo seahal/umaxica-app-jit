@@ -5,23 +5,17 @@
 # Table name: staff_passkey_statuses
 # Database name: operator
 #
-#  id :string(255)      not null, primary key
-#
-# Indexes
-#
-#  index_staff_identity_passkey_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 
 class StaffPasskeyStatus < OperatorRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   # Status constants
   ACTIVE = "ACTIVE"
   DISABLED = "DISABLED"
   DELETED = "DELETED"
   has_many :staff_passkeys, dependent: :restrict_with_error
-
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Z0-9_]+\z/ }
   before_validation { self.id = id&.upcase }
 end

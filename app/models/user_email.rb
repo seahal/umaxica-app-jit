@@ -5,7 +5,7 @@
 # Table name: user_emails
 # Database name: principal
 #
-#  id                            :uuid             not null, primary key
+#  id                            :bigint           not null, primary key
 #  address                       :string           default(""), not null
 #  locked_at                     :datetime         default(-Infinity), not null
 #  otp_attempts_count            :integer          default(0), not null
@@ -17,8 +17,8 @@
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
 #  public_id                     :string(21)       not null
-#  user_id                       :uuid             not null
-#  user_identity_email_status_id :string(255)      default("NEYO"), not null
+#  user_id                       :bigint           not null
+#  user_identity_email_status_id :integer          default(0), not null
 #
 # Indexes
 #
@@ -46,7 +46,7 @@ class UserEmail < PrincipalRecord
              optional: true,
              inverse_of: :user_emails,
              foreign_key: :user_identity_email_status_id
-  belongs_to :user, optional: true, inverse_of: :user_emails
+  belongs_to :user, optional: false, inverse_of: :user_emails
   validates :address, presence: true, length: { maximum: 255 }
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true

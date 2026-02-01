@@ -5,7 +5,7 @@
 # Table name: staff_audits
 # Database name: audit
 #
-#  id             :uuid             not null, primary key
+#  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
 #  context        :jsonb            not null
 #  current_value  :text             default(""), not null
@@ -54,6 +54,10 @@ class StaffAuditTest < ActiveSupport::TestCase
       timestamp: Time.current,
       ip_address: "192.168.1.1",
     )
+  end
+
+  test "uses bigint primary key" do
+    assert_kind_of Integer, @audit.id
   end
 
   test "inherits from AuditRecord" do

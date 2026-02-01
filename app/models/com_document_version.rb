@@ -5,7 +5,7 @@
 # Table name: com_document_versions
 # Database name: document
 #
-#  id              :uuid             not null, primary key
+#  id              :bigint           not null, primary key
 #  body            :text
 #  description     :string
 #  edited_by_type  :string
@@ -17,7 +17,7 @@
 #  title           :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  com_document_id :uuid             not null
+#  com_document_id :bigint           not null
 #  edited_by_id    :bigint
 #  public_id       :string(255)      default(""), not null
 #

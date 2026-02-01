@@ -50,7 +50,9 @@ class MigrateStaffTokenKindsToSmallint < ActiveRecord::Migration[8.2]
       rename_column :staff_token_kinds, :id, :id_old_string
 
       # Promote smallint to ID
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :staff_token_kinds, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       execute "ALTER TABLE staff_token_kinds ADD PRIMARY KEY (id)"
     end
   end

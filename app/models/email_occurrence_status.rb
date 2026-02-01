@@ -5,15 +5,18 @@
 # Table name: email_occurrence_statuses
 # Database name: occurrence
 #
-#  id :string(255)      default("NONE"), not null, primary key
+#  id         :string           not null, primary key
+#  expires_at :datetime         not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 # Indexes
 #
-#  index_email_occurrence_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  index_email_occurrence_statuses_on_expires_at  (expires_at)
 #
 
 class EmailOccurrenceStatus < OccurrenceRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   include OccurrenceStatus
 
@@ -24,5 +27,4 @@ class EmailOccurrenceStatus < OccurrenceRecord
   BLOCKED = "BLOCKED"
   has_many :email_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
                                inverse_of: :email_occurrence_status
-  validates :id, uniqueness: { case_sensitive: false }
 end

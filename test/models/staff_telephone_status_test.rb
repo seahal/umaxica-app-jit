@@ -5,11 +5,7 @@
 # Table name: staff_telephone_statuses
 # Database name: operator
 #
-#  id :string(255)      default("UNVERIFIED"), not null, primary key
-#
-# Indexes
-#
-#  index_staff_identity_telephone_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 
 require "test_helper"

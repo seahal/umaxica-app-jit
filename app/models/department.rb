@@ -5,27 +5,25 @@
 # Table name: departments
 # Database name: operator
 #
-#  id                   :uuid             not null, primary key
-#  name                 :string           not null
+#  id                   :bigint           not null, primary key
+#  name                 :string
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  department_status_id :string(255)      default("NEYO"), not null
-#  parent_id            :uuid
-#  workspace_id         :uuid
+#  department_status_id :string
+#  parent_id            :bigint
+#  workspace_id         :bigint
 #
 # Indexes
 #
-#  index_departments_on_department_status_id                (department_status_id)
-#  index_departments_on_department_status_id_and_parent_id  (department_status_id,parent_id) UNIQUE
-#  index_departments_on_parent_id                           (parent_id)
-#  index_departments_on_status_and_parent                   (department_status_id,parent_id) UNIQUE
-#  index_departments_on_workspace_id                        (workspace_id)
+#  index_departments_on_department_status_id  (department_status_id)
+#  index_departments_on_parent_id             (parent_id)
+#  index_departments_on_workspace_id          (workspace_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (department_status_id => organization_statuses.id) ON DELETE => restrict
-#  fk_rails_...  (parent_id => departments.id) ON DELETE => restrict
-#  fk_rails_...  (workspace_id => organizations.id) ON DELETE => restrict
+#  fk_rails_...  (department_status_id => department_statuses.id)
+#  fk_rails_...  (parent_id => departments.id)
+#  fk_rails_...  (workspace_id => workspaces.id)
 #
 
 class Department < OperatorRecord

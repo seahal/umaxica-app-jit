@@ -16,6 +16,8 @@
 # frozen_string_literal: true
 
 class AppPreferenceTimezoneOption < PreferenceRecord
+  include CodeIdentifiable
+
   has_many :app_preference_timezones,
            class_name: "AppPreferenceTimezone",
            foreign_key: :option_id,
@@ -24,8 +26,6 @@ class AppPreferenceTimezoneOption < PreferenceRecord
   scope :ordered, -> { order(:position, :id) }
 
   self.primary_key = :id
-
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Za-z0-9_\/\-\+]+\z/ }
 
   validates :position,

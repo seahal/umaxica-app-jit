@@ -5,7 +5,7 @@
 # Table name: avatar_permissions
 # Database name: avatar
 #
-#  id          :integer          not null, primary key, limit: 2
+#  id          :integer          not null, primary key
 #  description :text
 #  key         :string           not null
 #  name        :string           not null
@@ -16,6 +16,8 @@
 #
 
 class AvatarPermission < AvatarRecord
+  include CodeIdentifiable
+
   self.record_timestamps = false
 
   has_many :avatar_role_permissions, dependent: :restrict_with_error

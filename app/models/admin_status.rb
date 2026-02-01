@@ -5,16 +5,10 @@
 # Table name: admin_statuses
 # Database name: operator
 #
-#  id         :string(255)      default("NEYO"), not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
-# Indexes
-#
-#  index_admin_identity_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 class AdminStatus < OperatorRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   # Status constants
   NEYO = "NEYO"
@@ -22,5 +16,4 @@ class AdminStatus < OperatorRecord
            foreign_key: :status_id,
            inverse_of: :admin_status,
            dependent: :restrict_with_error
-  validates :id, uniqueness: { case_sensitive: false }
 end

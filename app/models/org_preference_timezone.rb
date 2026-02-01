@@ -3,11 +3,11 @@
 # Table name: org_preference_timezones
 # Database name: preference
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  option_id     :integer
-#  preference_id :uuid             not null
+#  preference_id :bigint           not null
 #
 # Indexes
 #

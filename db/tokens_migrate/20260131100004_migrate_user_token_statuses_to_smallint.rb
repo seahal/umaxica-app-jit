@@ -41,7 +41,9 @@ class MigrateUserTokenStatusesToSmallint < ActiveRecord::Migration[8.2]
       execute "ALTER TABLE user_token_statuses DROP CONSTRAINT IF EXISTS chk_user_token_statuses_id_format"
 
       rename_column :user_token_statuses, :id, :id_old_string
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :user_token_statuses, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       execute "ALTER TABLE user_token_statuses ADD PRIMARY KEY (id)"
 
       execute "ALTER TABLE user_token_statuses ADD CONSTRAINT chk_user_token_statuses_id_positive CHECK (id >= 0)"

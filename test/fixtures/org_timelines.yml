@@ -3,7 +3,7 @@
 # Table name: org_timelines
 # Database name: news
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  expires_at    :datetime         default(Infinity), not null
 #  lock_version  :integer          default(0), not null
 #  position      :integer          default(0), not null
@@ -27,18 +27,18 @@
 #
 
 one:
-  status_id: "NEYO"
-  slug_id: "one-org-timeline-0001"
-  response_mode: "html"
+_id: 10 # was 
+_id: 10 # was 
+_id: 10 # was 
   published_at: <%= Time.current %>
   expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 
 two:
-  status_id: "NEYO"
-  slug_id: "two-org-timeline-0002"
-  response_mode: "html"
+_id: 10 # was 
+  slug_id: 30 # was two-org-timeline-0002"
+_id: 10 # was 
   published_at: <%= Time.current %>
   expires_at: <%= 1.day.from_now %>
   created_at: <%= Time.current %>

@@ -5,15 +5,11 @@
 # Table name: staff_email_statuses
 # Database name: operator
 #
-#  id :string(255)      default("UNVERIFIED"), not null, primary key
-#
-# Indexes
-#
-#  index_staff_identity_email_statuses_on_lower_id  (lower((id)::text)) UNIQUE
+#  id :string           not null, primary key
 #
 
 class StaffEmailStatus < OperatorRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   # Status constants
   UNVERIFIED = "UNVERIFIED"
@@ -21,5 +17,4 @@ class StaffEmailStatus < OperatorRecord
   SUSPENDED = "SUSPENDED"
   DELETED = "DELETED"
   has_many :staff_emails, inverse_of: :staff_email_status, dependent: :restrict_with_error
-  validates :id, uniqueness: { case_sensitive: false }
 end

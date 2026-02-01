@@ -16,7 +16,7 @@
 # frozen_string_literal: true
 
 class OrgPreferenceStatus < PreferenceRecord
-  include StringPrimaryKey
+  include CodeIdentifiable
 
   has_many :org_preferences,
            class_name: "OrgPreference",
@@ -30,8 +30,6 @@ class OrgPreferenceStatus < PreferenceRecord
             presence: true,
             numericality: { only_integer: true, greater_than: 0 },
             uniqueness: true
-
-  validates :id, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false },
                  format: { with: /\A[A-Z0-9_]+\z/ }
   before_validation { self.id = id&.upcase }
 end

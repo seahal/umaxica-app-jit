@@ -3,10 +3,10 @@
 # Table name: client_avatar_impersonations
 # Database name: avatar
 #
-#  id         :uuid             not null, primary key
+#  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  avatar_id  :string           not null
+#  avatar_id  :bigint           not null
 #  client_id  :uuid             not null
 #
 # Indexes

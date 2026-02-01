@@ -5,7 +5,7 @@
 # Table name: com_documents
 # Database name: document
 #
-#  id            :uuid             not null, primary key
+#  id            :bigint           not null, primary key
 #  expires_at    :datetime         default(Infinity), not null
 #  lock_version  :integer          default(0), not null
 #  permalink     :string(200)      default(""), not null

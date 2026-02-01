@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ConvertUserIdentityAuditLevelsToSmallint < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
@@ -16,10 +18,12 @@ class ConvertUserIdentityAuditLevelsToSmallint < ActiveRecord::Migration[8.2]
 
       change_column_null :user_identity_audit_levels, :id_small, false, 0
 
-      execute "ALTER TABLE user_identity_audit_levels DROP CONSTRAINT user_identity_audit_levels_pkey CASCADE"
+      drop_primary_key("user_identity_audit_levels")
 
       rename_column :user_identity_audit_levels, :id, :id_old_string
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :user_identity_audit_levels, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       execute "ALTER TABLE user_identity_audit_levels ADD PRIMARY KEY (id)"
       add_check_constraint :user_identity_audit_levels, "id >= 0", name: "user_identity_audit_levels_id_non_negative"
 
@@ -45,5 +49,23 @@ class ConvertUserIdentityAuditLevelsToSmallint < ActiveRecord::Migration[8.2]
 
   def down
     raise ActiveRecord::IrreversibleMigration
+  end
+
+  private
+
+  def drop_primary_key(table_name)
+    constraint_name = select_value(<<~SQL.squish)
+      SELECT constraint_name
+      FROM information_schema.table_constraints
+      WHERE table_schema = 'public'
+        AND table_name = #{connection.quote(table_name)}
+        AND constraint_type = 'PRIMARY KEY'
+    SQL
+    return unless constraint_name
+
+    execute <<~SQL.squish
+      ALTER TABLE #{connection.quote_table_name(table_name)}
+      DROP CONSTRAINT #{connection.quote_column_name(constraint_name)} CASCADE
+    SQL
   end
 end

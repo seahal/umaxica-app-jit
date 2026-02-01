@@ -14,9 +14,9 @@
 #
 
 neyo:
-  id: NEYO
+  code: "NEYO"
   position: 1
 
 deleted:
-  id: DELETED
+  code: "DELETED"
   position: 2

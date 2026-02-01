@@ -14,9 +14,9 @@
 #
 
 ja:
-  id: "JA"
+  code: "11 # was 11 # was JA"
   position: 1
 
 en:
-  id: "EN"
+  code: "12 # was 12 # was EN"
   position: 2

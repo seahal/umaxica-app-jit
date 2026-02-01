@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ConvertUserPasskeyStatusesToSmallint < ActiveRecord::Migration[8.2]
   def up
     safety_assured do
@@ -20,10 +22,12 @@ class ConvertUserPasskeyStatusesToSmallint < ActiveRecord::Migration[8.2]
 
       remove_index :user_passkey_statuses, name: "index_user_identity_passkey_statuses_on_lower_id"
       execute "ALTER TABLE user_passkey_statuses DROP CONSTRAINT IF EXISTS chk_user_identity_passkey_statuses_id_format"
-      execute "ALTER TABLE user_passkey_statuses DROP CONSTRAINT user_passkey_statuses_pkey CASCADE"
+      drop_primary_key("user_passkey_statuses")
 
       rename_column :user_passkey_statuses, :id, :id_old_string
+      # rubocop:disable Rails/DangerousColumnNames
       rename_column :user_passkey_statuses, :id_small, :id
+      # rubocop:enable Rails/DangerousColumnNames
       execute "ALTER TABLE user_passkey_statuses ADD PRIMARY KEY (id)"
       add_check_constraint :user_passkey_statuses, "id >= 0", name: "user_passkey_statuses_id_non_negative"
 
@@ -50,5 +54,23 @@ class ConvertUserPasskeyStatusesToSmallint < ActiveRecord::Migration[8.2]
 
   def down
     raise ActiveRecord::IrreversibleMigration
+  end
+
+  private
+
+  def drop_primary_key(table_name)
+    constraint_name = select_value(<<~SQL.squish)
+      SELECT constraint_name
+      FROM information_schema.table_constraints
+      WHERE table_schema = 'public'
+        AND table_name = #{connection.quote(table_name)}
+        AND constraint_type = 'PRIMARY KEY'
+    SQL
+    return unless constraint_name
+
+    execute <<~SQL.squish
+      ALTER TABLE #{connection.quote_table_name(table_name)}
+      DROP CONSTRAINT #{connection.quote_column_name(constraint_name)} CASCADE
+    SQL
   end
 end

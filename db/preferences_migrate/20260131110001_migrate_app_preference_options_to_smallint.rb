@@ -24,7 +24,9 @@ class MigrateAppPreferenceOptionsToSmallint < ActiveRecord::Migration[8.2]
 
         # 4. Rename old id and promote id_small
         rename_column table, :id, :id_old
+        # rubocop:disable Rails/DangerousColumnNames
         rename_column table, :id_small, :id
+        # rubocop:enable Rails/DangerousColumnNames
 
         # 5. Set PK
         execute "ALTER TABLE #{table} ADD PRIMARY KEY (id)"

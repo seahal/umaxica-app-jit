@@ -10,6 +10,6 @@
 #  index_com_contact_categories_on_lower_id  (lower((id)::text)) UNIQUE
 #
 security_issue:
-  id: SECURITY_ISSUE
+_id: 10 # was 
 neyo:
-  id: NEYO
+  code: "NEYO"
