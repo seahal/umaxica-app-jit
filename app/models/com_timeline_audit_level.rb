@@ -5,11 +5,12 @@
 # Table name: com_timeline_audit_levels
 # Database name: audit
 #
-#  id :integer          default(0), not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_com_timeline_audit_levels_on_id  (id) UNIQUE
+#  index_com_timeline_audit_levels_on_code  (code) UNIQUE
 #
 
 class ComTimelineAuditLevel < AuditRecord

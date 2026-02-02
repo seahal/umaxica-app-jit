@@ -14,7 +14,6 @@
 # Indexes
 #
 #  idx_area_email_occ_on_ids                            (area_occurrence_id,email_occurrence_id) UNIQUE
-#  index_area_email_occurrences_on_area_occurrence_id   (area_occurrence_id)
 #  index_area_email_occurrences_on_email_occurrence_id  (email_occurrence_id)
 #
 # Foreign Keys

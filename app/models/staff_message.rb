@@ -8,12 +8,13 @@
 #  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  public_id  :uuid
+#  public_id  :uuid             not null
 #  staff_id   :bigint           not null
 #
 # Indexes
 #
-#  index_staff_messages_on_staff_id  (staff_id)
+#  index_staff_messages_on_public_id  (public_id) UNIQUE
+#  index_staff_messages_on_staff_id   (staff_id)
 #
 
 class StaffMessage < MessageRecord

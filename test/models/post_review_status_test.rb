@@ -5,13 +5,12 @@
 # Table name: post_review_statuses
 # Database name: avatar
 #
-#  id   :integer          not null, primary key
-#  key  :string           not null
-#  name :string           not null
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_post_review_statuses_on_key  (key) UNIQUE
+#  index_post_review_statuses_on_code  (code) UNIQUE
 #
 
 require "test_helper"

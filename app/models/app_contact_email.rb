@@ -5,28 +5,14 @@
 # Table name: app_contact_emails
 # Database name: guest
 #
-#  id                     :string           not null, primary key
-#  activated              :boolean          default(FALSE), not null
-#  deletable              :boolean          default(FALSE), not null
-#  email_address          :string(1000)     default(""), not null
-#  expires_at             :datetime         not null
-#  remaining_views        :integer          default(10), not null
-#  token_digest           :string
-#  token_expires_at       :datetime
-#  token_viewed           :boolean          default(FALSE), not null
-#  verifier_attempts_left :integer          default(3), not null
-#  verifier_digest        :string
-#  verifier_expires_at    :datetime
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  app_contact_id         :bigint           not null
+#  id             :bigint           not null, primary key
+#  code           :citext           not null
+#  app_contact_id :bigint           not null
 #
 # Indexes
 #
-#  index_app_contact_emails_on_app_contact_id       (app_contact_id)
-#  index_app_contact_emails_on_email_address        (email_address)
-#  index_app_contact_emails_on_expires_at           (expires_at)
-#  index_app_contact_emails_on_verifier_expires_at  (verifier_expires_at)
+#  index_app_contact_emails_on_app_contact_id  (app_contact_id)
+#  index_app_contact_emails_on_code            (code) UNIQUE
 #
 # Foreign Keys
 #

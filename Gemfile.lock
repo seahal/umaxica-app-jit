@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 03fd08a62790d279361cf67de135e1fea85986ea
+  revision: 76fcc3a31daf57df1fa8b067a7823880605392e7
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -150,7 +150,7 @@ GEM
     bigdecimal (4.0.1)
     bindata (2.5.1)
     bindex (0.8.1)
-    bootsnap (1.21.1)
+    bootsnap (1.22.0)
       msgpack (~> 1.2)
     brakeman (8.0.1)
       racc

@@ -14,7 +14,6 @@
 # Indexes
 #
 #  idx_area_staff_occ_on_ids                            (area_occurrence_id,staff_occurrence_id) UNIQUE
-#  index_area_staff_occurrences_on_area_occurrence_id   (area_occurrence_id)
 #  index_area_staff_occurrences_on_staff_occurrence_id  (staff_occurrence_id)
 #
 # Foreign Keys

@@ -5,11 +5,12 @@
 # Table name: app_contact_statuses
 # Database name: guest
 #
-#  id :integer          not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_app_contact_statuses_on_id  (id) UNIQUE
+#  index_app_contact_statuses_on_code  (code) UNIQUE
 #
 
 require "test_helper"

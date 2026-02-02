@@ -14,7 +14,6 @@
 # Indexes
 #
 #  idx_domain_telephone_occ_on_ids                                (domain_occurrence_id,telephone_occurrence_id) UNIQUE
-#  index_domain_telephone_occurrences_on_domain_occurrence_id     (domain_occurrence_id)
 #  index_domain_telephone_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #
 # Foreign Keys

@@ -13,16 +13,23 @@
 #  token_viewed     :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  category_id      :string
+#  category_id      :bigint           not null
 #  public_id        :string(21)       not null
-#  status_id        :integer
+#  status_id        :bigint           not null
 #
 # Indexes
 #
-#  index_org_contacts_on_public_id         (public_id)
+#  index_org_contacts_on_category_id       (category_id)
+#  index_org_contacts_on_public_id         (public_id) UNIQUE
+#  index_org_contacts_on_status_id         (status_id)
 #  index_org_contacts_on_token             (token)
 #  index_org_contacts_on_token_digest      (token_digest)
 #  index_org_contacts_on_token_expires_at  (token_expires_at)
+#
+# Foreign Keys
+#
+#  fk_org_contacts_on_status_id_nullify  (status_id => org_contact_statuses.id) ON DELETE => nullify
+#  fk_rails_...                          (category_id => org_contact_categories.id)
 #
 
 require "test_helper"

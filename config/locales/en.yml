@@ -32,6 +32,7 @@ en:
     errors:
       messages:
         invalid_e164_format: "must be in E.164 format (e.g., +819012345678)"
+        code_format: "must contain only uppercase letters, numbers, and underscores"
         exceeds_e164_length: "exceeds E.164 maximum length of %{max} digits"
         country_code_cannot_start_with_zero: "country code cannot start with zero"
       models:

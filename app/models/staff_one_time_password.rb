@@ -7,12 +7,20 @@
 #  secret_key                        :string
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
+#  public_id                         :string(21)       not null
 #  staff_id                          :bigint           not null
-#  staff_one_time_password_status_id :string
+#  staff_one_time_password_status_id :bigint           default(0), not null
 #
 # Indexes
 #
-#  idx_staff_otps_on_staff_id  (staff_id)
+#  idx_staff_otps_on_staff_id                   (staff_id)
+#  idx_staff_otps_on_status_id                  (staff_one_time_password_status_id)
+#  index_staff_one_time_passwords_on_public_id  (public_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...                                                     (staff_id => staffs.id) ON DELETE => cascade
+#  fk_staff_one_time_passwords_on_staff_one_time_password_status_i  (staff_one_time_password_status_id => staff_one_time_password_statuses.id)
 #
 
 # frozen_string_literal: true

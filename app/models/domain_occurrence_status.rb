@@ -5,14 +5,12 @@
 # Table name: domain_occurrence_statuses
 # Database name: occurrence
 #
-#  id         :string           not null, primary key
-#  expires_at :datetime         not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_domain_occurrence_statuses_on_expires_at  (expires_at)
+#  index_domain_occurrence_statuses_on_code  (code) UNIQUE
 #
 
 class DomainOccurrenceStatus < OccurrenceRecord

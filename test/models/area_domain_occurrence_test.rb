@@ -14,7 +14,6 @@
 # Indexes
 #
 #  idx_area_domain_occ_on_ids                             (area_occurrence_id,domain_occurrence_id) UNIQUE
-#  index_area_domain_occurrences_on_area_occurrence_id    (area_occurrence_id)
 #  index_area_domain_occurrences_on_domain_occurrence_id  (domain_occurrence_id)
 #
 # Foreign Keys

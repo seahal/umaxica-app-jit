@@ -24,7 +24,7 @@
 #
 #  index_com_contact_topics_on_com_contact_id  (com_contact_id)
 #  index_com_contact_topics_on_expires_at      (expires_at)
-#  index_com_contact_topics_on_public_id       (public_id)
+#  index_com_contact_topics_on_public_id       (public_id) UNIQUE
 #
 # Foreign Keys
 #

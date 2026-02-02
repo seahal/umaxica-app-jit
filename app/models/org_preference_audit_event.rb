@@ -5,11 +5,12 @@
 # Table name: org_preference_audit_events
 # Database name: audit
 #
-#  id :integer          default(0), not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_org_preference_audit_events_on_id  (id) UNIQUE
+#  index_org_preference_audit_events_on_code  (code) UNIQUE
 #
 class OrgPreferenceAuditEvent < AuditRecord
   include CodeIdentifiable
@@ -24,12 +25,4 @@ class OrgPreferenceAuditEvent < AuditRecord
            inverse_of: :org_preference_audit_event,
            dependent: :restrict_with_error
   scope :ordered, -> { column_names.include?("position") ? order(:position, :id) : order(:id) }
-
-  validates :position,
-            presence: true,
-            numericality: { only_integer: true, greater_than: 0 },
-            uniqueness: true,
-            if: -> { self.class.column_names.include?("position") }
-                 format: { with: /\A[A-Z0-9_]+\z/ }
-  before_validation { self.id = id&.upcase }
 end

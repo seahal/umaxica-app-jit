@@ -13,9 +13,8 @@
 #
 # Indexes
 #
-#  idx_domain_user_occ_on_ids                             (domain_occurrence_id,user_occurrence_id) UNIQUE
-#  index_domain_user_occurrences_on_domain_occurrence_id  (domain_occurrence_id)
-#  index_domain_user_occurrences_on_user_occurrence_id    (user_occurrence_id)
+#  idx_domain_user_occ_on_ids                           (domain_occurrence_id,user_occurrence_id) UNIQUE
+#  index_domain_user_occurrences_on_user_occurrence_id  (user_occurrence_id)
 #
 # Foreign Keys
 #

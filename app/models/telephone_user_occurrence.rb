@@ -13,9 +13,8 @@
 #
 # Indexes
 #
-#  idx_telephone_user_occ_on_ids                                (telephone_occurrence_id,user_occurrence_id) UNIQUE
-#  index_telephone_user_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
-#  index_telephone_user_occurrences_on_user_occurrence_id       (user_occurrence_id)
+#  idx_telephone_user_occ_on_ids                           (telephone_occurrence_id,user_occurrence_id) UNIQUE
+#  index_telephone_user_occurrences_on_user_occurrence_id  (user_occurrence_id)
 #
 # Foreign Keys
 #

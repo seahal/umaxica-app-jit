@@ -13,11 +13,12 @@
 #
 # Indexes
 #
+#  index_client_notifications_on_public_id             (public_id) UNIQUE
 #  index_client_notifications_on_user_notification_id  (user_notification_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_notification_id => user_notifications.id)
+#  fk_client_notifications_on_user_notification_id_cascade  (user_notification_id => user_notifications.id) ON DELETE => cascade
 #
 
 class ClientNotification < NotificationRecord

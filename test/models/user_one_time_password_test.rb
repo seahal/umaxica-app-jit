@@ -11,9 +11,9 @@
 #  title                                     :string(32)
 #  created_at                                :datetime         not null
 #  updated_at                                :datetime         not null
-#  public_id                                 :string(21)
+#  public_id                                 :string(21)       not null
 #  user_id                                   :bigint           not null
-#  user_identity_one_time_password_status_id :integer          default(0), not null
+#  user_identity_one_time_password_status_id :bigint           default(0), not null
 #
 # Indexes
 #

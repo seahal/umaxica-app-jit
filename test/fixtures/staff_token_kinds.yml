@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: staff_token_kinds
+# Database name: token
+#
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_staff_token_kinds_on_code  (code) UNIQUE
+#
 browser_web:
   code: "BROWSER_WEB"
 client_ios:

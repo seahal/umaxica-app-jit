@@ -12,7 +12,7 @@
 #  updated_at                  :datetime         not null
 #  assigned_by_actor_id        :string
 #  avatar_id                   :bigint           not null
-#  handle_assignment_status_id :integer
+#  handle_assignment_status_id :bigint
 #  handle_id                   :bigint           not null
 #
 # Indexes

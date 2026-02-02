@@ -5,7 +5,12 @@
 # Table name: user_secret_kinds
 # Database name: principal
 #
-#  id :integer          not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_user_secret_kinds_on_code  (code) UNIQUE
 #
 class UserSecretKind < PrincipalRecord
   include CodeIdentifiable

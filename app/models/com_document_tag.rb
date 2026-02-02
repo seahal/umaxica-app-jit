@@ -7,11 +7,12 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  com_document_id            :bigint           not null
-#  com_document_tag_master_id :integer          default(0), not null
+#  com_document_tag_master_id :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_com_document_tags_on_com_document_tag_master_id  (com_document_tag_master_id)
+#  idx_com_document_tags_on_master_and_document  (com_document_tag_master_id,com_document_id) UNIQUE
+#  index_com_document_tags_on_com_document_id    (com_document_id)
 #
 # Foreign Keys
 #

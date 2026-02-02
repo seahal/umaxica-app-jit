@@ -13,9 +13,8 @@
 #
 # Indexes
 #
-#  idx_telephone_zip_occ_on_ids                                (telephone_occurrence_id,zip_occurrence_id) UNIQUE
-#  index_telephone_zip_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
-#  index_telephone_zip_occurrences_on_zip_occurrence_id        (zip_occurrence_id)
+#  idx_telephone_zip_occ_on_ids                          (telephone_occurrence_id,zip_occurrence_id) UNIQUE
+#  index_telephone_zip_occurrences_on_zip_occurrence_id  (zip_occurrence_id)
 #
 # Foreign Keys
 #

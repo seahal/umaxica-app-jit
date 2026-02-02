@@ -3,14 +3,12 @@
 # Table name: avatar_capabilities
 # Database name: avatar
 #
-#  id          :integer          not null, primary key
-#  description :text
-#  key         :string           not null
-#  name        :string           not null
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_avatar_capabilities_on_key  (key) UNIQUE
+#  index_avatar_capabilities_on_code  (code) UNIQUE
 #
 
 # frozen_string_literal: true

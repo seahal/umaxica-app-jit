@@ -3,8 +3,8 @@
 # Table name: org_timeline_category_masters
 # Database name: news
 #
-#  id        :integer          default(0), not null, primary key
-#  parent_id :integer          default(0), not null
+#  id        :bigint           not null, primary key
+#  parent_id :bigint           not null
 #
 # Indexes
 #
@@ -12,14 +12,12 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (parent_id => org_timeline_category_masters.id)
+#  fk_org_timeline_category_masters_parent  (parent_id => org_timeline_category_masters.id)
 #
 
 # frozen_string_literal: true
 
 class OrgTimelineCategoryMaster < NewsRecord
-  include CodeIdentifiable
-
   include Treeable
 
   belongs_to :parent,

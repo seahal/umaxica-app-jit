@@ -21,13 +21,12 @@
 #
 # Indexes
 #
-#  index_com_document_revisions_on_com_document_id                 (com_document_id)
 #  index_com_document_revisions_on_com_document_id_and_created_at  (com_document_id,created_at)
 #  index_com_document_revisions_on_public_id                       (public_id) UNIQUE
 #
 # Foreign Keys
 #
-#  fk_rails_...  (com_document_id => com_documents.id)
+#  fk_rails_...  (com_document_id => com_documents.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

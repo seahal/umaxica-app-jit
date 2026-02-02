@@ -14,7 +14,6 @@
 # Indexes
 #
 #  idx_ip_telephone_occ_on_ids                                (ip_occurrence_id,telephone_occurrence_id) UNIQUE
-#  index_ip_telephone_occurrences_on_ip_occurrence_id         (ip_occurrence_id)
 #  index_ip_telephone_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #
 # Foreign Keys

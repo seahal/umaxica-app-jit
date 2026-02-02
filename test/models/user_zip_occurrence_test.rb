@@ -13,9 +13,8 @@
 #
 # Indexes
 #
-#  idx_user_zip_occ_on_ids                           (user_occurrence_id,zip_occurrence_id) UNIQUE
-#  index_user_zip_occurrences_on_user_occurrence_id  (user_occurrence_id)
-#  index_user_zip_occurrences_on_zip_occurrence_id   (zip_occurrence_id)
+#  idx_user_zip_occ_on_ids                          (user_occurrence_id,zip_occurrence_id) UNIQUE
+#  index_user_zip_occurrences_on_zip_occurrence_id  (zip_occurrence_id)
 #
 # Foreign Keys
 #

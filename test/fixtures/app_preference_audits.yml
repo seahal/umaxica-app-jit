@@ -3,7 +3,7 @@
 # Table name: app_preference_audits
 # Database name: audit
 #
-#  id             :uuid             not null, primary key
+#  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
 #  context        :jsonb            not null
 #  current_value  :text             default(""), not null
@@ -15,8 +15,8 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
-#  event_id       :integer          default(0), not null
-#  level_id       :integer          default(0), not null
+#  event_id       :bigint           default(0), not null
+#  level_id       :bigint           default(0), not null
 #  subject_id     :string           not null
 #
 # Indexes
@@ -39,7 +39,5 @@ one:
   id: 018eb261-1234-7000-8000-000000000001
   subject_id: <%= ActiveRecord::FixtureSet.identify(:one, :uuid) %>
   subject_type: AppPreference
-_id: 10 # was 
-_id: 10 # was 
   occurred_at: <%= Time.current %>
   expires_at: <%= 20.years.from_now %>

@@ -14,7 +14,6 @@
 # Indexes
 #
 #  idx_ip_zip_occ_on_ids                          (ip_occurrence_id,zip_occurrence_id) UNIQUE
-#  index_ip_zip_occurrences_on_ip_occurrence_id   (ip_occurrence_id)
 #  index_ip_zip_occurrences_on_zip_occurrence_id  (zip_occurrence_id)
 #
 # Foreign Keys

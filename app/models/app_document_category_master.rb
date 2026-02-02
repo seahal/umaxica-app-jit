@@ -3,11 +3,13 @@
 # Table name: app_document_category_masters
 # Database name: document
 #
-#  id        :integer          default(0), not null, primary key
-#  parent_id :integer          default(0), not null
+#  id        :bigint           not null, primary key
+#  code      :citext           not null
+#  parent_id :bigint           not null
 #
 # Indexes
 #
+#  index_app_document_category_masters_on_code       (code) UNIQUE
 #  index_app_document_category_masters_on_parent_id  (parent_id)
 #
 # Foreign Keys

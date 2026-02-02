@@ -21,25 +21,17 @@
 #
 # Indexes
 #
-#  index_com_document_revisions_on_com_document_id                 (com_document_id)
 #  index_com_document_revisions_on_com_document_id_and_created_at  (com_document_id,created_at)
 #  index_com_document_revisions_on_public_id                       (public_id) UNIQUE
 #
 # Foreign Keys
 #
-#  fk_rails_...  (com_document_id => com_documents.id)
+#  fk_rails_...  (com_document_id => com_documents.id) ON DELETE => cascade
 #
 
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
   published_at: 2026-01-12 17:57:07
   expires_at: 2026-01-12 17:57:07
   edited_by_type: MyString
@@ -47,13 +39,6 @@ _id: 10 # was
   public_id: 216 # was MyStringOne
 
 two:
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
   published_at: 2026-01-12 17:57:07
   expires_at: 2026-01-12 17:57:07
   edited_by_type: MyString

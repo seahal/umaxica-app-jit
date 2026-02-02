@@ -13,9 +13,8 @@
 #
 # Indexes
 #
-#  idx_domain_zip_occ_on_ids                             (domain_occurrence_id,zip_occurrence_id) UNIQUE
-#  index_domain_zip_occurrences_on_domain_occurrence_id  (domain_occurrence_id)
-#  index_domain_zip_occurrences_on_zip_occurrence_id     (zip_occurrence_id)
+#  idx_domain_zip_occ_on_ids                          (domain_occurrence_id,zip_occurrence_id) UNIQUE
+#  index_domain_zip_occurrences_on_zip_occurrence_id  (zip_occurrence_id)
 #
 # Foreign Keys
 #

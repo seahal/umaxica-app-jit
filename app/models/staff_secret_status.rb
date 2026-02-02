@@ -5,7 +5,12 @@
 # Table name: staff_secret_statuses
 # Database name: operator
 #
-#  id :string           not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_staff_secret_statuses_on_code  (code) UNIQUE
 #
 
 class StaffSecretStatus < OperatorRecord

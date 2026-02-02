@@ -16,7 +16,7 @@
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
 #  user_id                               :bigint           not null
-#  user_identity_social_google_status_id :integer          default(1), not null
+#  user_identity_social_google_status_id :bigint           default(0), not null
 #
 # Indexes
 #

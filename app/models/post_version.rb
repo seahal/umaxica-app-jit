@@ -26,7 +26,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (post_id => posts.id)
+#  fk_rails_...  (post_id => posts.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

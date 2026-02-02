@@ -11,7 +11,7 @@
 #  admin_id            :bigint
 #  department_id       :bigint
 #  parent_id           :bigint
-#  workspace_status_id :string
+#  workspace_status_id :bigint           default(0), not null
 #
 # Indexes
 #
@@ -23,7 +23,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (workspace_status_id => workspace_statuses.id) ON DELETE => restrict
+#  fk_rails_...  (workspace_status_id => organization_statuses.id)
 #
 
 # frozen_string_literal: true

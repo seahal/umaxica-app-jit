@@ -13,9 +13,8 @@
 #
 # Indexes
 #
-#  idx_domain_staff_occ_on_ids                             (domain_occurrence_id,staff_occurrence_id) UNIQUE
-#  index_domain_staff_occurrences_on_domain_occurrence_id  (domain_occurrence_id)
-#  index_domain_staff_occurrences_on_staff_occurrence_id   (staff_occurrence_id)
+#  idx_domain_staff_occ_on_ids                            (domain_occurrence_id,staff_occurrence_id) UNIQUE
+#  index_domain_staff_occurrences_on_staff_occurrence_id  (staff_occurrence_id)
 #
 # Foreign Keys
 #

@@ -14,7 +14,6 @@
 # Indexes
 #
 #  idx_ip_user_occ_on_ids                           (ip_occurrence_id,user_occurrence_id) UNIQUE
-#  index_ip_user_occurrences_on_ip_occurrence_id    (ip_occurrence_id)
 #  index_ip_user_occurrences_on_user_occurrence_id  (user_occurrence_id)
 #
 # Foreign Keys

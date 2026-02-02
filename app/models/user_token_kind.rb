@@ -3,7 +3,12 @@
 # Table name: user_token_kinds
 # Database name: token
 #
-#  id :integer          not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_user_token_kinds_on_code  (code) UNIQUE
 #
 # frozen_string_literal: true
 

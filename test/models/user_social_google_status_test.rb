@@ -5,7 +5,12 @@
 # Table name: user_social_google_statuses
 # Database name: principal
 #
-#  id :integer          not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_user_social_google_statuses_on_code  (code) UNIQUE
 #
 require "test_helper"
 

@@ -13,9 +13,8 @@
 #
 # Indexes
 #
-#  idx_email_ip_occ_on_ids                            (email_occurrence_id,ip_occurrence_id) UNIQUE
-#  index_email_ip_occurrences_on_email_occurrence_id  (email_occurrence_id)
-#  index_email_ip_occurrences_on_ip_occurrence_id     (ip_occurrence_id)
+#  idx_email_ip_occ_on_ids                         (email_occurrence_id,ip_occurrence_id) UNIQUE
+#  index_email_ip_occurrences_on_ip_occurrence_id  (ip_occurrence_id)
 #
 # Foreign Keys
 #

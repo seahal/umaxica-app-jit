@@ -1,3 +1,7 @@
 ja:
+  activerecord:
+    errors:
+      messages:
+        code_format: "大文字・数字・アンダースコアのみを使用してください"
   errors:
     otp_locked: "試行回数の上限を超えました。最初からやり直してください。"

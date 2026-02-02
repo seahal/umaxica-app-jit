@@ -6,10 +6,10 @@ class RenameStaffIdentityStatusColumns < ActiveRecord::Migration[7.1]
   disable_ddl_transaction!
   def change
     # Remove existing foreign keys first
-    remove_foreign_key :staff_emails, column: :status_id, if_exists: true
-    remove_foreign_key :staff_telephones, column: :status_id, if_exists: true
-    remove_foreign_key :staff_secrets, column: :status_id, if_exists: true
-    remove_foreign_key :staff_passkeys, column: :status_id, if_exists: true
+    remove_foreign_key :staff_emails, :staff_email_statuses, column: :status_id, if_exists: true
+    remove_foreign_key :staff_telephones, :staff_telephone_statuses, column: :status_id, if_exists: true
+    remove_foreign_key :staff_secrets, :staff_secret_statuses, column: :status_id, if_exists: true
+    remove_foreign_key :staff_passkeys, :staff_passkey_statuses, column: :status_id, if_exists: true
 
     # Remove existing indexes
     remove_index :staff_emails, column: :status_id, if_exists: true

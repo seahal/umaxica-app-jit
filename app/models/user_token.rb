@@ -20,8 +20,8 @@
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
 #  user_id                  :bigint           not null
-#  user_token_kind_id       :integer          default(1), not null
-#  user_token_status_id     :integer          default(0), not null
+#  user_token_kind_id       :bigint           default(0), not null
+#  user_token_status_id     :bigint           default(0), not null
 #
 # Indexes
 #
@@ -31,15 +31,14 @@
 #  index_user_tokens_on_refresh_token_digest         (refresh_token_digest) UNIQUE
 #  index_user_tokens_on_refresh_token_family_id      (refresh_token_family_id)
 #  index_user_tokens_on_revoked_at                   (revoked_at)
-#  index_user_tokens_on_user_id                      (user_id)
 #  index_user_tokens_on_user_id_and_last_step_up_at  (user_id,last_step_up_at)
 #  index_user_tokens_on_user_token_kind_id           (user_token_kind_id)
 #  index_user_tokens_on_user_token_status_id         (user_token_status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_token_kind_id => user_token_kinds.id)
-#  fk_rails_...  (user_token_status_id => user_token_statuses.id)
+#  fk_user_tokens_on_user_token_kind_id    (user_token_kind_id => user_token_kinds.id)
+#  fk_user_tokens_on_user_token_status_id  (user_token_status_id => user_token_statuses.id)
 #
 
 # Refresh tokens are persisted as digests only.

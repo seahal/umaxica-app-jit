@@ -6,7 +6,7 @@
 #  id            :bigint           not null, primary key
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  option_id     :integer
+#  option_id     :bigint           not null
 #  preference_id :bigint           not null
 #
 # Indexes
@@ -16,8 +16,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (option_id => com_preference_timezone_options.id)
-#  fk_rails_...  (preference_id => com_preferences.id)
+#  fk_com_preference_timezones_on_option_id  (option_id => com_preference_timezone_options.id)
+#  fk_rails_...                              (preference_id => com_preferences.id)
 #
 
 # frozen_string_literal: true

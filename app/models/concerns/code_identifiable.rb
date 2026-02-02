@@ -25,12 +25,12 @@ module CodeIdentifiable
     before_validation { self.code = code&.upcase }
 
     # Validations
+    # Note: citext columns are case-insensitive at DB level, so we use standard uniqueness
     validates :code,
               presence: true,
               length: { maximum: 255 },
-              uniqueness: { case_sensitive: false },
-              format: { with: /\A[A-Z0-9_]+\z/,
-                        message: "must contain only uppercase letters, numbers, and underscores", }
+              uniqueness: true,
+              format: { with: /\A[A-Z0-9_]+\z/, message: :code_format }
   end
 
   class_methods do

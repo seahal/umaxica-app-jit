@@ -5,11 +5,12 @@
 # Table name: org_timeline_audit_levels
 # Database name: audit
 #
-#  id :integer          default(0), not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_org_timeline_audit_levels_on_id  (id) UNIQUE
+#  index_org_timeline_audit_levels_on_code  (code) UNIQUE
 #
 #  id :string(255)      default("NEYO"), not null, primary key
 

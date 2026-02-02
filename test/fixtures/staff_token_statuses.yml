@@ -3,7 +3,12 @@
 # Table name: staff_token_statuses
 # Database name: token
 #
-#  id :integer          not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_staff_token_statuses_on_code  (code) UNIQUE
 #
 neyo:
   code: "0 # was NEYO"

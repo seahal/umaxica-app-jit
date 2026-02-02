@@ -13,9 +13,8 @@
 #
 # Indexes
 #
-#  idx_staff_user_occ_on_ids                            (staff_occurrence_id,user_occurrence_id) UNIQUE
-#  index_staff_user_occurrences_on_staff_occurrence_id  (staff_occurrence_id)
-#  index_staff_user_occurrences_on_user_occurrence_id   (user_occurrence_id)
+#  idx_staff_user_occ_on_ids                           (staff_occurrence_id,user_occurrence_id) UNIQUE
+#  index_staff_user_occurrences_on_user_occurrence_id  (user_occurrence_id)
 #
 # Foreign Keys
 #

@@ -5,7 +5,12 @@
 # Table name: staff_passkey_statuses
 # Database name: operator
 #
-#  id :string           not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_staff_passkey_statuses_on_code  (code) UNIQUE
 #
 require "test_helper"
 

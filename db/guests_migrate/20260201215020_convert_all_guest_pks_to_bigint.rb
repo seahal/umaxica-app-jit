@@ -7,18 +7,18 @@ class ConvertAllGuestPksToBigint < ActiveRecord::Migration[8.2]
     enable_extension "citext" unless extension_enabled?("citext")
 
     # Drop all guest tables with int/serial/string PKs
-    drop_table :app_contact_statuses, if_exists: true
-    drop_table :com_contact_statuses, if_exists: true
-    drop_table :org_contact_statuses, if_exists: true
-    drop_table :app_contact_categories, if_exists: true
-    drop_table :com_contact_categories, if_exists: true
-    drop_table :org_contact_categories, if_exists: true
-    drop_table :app_contact_emails, if_exists: true
-    drop_table :com_contact_emails, if_exists: true
-    drop_table :org_contact_emails, if_exists: true
-    drop_table :app_contact_telephones, if_exists: true
-    drop_table :com_contact_telephones, if_exists: true
-    drop_table :org_contact_telephones, if_exists: true
+    drop_table :app_contact_statuses, if_exists: true, force: :cascade
+    drop_table :com_contact_statuses, if_exists: true, force: :cascade
+    drop_table :org_contact_statuses, if_exists: true, force: :cascade
+    drop_table :app_contact_categories, if_exists: true, force: :cascade
+    drop_table :com_contact_categories, if_exists: true, force: :cascade
+    drop_table :org_contact_categories, if_exists: true, force: :cascade
+    drop_table :app_contact_emails, if_exists: true, force: :cascade
+    drop_table :com_contact_emails, if_exists: true, force: :cascade
+    drop_table :org_contact_emails, if_exists: true, force: :cascade
+    drop_table :app_contact_telephones, if_exists: true, force: :cascade
+    drop_table :com_contact_telephones, if_exists: true, force: :cascade
+    drop_table :org_contact_telephones, if_exists: true, force: :cascade
 
     # Recreate all tables with bigint PK + code column
     create_table :app_contact_statuses, id: :bigint do |t|

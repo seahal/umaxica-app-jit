@@ -11,7 +11,7 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  post_id               :bigint           not null
-#  post_review_status_id :integer          default(0), not null
+#  post_review_status_id :bigint           default(0), not null
 #  reviewer_actor_id     :string           not null
 #
 # Indexes

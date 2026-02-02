@@ -9,9 +9,9 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  department_id :bigint
-#  public_id     :string
+#  public_id     :string           not null
 #  staff_id      :bigint           not null
-#  status_id     :string           default("NEYO"), not null
+#  status_id     :bigint           default(0), not null
 #
 # Indexes
 #

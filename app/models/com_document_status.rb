@@ -5,7 +5,12 @@
 # Table name: com_document_statuses
 # Database name: document
 #
-#  id :integer          default(0), not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_com_document_statuses_on_code  (code) UNIQUE
 #
 
 class ComDocumentStatus < DocumentRecord

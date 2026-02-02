@@ -29,12 +29,6 @@
 #  fk_rails_...  (com_document_id => com_documents.id) ON DELETE => cascade
 #
 one:
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
-_id: 10 # was 
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>
   edited_by_type: Staff

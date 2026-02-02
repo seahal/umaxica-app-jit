@@ -13,7 +13,6 @@
 #
 #  index_client_avatar_deletions_on_avatar_id          (avatar_id)
 #  index_client_avatar_deletions_on_client_and_avatar  (client_id,avatar_id) UNIQUE
-#  index_client_avatar_deletions_on_client_id          (client_id)
 #
 # Foreign Keys
 #

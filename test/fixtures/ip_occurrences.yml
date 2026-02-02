@@ -10,7 +10,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string           default("NONE"), not null
+#  status_id  :bigint           default(0), not null
 #
 # Indexes
 #
@@ -21,10 +21,9 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => ip_occurrence_statuses.id)
+#  fk_ip_occurrences_on_status_id  (status_id => ip_occurrence_statuses.id)
 #
 one:
-_id: 10 # was 
   public_id: 473 # was one_ip_occ_id_0000001
   body: "127.0.0.1"
   created_at: <%= Time.current %>

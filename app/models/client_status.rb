@@ -5,7 +5,12 @@
 # Table name: client_statuses
 # Database name: principal
 #
-#  id :integer          not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_client_statuses_on_code  (code) UNIQUE
 #
 class ClientStatus < PrincipalRecord
   include CodeIdentifiable

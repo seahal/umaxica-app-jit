@@ -7,16 +7,16 @@ class ConvertAllAvatarPksToBigint < ActiveRecord::Migration[8.2]
     enable_extension "citext" unless extension_enabled?("citext")
 
     # Drop all avatar tables with int/serial/string PKs
-    drop_table :handle_statuses, if_exists: true
-    drop_table :handle_assignment_statuses, if_exists: true
-    drop_table :post_statuses, if_exists: true
-    drop_table :post_review_statuses, if_exists: true
-    drop_table :avatar_roles, if_exists: true
-    drop_table :avatar_permissions, if_exists: true
-    drop_table :avatar_capabilities, if_exists: true
-    drop_table :avatar_ownership_statuses, if_exists: true
-    drop_table :avatar_moniker_statuses, if_exists: true
-    drop_table :avatar_membership_statuses, if_exists: true
+    drop_table :handle_statuses, if_exists: true, force: :cascade
+    drop_table :handle_assignment_statuses, if_exists: true, force: :cascade
+    drop_table :post_statuses, if_exists: true, force: :cascade
+    drop_table :post_review_statuses, if_exists: true, force: :cascade
+    drop_table :avatar_roles, if_exists: true, force: :cascade
+    drop_table :avatar_permissions, if_exists: true, force: :cascade
+    drop_table :avatar_capabilities, if_exists: true, force: :cascade
+    drop_table :avatar_ownership_statuses, if_exists: true, force: :cascade
+    drop_table :avatar_moniker_statuses, if_exists: true, force: :cascade
+    drop_table :avatar_membership_statuses, if_exists: true, force: :cascade
 
     # Recreate all tables with bigint PK + code column
     create_table :handle_statuses, id: :bigint do |t|

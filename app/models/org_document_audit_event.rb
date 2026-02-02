@@ -5,11 +5,12 @@
 # Table name: org_document_audit_events
 # Database name: audit
 #
-#  id :integer          default(0), not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_org_document_audit_events_on_id  (id) UNIQUE
+#  index_org_document_audit_events_on_code  (code) UNIQUE
 #
 
 class OrgDocumentAuditEvent < AuditRecord
@@ -23,6 +24,5 @@ class OrgDocumentAuditEvent < AuditRecord
            primary_key: "id",
            inverse_of: :org_document_audit_event,
            dependent: :restrict_with_error
-                 format: { with: /\A[A-Z0-9_]+\z/ }
   before_validation { self.id = id&.upcase }
 end

@@ -13,7 +13,8 @@
 #
 # Indexes
 #
-#  index_staff_notifications_on_staff_id  (staff_id)
+#  index_staff_notifications_on_public_id  (public_id) UNIQUE
+#  index_staff_notifications_on_staff_id   (staff_id)
 #
 
 class StaffNotification < NotificationRecord

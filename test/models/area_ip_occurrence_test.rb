@@ -13,9 +13,8 @@
 #
 # Indexes
 #
-#  idx_area_ip_occ_on_ids                           (area_occurrence_id,ip_occurrence_id) UNIQUE
-#  index_area_ip_occurrences_on_area_occurrence_id  (area_occurrence_id)
-#  index_area_ip_occurrences_on_ip_occurrence_id    (ip_occurrence_id)
+#  idx_area_ip_occ_on_ids                         (area_occurrence_id,ip_occurrence_id) UNIQUE
+#  index_area_ip_occurrences_on_ip_occurrence_id  (ip_occurrence_id)
 #
 # Foreign Keys
 #

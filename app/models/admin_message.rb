@@ -8,16 +8,17 @@
 #  id               :bigint           not null, primary key
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  public_id        :uuid
+#  public_id        :uuid             not null
 #  staff_message_id :bigint
 #
 # Indexes
 #
+#  index_admin_messages_on_public_id         (public_id) UNIQUE
 #  index_admin_messages_on_staff_message_id  (staff_message_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (staff_message_id => staff_messages.id)
+#  fk_admin_messages_on_staff_message_id_cascade  (staff_message_id => staff_messages.id) ON DELETE => cascade
 #
 
 class AdminMessage < MessageRecord

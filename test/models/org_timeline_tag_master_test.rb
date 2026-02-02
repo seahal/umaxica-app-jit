@@ -3,8 +3,8 @@
 # Table name: org_timeline_tag_masters
 # Database name: news
 #
-#  id        :integer          default(0), not null, primary key
-#  parent_id :integer          default(0), not null
+#  id        :bigint           not null, primary key
+#  parent_id :bigint           not null
 #
 # Indexes
 #
@@ -12,7 +12,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (parent_id => org_timeline_tag_masters.id)
+#  fk_org_timeline_tag_masters_parent  (parent_id => org_timeline_tag_masters.id)
 #
 
 # frozen_string_literal: true

@@ -21,13 +21,12 @@
 #
 # Indexes
 #
-#  index_com_timeline_revisions_on_com_timeline_id                 (com_timeline_id)
 #  index_com_timeline_revisions_on_com_timeline_id_and_created_at  (com_timeline_id,created_at)
 #  index_com_timeline_revisions_on_public_id                       (public_id) UNIQUE
 #
 # Foreign Keys
 #
-#  fk_rails_...  (com_timeline_id => com_timelines.id)
+#  fk_rails_...  (com_timeline_id => com_timelines.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

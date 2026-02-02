@@ -12,7 +12,7 @@
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  avatar_id                :bigint           not null
-#  avatar_moniker_status_id :integer
+#  avatar_moniker_status_id :bigint
 #  set_by_actor_id          :string
 #
 # Indexes

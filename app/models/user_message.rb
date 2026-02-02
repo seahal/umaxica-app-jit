@@ -8,12 +8,13 @@
 #  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  public_id  :uuid
+#  public_id  :uuid             not null
 #  user_id    :bigint           not null
 #
 # Indexes
 #
-#  index_user_messages_on_user_id  (user_id)
+#  index_user_messages_on_public_id  (public_id) UNIQUE
+#  index_user_messages_on_user_id    (user_id)
 #
 
 class UserMessage < MessageRecord

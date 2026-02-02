@@ -22,7 +22,7 @@
 #
 #  index_org_contact_topics_on_expires_at      (expires_at)
 #  index_org_contact_topics_on_org_contact_id  (org_contact_id)
-#  index_org_contact_topics_on_public_id       (public_id)
+#  index_org_contact_topics_on_public_id       (public_id) UNIQUE
 #
 # Foreign Keys
 #

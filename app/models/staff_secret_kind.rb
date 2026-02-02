@@ -5,12 +5,15 @@
 # Table name: staff_secret_kinds
 # Database name: operator
 #
-#  id :string(255)      not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_staff_secret_kinds_on_code  (code) UNIQUE
 #
 
 class StaffSecretKind < OperatorRecord
-  include StringPrimaryKey
-
   # Kind constants
   LOGIN = "LOGIN"
   TOTP = "TOTP"
@@ -19,5 +22,6 @@ class StaffSecretKind < OperatorRecord
 
   has_many :staff_secrets, inverse_of: :staff_secret_kind, dependent: :restrict_with_exception
 
-  validates :id, uniqueness: { case_sensitive: false }
+  validates :id, uniqueness: true
+  validates :code, presence: true, uniqueness: true
 end

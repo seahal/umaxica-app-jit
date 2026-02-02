@@ -5,7 +5,7 @@
 # Table name: org_timeline_statuses
 # Database name: news
 #
-#  id :integer          default(0), not null, primary key
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"

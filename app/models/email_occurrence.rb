@@ -12,7 +12,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :string           default("NONE"), not null
+#  status_id  :bigint           default(0), not null
 #
 # Indexes
 #
@@ -23,7 +23,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (status_id => email_occurrence_statuses.id)
+#  fk_email_occurrences_on_status_id  (status_id => email_occurrence_statuses.id)
 #
 
 class EmailOccurrence < OccurrenceRecord

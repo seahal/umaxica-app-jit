@@ -5,11 +5,12 @@
 # Table name: staff_audit_events
 # Database name: audit
 #
-#  id :integer          default(0), not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_staff_audit_events_on_id  (id) UNIQUE
+#  index_staff_audit_events_on_code  (code) UNIQUE
 #
 
 class StaffAuditEvent < AuditRecord

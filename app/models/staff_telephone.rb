@@ -5,26 +5,28 @@
 # Table name: staff_telephones
 # Database name: operator
 #
-#  id                 :bigint           not null, primary key
-#  locked_at          :datetime
-#  number             :string
-#  otp_attempts_count :integer          default(0), not null
-#  otp_counter        :text
-#  otp_expires_at     :datetime
-#  otp_private_key    :string
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  staff_id           :bigint
-#  status_id          :string           default("UNVERIFIED"), not null
+#  id                                 :bigint           not null, primary key
+#  locked_at                          :datetime
+#  number                             :string           not null
+#  otp_attempts_count                 :integer          default(0), not null
+#  otp_counter                        :text             not null
+#  otp_expires_at                     :datetime
+#  otp_private_key                    :string           not null
+#  created_at                         :datetime         not null
+#  updated_at                         :datetime         not null
+#  staff_id                           :bigint           not null
+#  staff_identity_telephone_status_id :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_staff_telephones_on_staff_id  (staff_id)
+#  index_staff_telephones_on_lower_number                        (lower((number)::text)) UNIQUE
+#  index_staff_telephones_on_staff_id                            (staff_id)
+#  index_staff_telephones_on_staff_identity_telephone_status_id  (staff_identity_telephone_status_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (staff_id => staffs.id)
-#  fk_rails_...  (status_id => staff_telephone_statuses.id)
+#  fk_rails_...  (staff_identity_telephone_status_id => staff_telephone_statuses.id)
 #
 
 class StaffTelephone < OperatorRecord

@@ -5,14 +5,12 @@
 # Table name: com_preference_statuses
 # Database name: preference
 #
-#  id         :integer          default(0), not null, primary key
-#  position   :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  com_preference_statuses_position_unique  (position) UNIQUE
+#  index_com_preference_statuses_on_code  (code) UNIQUE
 #
 require "test_helper"
 

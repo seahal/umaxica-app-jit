@@ -5,15 +5,22 @@
 #
 #  id           :bigint           not null, primary key
 #  expires_at   :datetime
+#  jti          :string
 #  token_digest :binary
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  public_id    :string
-#  status_id    :string           default("NEYO"), not null
+#  public_id    :string           not null
+#  status_id    :bigint           default(0), not null
 #
 # Indexes
 #
+#  index_com_preferences_on_jti        (jti) UNIQUE
+#  index_com_preferences_on_public_id  (public_id) UNIQUE
 #  index_com_preferences_on_status_id  (status_id)
+#
+# Foreign Keys
+#
+#  fk_com_preferences_on_status_id  (status_id => com_preference_statuses.id)
 #
 
 # frozen_string_literal: true

@@ -3,14 +3,12 @@
 # Table name: org_preference_timezone_options
 # Database name: preference
 #
-#  id         :integer          not null, primary key
-#  position   :integer          not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  org_preference_timezone_options_position_unique  (position) UNIQUE
+#  index_org_preference_timezone_options_on_code  (code) UNIQUE
 #
 
 # frozen_string_literal: true
@@ -26,11 +24,6 @@ class OrgPreferenceTimezoneOption < PreferenceRecord
            inverse_of: :option,
            dependent: :restrict_with_error
   scope :ordered, -> { order(:position, :id) }
-                 format: { with: /\A[A-Za-z0-9_\/\-\+]+\z/ }
-  validates :position,
-            presence: true,
-            numericality: { only_integer: true, greater_than: 0 },
-            uniqueness: true
   before_validation { self.id = id&.downcase }
 
   private

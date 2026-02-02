@@ -7,16 +7,17 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  com_timeline_id            :bigint           not null
-#  com_timeline_tag_master_id :integer          default(0), not null
+#  com_timeline_tag_master_id :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_com_timeline_tags_on_com_timeline_tag_master_id  (com_timeline_tag_master_id)
+#  idx_com_timeline_tags_on_master_and_timeline  (com_timeline_tag_master_id,com_timeline_id) UNIQUE
+#  index_com_timeline_tags_on_com_timeline_id    (com_timeline_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (com_timeline_id => com_timelines.id) ON DELETE => cascade
-#  fk_rails_...  (com_timeline_tag_master_id => com_timeline_tag_masters.id)
+#  fk_com_timeline_tags_on_com_timeline_tag_master_id  (com_timeline_tag_master_id => com_timeline_tag_masters.id)
+#  fk_rails_...                                        (com_timeline_id => com_timelines.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

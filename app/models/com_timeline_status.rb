@@ -5,12 +5,10 @@
 # Table name: com_timeline_statuses
 # Database name: news
 #
-#  id :integer          default(0), not null, primary key
+#  id :bigint           not null, primary key
 #
 
 class ComTimelineStatus < NewsRecord
-  include CodeIdentifiable
-
   has_many :com_timelines,
            foreign_key: :status_id,
            inverse_of: :com_timeline_status,

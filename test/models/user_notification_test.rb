@@ -13,7 +13,8 @@
 #
 # Indexes
 #
-#  index_user_notifications_on_user_id  (user_id)
+#  index_user_notifications_on_public_id  (public_id) UNIQUE
+#  index_user_notifications_on_user_id    (user_id)
 #
 
 require "test_helper"

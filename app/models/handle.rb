@@ -11,7 +11,7 @@
 #  is_system        :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  handle_status_id :integer
+#  handle_status_id :bigint
 #  public_id        :string           not null
 #
 # Indexes

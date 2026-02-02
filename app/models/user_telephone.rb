@@ -15,11 +15,11 @@
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
 #  user_id                           :bigint           not null
-#  user_identity_telephone_status_id :integer          default(0), not null
+#  user_identity_telephone_status_id :bigint           default(0), not null
 #
 # Indexes
 #
-#  index_user_identity_telephones_on_lower_number              (lower((number)::text))
+#  index_user_telephones_on_lower_number                       (lower((number)::text)) UNIQUE
 #  index_user_telephones_on_user_id                            (user_id)
 #  index_user_telephones_on_user_identity_telephone_status_id  (user_identity_telephone_status_id)
 #

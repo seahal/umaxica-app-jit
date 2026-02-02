@@ -11,7 +11,7 @@
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  avatar_id                  :bigint           not null
-#  avatar_ownership_status_id :integer
+#  avatar_ownership_status_id :bigint
 #  owner_organization_id      :string           not null
 #  transferred_by_actor_id    :string
 #

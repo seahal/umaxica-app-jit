@@ -110,10 +110,10 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
     skip "Run 'bundle exec database_consistency' manually to verify"
 
     # Expected improvements:
-    # - UniqueIndexChecker: 44 → 12 (PKs remain)
-    # - NullConstraintChecker: 12 → 0
-    # - ForeignKeyTypeChecker: 38 → 0
-    # - ForeignKeyChecker: 33 → 0
-    # - RedundantIndexChecker: 45 → 0
+    # - UniqueIndexChecker: 44 -> 12 (PKs remain)
+    # - NullConstraintChecker: 12 -> 0
+    # - ForeignKeyTypeChecker: 38 -> 0
+    # - ForeignKeyChecker: 33 -> 0
+    # - RedundantIndexChecker: 45 -> 0
   end
 end

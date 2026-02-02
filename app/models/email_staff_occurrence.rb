@@ -14,7 +14,6 @@
 # Indexes
 #
 #  idx_email_staff_occ_on_ids                            (email_occurrence_id,staff_occurrence_id) UNIQUE
-#  index_email_staff_occurrences_on_email_occurrence_id  (email_occurrence_id)
 #  index_email_staff_occurrences_on_staff_occurrence_id  (staff_occurrence_id)
 #
 # Foreign Keys

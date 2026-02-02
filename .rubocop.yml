@@ -864,6 +864,9 @@ Rails/FindByOrAssignmentMemoization:
 Rails/OrderArguments:
   Enabled: true
 
+Rails/CreateTableWithTimestamps:
+  Enabled: false
+
 # ============================================================
 # 6. パフォーマンス
 # ============================================================

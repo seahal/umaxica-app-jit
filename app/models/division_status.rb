@@ -5,7 +5,12 @@
 # Table name: division_statuses
 # Database name: operator
 #
-#  id :string           not null, primary key
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_division_statuses_on_code  (code) UNIQUE
 #
 class DivisionStatus < OperatorRecord
   include CodeIdentifiable

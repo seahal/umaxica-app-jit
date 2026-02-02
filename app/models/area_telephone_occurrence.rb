@@ -14,7 +14,6 @@
 # Indexes
 #
 #  idx_area_telephone_occ_on_ids                                (area_occurrence_id,telephone_occurrence_id) UNIQUE
-#  index_area_telephone_occurrences_on_area_occurrence_id       (area_occurrence_id)
 #  index_area_telephone_occurrences_on_telephone_occurrence_id  (telephone_occurrence_id)
 #
 # Foreign Keys

@@ -18,7 +18,7 @@
 #  updated_at                    :datetime         not null
 #  public_id                     :string(21)       not null
 #  user_id                       :bigint           not null
-#  user_identity_email_status_id :integer          default(0), not null
+#  user_identity_email_status_id :bigint           default(0), not null
 #
 # Indexes
 #

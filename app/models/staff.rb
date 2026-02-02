@@ -9,8 +9,8 @@
 #  withdrawn_at :datetime
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  public_id    :string
-#  status_id    :string           default("NEYO"), not null
+#  public_id    :string           not null
+#  status_id    :bigint           default(0), not null
 #
 # Indexes
 #

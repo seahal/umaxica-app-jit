@@ -5,14 +5,12 @@
 # Table name: avatar_permissions
 # Database name: avatar
 #
-#  id          :integer          not null, primary key
-#  description :text
-#  key         :string           not null
-#  name        :string           not null
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_avatar_permissions_on_key  (key) UNIQUE
+#  index_avatar_permissions_on_code  (code) UNIQUE
 #
 
 class AvatarPermission < AvatarRecord
@@ -22,7 +20,4 @@ class AvatarPermission < AvatarRecord
 
   has_many :avatar_role_permissions, dependent: :restrict_with_error
   has_many :avatar_roles, through: :avatar_role_permissions
-
-  validates :key, presence: true, uniqueness: true
-  validates :name, presence: true
 end

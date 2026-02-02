@@ -5,13 +5,12 @@
 # Table name: post_review_statuses
 # Database name: avatar
 #
-#  id   :integer          not null, primary key
-#  key  :string           not null
-#  name :string           not null
+#  id   :bigint           not null, primary key
+#  code :citext           not null
 #
 # Indexes
 #
-#  index_post_review_statuses_on_key  (key) UNIQUE
+#  index_post_review_statuses_on_code  (code) UNIQUE
 #
 
 class PostReviewStatus < AvatarRecord
@@ -20,7 +19,4 @@ class PostReviewStatus < AvatarRecord
   self.record_timestamps = false
 
   has_many :post_reviews, dependent: :restrict_with_error
-
-  validates :key, presence: true, uniqueness: true
-  validates :name, presence: true
 end

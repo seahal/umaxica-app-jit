@@ -20,8 +20,8 @@
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
 #  staff_id                 :bigint           not null
-#  staff_token_kind_id      :integer          default(1), not null
-#  staff_token_status_id    :integer          default(0), not null
+#  staff_token_kind_id      :bigint           default(0), not null
+#  staff_token_status_id    :bigint           default(0), not null
 #
 # Indexes
 #
@@ -31,15 +31,14 @@
 #  index_staff_tokens_on_refresh_token_digest          (refresh_token_digest) UNIQUE
 #  index_staff_tokens_on_refresh_token_family_id       (refresh_token_family_id)
 #  index_staff_tokens_on_revoked_at                    (revoked_at)
-#  index_staff_tokens_on_staff_id                      (staff_id)
 #  index_staff_tokens_on_staff_id_and_last_step_up_at  (staff_id,last_step_up_at)
 #  index_staff_tokens_on_staff_token_kind_id           (staff_token_kind_id)
 #  index_staff_tokens_on_staff_token_status_id         (staff_token_status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (staff_token_kind_id => staff_token_kinds.id)
-#  fk_rails_...  (staff_token_status_id => staff_token_statuses.id)
+#  fk_staff_tokens_on_staff_token_kind_id    (staff_token_kind_id => staff_token_kinds.id)
+#  fk_staff_tokens_on_staff_token_status_id  (staff_token_status_id => staff_token_statuses.id)
 #
 
 # Refresh tokens are persisted as digests only.

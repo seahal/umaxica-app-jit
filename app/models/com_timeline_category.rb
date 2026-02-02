@@ -6,7 +6,7 @@
 #  id                              :bigint           not null, primary key
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
-#  com_timeline_category_master_id :integer          default(0), not null
+#  com_timeline_category_master_id :bigint           default(0), not null
 #  com_timeline_id                 :bigint           not null
 #
 # Indexes
@@ -16,8 +16,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (com_timeline_category_master_id => com_timeline_category_masters.id)
-#  fk_rails_...  (com_timeline_id => com_timelines.id) ON DELETE => cascade
+#  fk_com_timeline_categories_on_com_timeline_category_master_id  (com_timeline_category_master_id => com_timeline_category_masters.id)
+#  fk_rails_...                                                   (com_timeline_id => com_timelines.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

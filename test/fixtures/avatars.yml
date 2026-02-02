@@ -11,7 +11,7 @@
 #  updated_at                   :datetime         not null
 #  active_handle_id             :bigint           not null
 #  avatar_status_id             :string
-#  capability_id                :integer          default(0), not null
+#  capability_id                :bigint           default(0), not null
 #  client_id                    :uuid
 #  owner_organization_id        :string
 #  public_id                    :string           not null

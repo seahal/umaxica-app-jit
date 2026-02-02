@@ -22,7 +22,7 @@
 #
 #  index_app_contact_topics_on_app_contact_id  (app_contact_id)
 #  index_app_contact_topics_on_expires_at      (expires_at)
-#  index_app_contact_topics_on_public_id       (public_id)
+#  index_app_contact_topics_on_public_id       (public_id) UNIQUE
 #
 # Foreign Keys
 #

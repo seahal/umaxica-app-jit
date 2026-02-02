@@ -8,16 +8,17 @@
 #  id              :bigint           not null, primary key
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  public_id       :uuid
+#  public_id       :uuid             not null
 #  user_message_id :bigint
 #
 # Indexes
 #
+#  index_client_messages_on_public_id        (public_id) UNIQUE
 #  index_client_messages_on_user_message_id  (user_message_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_message_id => user_messages.id)
+#  fk_client_messages_on_user_message_id_cascade  (user_message_id => user_messages.id) ON DELETE => cascade
 #
 
 class ClientMessage < MessageRecord

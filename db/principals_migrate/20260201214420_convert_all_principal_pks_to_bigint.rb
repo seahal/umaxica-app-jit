@@ -7,20 +7,20 @@ class ConvertAllPrincipalPksToBigint < ActiveRecord::Migration[8.2]
     enable_extension "citext" unless extension_enabled?("citext")
 
     # Drop all principal tables with int/serial/string PKs
-    drop_table :user_statuses, if_exists: true
-    drop_table :client_statuses, if_exists: true
-    drop_table :user_email_statuses, if_exists: true
-    drop_table :user_telephone_statuses, if_exists: true
-    drop_table :user_secret_statuses, if_exists: true
-    drop_table :user_passkey_statuses, if_exists: true
-    drop_table :user_one_time_password_statuses, if_exists: true
-    drop_table :user_secret_kinds, if_exists: true
-    drop_table :user_token_kinds, if_exists: true
-    drop_table :user_token_statuses, if_exists: true
-    drop_table :staff_token_kinds, if_exists: true
-    drop_table :staff_token_statuses, if_exists: true
-    drop_table :user_social_google_statuses, if_exists: true
-    drop_table :user_social_apple_statuses, if_exists: true
+    drop_table :user_statuses, if_exists: true, force: :cascade
+    drop_table :client_statuses, if_exists: true, force: :cascade
+    drop_table :user_email_statuses, if_exists: true, force: :cascade
+    drop_table :user_telephone_statuses, if_exists: true, force: :cascade
+    drop_table :user_secret_statuses, if_exists: true, force: :cascade
+    drop_table :user_passkey_statuses, if_exists: true, force: :cascade
+    drop_table :user_one_time_password_statuses, if_exists: true, force: :cascade
+    drop_table :user_secret_kinds, if_exists: true, force: :cascade
+    drop_table :user_token_kinds, if_exists: true, force: :cascade
+    drop_table :user_token_statuses, if_exists: true, force: :cascade
+    drop_table :staff_token_kinds, if_exists: true, force: :cascade
+    drop_table :staff_token_statuses, if_exists: true, force: :cascade
+    drop_table :user_social_google_statuses, if_exists: true, force: :cascade
+    drop_table :user_social_apple_statuses, if_exists: true, force: :cascade
 
     # Recreate all tables with bigint PK + code column
     create_table :user_statuses, id: :bigint do |t|

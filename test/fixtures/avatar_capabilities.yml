@@ -1,6 +1,17 @@
-  <% I18n.locale = :ja %>
+# <% I18n.locale = :ja %>
 
+# == Schema Information
+#
+# Table name: avatar_capabilities
+# Database name: avatar
+#
+#  id   :bigint           not null, primary key
+#  code :citext           not null
+#
+# Indexes
+#
+#  index_avatar_capabilities_on_code  (code) UNIQUE
+#
 normal:
   code: "11 # was 11 # was NORMAL"
-_id: 10 # was 
   name: "Normal"

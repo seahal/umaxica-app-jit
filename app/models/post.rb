@@ -12,7 +12,7 @@
 #  updated_at            :datetime         not null
 #  author_avatar_id      :bigint           not null
 #  created_by_actor_id   :string           not null
-#  post_status_id        :integer          default(0), not null
+#  post_status_id        :bigint           default(0), not null
 #  public_id             :string           not null
 #  published_by_actor_id :string
 #
