@@ -3,21 +3,16 @@
 # Table name: user_audit_levels
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_audit_levels_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 neyo:
-  code: "NEYO"
+  id: 4
 debug:
-  code: "DEBUG"
+  id: 1
 error:
-  code: "ERROR"
+  id: 2
 info:
-  code: "INFO"
+  id: 3
 warn:
-  code: "WARN"
+  id: 5

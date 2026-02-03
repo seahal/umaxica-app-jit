@@ -17,7 +17,7 @@
 #  latest_revision_id :bigint
 #  latest_version_id  :bigint
 #  slug_id            :string(32)       default(""), not null
-#  status_id          :bigint           default(0), not null
+#  status_id          :bigint           default(1), not null
 #
 # Indexes
 #
@@ -37,6 +37,10 @@
 class ComTimeline < NewsRecord
   include ::SlugId
   include Timeline
+
+  attribute :status_id, default: ComTimelineStatus::NEYO
+
+  attribute :status_id, default: ComTimelineStatus::NEYO
 
   validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
 

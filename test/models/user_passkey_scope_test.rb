@@ -4,7 +4,7 @@ require "test_helper"
 
 class UserPasskeyScopeTest < ActiveSupport::TestCase
   setup do
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: "NEYO")
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
 
     @active_passkey = UserPasskey.create!(
       user: @user,

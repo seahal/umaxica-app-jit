@@ -18,7 +18,7 @@
 #  updated_at                    :datetime         not null
 #  public_id                     :string(21)       not null
 #  user_id                       :bigint           not null
-#  user_identity_email_status_id :bigint           default(0), not null
+#  user_identity_email_status_id :bigint           default(1), not null
 #
 # Indexes
 #
@@ -42,6 +42,7 @@ class UserEmail < PrincipalRecord
   include Turnstile
 
   MAX_EMAILS_PER_USER = 4
+  attribute :user_identity_email_status_id, default: UserEmailStatus::UNVERIFIED
   belongs_to :user_email_status,
              optional: true,
              inverse_of: :user_emails,
@@ -51,11 +52,8 @@ class UserEmail < PrincipalRecord
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
-  validates :user_identity_email_status_id, length: { maximum: 255 }
+  validates :user_identity_email_status_id, numericality: { only_integer: true }
   validate :enforce_user_email_limit, on: :create
-  before_validation do
-    self.user_id ||= "00000000-0000-0000-0000-000000000000"
-  end
 
   def to_param
     public_id

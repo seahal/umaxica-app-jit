@@ -20,8 +20,8 @@
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
 #  staff_id                 :bigint           not null
-#  staff_token_kind_id      :bigint           default(0), not null
-#  staff_token_status_id    :bigint           default(0), not null
+#  staff_token_kind_id      :bigint           default(1), not null
+#  staff_token_status_id    :bigint           default(2), not null
 #
 # Indexes
 #
@@ -48,7 +48,7 @@ class StaffTokenTest < ActiveSupport::TestCase
   def setup
     @staff = Staff.find_by!(public_id: "bcde3456")
 
-    @token = StaffToken.create!(staff: @staff, staff_token_status_id: "ACTIVE")
+    @token = StaffToken.create!(staff: @staff, staff_token_status_id: StaffTokenStatus::ACTIVE)
   end
 
   test "inherits from TokenRecord" do
@@ -67,10 +67,9 @@ class StaffTokenTest < ActiveSupport::TestCase
     assert_equal @staff.id, @token.staff_id
   end
 
-  test "generates UUID id automatically" do
+  test "assigns numeric id automatically" do
     assert_not_nil @token.id
-    assert_equal 36, @token.id.length
-    assert_match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, @token.id)
+    assert_kind_of Integer, @token.id
   end
 
   test "has created_at timestamp" do
@@ -117,7 +116,7 @@ class StaffTokenTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum concurrent sessions per staff" do
-    staff = Staff.create!(staff_status: StaffStatus.find("NEYO"))
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NEYO))
     StaffToken::MAX_SESSIONS_PER_STAFF.times do
       StaffToken.create!(staff: staff)
     end

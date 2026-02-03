@@ -19,7 +19,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
 
       pref, _token, _cookie_name = assert_preference_created(domain)
-      assert_equal "NEYO", pref.status_id
+      assert_equal 2, pref.status_id
     end
 
     test "#{domain[:name]} domain redirects to add ri param when missing" do
@@ -66,7 +66,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       )
 
       pref.reload
-      assert_equal "US", pref.try("#{domain[:name]}_preference_region").option_id
+      assert_equal 1, pref.try("#{domain[:name]}_preference_region").option_id
     end
 
     test "#{domain[:name]} domain updates timezone" do
@@ -83,7 +83,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       )
 
       pref.reload
-      assert_equal update_option_id, pref.try("#{domain[:name]}_preference_timezone").option_id
+      assert_equal 1, pref.try("#{domain[:name]}_preference_timezone").option_id
     end
 
     test "#{domain[:name]} domain updates language" do
@@ -99,7 +99,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       )
 
       pref.reload
-      assert_equal "EN", pref.try("#{domain[:name]}_preference_language").option_id
+      assert_equal 2, pref.try("#{domain[:name]}_preference_language").option_id
     end
 
     test "#{domain[:name]} domain applies language setting to locale" do
@@ -199,7 +199,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       )
 
       pref.reload
-      assert_equal "dark", pref.try("#{domain[:name]}_preference_colortheme").option_id
+      assert_equal 2, pref.try("#{domain[:name]}_preference_colortheme").option_id
     end
 
     test "#{domain[:name]} domain timezone select omits blank option" do
@@ -240,7 +240,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       assert_equal I18n.t("apex." + domain[:name] + ".preference.resets.destroyed"), flash[:notice]
 
       pref.reload
-      assert_equal "DELETED", pref.status_id
+      assert_equal 1, pref.status_id
       assert_not_nil pref.expires_at
     end
 
@@ -257,7 +257,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       end
 
       pref.reload
-      assert_equal "NEYO", pref.status_id
+      assert_equal 2, pref.status_id
       assert_operator pref.expires_at, :>=, original_expires_at
     end
 
@@ -276,7 +276,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       new_token_digest = refresh_token_digest_for(new_token)
       new_pref = domain[:preference_model].find_by(token_digest: new_token_digest)
       assert_not_equal pref.id, new_pref.id
-      assert_equal "NEYO", new_pref.status_id
+      assert_equal 2, new_pref.status_id
     end
 
     test "#{domain[:name]} domain surfaces localized timezone errors" do
@@ -341,7 +341,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       initial_status = pref.status_id
       initial_audit_count = audit_class.where(subject_id: pref.id.to_s).count
 
-      assert_equal "NEYO", initial_status, "Initial status should be NEYO"
+      assert_equal 2, initial_status, "Initial status should be NEYO"
 
       # Submit reset form with confirmation
       delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
@@ -353,13 +353,14 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       pref.reload
       final_audit_count = audit_class.where(subject_id: pref.id.to_s).count
 
-      assert_equal "DELETED", pref.status_id, "Status should be DELETED after reset"
+      assert_equal 1, pref.status_id, "Status should be DELETED after reset"
       assert_operator final_audit_count, :>, initial_audit_count,
                       "Audit log should be created"
 
       # Verify audit log event
-      audit = audit_class.where(subject_id: pref.id.to_s).order(created_at: :desc).first
-      assert_equal "RESET_BY_USER_DECISION", audit.event_id
+      event_class = "#{domain[:name].capitalize}PreferenceAuditEvent".constantize
+      audit = audit_class.where(subject_id: pref.id.to_s).order(id: :desc).first
+      assert_equal event_class::RESET_BY_USER_DECISION, audit.event_id
 
       # Verify cookies are deleted
       assert_empty cookies[cookie_name].to_s, "Refresh token cookie should be deleted"
@@ -378,7 +379,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Verify database is unchanged
       pref.reload
-      assert_equal "NEYO", pref.status_id, "Status should remain NEYO"
+      assert_equal 2, pref.status_id, "Status should remain NEYO"
 
       # Verify cookie is still present
       assert_not_nil cookies[cookie_name], "Cookie should still exist"

@@ -5,43 +5,15 @@
 # Table name: zip_occurrence_statuses
 # Database name: occurrence
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_zip_occurrence_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class ZipOccurrenceStatusTest < ActiveSupport::TestCase
-  test "upcases id before validation" do
-    assert_upcases_id(ZipOccurrenceStatus)
-  end
-
-  test "validates id presence" do
-    record = ZipOccurrenceStatus.new(id: nil)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id length" do
-    record = ZipOccurrenceStatus.new(id: "A" * 256)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id format" do
-    record = ZipOccurrenceStatus.new(id: "BAD-ID!")
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id uniqueness case insensitive" do
-    record = ZipOccurrenceStatus.new(id: "active")
-
-    assert_invalid_attribute(record, :id)
+  test "accepts integer ids" do
+    record = ZipOccurrenceStatus.new(id: 3)
+    assert_predicate record, :valid?
   end
 
   test "has occurrences association" do

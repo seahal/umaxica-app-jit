@@ -5,7 +5,14 @@ require "test_helper"
 class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::IntegrationTest
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
-    @user = User.create!
+    UserStatus.find_or_create_by!(id: UserStatus::NEYO)
+    UserSecretStatus.find_or_create_by!(id: UserSecretStatus::ACTIVE)
+    UserSecretKind.find_or_create_by!(id: UserSecretKind::LOGIN)
+
+    @user = User.create!(
+      status_id: UserStatus::NEYO,
+      public_id: "secret_user_#{SecureRandom.hex(4)}",
+    )
     @user_secret = UserSecret.create!(
       user: @user,
       name: "Test Secret",

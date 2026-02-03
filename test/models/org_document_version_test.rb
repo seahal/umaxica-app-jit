@@ -34,6 +34,8 @@
 require "test_helper"
 
 class OrgDocumentVersionTest < ActiveSupport::TestCase
+  fixtures :org_documents, :org_document_statuses
+
   test "includes Version concern" do
     assert_includes OrgDocumentVersion.included_modules, Version
   end

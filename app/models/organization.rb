@@ -44,5 +44,5 @@ class Organization < OperatorRecord
   has_many :user_memberships, dependent: :destroy, inverse_of: :workspace
 
   validates :domain, uniqueness: true
-  validates :workspace_status_id, length: { maximum: 255 }, allow_nil: true
+  validates :workspace_status_id, numericality: { only_integer: true }, allow_nil: true
 end

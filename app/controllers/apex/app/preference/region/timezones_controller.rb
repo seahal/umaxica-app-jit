@@ -13,8 +13,12 @@ module Apex
 
           def update
             set_timezone_preferences_update
-            redirect_to edit_apex_app_preference_region_timezone_url(tz: @preference_timezone.option_id.downcase),
-                        notice: t("apex.app.preferences.update_success")
+            redirect_to(
+              edit_apex_app_preference_region_timezone_url(
+                tz: option_id_to_timezone(@preference_timezone.option_id, preference_prefix).downcase,
+              ),
+              notice: t("apex.app.preferences.update_success"),
+            )
           rescue PreferenceOperationError
             redirect_to edit_apex_app_preference_region_timezone_url,
                         alert: I18n.t("errors.messages.preference_operation_failed")

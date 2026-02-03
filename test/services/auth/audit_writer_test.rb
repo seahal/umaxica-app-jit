@@ -4,9 +4,11 @@ require "test_helper"
 
 module Auth
   class AuditWriterTest < ActiveSupport::TestCase
+    fixtures :users, :user_statuses, :user_audit_events, :user_audit_levels
+
     setup do
       @user = users(:one)
-      @user.update!(status_id: "ACTIVE", withdrawn_at: nil) if defined?(UserStatus)
+      @user.update!(status_id: UserStatus::ACTIVE, withdrawn_at: nil) if defined?(UserStatus)
 
       # Ensure audit master data exists
       UserAuditEvent.ensure_defaults! if UserAuditEvent.respond_to?(:ensure_defaults!)
@@ -16,14 +18,14 @@ module Auth
     test "write! creates audit record successfully" do
       audit = Auth::AuditWriter.write!(
         UserAudit,
-        "LOGGED_IN",
+        UserAuditEvent::LOGGED_IN,
         resource: @user,
         actor: @user,
         ip_address: "127.0.0.1",
       )
 
       assert_predicate audit, :persisted?
-      assert_equal "LOGGED_IN", audit.event_id
+      assert_equal UserAuditEvent::LOGGED_IN, audit.event_id
       assert_equal @user.id.to_s, audit.subject_id
       assert_equal "User", audit.subject_type
       assert_equal IPAddr.new("127.0.0.1"), audit.ip_address
@@ -47,14 +49,14 @@ module Auth
     test "write returns true on success" do
       result = Auth::AuditWriter.write(
         UserAudit,
-        "LOGGED_IN",
+        UserAuditEvent::LOGGED_IN,
         resource: @user,
         actor: @user,
         ip_address: "127.0.0.1",
       )
 
       assert result
-      assert UserAudit.exists?(event_id: "LOGGED_IN", subject_id: @user.id.to_s)
+      assert UserAudit.exists?(event_id: UserAuditEvent::LOGGED_IN, subject_id: @user.id.to_s)
     end
 
     test "write returns false on failure" do
@@ -124,14 +126,14 @@ module Auth
     test "build_audit creates audit record without saving" do
       audit = Auth::AuditWriter.build_audit(
         UserAudit,
-        "LOGGED_IN",
+        UserAuditEvent::LOGGED_IN,
         resource: @user,
         actor: @user,
         ip_address: "127.0.0.1",
       )
 
       assert_not audit.persisted?
-      assert_equal "LOGGED_IN", audit.event_id
+      assert_equal UserAuditEvent::LOGGED_IN, audit.event_id
       assert_equal @user.id.to_s, audit.subject_id
       assert_equal "User", audit.subject_type
     end

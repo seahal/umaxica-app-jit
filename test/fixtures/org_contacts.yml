@@ -30,7 +30,9 @@
 #  fk_rails_...                          (category_id => org_contact_categories.id)
 #
 one:
-  public_id: 25 # was test_org_contact_0001
+  category_id: 2
+  status_id: 1
+  public_id: test_org_contact_0001
   ip_address: 127.0.0.1
   token: abcdefghijklmnopqrstuvwx
   token_digest: ""

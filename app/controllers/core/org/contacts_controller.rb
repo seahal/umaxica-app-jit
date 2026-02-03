@@ -50,7 +50,7 @@ module Core
         end
 
         if @contact.save
-          @contact.update!(status_id: "SET_UP")
+          @contact.update!(status_id: OrgContactStatus::SET_UP)
 
           verification_code = @contact_email.generate_verifier!
 

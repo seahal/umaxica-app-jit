@@ -4,10 +4,10 @@ module UserSecret::Kinds
   extend ActiveSupport::Concern
 
   # Kind constants
-  LOGIN = "LOGIN"
-  TOTP = "TOTP"
-  RECOVERY = "RECOVERY"
-  API = "API"
+  LOGIN = UserSecretKind::LOGIN
+  TOTP = UserSecretKind::TOTP
+  RECOVERY = UserSecretKind::RECOVERY
+  API = UserSecretKind::API
 
   ALL = [LOGIN, TOTP, RECOVERY, API].freeze
 

@@ -5,21 +5,13 @@
 # Table name: staff_passkey_statuses
 # Database name: operator
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_staff_passkey_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class StaffPasskeyStatus < OperatorRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  ACTIVE = 1
+  REVOKED = 2
 
-  # Status constants
-  ACTIVE = "ACTIVE"
-  DISABLED = "DISABLED"
-  DELETED = "DELETED"
   has_many :staff_passkeys, dependent: :restrict_with_error
-  before_validation { self.id = id&.upcase }
 end

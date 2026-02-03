@@ -10,14 +10,16 @@ require "test_helper"
 # - Reauth with wrong identity fails
 class SocialAuthReauthTest < ActionDispatch::IntegrationTest
   SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
+  fixtures :user_statuses, :user_social_google_statuses, :user_social_apple_statuses
 
   setup do
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
 
     # Create test user
+    UserStatus.find_or_create_by!(id: UserStatus::NEYO)
     @user = User.create!(
-      status_id: "NEYO",
+      status_id: UserStatus::NEYO,
       public_id: "reauth_test_#{SecureRandom.hex(4)}",
       last_reauth_at: nil, # Explicitly nil to test update
     )
@@ -46,7 +48,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
       last_authenticated_at: 1.day.ago,
     )
 
-    setup_google_mock_auth(uid: @google_uid, email: "reauth@example.com")
+    setup_google_mock_auth(uid: @google_uid)
 
     # Verify last_reauth_at is nil before
     assert_nil @user.reload.last_reauth_at, "last_reauth_at should be nil initially"
@@ -91,7 +93,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
       last_authenticated_at: 1.day.ago,
     )
 
-    setup_apple_mock_auth(uid: @apple_uid, email: "reauth_apple@example.com")
+    setup_apple_mock_auth(uid: @apple_uid)
 
     assert_nil @user.reload.last_reauth_at
 
@@ -132,7 +134,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
     # Mock auth returns different uid
     different_uid = "completely_different_google_uid"
-    setup_google_mock_auth(uid: different_uid, email: "different@example.com")
+    setup_google_mock_auth(uid: different_uid)
 
     original_reauth_at = @user.last_reauth_at
 
@@ -157,7 +159,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
   test "reauth without linked identity fails" do
     # User has no Google linked
-    setup_google_mock_auth(uid: "some_unlinked_uid", email: "nolink@example.com")
+    setup_google_mock_auth(uid: "some_unlinked_uid")
 
     get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
@@ -175,7 +177,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
   end
 
   test "reauth requires authentication" do
-    setup_google_mock_auth(uid: "test", email: "test@example.com")
+    setup_google_mock_auth(uid: "test")
 
     # No auth header
     get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
@@ -189,11 +191,13 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
   private
 
-  def setup_google_mock_auth(uid:, email: "test@example.com")
+  # IMPORTANT: Social login authenticates by provider+uid ONLY, NOT email
+  # We deliberately omit email from mock_auth to test this requirement
+  def setup_google_mock_auth(uid:)
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
       provider: "google_oauth2",
       uid: uid,
-      info: { email: email, image: "https://example.com/image.jpg" },
+      info: { image: "https://example.com/image.jpg" },
       credentials: {
         token: "google_token_#{SecureRandom.hex(8)}",
         refresh_token: "refresh_token",
@@ -202,11 +206,11 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     )
   end
 
-  def setup_apple_mock_auth(uid:, email: "apple@example.com")
+  def setup_apple_mock_auth(uid:)
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
       provider: "apple",
       uid: uid,
-      info: { email: email },
+      info: {},
       credentials: {
         token: "apple_token_#{SecureRandom.hex(8)}",
         expires_at: 1.week.from_now.to_i,

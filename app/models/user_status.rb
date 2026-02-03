@@ -5,30 +5,23 @@
 # Table name: user_statuses
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class UserStatus < PrincipalRecord
-  include CodeIdentifiable
+  ACTIVE = 1
+  INACTIVE = 2
+  PENDING = 3
+  DELETED = 4
+  WITHDRAWN = 5
+  PENDING_DELETION = 6
+  PRE_WITHDRAWAL_CONDITION = 7
+  WITHDRAWAL_COMPLETED = 8
+  UNVERIFIED_WITH_SIGN_UP = 9
+  VERIFIED_WITH_SIGN_UP = 10
+  NEYO = 11
+  GHOST = 12
+  NONE = 13
 
-  NEYO = "NEYO"
-  NONE = "NONE"
-  GHOST = "GHOST"
-  ALIVE = "ALIVE"
-  ACTIVE = "ACTIVE"
-  INACTIVE = "INACTIVE"
-  PENDING = "PENDING"
-  DELETED = "DELETED"
-  WITHDRAWN = "WITHDRAWN"
-  PRE_WITHDRAWAL_CONDITION = "PRE_WITHDRAWAL_CONDITION"
-  WITHDRAWAL_COMPLETED = "WITHDRAWAL_COMPLETED"
-  UNVERIFIED_WITH_SIGN_UP = "UNVERIFIED_WITH_SIGN_UP"
-  VERIFIED_WITH_SIGN_UP = "VERIFIED_WITH_SIGN_UP"
-  PENDING_DELETION = "PENDING_DELETION"
   has_many :users,
            foreign_key: :status_id,
            dependent: :restrict_with_error,

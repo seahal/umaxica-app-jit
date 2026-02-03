@@ -25,6 +25,8 @@
 require "test_helper"
 
 class UserClientObservationTest < ActiveSupport::TestCase
+  fixtures :user_client_observations
+
   test "fixture is valid" do
     assert_predicate user_client_observations(:one), :valid?
   end

@@ -3,6 +3,8 @@
 require "test_helper"
 
 class DocumentVersionWriterTest < ActiveSupport::TestCase
+  fixtures :com_documents, :app_documents, :org_documents
+
   test "writes com document version" do
     doc = com_documents(:one)
 

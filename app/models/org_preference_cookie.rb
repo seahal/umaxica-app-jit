@@ -32,6 +32,10 @@ class OrgPreferenceCookie < PreferenceRecord
   validates :targetable, inclusion: { in: [true, false] }
   validates :performant, inclusion: { in: [true, false] }
   validates :functional, inclusion: { in: [true, false] }
+
+  attr_accessor :consented
+
+  alias_method :consented?, :consented
   # validates :consented, inclusion: { in: [true, false] }
 
   private

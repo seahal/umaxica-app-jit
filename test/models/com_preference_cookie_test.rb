@@ -26,7 +26,8 @@ require "test_helper"
 
 class ComPreferenceCookieTest < ActiveSupport::TestCase
   setup do
-    @preference = ComPreference.create!
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NEYO)
+    @preference = ComPreference.create!(status_id: ComPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do

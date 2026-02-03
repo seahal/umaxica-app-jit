@@ -3,7 +3,7 @@
 require "test_helper"
 
 class Auth::StaffTest < ActiveSupport::TestCase
-  fixtures :staffs, :staff_statuses, :staff_identity_statuses, :staff_tokens, :staff_token_kinds, :staff_token_statuses
+  fixtures :staffs, :staff_statuses, :staff_tokens, :staff_token_kinds, :staff_token_statuses
   class FormatMock
     attr_accessor :format_type
 

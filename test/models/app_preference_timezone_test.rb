@@ -26,7 +26,8 @@ require "test_helper"
 
 class AppPreferenceTimezoneTest < ActiveSupport::TestCase
   setup do
-    @preference = AppPreference.create!
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
+    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,7 +46,7 @@ class AppPreferenceTimezoneTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     timezone = AppPreferenceTimezone.create!(preference: @preference)
-    assert_equal "Asia/Tokyo", timezone.option_id
+    assert_equal AppPreferenceTimezoneOption::ASIA_TOKYO, timezone.option_id
   end
 
   test "validates uniqueness of preference" do
@@ -56,21 +57,10 @@ class AppPreferenceTimezoneTest < ActiveSupport::TestCase
     assert_includes duplicate_timezone.errors[:preference_id], "はすでに存在します"
   end
 
-  test "permits IANA timezone string as option_id and associates with valid option" do
-    timezone = AppPreferenceTimezone.create!(preference: @preference, option_id: "Asia/Tokyo")
-    assert_equal "Asia/Tokyo", timezone.option_id
-    # "Asia/Tokyo" exists in fixtures and matches relaxed regex
-    assert_equal app_preference_timezone_options(:asia_tokyo), timezone.option
-  end
-
-  test "AppPreferenceTimezoneOption accepts IANA format with relaxed regex" do
-    option = AppPreferenceTimezoneOption.new(id: "Mars/Phobos")
-    assert_predicate option, :valid?, option.errors.full_messages.to_sentence
-  end
-
-  test "AppPreferenceTimezoneOption rejects invalid characters" do
-    option = AppPreferenceTimezoneOption.new(id: "BadVal$ue")
-    assert_not option.valid?
-    assert_includes option.errors[:id], "は不正な値です"
+  test "AppPreferenceTimezoneOption accepts numeric ids" do
+    option = AppPreferenceTimezoneOption.create!(id: 99)
+    assert_predicate option, :persisted?
+    timezone = AppPreferenceTimezone.create!(preference: @preference, option_id: 99)
+    assert_equal option, timezone.option
   end
 end

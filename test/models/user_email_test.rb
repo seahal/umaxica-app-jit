@@ -18,7 +18,7 @@
 #  updated_at                    :datetime         not null
 #  public_id                     :string(21)       not null
 #  user_id                       :bigint           not null
-#  user_identity_email_status_id :bigint           default(0), not null
+#  user_identity_email_status_id :bigint           default(1), not null
 #
 # Indexes
 #
@@ -37,6 +37,8 @@
 require "test_helper"
 
 class UserEmailTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses, :user_email_statuses
+
   setup do
     @user = users(:none_user)
     @valid_attributes = {

@@ -9,6 +9,15 @@
 #
 
 class AppTimelineStatus < NewsRecord
+  # Fixed IDs - do not modify these values
+  NEYO = 1
+  ACTIVE = 2
+  INACTIVE = 3
+  PENDING = 4
+  DELETED = 5
+  DRAFT = 6
+  ARCHIVED = 7
+
   has_many :app_timelines,
            foreign_key: :status_id,
            inverse_of: :app_timeline_status,

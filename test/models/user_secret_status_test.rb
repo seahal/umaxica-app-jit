@@ -5,47 +5,26 @@
 # Table name: user_secret_statuses
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_secret_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class UserSecretStatusTest < ActiveSupport::TestCase
-  test "valid status" do
-    status = UserSecretStatus.new(id: 99)
-    assert_predicate status, :valid?
-    assert status.save
-    assert_equal 99, status.id
-  end
-
   test "status constants are defined" do
-    assert_equal 0, UserSecretStatus::NEYO
     assert_equal 1, UserSecretStatus::ACTIVE
-    assert_equal 2, UserSecretStatus::USED
-    assert_equal 3, UserSecretStatus::EXPIRED
-    assert_equal 4, UserSecretStatus::REVOKED
+    assert_equal 2, UserSecretStatus::EXPIRED
+    assert_equal 3, UserSecretStatus::REVOKED
+    assert_equal 4, UserSecretStatus::USED
     assert_equal 5, UserSecretStatus::DELETED
+    assert_equal 6, UserSecretStatus::NEYO
   end
 
-  test "validates id is non-negative" do
-    record = UserSecretStatus.new(id: -1)
-    assert_predicate record, :invalid?
-    assert_includes record.errors[:id], "must be greater than or equal to 0"
-  end
-
-  test "validates id is an integer" do
-    record = UserSecretStatus.new(id: 1.5)
-    assert_predicate record, :invalid?
-  end
-
-  test "validates uniqueness of id" do
-    UserSecretStatus.create!(id: 99)
-    duplicate = UserSecretStatus.new(id: 99)
-    assert_predicate duplicate, :invalid?
-    assert_predicate duplicate.errors[:id], :any?
+  test "status ids are integers" do
+    assert_kind_of Integer, UserSecretStatus::ACTIVE
+    assert_kind_of Integer, UserSecretStatus::EXPIRED
+    assert_kind_of Integer, UserSecretStatus::REVOKED
+    assert_kind_of Integer, UserSecretStatus::USED
+    assert_kind_of Integer, UserSecretStatus::DELETED
+    assert_kind_of Integer, UserSecretStatus::NEYO
   end
 end

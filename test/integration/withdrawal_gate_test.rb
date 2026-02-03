@@ -3,7 +3,7 @@
 require "test_helper"
 
 class WithdrawalGateTest < ActionDispatch::IntegrationTest
-  fixtures :users
+  fixtures :users, :user_statuses, :user_token_kinds, :user_token_statuses
 
   setup do
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -15,12 +15,13 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
       status_id: UserStatus::PRE_WITHDRAWAL_CONDITION,
       withdrawn_at: Time.current,
     )
+    UserToken.where(user: @withdrawn_user).delete_all
 
     # Create a token for the withdrawn user with step-up auth satisfied
     @token = UserToken.create!(
       user: @withdrawn_user,
-      user_token_status_id: "NEYO",
-      user_token_kind_id: "BROWSER_WEB",
+      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
       public_id: "withdrawn_#{SecureRandom.hex(5)}",
       refresh_expires_at: 1.day.from_now,
       last_step_up_at: 1.minute.ago,
@@ -89,8 +90,8 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
 
     normal_token = UserToken.create!(
       user: normal_user,
-      user_token_status_id: "NEYO",
-      user_token_kind_id: "BROWSER_WEB",
+      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
       public_id: "normal_#{SecureRandom.hex(5)}",
       refresh_expires_at: 1.day.from_now,
       last_step_up_at: 1.minute.ago,

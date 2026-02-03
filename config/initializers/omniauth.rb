@@ -57,7 +57,8 @@ Rails.application.config.middleware.use OmniAuth::Builder do
            {
              # OmniAuth standard callback path
              callback_path: "/auth/google_oauth2/callback",
-             # Request minimal scopes - we identify by provider+uid only
+             # IMPORTANT: We authenticate by provider+uid only, NOT email
+             # Request minimal scope - openid gives us the user identifier (sub claim)
              scope: "openid",
              # Include access_type for refresh token (optional)
              access_type: "offline",
@@ -81,13 +82,14 @@ Rails.application.config.middleware.use OmniAuth::Builder do
            {
              # OmniAuth standard callback path
              callback_path: "/auth/apple/callback",
-             # Minimal scope - we only need user identifier (sub)
-             scope: "email",
+             # IMPORTANT: We authenticate by provider+uid only, NOT email
+             # Empty scope means we only get the user identifier (sub claim in id_token)
+             scope: "",
              team_id: apple_team_id,
              key_id: apple_key_id,
              pem: apple_pem,
              # NOTE:
-             # - Apple requires `response_mode=form_post` when requesting `email`/`name` scopes.
+             # - We use `response_mode=form_post` for security (prevents token leakage in URL)
              # - Because this is a POST callback, SameSite cookies must be `None` + `Secure`
              #   to preserve the session (nonce validation).
              authorize_params: {

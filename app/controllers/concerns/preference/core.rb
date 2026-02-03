@@ -22,7 +22,7 @@ module Preference::Core
 
       update_preference_child_with_audit(
         @preference_region,
-        sanitize_option_id(preference_region_params),
+        sanitize_option_id(preference_region_params, option_type: :region),
         "UPDATE_PREFERENCE_REGION",
       )
     end
@@ -40,7 +40,7 @@ module Preference::Core
 
       update_preference_child_with_audit(
         @preference_language,
-        sanitize_option_id(preference_language_params),
+        sanitize_option_id(preference_language_params, option_type: :language),
         "UPDATE_PREFERENCE_LANGUAGE",
       )
     end
@@ -61,7 +61,7 @@ module Preference::Core
       begin
         update_preference_child_with_audit(
           @preference_timezone,
-          sanitize_option_id(preference_timezone_params),
+          sanitize_option_id(preference_timezone_params, option_type: :timezone),
           "UPDATE_PREFERENCE_TIMEZONE",
         )
       rescue ActiveRecord::RecordInvalid, ActiveRecord::InvalidForeignKey
@@ -167,14 +167,14 @@ module Preference::Core
       PreferenceRecord.transaction do
         # Update preference to deleted status
         preference.update!(
-          status_id: "DELETED",
+          status_id: preference_status_class::DELETED,
           expires_at: Time.current,
         )
 
         # Set @preferences temporarily for create_audit_log
         @preferences = preference
         create_audit_log(
-          event_id: "RESET_BY_USER_DECISION",
+          event_id: preference_audit_event_class::RESET_BY_USER_DECISION,
           context: { preference_deleted: true },
         )
       rescue ActiveRecord::RecordInvalid, ActiveRecord::InvalidForeignKey => e

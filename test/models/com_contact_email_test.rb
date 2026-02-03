@@ -5,14 +5,28 @@
 # Table name: com_contact_emails
 # Database name: guest
 #
-#  id             :bigint           not null, primary key
-#  code           :citext           not null
-#  com_contact_id :bigint           not null
+#  id                     :bigint           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  expires_at             :timestamptz      not null
+#  hotp_counter           :integer
+#  hotp_secret            :string
+#  remaining_views        :integer          default(10), not null
+#  token_digest           :string(255)
+#  token_expires_at       :timestamptz
+#  token_viewed           :boolean          default(FALSE), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  com_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_com_contact_emails_on_code                   (code) UNIQUE
 #  index_com_contact_emails_on_com_contact_id_unique  (com_contact_id) UNIQUE
+#  index_com_contact_emails_on_email_address          (email_address)
 #
 # Foreign Keys
 #
@@ -22,22 +36,30 @@
 require "test_helper"
 
 class ComContactEmailTest < ActiveSupport::TestCase
+  fixtures :com_contact_categories, :com_contact_statuses
+
   test "should inherit from GuestRecord" do
     assert_operator ComContactEmail, :<, GuestRecord
   end
 
   setup do
     # Seed necessary reference data for tests
-    %w(SECURITY_ISSUE NEYO).each do |id|
-      ComContactCategory.create_with(created_at: Time.current, updated_at: Time.current).find_or_create_by(id: id)
+    [ComContactCategory::SECURITY_ISSUE, ComContactCategory::NEYO].each do |id|
+      ComContactCategory.find_or_create_by!(id: id)
     end
-    %w(NEYO SET_UP CHECKED_EMAIL_ADDRESS CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION).each do |id|
-      ComContactStatus.find_or_create_by(id: id)
+    [
+      ComContactStatus::NEYO,
+      ComContactStatus::SET_UP,
+      ComContactStatus::CHECKED_EMAIL_ADDRESS,
+      ComContactStatus::CHECKED_TELEPHONE_NUMBER,
+      ComContactStatus::COMPLETED_CONTACT_ACTION,
+    ].each do |id|
+      ComContactStatus.find_or_create_by!(id: id)
     end
   end
 
   test "should belong to com_contact" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_1",
       created_at: Time.current,
       updated_at: Time.current,
@@ -57,7 +79,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should downcase email_address before save" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_2",
       created_at: Time.current,
       updated_at: Time.current,
@@ -76,7 +98,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should encrypt email_address" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_3",
       created_at: Time.current,
       updated_at: Time.current,
@@ -102,12 +124,12 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should support deterministic encryption for email_address" do
-    contact1 = ComContact.create!(
+    contact1 = create_contact(
       public_id: "unique_contact_4",
       created_at: Time.current,
       updated_at: Time.current,
     )
-    contact2 = ComContact.create!(
+    contact2 = create_contact(
       public_id: "unique_contact_5",
       created_at: Time.current,
       updated_at: Time.current,
@@ -147,7 +169,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   test "should have valid fixtures" do
     # Note: Encrypted fields in fixtures may cause issues
     # We create a fresh record instead of loading from fixtures
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_6",
       created_at: Time.current,
       updated_at: Time.current,
@@ -164,8 +186,8 @@ class ComContactEmailTest < ActiveSupport::TestCase
     assert_predicate email, :valid?
   end
 
-  test "should use UUID as primary key" do
-    contact = ComContact.create!(
+  test "should use bigint as primary key" do
+    contact = create_contact(
       public_id: "unique_contact_7",
       created_at: Time.current,
       updated_at: Time.current,
@@ -176,13 +198,12 @@ class ComContactEmailTest < ActiveSupport::TestCase
       expires_at: 1.day.from_now,
     )
 
-    assert_kind_of String, email.id
-    assert_equal 21, email.id.length
+    assert_kind_of Integer, email.id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_8",
       created_at: Time.current,
       updated_at: Time.current,
@@ -202,7 +223,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should have all expected attributes" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_9",
       created_at: Time.current,
       updated_at: Time.current,
@@ -222,7 +243,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   # rubocop:enable Minitest/MultipleAssertions
 
   test "should have default values" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_10",
       created_at: Time.current,
       updated_at: Time.current,
@@ -235,12 +256,12 @@ class ComContactEmailTest < ActiveSupport::TestCase
 
     assert_not email.activated
     assert_not email.deletable
-    assert_equal 0, email.remaining_views
+    assert_equal 10, email.remaining_views
   end
 
   # Validation tests
   test "should validate presence of email_address" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_11",
       created_at: Time.current,
       updated_at: Time.current,
@@ -255,7 +276,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should validate format of email_address" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_12",
       created_at: Time.current,
       updated_at: Time.current,
@@ -290,7 +311,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   # Verifier tests
   # rubocop:disable Minitest/MultipleAssertions
   test "should generate verifier code" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_13",
       created_at: Time.current,
       updated_at: Time.current,
@@ -313,7 +334,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   # rubocop:enable Minitest/MultipleAssertions
 
   test "should verify correct code" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_14",
       created_at: Time.current,
       updated_at: Time.current,
@@ -332,7 +353,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should reject incorrect code and decrement attempts" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_15",
       created_at: Time.current,
       updated_at: Time.current,
@@ -352,7 +373,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should reject code when attempts exhausted" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_16",
       created_at: Time.current,
       updated_at: Time.current,
@@ -373,7 +394,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should reject expired verifier code" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_17",
       created_at: Time.current,
       updated_at: Time.current,
@@ -394,7 +415,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "verifier_expired? should return true when expired" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_18",
       created_at: Time.current,
       updated_at: Time.current,
@@ -415,7 +436,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "can_resend_verifier? should return true when verifier expired" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_19",
       created_at: Time.current,
       updated_at: Time.current,
@@ -433,7 +454,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "can_resend_verifier? should return true when attempts exhausted" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_20",
       created_at: Time.current,
       updated_at: Time.current,
@@ -451,7 +472,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "can_resend_verifier? should return false when activated" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_21",
       created_at: Time.current,
       updated_at: Time.current,
@@ -470,7 +491,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
 
   # HOTP tests
   test "should generate hotp secret and code" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "unique_contact_hotp",
       created_at: Time.current,
       updated_at: Time.current,
@@ -491,7 +512,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should verify hotp code" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "uc_hotp_verify",
       created_at: Time.current,
       updated_at: Time.current,
@@ -510,7 +531,7 @@ class ComContactEmailTest < ActiveSupport::TestCase
   end
 
   test "should reject incorrect hotp code" do
-    contact = ComContact.create!(
+    contact = create_contact(
       public_id: "uc_hotp_wrong",
       created_at: Time.current,
       updated_at: Time.current,
@@ -529,10 +550,15 @@ class ComContactEmailTest < ActiveSupport::TestCase
     assert_equal initial_attempts - 1, email.verifier_attempts_left
   end
 
-  test "generate_id generates nanoid" do
-    email = ComContactEmail.new
-    email.send(:generate_id)
-    assert_not_nil email.id
-    assert_equal 21, email.id.length
+  private
+
+  def create_contact(attrs = {})
+    ComContact.create!(
+      {
+        confirm_policy: "1",
+        category_id: ComContactCategory::SECURITY_ISSUE,
+        status_id: ComContactStatus::NEYO,
+      }.merge(attrs),
+    )
   end
 end

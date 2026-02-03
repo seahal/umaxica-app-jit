@@ -14,7 +14,7 @@
 #  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
 #  subject_id     :string           not null
@@ -40,6 +40,12 @@
 require "test_helper"
 
 class ComPreferenceAuditTest < ActiveSupport::TestCase
+  fixtures :com_preferences,
+           :com_preference_audits,
+           :com_preference_audit_events,
+           :com_preference_audit_levels,
+           :com_preference_statuses
+
   setup do
     @audit = com_preference_audits(:one)
     @preference = com_preferences(:one)
@@ -87,15 +93,15 @@ class ComPreferenceAuditTest < ActiveSupport::TestCase
     assert_includes @audit.errors[:subject_type], I18n.t("errors.messages.blank")
   end
 
-  test "validates length of event_id" do
-    @audit.event_id = "A" * 256
-    assert_not @audit.valid?
-    assert_includes @audit.errors[:event_id], I18n.t("errors.messages.too_long", count: 255)
+  test "event_id is integer type" do
+    # event_id is now bigint, not string - length validation doesn't apply
+    @audit.event_id = 1
+    assert_kind_of Integer, @audit.event_id
   end
 
-  test "validates length of level_id" do
-    @audit.level_id = "A" * 256
-    assert_not @audit.valid?
-    assert_includes @audit.errors[:level_id], I18n.t("errors.messages.too_long", count: 255)
+  test "level_id is integer type" do
+    # level_id is now bigint, not string - length validation doesn't apply
+    @audit.level_id = 1
+    assert_kind_of Integer, @audit.level_id
   end
 end

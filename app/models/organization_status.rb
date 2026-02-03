@@ -5,17 +5,12 @@
 # Table name: organization_statuses
 # Database name: operator
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_organization_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class OrganizationStatus < OperatorRecord
-  include CodeIdentifiable
-
   self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  NEYO = 1
 
   has_many :organizations,
            class_name: "Organization",

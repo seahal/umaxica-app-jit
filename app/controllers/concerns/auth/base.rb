@@ -486,8 +486,17 @@ module Auth
       end
 
       kind_id = token_kind_id
-      if kind_id == "BROWSER_WEB" && token_class.columns_hash["#{resource_type}_token_kind_id"]&.type == :integer
-        kind_id = 1
+      if token_class.columns_hash["#{resource_type}_token_kind_id"]&.type == :integer && kind_id.is_a?(String)
+        kind_id =
+          case [resource_type, kind_id]
+          when ["staff", "BROWSER_WEB"] then StaffTokenKind::BROWSER_WEB
+          when ["staff", "CLIENT_IOS"] then StaffTokenKind::CLIENT_IOS
+          when ["staff", "CLIENT_ANDROID"] then StaffTokenKind::CLIENT_ANDROID
+          when ["user", "BROWSER_WEB"] then UserTokenKind::BROWSER_WEB
+          when ["user", "CLIENT_IOS"] then UserTokenKind::CLIENT_IOS
+          when ["user", "CLIENT_ANDROID"] then UserTokenKind::CLIENT_ANDROID
+          else kind_id
+          end
       end
 
       token_record = create_login_token_record(resource, kind_id)

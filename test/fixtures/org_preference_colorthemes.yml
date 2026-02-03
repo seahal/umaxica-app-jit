@@ -20,17 +20,8 @@
 #  fk_rails_...                                (preference_id => org_preferences.id)
 #
 
-_fixture:
-
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# This fixture is for the preference database
-# Load explicitly in tests that need it
-
-# one:
-#   preference: one
-#   option_id: light
-#
-# two:
-#   preference: two
-#   option_id: dark
+one:
+  preference: one
+  option_id: <%= OrgPreferenceColorthemeOption::SYSTEM %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

@@ -5,18 +5,11 @@
 # Table name: user_token_statuses
 # Database name: token
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_token_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class UserTokenStatus < TokenRecord
-  include CodeIdentifiable
-
-  # Status constants
-  NEYO = "NEYO"
+  ACTIVE = 1
+  NEYO = 0
   has_many :user_tokens, dependent: :restrict_with_error
 end

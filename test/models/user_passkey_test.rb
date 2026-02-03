@@ -13,7 +13,7 @@
 #  updated_at             :datetime         not null
 #  external_id            :uuid             not null
 #  user_id                :bigint           not null
-#  user_passkey_status_id :bigint           default(0), not null
+#  user_passkey_status_id :bigint           default(1), not null
 #  webauthn_id            :string           default(""), not null
 #
 # Indexes
@@ -32,7 +32,7 @@ require "test_helper"
 
 class UserPasskeyTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: "NEYO")
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
     @passkey = UserPasskey.new(
       user: @user,
       webauthn_id: SecureRandom.uuid,

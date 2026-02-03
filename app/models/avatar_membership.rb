@@ -38,5 +38,5 @@ class AvatarMembership < AvatarRecord
   validates :avatar_id, uniqueness: { scope: :actor_id }
   validates :actor_id, presence: true
   validates :valid_from, presence: true
-  validates :id, length: { maximum: 255 }
+  validates :id, numericality: { only_integer: true }, allow_nil: true
 end

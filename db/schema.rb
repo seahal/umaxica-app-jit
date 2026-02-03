@@ -10,22 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_02_290000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "app_contact_categories", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_contact_categories_on_code", unique: true
   end
 
   create_table "app_contact_emails", force: :cascade do |t|
+    t.boolean "activated", default: false, null: false
     t.bigint "app_contact_id", null: false
-    t.citext "code", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "email_address", limit: 1000, default: "", null: false
+    t.string "token_digest", limit: 255
+    t.timestamptz "token_expires_at"
+    t.boolean "token_viewed", default: false, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.string "verifier_digest", limit: 255
+    t.timestamptz "verifier_expires_at"
     t.index ["app_contact_id"], name: "index_app_contact_emails_on_app_contact_id"
-    t.index ["code"], name: "index_app_contact_emails_on_code", unique: true
+    t.index ["email_address"], name: "index_app_contact_emails_on_email_address"
   end
 
   create_table "app_contact_histories", force: :cascade do |t|
@@ -41,15 +48,19 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "app_contact_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_contact_statuses_on_code", unique: true
   end
 
   create_table "app_contact_telephones", force: :cascade do |t|
+    t.boolean "activated", default: false, null: false
     t.bigint "app_contact_id", null: false
-    t.citext "code", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "telephone_number", limit: 1000, default: "", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.string "verifier_digest", limit: 255
+    t.timestamptz "verifier_expires_at"
     t.index ["app_contact_id"], name: "index_app_contact_telephones_on_app_contact_id"
-    t.index ["code"], name: "index_app_contact_telephones_on_code", unique: true
+    t.index ["telephone_number"], name: "index_app_contact_telephones_on_telephone_number"
   end
 
   create_table "app_contact_topics", force: :cascade do |t|
@@ -101,27 +112,48 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "com_contact_categories", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_contact_categories_on_code", unique: true
   end
 
   create_table "com_contact_emails", force: :cascade do |t|
-    t.citext "code", null: false
+    t.boolean "activated", default: false, null: false
     t.bigint "com_contact_id", null: false
-    t.index ["code"], name: "index_com_contact_emails_on_code", unique: true
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.boolean "deletable", default: false, null: false
+    t.string "email_address", limit: 1000, default: "", null: false
+    t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
+    t.integer "hotp_counter"
+    t.string "hotp_secret"
+    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.string "token_digest", limit: 255
+    t.timestamptz "token_expires_at"
+    t.boolean "token_viewed", default: false, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.string "verifier_digest", limit: 255
+    t.timestamptz "verifier_expires_at"
     t.index ["com_contact_id"], name: "index_com_contact_emails_on_com_contact_id_unique", unique: true
+    t.index ["email_address"], name: "index_com_contact_emails_on_email_address"
   end
 
   create_table "com_contact_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_contact_statuses_on_code", unique: true
   end
 
   create_table "com_contact_telephones", force: :cascade do |t|
-    t.citext "code", null: false
+    t.boolean "activated", default: false, null: false
     t.bigint "com_contact_id", null: false
-    t.index ["code"], name: "index_com_contact_telephones_on_code", unique: true
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.boolean "deletable", default: false, null: false
+    t.timestamptz "expires_at", default: -> { "(CURRENT_TIMESTAMP + 'P1D'::interval)" }, null: false
+    t.integer "hotp_counter"
+    t.string "hotp_secret"
+    t.integer "remaining_views", limit: 2, default: 10, null: false
+    t.string "telephone_number", limit: 1000, default: "", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.string "verifier_digest", limit: 255
+    t.timestamptz "verifier_expires_at"
     t.index ["com_contact_id"], name: "index_com_contact_telephones_on_com_contact_id_unique", unique: true
+    t.index ["telephone_number"], name: "index_com_contact_telephones_on_telephone_number"
   end
 
   create_table "com_contact_topics", force: :cascade do |t|
@@ -163,14 +195,21 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "org_contact_categories", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_contact_categories_on_code", unique: true
   end
 
   create_table "org_contact_emails", force: :cascade do |t|
-    t.citext "code", null: false
+    t.boolean "activated", default: false, null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "email_address", limit: 1000, default: "", null: false
     t.bigint "org_contact_id", null: false
-    t.index ["code"], name: "index_org_contact_emails_on_code", unique: true
+    t.string "token_digest", limit: 255
+    t.timestamptz "token_expires_at"
+    t.boolean "token_viewed", default: false, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.string "verifier_digest", limit: 255
+    t.timestamptz "verifier_expires_at"
+    t.index ["email_address"], name: "index_org_contact_emails_on_email_address"
     t.index ["org_contact_id"], name: "index_org_contact_emails_on_org_contact_id"
   end
 
@@ -187,15 +226,19 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "org_contact_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_contact_statuses_on_code", unique: true
   end
 
   create_table "org_contact_telephones", force: :cascade do |t|
-    t.citext "code", null: false
+    t.boolean "activated", default: false, null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.bigint "org_contact_id", null: false
-    t.index ["code"], name: "index_org_contact_telephones_on_code", unique: true
+    t.string "telephone_number", limit: 1000, default: "", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.integer "verifier_attempts_left", limit: 2, default: 3, null: false
+    t.string "verifier_digest", limit: 255
+    t.timestamptz "verifier_expires_at"
     t.index ["org_contact_id"], name: "index_org_contact_telephones_on_org_contact_id"
+    t.index ["telephone_number"], name: "index_org_contact_telephones_on_telephone_number"
   end
 
   create_table "org_contact_topics", force: :cascade do |t|
@@ -239,7 +282,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   add_foreign_key "app_contact_telephones", "app_contacts"
   add_foreign_key "app_contact_topics", "app_contacts", validate: false
   add_foreign_key "app_contacts", "app_contact_categories", column: "category_id"
-  add_foreign_key "app_contacts", "app_contact_statuses", column: "status_id"
+  add_foreign_key "app_contacts", "app_contact_statuses", column: "status_id", on_delete: :nullify
   add_foreign_key "com_contact_audits", "com_contacts", validate: false
   add_foreign_key "com_contact_emails", "com_contacts"
   add_foreign_key "com_contact_telephones", "com_contacts"

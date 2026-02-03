@@ -95,7 +95,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     first_email = UserEmail.find_by(public_id: first_email_id)
 
     assert_not_nil first_email
-    assert_equal "UNVERIFIED_WITH_SIGN_UP", first_email.user_email_status_id
+    assert_equal UserEmailStatus::UNVERIFIED_WITH_SIGN_UP, first_email.user_email_status_id
 
     # Second registration attempt immediately after
     # This should delete the previous unverified record and create a new one
@@ -380,7 +380,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
   test "redirects to root when user is already logged in" do
     # Create a user and log them in
-    user = User.create!(status_id: "VERIFIED_WITH_SIGN_UP")
+    user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
 
     # Try to access registration page while logged in (using test header to inject current user)
     get new_sign_app_up_email_url(ri: "jp"),
@@ -481,25 +481,25 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     # Verify success response
     assert_redirected_to sign_app_configuration_path(ri: "jp")
 
-    # Verify User was created
-    assert_equal initial_user_count + 1, User.count
+    # Verify User count unchanged (pending user was updated, not created)
+    assert_equal initial_user_count, User.count
 
     # Verify UserEmail was updated and linked to user
     user_email.reload
 
     assert_not_nil user_email.user_id
-    assert_equal "VERIFIED_WITH_SIGN_UP", user_email.user_email_status_id
+    assert_equal UserEmailStatus::VERIFIED_WITH_SIGN_UP, user_email.user_email_status_id
 
     # Verify User has correct status
     user = user_email.user
 
-    assert_equal "VERIFIED_WITH_SIGN_UP", user.status_id
+    assert_equal UserStatus::VERIFIED_WITH_SIGN_UP, user.status_id
 
     # Verify UserAudit was created
     assert_equal initial_audit_count + 1, UserAudit.count
     audit = UserAudit.last
 
-    assert_equal user.id, audit.user_id
+    assert_equal user.id.to_s, audit.user_id
     assert_equal user.id, audit.actor_id
     assert_equal "User", audit.actor_type
     assert_equal "SIGNED_UP_WITH_EMAIL", audit.event_id
@@ -637,6 +637,121 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil session.id
     assert_not_equal old_session_id, session.id
   end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "creates pending user with UNVERIFIED_WITH_SIGN_UP status during email registration" do
+    email = "pending_user_test@example.com"
+
+    initial_user_count = User.count
+
+    # Create registration record
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             address: email,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    assert_response :redirect
+
+    # Verify pending user was created
+    assert_equal initial_user_count + 1, User.count
+
+    # Extract email and verify it's linked to a pending user
+    email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    user_email = UserEmail.find_by(public_id: email_id)
+
+    assert_not_nil user_email.user
+    assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, user_email.user.status_id
+    assert_equal UserEmailStatus::UNVERIFIED_WITH_SIGN_UP, user_email.user_email_status_id
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "does not leave zero or null user_id in database" do
+    email = "no_zero_user_id@example.com"
+
+    # Create registration record
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             address: email,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    assert_response :redirect
+
+    # Extract email ID from redirect location
+    email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    user_email = UserEmail.find_by(public_id: email_id)
+
+    # Verify user_id is not zero or null
+    assert_not_nil user_email.user_id, "user_id should not be nil"
+    assert_not_equal "00000000-0000-0000-0000-000000000000", user_email.user_id, "user_id should not be zero UUID"
+
+    # Verify user actually exists
+    assert User.exists?(id: user_email.user_id), "User record should exist for user_id"
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "deletes pending user when unverified email is replaced" do
+    email = "replace_pending_test@example.com"
+
+    # First registration attempt
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             address: email,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    assert_response :redirect
+
+    # Get first pending user
+    first_email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    first_email = UserEmail.find_by(public_id: first_email_id)
+    first_user_id = first_email.user_id
+
+    # Count users before second attempt
+    user_count_before_second = User.count
+
+    # Second registration attempt (should delete first pending user)
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             address: email,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    assert_response :redirect
+
+    # Verify first user was deleted
+    assert_nil User.find_by(id: first_user_id), "First pending user should be deleted"
+
+    # Verify new user was created (count should remain the same: one deleted, one created)
+    assert_equal user_count_before_second, User.count
+
+    # Verify new email has a different user
+    second_email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    second_email = UserEmail.find_by(public_id: second_email_id)
+
+    assert_not_equal first_user_id, second_email.user_id
+    assert_not_nil second_email.user
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 
   private
 

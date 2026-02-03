@@ -5,21 +5,18 @@
 # Table name: staff_telephone_statuses
 # Database name: operator
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_staff_telephone_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class StaffTelephoneStatus < OperatorRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  ACTIVE = 1
+  DELETED = 2
+  INACTIVE = 3
+  NEYO = 4
+  PENDING = 5
+  UNVERIFIED = 6
+  VERIFIED = 7
 
-  # Status constants
-  UNVERIFIED = "UNVERIFIED"
-  VERIFIED = "VERIFIED"
-  SUSPENDED = "SUSPENDED"
-  DELETED = "DELETED"
   has_many :staff_telephones, inverse_of: :staff_telephone_status, dependent: :restrict_with_error
 end

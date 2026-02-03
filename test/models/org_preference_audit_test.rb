@@ -14,7 +14,7 @@
 #  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
 #  subject_id     :string           not null
@@ -40,6 +40,12 @@
 require "test_helper"
 
 class OrgPreferenceAuditTest < ActiveSupport::TestCase
+  fixtures :org_preferences,
+           :org_preference_audits,
+           :org_preference_audit_events,
+           :org_preference_audit_levels,
+           :org_preference_statuses
+
   setup do
     @audit = org_preference_audits(:one)
     @preference = org_preferences(:one)
@@ -84,17 +90,5 @@ class OrgPreferenceAuditTest < ActiveSupport::TestCase
     @audit.subject_type = nil
     assert_not @audit.valid?
     assert_includes @audit.errors[:subject_type], I18n.t("errors.messages.blank")
-  end
-
-  test "validates length of event_id" do
-    @audit.event_id = "A" * 256
-    assert_not @audit.valid?
-    assert_includes @audit.errors[:event_id], I18n.t("errors.messages.too_long", count: 255)
-  end
-
-  test "validates length of level_id" do
-    @audit.level_id = "A" * 256
-    assert_not @audit.valid?
-    assert_includes @audit.errors[:level_id], I18n.t("errors.messages.too_long", count: 255)
   end
 end

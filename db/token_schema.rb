@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_02_250001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -33,13 +33,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "staff_token_kinds", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_token_kinds_on_code", unique: true
   end
 
   create_table "staff_token_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_token_statuses_on_code", unique: true
   end
 
   create_table "staff_tokens", force: :cascade do |t|
@@ -73,13 +69,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "user_token_kinds", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_token_kinds_on_code", unique: true
   end
 
   create_table "user_token_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_token_statuses_on_code", unique: true
   end
 
   create_table "user_tokens", force: :cascade do |t|

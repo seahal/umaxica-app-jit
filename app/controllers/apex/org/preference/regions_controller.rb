@@ -13,8 +13,12 @@ module Apex
 
         def update
           set_region_preferences_update
-          redirect_to edit_apex_org_preference_region_url(ri: @preference_region.option_id.downcase),
-                      notice: t("apex.org.preferences.update_success")
+          redirect_to(
+            edit_apex_org_preference_region_url(
+              ri: option_id_to_region(@preference_region.option_id, preference_prefix),
+            ),
+            notice: t("apex.org.preferences.update_success"),
+          )
         end
 
         private

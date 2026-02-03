@@ -5,18 +5,13 @@
 # Table name: avatar_capabilities
 # Database name: avatar
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_avatar_capabilities_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class AvatarCapability < AvatarRecord
-  include CodeIdentifiable
-
   self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  NORMAL = 1
 
   has_many :avatars, foreign_key: :capability_id, inverse_of: :capability, dependent: :restrict_with_error
 end

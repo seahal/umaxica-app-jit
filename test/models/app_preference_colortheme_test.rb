@@ -26,7 +26,8 @@ require "test_helper"
 
 class AppPreferenceColorthemeTest < ActiveSupport::TestCase
   setup do
-    @preference = AppPreference.create!
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
+    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,7 +46,7 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     colortheme = AppPreferenceColortheme.create!(preference: @preference)
-    assert_equal "system", colortheme.option_id
+    assert_equal AppPreferenceColorthemeOption::SYSTEM, colortheme.option_id
   end
 
   test "validates uniqueness of preference" do
@@ -56,21 +57,10 @@ class AppPreferenceColorthemeTest < ActiveSupport::TestCase
     assert_not_empty duplicate_colortheme.errors[:preference_id]
   end
 
-  test "permits lowercase theme string as option_id and associates with valid option" do
-    colortheme = AppPreferenceColortheme.create!(preference: @preference, option_id: "light")
-    assert_equal "light", colortheme.option_id
-    # "light" exists in fixtures and matches relaxed regex
-    assert_equal app_preference_colortheme_options(:light), colortheme.option
-  end
-
-  test "AppPreferenceColorthemeOption accepts lowercase with relaxed regex" do
-    option = AppPreferenceColorthemeOption.new(id: "dim")
-    assert_predicate option, :valid?
-  end
-
-  test "AppPreferenceColorthemeOption rejects invalid characters" do
-    option = AppPreferenceColorthemeOption.new(id: "Bad-Theme")
-    assert_not option.valid?
-    assert_includes option.errors[:id], "は不正な値です"
+  test "AppPreferenceColorthemeOption accepts numeric ids" do
+    option = AppPreferenceColorthemeOption.create!(id: 99)
+    assert_predicate option, :persisted?
+    colortheme = AppPreferenceColortheme.create!(preference: @preference, option_id: 99)
+    assert_equal option, colortheme.option
   end
 end

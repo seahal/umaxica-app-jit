@@ -19,7 +19,8 @@ module Auth
       actor ||= resource
 
       AuditRecord.connected_to(role: :writing) do
-        audit = build_audit(audit_class, event_id, resource: resource, actor: actor, ip_address: ip_address)
+        normalized_event_id = normalize_event_id(audit_class, event_id)
+        audit = build_audit(audit_class, normalized_event_id, resource: resource, actor: actor, ip_address: ip_address)
 
         unless audit.save
           error_message = "Audit save failed: #{audit.errors.full_messages.join(", ")}"
@@ -64,6 +65,11 @@ module Auth
         occurred_at: Time.current,
       )
 
+      if actor
+        audit.actor_id = actor.id
+        audit.actor_type = actor.class.name
+      end
+
       # Set resource using the appropriate setter method
       # For UserAudit: user= or subject_id=/subject_type=
       # For StaffAudit: staff= or subject_id=/subject_type=
@@ -92,5 +98,18 @@ module Auth
       end
     end
     private_class_method :infer_resource_type
+
+    def self.normalize_event_id(audit_class, event_id)
+      return event_id if event_id.is_a?(Integer)
+      return event_id unless event_id.is_a?(String)
+
+      event_class_name = audit_class.name.sub(/Audit\z/, "AuditEvent")
+      event_class = event_class_name.safe_constantize
+      return event_id unless event_class
+      return event_id unless event_class.const_defined?(event_id)
+
+      event_class.const_get(event_id)
+    end
+    private_class_method :normalize_event_id
   end
 end

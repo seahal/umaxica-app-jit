@@ -5,19 +5,13 @@
 # Table name: user_passkey_statuses
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_passkey_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class UserPasskeyStatus < PrincipalRecord
-  include CodeIdentifiable
-
-  NEYO = "NEYO"
-  ACTIVE = "ACTIVE"
-  DISABLED = "DISABLED"
-  DELETED = "DELETED"
+  ACTIVE = 1
+  DISABLED = 2
+  REVOKED = 3
+  DELETED = 4
+  NEYO = 5
   has_many :user_passkeys, dependent: :restrict_with_error
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_03_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -20,8 +20,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
     t.datetime "created_at", null: false
     t.string "role", limit: 50, default: "viewer", null: false
     t.datetime "updated_at", null: false
-    t.uuid "user_id", null: false
-    t.index ["avatar_id", "user_id", "role"], name: "index_avatar_assignments_unique", unique: true
+    t.bigint "user_id", null: false
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_affiliation", unique: true, where: "((role)::text = 'affiliation'::text)"
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_owner", unique: true, where: "((role)::text = 'owner'::text)"
     t.index ["user_id"], name: "index_avatar_assignments_on_user_id"
@@ -40,8 +39,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "avatar_capabilities", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_avatar_capabilities_on_code", unique: true
   end
 
   create_table "avatar_follows", force: :cascade do |t|
@@ -54,8 +51,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "avatar_membership_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_avatar_membership_statuses_on_code", unique: true
   end
 
   create_table "avatar_memberships", force: :cascade do |t|
@@ -77,8 +72,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "avatar_moniker_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_avatar_moniker_statuses_on_code", unique: true
   end
 
   create_table "avatar_monikers", force: :cascade do |t|
@@ -122,13 +115,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "avatar_ownership_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_avatar_ownership_statuses_on_code", unique: true
   end
 
   create_table "avatar_permissions", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_avatar_permissions_on_code", unique: true
   end
 
   create_table "avatar_role_permissions", force: :cascade do |t|
@@ -143,8 +132,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "avatar_roles", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_avatar_roles_on_code", unique: true
   end
 
   create_table "avatars", force: :cascade do |t|
@@ -233,8 +220,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "handle_assignment_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_handle_assignment_statuses_on_code", unique: true
   end
 
   create_table "handle_assignments", force: :cascade do |t|
@@ -255,8 +240,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "handle_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_handle_statuses_on_code", unique: true
   end
 
   create_table "handles", force: :cascade do |t|
@@ -276,8 +259,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "post_review_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_post_review_statuses_on_code", unique: true
   end
 
   create_table "post_reviews", force: :cascade do |t|
@@ -295,8 +276,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "post_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_post_statuses_on_code", unique: true
   end
 
   create_table "post_versions", force: :cascade do |t|

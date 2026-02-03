@@ -5,25 +5,21 @@
 # Table name: avatar_ownership_statuses
 # Database name: avatar
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_avatar_ownership_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class AvatarOwnershipStatusTest < ActiveSupport::TestCase
-  test "validations" do
-    status = AvatarOwnershipStatus.new(id: "TEST_STATUS")
+  test "accepts integer ids" do
+    status = AvatarOwnershipStatus.new(id: 9)
     assert_predicate status, :valid?
   end
 
-  test "validates length of id" do
-    record = AvatarOwnershipStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "constants are defined" do
+    assert_equal 1, AvatarOwnershipStatus::NEYO
+    assert_equal 2, AvatarOwnershipStatus::ACTIVE
+    assert_equal 3, AvatarOwnershipStatus::INACTIVE
+    assert_equal 4, AvatarOwnershipStatus::DELETED
   end
 end

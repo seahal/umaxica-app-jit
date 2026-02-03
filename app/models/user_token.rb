@@ -20,7 +20,7 @@
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
 #  user_id                  :bigint           not null
-#  user_token_kind_id       :bigint           default(0), not null
+#  user_token_kind_id       :bigint           default(11), not null
 #  user_token_status_id     :bigint           default(0), not null
 #
 # Indexes
@@ -52,7 +52,8 @@ class UserToken < TokenRecord
   belongs_to :user, inverse_of: :user_tokens
   belongs_to :user_token_status
   belongs_to :user_token_kind, optional: true
-  attribute :user_token_status_id, default: "NEYO"
+  attribute :user_token_status_id, default: UserTokenStatus::NEYO
+  attribute :user_token_kind_id, default: UserTokenKind::BROWSER_WEB
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :refresh_expires_at, presence: true

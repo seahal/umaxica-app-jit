@@ -3,18 +3,15 @@
 # Table name: domain_occurrence_statuses
 # Database name: occurrence
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_domain_occurrence_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 neyo:
-  code: "NEYO"
+  id: 4
 active:
-  code: "ACTIVE"
+  id: 1
 inactive:
+  id: 3
 pending:
+  id: 5
 deleted:
-  code: "DELETED"
+  id: 2

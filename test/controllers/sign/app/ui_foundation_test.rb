@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses
+
   setup do
     @user = users(:one)
     @host = ENV["SIGN_SERVICE_URL"]

@@ -32,6 +32,8 @@
 require "test_helper"
 
 class OrgContactTopicTest < ActiveSupport::TestCase
+  fixtures :org_contact_categories, :org_contact_statuses
+
   test "should inherit from GuestRecord" do
     assert_operator OrgContactTopic, :<, GuestRecord
   end
@@ -39,18 +41,18 @@ class OrgContactTopicTest < ActiveSupport::TestCase
   def build_contact
     contact = OrgContact.new
     contact.confirm_policy = "1"
+    contact.category_id = OrgContactCategory::ORGANIZATION_INQUIRY
+    contact.status_id = OrgContactStatus::NEYO
     contact.save!
 
     OrgContactEmail.create!(
       org_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now,
     )
 
     OrgContactTelephone.create!(
       org_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now,
     )
 
     contact
@@ -87,8 +89,7 @@ class OrgContactTopicTest < ActiveSupport::TestCase
     contact = build_contact
     topic = OrgContactTopic.create!(org_contact: contact)
 
-    assert_kind_of String, topic.id
-    assert_equal 36, topic.id.length
+    assert_kind_of Integer, topic.id
   end
 
   # rubocop:disable Minitest/MultipleAssertions

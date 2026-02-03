@@ -16,9 +16,9 @@
 #  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
-#  level_id       :bigint           default(0), not null
+#  level_id       :bigint           default(4), not null
 #  subject_id     :string           not null
 #
 # Indexes
@@ -45,8 +45,8 @@ class UserAuditTest < ActiveSupport::TestCase
 
   def setup
     @user = users(:one)
-    @audit_event = UserAuditEvent.find("LOGIN_SUCCESS")
-    @level = UserAuditLevel.find_or_create_by!(id: "INFO")
+    @audit_event = UserAuditEvent.find(UserAuditEvent::LOGIN_SUCCESS)
+    @level = UserAuditLevel.find_or_create_by!(id: UserAuditLevel::INFO)
     @audit = UserAudit.create!(
       user: @user,
       user_audit_level: @level,
@@ -89,7 +89,7 @@ class UserAuditTest < ActiveSupport::TestCase
   test "validates foreign key constraint on event_id" do
     audit = UserAudit.new(
       user: @user,
-      event_id: "INVALID_EVENT_ID",
+      event_id: 9999,
       timestamp: Time.current,
     )
 
@@ -186,7 +186,7 @@ class UserAuditTest < ActiveSupport::TestCase
       actor: nil,
     )
 
-    assert_equal "00000000-0000-0000-0000-000000000000", audit.actor_id
+    assert_equal 0, audit.actor_id
     assert_equal "User", audit.actor_type
   end
 end

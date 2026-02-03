@@ -5,24 +5,23 @@
 # Table name: user_audit_levels
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_audit_levels_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class UserAuditLevel < AuditRecord
-  include CodeIdentifiable
-
   self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  DEBUG = 1
+  ERROR = 2
+  INFO = 3
+  NEYO = 4
+  WARN = 5
 
   has_many :user_audits,
            foreign_key: :level_id,
            dependent: :restrict_with_error,
            inverse_of: :user_audit_level
 
-  DEFAULTS = %w(NEYO INFO WARN ERROR).freeze
+  DEFAULTS = [NEYO, INFO, WARN, ERROR].freeze
 
   def self.ensure_defaults!
     DEFAULTS.each do |id|

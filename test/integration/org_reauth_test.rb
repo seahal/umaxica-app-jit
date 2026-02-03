@@ -14,8 +14,8 @@ class OrgReauthTest < ActionDispatch::IntegrationTest
 
     @token = StaffToken.create!(
       staff: @staff,
-      staff_token_status_id: "NEYO",
-      staff_token_kind_id: "BROWSER_WEB",
+      staff_token_status_id: StaffTokenStatus::NEYO,
+      staff_token_kind_id: StaffTokenKind::BROWSER_WEB,
       public_id: "org_reauth_#{SecureRandom.hex(5)}",
       refresh_expires_at: 1.day.from_now,
     )
@@ -49,8 +49,7 @@ class OrgReauthTest < ActionDispatch::IntegrationTest
     StaffOneTimePassword.create!(
       staff: @staff,
       private_key: private_key,
-      staff_one_time_password_status_id: "ACTIVE",
-      last_otp_at: Time.zone.at(0),
+      staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
     )
 
     encoded_return_to = Base64.urlsafe_encode64(sign_org_configuration_path(ri: "jp"))

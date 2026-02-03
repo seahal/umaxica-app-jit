@@ -34,10 +34,4 @@ class AvatarMonikerTest < ActiveSupport::TestCase
     moniker = AvatarMoniker.new
     assert_not moniker.valid?
   end
-
-  test "validates length of id" do
-    record = AvatarMoniker.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
-  end
 end

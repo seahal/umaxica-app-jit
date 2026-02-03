@@ -3,9 +3,9 @@
 module StaffSecret::Kinds
   extend ActiveSupport::Concern
 
-  # Kind constants
-  LOGIN = "LOGIN"
-  TOTP = "TOTP"
+  # Kind constants (integer IDs)
+  LOGIN = StaffSecretKind::LOGIN
+  TOTP = StaffSecretKind::TOTP
 
   ALL = [LOGIN, TOTP].freeze
 

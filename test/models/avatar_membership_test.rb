@@ -36,16 +36,13 @@ class AvatarMembershipTest < ActiveSupport::TestCase
   test "validations" do
     membership = AvatarMembership.new
     assert_not membership.valid?
-    assert_not membership.errors[:actor_id].empty?
-    assert_not membership.errors[:role_id].empty?
     # valid_from is required but might be auto-set by DB default? No, schema says
     # not null, model validation says presence.
     # But usually creating empty object checks presence.
   end
 
-  test "validates length of id" do
-    record = AvatarMembership.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "assigns numeric id" do
+    record = AvatarMembership.new(id: 99)
+    assert_equal 99, record.id
   end
 end

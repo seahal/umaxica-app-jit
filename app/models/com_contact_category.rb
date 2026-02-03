@@ -5,22 +5,14 @@
 # Table name: com_contact_categories
 # Database name: guest
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_com_contact_categories_on_code  (code) UNIQUE
-#
-
 class ComContactCategory < GuestRecord
-  include CodeIdentifiable
+  NEYO = 1
+  SECURITY_ISSUE = 2
 
   has_many :com_contacts,
            foreign_key: :category_id,
-           primary_key: :id,
            inverse_of: :com_contact_category,
-           dependent: :restrict_with_error
-
-  validates :description, length: { maximum: 255 }
+           dependent: :restrict_with_exception
 end

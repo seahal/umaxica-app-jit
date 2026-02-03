@@ -242,6 +242,11 @@ module Preference
     def create_preference_options(preference)
       prefix = preference.class.name.gsub("Preference", "")
 
+      timezone_option_class = "#{prefix}PreferenceTimezoneOption".constantize
+      language_option_class = "#{prefix}PreferenceLanguageOption".constantize
+      region_option_class = "#{prefix}PreferenceRegionOption".constantize
+      colortheme_option_class = "#{prefix}PreferenceColorthemeOption".constantize
+
       "#{prefix}PreferenceCookie".constantize.create!(
         preference_id: preference.id,
         targetable: false,
@@ -251,22 +256,22 @@ module Preference
 
       "#{prefix}PreferenceTimezone".constantize.create!(
         preference_id: preference.id,
-        option_id: "Asia/Tokyo",
+        option_id: timezone_option_class::ASIA_TOKYO,
       )
 
       "#{prefix}PreferenceLanguage".constantize.create!(
         preference_id: preference.id,
-        option_id: "JA",
+        option_id: language_option_class::JA,
       )
 
       "#{prefix}PreferenceRegion".constantize.create!(
         preference_id: preference.id,
-        option_id: "JP",
+        option_id: region_option_class::JP,
       )
 
       "#{prefix}PreferenceColortheme".constantize.create!(
         preference_id: preference.id,
-        option_id: "system",
+        option_id: colortheme_option_class::SYSTEM,
       )
     end
 
@@ -368,19 +373,39 @@ module Preference
       @preference_audit_event_class ||= "#{preference_class.name}AuditEvent".constantize
     end
 
+    def preference_audit_level_class
+      @preference_audit_level_class ||= "#{preference_class.name}AuditLevel".constantize
+    end
+
+    def preference_status_class
+      @preference_status_class ||= "#{preference_class.name}Status".constantize
+    end
+
+    def normalize_preference_audit_event_id(event_id)
+      return if event_id.blank?
+      return event_id if event_id.is_a?(Integer)
+
+      if preference_audit_event_class.const_defined?(event_id)
+        preference_audit_event_class.const_get(event_id)
+      else
+        event_id
+      end
+    end
+
     def create_audit_log(event_id:, context:, expires_at: nil)
       expires_at_value = expires_at || Preference::Core::COOKIE_EXPIRY.from_now
+      normalized_event_id = normalize_preference_audit_event_id(event_id)
 
       AuditRecord.connected_to(role: :writing) do
-        if event_id.present?
-          preference_audit_event_class.find_or_create_by!(id: event_id)
+        if normalized_event_id.present?
+          preference_audit_event_class.find_or_create_by!(id: normalized_event_id)
         end
 
         preference_audit_class.create!(
           subject_id: @preferences.id.to_s,
           subject_type: @preferences.class.name,
-          event_id: event_id,
-          level_id: "INFO",
+          event_id: normalized_event_id,
+          level_id: preference_audit_level_class::INFO,
           occurred_at: Time.current,
           expires_at: expires_at_value,
           ip_address: request.remote_ip || "0.0.0.0",
@@ -460,7 +485,37 @@ module Preference
 
     def sanitize_option_id(params, option_type: nil)
       params[:option_id] = nil if params[:option_id].blank?
-      params[:option_id] = canonical_colortheme_option_id(params[:option_id]) if option_type == :colortheme
+
+      return params if params[:option_id].blank?
+
+      prefix = preference_class.name.gsub("Preference", "")
+      option_class_name =
+        case option_type
+        when :colortheme then "#{prefix}PreferenceColorthemeOption"
+        when :language then "#{prefix}PreferenceLanguageOption"
+        when :region then "#{prefix}PreferenceRegionOption"
+        when :timezone then "#{prefix}PreferenceTimezoneOption"
+        end
+
+      if option_class_name
+        name = (option_type == :colortheme) ? canonical_colortheme_option_id(params[:option_id]) : params[:option_id]
+        if name.present?
+          option_class = option_class_name.constantize
+          # Try to find constant matching the name (upcase)
+          # For Language/Region/Timezone, the input might be "US", "EN", "Asia/Tokyo"
+          # We need to map these to constants like US, EN, ASIA_TOKYO
+          const_name = name.to_s.upcase.tr("/", "_").tr("-", "_")
+          Rails.logger.debug do
+            "DEBUG: sanitize #{preference_class.name} #{option_type} " \
+              "name='#{name}' const='#{const_name}' " \
+              "found=#{option_class.const_defined?(const_name)}"
+          end
+
+          if option_class.const_defined?(const_name)
+            params[:option_id] = option_class.const_get(const_name)
+          end
+        end
+      end
       params
     end
 
@@ -598,18 +653,60 @@ module Preference
     end
 
     def build_preferences_payload(preference)
-      prefix = preference.class.name.underscore
-      language = preference.public_send("#{prefix}_language")&.option_id
-      region = preference.public_send("#{prefix}_region")&.option_id
-      timezone = preference.public_send("#{prefix}_timezone")&.option_id
-      colortheme = preference.public_send("#{prefix}_colortheme")&.option_id
+      association_prefix = preference.class.name.underscore
+      option_prefix = preference.class.name.sub("Preference", "")
+      language = preference.public_send("#{association_prefix}_language")&.option_id
+      region = preference.public_send("#{association_prefix}_region")&.option_id
+      timezone = preference.public_send("#{association_prefix}_timezone")&.option_id
+      colortheme = preference.public_send("#{association_prefix}_colortheme")&.option_id
 
       {
-        "lx" => language.presence&.downcase || "ja",
-        "ri" => region.presence&.downcase || "jp",
-        "tz" => timezone.presence || "Asia/Tokyo",
-        "ct" => normalize_colortheme(colortheme.presence) || "sy",
+        "lx" => option_id_to_language(language, option_prefix) || "ja",
+        "ri" => option_id_to_region(region, option_prefix) || "jp",
+        "tz" => option_id_to_timezone(timezone, option_prefix) || "Asia/Tokyo",
+        "ct" => normalize_colortheme(option_id_to_colortheme(colortheme, option_prefix)) || "sy",
       }
+    end
+
+    def option_id_to_language(option_id, prefix)
+      return if option_id.blank?
+
+      option_class = "#{prefix}PreferenceLanguageOption".constantize
+      return "ja" if option_id == option_class::JA
+      return "en" if option_class.const_defined?(:EN) && option_id == option_class::EN
+
+      option_id.to_s.downcase
+    end
+
+    def option_id_to_region(option_id, prefix)
+      return if option_id.blank?
+
+      option_class = "#{prefix}PreferenceRegionOption".constantize
+      return "jp" if option_id == option_class::JP
+      return "us" if option_id == option_class::US
+
+      option_id.to_s.downcase
+    end
+
+    def option_id_to_timezone(option_id, prefix)
+      return if option_id.blank?
+
+      option_class = "#{prefix}PreferenceTimezoneOption".constantize
+      return "Asia/Tokyo" if option_id == option_class::ASIA_TOKYO
+      return "Etc/UTC" if option_id == option_class::ETC_UTC
+
+      option_id.to_s
+    end
+
+    def option_id_to_colortheme(option_id, prefix)
+      return if option_id.blank?
+
+      option_class = "#{prefix}PreferenceColorthemeOption".constantize
+      return "light" if option_id == option_class::LIGHT
+      return "dark" if option_id == option_class::DARK
+      return "system" if option_id == option_class::SYSTEM
+
+      option_id.to_s
     end
 
     def preference_payload_preferences
@@ -679,7 +776,7 @@ module Preference
 
     def valid_refresh_preference?(preference)
       preference.present? &&
-        preference.status_id != "DELETED" &&
+        preference.status_id != preference_status_class::DELETED &&
         (preference.expires_at.nil? || preference.expires_at > Time.current)
     end
 

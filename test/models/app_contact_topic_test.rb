@@ -32,27 +32,29 @@
 require "test_helper"
 
 class AppContactTopicTest < ActiveSupport::TestCase
+  fixtures :app_contact_categories, :app_contact_statuses
+
   test "should inherit from GuestRecord" do
     assert_operator AppContactTopic, :<, GuestRecord
   end
 
   def build_contact
+    AppContactCategory.find_or_create_by!(id: AppContactCategory::NEYO)
+    AppContactStatus.find_or_create_by!(id: AppContactStatus::NEYO)
     contact = AppContact.new
     contact.confirm_policy = "1"
-    contact.category_id = "NEYO"
-    contact.status_id = "NEYO"
+    contact.category_id = AppContactCategory::NEYO
+    contact.status_id = AppContactStatus::NEYO
     contact.save!
 
     AppContactEmail.create!(
       app_contact: contact,
       email_address: "test@example.com",
-      expires_at: 1.day.from_now,
     )
 
     AppContactTelephone.create!(
       app_contact: contact,
       telephone_number: "+1234567890",
-      expires_at: 1.day.from_now,
     )
 
     contact
@@ -85,12 +87,11 @@ class AppContactTopicTest < ActiveSupport::TestCase
     assert_not topic.deletable
   end
 
-  test "should use UUID as primary key" do
+  test "should use numeric primary key" do
     contact = build_contact
     topic = AppContactTopic.create!(app_contact: contact)
 
-    assert_kind_of String, topic.id
-    assert_equal 36, topic.id.length
+    assert_kind_of Integer, topic.id
   end
 
   # rubocop:disable Minitest/MultipleAssertions

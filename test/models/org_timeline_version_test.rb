@@ -34,13 +34,15 @@
 require "test_helper"
 
 class OrgTimelineVersionTest < ActiveSupport::TestCase
+  fixtures :org_timelines, :org_timeline_statuses
+
   test "includes Version concern" do
     assert_includes OrgTimelineVersion.included_modules, Version
   end
 
   test "encrypts title, description, and body" do
     record = OrgTimelineVersion.create!(
-      org_timeline: OrgTimeline.find_by!(slug_id: "one-org-timeline-0001"),
+      org_timeline: OrgTimeline.find_by!(slug_id: "org-timeline-0000001"),
       permalink: "permalink_#{SecureRandom.hex(4)}",
       response_mode: "html",
       published_at: Time.zone.parse("2999-01-01 00:00:00"),

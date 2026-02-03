@@ -3,11 +3,12 @@
 require "test_helper"
 
 class Sign::App::Edge::V1::Token::ChecksControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_tokens
+  fixtures :users
 
   setup do
     @user = users(:one)
     @host = ENV.fetch("SIGN_SERVICE_URL", "test.umaxica.com")
+    UserToken.where(user: @user).delete_all
   end
 
   test "GET check with valid JWT access token returns 200" do

@@ -11,7 +11,7 @@
 #  department_id :bigint
 #  public_id     :string           not null
 #  staff_id      :bigint           not null
-#  status_id     :bigint           default(0), not null
+#  status_id     :bigint           default(2), not null
 #
 # Indexes
 #
@@ -47,5 +47,5 @@ class Admin < OperatorRecord
   has_many :staffs,
            through: :staff_admins
   validates :public_id, uniqueness: true, allow_nil: true
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 end

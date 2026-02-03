@@ -4,6 +4,8 @@ require "test_helper"
 
 # Test with UserEmail which includes Email
 class EmailTest < ActiveSupport::TestCase
+  fixtures :users, :staffs, :user_statuses, :staff_statuses
+
   setup do
     @user = users(:none_user)
   end

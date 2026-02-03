@@ -10,7 +10,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string           not null
-#  status_id    :bigint           default(0), not null
+#  status_id    :bigint           default(2), not null
 #
 # Indexes
 #
@@ -28,6 +28,10 @@
 require "test_helper"
 
 class AppPreferenceTest < ActiveSupport::TestCase
+  setup do
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
+  end
+
   test "generates public_id on create" do
     preference = AppPreference.create!
     assert_not_nil preference.public_id

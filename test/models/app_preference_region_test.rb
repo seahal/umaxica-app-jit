@@ -25,8 +25,11 @@
 require "test_helper"
 
 class AppPreferenceRegionTest < ActiveSupport::TestCase
+  fixtures :app_preference_region_options
+
   setup do
-    @preference = AppPreference.create!
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
+    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,7 +48,7 @@ class AppPreferenceRegionTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     region = AppPreferenceRegion.create!(preference: @preference)
-    assert_equal "JP", region.option_id
+    assert_equal AppPreferenceRegionOption::JP, region.option_id
   end
 
   test "validates uniqueness of preference" do
@@ -58,14 +61,14 @@ class AppPreferenceRegionTest < ActiveSupport::TestCase
 
   test "raises InvalidForeignKey for non-existent arbitrary option_id" do
     assert_raises(ActiveRecord::InvalidForeignKey) do
-      AppPreferenceRegion.create!(preference: @preference, option_id: "Mars")
+      AppPreferenceRegion.create!(preference: @preference, option_id: 9999)
     end
   end
 
-  test "AppPreferenceRegionOption accepts valid uppercase code" do
-    option = AppPreferenceRegionOption.create!(id: "XX")
+  test "AppPreferenceRegionOption accepts numeric ids" do
+    option = AppPreferenceRegionOption.create!(id: 99)
     assert_predicate option, :persisted?
-    region = AppPreferenceRegion.create!(preference: @preference, option_id: "XX")
+    region = AppPreferenceRegion.create!(preference: @preference, option_id: 99)
     assert_equal option, region.option
   end
 end

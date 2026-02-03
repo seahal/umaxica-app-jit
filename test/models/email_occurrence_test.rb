@@ -12,7 +12,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :bigint           default(0), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
@@ -29,6 +29,7 @@
 require "test_helper"
 
 class EmailOccurrenceTest < ActiveSupport::TestCase
+  fixtures :email_occurrences, :email_occurrence_statuses
   test "public_id length" do
     record = build_occurrence(EmailOccurrence, body: "user@example.com", public_id: "A" * 20)
 

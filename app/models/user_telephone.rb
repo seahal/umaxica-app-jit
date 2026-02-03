@@ -15,7 +15,7 @@
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
 #  user_id                           :bigint           not null
-#  user_identity_telephone_status_id :bigint           default(0), not null
+#  user_identity_telephone_status_id :bigint           default(1), not null
 #
 # Indexes
 #
@@ -35,6 +35,7 @@ class UserTelephone < PrincipalRecord
   include Turnstile
 
   MAX_TELEPHONES_PER_USER = 4
+  attribute :user_identity_telephone_status_id, default: UserTelephoneStatus::UNVERIFIED
 
   belongs_to :user_telephone_status, inverse_of: :user_telephones, foreign_key: :user_identity_telephone_status_id
   belongs_to :user, inverse_of: :user_telephones
@@ -43,10 +44,10 @@ class UserTelephone < PrincipalRecord
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
-  validates :user_identity_telephone_status_id, length: { maximum: 255 }
+  validates :user_identity_telephone_status_id, numericality: { only_integer: true }
   validate :enforce_user_telephone_limit, on: :create
   before_validation do
-    self.user_id ||= "00000000-0000-0000-0000-000000000000"
+    self.user_id ||= 0
   end
 
   after_initialize do

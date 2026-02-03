@@ -3,6 +3,8 @@
 require "test_helper"
 
 class EmailDeliveryTest < ActionDispatch::IntegrationTest
+  fixtures :user_email_statuses, :user_statuses
+
   setup do
     # Use the solid_queue adapter for this test to verify DB persistence
     @previous_adapter = ActiveJob::Base.queue_adapter

@@ -3,6 +3,8 @@
 require "test_helper"
 
 class AuthorizationAuditTest < ActiveSupport::TestCase
+  fixtures :users, :staffs, :user_statuses, :staff_statuses
+
   class DummyPolicy
     def initialize
     end
@@ -189,7 +191,7 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
 
     record = UserAudit.last
     assert_equal user, record.user
-    assert_equal "AUTHORIZATION_FAILED", record.event_id
+    assert_equal 3, record.event_id
   end
 
   test "log_authorization_failure creates real staff audit record" do
@@ -203,7 +205,7 @@ class AuthorizationAuditTest < ActiveSupport::TestCase
 
     record = StaffAudit.last
     assert_equal staff, record.staff
-    assert_equal "AUTHORIZATION_FAILED", record.event_id
+    assert_equal 2, record.event_id
   end
 
   test "handle_authorization_error handles html format" do

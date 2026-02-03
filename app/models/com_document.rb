@@ -81,7 +81,7 @@ class ComDocument < DocumentRecord
   has_one :category_master,
           through: :category,
           source: :com_document_category_master
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 
   def latest_version
     com_document_versions.order(created_at: :desc).first!

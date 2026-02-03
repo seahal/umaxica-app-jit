@@ -10,14 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_03_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
 
   create_table "app_preference_colortheme_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_preference_colortheme_options_on_code", unique: true
   end
 
   create_table "app_preference_colorthemes", force: :cascade do |t|
@@ -40,8 +38,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "app_preference_language_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_preference_language_options_on_code", unique: true
   end
 
   create_table "app_preference_languages", force: :cascade do |t|
@@ -54,8 +50,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "app_preference_region_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_preference_region_options_on_code", unique: true
   end
 
   create_table "app_preference_regions", force: :cascade do |t|
@@ -68,13 +62,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "app_preference_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_preference_statuses_on_code", unique: true
   end
 
   create_table "app_preference_timezone_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_preference_timezone_options_on_code", unique: true
   end
 
   create_table "app_preference_timezones", force: :cascade do |t|
@@ -91,7 +81,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
     t.datetime "expires_at"
     t.string "jti"
     t.string "public_id", null: false
-    t.bigint "status_id", default: 0, null: false
+    t.bigint "status_id", default: 2, null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_app_preferences_on_jti", unique: true
@@ -100,8 +90,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "com_preference_colortheme_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_preference_colortheme_options_on_code", unique: true
   end
 
   create_table "com_preference_colorthemes", force: :cascade do |t|
@@ -124,8 +112,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "com_preference_language_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_preference_language_options_on_code", unique: true
   end
 
   create_table "com_preference_languages", force: :cascade do |t|
@@ -138,8 +124,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "com_preference_region_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_preference_region_options_on_code", unique: true
   end
 
   create_table "com_preference_regions", force: :cascade do |t|
@@ -152,13 +136,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "com_preference_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_preference_statuses_on_code", unique: true
   end
 
   create_table "com_preference_timezone_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_preference_timezone_options_on_code", unique: true
   end
 
   create_table "com_preference_timezones", force: :cascade do |t|
@@ -175,7 +155,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
     t.datetime "expires_at"
     t.string "jti"
     t.string "public_id", null: false
-    t.bigint "status_id", default: 0, null: false
+    t.bigint "status_id", default: 2, null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_com_preferences_on_jti", unique: true
@@ -184,8 +164,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "org_preference_colortheme_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_preference_colortheme_options_on_code", unique: true
   end
 
   create_table "org_preference_colorthemes", force: :cascade do |t|
@@ -208,8 +186,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "org_preference_language_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_preference_language_options_on_code", unique: true
   end
 
   create_table "org_preference_languages", force: :cascade do |t|
@@ -222,8 +198,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "org_preference_region_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_preference_region_options_on_code", unique: true
   end
 
   create_table "org_preference_regions", force: :cascade do |t|
@@ -236,13 +210,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
   end
 
   create_table "org_preference_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_preference_statuses_on_code", unique: true
   end
 
   create_table "org_preference_timezone_options", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_preference_timezone_options_on_code", unique: true
   end
 
   create_table "org_preference_timezones", force: :cascade do |t|
@@ -259,7 +229,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
     t.datetime "expires_at"
     t.string "jti"
     t.string "public_id", null: false
-    t.bigint "status_id", default: 0, null: false
+    t.bigint "status_id", default: 2, null: false
     t.binary "token_digest"
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_org_preferences_on_jti", unique: true

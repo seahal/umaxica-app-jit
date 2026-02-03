@@ -5,19 +5,14 @@
 # Table name: staff_statuses
 # Database name: operator
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_staff_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class StaffStatus < OperatorRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  ACTIVE = 1
+  NEYO = 2
 
-  # Status constants
-  NEYO = "NEYO"
   # Use Rails convention `status_id` as the foreign key on `staffs`.
   has_many :staffs,
            foreign_key: :status_id,

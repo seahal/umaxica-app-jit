@@ -80,16 +80,23 @@ module Sign
         def update
           # FIXME: write test code!
 
+          @user_telephone = UserTelephone.find_by(id: params["id"])
+
+          if @user_telephone.blank?
+            redirect_to new_sign_app_up_telephone_path,
+                        notice: t("sign.app.registration.telephone.edit.session_expired") and return
+          end
+
           registration_session = session[:user_telephone_registration]
           if registration_session.blank? || registration_session["id"] != params["id"]
+            @user_telephone.errors.add(:base, t("sign.app.registration.telephone.edit.session_expired"))
             render :edit, status: :unprocessable_content and return
           end
 
           # Retrieve telephone record with OTP
-          @user_telephone = UserTelephone.find_by(id: params["id"])
-          if @user_telephone.blank? ||
-              @user_telephone.otp_expired? ||
+          if @user_telephone.otp_expired? ||
               registration_session["expires_at"].to_i <= Time.now.to_i
+            @user_telephone.errors.add(:base, t("sign.app.registration.telephone.edit.session_expired"))
             render :edit, status: :unprocessable_content and return
           end
 

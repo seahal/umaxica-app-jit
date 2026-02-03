@@ -3,13 +3,9 @@
 # Table name: app_contact_categories
 # Database name: guest
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_app_contact_categories_on_code  (code) UNIQUE
-#
-application_inquiry:
 neyo:
-  code: "NEYO"
+  id: 1
+application_inquiry:
+  id: 2

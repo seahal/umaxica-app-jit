@@ -3,6 +3,10 @@
 require "test_helper"
 
 class TimelineVersionWriterTest < ActiveSupport::TestCase
+  fixtures :com_timelines, :com_timeline_statuses,
+           :app_timelines, :app_timeline_statuses,
+           :org_timelines, :org_timeline_statuses
+
   test "writes com timeline version" do
     timeline = com_timelines(:one)
 

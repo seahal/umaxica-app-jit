@@ -5,6 +5,8 @@ require "minitest/mock"
 
 module Sign::App::In::Passkey
   class AuthenticationFlowTest < ActionDispatch::IntegrationTest
+    fixtures :users, :user_statuses, :user_email_statuses, :user_passkey_statuses
+
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
       # Mock TRUSTED_ORIGINS
@@ -15,7 +17,7 @@ module Sign::App::In::Passkey
       UserEmail.create!(
         user: @user,
         address: "one@example.com",
-        user_identity_email_status_id: "VERIFIED",
+        user_identity_email_status_id: UserEmailStatus::VERIFIED,
         otp_attempts_count: 0,
         otp_counter: "0",
         otp_private_key: "secret",
@@ -34,6 +36,7 @@ module Sign::App::In::Passkey
         sign_count: 10,
         description: "Test Passkey",
         external_id: SecureRandom.uuid,
+        user_passkey_status_id: UserPasskeyStatus::ACTIVE,
       )
     end
 

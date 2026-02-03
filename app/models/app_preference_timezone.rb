@@ -35,6 +35,6 @@ class AppPreferenceTimezone < PreferenceRecord
   private
 
   def set_option_id
-    self.option_id ||= "Asia/Tokyo"
+    self.option_id ||= AppPreferenceTimezoneOption::ASIA_TOKYO
   end
 end

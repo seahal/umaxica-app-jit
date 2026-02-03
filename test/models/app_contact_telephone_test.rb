@@ -5,14 +5,20 @@
 # Table name: app_contact_telephones
 # Database name: guest
 #
-#  id             :bigint           not null, primary key
-#  code           :citext           not null
-#  app_contact_id :bigint           not null
+#  id                     :bigint           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  telephone_number       :string(1000)     default(""), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  app_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_app_contact_telephones_on_app_contact_id  (app_contact_id)
-#  index_app_contact_telephones_on_code            (code) UNIQUE
+#  index_app_contact_telephones_on_app_contact_id    (app_contact_id)
+#  index_app_contact_telephones_on_telephone_number  (telephone_number)
 #
 # Foreign Keys
 #
@@ -22,6 +28,7 @@
 require "test_helper"
 
 class AppContactTelephoneTest < ActiveSupport::TestCase
+  fixtures :app_contacts, :app_contact_telephones
   def setup
     @app_contact = AppContact.find_by!(public_id: "one_app_contact_00001")
     @telephone = AppContactTelephone.new(

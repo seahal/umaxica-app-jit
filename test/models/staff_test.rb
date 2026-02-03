@@ -10,7 +10,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string           not null
-#  status_id    :bigint           default(0), not null
+#  status_id    :bigint           default(2), not null
 #
 # Indexes
 #
@@ -29,9 +29,9 @@ class StaffTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
-    StaffTelephoneStatus.find_or_create_by!(id: "UNVERIFIED")
-    StaffEmailStatus.find_or_create_by!(id: "UNVERIFIED")
-    StaffTokenStatus.find_or_create_by!(id: "ACTIVE")
+    StaffTelephoneStatus.find_or_create_by!(id: StaffTelephoneStatus::UNVERIFIED)
+    StaffEmailStatus.find_or_create_by!(id: StaffEmailStatus::UNVERIFIED)
+    StaffTokenStatus.find_or_create_by!(id: StaffTokenStatus::ACTIVE)
   end
 
   # ==========================================================================

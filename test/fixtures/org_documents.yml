@@ -36,7 +36,11 @@
 #
 
 one:
-  slug_id: 164 # was org-documents-0000001"
+  slug_id: "org-documents-0000001"
+  status_id: 6
+  permalink: "org-documents-0000001"
 
 two:
-  slug_id: 164 # was org-documents-0000002"
+  slug_id: "org-documents-0000002"
+  status_id: 6
+  permalink: "org-documents-0000002"

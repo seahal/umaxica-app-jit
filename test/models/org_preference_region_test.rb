@@ -26,7 +26,8 @@ require "test_helper"
 
 class OrgPreferenceRegionTest < ActiveSupport::TestCase
   setup do
-    @preference = OrgPreference.create!
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NEYO)
+    @preference = OrgPreference.create!(status_id: OrgPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,6 +46,6 @@ class OrgPreferenceRegionTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     region = OrgPreferenceRegion.create!(preference: @preference)
-    assert_equal "JP", region.option_id
+    assert_equal OrgPreferenceRegionOption::JP, region.option_id
   end
 end

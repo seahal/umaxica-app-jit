@@ -9,6 +9,8 @@ require "test_helper"
 # - New user creation via social login
 # - JWT/session tokens are issued on success
 class SocialAuthLoginTest < ActionDispatch::IntegrationTest
+  fixtures :user_statuses, :user_social_google_statuses, :user_social_apple_statuses
+
   SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
 
   setup do
@@ -28,7 +30,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     existing_uid = "existing_google_user_#{SecureRandom.hex(4)}"
 
     # Create existing user with Google identity
-    existing_user = User.create!(status_id: "NEYO", public_id: "ex_#{SecureRandom.hex(4)}")
+    existing_user = User.create!(status_id: UserStatus::NEYO, public_id: "ex_#{SecureRandom.hex(4)}")
     UserSocialGoogle.create!(
       user: existing_user,
       uid: existing_uid,
@@ -38,7 +40,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
       user_social_google_status: user_social_google_statuses(:active),
     )
 
-    setup_google_mock_auth(uid: existing_uid, email: "existing@example.com")
+    setup_google_mock_auth(uid: existing_uid)
 
     user_count_before = User.count
 
@@ -65,7 +67,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
   test "Apple login with existing identity does not create new user" do
     existing_uid = "existing_apple_user_#{SecureRandom.hex(4)}"
 
-    existing_user = User.create!(status_id: "NEYO", public_id: "ex_ap_#{SecureRandom.hex(4)}")
+    existing_user = User.create!(status_id: UserStatus::NEYO, public_id: "ex_ap_#{SecureRandom.hex(4)}")
     UserSocialApple.create!(
       user: existing_user,
       uid: existing_uid,
@@ -75,7 +77,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
       user_social_apple_status: user_social_apple_statuses(:active),
     )
 
-    setup_apple_mock_auth(uid: existing_uid, email: "existing_apple@example.com")
+    setup_apple_mock_auth(uid: existing_uid)
 
     user_count_before = User.count
 
@@ -95,7 +97,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
   # ============================================================================
   test "Google login with new uid creates new user and identity" do
     new_uid = "brand_new_google_#{SecureRandom.hex(4)}"
-    setup_google_mock_auth(uid: new_uid, email: "newuser@example.com")
+    setup_google_mock_auth(uid: new_uid)
 
     user_count_before = User.count
     identity_count_before = UserSocialGoogle.count
@@ -122,7 +124,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
 
   test "Apple login with new uid creates new user and identity" do
     new_uid = "brand_new_apple_#{SecureRandom.hex(4)}"
-    setup_apple_mock_auth(uid: new_uid, email: "newapple@example.com")
+    setup_apple_mock_auth(uid: new_uid)
 
     user_count_before = User.count
     identity_count_before = UserSocialApple.count
@@ -150,7 +152,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
   # ============================================================================
   test "successful login sets auth cookies" do
     new_uid = "cookie_test_#{SecureRandom.hex(4)}"
-    setup_google_mock_auth(uid: new_uid, email: "cookie@example.com")
+    setup_google_mock_auth(uid: new_uid)
 
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
@@ -177,7 +179,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     existing_uid = "update_auth_time_#{SecureRandom.hex(4)}"
     old_auth_time = 1.week.ago
 
-    existing_user = User.create!(status_id: "NEYO", public_id: "at_#{SecureRandom.hex(4)}")
+    existing_user = User.create!(status_id: UserStatus::NEYO, public_id: "at_#{SecureRandom.hex(4)}")
     identity = UserSocialGoogle.create!(
       user: existing_user,
       uid: existing_uid,
@@ -188,7 +190,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
       last_authenticated_at: old_auth_time,
     )
 
-    setup_google_mock_auth(uid: existing_uid, email: "authtime@example.com")
+    setup_google_mock_auth(uid: existing_uid)
 
     time_before = Time.current
 
@@ -208,11 +210,13 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
 
   private
 
-  def setup_google_mock_auth(uid:, email: "test@example.com")
+  # IMPORTANT: Social login authenticates by provider+uid ONLY, NOT email
+  # We deliberately omit email from mock_auth to test this requirement
+  def setup_google_mock_auth(uid:)
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
       provider: "google_oauth2",
       uid: uid,
-      info: { email: email, image: "https://example.com/image.jpg" },
+      info: { image: "https://example.com/image.jpg" },
       credentials: {
         token: "google_token_#{SecureRandom.hex(8)}",
         refresh_token: "refresh_token",
@@ -221,11 +225,11 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     )
   end
 
-  def setup_apple_mock_auth(uid:, email: "apple@example.com")
+  def setup_apple_mock_auth(uid:)
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
       provider: "apple",
       uid: uid,
-      info: { email: email },
+      info: {}, # Apple may not provide any info when email scope is not requested
       credentials: {
         token: "apple_token_#{SecureRandom.hex(8)}",
         expires_at: 1.week.from_now.to_i,

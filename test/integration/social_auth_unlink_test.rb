@@ -9,13 +9,15 @@ require "test_helper"
 # - Successful unlink removes identity
 # - Unlink requires authentication
 class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
+  fixtures :user_social_google_statuses, :user_social_apple_statuses, :user_statuses
+
   setup do
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
 
     # Create test user with recent reauth (required for unlink when REQUIRE_REAUTH_FOR_UNLINK is true)
     @user = User.create!(
-      status_id: "NEYO",
+      status_id: UserStatus::NEYO,
       public_id: "unlink_test_#{SecureRandom.hex(4)}",
       last_reauth_at: 1.minute.ago,
     )

@@ -15,7 +15,7 @@
 #  created_at                         :datetime         not null
 #  updated_at                         :datetime         not null
 #  staff_id                           :bigint           not null
-#  staff_identity_telephone_status_id :bigint           default(0), not null
+#  staff_identity_telephone_status_id :bigint           default(6), not null
 #
 # Indexes
 #
@@ -32,6 +32,8 @@
 require "test_helper"
 
 class StaffTelephoneTest < ActiveSupport::TestCase
+  fixtures :staffs, :staff_statuses, :staff_telephone_statuses
+
   setup do
     @staff = staffs(:none_staff)
     @valid_attributes = {
@@ -113,11 +115,11 @@ class StaffTelephoneTest < ActiveSupport::TestCase
 
     assert_not_nil staff_telephone.id
     # UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
-    assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, staff_telephone.id)
+    assert_kind_of Integer, staff_telephone.id
   end
 
   test "enforces maximum telephones per staff" do
-    staff = Staff.create!(staff_status: StaffStatus.find("NEYO"))
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NEYO))
     StaffTelephone::MAX_TELEPHONES_PER_STAFF.times do |i|
       StaffTelephone.create!(
         number: "+1234567890#{i}",

@@ -9,7 +9,7 @@
 #  updated_at                        :datetime         not null
 #  public_id                         :string(21)       not null
 #  staff_id                          :bigint           not null
-#  staff_one_time_password_status_id :bigint           default(0), not null
+#  staff_one_time_password_status_id :bigint           default(4), not null
 #
 # Indexes
 #
@@ -34,7 +34,6 @@ class StaffOneTimePasswordTest < ActiveSupport::TestCase
     staff = staffs(:one)
     totp = StaffOneTimePassword.new(
       staff: staff,
-      last_otp_at: Time.current,
       private_key: "",
       public_id: nil,
     )
@@ -51,14 +50,12 @@ class StaffOneTimePasswordTest < ActiveSupport::TestCase
     StaffOneTimePassword::MAX_TOTPS_PER_STAFF.times do |index|
       StaffOneTimePassword.create!(
         staff: staff,
-        last_otp_at: Time.current,
         private_key: "key-#{index}",
       )
     end
 
     extra = StaffOneTimePassword.new(
       staff: staff,
-      last_otp_at: Time.current,
       private_key: "extra-key",
     )
 

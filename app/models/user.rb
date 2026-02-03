@@ -12,7 +12,7 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  public_id      :string(255)      default(""), not null
-#  status_id      :bigint           default(0), not null
+#  status_id      :bigint           default(13), not null
 #
 # Indexes
 #
@@ -116,7 +116,7 @@ class User < PrincipalRecord
            through: :avatar_assignments,
            source: :avatar
   validates :public_id, uniqueness: true, length: { maximum: 21 }
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 
   def totp_enabled?
     user_one_time_passwords.exists?(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)

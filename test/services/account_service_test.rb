@@ -3,9 +3,20 @@
 require "test_helper"
 
 class AccountServiceTest < ActiveSupport::TestCase
+  fixtures :users,
+           :staffs,
+           :user_statuses,
+           :staff_statuses,
+           :user_token_statuses,
+           :user_token_kinds,
+           :staff_token_statuses,
+           :staff_token_kinds
+
   setup do
     @user = users(:one)
     @staff = staffs(:one)
+    UserToken.where(user: @user).delete_all
+    StaffToken.where(staff: @staff).delete_all
   end
 
   # Initialization Tests
@@ -41,7 +52,7 @@ class AccountServiceTest < ActiveSupport::TestCase
   end
 
   test "find should return account service for staff" do
-    account = AccountService.find(@staff.id)
+    account = AccountService.find(@staff.id, type: :staff)
 
     assert_not_nil account
     assert_predicate account, :staff?

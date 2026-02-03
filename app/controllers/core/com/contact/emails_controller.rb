@@ -50,7 +50,7 @@ module Core
         end
 
         def process_verification
-          @contact.update!(status_id: "CHECKED_EMAIL_ADDRESS")
+          @contact.update!(status_id: ComContactStatus::CHECKED_EMAIL_ADDRESS)
 
           redirect_url = new_core_com_contact_telephone_url(
             @contact,
@@ -102,7 +102,7 @@ module Core
 
           raise Help::ContactNotFoundError if @contact.nil?
 
-          raise Help::InvalidContactStatusError.new(@contact.status_id) unless @contact.status_id == "SET_UP"
+          raise Help::InvalidContactStatusError.new(@contact.status_id) unless @contact.status_id == ComContactStatus::SET_UP
         end
 
         def handle_contact_error(error)

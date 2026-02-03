@@ -38,7 +38,15 @@
 one:
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>
+  permalink: "com_doc_one"
+  status_id: <%= ComDocumentStatus::ACTIVE %>
+  slug_id: "com_doc_one_slug"
+  revision_key: "rev_key_one"
 
 two:
   published_at: <%= 1.day.ago %>
   expires_at: <%= 1.year.from_now %>
+  permalink: "com_doc_two"
+  status_id: <%= ComDocumentStatus::ACTIVE %>
+  slug_id: "com_doc_two_slug"
+  revision_key: "rev_key_two"

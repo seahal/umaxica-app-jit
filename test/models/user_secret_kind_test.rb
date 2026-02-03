@@ -3,12 +3,7 @@
 # Table name: user_secret_kinds
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_secret_kinds_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
@@ -41,7 +36,7 @@ class UserSecretKindTest < ActiveSupport::TestCase
   test "validates id is non-negative" do
     record = UserSecretKind.new(id: -1)
     assert_predicate record, :invalid?
-    assert_includes record.errors[:id], "must be greater than or equal to 0"
+    assert_includes record.errors[:id], "は0以上の値にしてください"
   end
 
   test "validates id is an integer" do

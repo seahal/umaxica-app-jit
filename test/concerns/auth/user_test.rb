@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Auth::UserTest < ActiveSupport::TestCase
+  fixtures :user_statuses
+
   class FormatMock
     attr_accessor :format_type
 
@@ -66,11 +68,7 @@ class Auth::UserTest < ActiveSupport::TestCase
 
   setup do
     @obj = DummyClass.new
-    @user =
-      User.find_or_create_by!(id: SecureRandom.uuid) do |u|
-        u.status_id = "NEYO"
-        u.public_id = SecureRandom.alphanumeric(21)
-      end
+    @user = User.create!(status_id: UserStatus::NEYO, public_id: SecureRandom.alphanumeric(21))
   end
 
   test "module can be included" do

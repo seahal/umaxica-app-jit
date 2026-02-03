@@ -3,13 +3,9 @@
 # Table name: com_contact_categories
 # Database name: guest
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_com_contact_categories_on_code  (code) UNIQUE
-#
-security_issue:
 neyo:
-  code: "NEYO"
+  id: 1
+security_issue:
+  id: 2

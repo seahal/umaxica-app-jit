@@ -16,7 +16,7 @@
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
 #  user_id                              :bigint           not null
-#  user_identity_social_apple_status_id :bigint           default(0), not null
+#  user_identity_social_apple_status_id :bigint           default(1), not null
 #
 # Indexes
 #
@@ -44,7 +44,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "uid-1",
       token: "token-1",
       expires_at: 1.week.from_now.to_i,
-      user_social_apple_status: UserSocialAppleStatus.find("ACTIVE"),
+      user_social_apple_status: UserSocialAppleStatus.find(UserSocialAppleStatus::ACTIVE),
     )
 
     duplicate = UserSocialApple.new(
@@ -124,7 +124,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "existing-uid",
       token: "old-token",
       expires_at: 123,
-      user_social_apple_status: UserSocialAppleStatus.find("ACTIVE"),
+      user_social_apple_status: UserSocialAppleStatus.find(UserSocialAppleStatus::ACTIVE),
     )
 
     auth = MockAuth.new(
@@ -190,7 +190,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "active-apple-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_apple_status_id: "ACTIVE",
+      user_identity_social_apple_status_id: UserSocialAppleStatus::ACTIVE,
     )
 
     inactive = UserSocialApple.create!(
@@ -198,7 +198,7 @@ class UserSocialAppleTest < ActiveSupport::TestCase
       uid: "inactive-apple-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_apple_status_id: "REVOKED",
+      user_identity_social_apple_status_id: UserSocialAppleStatus::REVOKED,
     )
 
     assert_includes UserSocialApple.active, active

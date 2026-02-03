@@ -3,18 +3,11 @@
 # Table name: org_preference_region_options
 # Database name: preference
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_preference_region_options_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 us:
-  code: "11 # was 11 # was US"
-  position: 1
+  id: 1
 
 jp:
-  code: "12 # was 12 # was JP"
-  position: 2
+  id: 2

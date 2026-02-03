@@ -5,43 +5,20 @@
 # Table name: ip_occurrence_statuses
 # Database name: occurrence
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_ip_occurrence_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class IpOccurrenceStatusTest < ActiveSupport::TestCase
-  test "upcases id before validation" do
-    assert_upcases_id(IpOccurrenceStatus)
+  test "accepts integer ids" do
+    record = IpOccurrenceStatus.new(id: 9)
+    assert_predicate record, :valid?
   end
 
-  test "validates id presence" do
-    record = IpOccurrenceStatus.new(id: nil)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id length" do
-    record = IpOccurrenceStatus.new(id: "A" * 256)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id format" do
-    record = IpOccurrenceStatus.new(id: "BAD-ID!")
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id uniqueness case insensitive" do
-    record = IpOccurrenceStatus.new(id: "active")
-
-    assert_invalid_attribute(record, :id)
+  test "constants are defined" do
+    assert_equal 1, IpOccurrenceStatus::ACTIVE
+    assert_equal 2, IpOccurrenceStatus::NEYO
   end
 
   test "has occurrences association" do

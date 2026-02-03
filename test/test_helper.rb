@@ -50,6 +50,28 @@ class ActiveSupport::TestCase
 
   self.use_transactional_tests = false if ENV["SKIP_DB"] == "1" && respond_to?(:use_transactional_tests=)
 
+  fixtures :staff_token_kinds,
+           :staff_token_statuses,
+           :user_token_kinds,
+           :user_token_statuses,
+           :app_preference_statuses,
+           :com_preference_statuses,
+           :org_preference_statuses,
+           :app_preference_region_options,
+           :app_preference_language_options,
+           :app_preference_timezone_options,
+           :app_preference_colortheme_options,
+           :com_preference_region_options,
+           :com_preference_language_options,
+           :com_preference_timezone_options,
+           :com_preference_colortheme_options,
+           :org_preference_region_options,
+           :org_preference_language_options,
+           :org_preference_timezone_options,
+           :org_preference_colortheme_options,
+           :ip_occurrences,
+           :ip_occurrence_statuses unless ENV["SKIP_DB"] == "1"
+
   # Load fixtures only when explicitly needed in individual test files
   # instead of loading all fixtures globally
   # To use fixtures in a specific test file, add:

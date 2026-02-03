@@ -36,10 +36,15 @@
 #
 
 one:
+  slug_id: one_slug_id
+  permalink: one_permalink
+  status_id: <%= AppDocumentStatus::ACTIVE %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 
 two:
   slug_id: 30 # was two-app-document-0002"
+  permalink: two_permalink
+  status_id: <%= AppDocumentStatus::ACTIVE %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

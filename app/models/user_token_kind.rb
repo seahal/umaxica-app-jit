@@ -3,21 +3,17 @@
 # Table name: user_token_kinds
 # Database name: token
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_token_kinds_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 # frozen_string_literal: true
 
 class UserTokenKind < TokenRecord
-  include CodeIdentifiable
-
-  # id is a string, manually managed
   self.primary_key = :id
   self.record_timestamps = false
+
+  BROWSER_WEB = 11
+  CLIENT_IOS = 12
+  CLIENT_ANDROID = 13
 
   has_many :user_tokens, dependent: :restrict_with_error
 end

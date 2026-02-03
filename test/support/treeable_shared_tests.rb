@@ -14,7 +14,7 @@ module TreeableSharedTests
     if treeable_class.respond_to?(:tree_root_parent_value)
       treeable_class.tree_root_parent_value
     else
-      "none"
+      0
     end
   end
 
@@ -35,8 +35,9 @@ module TreeableSharedTests
     # rubocop:enable Rails/SkipsModelValidations
   end
 
-  def create_master!(klass, id:, parent: nil, parent_id: nil, position: nil)
-    attributes = { id: id }
+  def create_master!(klass, id: nil, parent: nil, parent_id: nil, position: nil)
+    attributes = {}
+    attributes[:id] = id if id
 
     if parent
       attributes[:parent] = parent
@@ -55,13 +56,21 @@ module TreeableSharedTests
 
   def build_tree!(klass)
     ensure_root_sentinel!(klass)
-    token = SecureRandom.hex(4).upcase
+    if string_id_column?
+      token = SecureRandom.hex(4).upcase
 
-    root = create_master!(klass, id: "ROOT_#{token}", parent_id: ROOT_SENTINEL, position: 0)
-    a = create_master!(klass, id: "A_#{token}", parent: root, position: 2)
-    b = create_master!(klass, id: "B_#{token}", parent: root, position: 1)
-    c = create_master!(klass, id: "C_#{token}", parent: root, position: 1)
-    c1 = create_master!(klass, id: "C1_#{token}", parent: c, position: 1)
+      root = create_master!(klass, id: "ROOT_#{token}", parent_id: tree_root_sentinel, position: 0)
+      a = create_master!(klass, id: "A_#{token}", parent: root, position: 2)
+      b = create_master!(klass, id: "B_#{token}", parent: root, position: 1)
+      c = create_master!(klass, id: "C_#{token}", parent: root, position: 1)
+      c1 = create_master!(klass, id: "C1_#{token}", parent: c, position: 1)
+    else
+      root = create_master!(klass, parent_id: tree_root_sentinel, position: 0)
+      a = create_master!(klass, parent: root, position: 2)
+      b = create_master!(klass, parent: root, position: 1)
+      c = create_master!(klass, parent: root, position: 1)
+      c1 = create_master!(klass, parent: c, position: 1)
+    end
 
     { root: root, a: a, b: b, c: c, c1: c1 }
   end
@@ -72,35 +81,37 @@ module TreeableSharedTests
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
-    master = klass.new(id: nil, parent_id: ROOT_SENTINEL)
+    return skip("id is auto-generated for numeric primary keys") unless string_id_column?
+
+    master = klass.new(id: nil, parent_id: tree_root_sentinel)
     assert_not master.valid?
     assert_not_empty master.errors[:id]
 
     token = SecureRandom.hex(4).upcase
-    existing = create_master!(klass, id: "EXISTING_#{token}", parent_id: ROOT_SENTINEL)
-    duplicate = klass.new(id: existing.id.downcase, parent_id: ROOT_SENTINEL)
+    existing = create_master!(klass, id: "EXISTING_#{token}", parent_id: tree_root_sentinel)
+    duplicate = klass.new(id: existing.id.downcase, parent_id: tree_root_sentinel)
     assert_not duplicate.valid?
     assert_not_empty duplicate.errors[:id]
   end
 
   def test_upcases_id_before_validation
-    return unless string_id_column?
+    return skip("id upcasing only applies to string ids") unless string_id_column?
 
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
-    master = klass.new(id: "new_category", parent_id: ROOT_SENTINEL)
+    master = klass.new(id: "new_category", parent_id: tree_root_sentinel)
     master.valid?
     assert_equal "NEW_CATEGORY", master.id
   end
 
   def test_validates_id_format
-    return unless string_id_column?
+    return skip("id format validation only applies to string ids") unless string_id_column?
 
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
-    master = klass.new(id: "INVALID-ID!", parent_id: ROOT_SENTINEL)
+    master = klass.new(id: "INVALID-ID!", parent_id: tree_root_sentinel)
     assert_not master.valid?
     assert_not_empty master.errors[:id]
   end
@@ -109,18 +120,19 @@ module TreeableSharedTests
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
-    master = klass.new(id: "TEST_CAT", parent_id: ROOT_SENTINEL)
+    id_value = string_id_column? ? "TEST_CAT" : 1
+    master = klass.new(id: id_value, parent_id: tree_root_sentinel)
     assert_respond_to master, :name
     assert_kind_of String, master.name
   end
 
   def test_validates_length_of_id
-    return unless string_id_column?
+    return skip("id length validation only applies to string ids") unless string_id_column?
 
     klass = treeable_class
     ensure_root_sentinel!(klass)
 
-    record = klass.new(id: "A" * 256, parent_id: ROOT_SENTINEL)
+    record = klass.new(id: "A" * 256, parent_id: tree_root_sentinel)
     assert_predicate record, :invalid?
     assert_predicate record.errors[:id], :any?
   end

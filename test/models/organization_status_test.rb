@@ -5,12 +5,7 @@
 # Table name: organization_statuses
 # Database name: operator
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_organization_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
@@ -19,9 +14,12 @@ class OrganizationStatusTest < ActiveSupport::TestCase
   #   assert true
   # end
 
-  test "validates length of id" do
-    record = OrganizationStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "accepts integer ids" do
+    record = OrganizationStatus.new(id: 9)
+    assert_predicate record, :valid?
+  end
+
+  test "constants are defined" do
+    assert_equal 1, OrganizationStatus::NEYO
   end
 end

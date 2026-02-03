@@ -3,6 +3,10 @@
 require "test_helper"
 
 class ComContactPolicyTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses
+
+  fixtures :staffs, :staff_statuses, :users, :user_statuses
+
   class MockContact
     def initialize
     end

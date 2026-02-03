@@ -7,15 +7,15 @@
 #
 #  id                             :bigint           not null, primary key
 #  expires_at                     :datetime         default(Infinity), not null
-#  last_used_at                   :datetime         default(-Infinity), not null
+#  last_used_at                   :datetime
 #  name                           :string           default(""), not null
 #  password_digest                :string           default(""), not null
 #  uses_remaining                 :integer          default(1), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  user_id                        :bigint           not null
-#  user_identity_secret_status_id :bigint           default(0), not null
-#  user_secret_kind_id            :bigint           default(0), not null
+#  user_identity_secret_status_id :bigint           default(1), not null
+#  user_secret_kind_id            :bigint           default(1), not null
 #
 # Indexes
 #
@@ -39,14 +39,15 @@ class UserSecret < PrincipalRecord
   MAX_SECRETS_PER_USER = 10
   attr_accessor :raw_secret
 
+  attribute :user_identity_secret_status_id, default: UserSecretStatus::ACTIVE
+  attribute :user_secret_kind_id, default: UserSecretKind::LOGIN
+
   belongs_to :user, inverse_of: :user_secrets
   belongs_to :user_secret_status, inverse_of: :user_secrets, foreign_key: :user_identity_secret_status_id
   belongs_to :user_secret_kind, inverse_of: :user_secrets
 
   validates :name, length: { maximum: 255 }
   validates :password_digest, presence: true, length: { maximum: 255 }
-  validates :user_identity_secret_status_id, length: { maximum: 255 }
-  validates :user_secret_kind_id, length: { maximum: 255 }
 
   validate :enforce_secret_limit, on: :create
 

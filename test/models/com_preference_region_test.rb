@@ -26,7 +26,8 @@ require "test_helper"
 
 class ComPreferenceRegionTest < ActiveSupport::TestCase
   setup do
-    @preference = ComPreference.create!
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NEYO)
+    @preference = ComPreference.create!(status_id: ComPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -47,6 +48,6 @@ class ComPreferenceRegionTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     region = ComPreferenceRegion.create!(preference: @preference)
-    assert_equal "JP", region.option_id
+    assert_equal ComPreferenceRegionOption::JP, region.option_id
   end
 end

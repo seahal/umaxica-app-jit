@@ -5,6 +5,8 @@ require "test_helper"
 require "ostruct"
 
 class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses, :user_telephone_statuses
+
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"

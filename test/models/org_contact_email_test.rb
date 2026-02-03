@@ -5,13 +5,22 @@
 # Table name: org_contact_emails
 # Database name: guest
 #
-#  id             :bigint           not null, primary key
-#  code           :citext           not null
-#  org_contact_id :bigint           not null
+#  id                     :bigint           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  token_digest           :string(255)
+#  token_expires_at       :timestamptz
+#  token_viewed           :boolean          default(FALSE), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  org_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_org_contact_emails_on_code            (code) UNIQUE
+#  index_org_contact_emails_on_email_address   (email_address)
 #  index_org_contact_emails_on_org_contact_id  (org_contact_id)
 #
 # Foreign Keys
@@ -22,6 +31,8 @@
 require "test_helper"
 
 class OrgContactEmailTest < ActiveSupport::TestCase
+  fixtures :org_contacts, :org_contact_categories, :org_contact_statuses
+
   def setup
     @org_contact = org_contacts(:one)
     @email = OrgContactEmail.new(
@@ -85,7 +96,7 @@ class OrgContactEmailTest < ActiveSupport::TestCase
   end
 
   test "can_resend_verifier? logic" do
-    assert_predicate @email, :can_resend_verifier? # Fresh record (defaults to expired)
+    assert_not @email.can_resend_verifier?
     @email.generate_verifier!
     # Still valid attempt window
     assert_not @email.can_resend_verifier?

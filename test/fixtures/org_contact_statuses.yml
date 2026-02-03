@@ -3,14 +3,23 @@
 # Table name: org_contact_statuses
 # Database name: guest
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_contact_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 neyo:
-  code: "NEYO"
+  id: 1
+checked_email_address:
+  id: 2
+email_pending:
+  id: 3
+phone_verified:
+  id: 4
+completed:
+  id: 5
+email_verified:
+  id: 6
 set_up:
-  code: "SET_UP"
+  id: 7
+checked_telephone_number:
+  id: 9
+completed_contact_action:
+  id: 10

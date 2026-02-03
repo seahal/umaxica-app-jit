@@ -3,7 +3,11 @@
 require "test_helper"
 
 class Sign::RefreshTokenServiceTest < ActiveSupport::TestCase
-  fixtures :users, :user_tokens
+  fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds, :user_tokens
+
+  setup do
+    # UserToken.where(user: users(:one)).delete_all
+  end
 
   test "rotation increments generation counter" do
     token = UserToken.create!(user: users(:one))

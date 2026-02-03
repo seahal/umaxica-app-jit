@@ -3,21 +3,16 @@
 # Table name: handle_assignment_statuses
 # Database name: avatar
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_handle_assignment_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 # Auto-generated minimal fixture
 neyo:
-  code: "NEYO"
+  id: 5
 active:
-  code: "ACTIVE"
+  id: 3
 inactive:
-  code: "11 # was 11 # was INACTIVE"
+  id: 1
 pending:
-  code: "12 # was 12 # was PENDING"
+  id: 2
 deleted:
-  code: "DELETED"
+  id: 4

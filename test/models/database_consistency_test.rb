@@ -5,6 +5,8 @@ require "test_helper"
 # Test suite to verify database consistency improvements
 # Tests for uniqueness, presence, and foreign key validations
 class DatabaseConsistencyTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses, :user_occurrence_statuses, :zip_occurrence_statuses
+
   # Test PublicId concern validations
   test "UserEmail requires unique public_id" do
     email = UserEmail.new(
@@ -14,50 +16,57 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
     )
     assert_predicate email, :valid?
 
-    # Try to create another with same public_id
+    # Try to create another with same public_id (requires first to be saved if using new logic,
+    # but here distinct instances)
+    # The first one 'email' is just new. It is NOT in DB.
+    # So duplicate IS valid unless we save 'email' first.
+    email.save!
+
     duplicate = UserEmail.new(
       address: "other@example.com",
       user_id: users(:one).id,
       public_id: "test_public_id_12345",
     )
     assert_not duplicate.valid?
-    assert_includes duplicate.errors[:public_id], "has already been taken"
+    assert_includes duplicate.errors[:public_id], "はすでに存在します"
   end
 
-  test "UserEmail requires public_id presence" do
+  test "UserEmail auto-generates public_id when nil" do
     email = UserEmail.new(
       address: "test@example.com",
       user_id: users(:one).id,
       public_id: nil,
     )
-    assert_not email.valid?
-    assert_includes email.errors[:public_id], "can't be blank"
+    # PublicId concern auto-generates public_id before validation on create
+    email.valid?
+    assert_not_nil email.public_id
+    assert_equal 21, email.public_id.length
   end
 
   # Test Preference jti uniqueness
   test "AppPreference requires unique jti" do
     AppPreference.create!(
       jti: "unique_jti_123",
-      status_id: "NEYO",
+      status_id: AppPreferenceStatus::NEYO,
     )
 
     pref2 = AppPreference.new(
       jti: "unique_jti_123",
-      status_id: "NEYO",
+      status_id: AppPreferenceStatus::NEYO,
     )
     assert_not pref2.valid?
-    assert_includes pref2.errors[:jti], "has already been taken"
+    assert_includes pref2.errors[:jti], "はすでに存在します"
   end
 
   # Test Occurrence composite uniqueness
   test "UserZipOccurrence requires unique combination of user_occurrence_id and zip_occurrence_id" do
     user_occ = UserOccurrence.first || UserOccurrence.create!(
-      public_id: "test_user_occ",
-      status_id: 0,
+      body: "user_occ_#{SecureRandom.hex(6)}",
+      status_id: UserOccurrenceStatus::NEYO,
     )
     zip_occ = ZipOccurrence.first || ZipOccurrence.create!(
-      public_id: "test_zip_occ",
-      status_id: 0,
+      body: "zip_#{SecureRandom.hex(4)}",
+      status_id: ZipOccurrenceStatus::NEYO,
     )
 
     UserZipOccurrence.create!(
@@ -71,7 +80,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
       zip_occurrence_id: zip_occ.id,
     )
     assert_not occurrence2.valid?
-    assert_includes occurrence2.errors[:user_occurrence_id], "has already been taken"
+    assert_includes occurrence2.errors[:user_occurrence_id], "はすでに存在します"
   end
 
   # Test belongs_to presence validation
@@ -85,7 +94,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
     email.user_id = nil
     email.valid?
     assert_not email.valid?
-    assert_includes email.errors[:user], "must exist"
+    assert_includes email.errors[:user], "を入力してください"
   end
 
   test "StaffNotification requires staff association" do
@@ -94,7 +103,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
       staff_id: nil,
     )
     assert_not notification.valid?
-    assert_includes notification.errors[:staff], "must exist"
+    assert_includes notification.errors[:staff], "を入力してください"
   end
 
   # Test foreign key constraints (requires database setup)

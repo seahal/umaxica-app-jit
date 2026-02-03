@@ -8,7 +8,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string           not null
-#  status_id    :bigint           default(0), not null
+#  status_id    :bigint           default(2), not null
 #
 # Indexes
 #
@@ -22,23 +22,23 @@
 #
 
 placeholder:
-  status_id: "NEYO"
+  status_id: <%= StaffStatus::NEYO %>
   public_id: "abcd2345"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 one:
-  status_id: "NEYO"
+  status_id: <%= StaffStatus::NEYO %>
   public_id: "bcde3456"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 none_staff:
-  status_id: "NEYO"
+  status_id: <%= StaffStatus::NEYO %>
   public_id: "cdef4567"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 
 two:
-  status_id: "NEYO"
+  status_id: <%= StaffStatus::NEYO %>
   public_id: "defh5678"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

@@ -4,7 +4,7 @@ require "test_helper"
 require "base64"
 
 class ReauthSessionsTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_one_time_password_statuses
+  fixtures :users, :user_statuses, :user_one_time_password_statuses, :user_token_statuses, :user_token_kinds
 
   setup do
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -14,8 +14,8 @@ class ReauthSessionsTest < ActionDispatch::IntegrationTest
 
     @token = UserToken.create!(
       user: @user,
-      user_token_status_id: "NEYO",
-      user_token_kind_id: "BROWSER_WEB",
+      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
       public_id: "reauth_#{SecureRandom.hex(5)}",
       refresh_expires_at: 1.day.from_now,
     )

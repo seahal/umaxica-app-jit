@@ -5,19 +5,14 @@
 # Table name: com_document_audit_levels
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_com_document_audit_levels_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class ComDocumentAuditLevelTest < ActiveSupport::TestCase
   test "restrict_with_error on destroy when audits exist" do
-    level = ComDocumentAuditLevel.find("NEYO")
+    level = ComDocumentAuditLevel.find(ComDocumentAuditLevel::NEYO)
     doc = ComDocument.create!(
       permalink: "audit_doc",
       response_mode: "html",
@@ -25,12 +20,12 @@ class ComDocumentAuditLevelTest < ActiveSupport::TestCase
       expires_at: 1.hour.from_now,
       position: 0,
       revision_key: "rev_key",
-      status_id: "NEYO",
+      status_id: ComDocumentStatus::NEYO,
     )
 
     ComDocumentAudit.create!(
       com_document: doc,
-      com_document_audit_event: ComDocumentAuditEvent.find("CREATED"),
+      com_document_audit_event: ComDocumentAuditEvent.find(ComDocumentAuditEvent::CREATED),
       com_document_audit_level: level,
     )
 
@@ -46,16 +41,15 @@ class ComDocumentAuditLevelTest < ActiveSupport::TestCase
   end
 
   test "can destroy when no audits exist" do
-    level = ComDocumentAuditLevel.create!(id: "UNUSED")
+    level = ComDocumentAuditLevel.create!(id: 2)
 
     assert_difference "ComDocumentAuditLevel.count", -1 do
       assert level.destroy
     end
   end
 
-  test "validates length of id" do
-    record = ComDocumentAuditLevel.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "accepts integer ids" do
+    record = ComDocumentAuditLevel.new(id: 3)
+    assert_predicate record, :valid?
   end
 end

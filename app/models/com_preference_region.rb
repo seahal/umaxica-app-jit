@@ -35,6 +35,6 @@ class ComPreferenceRegion < PreferenceRecord
   private
 
   def set_option_id
-    self.option_id ||= "JP"
+    self.option_id ||= ComPreferenceRegionOption::JP
   end
 end

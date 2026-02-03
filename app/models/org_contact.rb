@@ -53,33 +53,30 @@ class OrgContact < GuestRecord
 
   after_initialize do
     if new_record?
-      self.category_id ||= "ORGANIZATION_INQUIRY"
-      self.status_id ||= "NEYO"
+      self.category_id ||= OrgContactCategory::ORGANIZATION_INQUIRY
+      self.status_id ||= OrgContactStatus::NEYO
     end
   end
 
   # Validations
   validates :confirm_policy, acceptance: true
-  validates :category_id, length: { maximum: 255 }
-  validates :status_id, length: { maximum: 255 }
   validates :token, length: { maximum: 32 }
   validates :token_digest, length: { maximum: 255 }
+
   # Callbacks
-  before_validation { self.category_id = category_id&.upcase }
-  before_validation { self.status_id = status_id&.upcase }
   before_create :generate_token
 
   # State transition helpers
   def email_pending?
-    status_id == "SET_UP"
+    status_id == OrgContactStatus::SET_UP
   end
 
   def email_verified?
-    status_id == "CHECKED_EMAIL_ADDRESS"
+    status_id == OrgContactStatus::CHECKED_EMAIL_ADDRESS
   end
 
   def phone_verified?
-    status_id == "CHECKED_TELEPHONE_NUMBER"
+    status_id == OrgContactStatus::CHECKED_TELEPHONE_NUMBER
   end
 
   def can_verify_email?
@@ -97,19 +94,19 @@ class OrgContact < GuestRecord
   def verify_email!
     raise StandardError, "Cannot verify email at this time" unless can_verify_email?
 
-    update!(status_id: "CHECKED_EMAIL_ADDRESS")
+    update!(status_id: OrgContactStatus::CHECKED_EMAIL_ADDRESS)
   end
 
   def verify_phone!
     raise StandardError, "Cannot verify phone at this time" unless can_verify_phone?
 
-    update!(status_id: "CHECKED_TELEPHONE_NUMBER")
+    update!(status_id: OrgContactStatus::CHECKED_TELEPHONE_NUMBER)
   end
 
   def complete!
     raise StandardError, "Cannot complete contact at this time" unless can_complete?
 
-    update!(status_id: "COMPLETED_CONTACT_ACTION")
+    update!(status_id: OrgContactStatus::COMPLETED_CONTACT_ACTION)
   end
 
   # Token management

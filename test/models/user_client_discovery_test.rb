@@ -25,6 +25,9 @@
 require "test_helper"
 
 class UserClientDiscoveryTest < ActiveSupport::TestCase
+  fixtures :user_client_discoveries, :users, :user_statuses, :clients, :client_statuses, :divisions,
+           :division_statuses, :organizations, :organization_statuses
+
   test "fixture is valid" do
     assert_predicate user_client_discoveries(:one), :valid?
   end

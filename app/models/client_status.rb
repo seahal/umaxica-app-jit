@@ -5,18 +5,16 @@
 # Table name: client_statuses
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_client_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class ClientStatus < PrincipalRecord
-  include CodeIdentifiable
-
   self.record_timestamps = false
-  NEYO = "NEYO"
+
+  ACTIVE = 1
+  INACTIVE = 2
+  PENDING = 3
+  DELETED = 4
+  NEYO = 5
   has_many :clients,
            foreign_key: :status_id,
            dependent: :restrict_with_error,

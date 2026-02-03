@@ -11,7 +11,7 @@
 #  client_status_id :bigint           default(0), not null
 #  division_id      :bigint
 #  public_id        :string           not null
-#  status_id        :bigint           default(0), not null
+#  status_id        :bigint           default(5), not null
 #  user_id          :bigint
 #
 # Indexes
@@ -77,5 +77,5 @@ class Client < PrincipalRecord
   has_many :user_clients, dependent: :destroy
   has_many :users, through: :user_clients
   validates :public_id, uniqueness: true, allow_nil: true
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 end

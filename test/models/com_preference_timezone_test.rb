@@ -26,7 +26,8 @@ require "test_helper"
 
 class ComPreferenceTimezoneTest < ActiveSupport::TestCase
   setup do
-    @preference = ComPreference.create!
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NEYO)
+    @preference = ComPreference.create!(status_id: ComPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,6 +46,6 @@ class ComPreferenceTimezoneTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     timezone = ComPreferenceTimezone.create!(preference: @preference)
-    assert_equal "Asia/Tokyo", timezone.option_id
+    assert_equal ComPreferenceTimezoneOption::ASIA_TOKYO, timezone.option_id
   end
 end

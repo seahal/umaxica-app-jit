@@ -5,17 +5,15 @@
 # Table name: avatar_moniker_statuses
 # Database name: avatar
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_avatar_moniker_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class AvatarMonikerStatus < AvatarRecord
-  include CodeIdentifiable
-
   self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  NEYO = 1
+  ACTIVE = 2
+  INACTIVE = 3
+  DELETED = 4
 
   has_many :avatar_monikers, dependent: :restrict_with_error
 end

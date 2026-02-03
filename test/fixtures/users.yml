@@ -10,7 +10,7 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  public_id      :string(255)      default(""), not null
-#  status_id      :bigint           default(0), not null
+#  status_id      :bigint           default(13), not null
 #
 # Indexes
 #
@@ -23,23 +23,30 @@
 #  fk_rails_...  (status_id => user_statuses.id)
 #
 
+zero:
+  id: 0
+  status_id: <%= UserStatus::NEYO %>
+  public_id: "zero_id"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
 placeholder:
-  status: neyo
+  status_id: <%= UserStatus::NEYO %>
   public_id: "placeholder_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 one:
-  status: neyo
+  status_id: <%= UserStatus::NEYO %>
   public_id: "one_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 none_user:
-  status: neyo
+  status_id: <%= UserStatus::NEYO %>
   public_id: "none_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 two:
-  status: neyo
+  status_id: <%= UserStatus::NEYO %>
   public_id: "two_id"
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

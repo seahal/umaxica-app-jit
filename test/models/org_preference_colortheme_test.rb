@@ -26,7 +26,8 @@ require "test_helper"
 
 class OrgPreferenceColorthemeTest < ActiveSupport::TestCase
   setup do
-    @preference = OrgPreference.create!
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NEYO)
+    @preference = OrgPreference.create!(status_id: OrgPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,6 +46,6 @@ class OrgPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     colortheme = OrgPreferenceColortheme.create!(preference: @preference)
-    assert_equal "system", colortheme.option_id
+    assert_equal OrgPreferenceColorthemeOption::SYSTEM, colortheme.option_id
   end
 end

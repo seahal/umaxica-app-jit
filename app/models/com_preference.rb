@@ -10,7 +10,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string           not null
-#  status_id    :bigint           default(0), not null
+#  status_id    :bigint           default(2), not null
 #
 # Indexes
 #
@@ -28,6 +28,8 @@
 class ComPreference < PreferenceRecord
   include ::PublicId
   include ::Preference::Resettable
+
+  attribute :status_id, default: ComPreferenceStatus::NEYO
 
   belongs_to :com_preference_status,
              foreign_key: :status_id,
@@ -57,6 +59,6 @@ class ComPreference < PreferenceRecord
            foreign_key: :subject_id,
            inverse_of: :com_preference,
            dependent: :destroy
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
   validates :jti, uniqueness: true, allow_nil: true
 end

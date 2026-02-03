@@ -4,6 +4,8 @@ require "test_helper"
 require "minitest/mock"
 
 class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses
+
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)

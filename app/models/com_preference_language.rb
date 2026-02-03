@@ -35,6 +35,6 @@ class ComPreferenceLanguage < PreferenceRecord
   private
 
   def set_option_id
-    self.option_id ||= "JA"
+    self.option_id ||= ComPreferenceLanguageOption::JA
   end
 end

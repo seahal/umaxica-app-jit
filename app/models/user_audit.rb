@@ -16,9 +16,9 @@
 #  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
-#  level_id       :bigint           default(0), not null
+#  level_id       :bigint           default(4), not null
 #  subject_id     :string           not null
 #
 # Indexes
@@ -46,17 +46,17 @@ class UserAudit < AuditRecord
   validates :subject_id, presence: true
   validates :subject_type, presence: true
 
-  attribute :level_id, default: "NEYO"
+  attribute :level_id, default: UserAuditLevel::NEYO
 
-  validates :event_id, length: { maximum: 255 }
-  validates :level_id, length: { maximum: 255 }
+  validates :event_id, numericality: { only_integer: true }, allow_nil: true
+  validates :level_id, numericality: { only_integer: true }, allow_nil: true
   # Validate that event_id exists in user_audit_events table
   validate :event_id_must_exist
   before_create :set_timestamp
   before_validation do
-    if actor_id.blank?
+    if actor_id.blank? && actor_type.blank?
       self.actor_id = "00000000-0000-0000-0000-000000000000"
-      self.actor_type ||= "User"
+      self.actor_type = "User"
     end
   end
   # Helper methods for compatibility with existing code

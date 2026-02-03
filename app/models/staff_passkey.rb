@@ -15,7 +15,7 @@
 #  updated_at              :datetime         not null
 #  external_id             :string           not null
 #  staff_id                :bigint           not null
-#  staff_passkey_status_id :bigint           default(0), not null
+#  staff_passkey_status_id :bigint           default(1), not null
 #  webauthn_id             :string           default(""), not null
 #
 # Indexes
@@ -34,17 +34,19 @@
 class StaffPasskey < OperatorRecord
   self.ignored_columns += ["webauthn_id_binary"]
   MAX_PASSKEYS_PER_STAFF = 4
+  attribute :staff_passkey_status_id, default: StaffPasskeyStatus::ACTIVE
+  alias_attribute :description, :name
 
   belongs_to :staff, inverse_of: :staff_passkeys
   belongs_to :staff_passkey_status, optional: true
 
-  scope :active, -> { where(staff_passkey_status_id: "ACTIVE") }
+  scope :active, -> { where(staff_passkey_status_id: StaffPasskeyStatus::ACTIVE) }
 
   validates :webauthn_id, presence: true, uniqueness: true
   validates :external_id, presence: true
   validates :public_key, presence: true
-  validates :description, presence: true
-  validates :staff_passkey_status_id, length: { maximum: 255 }
+  validates :name, presence: true
+  validates :staff_passkey_status_id, numericality: { only_integer: true }
   validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   validate :enforce_staff_passkey_limit, on: :create
@@ -65,6 +67,6 @@ class StaffPasskey < OperatorRecord
   def set_defaults
     self.external_id ||= SecureRandom.uuid
     self.sign_count ||= 0
-    self.description = I18n.t("sign.default_passkey_description") if description.blank?
+    self.name = I18n.t("sign.default_passkey_description") if name.blank?
   end
 end

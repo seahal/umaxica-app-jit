@@ -26,7 +26,8 @@ require "test_helper"
 
 class ComPreferenceColorthemeTest < ActiveSupport::TestCase
   setup do
-    @preference = ComPreference.create!
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NEYO)
+    @preference = ComPreference.create!(status_id: ComPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,6 +46,6 @@ class ComPreferenceColorthemeTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     colortheme = ComPreferenceColortheme.create!(preference: @preference)
-    assert_equal "system", colortheme.option_id
+    assert_equal ComPreferenceColorthemeOption::SYSTEM, colortheme.option_id
   end
 end

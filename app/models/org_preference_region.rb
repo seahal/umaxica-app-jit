@@ -35,6 +35,6 @@ class OrgPreferenceRegion < PreferenceRecord
   private
 
   def set_option_id
-    self.option_id ||= "JP"
+    self.option_id ||= OrgPreferenceRegionOption::JP
   end
 end

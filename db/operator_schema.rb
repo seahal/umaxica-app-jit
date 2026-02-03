@@ -10,15 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_02_260000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "admin_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_admin_statuses_on_code", unique: true
   end
 
   create_table "admins", force: :cascade do |t|
@@ -37,8 +35,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "department_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_department_statuses_on_code", unique: true
   end
 
   create_table "departments", force: :cascade do |t|
@@ -54,8 +50,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "division_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_division_statuses_on_code", unique: true
   end
 
   create_table "divisions", force: :cascade do |t|
@@ -69,8 +63,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "organization_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_organization_statuses_on_code", unique: true
   end
 
   create_table "organizations", force: :cascade do |t|
@@ -110,8 +102,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "staff_email_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_email_statuses_on_code", unique: true
   end
 
   create_table "staff_emails", force: :cascade do |t|
@@ -163,13 +153,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "staff_identity_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_identity_statuses_on_code", unique: true
   end
 
   create_table "staff_one_time_password_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_one_time_password_statuses_on_code", unique: true
   end
 
   create_table "staff_one_time_passwords", force: :cascade do |t|
@@ -185,8 +171,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "staff_passkey_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_passkey_statuses_on_code", unique: true
   end
 
   create_table "staff_passkeys", force: :cascade do |t|
@@ -217,13 +201,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "staff_secret_kinds", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_secret_kinds_on_code", unique: true
   end
 
   create_table "staff_secret_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_secret_statuses_on_code", unique: true
   end
 
   create_table "staff_secrets", force: :cascade do |t|
@@ -241,13 +221,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "staff_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_statuses_on_code", unique: true
   end
 
   create_table "staff_telephone_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_telephone_statuses_on_code", unique: true
   end
 
   create_table "staff_telephones", force: :cascade do |t|
@@ -288,8 +264,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "workspace_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_workspace_statuses_on_code", unique: true
   end
 
   create_table "workspaces", force: :cascade do |t|

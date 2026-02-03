@@ -10,7 +10,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :bigint           default(0), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
@@ -24,14 +24,10 @@
 #  fk_zip_occurrences_on_status_id  (status_id => zip_occurrence_statuses.id)
 #
 one:
-  public_id: 139 # was one_zip_occ_id_000001
+  public_id: one_zip_occ_id_000001
   body: "90210"
-  expires_at: <%= 1.year.from_now %>
-  created_at: <%= Time.current %>
-  updated_at: <%= Time.current %>
-one:
-  public_id: 139 # was one_zip_occ_id_000001
-  body: "90210"
+  memo: ""
+  status_id: <%= ZipOccurrenceStatus::ACTIVE %>
   expires_at: <%= 1.year.from_now %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

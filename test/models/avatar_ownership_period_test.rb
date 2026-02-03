@@ -35,9 +35,22 @@ class AvatarOwnershipPeriodTest < ActiveSupport::TestCase
     assert_not period.valid?
   end
 
-  test "validates length of id" do
-    record = AvatarOwnershipPeriod.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "validates id is numeric" do
+    # With bigint ID, length validation is irrelevant
+    # Test that record validation works with all required fields
+    AvatarOwnershipStatus.find_or_create_by!(id: 1)
+    avatar = Avatar.create!(
+      capability: AvatarCapability.find_or_create_by!(id: AvatarCapability::NORMAL),
+      active_handle: Handle.create!(handle: "test-#{SecureRandom.hex(4)}", cooldown_until: Time.current),
+      moniker: "Test",
+    )
+    record = AvatarOwnershipPeriod.new(
+      id: 99,
+      avatar: avatar,
+      owner_organization_id: "org_123",
+      valid_from: Time.current,
+    )
+    assert_predicate record, :valid?
+    assert_kind_of Integer, record.id
   end
 end

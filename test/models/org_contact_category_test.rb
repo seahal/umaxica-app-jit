@@ -5,12 +5,7 @@
 # Table name: org_contact_categories
 # Database name: guest
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_contact_categories_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
@@ -25,62 +20,25 @@ class OrgContactCategoryTest < ActiveSupport::TestCase
   end
 
   test "should create contact category with id" do
-    category = OrgContactCategory.new(id: "org_inquiry")
+    category = OrgContactCategory.find_or_create_by!(id: OrgContactCategory::ORGANIZATION_INQUIRY)
 
-    assert category.save
-    assert_equal "ORG_INQUIRY", category.id
+    assert_equal OrgContactCategory::ORGANIZATION_INQUIRY, category.id
+    assert_kind_of Integer, category.id
   end
 
   test "should find contact category by id" do
-    category = OrgContactCategory.create!(id: "org_support")
-    found = OrgContactCategory.find("ORG_SUPPORT")
+    category = OrgContactCategory.create!(id: 998)
+    found = OrgContactCategory.find(998)
 
     assert_equal category.id, found.id
   end
 
   test "should have unique id" do
-    OrgContactCategory.create!(id: "unique_org_category_#{SecureRandom.hex(4)}")
-    category_title = "duplicate_org_test_#{SecureRandom.hex(4)}"
-    OrgContactCategory.create!(id: category_title)
+    OrgContactCategory.create!(id: 999)
 
     assert_raises(ActiveRecord::RecordInvalid) do
-      OrgContactCategory.create!(id: category_title)
+      OrgContactCategory.create!(id: 999)
     end
-  end
-
-  test "id is invalid when nil or blank" do
-    category = OrgContactCategory.new(id: nil)
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-
-    category = OrgContactCategory.new(id: "")
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-
-    category = OrgContactCategory.new(id: " ")
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-  end
-
-  test "id enforces length and format boundaries" do
-    category = OrgContactCategory.new(id: "A" * 255)
-    assert_predicate category, :valid?
-
-    category = OrgContactCategory.new(id: "A" * 256)
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-
-    category = OrgContactCategory.new(id: "BAD-ID")
-    assert_not category.valid?
-    assert_predicate category.errors[:id], :any?
-  end
-
-  test "id uniqueness is case-insensitive" do
-    OrgContactCategory.create!(id: "CASE_CHECK")
-
-    duplicate = OrgContactCategory.new(id: "case_check")
-    assert_not duplicate.valid?
-    assert_predicate duplicate.errors[:id], :any?
   end
 
   # parent_id column has been removed from org_contact_categories
@@ -112,11 +70,12 @@ class OrgContactCategoryTest < ActiveSupport::TestCase
   # end
 
   test "destroy is restricted when contacts exist" do
-    category = OrgContactCategory.create!(id: "CONTACT_PARENT")
-    status = OrgContactStatus.create!(id: "ACTIVE_TEST")
+    category = OrgContactCategory.create!(id: 101)
+    status = OrgContactStatus.find_by(id: OrgContactStatus::NEYO) || OrgContactStatus.create!(id: OrgContactStatus::NEYO)
     OrgContact.create!(confirm_policy: "1", category_id: category.id, status_id: status.id)
 
-    assert_not category.destroy
-    assert_predicate category.errors[:base], :any?
+    assert_raises(ActiveRecord::DeleteRestrictionError) do
+      category.destroy
+    end
   end
 end

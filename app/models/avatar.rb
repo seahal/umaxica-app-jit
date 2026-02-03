@@ -171,7 +171,7 @@ class Avatar < AvatarRecord
   def self.create_with_owner(attributes, user)
     transaction do
       avatar = create!(attributes)
-      avatar.avatar_assignments.create!(user: user, role: "owner")
+      avatar.avatar_assignments.create!(user_id: user.id, role: "owner")
       avatar
     end
   end

@@ -3,6 +3,8 @@
 require "test_helper"
 
 class SocialLinkUnlinkTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses, :user_secret_kinds, :user_secret_statuses, :user_social_apple_statuses
+
   setup do
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -11,9 +13,17 @@ class SocialLinkUnlinkTest < ActionDispatch::IntegrationTest
     # Ensure @user has at least one auth method to start (e.g. password secret)
     # Check fixtures or add one.
     # Note: UserSecretKind should be seeded. If validation fails, check seeded values.
-    # Assuming 'password' is valid id.
-    secret_kind = UserSecretKind.find_by(id: "password") || UserSecretKind.create!(id: "password")
-    UserSecret.create!(user: @user, user_secret_kind_id: secret_kind.id, password_digest: "digest", name: "default")
+    UserSecretKind.find_or_create_by!(id: UserSecretKind::LOGIN)
+    UserSecretStatus.find_or_create_by!(id: UserSecretStatus::ACTIVE)
+    UserSocialAppleStatus.find_or_create_by!(id: UserSocialAppleStatus::ACTIVE)
+    UserSocialAppleStatus.find_or_create_by!(id: UserSocialAppleStatus::REVOKED)
+
+    UserSecret.create!(
+      user: @user,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+      password_digest: "digest",
+      name: "default",
+    )
 
     # Login as user
     @headers = as_user_headers(@user, host: @host)
@@ -33,7 +43,7 @@ class SocialLinkUnlinkTest < ActionDispatch::IntegrationTest
 
     revoked = UserSocialApple.find_by(uid: "apple_uid_link")
     assert revoked
-    assert_equal "REVOKED", revoked.user_identity_social_apple_status_id
+    assert_equal UserSocialAppleStatus::REVOKED, revoked.user_identity_social_apple_status_id
   end
 
   test "should prevent unlinking last identity" do

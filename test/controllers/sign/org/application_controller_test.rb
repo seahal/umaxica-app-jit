@@ -13,8 +13,8 @@ module Sign::Org
       )
       @controller.response = ActionDispatch::TestResponse.new
       @staff =
-        Staff.find_or_create_by!(id: SecureRandom.uuid) do |s|
-          s.status_id = "NEYO"
+        Staff.find_or_create_by!(id: 1) do |s|
+          s.status_id = StaffStatus::NEYO
         end
     end
 

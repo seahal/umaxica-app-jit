@@ -4,6 +4,8 @@ require "test_helper"
 require_relative "../../../../../app/errors/sign/withdrawal_error"
 
 class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds
+
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
@@ -47,14 +49,14 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   end
 
   test "should get new withdrawal page" do
-    @user.update!(status_id: "NEYO")
+    @user.update!(status_id: UserStatus::NEYO)
     get new_sign_app_configuration_withdrawal_url(ri: "jp"),
         headers: request_headers
     assert_response :success
   end
 
   test "should create withdrawal and set withdrawn_at" do
-    @user.update!(status_id: "NEYO")
+    @user.update!(status_id: UserStatus::NEYO)
 
     post sign_app_configuration_withdrawal_url(ri: "jp"),
          headers: request_headers
@@ -148,7 +150,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
   # Turnstile Widget Verification Tests
   test "new withdrawal page renders Turnstile widget" do
-    @user.update!(status_id: "NEYO")
+    @user.update!(status_id: UserStatus::NEYO)
 
     get new_sign_app_configuration_withdrawal_url(ri: "jp"),
         headers: request_headers
@@ -159,7 +161,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
   # Checkbox visibility tests
   # test "new withdrawal page renders confirm_create_recovery_code checkbox" do
-  #   @user.update!(status_id: "NEYO")
+  #   @user.update!(status_id: UserStatus::NEYO)
   #
   #   get new_sign_app_configuration_withdrawal_url(ri: "jp"),
   #       headers: request_headers
@@ -185,7 +187,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   end
 
   test "create accepts confirm_create_recovery_code parameter" do
-    @user.update!(status_id: "NEYO")
+    @user.update!(status_id: UserStatus::NEYO)
 
     post sign_app_configuration_withdrawal_url(ri: "jp"), params: { confirm_create_recovery_code: "1" },
                                                           headers: request_headers
@@ -219,7 +221,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
   # end
 
   test "should handle creation failure" do
-    @user.update!(status_id: "NEYO")
+    @user.update!(status_id: UserStatus::NEYO)
 
     # We need to stub current_user.save to return false.
     # Since we can't easily access the exact instance controller uses,
@@ -243,7 +245,7 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
 
     user_mock = @user
     user_mock.define_singleton_method(:save!) { raise ActiveRecord::RecordInvalid.new(User.new) }
-    user_mock.define_singleton_method(:status_id) { "NEYO" } # Ensure checking status works
+    user_mock.define_singleton_method(:status_id) { UserStatus::NEYO } # Ensure checking status works
 
     # Stub finding methods likely used by authentication
     User.stub(:find, user_mock) do

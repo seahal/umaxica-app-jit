@@ -4,6 +4,8 @@ require "test_helper"
 require "base64"
 
 class Sign::Org::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :staffs, :staff_statuses
+
   setup do
     host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
     @staff = staffs(:one)

@@ -16,7 +16,7 @@
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
 #  user_id                               :bigint           not null
-#  user_identity_social_google_status_id :bigint           default(0), not null
+#  user_identity_social_google_status_id :bigint           default(1), not null
 #
 # Indexes
 #
@@ -35,6 +35,8 @@ class UserSocialGoogle < PrincipalRecord
   include SocialIdentifiable
 
   alias_attribute :user_social_google_status_id, :user_identity_social_google_status_id
+  attribute :user_identity_social_google_status_id, default: UserSocialGoogleStatus::ACTIVE
+
   belongs_to :user, inverse_of: :user_social_google
   belongs_to :user_social_google_status,
              inverse_of: :user_social_googles,
@@ -45,10 +47,14 @@ class UserSocialGoogle < PrincipalRecord
   validates :user_id, uniqueness: true
   validates :uid, presence: true, uniqueness: { scope: :provider }
   validates :expires_at, presence: true
-  validates :user_identity_social_google_status_id, length: { maximum: 255 }
+  validates :user_identity_social_google_status_id, numericality: { only_integer: true }
 
   def self.status_column
     :user_identity_social_google_status_id
+  end
+
+  def self.status_class
+    UserSocialGoogleStatus
   end
 
   def self.find_or_create_from_auth_hash(auth)

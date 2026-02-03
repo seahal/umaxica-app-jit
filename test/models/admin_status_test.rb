@@ -5,12 +5,7 @@
 # Table name: admin_statuses
 # Database name: operator
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_admin_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
@@ -19,9 +14,13 @@ class AdminStatusTest < ActiveSupport::TestCase
   #   assert true
   # end
 
-  test "validates length of id" do
-    record = AdminStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "accepts integer ids" do
+    record = AdminStatus.new(id: 9)
+    assert_predicate record, :valid?
+  end
+
+  test "constants are defined" do
+    assert_equal 1, AdminStatus::ACTIVE
+    assert_equal 2, AdminStatus::NEYO
   end
 end

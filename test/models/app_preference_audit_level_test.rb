@@ -5,12 +5,7 @@
 # Table name: app_preference_audit_levels
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_app_preference_audit_levels_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 

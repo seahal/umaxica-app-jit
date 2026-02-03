@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds
+
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
@@ -23,7 +25,7 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
       user_id: @user.id,
       public_id: "test_session_#{SecureRandom.hex(4)}",
       refresh_expires_at: 1.day.from_now,
-      user_token_kind_id: "BROWSER_WEB",
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
 
     delete sign_app_configuration_session_url(user_token.public_id, ri: "jp"), headers: @headers

@@ -26,7 +26,8 @@ require "test_helper"
 
 class AppPreferenceCookieTest < ActiveSupport::TestCase
   setup do
-    @preference = AppPreference.create!
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
+    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NEYO)
   end
 
   %i(targetable performant functional).each do |flag|

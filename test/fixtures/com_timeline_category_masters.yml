@@ -15,4 +15,4 @@
 #  fk_com_timeline_category_masters_parent  (parent_id => com_timeline_category_masters.id)
 #
 neyo:
-  code: "NEYO"
+  id: 1

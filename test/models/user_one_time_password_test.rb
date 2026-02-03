@@ -13,7 +13,7 @@
 #  updated_at                                :datetime         not null
 #  public_id                                 :string(21)       not null
 #  user_id                                   :bigint           not null
-#  user_identity_one_time_password_status_id :bigint           default(0), not null
+#  user_identity_one_time_password_status_id :bigint           default(5), not null
 #
 # Indexes
 #
@@ -31,8 +31,8 @@ require "test_helper"
 
 class UserOneTimePasswordTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: "NEYO")
-    @status = UserOneTimePasswordStatus.find("ACTIVE")
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
+    @status = UserOneTimePasswordStatus.find(UserOneTimePasswordStatus::ACTIVE)
     # Ensure NEYO status exists for defaults
     unless UserOneTimePasswordStatus.exists?("NEYO")
       UserOneTimePasswordStatus.create!(id: "NEYO")
@@ -116,7 +116,7 @@ class UserOneTimePasswordTest < ActiveSupport::TestCase
 
   test "enforces maximum totp records per user" do
     new_user = User.create!(
-      status_id: "NEYO",
+      status_id: UserStatus::NEYO,
     )
 
     UserOneTimePassword::MAX_TOTPS_PER_USER.times do

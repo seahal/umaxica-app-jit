@@ -5,20 +5,16 @@
 # Table name: user_email_statuses
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_email_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class UserEmailStatus < PrincipalRecord
-  include CodeIdentifiable
+  UNVERIFIED = 1
+  VERIFIED = 2
+  SUSPENDED = 3
+  DELETED = 4
+  NEYO = 5
+  UNVERIFIED_WITH_SIGN_UP = 6
+  VERIFIED_WITH_SIGN_UP = 7
 
-  NEYO = "NEYO"
-  UNVERIFIED = "UNVERIFIED"
-  VERIFIED = "VERIFIED"
-  SUSPENDED = "SUSPENDED"
-  DELETED = "DELETED"
   has_many :user_emails, inverse_of: :user_email_status, dependent: :restrict_with_error
 end

@@ -7,18 +7,18 @@
 #  id :bigint           not null, primary key
 #
 neyo:
-  code: "NEYO"
+  id: 1
 active:
-  code: "ACTIVE"
+  id: 2
 inactive:
-  code: "INACTIVE"
+  id: 3
 pending:
-  code: "PENDING"
+  id: 4
 deleted:
-  code: "DELETED"
+  id: 5
 
 draft:
-  code: "DRAFT"
+  id: 6
 
 archived:
-  code: "ARCHIVED"
+  id: 7

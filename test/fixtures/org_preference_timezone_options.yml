@@ -3,18 +3,11 @@
 # Table name: org_preference_timezone_options
 # Database name: preference
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_preference_timezone_options_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 utc:
-  code: "11 # was Etc/UTC"
-  position: 1
+  id: 1
 
 asia_tokyo:
-  code: "12 # was Asia/Tokyo"
-  position: 2
+  id: 2

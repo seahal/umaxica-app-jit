@@ -6,6 +6,8 @@ module Sign
   module App
     module In
       class EmailsControllerSecurityTest < ActionDispatch::IntegrationTest
+        fixtures :users, :user_statuses, :user_email_statuses
+
         setup do
           host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
           CloudflareTurnstile.test_mode = true
@@ -129,8 +131,9 @@ module Sign
         end
 
         test "handles OTP in database" do
+          user = users(:one)
           # Create existing email
-          UserEmail.create!(address: "otp_test@example.com", confirm_policy: true)
+          UserEmail.create!(user: user, address: "otp_test@example.com", confirm_policy: true)
 
           # Request OTP
           post sign_app_in_email_url(ri: "jp"), params: {
@@ -144,8 +147,9 @@ module Sign
         end
 
         test "cleans up OTP secrets after verification" do
+          user = users(:one)
           # Create existing email
-          email = UserEmail.create!(address: "cleanup_test@example.com", confirm_policy: true)
+          email = UserEmail.create!(user: user, address: "cleanup_test@example.com", confirm_policy: true)
 
           # Request OTP to generate secrets
           post sign_app_in_email_url(ri: "jp"), params: {

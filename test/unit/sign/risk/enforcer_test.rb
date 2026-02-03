@@ -5,6 +5,8 @@ require "test_helper"
 module Sign
   module Risk
     class EnforcerTest < ActiveSupport::TestCase
+      fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds
+
       setup do
         @user = users(:one) # Assuming fixtures or factory
         @user_id = @user.id

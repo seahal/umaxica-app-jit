@@ -7,10 +7,12 @@ module Core
   module Com
     module Contact
       class EmailsControllerTest < ActionDispatch::IntegrationTest
+        fixtures :com_contact_categories, :com_contact_statuses
+
         setup do
           @contact = ComContact.create!(
-            category_id: "SECURITY_ISSUE",
-            status_id: "SET_UP",
+            category_id: ComContactCategory::SECURITY_ISSUE,
+            status_id: ComContactStatus::SET_UP,
           )
 
           @contact_email = ComContactEmail.create!(
@@ -68,7 +70,7 @@ module Core
           assert_response :redirect
 
           @contact.reload
-          assert_equal "CHECKED_EMAIL_ADDRESS", @contact.status_id
+          assert_equal ComContactStatus::CHECKED_EMAIL_ADDRESS, @contact.status_id
           assert @contact_email.reload.activated
         end
 
@@ -88,7 +90,7 @@ module Core
           assert_response :redirect
 
           @contact.reload
-          assert_equal "CHECKED_EMAIL_ADDRESS", @contact.status_id
+          assert_equal ComContactStatus::CHECKED_EMAIL_ADDRESS, @contact.status_id
         end
 
         test "should not verify with invalid code" do
@@ -170,7 +172,7 @@ module Core
 
         test "should handle invalid contact status" do
           host! @host
-          @contact.update!(status_id: "NEYO")
+          @contact.update!(status_id: ComContactStatus::NEYO)
           get new_core_com_contact_email_url(contact_id: @contact.public_id)
           assert_response :unprocessable_content
         end

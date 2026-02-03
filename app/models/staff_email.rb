@@ -17,7 +17,7 @@
 #  updated_at                     :datetime         not null
 #  public_id                      :string(21)       not null
 #  staff_id                       :bigint           not null
-#  staff_identity_email_status_id :bigint           default(0), not null
+#  staff_identity_email_status_id :bigint           default(6), not null
 #
 # Indexes
 #
@@ -38,16 +38,17 @@ class StaffEmail < OperatorRecord
   include Email
 
   MAX_EMAILS_PER_STAFF = 4
+  attribute :staff_identity_email_status_id, default: StaffEmailStatus::UNVERIFIED
   belongs_to :staff_email_status, inverse_of: :staff_emails, foreign_key: :staff_identity_email_status_id
   belongs_to :staff
   validates :address, presence: true, length: { maximum: 255 }
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
-  validates :staff_identity_email_status_id, length: { maximum: 255 }
+  validates :staff_identity_email_status_id, numericality: { only_integer: true }
   validate :enforce_staff_email_limit, on: :create
   before_validation do
-    self.staff_id ||= "00000000-0000-0000-0000-000000000000"
+    self.staff_id ||= 0
   end
 
   def to_param

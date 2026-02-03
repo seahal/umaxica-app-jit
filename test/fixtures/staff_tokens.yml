@@ -18,8 +18,8 @@
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
 #  staff_id                 :bigint           not null
-#  staff_token_kind_id      :bigint           default(0), not null
-#  staff_token_status_id    :bigint           default(0), not null
+#  staff_token_kind_id      :bigint           default(1), not null
+#  staff_token_status_id    :bigint           default(2), not null
 #
 # Indexes
 #

@@ -3,7 +3,7 @@
 module UserSecrets
   class Create
     ACTION = "user_secret.create"
-    EVENT_ID = "USER_IDENTITY_SECRET_CREATE"
+    EVENT_ID = UserAuditEvent::USER_SECRET_CREATED
 
     Result = Struct.new(:secret, :raw_secret, keyword_init: true)
 

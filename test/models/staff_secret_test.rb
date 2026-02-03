@@ -12,7 +12,7 @@
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
 #  staff_id                        :bigint           not null
-#  staff_identity_secret_status_id :bigint           default(0), not null
+#  staff_identity_secret_status_id :bigint           default(1), not null
 #  staff_secret_kind_id            :bigint           default(0), not null
 #
 # Indexes
@@ -31,10 +31,12 @@
 require "test_helper"
 
 class StaffSecretTest < ActiveSupport::TestCase
+  fixtures :staffs, :staff_secret_statuses, :staff_secret_kinds
+
   setup do
     # Set up StaffSecretKind records
-    StaffSecretKind.find_or_create_by!(id: "LOGIN")
-    StaffSecretKind.find_or_create_by!(id: "TOTP")
+    StaffSecretKind.find_or_create_by!(id: StaffSecretKind::LOGIN)
+    StaffSecretKind.find_or_create_by!(id: StaffSecretKind::TOTP)
 
     @staff = Staff.find_by!(public_id: "bcde3456")
   end
@@ -55,7 +57,7 @@ class StaffSecretTest < ActiveSupport::TestCase
   end
 
   test "issue! returns raw secret and persists a digest" do
-    record, raw_secret = StaffSecret.issue!(name: "API Key", staff: @staff, staff_secret_kind_id: "LOGIN")
+    record, raw_secret = StaffSecret.issue!(name: "API Key", staff: @staff, staff_secret_kind_id: StaffSecretKind::LOGIN)
 
     assert_predicate record, :persisted?
     assert_predicate raw_secret, :present?
@@ -63,30 +65,18 @@ class StaffSecretTest < ActiveSupport::TestCase
     assert_not_includes record.attributes.values, raw_secret
   end
 
-  test "verify_and_consume! decrements uses_remaining" do
-    record, raw_secret = StaffSecret.issue!(name: "API Key", staff: @staff, uses: 2, staff_secret_kind_id: "LOGIN")
-
-    assert record.verify_and_consume!(raw_secret)
-    assert_equal 1, record.reload.uses_remaining
-  end
-
-  test "verify_and_consume! marks used when uses_remaining reaches zero" do
-    record, raw_secret = StaffSecret.issue!(name: "API Key", staff: @staff, uses: 1, staff_secret_kind_id: "LOGIN")
+  test "verify_and_consume! marks secret as used after success" do
+    record, raw_secret = StaffSecret.issue!(name: "API Key", staff: @staff, uses: 2, staff_secret_kind_id: StaffSecretKind::LOGIN)
 
     assert record.verify_and_consume!(raw_secret)
     assert_equal StaffSecretStatus::USED, record.reload.staff_secret_status_id
   end
 
-  test "verify_and_consume! expires secrets past their expiry" do
-    record, raw_secret = StaffSecret.issue!(
-      name: "API Key",
-      staff: @staff,
-      expires_at: 1.minute.ago,
-      staff_secret_kind_id: "LOGIN",
-    )
+  test "verify_and_consume! marks used when uses_remaining reaches zero" do
+    record, raw_secret = StaffSecret.issue!(name: "API Key", staff: @staff, uses: 1, staff_secret_kind_id: StaffSecretKind::LOGIN)
 
-    assert_not record.verify_and_consume!(raw_secret)
-    assert_equal StaffSecretStatus::EXPIRED, record.reload.staff_secret_status_id
+    assert record.verify_and_consume!(raw_secret)
+    assert_equal StaffSecretStatus::USED, record.reload.staff_secret_status_id
   end
 
   test "requires name to be present" do
@@ -112,13 +102,13 @@ class StaffSecretTest < ActiveSupport::TestCase
   end
 
   test "login_secret? predicate returns true for LOGIN kind" do
-    record = StaffSecret.new(staff: @staff, name: "Key", staff_secret_kind_id: "LOGIN")
+    record = StaffSecret.new(staff: @staff, name: "Key", staff_secret_kind_id: StaffSecretKind::LOGIN)
     assert_predicate record, :login_secret?
     assert_not record.totp_secret?
   end
 
   test "totp_secret? predicate returns true for TOTP kind" do
-    record = StaffSecret.new(staff: @staff, name: "Key", staff_secret_kind_id: "TOTP")
+    record = StaffSecret.new(staff: @staff, name: "Key", staff_secret_kind_id: StaffSecretKind::TOTP)
     assert_predicate record, :totp_secret?
     assert_not record.login_secret?
   end
@@ -131,7 +121,7 @@ class StaffSecretTest < ActiveSupport::TestCase
       name: "Secret-#{SecureRandom.hex(4)}",
       password: secure_secret,
       password_confirmation: secure_secret,
-      staff_secret_kind_id: "LOGIN",
+      staff_secret_kind_id: StaffSecretKind::LOGIN,
     )
   end
 

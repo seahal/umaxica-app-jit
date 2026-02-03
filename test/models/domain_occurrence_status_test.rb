@@ -5,43 +5,23 @@
 # Table name: domain_occurrence_statuses
 # Database name: occurrence
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_domain_occurrence_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class DomainOccurrenceStatusTest < ActiveSupport::TestCase
-  test "upcases id before validation" do
-    assert_upcases_id(DomainOccurrenceStatus)
+  test "accepts integer ids" do
+    record = DomainOccurrenceStatus.new(id: 9)
+    assert_predicate record, :valid?
   end
 
-  test "validates id presence" do
-    record = DomainOccurrenceStatus.new(id: nil)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id length" do
-    record = DomainOccurrenceStatus.new(id: "A" * 256)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id format" do
-    record = DomainOccurrenceStatus.new(id: "BAD-ID!")
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id uniqueness case insensitive" do
-    record = DomainOccurrenceStatus.new(id: "active")
-
-    assert_invalid_attribute(record, :id)
+  test "constants are defined" do
+    assert_equal 1, DomainOccurrenceStatus::ACTIVE
+    assert_equal 2, DomainOccurrenceStatus::DELETED
+    assert_equal 3, DomainOccurrenceStatus::INACTIVE
+    assert_equal 4, DomainOccurrenceStatus::NEYO
+    assert_equal 5, DomainOccurrenceStatus::PENDING
   end
 
   test "has occurrences association" do

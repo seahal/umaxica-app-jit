@@ -34,14 +34,18 @@
 require "test_helper"
 
 class ComContactTopicTest < ActiveSupport::TestCase
+  fixtures :com_contact_categories, :com_contact_statuses
+
   test "should inherit from GuestRecord" do
     assert_operator ComContactTopic, :<, GuestRecord
   end
 
   def build_contact
+    ComContactCategory.find_or_create_by!(id: ComContactCategory::NEYO)
+    ComContactStatus.find_or_create_by!(id: ComContactStatus::NEYO)
     contact = ComContact.new(confirm_policy: "1")
-    contact.category_id = "NEYO"
-    contact.status_id = "NEYO"
+    contact.category_id = ComContactCategory::NEYO
+    contact.status_id = ComContactStatus::NEYO
     contact.save!
 
     ComContactEmail.create!(
@@ -86,12 +90,11 @@ class ComContactTopicTest < ActiveSupport::TestCase
     assert_not topic.deletable
   end
 
-  test "should use UUID as primary key" do
+  test "should use bigint as primary key" do
     contact = build_contact
     topic = ComContactTopic.create!(com_contact: contact)
 
-    assert_kind_of String, topic.id
-    assert_equal 36, topic.id.length
+    assert_kind_of Integer, topic.id
   end
 
   # rubocop:disable Minitest/MultipleAssertions

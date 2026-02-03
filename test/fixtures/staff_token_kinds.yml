@@ -3,16 +3,11 @@
 # Table name: staff_token_kinds
 # Database name: token
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_staff_token_kinds_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 browser_web:
-  code: "BROWSER_WEB"
+  id: 1
 client_ios:
-  code: "CLIENT_IOS"
+  id: 2
 client_android:
-  code: "CLIENT_ANDROID"
+  id: 3

@@ -12,7 +12,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :bigint           default(0), not null
+#  status_id  :bigint           default(4), not null
 #
 # Indexes
 #
@@ -29,6 +29,7 @@
 require "test_helper"
 
 class DomainOccurrenceTest < ActiveSupport::TestCase
+  fixtures :ip_occurrences, :ip_occurrence_statuses
   fixtures :domain_occurrences, :domain_occurrence_statuses
 
   test "public_id length" do

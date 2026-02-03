@@ -20,8 +20,8 @@
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
 #  staff_id                 :bigint           not null
-#  staff_token_kind_id      :bigint           default(0), not null
-#  staff_token_status_id    :bigint           default(0), not null
+#  staff_token_kind_id      :bigint           default(1), not null
+#  staff_token_status_id    :bigint           default(2), not null
 #
 # Indexes
 #
@@ -52,7 +52,8 @@ class StaffToken < TokenRecord
   belongs_to :staff
   belongs_to :staff_token_status
   belongs_to :staff_token_kind, optional: true
-  attribute :staff_token_status_id, default: "NEYO"
+  attribute :staff_token_status_id, default: StaffTokenStatus::NEYO
+  attribute :staff_token_kind_id, default: StaffTokenKind::BROWSER_WEB
 
   validates :public_id, uniqueness: true, length: { maximum: 21 }
   validates :refresh_expires_at, presence: true

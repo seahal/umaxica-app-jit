@@ -6,6 +6,8 @@ require "base64"
 
 module Sign::App::In
   class PasskeysControllerTest < ActionDispatch::IntegrationTest
+    fixtures :users, :user_statuses, :user_email_statuses
+
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
       @user = users(:one) # Ensure this user has an email in fixtures

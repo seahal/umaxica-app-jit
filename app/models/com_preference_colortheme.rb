@@ -35,8 +35,6 @@ class ComPreferenceColortheme < PreferenceRecord
   private
 
   def set_option_id
-    return if option_id.present?
-
-    self.option_id = ComPreferenceColorthemeOption.find_by(id: "system")&.id || "system"
+    self.option_id ||= ComPreferenceColorthemeOption::SYSTEM
   end
 end

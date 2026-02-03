@@ -15,7 +15,7 @@
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
 #  user_id                           :bigint           not null
-#  user_identity_telephone_status_id :bigint           default(0), not null
+#  user_identity_telephone_status_id :bigint           default(1), not null
 #
 # Indexes
 #
@@ -32,6 +32,8 @@
 require "test_helper"
 
 class UserTelephoneTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses, :user_telephone_statuses
+
   setup do
     @user = users(:none_user)
     @valid_attributes = {
@@ -128,15 +130,14 @@ class UserTelephoneTest < ActiveSupport::TestCase
     assert_predicate user_telephone.errors[:confirm_using_mfa], :any?
   end
 
-  test "should generate UUID v7 before creation" do
+  test "should assign numeric id before creation" do
     user_telephone = UserTelephone.new(@valid_attributes)
 
     assert_nil user_telephone.id
     user_telephone.save!
 
     assert_not_nil user_telephone.id
-    # UUID v7 format: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
-    assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, user_telephone.id)
+    assert_kind_of Integer, user_telephone.id
   end
 
   test "number is invalid when blank" do

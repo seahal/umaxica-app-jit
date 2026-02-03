@@ -16,12 +16,12 @@ module Sign
       # Assuming UserTelephone has normalization or similar
       # For now, we trust params or basic validation
       @user_telephone = UserTelephone.new(telephone_number: number)
-      @user_telephone.user_telephone_status_id = "UNVERIFIED_WITH_SIGN_UP"
+      @user_telephone.user_telephone_status_id = UserTelephoneStatus::UNVERIFIED
 
       # Delete existing unverified
       UserTelephone.where(
         telephone_number: @user_telephone.telephone_number,
-        user_telephone_status_id: "UNVERIFIED_WITH_SIGN_UP",
+        user_telephone_status_id: UserTelephoneStatus::UNVERIFIED,
       ).destroy_all
 
       generate_otp_attributes(@user_telephone)
@@ -44,7 +44,7 @@ module Sign
       @user_telephone = UserTelephone.find_by(id: id)
       if @user_telephone.blank? ||
           @user_telephone.otp_expired? ||
-          @user_telephone.user_telephone_status_id != "UNVERIFIED_WITH_SIGN_UP"
+          @user_telephone.user_telephone_status_id != UserTelephoneStatus::UNVERIFIED
         return :session_expired
       end
 
@@ -61,7 +61,7 @@ module Sign
       end
 
       clear_otp(@user_telephone)
-      @user_telephone.user_telephone_status_id = "VERIFIED_WITH_SIGN_UP"
+      @user_telephone.user_telephone_status_id = UserTelephoneStatus::VERIFIED
 
       yield(@user_telephone) if block_given?
 

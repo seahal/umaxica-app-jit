@@ -3,31 +3,28 @@
 # Table name: staff_audit_events
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_staff_audit_events_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
+none:
+  id: 0
 login_success:
-  code: "11 # was 11 # was LOGIN_SUCCESS"
+  id: 1
 
 neyo:
-  code: "NEYO"
+  id: 7
 
 authorization_failed:
-  code: "12 # was 12 # was AUTHORIZATION_FAILED"
+  id: 2
 
 logged_in:
-  code: "13 # was 13 # was LOGGED_IN"
+  id: 3
 
 logged_out:
-  code: "14 # was 14 # was LOGGED_OUT"
+  id: 4
 
 login_failed:
-  code: "15 # was 15 # was LOGIN_FAILED"
+  id: 5
 
 token_refreshed:
-  code: "16 # was 16 # was TOKEN_REFRESHED"
+  id: 6

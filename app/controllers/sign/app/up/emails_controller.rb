@@ -153,17 +153,26 @@ module Sign
         def valid_email_session?
           @user_email.present? &&
             !@user_email.otp_expired? &&
-            @user_email.user_email_status_id == UserEmailStatus::UNVERIFIED
+            @user_email.user_email_status_id == UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
         end
 
         def create_user_and_login(user_email)
-          ActiveRecord::Base.transaction do
-            @user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
-            user_email.user = @user
-            audit = UserAudit.new(actor: @user, event_id: "SIGNED_UP_WITH_EMAIL", user: @user)
-            audit.save!
-            user_email.save!
-          end
+          # Update existing pending user to verified status
+          # Note: This is called within complete_email_verification!'s transaction
+          @user = user_email.user
+          @user.update!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+
+          # Create audit record
+          # Note: actor_id is UUID type, so we use user's public_id (not integer id)
+          audit = UserAudit.new
+          audit.actor_type = "User"
+          audit.actor_id = @user.public_id
+          audit.event_id = UserAuditEvent::SIGNED_UP_WITH_EMAIL
+          audit.subject_id = @user.id.to_s
+          audit.subject_type = "User"
+          audit.save!
+
+          user_email.save!
           log_in(@user, record_login_audit: false)
         end
       end

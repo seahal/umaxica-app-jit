@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses
+
   test "should get new" do
     get new_sign_app_up_url(format: :html, ri: "jp"), headers: { "Host" => host }
 

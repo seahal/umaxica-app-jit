@@ -5,43 +5,20 @@
 # Table name: telephone_occurrence_statuses
 # Database name: occurrence
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_telephone_occurrence_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class TelephoneOccurrenceStatusTest < ActiveSupport::TestCase
-  test "upcases id before validation" do
-    assert_upcases_id(TelephoneOccurrenceStatus)
+  test "accepts integer ids" do
+    record = TelephoneOccurrenceStatus.new(id: 9)
+    assert_predicate record, :valid?
   end
 
-  test "validates id presence" do
-    record = TelephoneOccurrenceStatus.new(id: nil)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id length" do
-    record = TelephoneOccurrenceStatus.new(id: "A" * 256)
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id format" do
-    record = TelephoneOccurrenceStatus.new(id: "BAD-ID!")
-
-    assert_invalid_attribute(record, :id)
-  end
-
-  test "validates id uniqueness case insensitive" do
-    record = TelephoneOccurrenceStatus.new(id: "active")
-
-    assert_invalid_attribute(record, :id)
+  test "constants are defined" do
+    assert_equal 1, TelephoneOccurrenceStatus::ACTIVE
+    assert_equal 2, TelephoneOccurrenceStatus::NEYO
   end
 
   test "has occurrences association" do

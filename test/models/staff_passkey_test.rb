@@ -15,7 +15,7 @@
 #  updated_at              :datetime         not null
 #  external_id             :string           not null
 #  staff_id                :bigint           not null
-#  staff_passkey_status_id :bigint           default(0), not null
+#  staff_passkey_status_id :bigint           default(1), not null
 #  webauthn_id             :string           default(""), not null
 #
 # Indexes
@@ -37,14 +37,14 @@ class StaffPasskeyTest < ActiveSupport::TestCase
   test "should create passkey with valid attributes" do
     passkey = StaffPasskey.new(
       staff: Staff.find_by!(public_id: "bcde3456"),
-      description: "Staff Passkey",
+      name: "Staff Passkey",
       public_key: "test_staff_public_key",
       sign_count: 1,
       external_id: SecureRandom.uuid,
       webauthn_id: SecureRandom.hex(32),
     )
 
-    assert_equal "Staff Passkey", passkey.description
+    assert_equal "Staff Passkey", passkey.name
     assert_equal "test_staff_public_key", passkey.public_key
     assert_equal 1, passkey.sign_count
   end
@@ -53,10 +53,10 @@ class StaffPasskeyTest < ActiveSupport::TestCase
     assert_respond_to StaffPasskey.new, :staff
   end
 
-  test "should have description field" do
-    passkey = StaffPasskey.new(description: "Example Description")
+  test "should have name field" do
+    passkey = StaffPasskey.new(name: "Example Name")
 
-    assert_equal "Example Description", passkey.description
+    assert_equal "Example Name", passkey.name
   end
 
   test "should have public_key field" do
@@ -70,7 +70,7 @@ class StaffPasskeyTest < ActiveSupport::TestCase
   end
 
   test "should have required database columns" do
-    required_columns = %w(description public_key sign_count external_id staff_id webauthn_id)
+    required_columns = %w(name public_key sign_count external_id staff_id webauthn_id)
 
     required_columns.each do |column|
       assert_includes StaffPasskey.column_names, column
@@ -84,7 +84,7 @@ class StaffPasskeyTest < ActiveSupport::TestCase
     StaffPasskey.stub(:where, relation_stub) do
       extra_passkey = StaffPasskey.new(
         staff: staff,
-        description: "Overflow Staff Key",
+        name: "Overflow Staff Key",
         public_key: "overflow-key",
         sign_count: 0,
         external_id: SecureRandom.uuid,

@@ -5,22 +5,16 @@
 # Table name: org_contact_categories
 # Database name: guest
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_org_contact_categories_on_code  (code) UNIQUE
-#
-
 class OrgContactCategory < GuestRecord
-  include CodeIdentifiable
+  NEYO = 1
+  ORGANIZATION_INQUIRY = 2
 
   has_many :org_contacts,
            foreign_key: :category_id,
-           primary_key: :id,
            inverse_of: :org_contact_category,
-           dependent: :restrict_with_error
+           dependent: :restrict_with_exception
 
-  validates :description, length: { maximum: 255 }
+  validates :id, uniqueness: true
 end

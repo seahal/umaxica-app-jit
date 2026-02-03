@@ -3,25 +3,29 @@
 # Table name: app_preference_timezone_options
 # Database name: preference
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_app_preference_timezone_options_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
 class AppPreferenceTimezoneOption < PreferenceRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  ETC_UTC = 1
+  ASIA_TOKYO = 2
 
   has_many :app_preference_timezones,
            class_name: "AppPreferenceTimezone",
            foreign_key: :option_id,
            inverse_of: :option,
            dependent: :restrict_with_error
-  scope :ordered, -> { order(:position, :id) }
+  scope :ordered, -> { order(:id) }
+
+  def name
+    case id
+    when ETC_UTC then "Etc/UTC"
+    when ASIA_TOKYO then "Asia/Tokyo"
+    end
+  end
 
   self.primary_key = :id
 end

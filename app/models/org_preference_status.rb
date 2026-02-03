@@ -3,18 +3,15 @@
 # Table name: org_preference_statuses
 # Database name: preference
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_preference_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
 class OrgPreferenceStatus < PreferenceRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  DELETED = 1
+  NEYO = 2
 
   has_many :org_preferences,
            class_name: "OrgPreference",
@@ -22,7 +19,5 @@ class OrgPreferenceStatus < PreferenceRecord
            primary_key: "id",
            inverse_of: :org_preference_status,
            dependent: :restrict_with_error
-  scope :ordered, -> { order(:position, :id) }
-
-  before_validation { self.id = id&.upcase }
+  scope :ordered, -> { order(:id) }
 end

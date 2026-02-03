@@ -5,14 +5,25 @@
 # Table name: com_contact_telephones
 # Database name: guest
 #
-#  id             :bigint           not null, primary key
-#  code           :citext           not null
-#  com_contact_id :bigint           not null
+#  id                     :bigint           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
+#  expires_at             :timestamptz      not null
+#  hotp_counter           :integer
+#  hotp_secret            :string
+#  remaining_views        :integer          default(10), not null
+#  telephone_number       :string(1000)     default(""), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  com_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_com_contact_telephones_on_code                   (code) UNIQUE
 #  index_com_contact_telephones_on_com_contact_id_unique  (com_contact_id) UNIQUE
+#  index_com_contact_telephones_on_telephone_number       (telephone_number)
 #
 # Foreign Keys
 #
@@ -22,12 +33,14 @@
 require "test_helper"
 
 class ComContactTelephoneTest < ActiveSupport::TestCase
+  fixtures :com_contact_categories, :com_contact_statuses
+
   test "should inherit from GuestRecord" do
     assert_operator ComContactTelephone, :<, GuestRecord
   end
 
   test "should belong to com_contact" do
-    contact = ComContact.create!(public_id: "phone_1", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_1", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15551234567",
@@ -45,7 +58,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   # This test has been removed as the downcase behavior was removed from the model
 
   test "should encrypt telephone_number" do
-    contact = ComContact.create!(public_id: "phone_2", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_2", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15551234568",
@@ -67,8 +80,8 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should support deterministic encryption for telephone_number" do
-    contact1 = ComContact.create!(public_id: "phone_3", created_at: Time.current, updated_at: Time.current)
-    contact2 = ComContact.create!(public_id: "phone_4", created_at: Time.current, updated_at: Time.current)
+    contact1 = create_contact(public_id: "phone_3", created_at: Time.current, updated_at: Time.current)
+    contact2 = create_contact(public_id: "phone_4", created_at: Time.current, updated_at: Time.current)
 
     # Create two records with the same telephone number
     telephone1 = ComContactTelephone.create!(
@@ -104,7 +117,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   test "should have valid fixtures" do
     # Note: Encrypted fields in fixtures may cause issues
     # We create a fresh record instead of loading from fixtures
-    contact = ComContact.create!(public_id: "phone_5", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_5", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000000",
@@ -117,22 +130,20 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     assert_predicate telephone, :valid?
   end
 
-  test "should use Nanoid as primary key" do
-    contact = ComContact.create!(public_id: "phone_6", created_at: Time.current, updated_at: Time.current)
+  test "should use bigint as primary key" do
+    contact = create_contact(public_id: "phone_6", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15551111111",
       expires_at: 1.day.from_now,
     )
 
-    assert_kind_of String, telephone.id
-
-    assert_equal 21, telephone.id.length # Assuming standard nanoid length
+    assert_kind_of Integer, telephone.id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should have timestamps" do
-    contact = ComContact.create!(public_id: "phone_7", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_7", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15552222222",
@@ -148,7 +159,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
 
   # rubocop:disable Minitest/MultipleAssertions
   test "should have all expected attributes" do
-    contact = ComContact.create!(public_id: "phone_8", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_8", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15553333333",
@@ -166,7 +177,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   # rubocop:enable Minitest/MultipleAssertions
 
   test "should have default values" do
-    contact = ComContact.create!(public_id: "phone_9", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_9", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15554444444",
@@ -176,13 +187,13 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     assert_not telephone.activated
     assert_not telephone.deletable
     assert_equal 10, telephone.remaining_views
-    assert_not_nil telephone.hotp_secret
-    assert_equal 0, telephone.hotp_counter
+    assert_nil telephone.hotp_secret
+    assert_nil telephone.hotp_counter
   end
 
   # Validation tests
   test "should validate presence of telephone_number" do
-    contact = ComContact.create!(public_id: "phone_10", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_10", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.new(
       com_contact: contact,
       expires_at: 1.day.from_now,
@@ -193,7 +204,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should validate format of telephone_number" do
-    contact = ComContact.create!(public_id: "phone_10_1", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_10_1", created_at: Time.current, updated_at: Time.current)
 
     # Invalid telephone formats
     invalid_phones = ["abc", "123-abc-4567", "!!!"]
@@ -212,7 +223,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     valid_phones = ["+1234567890", "+1-123-456-7890", "+1 (123) 456-7890", "+81 90 1234 5678"]
     valid_phones.each_with_index do |valid_phone, i|
       telephone = ComContactTelephone.new(
-        com_contact: ComContact.create!(
+        com_contact: create_contact(
           public_id: "phone_10_2_#{i}", created_at: Time.current,
           updated_at: Time.current,
         ),
@@ -226,7 +237,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
 
   # Alias attribute tests
   test "should alias otp_digest to verifier_digest" do
-    contact = ComContact.create!(public_id: "phone_11", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_11", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15555555555",
@@ -241,7 +252,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should alias otp_expires_at to verifier_expires_at" do
-    contact = ComContact.create!(public_id: "phone_12", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_12", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15556666666",
@@ -256,7 +267,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should alias otp_attempts_left to verifier_attempts_left" do
-    contact = ComContact.create!(public_id: "phone_13", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_13", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15557777777",
@@ -270,7 +281,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   # OTP tests
   # rubocop:disable Minitest/MultipleAssertions
   test "should generate OTP" do
-    contact = ComContact.create!(public_id: "phone_14", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_14", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15558888888",
@@ -289,7 +300,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   # rubocop:enable Minitest/MultipleAssertions
 
   test "should verify correct OTP" do
-    contact = ComContact.create!(public_id: "phone_15", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_15", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15559999999",
@@ -304,7 +315,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should reject incorrect OTP_and decrement attempts" do
-    contact = ComContact.create!(public_id: "phone_16", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_16", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000001",
@@ -320,7 +331,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should reject OTP_when attempts exhausted" do
-    contact = ComContact.create!(public_id: "phone_17", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_17", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000002",
@@ -337,7 +348,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should reject expired OTP" do
-    contact = ComContact.create!(public_id: "phone_18", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_18", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000003",
@@ -354,7 +365,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "otp_expired? should return true when expired" do
-    contact = ComContact.create!(public_id: "phone_19", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_19", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000004",
@@ -371,7 +382,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "can_resend_otp? should return true when OTP_expired" do
-    contact = ComContact.create!(public_id: "phone_20", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_20", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000005",
@@ -385,7 +396,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "can_resend_otp? should return true when attempts exhausted" do
-    contact = ComContact.create!(public_id: "phone_21", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_21", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000006",
@@ -399,7 +410,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "can_resend_otp? should return false when activated" do
-    contact = ComContact.create!(public_id: "phone_22", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_22", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000007",
@@ -415,7 +426,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   # HOTP tests
   # rubocop:disable Minitest/MultipleAssertions
   test "should generate and verify HOTP" do
-    contact = ComContact.create!(public_id: "phone_23", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_23", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000008",
@@ -451,7 +462,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   # rubocop:enable Minitest/MultipleAssertions
 
   test "should reject reuse of HOTP code" do
-    contact = ComContact.create!(public_id: "phone_24", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_24", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000009",
@@ -465,7 +476,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should reject incorrect HOTP" do
-    contact = ComContact.create!(public_id: "phone_25", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_25", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000010",
@@ -480,7 +491,7 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "should reject expired HOTP" do
-    contact = ComContact.create!(public_id: "phone_26", created_at: Time.current, updated_at: Time.current)
+    contact = create_contact(public_id: "phone_26", created_at: Time.current, updated_at: Time.current)
     telephone = ComContactTelephone.create!(
       com_contact: contact,
       telephone_number: "+15550000011",
@@ -492,5 +503,17 @@ class ComContactTelephoneTest < ActiveSupport::TestCase
     # Correct.
     telephone.update!(verifier_expires_at: 1.hour.ago)
     assert_not telephone.verify_hotp_code(code)
+  end
+
+  private
+
+  def create_contact(attrs = {})
+    ComContact.create!(
+      {
+        confirm_policy: "1",
+        category_id: ComContactCategory::SECURITY_ISSUE,
+        status_id: ComContactStatus::NEYO,
+      }.merge(attrs),
+    )
   end
 end

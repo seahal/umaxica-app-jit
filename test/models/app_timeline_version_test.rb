@@ -34,6 +34,7 @@
 require "test_helper"
 
 class AppTimelineVersionTest < ActiveSupport::TestCase
+  fixtures :app_timelines
   test "includes Version concern" do
     assert_includes AppTimelineVersion.included_modules, Version
   end

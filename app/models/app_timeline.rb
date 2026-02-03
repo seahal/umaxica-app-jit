@@ -17,7 +17,7 @@
 #  latest_revision_id :bigint
 #  latest_version_id  :bigint
 #  slug_id            :string(32)       default(""), not null
-#  status_id          :bigint           default(0), not null
+#  status_id          :bigint           default(1), not null
 #
 # Indexes
 #
@@ -37,6 +37,8 @@
 class AppTimeline < NewsRecord
   include ::SlugId
   include Timeline
+
+  attribute :status_id, default: AppTimelineStatus::NEYO
 
   validates :latest_version_id, :latest_revision_id, uniqueness: { allow_nil: true }
 

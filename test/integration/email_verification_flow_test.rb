@@ -6,16 +6,17 @@ class EmailVerificationFlowTest < ActionDispatch::IntegrationTest
   setup do
     CloudflareTurnstile.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
-    @user = User.create!(status_id: "UNVERIFIED_WITH_SIGN_UP")
+    @user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
   end
 
   test "social login flow does not trigger email verification and redirects to configuration" do
     OmniAuth.config.test_mode = true
+    # IMPORTANT: Social login uses provider+uid ONLY, NOT email
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
       {
         provider: "apple",
         uid: "flow_uid",
-        info: { email: "flow@example.com" },
+        info: {},
         credentials: { token: "token", expires_at: 1.week.from_now.to_i },
       },
     )

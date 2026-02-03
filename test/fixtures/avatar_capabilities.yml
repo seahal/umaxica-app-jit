@@ -5,13 +5,8 @@
 # Table name: avatar_capabilities
 # Database name: avatar
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_avatar_capabilities_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 normal:
-  code: "11 # was 11 # was NORMAL"
-  name: "Normal"
+  id: 1
+  id: 1

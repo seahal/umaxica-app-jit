@@ -43,7 +43,7 @@
                 </h3>
                 <div class="flex items-center gap-2 text-xs text-gray-500">
                   <code class="bg-gray-100 px-2 py-0.5 rounded"><%= document.permalink %></code>
-                  <% if document.status_id == "ACTIVE" %>
+                  <% if document.status_id == ComDocumentStatus::ACTIVE %>
                     <span class="text-green-600">●</span>
                   <% end %>
                 </div>

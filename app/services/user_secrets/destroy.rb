@@ -3,7 +3,7 @@
 module UserSecrets
   class Destroy
     ACTION = "user_secret.delete"
-    EVENT_ID = "USER_IDENTITY_SECRET_DELETE"
+    EVENT_ID = UserAuditEvent::USER_SECRET_REMOVED
 
     def self.call(actor:, secret:)
       new(actor: actor, secret: secret).call

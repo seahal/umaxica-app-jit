@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Sign::Org::Configuration::SessionsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :staffs, :staff_statuses
+
   setup do
     host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
     @staff = staffs(:one)

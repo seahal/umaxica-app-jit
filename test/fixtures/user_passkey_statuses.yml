@@ -3,20 +3,15 @@
 # Table name: user_passkey_statuses
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_passkey_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 neyo:
-  code: "NEYO"
+  id: 5
 active:
-  code: "ACTIVE"
+  id: 1
 deleted:
-  code: "DELETED"
+  id: 4
 disabled:
-  code: "DISABLED"
+  id: 2
 revoked:
-  code: "REVOKED"
+  id: 3

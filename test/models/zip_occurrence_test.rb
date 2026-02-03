@@ -12,7 +12,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :bigint           default(0), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
@@ -29,6 +29,8 @@
 require "test_helper"
 
 class ZipOccurrenceTest < ActiveSupport::TestCase
+  fixtures :zip_occurrences, :zip_occurrence_statuses
+
   test "public_id length" do
     record = build_occurrence(ZipOccurrence, body: "1500001", public_id: "A" * 20)
 

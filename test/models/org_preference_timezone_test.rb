@@ -26,7 +26,8 @@ require "test_helper"
 
 class OrgPreferenceTimezoneTest < ActiveSupport::TestCase
   setup do
-    @preference = OrgPreference.create!
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NEYO)
+    @preference = OrgPreference.create!(status_id: OrgPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,6 +46,6 @@ class OrgPreferenceTimezoneTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     timezone = OrgPreferenceTimezone.create!(preference: @preference)
-    assert_equal "Asia/Tokyo", timezone.option_id
+    assert_equal OrgPreferenceTimezoneOption::ASIA_TOKYO, timezone.option_id
   end
 end

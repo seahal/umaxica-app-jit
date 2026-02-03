@@ -77,18 +77,31 @@ module Sign
       end
 
       @user_email = UserEmail.new(address: email_address, confirm_policy: confirm_policy)
-      @user_email.user_email_status_id = "UNVERIFIED_WITH_SIGN_UP"
+      @user_email.user_email_status_id = UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
 
       # Rate limit check (TODO: Implement rate limiting)
       # if rate_limited? ...
 
       begin
         UserEmail.transaction do
-          # Delete existing unverified email
-          UserEmail.where(
+          # Delete existing unverified emails and their pending users
+          existing_emails = UserEmail.where(
             address: @user_email.address,
-            user_email_status_id: "UNVERIFIED_WITH_SIGN_UP",
-          ).destroy_all
+            user_email_status_id: UserEmailStatus::UNVERIFIED_WITH_SIGN_UP,
+          ).to_a
+
+          existing_emails.each do |email|
+            pending_user = email.user
+            # For signup flow, each pending user should only have one email
+            # Delete the user first (which will cascade delete the email via dependent: :destroy)
+            if pending_user && pending_user.status_id == UserStatus::UNVERIFIED_WITH_SIGN_UP
+              pending_user.destroy!
+            end
+          end
+
+          # Create pending user
+          @pending_user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
+          @user_email.user = @pending_user
 
           # Generate OTP
           num = generate_otp_attributes(@user_email)
@@ -142,7 +155,7 @@ module Sign
       begin
         @user_email.transaction do
           clear_otp(@user_email)
-          @user_email.user_email_status_id = "VERIFIED_WITH_SIGN_UP"
+          @user_email.user_email_status_id = UserEmailStatus::VERIFIED_WITH_SIGN_UP
 
           yield(@user_email) if block_given?
         end

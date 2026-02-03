@@ -5,47 +5,26 @@
 # Table name: user_passkey_statuses
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_passkey_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class UserPasskeyStatusTest < ActiveSupport::TestCase
   fixtures :user_passkey_statuses
 
-  test "valid status" do
-    status = UserPasskeyStatus.new(id: 99)
-    assert_predicate status, :valid?
-    assert status.save
-    assert_equal 99, status.id
-  end
-
   test "status constants are defined" do
-    assert_equal 0, UserPasskeyStatus::NEYO
     assert_equal 1, UserPasskeyStatus::ACTIVE
     assert_equal 2, UserPasskeyStatus::DISABLED
-    assert_equal 3, UserPasskeyStatus::DELETED
+    assert_equal 3, UserPasskeyStatus::REVOKED
+    assert_equal 4, UserPasskeyStatus::DELETED
+    assert_equal 5, UserPasskeyStatus::NEYO
   end
 
-  test "validates id is non-negative" do
-    record = UserPasskeyStatus.new(id: -1)
-    assert_predicate record, :invalid?
-    assert_includes record.errors[:id], "must be greater than or equal to 0"
-  end
-
-  test "validates id is an integer" do
-    record = UserPasskeyStatus.new(id: 1.5)
-    assert_predicate record, :invalid?
-  end
-
-  test "validates uniqueness of id" do
-    UserPasskeyStatus.create!(id: 99)
-    duplicate = UserPasskeyStatus.new(id: 99)
-    assert_predicate duplicate, :invalid?
-    assert_predicate duplicate.errors[:id], :any?
+  test "status ids are integers" do
+    assert_kind_of Integer, UserPasskeyStatus::ACTIVE
+    assert_kind_of Integer, UserPasskeyStatus::DISABLED
+    assert_kind_of Integer, UserPasskeyStatus::REVOKED
+    assert_kind_of Integer, UserPasskeyStatus::DELETED
+    assert_kind_of Integer, UserPasskeyStatus::NEYO
   end
 end

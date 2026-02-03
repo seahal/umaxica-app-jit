@@ -86,7 +86,7 @@ class HandleTest < ActiveSupport::TestCase
 
   test "association deletion: restriction by active_avatars" do
     @handle.save!
-    capability = AvatarCapability.find_or_create_by!(key: "handle_test_cap", name: "Test Cap")
+    capability = AvatarCapability.find_or_create_by!(id: AvatarCapability::NORMAL)
     Avatar.create!(
       moniker: "Avatar with Handle",
       active_handle: @handle,

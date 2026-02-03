@@ -5,24 +5,16 @@
 # Table name: email_occurrence_statuses
 # Database name: occurrence
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_email_occurrence_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class EmailOccurrenceStatus < OccurrenceRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  ACTIVE = 1
+  NEYO = 2
 
   include OccurrenceStatus
 
-  # Status constants
-  NEYO = "NEYO"
-  ACTIVE = "ACTIVE"
-  INACTIVE = "INACTIVE"
-  BLOCKED = "BLOCKED"
   has_many :email_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
                                inverse_of: :email_occurrence_status
 end

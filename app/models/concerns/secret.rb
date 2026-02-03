@@ -19,8 +19,9 @@ module Secret
   class_methods do
     def issue!(name:, length: SECRET_PASSWORD_LENGTH, expires_at: nil, uses: 1, status: :active, **attributes)
       raw_secret = SecureRandom.base58(length)
-      record_attributes = attributes.merge(name: name, uses_remaining: uses)
-      record_attributes[:expires_at] = expires_at if expires_at
+      record_attributes = attributes.merge(name: name)
+      record_attributes[:uses_remaining] = uses if supports_uses_remaining?
+      record_attributes[:expires_at] = expires_at if expires_at && supports_expiration?
       record = new(record_attributes)
       record[identity_secret_status_id_column] = status_id_for(status)
       record.password = raw_secret
@@ -38,7 +39,27 @@ module Secret
 
     def status_id_for(status)
       status_key = status.to_s.upcase
-      identity_secret_status_class.find(status_key).id
+      identity_secret_status_class.const_get(status_key)
+    end
+
+    def supports_uses_remaining?
+      if respond_to?(:column_names)
+        column_names.include?("uses_remaining")
+      elsif respond_to?(:attribute_types)
+        attribute_types.key?("uses_remaining")
+      else
+        false
+      end
+    end
+
+    def supports_expiration?
+      if respond_to?(:column_names)
+        column_names.include?("expires_at")
+      elsif respond_to?(:attribute_types)
+        attribute_types.key?("expires_at")
+      else
+        false
+      end
     end
   end
 
@@ -52,13 +73,20 @@ module Secret
       # Then check other conditions
       return false unless active?
       return false if expire_if_needed!(now: now)
-      return false unless uses_remaining.to_i.positive?
+
+      if uses_remaining_available?
+        return false unless uses_remaining.to_i.positive?
+      end
       return false unless auth_result
 
-      self.uses_remaining -= 1
       self.last_used_at = now
-
-      if uses_remaining.zero?
+      if uses_remaining_available?
+        self.uses_remaining -= 1
+        if uses_remaining.zero?
+          self[self.class.identity_secret_status_id_column] = self.class.status_id_for(:used)
+        end
+      else
+        # Fallback for secrets without uses_remaining persistence: mark as used after first success.
         self[self.class.identity_secret_status_id_column] = self.class.status_id_for(:used)
       end
 
@@ -103,7 +131,12 @@ module Secret
     self[self.class.identity_secret_status_id_column]
   end
 
+  def uses_remaining_available?
+    respond_to?(:uses_remaining) && self.class.supports_uses_remaining?
+  end
+
   def expired_by_time?(now)
+    return false unless respond_to?(:expires_at)
     return false if expires_at.nil?
 
     # PostgreSQL infinity/-infinity are used as sentinels for "never expires"

@@ -4,6 +4,8 @@ require "test_helper"
 require "minitest/mock"
 
 class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds, :user_one_time_password_statuses
+
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)

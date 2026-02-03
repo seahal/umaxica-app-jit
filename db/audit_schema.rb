@@ -10,19 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_03_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
 
   create_table "app_contact_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_contact_audit_events_on_code", unique: true
   end
 
   create_table "app_contact_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_contact_audit_levels_on_code", unique: true
   end
 
   create_table "app_contact_histories", force: :cascade do |t|
@@ -54,13 +50,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "app_document_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_document_audit_events_on_code", unique: true
   end
 
   create_table "app_document_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_document_audit_levels_on_code", unique: true
   end
 
   create_table "app_document_audits", force: :cascade do |t|
@@ -90,17 +82,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "app_preference_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_preference_audit_events_on_code", unique: true
   end
 
   create_table "app_preference_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_preference_audit_levels_on_code", unique: true
   end
 
   create_table "app_preference_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -126,17 +114,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "app_timeline_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_timeline_audit_events_on_code", unique: true
   end
 
   create_table "app_timeline_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_timeline_audit_levels_on_code", unique: true
   end
 
   create_table "app_timeline_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -162,17 +146,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "com_contact_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_contact_audit_events_on_code", unique: true
   end
 
   create_table "com_contact_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_contact_audit_levels_on_code", unique: true
   end
 
   create_table "com_contact_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -200,17 +180,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "com_document_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_document_audit_events_on_code", unique: true
   end
 
   create_table "com_document_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_document_audit_levels_on_code", unique: true
   end
 
   create_table "com_document_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -236,17 +212,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "com_preference_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_preference_audit_events_on_code", unique: true
   end
 
   create_table "com_preference_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_preference_audit_levels_on_code", unique: true
   end
 
   create_table "com_preference_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -272,17 +244,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "com_timeline_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_timeline_audit_events_on_code", unique: true
   end
 
   create_table "com_timeline_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_timeline_audit_levels_on_code", unique: true
   end
 
   create_table "com_timeline_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -308,17 +276,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "org_contact_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_contact_audit_events_on_code", unique: true
   end
 
   create_table "org_contact_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_contact_audit_levels_on_code", unique: true
   end
 
   create_table "org_contact_histories", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -346,17 +310,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "org_document_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_document_audit_events_on_code", unique: true
   end
 
   create_table "org_document_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_document_audit_levels_on_code", unique: true
   end
 
   create_table "org_document_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -382,17 +342,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "org_preference_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_preference_audit_events_on_code", unique: true
   end
 
   create_table "org_preference_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_preference_audit_levels_on_code", unique: true
   end
 
   create_table "org_preference_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -418,17 +374,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "org_timeline_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_timeline_audit_events_on_code", unique: true
   end
 
   create_table "org_timeline_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_timeline_audit_levels_on_code", unique: true
   end
 
   create_table "org_timeline_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -454,17 +406,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "staff_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_audit_events_on_code", unique: true
   end
 
   create_table "staff_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_audit_levels_on_code", unique: true
   end
 
   create_table "staff_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -491,17 +439,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "user_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_audit_events_on_code", unique: true
   end
 
   create_table "user_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_audit_levels_on_code", unique: true
   end
 
   create_table "user_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false

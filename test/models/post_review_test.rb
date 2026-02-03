@@ -29,14 +29,28 @@
 require "test_helper"
 
 class PostReviewTest < ActiveSupport::TestCase
+  fixtures :avatars, :post_statuses, :post_review_statuses, :handles, :avatar_capabilities, :handle_statuses
+
   test "validations" do
     review = PostReview.new
     assert_not review.valid?
   end
 
   test "validates length of id" do
-    record = PostReview.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+    post = Post.create!(
+      author_avatar: avatars(:one),
+      post_status_id: PostStatus::NEYO,
+      public_id: "pr_test_#{SecureRandom.hex(4)}",
+      body: "body",
+      created_by_actor_id: "actor",
+    )
+    record = PostReview.new(
+      id: 99,
+      post: post,
+      post_review_status_id: PostReviewStatus::NEYO,
+      reviewer_actor_id: "reviewer_actor",
+    )
+
+    assert_predicate record, :valid?
   end
 end

@@ -41,7 +41,7 @@ class ComTimelineVersionTest < ActiveSupport::TestCase
   test "encrypts title, description, and body" do
     timeline = ComTimeline.create!(
       response_mode: "html",
-      status_id: "NEYO",
+      status_id: ComTimelineStatus::NEYO,
       published_at: Time.zone.parse("2024-01-01 00:00:00"),
       expires_at: Time.zone.parse("2999-12-31 00:00:00"),
     )

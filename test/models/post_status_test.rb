@@ -5,25 +5,21 @@
 # Table name: post_statuses
 # Database name: avatar
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_post_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
 
 class PostStatusTest < ActiveSupport::TestCase
-  test "validations" do
-    status = PostStatus.new(id: "TEST_STATUS")
+  test "accepts integer ids" do
+    status = PostStatus.new(id: 9)
     assert_predicate status, :valid?
   end
 
-  test "validates length of id" do
-    record = PostStatus.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "constants are defined" do
+    assert_equal 1, PostStatus::NEYO
+    assert_equal 2, PostStatus::ACTIVE
+    assert_equal 3, PostStatus::INACTIVE
+    assert_equal 4, PostStatus::DELETED
   end
 end

@@ -13,7 +13,7 @@
 #  updated_at                                :datetime         not null
 #  public_id                                 :string(21)       not null
 #  user_id                                   :bigint           not null
-#  user_identity_one_time_password_status_id :bigint           default(0), not null
+#  user_identity_one_time_password_status_id :bigint           default(5), not null
 #
 # Indexes
 #
@@ -38,7 +38,7 @@ class UserOneTimePassword < PrincipalRecord
   belongs_to :user, inverse_of: :user_one_time_passwords
   belongs_to :user_one_time_password_status, optional: true, inverse_of: :user_one_time_passwords,
                                              foreign_key: :user_identity_one_time_password_status_id
-  attribute :user_identity_one_time_password_status_id, default: "NEYO"
+  attribute :user_identity_one_time_password_status_id, default: UserOneTimePasswordStatus::NEYO
 
   validates :private_key, presence: true, length: { maximum: 1024 }
   validates :last_otp_at, presence: true

@@ -3,6 +3,8 @@
 require "test_helper"
 
 class SocialIdentifiableTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses
+
   class DummySocial < ApplicationRecord
     self.table_name = "users"
     include SocialIdentifiable

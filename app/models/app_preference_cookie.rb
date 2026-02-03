@@ -33,7 +33,10 @@ class AppPreferenceCookie < PreferenceRecord
   validates :targetable, inclusion: { in: [true, false] }
   validates :performant, inclusion: { in: [true, false] }
   validates :functional, inclusion: { in: [true, false] }
-  validates :consented, inclusion: { in: [true, false] }
+
+  attr_accessor :consented
+
+  alias_method :consented?, :consented
 
   private
 
@@ -43,6 +46,5 @@ class AppPreferenceCookie < PreferenceRecord
     self.targetable = false if targetable.nil?
     self.performant = false if performant.nil?
     self.functional = false if functional.nil?
-    self.consented = false if consented.nil?
   end
 end

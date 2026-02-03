@@ -177,7 +177,7 @@ module Sign
 
         totps =
           current_staff.staff_one_time_passwords
-            .where(staff_one_time_password_status_id: "ACTIVE")
+            .where(staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE)
             .order(created_at: :desc)
 
         totps.any? do |totp|

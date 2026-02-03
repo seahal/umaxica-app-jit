@@ -35,6 +35,6 @@ class ComPreferenceTimezone < PreferenceRecord
   private
 
   def set_option_id
-    self.option_id ||= "Asia/Tokyo"
+    self.option_id ||= ComPreferenceTimezoneOption::ASIA_TOKYO
   end
 end

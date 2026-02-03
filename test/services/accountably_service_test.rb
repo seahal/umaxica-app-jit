@@ -3,9 +3,24 @@
 require "test_helper"
 
 class AccountablyServiceTest < ActiveSupport::TestCase
+  fixtures :users,
+           :staffs,
+           :user_statuses,
+           :staff_statuses,
+           :user_token_statuses,
+           :user_token_kinds,
+           :staff_token_statuses,
+           :staff_token_kinds,
+           :user_email_statuses,
+           :user_telephone_statuses,
+           :user_social_apple_statuses,
+           :user_social_google_statuses
+
   setup do
     @user = users(:one)
     @staff = staffs(:one)
+    UserToken.where(user: @user).delete_all
+    StaffToken.where(staff: @staff).delete_all
   end
 
   # Initialization Tests
@@ -41,7 +56,7 @@ class AccountablyServiceTest < ActiveSupport::TestCase
   end
 
   test "find should return accountably service for staff" do
-    accountably = AccountablyService.find(@staff.id)
+    accountably = AccountablyService.find(@staff.id, type: :staff)
 
     assert_not_nil accountably
     assert_predicate accountably, :staff?

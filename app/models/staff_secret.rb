@@ -12,7 +12,7 @@
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
 #  staff_id                        :bigint           not null
-#  staff_identity_secret_status_id :bigint           default(0), not null
+#  staff_identity_secret_status_id :bigint           default(1), not null
 #  staff_secret_kind_id            :bigint           default(0), not null
 #
 # Indexes
@@ -34,6 +34,7 @@ class StaffSecret < OperatorRecord
   include StaffSecret::Kinds
 
   MAX_SECRETS_PER_STAFF = 10
+  attribute :staff_identity_secret_status_id, default: StaffSecretStatus::ACTIVE
 
   belongs_to :staff
   belongs_to :staff_secret_status,
@@ -42,8 +43,8 @@ class StaffSecret < OperatorRecord
              foreign_key: :staff_identity_secret_status_id
   belongs_to :staff_secret_kind, inverse_of: :staff_secrets
 
-  validates :staff_identity_secret_status_id, length: { maximum: 255 }
-  validates :staff_secret_kind_id, length: { maximum: 255 }
+  validates :staff_identity_secret_status_id, numericality: { only_integer: true }
+  validates :staff_secret_kind_id, numericality: { only_integer: true }
   validate :enforce_secret_limit, on: :create
 
   def self.identity_secret_status_class

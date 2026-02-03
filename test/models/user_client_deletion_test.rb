@@ -25,6 +25,8 @@
 require "test_helper"
 
 class UserClientDeletionTest < ActiveSupport::TestCase
+  fixtures :users, :user_statuses, :clients, :client_statuses, :user_client_deletions
+
   test "fixture is valid" do
     # Fixture accessor might be broken, finding by user and client
     user = User.find_by!(public_id: "one_id")

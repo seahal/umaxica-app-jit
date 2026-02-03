@@ -4,12 +4,12 @@ class UserPurgeJob < ApplicationJob
   queue_as :default
 
   def perform
-    User.where(status_id: "PENDING_DELETION")
+    User.where(status_id: UserStatus::PENDING_DELETION)
       .where(scheduled_purge_at: ..Time.current)
       .find_each do |user|
-      user.destroy!
-    rescue => e
-      Rails.logger.error("Failed to purge user #{user.id}: #{e.message}")
+        user.destroy!
+      rescue => e
+        Rails.logger.error("Failed to purge user #{user.id}: #{e.message}")
     end
   end
 end

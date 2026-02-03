@@ -26,7 +26,8 @@ require "test_helper"
 
 class ComPreferenceLanguageTest < ActiveSupport::TestCase
   setup do
-    @preference = ComPreference.create!
+    ComPreferenceStatus.find_or_create_by!(id: ComPreferenceStatus::NEYO)
+    @preference = ComPreference.create!(status_id: ComPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,6 +46,6 @@ class ComPreferenceLanguageTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     language = ComPreferenceLanguage.create!(preference: @preference)
-    assert_equal "JA", language.option_id
+    assert_equal ComPreferenceLanguageOption::JA, language.option_id
   end
 end

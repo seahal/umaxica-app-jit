@@ -5,16 +5,18 @@
 # Table name: org_document_statuses
 # Database name: document
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_document_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class OrgDocumentStatus < DocumentRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  ACTIVE = 1
+  ARCHIVED = 2
+  DELETED = 3
+  DRAFT = 4
+  INACTIVE = 5
+  NEYO = 6
+  PENDING = 7
 
   has_many :org_documents,
            foreign_key: :status_id,

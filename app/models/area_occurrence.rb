@@ -12,7 +12,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :bigint           default(0), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
@@ -29,6 +29,8 @@
 class AreaOccurrence < OccurrenceRecord
   include PublicId
   include Occurrence
+
+  attribute :status_id, default: AreaOccurrenceStatus::NEYO
 
   belongs_to :area_occurrence_status, foreign_key: :status_id, optional: true, inverse_of: :area_occurrences
   has_many :area_domain_occurrences, dependent: :destroy, inverse_of: :area_occurrence
@@ -47,5 +49,5 @@ class AreaOccurrence < OccurrenceRecord
   has_many :zip_occurrences, through: :area_zip_occurrences
 
   validates :body, length: { maximum: 255 }
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 end

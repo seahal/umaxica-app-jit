@@ -5,12 +5,7 @@
 # Table name: app_document_statuses
 # Database name: document
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_app_document_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 require "test_helper"
@@ -20,55 +15,30 @@ class AppDocumentStatusTest < ActiveSupport::TestCase
 
   def setup
     @model_class = AppDocumentStatus
-    @valid_id = "ACTIVE"
+    @valid_id = AppDocumentStatus::ACTIVE
     @subject = @model_class.new(id: @valid_id)
-    @status = AppDocumentStatus.find("ACTIVE")
+    @status = AppDocumentStatus.find(AppDocumentStatus::ACTIVE)
   end
 
   test "inherits from DocumentRecord" do
     assert_operator AppDocumentStatus, :<, DocumentRecord
   end
 
-  test "id is required" do
-    status = AppDocumentStatus.new(id: nil)
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id must be unique" do
-    status = AppDocumentStatus.new(id: "ACTIVE")
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id must have maximum length of 255" do
-    status = AppDocumentStatus.new(id: "A" * 256)
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
-  end
-
-  test "id can have maximum length of 255" do
-    long_id = "A" * 255
-    status = AppDocumentStatus.create!(id: long_id)
-
-    assert_predicate status, :valid?
-    assert_equal 255, status.id.length
+  test "id is numeric" do
+    assert_kind_of Integer, @status.id
   end
 
   test "can load draft status from fixtures" do
-    draft = AppDocumentStatus.find("DRAFT")
+    draft = AppDocumentStatus.find(AppDocumentStatus::DRAFT)
 
     assert_not_nil draft
-    assert_equal "DRAFT", draft.id
+    assert_equal AppDocumentStatus::DRAFT, draft.id
   end
 
   test "can load archived status from fixtures" do
-    archived = AppDocumentStatus.find("ARCHIVED")
+    archived = AppDocumentStatus.find(AppDocumentStatus::ARCHIVED)
 
     assert_not_nil archived
-    assert_equal "ARCHIVED", archived.id
+    assert_equal AppDocumentStatus::ARCHIVED, archived.id
   end
 end

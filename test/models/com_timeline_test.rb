@@ -17,7 +17,7 @@
 #  latest_revision_id :bigint
 #  latest_version_id  :bigint
 #  slug_id            :string(32)       default(""), not null
-#  status_id          :bigint           default(0), not null
+#  status_id          :bigint           default(1), not null
 #
 # Indexes
 #
@@ -43,7 +43,7 @@ class ComTimelineTest < ActiveSupport::TestCase
       published_at: 1.hour.ago,
       expires_at: 1.hour.from_now,
       position: 0,
-      status_id: "NEYO",
+      status_id: ComTimelineStatus::NEYO,
     }
   end
 

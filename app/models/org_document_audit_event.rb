@@ -5,18 +5,13 @@
 # Table name: org_document_audit_events
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_document_audit_events_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class OrgDocumentAuditEvent < AuditRecord
-  include CodeIdentifiable
-
   self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  CREATED = 1
 
   has_many :org_document_audits,
            class_name: "OrgDocumentAudit",
@@ -24,5 +19,4 @@ class OrgDocumentAuditEvent < AuditRecord
            primary_key: "id",
            inverse_of: :org_document_audit_event,
            dependent: :restrict_with_error
-  before_validation { self.id = id&.upcase }
 end

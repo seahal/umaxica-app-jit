@@ -4,6 +4,8 @@ require "test_helper"
 require "base64"
 
 class Core::App::Configuration::EmailsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses
+
   setup do
     host! ENV.fetch("CORE_SERVICE_URL", "www.app.localhost")
     @user = users(:one)
@@ -31,6 +33,8 @@ class Core::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
 end
 
 class Core::Org::Configuration::EmailsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :staffs, :staff_statuses
+
   setup do
     host! ENV.fetch("CORE_STAFF_URL", "www.org.localhost")
     @staff = staffs(:one)

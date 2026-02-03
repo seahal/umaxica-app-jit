@@ -7,6 +7,20 @@ module Core
     module Edge
       module V1
         class PreferenceControllerTest < ActionDispatch::IntegrationTest
+          fixtures :com_preferences,
+                   :com_preference_statuses,
+                   :com_preference_audits,
+                   :com_preference_audit_events,
+                   :com_preference_audit_levels,
+                   :com_preference_languages,
+                   :com_preference_language_options,
+                   :com_preference_regions,
+                   :com_preference_region_options,
+                   :com_preference_timezones,
+                   :com_preference_timezone_options,
+                   :com_preference_colorthemes,
+                   :com_preference_colortheme_options
+
           setup do
             @preference = com_preferences(:one)
           end
@@ -50,10 +64,10 @@ module Core
             get core_com_edge_v1_preference_url
             assert_response :success
 
-            audit = ComPreferenceAudit.where(event_id: "CREATE_NEW_PREFERENCE_TOKEN").order(:created_at).last
+            audit = ComPreferenceAudit.where(event_id: ComPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN).order(:created_at).last
             assert_predicate audit, :present?
-            assert_equal "CREATE_NEW_PREFERENCE_TOKEN", audit.event_id
-            assert_equal "INFO", audit.level_id
+            assert_equal ComPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN, audit.event_id
+            assert_equal ComPreferenceAuditLevel::INFO, audit.level_id
             assert_equal "ComPreference", audit.subject_type
           end
 

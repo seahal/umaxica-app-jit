@@ -5,17 +5,16 @@
 # Table name: handle_statuses
 # Database name: avatar
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_handle_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class HandleStatus < AvatarRecord
-  include CodeIdentifiable
-
   self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  INACTIVE = 1
+  PENDING = 2
+  ACTIVE = 3
+  DELETED = 4
+  NEYO = 5
 
   has_many :handles, dependent: :restrict_with_error
 end

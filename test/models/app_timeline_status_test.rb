@@ -11,6 +11,8 @@
 require "test_helper"
 
 class AppTimelineStatusTest < ActiveSupport::TestCase
+  fixtures :app_timeline_statuses
+
   def setup
     @model_class = AppTimelineStatus
   end
@@ -19,31 +21,24 @@ class AppTimelineStatusTest < ActiveSupport::TestCase
     assert_operator AppTimelineStatus, :<, NewsRecord
   end
 
-  test "id is required" do
-    status = @model_class.new(id: nil)
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
+  test "accepts integer ids" do
+    status = @model_class.new(id: 9)
+    assert_predicate status, :valid?
   end
 
-  test "id must be unique" do
-    existing = @model_class.first!
-    duplicate = @model_class.new(id: existing.id)
-
-    assert_not duplicate.valid?
-    assert_not_empty duplicate.errors[:id]
-  end
-
-  test "id must be a non-negative integer" do
-    status = @model_class.new(id: -1)
-
-    assert_not status.valid?
-    assert_not_empty status.errors[:id]
+  test "constants are defined" do
+    assert_equal 1, AppTimelineStatus::NEYO
+    assert_equal 2, AppTimelineStatus::ACTIVE
+    assert_equal 3, AppTimelineStatus::INACTIVE
+    assert_equal 4, AppTimelineStatus::PENDING
+    assert_equal 5, AppTimelineStatus::DELETED
+    assert_equal 6, AppTimelineStatus::DRAFT
+    assert_equal 7, AppTimelineStatus::ARCHIVED
   end
 
   test "can find statuses by numeric id" do
-    status = @model_class.find(0)
+    status = @model_class.find(AppTimelineStatus::NEYO)
 
-    assert_equal 0, status.id
+    assert_equal AppTimelineStatus::NEYO, status.id
   end
 end

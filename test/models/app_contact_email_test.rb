@@ -5,14 +5,23 @@
 # Table name: app_contact_emails
 # Database name: guest
 #
-#  id             :bigint           not null, primary key
-#  code           :citext           not null
-#  app_contact_id :bigint           not null
+#  id                     :bigint           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  token_digest           :string(255)
+#  token_expires_at       :timestamptz
+#  token_viewed           :boolean          default(FALSE), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  app_contact_id         :bigint           not null
 #
 # Indexes
 #
 #  index_app_contact_emails_on_app_contact_id  (app_contact_id)
-#  index_app_contact_emails_on_code            (code) UNIQUE
+#  index_app_contact_emails_on_email_address   (email_address)
 #
 # Foreign Keys
 #
@@ -22,18 +31,28 @@
 require "test_helper"
 
 class AppContactEmailTest < ActiveSupport::TestCase
+  fixtures :app_contact_categories, :app_contact_statuses
+
   setup do
     # Seed necessary reference data for tests
-    %w(APPLICATION_INQUIRY NEYO).each do |id|
-      AppContactCategory.create_with(created_at: Time.current, updated_at: Time.current).find_or_create_by(id: id)
+    [AppContactCategory::APPLICATION_INQUIRY, AppContactCategory::NEYO].each do |id|
+      AppContactCategory.find_or_create_by(id: id)
     end
-    %w(NEYO SET_UP CHECKED_EMAIL_ADDRESS CHECKED_TELEPHONE_NUMBER COMPLETED_CONTACT_ACTION).each do |id|
+    [
+      AppContactStatus::NEYO,
+      AppContactStatus::SET_UP,
+      AppContactStatus::CHECKED_EMAIL_ADDRESS,
+      AppContactStatus::CHECKED_TELEPHONE_NUMBER,
+      AppContactStatus::COMPLETED_CONTACT_ACTION,
+    ].each do |id|
       AppContactStatus.find_or_create_by(id: id)
     end
 
     @app_contact = AppContact.create!(
       public_id: "test_contact_1",
       confirm_policy: "1",
+      category_id: AppContactCategory::APPLICATION_INQUIRY,
+      status_id: AppContactStatus::NEYO,
     )
 
     @email = AppContactEmail.new(

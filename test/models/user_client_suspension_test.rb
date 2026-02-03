@@ -25,6 +25,8 @@
 require "test_helper"
 
 class UserClientSuspensionTest < ActiveSupport::TestCase
+  fixtures :user_client_suspensions
+
   test "fixture is valid" do
     assert_predicate UserClientSuspension.first, :valid?
   end

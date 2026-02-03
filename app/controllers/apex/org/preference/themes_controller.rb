@@ -14,7 +14,7 @@ module Apex
         def update
           set_colortheme_preferences_update
           redirect_to edit_apex_org_preference_theme_url(
-            ct: colortheme_short_code(@preference_colortheme.option_id),
+            ct: colortheme_short_code(option_id_to_colortheme(@preference_colortheme.option_id, preference_prefix)),
           ),
                       notice: t("apex.org.preferences.update_success")
         end

@@ -3,6 +3,8 @@
 require "test_helper"
 
 class AuthenticationFlowTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds
+
   setup do
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
@@ -21,6 +23,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
       UserStatus.find_or_create_by!(id: UserStatus::ACTIVE)
       @user.update!(status_id: UserStatus::ACTIVE, withdrawn_at: nil)
     end
+    UserToken.where(user: @user).delete_all
   end
 
   test "guest can access login page" do
@@ -33,7 +36,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     # Create a token record directly
     token_record = UserToken.create!(
       user: @user,
-      user_token_kind_id: "BROWSER_WEB",
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
     refresh_plain = token_record.rotate_refresh_token!
 
@@ -65,13 +68,13 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     # Ensure master data exists for this test to pass (or fail if missing as expected)
     if UserAuditEvent.respond_to?(:ensure_defaults!)
       UserAuditEvent.ensure_defaults!
-    elsif !UserAuditEvent.exists?(id: "TOKEN_REFRESHED")
-      UserAuditEvent.create!(id: "TOKEN_REFRESHED") rescue nil
+    elsif !UserAuditEvent.exists?(id: UserAuditEvent::TOKEN_REFRESHED)
+      UserAuditEvent.create!(id: UserAuditEvent::TOKEN_REFRESHED) rescue nil
     end
 
     token_record = UserToken.create!(
       user: @user,
-      user_token_kind_id: "BROWSER_WEB",
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
     refresh_plain = token_record.rotate_refresh_token!
 
@@ -85,8 +88,14 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     assert_response :redirect
 
     # Check audit using subject fields
-    assert UserAudit.exists?(event_id: "TOKEN_REFRESHED", subject_id: @user.id.to_s, subject_type: "User"),
-           "TOKEN_REFRESHED audit should be created"
+    assert(
+      UserAudit.exists?(
+        event_id: UserAuditEvent::TOKEN_REFRESHED,
+        subject_id: @user.id.to_s,
+        subject_type: "User",
+      ),
+      "TOKEN_REFRESHED audit should be created",
+    )
   end
 
   test "S1: audit failure does not block authentication (refresh succeeds)" do
@@ -96,7 +105,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     token_record = UserToken.create!(
       user: @user,
-      user_token_kind_id: "BROWSER_WEB",
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
     refresh_plain = token_record.rotate_refresh_token!
 
@@ -140,7 +149,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     token_record = UserToken.create!(
       user: @user,
-      user_token_kind_id: "BROWSER_WEB",
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
     refresh_plain = token_record.rotate_refresh_token!
 
@@ -167,7 +176,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     token_record = UserToken.create!(
       user: inactive_user,
-      user_token_kind_id: "BROWSER_WEB",
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
     refresh_plain = token_record.rotate_refresh_token!
     token_id = token_record.id

@@ -32,7 +32,7 @@ require "test_helper"
 
 class PostTest < ActiveSupport::TestCase
   setup do
-    @capability = AvatarCapability.find_or_create_by!(key: "post_test_cap", name: "Post Test")
+    @capability = AvatarCapability.find_or_create_by!(id: AvatarCapability::NORMAL)
     @handle = Handle.find_or_create_by!(handle: "post_test_handle") { |h| h.cooldown_until = Time.current }
     @avatar =
       Avatar.find_or_create_by!(moniker: "Post Author") do |a|
@@ -40,7 +40,7 @@ class PostTest < ActiveSupport::TestCase
         a.active_handle = @handle
       end
     @status =
-      PostStatus.find_or_create_by!(id: "DRAFT")
+      PostStatus.find_or_create_by!(id: PostStatus::NEYO)
     @valid_attributes = {
       author_avatar: @avatar,
       post_status: @status,
@@ -101,9 +101,9 @@ class PostTest < ActiveSupport::TestCase
     post = Post.create!(@valid_attributes)
     # PostReview might require more fields, assuming basic creation works for now
     # Create status if not exists
-    PostReviewStatus.find_or_create_by!(id: "PENDING") { |s| s.key = "pending"; s.name = "Pending" }
+    PostReviewStatus.find_or_create_by!(id: PostReviewStatus::PENDING)
     PostReview.create!(
-      post: post, reviewer_actor_id: @avatar.id, post_review_status_id: "PENDING",
+      post: post, reviewer_actor_id: @avatar.id, post_review_status_id: PostReviewStatus::PENDING,
       decided_at: Time.current,
     )
 
@@ -149,9 +149,11 @@ class PostTest < ActiveSupport::TestCase
     assert_equal "Latest version", post.latest_version.body
   end
 
-  test "validates length of id" do
-    record = Post.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
+  test "validates id is numeric" do
+    # With bigint ID, length validation is irrelevant
+    # Test that record with explicit id validates with all required fields
+    record = Post.new(@valid_attributes.merge(id: 99))
+    assert_predicate record, :valid?
+    assert_kind_of Integer, record.id
   end
 end

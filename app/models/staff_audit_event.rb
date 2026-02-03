@@ -5,16 +5,18 @@
 # Table name: staff_audit_events
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_staff_audit_events_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class StaffAuditEvent < AuditRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  LOGIN_SUCCESS = 1
+  AUTHORIZATION_FAILED = 2
+  LOGGED_IN = 3
+  LOGGED_OUT = 4
+  LOGIN_FAILED = 5
+  TOKEN_REFRESHED = 6
+  NEYO = 7
 
   # Association with staff_audits
   has_many :staff_audits,

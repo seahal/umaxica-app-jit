@@ -33,6 +33,10 @@ class SocialAuthService
   end
 
   def handle_callback
+    Rails.logger.debug do
+      "[SocialAuth] handle_callback started - intent: #{@intent.inspect}, current_user: #{@current_user&.id}"
+    end
+
     validate_intent! if @intent.present?
     validate_auth_hash!
 
@@ -40,16 +44,31 @@ class SocialAuthService
     uid = extract_uid
     identity_class = SocialIdentifiable.model_for_provider(provider)
 
-    PrincipalRecord.transaction do
-      case @intent
-      when "login", nil
-        handle_login(identity_class, provider, uid)
-      when "link"
-        handle_link(identity_class, provider, uid)
-      when "reauth"
-        handle_reauth(identity_class, provider, uid)
-      end
+    Rails.logger.debug do
+      "[SocialAuth] Extracted - provider: #{provider}, uid: #{uid&.first(8)}***, " \
+        "identity_class: #{identity_class.name}"
     end
+
+    result =
+      PrincipalRecord.transaction do
+        case @intent
+        when "login", nil
+          Rails.logger.debug { "[SocialAuth] Processing login intent" }
+          handle_login(identity_class, provider, uid)
+        when "link"
+          Rails.logger.debug { "[SocialAuth] Processing link intent" }
+          handle_link(identity_class, provider, uid)
+        when "reauth"
+          Rails.logger.debug { "[SocialAuth] Processing reauth intent" }
+          handle_reauth(identity_class, provider, uid)
+        end
+      end
+
+    Rails.logger.debug do
+      "[SocialAuth] handle_callback completed - user_id: #{result[:user]&.id}, " \
+        "identity_id: #{result[:identity]&.id}"
+    end
+    result
   end
 
   def unlink(provider)
@@ -148,7 +167,9 @@ class SocialAuthService
     # Decode JWT without verification (we just need the sub claim)
     # The token has already been verified by omniauth-apple
     payload = JWT.decode(id_token, nil, false).first
-    payload["sub"]
+    uid = payload["sub"]
+    Rails.logger.debug { "[SocialAuth] Extracted uid from id_token: #{uid&.first(8)}***" }
+    uid
   rescue JWT::DecodeError => e
     Rails.logger.warn("[SocialAuth] Failed to decode id_token: #{e.message}")
     nil
@@ -160,25 +181,34 @@ class SocialAuthService
   # - If identity doesn't exist -> create identity and user, sign in
   def handle_login(identity_class, provider, uid)
     identity = identity_class.lock.find_by(uid: uid, provider: provider)
+    Rails.logger.debug { "[SocialAuth] handle_login - identity found: #{identity.present?}" }
 
     if identity
       # Existing identity
       user = identity.user
+      Rails.logger.debug do
+        "[SocialAuth] Existing identity - user_id: #{user&.id}, orphaned: #{user.nil?}"
+      end
+
       unless user
         # Orphaned identity - create user
+        Rails.logger.debug { "[SocialAuth] Creating user for orphaned identity" }
         user = create_user_for_identity(identity, identity_class, provider)
       end
 
       identity.update_from_auth_hash!(@auth_hash)
+      Rails.logger.debug { "[SocialAuth] Identity updated from auth_hash" }
       build_result(user, identity, reauthenticated: false, existing_account: true)
     else
       # New identity - create user and identity
+      Rails.logger.debug { "[SocialAuth] Creating new user and identity" }
       user = User.new(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
       identity = build_identity_for_user(identity_class, user, provider, uid)
 
       user.save!
       identity.save!
       identity.touch_authenticated!
+      Rails.logger.debug { "[SocialAuth] New user created - user_id: #{user.id}" }
 
       build_result(user, identity, reauthenticated: false, existing_account: false)
     end
@@ -201,8 +231,14 @@ class SocialAuthService
   def handle_link(identity_class, provider, uid)
     raise SocialAuth::UnauthorizedError.new("errors.social_auth.not_logged_in") unless @current_user
 
+    Rails.logger.debug { "[SocialAuth] handle_link - current_user_id: #{@current_user.id}" }
+
     # Check if user already has this provider linked
     existing_for_user = identity_for_user(identity_class, provider)
+    Rails.logger.debug do
+      "[SocialAuth] User already has provider: #{existing_for_user.present?}"
+    end
+
     if existing_for_user
       # User already has this provider - update and ensure it's ACTIVE
       existing_for_user.update_from_auth_hash!(@auth_hash)
@@ -217,15 +253,23 @@ class SocialAuthService
         end
 
       existing_for_user.update!(identity_class.status_column => active_status)
+      Rails.logger.debug { "[SocialAuth] Reactivated existing identity" }
       return build_result(@current_user, existing_for_user, reauthenticated: false)
     end
 
     identity = identity_class.lock.find_by(uid: uid, provider: provider)
+    Rails.logger.debug do
+      "[SocialAuth] Identity with uid exists: #{identity.present?}, " \
+        "belongs_to_current_user: #{identity&.user_id == @current_user.id}"
+    end
 
     if identity
       # Identity exists
       if identity.user_id != @current_user.id
         # Belongs to another user - conflict
+        Rails.logger.debug do
+          "[SocialAuth] Conflict - identity belongs to another user: #{identity.user_id}"
+        end
         raise SocialAuth::ConflictError.new(
           "errors.social_auth.linked_to_another_user",
           provider: SocialIdentifiable.normalize_provider(provider),
@@ -233,10 +277,12 @@ class SocialAuthService
       end
 
       # Belongs to current user (shouldn't happen due to unique constraint, but handle it)
+      Rails.logger.debug { "[SocialAuth] Identity already belongs to current user, updating" }
       identity.update_from_auth_hash!(@auth_hash)
       build_result(@current_user, identity, reauthenticated: false)
     else
       # Create new identity for current user
+      Rails.logger.debug { "[SocialAuth] Creating new identity for current user" }
       identity = build_identity_for_user(identity_class, @current_user, provider, uid)
       identity.save!
       identity.touch_authenticated!
@@ -247,6 +293,7 @@ class SocialAuthService
         provider: provider,
       )
 
+      Rails.logger.debug { "[SocialAuth] Successfully linked new identity" }
       build_result(@current_user, identity, reauthenticated: false)
     end
   rescue ActiveRecord::RecordNotUnique => e
@@ -268,9 +315,16 @@ class SocialAuthService
   def handle_reauth(identity_class, provider, uid)
     raise SocialAuth::UnauthorizedError.new("errors.social_auth.not_logged_in") unless @current_user
 
+    Rails.logger.debug { "[SocialAuth] handle_reauth - current_user_id: #{@current_user.id}" }
+
     identity = identity_class.lock.find_by(uid: uid, provider: provider)
+    Rails.logger.debug do
+      "[SocialAuth] Identity found: #{identity.present?}, " \
+        "belongs_to_current_user: #{identity&.user_id == @current_user.id}"
+    end
 
     unless identity && identity.user_id == @current_user.id
+      Rails.logger.debug { "[SocialAuth] Reauth failed - identity mismatch" }
       raise SocialAuth::UnauthorizedError.new(
         "errors.social_auth.reauth_identity_mismatch",
         provider: SocialIdentifiable.normalize_provider(provider),
@@ -280,6 +334,7 @@ class SocialAuthService
     now = Time.current
     identity.update_from_auth_hash!(@auth_hash)
     @current_user.update!(last_reauth_at: now)
+    Rails.logger.debug { "[SocialAuth] Reauth successful - last_reauth_at updated" }
 
     Rails.event.notify(
       "social_auth.reauthenticated",
@@ -352,20 +407,20 @@ class SocialAuthService
     if @current_user.respond_to?(:user_emails)
       # UserEmailStatus uses VERIFIED/VERIFIED_WITH_SIGN_UP, not ACTIVE
       auth_methods_count += @current_user.user_emails.where(
-        user_email_status_id: %w(ACTIVE VERIFIED VERIFIED_WITH_SIGN_UP),
+        user_email_status_id: [UserEmailStatus::VERIFIED, UserEmailStatus::VERIFIED_WITH_SIGN_UP],
       ).count
     end
 
     if @current_user.respond_to?(:user_telephones)
-      auth_methods_count += @current_user.user_telephones.where(user_telephone_status_id: "ACTIVE").count
+      auth_methods_count += @current_user.user_telephones.where(user_telephone_status_id: UserTelephoneStatus::VERIFIED).count
     end
 
     if @current_user.respond_to?(:user_passkeys)
-      auth_methods_count += @current_user.user_passkeys.where(user_passkey_status_id: "ACTIVE").count
+      auth_methods_count += @current_user.user_passkeys.where(user_passkey_status_id: UserPasskeyStatus::ACTIVE).count
     end
 
     if @current_user.respond_to?(:user_secrets)
-      auth_methods_count += @current_user.user_secrets.where(user_secret_status_id: "ACTIVE").count
+      auth_methods_count += @current_user.user_secrets.where(user_secret_status_id: UserSecretStatus::ACTIVE).count
     end
 
     auth_methods_count <= 1

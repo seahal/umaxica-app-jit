@@ -12,7 +12,7 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  public_id      :string(255)      default(""), not null
-#  status_id      :bigint           default(0), not null
+#  status_id      :bigint           default(13), not null
 #
 # Indexes
 #
@@ -31,17 +31,10 @@ class UserTest < ActiveSupport::TestCase
   NIL_UUID = "00000000-0000-0000-0000-000000000000"
 
   def setup
-    UserStatus.find_or_create_by!(id: "NONE")
-    UserTokenStatus.find_or_create_by!(id: "NONE")
-    UserTelephoneStatus.find_or_create_by!(id: "NONE")
-    UserEmailStatus.find_or_create_by!(id: "NONE")
-    UserPasskeyStatus.find_or_create_by!(id: "NONE")
-    UserSecretStatus.find_or_create_by!(id: "NONE")
-    UserSocialAppleStatus.find_or_create_by!(id: "NONE")
-    UserSocialGoogleStatus.find_or_create_by!(id: "NONE")
+
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
-        u.status_id = "NONE"
+        u.status_id = UserStatus::NONE
       end
   end
 
@@ -136,7 +129,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "owned_avatars association" do
-    capability = AvatarCapability.create!(key: "user-owned-#{SecureRandom.hex(4)}", name: "User")
+    capability = AvatarCapability.find_or_create_by!(id: AvatarCapability::NORMAL)
     handle = Handle.create!(
       handle: "owned_handle-#{SecureRandom.hex(4)}",
       cooldown_until: Time.current,

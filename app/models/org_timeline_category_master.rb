@@ -20,6 +20,9 @@
 class OrgTimelineCategoryMaster < NewsRecord
   include Treeable
 
+  # Fixed IDs - do not modify these values
+  NEYO = 1
+
   belongs_to :parent,
              class_name: "OrgTimelineCategoryMaster",
              inverse_of: :children,
@@ -40,10 +43,6 @@ class OrgTimelineCategoryMaster < NewsRecord
   validates :parent_id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   def self.tree_root_parent_value = 0
-
-  def self.tree_root_parent_values
-    [tree_root_parent_value, "NEYO", "none"].uniq
-  end
 
   def name
     I18n.t("org_timeline_categorys.%{id}", id: id)

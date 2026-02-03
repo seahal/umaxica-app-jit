@@ -10,7 +10,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string           not null
-#  status_id    :bigint           default(0), not null
+#  status_id    :bigint           default(2), not null
 #
 # Indexes
 #
@@ -89,7 +89,7 @@ class Staff < OperatorRecord
               with: /\A[abcdefhjklmnpqrtuvwxy23456789]{8}\z/,
               message: :invalid_format,
             }
-  validates :status_id, length: { maximum: 255 }
+  validates :status_id, numericality: { only_integer: true }
 
   before_validation :normalize_public_id
   before_validation :assign_public_id!, on: :create

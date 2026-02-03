@@ -20,7 +20,7 @@
 #  public_id                :string(21)       default(""), not null
 #  refresh_token_family_id  :string
 #  user_id                  :bigint           not null
-#  user_token_kind_id       :bigint           default(0), not null
+#  user_token_kind_id       :bigint           default(11), not null
 #  user_token_status_id     :bigint           default(0), not null
 #
 # Indexes
@@ -46,8 +46,8 @@ require "test_helper"
 # Covers refresh token behavior and session constraints for users.
 class UserTokenTest < ActiveSupport::TestCase
   def setup
-    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: "NEYO")
-    @token = UserToken.create!(user: @user)
+    @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
+    @token = UserToken.create!(user: @user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
   end
 
   test "inherits from TokenRecord" do
@@ -66,10 +66,9 @@ class UserTokenTest < ActiveSupport::TestCase
     assert_equal @user.id, @token.user_id
   end
 
-  test "generates UUID id automatically" do
+  test "assigns numeric id automatically" do
     assert_not_nil @token.id
-    assert_equal 36, @token.id.length
-    assert_match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, @token.id)
+    assert_kind_of Integer, @token.id
   end
 
   test "has created_at timestamp" do
@@ -88,14 +87,14 @@ class UserTokenTest < ActiveSupport::TestCase
   end
 
   test "can load one fixture" do
-    token_one = UserToken.find_by!(public_id: "one_user_token_000001")
+    token_one = UserToken.find_by!(public_id: "651")
 
     assert_not_nil token_one
     assert_not_nil token_one.user_id
   end
 
   test "can load two fixture" do
-    token_two = UserToken.find_by!(public_id: "two_user_token_000001")
+    token_two = UserToken.find_by!(public_id: "615")
 
     assert_not_nil token_two
     assert_not_nil token_two.user_id
@@ -103,7 +102,7 @@ class UserTokenTest < ActiveSupport::TestCase
 
   test "timestamp is set on creation" do
     user = User.create!
-    token = UserToken.create!(user: user)
+    token = UserToken.create!(user: user, user_token_kind_id: UserTokenKind::BROWSER_WEB)
 
     assert_not_nil token.created_at
     assert_not_nil token.updated_at

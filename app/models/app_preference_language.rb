@@ -35,6 +35,6 @@ class AppPreferenceLanguage < PreferenceRecord
   private
 
   def set_option_id
-    self.option_id ||= "JA"
+    self.option_id ||= AppPreferenceLanguageOption::JA
   end
 end

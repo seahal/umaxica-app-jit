@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_02_260000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -44,8 +44,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "area_occurrence_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_area_occurrence_statuses_on_code", unique: true
   end
 
   create_table "area_occurrences", force: :cascade do |t|
@@ -117,8 +115,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "domain_occurrence_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_domain_occurrence_statuses_on_code", unique: true
   end
 
   create_table "domain_occurrences", force: :cascade do |t|
@@ -181,8 +177,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "email_occurrence_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_email_occurrence_statuses_on_code", unique: true
   end
 
   create_table "email_occurrences", force: :cascade do |t|
@@ -236,8 +230,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "ip_occurrence_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_ip_occurrence_statuses_on_code", unique: true
   end
 
   create_table "ip_occurrences", force: :cascade do |t|
@@ -291,8 +283,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "staff_occurrence_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_staff_occurrence_statuses_on_code", unique: true
   end
 
   create_table "staff_occurrences", force: :cascade do |t|
@@ -337,8 +327,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "telephone_occurrence_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_telephone_occurrence_statuses_on_code", unique: true
   end
 
   create_table "telephone_occurrences", force: :cascade do |t|
@@ -374,8 +362,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "user_occurrence_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_occurrence_statuses_on_code", unique: true
   end
 
   create_table "user_occurrences", force: :cascade do |t|
@@ -402,8 +388,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_220000) do
   end
 
   create_table "zip_occurrence_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_zip_occurrence_statuses_on_code", unique: true
   end
 
   create_table "zip_occurrences", force: :cascade do |t|

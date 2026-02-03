@@ -3,52 +3,49 @@
 # Table name: user_audit_events
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
+#  id :bigint           not null, primary key
 #
-# Indexes
-#
-#  index_user_audit_events_on_code  (code) UNIQUE
-#
+none:
+  id: 0
 neyo:
-  code: "NEYO"
+  id: 9
 account_recovered:
-  code: "ACCOUNT_RECOVERED"
+  id: 1
 account_withdrawn:
-  code: "ACCOUNT_WITHDRAWN"
+  id: 2
 authorization_failed:
-  code: "AUTHORIZATION_FAILED"
+  id: 3
 logged_in:
-  code: "LOGGED_IN"
+  id: 4
 logged_out:
-  code: "LOGGED_OUT"
+  id: 5
 login_failed:
-  code: "LOGIN_FAILED"
+  id: 6
 login_success:
-  code: "LOGIN_SUCCESS"
+  id: 7
 logout:
-  code: "LOGOUT"
+  id: 8
 non_existent_event:
-  code: "NON_EXISTENT_EVENT"
+  id: 10
 passkey_registered:
-  code: "PASSKEY_REGISTERED"
+  id: 11
 passkey_removed:
-  code: "PASSKEY_REMOVED"
+  id: 12
 recovery_code_used:
-  code: "RECOVERY_CODE_USED"
+  id: 14
 recovery_codes_generated:
-  code: "RECOVERY_CODES_GENERATED"
+  id: 13
 signed_up_with_apple:
-  code: "SIGNED_UP_WITH_APPLE"
+  id: 15
 signed_up_with_email:
-  code: "SIGNED_UP_WITH_EMAIL"
+  id: 16
 signed_up_with_google:
-  code: "SIGNED_UP_WITH_GOOGLE"
+  id: 17
 signed_up_with_telephone:
-  code: "SIGNED_UP_WITH_TELEPHONE"
+  id: 18
 token_refreshed:
-  code: "TOKEN_REFRESHED"
+  id: 19
 totp_disabled:
-  code: "TOTP_DISABLED"
+  id: 20
 totp_enabled:
-  code: "TOTP_ENABLED"
+  id: 21

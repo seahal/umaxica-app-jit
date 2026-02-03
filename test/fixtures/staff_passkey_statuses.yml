@@ -3,14 +3,9 @@
 # Table name: staff_passkey_statuses
 # Database name: operator
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_staff_passkey_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 active:
-  code: "ACTIVE"
+  id: 1
 revoked:
-  code: "REVOKED"
+  id: 2

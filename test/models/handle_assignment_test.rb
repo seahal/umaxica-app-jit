@@ -35,7 +35,7 @@ require "test_helper"
 class HandleAssignmentTest < ActiveSupport::TestCase
   setup do
     unique_suffix = SecureRandom.hex(4)
-    @capability = AvatarCapability.create!(key: "normal-#{unique_suffix}", name: "Normal")
+    @capability = AvatarCapability.find_or_create_by!(id: AvatarCapability::NORMAL)
     @system_handle = Handle.create!(
       handle: "__unassigned__#{unique_suffix}",
       is_system: true,
@@ -83,11 +83,5 @@ class HandleAssignmentTest < ActiveSupport::TestCase
         valid_from: Time.current,
       )
     end
-  end
-
-  test "validates length of id" do
-    record = HandleAssignment.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
   end
 end

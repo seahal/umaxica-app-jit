@@ -5,21 +5,14 @@
 # Table name: user_one_time_password_statuses
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_one_time_password_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class UserOneTimePasswordStatus < PrincipalRecord
-  include CodeIdentifiable
-
-  NEYO = "NEYO"
-  ACTIVE = "ACTIVE"
-  INACTIVE = "INACTIVE"
-  REVOKED = "REVOKED"
-  DELETED = "DELETED"
+  ACTIVE = 1
+  INACTIVE = 2
+  REVOKED = 3
+  DELETED = 4
+  NEYO = 5
   has_many :user_one_time_passwords, dependent: :restrict_with_error,
                                      inverse_of: :user_one_time_password_status
 end

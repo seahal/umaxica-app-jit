@@ -16,7 +16,7 @@
 #  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
 #  subject_id     :string           not null
@@ -84,7 +84,7 @@ class AppTimelineAuditTest < ActiveSupport::TestCase
     AppTimelineStatus.find_or_create_by!(id: "NEYO")
 
     timeline = AppTimeline.create!(
-      status_id: "NEYO",
+      status_id: AppTimelineStatus::NEYO,
       slug_id: "tl-#{SecureRandom.hex(4)}",
       published_at: Time.current,
       expires_at: 1.year.from_now,

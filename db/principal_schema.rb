@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_03_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -42,8 +42,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "client_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_client_statuses_on_code", unique: true
   end
 
   create_table "clients", force: :cascade do |t|
@@ -163,8 +161,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "user_email_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_email_statuses_on_code", unique: true
   end
 
   create_table "user_emails", force: :cascade do |t|
@@ -189,13 +185,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "user_identity_audit_events", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_identity_audit_events_on_code", unique: true
   end
 
   create_table "user_identity_audit_levels", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_identity_audit_levels_on_code", unique: true
   end
 
   create_table "user_identity_audits", force: :cascade do |t|
@@ -229,8 +221,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "user_one_time_password_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_one_time_password_statuses_on_code", unique: true
   end
 
   create_table "user_one_time_passwords", force: :cascade do |t|
@@ -248,8 +238,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "user_passkey_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_passkey_statuses_on_code", unique: true
   end
 
   create_table "user_passkeys", force: :cascade do |t|
@@ -268,19 +256,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "user_secret_kinds", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_secret_kinds_on_code", unique: true
   end
 
   create_table "user_secret_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_secret_statuses_on_code", unique: true
   end
 
   create_table "user_secrets", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", default: ::Float::INFINITY, null: false
-    t.datetime "last_used_at", default: -::Float::INFINITY, null: false
+    t.datetime "last_used_at"
     t.string "name", default: "", null: false
     t.string "password_digest", default: "", null: false
     t.datetime "updated_at", null: false
@@ -295,8 +279,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "user_social_apple_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_social_apple_statuses_on_code", unique: true
   end
 
   create_table "user_social_apples", force: :cascade do |t|
@@ -318,8 +300,6 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "user_social_google_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_social_google_statuses_on_code", unique: true
   end
 
   create_table "user_social_googles", force: :cascade do |t|
@@ -341,13 +321,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "user_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_statuses_on_code", unique: true
   end
 
   create_table "user_telephone_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_user_telephone_statuses_on_code", unique: true
   end
 
   create_table "user_telephones", force: :cascade do |t|

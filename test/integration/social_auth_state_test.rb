@@ -191,7 +191,7 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
   # ============================================================================
   test "Google callback with valid state succeeds and creates user" do
     uid = "google_success_#{SecureRandom.hex(4)}"
-    setup_google_mock_auth(uid: uid, email: "success@example.com")
+    setup_google_mock_auth(uid: uid)
 
     # Start flow
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
@@ -218,7 +218,7 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
 
   test "Apple callback with valid state succeeds and creates user" do
     uid = "apple_success_#{SecureRandom.hex(4)}"
-    setup_apple_mock_auth(uid: uid, email: "apple_success@example.com")
+    setup_apple_mock_auth(uid: uid)
 
     get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
@@ -242,11 +242,13 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
 
   private
 
-  def setup_google_mock_auth(uid:, email: "test@example.com")
+  # IMPORTANT: Social login authenticates by provider+uid ONLY, NOT email
+  # We deliberately omit email from mock_auth to test this requirement
+  def setup_google_mock_auth(uid:)
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
       provider: "google_oauth2",
       uid: uid,
-      info: { email: email, image: "https://example.com/image.jpg" },
+      info: { image: "https://example.com/image.jpg" },
       credentials: {
         token: "google_token_#{SecureRandom.hex(8)}",
         refresh_token: "refresh_token",
@@ -255,11 +257,11 @@ class SocialAuthStateTest < ActionDispatch::IntegrationTest
     )
   end
 
-  def setup_apple_mock_auth(uid:, email: "apple@example.com")
+  def setup_apple_mock_auth(uid:)
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
       provider: "apple",
       uid: uid,
-      info: { email: email },
+      info: {},
       credentials: {
         token: "apple_token_#{SecureRandom.hex(8)}",
         expires_at: 1.week.from_now.to_i,

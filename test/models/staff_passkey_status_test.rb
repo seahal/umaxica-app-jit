@@ -5,21 +5,20 @@
 # Table name: staff_passkey_statuses
 # Database name: operator
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_staff_passkey_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 require "test_helper"
 
 class StaffPasskeyStatusTest < ActiveSupport::TestCase
   fixtures :staff_passkey_statuses
 
-  test "upcases id before validation" do
-    status = StaffPasskeyStatus.new(id: "custom")
-    status.valid?
-    assert_equal "CUSTOM", status.id
+  test "accepts integer ids" do
+    status = StaffPasskeyStatus.new(id: 9)
+    assert_predicate status, :valid?
+  end
+
+  test "constants are defined" do
+    assert_equal 1, StaffPasskeyStatus::ACTIVE
+    assert_equal 2, StaffPasskeyStatus::REVOKED
   end
 end

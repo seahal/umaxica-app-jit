@@ -9,7 +9,7 @@
 #  updated_at                        :datetime         not null
 #  public_id                         :string(21)       not null
 #  staff_id                          :bigint           not null
-#  staff_one_time_password_status_id :bigint           default(0), not null
+#  staff_one_time_password_status_id :bigint           default(4), not null
 #
 # Indexes
 #
@@ -35,10 +35,11 @@ class StaffOneTimePassword < OperatorRecord
   belongs_to :staff, inverse_of: :staff_one_time_passwords
   belongs_to :staff_one_time_password_status, optional: true
 
-  attribute :staff_one_time_password_status_id, default: "NEYO"
+  attribute :staff_one_time_password_status_id, default: StaffOneTimePasswordStatus::NEYO
+
+  alias_attribute :private_key, :secret_key
 
   validates :private_key, presence: true, length: { maximum: 1024 }
-  validates :last_otp_at, presence: true
   validates :title, length: { maximum: 32 }, allow_blank: true
   validate :enforce_staff_totp_limit, on: :create
 

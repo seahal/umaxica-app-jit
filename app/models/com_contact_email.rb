@@ -5,14 +5,28 @@
 # Table name: com_contact_emails
 # Database name: guest
 #
-#  id             :bigint           not null, primary key
-#  code           :citext           not null
-#  com_contact_id :bigint           not null
+#  id                     :bigint           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  deletable              :boolean          default(FALSE), not null
+#  email_address          :string(1000)     default(""), not null
+#  expires_at             :timestamptz      not null
+#  hotp_counter           :integer
+#  hotp_secret            :string
+#  remaining_views        :integer          default(10), not null
+#  token_digest           :string(255)
+#  token_expires_at       :timestamptz
+#  token_viewed           :boolean          default(FALSE), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  com_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_com_contact_emails_on_code                   (code) UNIQUE
 #  index_com_contact_emails_on_com_contact_id_unique  (com_contact_id) UNIQUE
+#  index_com_contact_emails_on_email_address          (email_address)
 #
 # Foreign Keys
 #
@@ -20,8 +34,6 @@
 #
 
 class ComContactEmail < GuestRecord
-  include CodeIdentifiable
-
   belongs_to :com_contact, inverse_of: :com_contact_email
 
   # Validations
@@ -29,7 +41,7 @@ class ComContactEmail < GuestRecord
   validates :token_digest, length: { maximum: 255 }
   validates :verifier_digest, length: { maximum: 255 }
   validates :com_contact_id, uniqueness: true
-  before_create :generate_id
+
   before_save { self.email_address&.downcase! }
   encrypts :email_address, downcase: true, deterministic: true
 
@@ -37,7 +49,6 @@ class ComContactEmail < GuestRecord
   encrypts :hotp_secret
 
   # Generate and store email verification code
-  # TODO: Rewrite this code to otp generator
   def generate_verifier!
     raw_code = SecureRandom.random_number(100_000..999_999).to_s # 6-digit code
     self.verifier_digest = Argon2::Password.create(raw_code)
@@ -48,11 +59,11 @@ class ComContactEmail < GuestRecord
   end
 
   # Verify the code
-  # TODO: Rewrite this code to otp verifier
   def verify_code(raw_code)
     return false if verifier_attempts_left <= 0
     return false if verifier_expires_at && Time.current >= verifier_expires_at
-    return false unless verifier_digest
+
+    # return false unless verifier_digest # Handled by Argon2 check
 
     if Argon2::Password.verify_password(raw_code.to_s, verifier_digest)
       update!(activated: true, verifier_attempts_left: 0)
@@ -63,12 +74,10 @@ class ComContactEmail < GuestRecord
     end
   end
 
-  # TODO: Rewrite this code to otp verifier
   def verifier_expired?
     verifier_expires_at && Time.current >= verifier_expires_at
   end
 
-  # TODO: Rewrite this code to otp verifier
   def can_resend_verifier?
     !activated && (verifier_expired? || verifier_attempts_left <= 0)
   end
@@ -103,13 +112,5 @@ class ComContactEmail < GuestRecord
       update!(verifier_attempts_left: verifier_attempts_left - 1)
       false
     end
-  end
-
-  private
-
-  # TODO: rewrite this code to be concerned ... how about public_id.rb ?
-  #     : rename to generate_public_id
-  def generate_id
-    self.id ||= Nanoid.generate(size: 21)
   end
 end

@@ -5,17 +5,19 @@
 # Table name: org_preference_audit_events
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_preference_audit_events_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class OrgPreferenceAuditEvent < AuditRecord
-  include CodeIdentifiable
-
   self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  CREATE_NEW_PREFERENCE_TOKEN = 1
+  REFRESH_TOKEN_ROTATED = 2
+  UPDATE_PREFERENCE_COOKIE = 3
+  UPDATE_PREFERENCE_LANGUAGE = 4
+  UPDATE_PREFERENCE_TIMEZONE = 5
+  RESET_BY_USER_DECISION = 6
+  UPDATE_PREFERENCE_REGION = 7
+  UPDATE_PREFERENCE_COLORTHEME = 8
 
   # Placeholder for audit event types; ids are string tokens (e.g., 'CREATED')
   has_many :org_preference_audits,

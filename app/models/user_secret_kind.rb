@@ -5,20 +5,17 @@
 # Table name: user_secret_kinds
 # Database name: principal
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_user_secret_kinds_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 class UserSecretKind < PrincipalRecord
-  include CodeIdentifiable
+  LOGIN = 1
+  TOTP = 2
+  RECOVERY = 3
+  API = 4
+  ALL = [LOGIN, TOTP, RECOVERY, API].freeze
 
-  LOGIN = "LOGIN"
-  TOTP = "TOTP"
-  RECOVERY = "RECOVERY"
-  API = "API"
+  validates :id, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :id, uniqueness: true
 
   has_many :user_secrets, inverse_of: :user_secret_kind, dependent: :restrict_with_exception
 end

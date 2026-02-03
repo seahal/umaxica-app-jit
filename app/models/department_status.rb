@@ -5,16 +5,15 @@
 # Table name: department_statuses
 # Database name: operator
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_department_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class DepartmentStatus < OperatorRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  NEYO = 1
+  ACTIVE = 2
+  INACTIVE = 3
+  DELETED = 4
 
   has_many :departments,
            inverse_of: :department_status,

@@ -14,7 +14,7 @@
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
 #  user_id                              :bigint           not null
-#  user_identity_social_apple_status_id :bigint           default(0), not null
+#  user_identity_social_apple_status_id :bigint           default(1), not null
 #
 # Indexes
 #

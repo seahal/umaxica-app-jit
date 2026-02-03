@@ -7,6 +7,20 @@ module Core
     module Edge
       module V1
         class PreferenceControllerTest < ActionDispatch::IntegrationTest
+          fixtures :org_preferences,
+                   :org_preference_statuses,
+                   :org_preference_audits,
+                   :org_preference_audit_events,
+                   :org_preference_audit_levels,
+                   :org_preference_languages,
+                   :org_preference_language_options,
+                   :org_preference_regions,
+                   :org_preference_region_options,
+                   :org_preference_timezones,
+                   :org_preference_timezone_options,
+                   :org_preference_colorthemes,
+                   :org_preference_colortheme_options
+
           setup do
             @preference = org_preferences(:one)
           end
@@ -50,10 +64,10 @@ module Core
             get core_org_edge_v1_preference_url
             assert_response :success
 
-            audit = OrgPreferenceAudit.where(event_id: "CREATE_NEW_PREFERENCE_TOKEN").order(:created_at).last
+            audit = OrgPreferenceAudit.where(event_id: OrgPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN).order(:created_at).last
             assert_predicate audit, :present?
-            assert_equal "CREATE_NEW_PREFERENCE_TOKEN", audit.event_id
-            assert_equal "INFO", audit.level_id
+            assert_equal OrgPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN, audit.event_id
+            assert_equal OrgPreferenceAuditLevel::INFO, audit.level_id
             assert_equal "OrgPreference", audit.subject_type
           end
 

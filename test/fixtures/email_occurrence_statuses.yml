@@ -3,14 +3,9 @@
 # Table name: email_occurrence_statuses
 # Database name: occurrence
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_email_occurrence_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 neyo:
-  code: "NEYO"
+  id: 2
 active:
-  code: "ACTIVE"
+  id: 1

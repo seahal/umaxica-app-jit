@@ -34,6 +34,8 @@
 require "test_helper"
 
 class ComDocumentVersionTest < ActiveSupport::TestCase
+  fixtures :com_documents, :com_document_statuses
+
   test "includes Version concern" do
     assert_includes ComDocumentVersion.included_modules, Version
   end

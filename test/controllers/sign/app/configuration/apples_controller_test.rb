@@ -5,6 +5,8 @@ require "base64"
 
 module Sign::App::Configuration
   class ApplesControllerTest < ActionDispatch::IntegrationTest
+    fixtures :users, :user_statuses
+
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
       @user = users(:one)

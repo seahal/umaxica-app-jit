@@ -16,9 +16,9 @@
 #  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
-#  level_id       :bigint           default(0), not null
+#  level_id       :bigint           default(1), not null
 #  subject_id     :string           not null
 #
 # Indexes
@@ -41,11 +41,13 @@
 require "test_helper"
 
 class StaffAuditTest < ActiveSupport::TestCase
+  fixtures :staffs, :users, :staff_audit_events, :staff_audit_levels, :staff_statuses, :user_statuses
+
   def setup
     @staff = staffs(:one)
     @actor = users(:none_user)
-    @audit_event = StaffAuditEvent.find("LOGIN_SUCCESS")
-    @audit_level = StaffAuditLevel.find("NEYO")
+    @audit_event = StaffAuditEvent.find(StaffAuditEvent::LOGIN_SUCCESS)
+    @audit_level = StaffAuditLevel.find(StaffAuditLevel::NEYO)
     @audit = StaffAudit.create!(
       staff: @staff,
       staff_audit_event: @audit_event,
@@ -159,8 +161,8 @@ class StaffAuditTest < ActiveSupport::TestCase
       timestamp: Time.current,
     )
 
-    assert_equal "NEYO", audit.level_id
-    assert_equal "NEYO", audit.staff_audit_level.id
+    assert_equal StaffAuditLevel::NEYO, audit.level_id
+    assert_equal StaffAuditLevel::NEYO, audit.staff_audit_level.id
   end
 
   test "sets timestamp on create when missing" do
@@ -192,7 +194,7 @@ class StaffAuditTest < ActiveSupport::TestCase
     audit = StaffAudit.new(
       staff: @staff,
       staff_audit_level: @audit_level,
-      event_id: "UNKNOWN_EVENT",
+      event_id: 999_999,
     )
 
     assert_not audit.valid?

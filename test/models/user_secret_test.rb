@@ -7,15 +7,15 @@
 #
 #  id                             :bigint           not null, primary key
 #  expires_at                     :datetime         default(Infinity), not null
-#  last_used_at                   :datetime         default(-Infinity), not null
+#  last_used_at                   :datetime
 #  name                           :string           default(""), not null
 #  password_digest                :string           default(""), not null
 #  uses_remaining                 :integer          default(1), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  user_id                        :bigint           not null
-#  user_identity_secret_status_id :bigint           default(0), not null
-#  user_secret_kind_id            :bigint           default(0), not null
+#  user_identity_secret_status_id :bigint           default(1), not null
+#  user_secret_kind_id            :bigint           default(1), not null
 #
 # Indexes
 #
@@ -36,20 +36,20 @@ require "concurrent"
 
 class UserSecretTest < ActiveSupport::TestCase
   setup do
-    UserStatus.find_or_create_by!(id: "NONE")
+    UserStatus.find_or_create_by!(id: UserStatus::NONE)
     # Also need UserSecretStatus as 'ACTIVE', 'USED', 'EXPIRED' are used in tests
-    UserSecretStatus.find_or_create_by!(id: "ACTIVE")
-    UserSecretStatus.find_or_create_by!(id: "USED")
-    UserSecretStatus.find_or_create_by!(id: "EXPIRED")
+    UserSecretStatus.find_or_create_by!(id: UserSecretStatus::ACTIVE)
+    UserSecretStatus.find_or_create_by!(id: UserSecretStatus::USED)
+    UserSecretStatus.find_or_create_by!(id: UserSecretStatus::EXPIRED)
     # Set up UserSecretKind records
-    UserSecretKind.find_or_create_by!(id: "LOGIN")
-    UserSecretKind.find_or_create_by!(id: "TOTP")
-    UserSecretKind.find_or_create_by!(id: "RECOVERY")
-    UserSecretKind.find_or_create_by!(id: "API")
+    UserSecretKind.find_or_create_by!(id: UserSecretKind::LOGIN)
+    UserSecretKind.find_or_create_by!(id: UserSecretKind::TOTP)
+    UserSecretKind.find_or_create_by!(id: UserSecretKind::RECOVERY)
+    UserSecretKind.find_or_create_by!(id: UserSecretKind::API)
 
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
-        u.status_id = "NONE"
+        u.status_id = UserStatus::NONE
       end
   end
 
@@ -69,7 +69,7 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "issue! returns raw secret and persists a digest" do
-    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, user_secret_kind_id: "LOGIN")
+    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, user_secret_kind_id: UserSecretKind::LOGIN)
 
     assert_predicate record, :persisted?
     assert_predicate raw_secret, :present?
@@ -78,14 +78,14 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "verify_and_consume! decrements uses_remaining" do
-    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 2, user_secret_kind_id: "LOGIN")
+    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 2, user_secret_kind_id: UserSecretKind::LOGIN)
 
     assert record.verify_and_consume!(raw_secret)
     assert_equal 1, record.reload.uses_remaining
   end
 
   test "verify_and_consume! marks used when uses_remaining reaches zero" do
-    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 1, user_secret_kind_id: "LOGIN")
+    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 1, user_secret_kind_id: UserSecretKind::LOGIN)
 
     assert record.verify_and_consume!(raw_secret)
     assert_equal UserSecretStatus::USED, record.reload.user_secret_status_id
@@ -96,7 +96,7 @@ class UserSecretTest < ActiveSupport::TestCase
       name: "API Key",
       user: @user,
       expires_at: 1.minute.ago,
-      user_secret_kind_id: "LOGIN",
+      user_secret_kind_id: UserSecretKind::LOGIN,
     )
 
     assert_not record.verify_and_consume!(raw_secret)
@@ -104,7 +104,7 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "verify_and_consume! only allows one consumer for a single use" do
-    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 1, user_secret_kind_id: "LOGIN")
+    record, raw_secret = UserSecret.issue!(name: "API Key", user: @user, uses: 1, user_secret_kind_id: UserSecretKind::LOGIN)
     gate = Queue.new
 
     futures =
@@ -137,7 +137,7 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "association deletion: destroys when user is destroyed" do
-    record, _raw = UserSecret.issue!(name: "Cleanup Test", user: @user, user_secret_kind_id: "LOGIN")
+    record, _raw = UserSecret.issue!(name: "Cleanup Test", user: @user, user_secret_kind_id: UserSecretKind::LOGIN)
     @user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { record.reload }
   end
@@ -159,10 +159,10 @@ class UserSecretTest < ActiveSupport::TestCase
 
   test "enabled? reflects active status" do
     record = UserSecret.new(user: @user, name: "Key")
-    record.user_secret_status_id = "ACTIVE"
+    record.user_secret_status_id = UserSecretStatus::ACTIVE
     assert_predicate record, :enabled?
 
-    record.user_secret_status_id = "REVOKED"
+    record.user_secret_status_id = UserSecretStatus::REVOKED
     assert_not record.enabled?
   end
 
@@ -178,7 +178,7 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "login_secret? predicate returns true for LOGIN kind" do
-    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: "LOGIN")
+    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: UserSecretKind::LOGIN)
     assert_predicate record, :login_secret?
     assert_not record.totp_secret?
     assert_not record.recovery_secret?
@@ -186,19 +186,19 @@ class UserSecretTest < ActiveSupport::TestCase
   end
 
   test "totp_secret? predicate returns true for TOTP kind" do
-    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: "TOTP")
+    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: UserSecretKind::TOTP)
     assert_predicate record, :totp_secret?
     assert_not record.login_secret?
   end
 
   test "recovery_secret? predicate returns true for RECOVERY kind" do
-    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: "RECOVERY")
+    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: UserSecretKind::RECOVERY)
     assert_predicate record, :recovery_secret?
     assert_not record.login_secret?
   end
 
   test "api_secret? predicate returns true for API kind" do
-    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: "API")
+    record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: UserSecretKind::API)
     assert_predicate record, :api_secret?
     assert_not record.login_secret?
   end
@@ -211,7 +211,7 @@ class UserSecretTest < ActiveSupport::TestCase
       name: "Secret-#{SecureRandom.hex(4)}",
       password: secure_secret,
       password_confirmation: secure_secret,
-      user_secret_kind_id: "LOGIN",
+      user_secret_kind_id: UserSecretKind::LOGIN,
     )
   end
 

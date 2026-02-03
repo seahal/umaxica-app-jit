@@ -17,7 +17,7 @@
 #  updated_at                     :datetime         not null
 #  public_id                      :string(21)       not null
 #  staff_id                       :bigint           not null
-#  staff_identity_email_status_id :bigint           default(0), not null
+#  staff_identity_email_status_id :bigint           default(6), not null
 #
 # Indexes
 #
@@ -96,14 +96,14 @@ class StaffEmailTest < ActiveSupport::TestCase
     assert_equal "staff@example.com", staff_email.address
   end
 
-  test "should generate UUID v7 before creation" do
+  test "should assign numeric id before creation" do
     staff_email = StaffEmail.new(@valid_attributes)
 
     assert_nil staff_email.id
     staff_email.save!
 
     assert_not_nil staff_email.id
-    assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i, staff_email.id)
+    assert_kind_of Integer, staff_email.id
   end
 
   # Encryption tests
@@ -119,7 +119,7 @@ class StaffEmailTest < ActiveSupport::TestCase
     staff_email = StaffEmail.new(@valid_attributes.except(:staff))
     staff_email.valid?
 
-    assert_equal "00000000-0000-0000-0000-000000000000", staff_email.staff_id
+    assert_equal 0, staff_email.staff_id
   end
 
   test "to_param uses public_id" do
@@ -129,7 +129,7 @@ class StaffEmailTest < ActiveSupport::TestCase
   end
 
   test "enforces maximum emails per staff" do
-    staff = Staff.create!(staff_status: StaffStatus.find("NEYO"))
+    staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NEYO))
     StaffEmail::MAX_EMAILS_PER_STAFF.times do |i|
       StaffEmail.create!(
         address: "staff_limit#{i}@example.com",

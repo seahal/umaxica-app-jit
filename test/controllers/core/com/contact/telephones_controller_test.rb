@@ -6,6 +6,8 @@ module Core
   module Com
     module Contact
       class TelephonesControllerTest < ActionDispatch::IntegrationTest
+        fixtures :com_contacts, :com_contact_categories, :com_contact_statuses
+
         setup do
           @contact = com_contacts(:verified_email_complete)
           @contact_telephone = ComContactTelephone.create!(
@@ -34,7 +36,7 @@ module Core
           # Check redirect location if necessary, but response :redirect is good start
 
           @contact.reload
-          assert_equal "CHECKED_TELEPHONE_NUMBER", @contact.status_id
+          assert_equal ComContactStatus::CHECKED_TELEPHONE_NUMBER, @contact.status_id
 
           @contact_telephone.reload
           assert @contact_telephone.activated
@@ -98,7 +100,7 @@ module Core
 
         test "should raise error if contact status is invalid" do
           host! @host
-          @contact.update!(status_id: "NEYO")
+          @contact.update!(status_id: ComContactStatus::NEYO)
 
           assert_raises(StandardError) do
             get new_core_com_contact_telephone_url(contact_id: @contact.public_id)

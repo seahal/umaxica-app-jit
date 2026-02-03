@@ -5,24 +5,18 @@
 # Table name: staff_occurrence_statuses
 # Database name: occurrence
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_staff_occurrence_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class StaffOccurrenceStatus < OccurrenceRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  NEYO = 1
+  ACTIVE = 2
+  INACTIVE = 3
+  DELETED = 4
 
   include OccurrenceStatus
 
-  # Status constants
-  NEYO = "NEYO"
-  ACTIVE = "ACTIVE"
-  INACTIVE = "INACTIVE"
-  BLOCKED = "BLOCKED"
   has_many :staff_occurrences, foreign_key: :status_id, dependent: :restrict_with_error,
                                inverse_of: :staff_occurrence_status
 end

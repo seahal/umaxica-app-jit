@@ -8,6 +8,20 @@ module Core
     module Edge
       module V1
         class PreferenceControllerTest < ActionDispatch::IntegrationTest
+          fixtures :app_preferences,
+                   :app_preference_statuses,
+                   :app_preference_audits,
+                   :app_preference_audit_events,
+                   :app_preference_audit_levels,
+                   :app_preference_languages,
+                   :app_preference_language_options,
+                   :app_preference_regions,
+                   :app_preference_region_options,
+                   :app_preference_timezones,
+                   :app_preference_timezone_options,
+                   :app_preference_colorthemes,
+                   :app_preference_colortheme_options
+
           setup do
             @preference = app_preferences(:one)
           end
@@ -51,10 +65,10 @@ module Core
             get core_app_edge_v1_preference_url
             assert_response :success
 
-            audit = AppPreferenceAudit.where(event_id: "CREATE_NEW_PREFERENCE_TOKEN").order(:created_at).last
+            audit = AppPreferenceAudit.where(event_id: AppPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN).order(:created_at).last
             assert_predicate audit, :present?
-            assert_equal "CREATE_NEW_PREFERENCE_TOKEN", audit.event_id
-            assert_equal "INFO", audit.level_id
+            assert_equal AppPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN, audit.event_id
+            assert_equal AppPreferenceAuditLevel::INFO, audit.level_id
             assert_equal "AppPreference", audit.subject_type
           end
 
@@ -130,7 +144,7 @@ module Core
             legacy_preference =
               AppPreference.create!(
                 public_id: SecureRandom.hex(10),
-                status_id: "NEYO",
+                status_id: AppPreferenceStatus::NEYO,
                 expires_at: 1.day.from_now,
                 token_digest: legacy_digest,
                 jti: SecureRandom.uuid,

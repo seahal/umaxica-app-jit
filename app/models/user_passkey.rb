@@ -13,7 +13,7 @@
 #  updated_at             :datetime         not null
 #  external_id            :uuid             not null
 #  user_id                :bigint           not null
-#  user_passkey_status_id :bigint           default(0), not null
+#  user_passkey_status_id :bigint           default(1), not null
 #  webauthn_id            :string           default(""), not null
 #
 # Indexes
@@ -30,17 +30,18 @@
 
 class UserPasskey < PrincipalRecord
   MAX_PASSKEYS_PER_USER = 4
+  attribute :user_passkey_status_id, default: UserPasskeyStatus::ACTIVE
 
   belongs_to :user, inverse_of: :user_passkeys
   belongs_to :user_passkey_status, optional: true
 
-  scope :active, -> { where(user_passkey_status_id: "ACTIVE") }
+  scope :active, -> { where(user_passkey_status_id: UserPasskeyStatus::ACTIVE) }
 
   validates :webauthn_id, presence: true, uniqueness: true
   validates :external_id, presence: true
   validates :public_key, presence: true
   validates :description, presence: true
-  validates :user_passkey_status_id, length: { maximum: 255 }
+  validates :user_passkey_status_id, numericality: { only_integer: true }
   validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validate :enforce_user_passkey_limit, on: :create
 

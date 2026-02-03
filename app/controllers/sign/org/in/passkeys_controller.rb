@@ -47,7 +47,7 @@ module Sign
           staff = find_active_staff(identifier)
           return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) unless staff
 
-          passkeys = staff.staff_passkeys.where(staff_passkey_status_id: "ACTIVE")
+          passkeys = staff.staff_passkeys.where(staff_passkey_status_id: StaffPasskeyStatus::ACTIVE)
           return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) if passkeys.empty?
 
           challenge_id, request_options = generate_challenge_options(passkeys, staff)

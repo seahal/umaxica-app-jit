@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Sign::App::RootsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses
+
   include RootThemeCookieHelper
 
   test "GET / redirects to new registration path" do

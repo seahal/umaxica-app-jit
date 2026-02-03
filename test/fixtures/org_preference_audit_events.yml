@@ -3,34 +3,31 @@
 # Table name: org_preference_audit_events
 # Database name: audit
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_preference_audit_events_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
+none:
+  id: 0
 create_new_preference_token:
-  code: "11 # was 11 # was CREATE_NEW_PREFERENCE_TOKEN"
+  id: 1
 
 refresh_token_rotated:
-  code: "12 # was 12 # was REFRESH_TOKEN_ROTATED"
+  id: 2
 
 update_preference_cookie:
-  code: "13 # was 13 # was UPDATE_PREFERENCE_COOKIE"
+  id: 3
 
 update_preference_language:
-  code: "14 # was 14 # was UPDATE_PREFERENCE_LANGUAGE"
+  id: 4
 
 update_preference_timezone:
-  code: "15 # was 15 # was UPDATE_PREFERENCE_TIMEZONE"
+  id: 5
 
 reset_by_user_decision:
-  code: "16 # was 16 # was RESET_BY_USER_DECISION"
+  id: 6
 
 update_preference_region:
-  code: "17 # was 17 # was UPDATE_PREFERENCE_REGION"
+  id: 7
 
 update_preference_colortheme:
-  code: "18 # was 18 # was UPDATE_PREFERENCE_COLORTHEME"
+  id: 8

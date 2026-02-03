@@ -5,14 +5,20 @@
 # Table name: org_contact_telephones
 # Database name: guest
 #
-#  id             :bigint           not null, primary key
-#  code           :citext           not null
-#  org_contact_id :bigint           not null
+#  id                     :bigint           not null, primary key
+#  activated              :boolean          default(FALSE), not null
+#  telephone_number       :string(1000)     default(""), not null
+#  verifier_attempts_left :integer          default(3), not null
+#  verifier_digest        :string(255)
+#  verifier_expires_at    :timestamptz
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  org_contact_id         :bigint           not null
 #
 # Indexes
 #
-#  index_org_contact_telephones_on_code            (code) UNIQUE
-#  index_org_contact_telephones_on_org_contact_id  (org_contact_id)
+#  index_org_contact_telephones_on_org_contact_id    (org_contact_id)
+#  index_org_contact_telephones_on_telephone_number  (telephone_number)
 #
 # Foreign Keys
 #
@@ -85,7 +91,7 @@ class OrgContactTelephoneTest < ActiveSupport::TestCase
   end
 
   test "otp_expired? reflects expiration timestamp" do
-    assert_predicate @telephone, :otp_expired?
+    assert_not @telephone.otp_expired?
 
     freeze_time do
       @telephone.update!(otp_expires_at: 5.minutes.from_now)

@@ -26,3 +26,12 @@
 #
 #  fk_rails_...  (handle_status_id => handle_statuses.id)
   #
+
+one:
+  handle: "handle_one"
+  public_id: "handle_pk_123"
+  handle_status_id: 3
+  cooldown_until: <%= Time.current %>
+  is_system: false
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

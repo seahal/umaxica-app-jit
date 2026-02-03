@@ -10,6 +10,7 @@ require "test_helper"
 # - Successful link creates identity and associates with current user
 class SocialAuthLinkTest < ActionDispatch::IntegrationTest
   SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
+  fixtures :users, :user_statuses, :user_social_google_statuses, :user_social_apple_statuses
 
   setup do
     OmniAuth.config.test_mode = true
@@ -46,7 +47,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     )
 
     # Setup mock auth with the same uid
-    setup_google_mock_auth(uid: existing_uid, email: "different@example.com")
+    setup_google_mock_auth(uid: existing_uid)
 
     # User two tries to link the same Google account
     # Start link flow as user_two
@@ -84,7 +85,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       user_social_apple_status: user_social_apple_statuses(:active),
     )
 
-    setup_apple_mock_auth(uid: existing_uid, email: "different@apple.com")
+    setup_apple_mock_auth(uid: existing_uid)
 
     # User two starts link flow
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
@@ -123,7 +124,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     # Try to link again (same provider, different uid)
     # Note: This depends on implementation - some update, some reject
-    setup_google_mock_auth(uid: old_uid, email: "updated@example.com")
+    setup_google_mock_auth(uid: old_uid)
 
     get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
@@ -148,7 +149,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
   # ============================================================================
   test "successful Google link creates identity for current user" do
     new_uid = "brand_new_google_#{SecureRandom.hex(4)}"
-    setup_google_mock_auth(uid: new_uid, email: "newlink@example.com")
+    setup_google_mock_auth(uid: new_uid)
 
     identity_count_before = UserSocialGoogle.count
 
@@ -205,7 +206,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     )
 
     # Setup mock auth with the same uid but updated info
-    setup_google_mock_auth(uid: revoked_uid, email: "reactivated@example.com")
+    setup_google_mock_auth(uid: revoked_uid)
 
     # User tries to link again
     get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
@@ -240,7 +241,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
       user_social_apple_status: user_social_apple_statuses(:revoked),
     )
 
-    setup_apple_mock_auth(uid: revoked_uid, email: "reactivated_apple@example.com")
+    setup_apple_mock_auth(uid: revoked_uid)
 
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
@@ -263,11 +264,13 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
   private
 
-  def setup_google_mock_auth(uid:, email: "test@example.com")
+  # IMPORTANT: Social login authenticates by provider+uid ONLY, NOT email
+  # We deliberately omit email from mock_auth to test this requirement
+  def setup_google_mock_auth(uid:)
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
       provider: "google_oauth2",
       uid: uid,
-      info: { email: email, image: "https://example.com/image.jpg" },
+      info: { image: "https://example.com/image.jpg" },
       credentials: {
         token: "google_token_#{SecureRandom.hex(8)}",
         refresh_token: "refresh_token",
@@ -276,11 +279,11 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     )
   end
 
-  def setup_apple_mock_auth(uid:, email: "apple@example.com")
+  def setup_apple_mock_auth(uid:)
     OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
       provider: "apple",
       uid: uid,
-      info: { email: email },
+      info: {},
       credentials: {
         token: "apple_token_#{SecureRandom.hex(8)}",
         expires_at: 1.week.from_now.to_i,

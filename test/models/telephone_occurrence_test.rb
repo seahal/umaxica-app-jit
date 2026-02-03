@@ -12,7 +12,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  public_id  :string(21)       default(""), not null
-#  status_id  :bigint           default(0), not null
+#  status_id  :bigint           default(2), not null
 #
 # Indexes
 #
@@ -29,6 +29,8 @@
 require "test_helper"
 
 class TelephoneOccurrenceTest < ActiveSupport::TestCase
+  fixtures :telephone_occurrences, :telephone_occurrence_statuses
+
   test "public_id length" do
     record = build_occurrence(TelephoneOccurrence, body: "+819012345678", public_id: "A" * 20)
 
@@ -134,7 +136,7 @@ class TelephoneOccurrenceTest < ActiveSupport::TestCase
     TelephoneOccurrence.create!(
       body: "+819012345678",
       public_id: "tel_norm_unique_00001",
-      status_id: "NEYO",
+      status_id: TelephoneOccurrenceStatus::NEYO,
     )
 
     # Try to create duplicate with different formatting

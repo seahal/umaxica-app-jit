@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_02_260000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -26,9 +26,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "app_document_category_masters", force: :cascade do |t|
-    t.citext "code", null: false
     t.bigint "parent_id", null: false
-    t.index ["code"], name: "index_app_document_category_masters_on_code", unique: true
     t.index ["parent_id"], name: "index_app_document_category_masters_on_parent_id"
   end
 
@@ -52,14 +50,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "app_document_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_app_document_statuses_on_code", unique: true
   end
 
   create_table "app_document_tag_masters", force: :cascade do |t|
-    t.citext "code", null: false
     t.bigint "parent_id", null: false
-    t.index ["code"], name: "index_app_document_tag_masters_on_code", unique: true
     t.index ["parent_id"], name: "index_app_document_tag_masters_on_parent_id"
   end
 
@@ -127,9 +121,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "com_document_category_masters", force: :cascade do |t|
-    t.citext "code", null: false
     t.bigint "parent_id", null: false
-    t.index ["code"], name: "index_com_document_category_masters_on_code", unique: true
     t.index ["parent_id"], name: "index_com_document_category_masters_on_parent_id"
   end
 
@@ -153,14 +145,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "com_document_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_com_document_statuses_on_code", unique: true
   end
 
   create_table "com_document_tag_masters", force: :cascade do |t|
-    t.citext "code", null: false
     t.bigint "parent_id", null: false
-    t.index ["code"], name: "index_com_document_tag_masters_on_code", unique: true
     t.index ["parent_id"], name: "index_com_document_tag_masters_on_parent_id"
   end
 
@@ -228,9 +216,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "org_document_category_masters", force: :cascade do |t|
-    t.citext "code", null: false
     t.bigint "parent_id", null: false
-    t.index ["code"], name: "index_org_document_category_masters_on_code", unique: true
     t.index ["parent_id"], name: "index_org_document_category_masters_on_parent_id"
   end
 
@@ -254,14 +240,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250000) do
   end
 
   create_table "org_document_statuses", force: :cascade do |t|
-    t.citext "code", null: false
-    t.index ["code"], name: "index_org_document_statuses_on_code", unique: true
   end
 
   create_table "org_document_tag_masters", force: :cascade do |t|
-    t.citext "code", null: false
     t.bigint "parent_id", null: false
-    t.index ["code"], name: "index_org_document_tag_masters_on_code", unique: true
     t.index ["parent_id"], name: "index_org_document_tag_masters_on_parent_id"
   end
 

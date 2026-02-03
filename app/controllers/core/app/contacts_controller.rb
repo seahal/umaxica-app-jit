@@ -55,7 +55,7 @@ module Core
 
         if @contact.save
           # Update status to SET_UP
-          @contact.update!(status_id: "SET_UP")
+          @contact.update!(status_id: AppContactStatus::SET_UP)
 
           # Generate HOTP and save to email record
           token = @email.generate_hotp!

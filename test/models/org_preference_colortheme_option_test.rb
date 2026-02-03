@@ -3,12 +3,7 @@
 # Table name: org_preference_colortheme_options
 # Database name: preference
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_org_preference_colortheme_options_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
@@ -16,20 +11,24 @@
 require "test_helper"
 
 class OrgPreferenceColorthemeOptionTest < ActiveSupport::TestCase
+  setup do
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NEYO)
+  end
+
   test "can be created" do
-    option = OrgPreferenceColorthemeOption.create!(id: "TEST_ORG_COLORTHEME")
+    option = OrgPreferenceColorthemeOption.create!(id: 99)
     assert_not_nil option.id
   end
 
   test "has many org_preference_colorthemes" do
-    option = OrgPreferenceColorthemeOption.create!(id: "TEST_ORG_COLORTHEME")
+    option = OrgPreferenceColorthemeOption.create!(id: 99)
     preference = OrgPreference.create!
     colortheme = OrgPreferenceColortheme.create!(preference: preference, option: option)
     assert_includes option.org_preference_colorthemes, colortheme
   end
 
   test "restricts deletion when associated records exist" do
-    option = OrgPreferenceColorthemeOption.create!(id: "TEST_ORG_COLORTHEME")
+    option = OrgPreferenceColorthemeOption.create!(id: 99)
     preference = OrgPreference.create!
     OrgPreferenceColortheme.create!(preference: preference, option: option)
 
@@ -38,18 +37,8 @@ class OrgPreferenceColorthemeOptionTest < ActiveSupport::TestCase
     end
   end
 
-  test "validates id format" do
-    option = OrgPreferenceColorthemeOption.new(id: "invalid-id")
-    assert_not option.valid?
-    assert_not_empty option.errors[:id]
-
-    option.id = "VALID_ID"
+  test "accepts integer ids" do
+    option = OrgPreferenceColorthemeOption.new(id: 123)
     assert_predicate option, :valid?
-  end
-
-  test "validates length of id" do
-    record = OrgPreferenceColorthemeOption.new(id: "A" * 256)
-    assert_predicate record, :invalid?
-    assert_predicate record.errors[:id], :any?
   end
 end

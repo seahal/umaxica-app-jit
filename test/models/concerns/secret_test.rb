@@ -6,6 +6,12 @@ class SecretTest < ActiveSupport::TestCase
   class SecretStatus
     attr_reader :id
 
+    ACTIVE = 1
+    USED = 2
+    REVOKED = 3
+    EXPIRED = 4
+    DELETED = 5
+
     def self.find(id)
       new(id)
     end
@@ -26,7 +32,7 @@ class SecretTest < ActiveSupport::TestCase
     attribute :uses_remaining, :integer
     attribute :expires_at, :datetime
     attribute :last_used_at, :datetime
-    attribute :secret_status_id, :string
+    attribute :secret_status_id, :integer
     attribute :password_digest, :string
 
     # We need to include Secret LAST so it can override/use methods

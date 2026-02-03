@@ -3,18 +3,15 @@
 # Table name: app_preference_statuses
 # Database name: preference
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_app_preference_statuses_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 # frozen_string_literal: true
 
 class AppPreferenceStatus < PreferenceRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  DELETED = 1
+  NEYO = 2
 
   has_many :app_preferences,
            class_name: "AppPreference",
@@ -22,5 +19,5 @@ class AppPreferenceStatus < PreferenceRecord
            primary_key: "id",
            inverse_of: :app_preference_status,
            dependent: :restrict_with_error
-  scope :ordered, -> { order(:position, :id) }
+  scope :ordered, -> { order(:id) }
 end

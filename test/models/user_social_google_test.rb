@@ -16,7 +16,7 @@
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
 #  user_id                               :bigint           not null
-#  user_identity_social_google_status_id :bigint           default(0), not null
+#  user_identity_social_google_status_id :bigint           default(1), not null
 #
 # Indexes
 #
@@ -44,7 +44,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
       uid: "uid-1",
       token: "token-1",
       expires_at: 1.week.from_now.to_i,
-      user_social_google_status: UserSocialGoogleStatus.find("ACTIVE"),
+      user_social_google_status: UserSocialGoogleStatus.find(UserSocialGoogleStatus::ACTIVE),
     )
 
     duplicate = UserSocialGoogle.new(
@@ -124,7 +124,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
       uid: "existing-google-uid",
       token: "old-token",
       expires_at: 123,
-      user_social_google_status: UserSocialGoogleStatus.find("ACTIVE"),
+      user_social_google_status: UserSocialGoogleStatus.find(UserSocialGoogleStatus::ACTIVE),
     )
 
     auth = MockAuth.new(
@@ -187,7 +187,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
       uid: "active-google-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_google_status_id: "ACTIVE",
+      user_identity_social_google_status_id: UserSocialGoogleStatus::ACTIVE,
     )
 
     inactive = UserSocialGoogle.create!(
@@ -195,7 +195,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
       uid: "inactive-google-uid",
       token: "token",
       expires_at: 123,
-      user_identity_social_google_status_id: "REVOKED",
+      user_identity_social_google_status_id: UserSocialGoogleStatus::REVOKED,
     )
 
     assert_includes UserSocialGoogle.active, active

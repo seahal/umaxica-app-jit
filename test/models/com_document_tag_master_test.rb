@@ -4,12 +4,10 @@
 # Database name: document
 #
 #  id        :bigint           not null, primary key
-#  code      :citext           not null
 #  parent_id :bigint           not null
 #
 # Indexes
 #
-#  index_com_document_tag_masters_on_code       (code) UNIQUE
 #  index_com_document_tag_masters_on_parent_id  (parent_id)
 #
 # Foreign Keys

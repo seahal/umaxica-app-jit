@@ -11,7 +11,7 @@
 #  client_status_id :bigint           default(0), not null
 #  division_id      :bigint
 #  public_id        :string           not null
-#  status_id        :bigint           default(0), not null
+#  status_id        :bigint           default(5), not null
 #  user_id          :bigint
 #
 # Indexes

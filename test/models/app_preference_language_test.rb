@@ -26,7 +26,8 @@ require "test_helper"
 
 class AppPreferenceLanguageTest < ActiveSupport::TestCase
   setup do
-    @preference = AppPreference.create!
+    AppPreferenceStatus.find_or_create_by!(id: AppPreferenceStatus::NEYO)
+    @preference = AppPreference.create!(status_id: AppPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,7 +46,7 @@ class AppPreferenceLanguageTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     language = AppPreferenceLanguage.create!(preference: @preference)
-    assert_equal "JA", language.option_id
+    assert_equal AppPreferenceLanguageOption::JA, language.option_id
   end
 
   test "validates uniqueness of preference" do

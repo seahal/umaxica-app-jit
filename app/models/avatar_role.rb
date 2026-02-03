@@ -5,18 +5,16 @@
 # Table name: avatar_roles
 # Database name: avatar
 #
-#  id   :bigint           not null, primary key
-#  code :citext           not null
-#
-# Indexes
-#
-#  index_avatar_roles_on_code  (code) UNIQUE
+#  id :bigint           not null, primary key
 #
 
 class AvatarRole < AvatarRecord
-  include CodeIdentifiable
-
   self.record_timestamps = false
+  # Fixed IDs - do not modify these values
+  NEYO = 1
+  VIEWER = 2
+  EDITOR = 3
+  ADMIN = 4
 
   has_many :avatar_role_permissions, dependent: :restrict_with_error
   has_many :avatar_permissions, through: :avatar_role_permissions

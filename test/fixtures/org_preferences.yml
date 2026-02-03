@@ -10,7 +10,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  public_id    :string           not null
-#  status_id    :bigint           default(0), not null
+#  status_id    :bigint           default(2), not null
 #
 # Indexes
 #
@@ -27,12 +27,14 @@
 
 one:
 
-  public_id: 792 # was org_pref_001
+  public_id: 922 # was org_pref_001
+  status_id: 2
   expires_at: <%= 20.years.from_now %>
   token_digest: <%= Digest::SHA256.hexdigest("test_token_001") %>
 
 two:
 
-  public_id: 710 # was org_pref_002
+  public_id: 820 # was org_pref_002
+  status_id: 2
   expires_at: <%= 20.years.from_now %>
   token_digest: <%= Digest::SHA256.hexdigest("test_token_002") %>

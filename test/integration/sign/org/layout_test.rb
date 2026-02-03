@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Sign::Org::LayoutTest < ActionDispatch::IntegrationTest
+  fixtures :staffs, :staff_statuses
+
   def default_headers
     { "Host" => ENV["SIGN_STAFF_URL"] || "sign.org.localhost" }
   end

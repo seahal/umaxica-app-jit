@@ -3,6 +3,8 @@
 require "test_helper"
 
 class AvatarServiceTest < ActiveSupport::TestCase
+  fixtures :avatar_capabilities, :handle_statuses, :handle_assignment_statuses, :avatars, :handles
+
   test "create_with_system_handle! creates avatar, system handle and assignment" do
     capability = avatar_capabilities(:normal)
     handle_status = handle_statuses(:active)

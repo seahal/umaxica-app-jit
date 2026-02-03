@@ -4,12 +4,10 @@
 # Database name: document
 #
 #  id        :bigint           not null, primary key
-#  code      :citext           not null
 #  parent_id :bigint           not null
 #
 # Indexes
 #
-#  index_com_document_category_masters_on_code       (code) UNIQUE
 #  index_com_document_category_masters_on_parent_id  (parent_id)
 #
 # Foreign Keys
@@ -20,7 +18,9 @@
 # frozen_string_literal: true
 
 class ComDocumentCategoryMaster < DocumentRecord
-  include CodeIdentifiable
+  # Fixed IDs - do not modify these values
+  NEYO = 1
+
   include Treeable
 
   belongs_to :parent,
@@ -39,15 +39,17 @@ class ComDocumentCategoryMaster < DocumentRecord
 
   self.primary_key = "id"
 
-  attribute :parent_id, default: "NEYO"
+  attribute :parent_id, default: 0
 
-  validates :parent_id, presence: true, length: { maximum: 255 }
+  validates :parent_id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
+  def self.tree_root_parent_value = 0
 
   def name
     I18n.t("com_document_categorys.%{id}", id: id)
   end
 
   def root?
-    parent_id == "NEYO"
+    parent_id.zero?
   end
 end

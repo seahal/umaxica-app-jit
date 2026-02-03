@@ -3,6 +3,8 @@
 require "test_helper"
 
 class TelephoneConcernTest < ActiveSupport::TestCase
+  fixtures :staffs, :staff_statuses
+
   setup do
     @telephone = StaffTelephone.new(
       number: "+1234567890",

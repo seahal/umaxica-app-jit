@@ -47,7 +47,7 @@ module Sign
           user = find_active_user_by_email(email)
           return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) unless user
 
-          passkeys = user.user_passkeys.where(user_passkey_status_id: "ACTIVE")
+          passkeys = user.user_passkeys.where(user_passkey_status_id: UserPasskeyStatus::ACTIVE)
           return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) if passkeys.empty?
 
           challenge_id, request_options = generate_challenge_options(passkeys, user)

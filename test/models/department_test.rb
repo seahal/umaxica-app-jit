@@ -29,6 +29,8 @@
 require "test_helper"
 
 class DepartmentTest < ActiveSupport::TestCase
+  fixtures :organizations, :organization_statuses, :department_statuses
+
   setup do
     @workspace = organizations(:one)
   end
@@ -36,14 +38,14 @@ class DepartmentTest < ActiveSupport::TestCase
   test "should be valid" do
     department = Department.new(
       name: "Test Dept",
-      department_status_id: "NEYO",
+      department_status_id: DepartmentStatus::NEYO,
       workspace: @workspace,
     )
     assert_predicate department, :valid?, department.errors.full_messages.to_sentence
   end
 
   test "requires name" do
-    department = Department.new(department_status_id: "NEYO")
+    department = Department.new(department_status_id: DepartmentStatus::NEYO)
     assert_not department.valid?
     assert_includes department.errors[:name], "を入力してください"
   end

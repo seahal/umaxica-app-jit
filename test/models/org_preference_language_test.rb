@@ -26,7 +26,8 @@ require "test_helper"
 
 class OrgPreferenceLanguageTest < ActiveSupport::TestCase
   setup do
-    @preference = OrgPreference.create!
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NEYO)
+    @preference = OrgPreference.create!(status_id: OrgPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
@@ -45,6 +46,6 @@ class OrgPreferenceLanguageTest < ActiveSupport::TestCase
 
   test "sets default option_id on create" do
     language = OrgPreferenceLanguage.create!(preference: @preference)
-    assert_equal "JA", language.option_id
+    assert_equal OrgPreferenceLanguageOption::JA, language.option_id
   end
 end

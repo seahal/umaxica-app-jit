@@ -26,7 +26,8 @@ require "test_helper"
 
 class OrgPreferenceCookieTest < ActiveSupport::TestCase
   setup do
-    @preference = OrgPreference.create!
+    OrgPreferenceStatus.find_or_create_by!(id: OrgPreferenceStatus::NEYO)
+    @preference = OrgPreference.create!(status_id: OrgPreferenceStatus::NEYO)
   end
 
   test "belongs to preference" do
