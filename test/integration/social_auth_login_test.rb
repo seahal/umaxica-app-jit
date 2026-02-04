@@ -11,8 +11,6 @@ require "test_helper"
 class SocialAuthLoginTest < ActionDispatch::IntegrationTest
   fixtures :user_statuses, :user_social_google_statuses, :user_social_apple_statuses
 
-  SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
-
   setup do
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -49,10 +47,8 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
         headers: { "Host" => @host }
     assert_response :redirect
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
     # Callback
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: { "Host" => @host }
 
     assert_response :redirect
@@ -84,9 +80,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
         headers: { "Host" => @host }
 
     assert_equal user_count_before, User.count
@@ -105,9 +99,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: { "Host" => @host }
 
     assert_response :redirect
@@ -132,9 +124,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
         headers: { "Host" => @host }
 
     assert_response :redirect
@@ -157,9 +147,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: { "Host" => @host }
 
     assert_response :redirect
@@ -197,9 +185,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
         headers: { "Host" => @host }
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: { "Host" => @host }
 
     identity.reload

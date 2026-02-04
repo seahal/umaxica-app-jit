@@ -27,9 +27,9 @@ module Sign
         end
 
         def create
-          email_params = params.expect(user_email: [:email])
+          email_params = params.expect(user_email: [:address])
 
-          unless initiate_email_verification!(email_params[:email])
+          unless initiate_email_verification!(email_params[:address])
             render :new, status: :unprocessable_content
             return
           end

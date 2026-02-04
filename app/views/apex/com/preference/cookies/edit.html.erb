@@ -8,7 +8,7 @@
     <!-- Stimulus renders the status here. -->
   </div>
 
-  <%= form_with scope: :preference_cookie, url: apex_com_preference_cookie_url, method: :patch, class: "mt-6 space-y-6" do |f| %>
+  <%= form_with model: @preference_cookie, scope: :preference_cookie, url: apex_com_preference_cookie_url, method: :patch, class: "mt-6 space-y-6" do |f| %>
     <div class="space-y-3">
       <div class="flex items-center gap-3">
         <%= check_box_tag :accept_necessary_cookies, "1", true, disabled: true, class: "h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" %>
@@ -17,7 +17,7 @@
 
       <% { functional: 'accept_functional_cookies', performant: 'accept_performance_cookies', targetable: 'accept_targeting_cookies', consented: 'accept_consent_cookies' }.each do |field, label_key| %>
         <div class="flex items-center gap-3">
-          <%= f.check_box field, { checked: @preference_cookie.public_send(field), data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" }, class: "h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" } %>
+          <%= f.check_box field, { data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" }, class: "h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary" } %>
           <%= f.label field, t("apex.com.preference.cookie.edit.#{label_key}"), class: "text-sm font-medium text-slate-700" %>
         </div>
       <% end %>

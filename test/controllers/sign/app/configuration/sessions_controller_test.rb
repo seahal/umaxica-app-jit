@@ -46,4 +46,11 @@ class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::Integra
 
     assert_response :success
   end
+
+  test "should show up link on index page" do
+    get sign_app_configuration_sessions_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp")
+  end
 end

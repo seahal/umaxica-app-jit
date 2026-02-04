@@ -49,12 +49,13 @@ module Sign
             Rails.logger.debug { "[OmniAuth] Validating state" }
             validate_social_auth_state!
 
+            intent = current_social_auth_intent
+
             # Process the callback through service
             # IMPORTANT: Auto-link behavior is handled by overriding current_social_auth_intent
-            Rails.logger.debug { "[OmniAuth] Processing callback with intent: #{current_social_auth_intent}" }
+            Rails.logger.debug { "[OmniAuth] Processing callback with intent: #{intent}" }
             result = process_social_auth_callback
             user = result[:user]
-            intent = current_social_auth_intent
             existing_account = result[:existing_account]
 
             Rails.logger.debug do
@@ -210,8 +211,7 @@ module Sign
         # IMPORTANT: This ensures UserSocialApple/UserSocialGoogle is created and linked to current_user
         # Without this, callback defaults to "login" intent and creates a NEW user instead
         def current_social_auth_intent
-          intent_data = session[SOCIAL_INTENT_SESSION_KEY]
-          explicit_intent = intent_data&.dig("intent")
+          explicit_intent = session[SOCIAL_INTENT_SESSION_KEY]
 
           # If explicit intent is set (via /social/start), use it
           return explicit_intent if explicit_intent.present?

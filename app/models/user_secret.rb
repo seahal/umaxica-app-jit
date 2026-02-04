@@ -13,6 +13,7 @@
 #  uses_remaining                 :integer          default(1), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
+#  public_id                      :string(21)       not null
 #  user_id                        :bigint           not null
 #  user_identity_secret_status_id :bigint           default(1), not null
 #  user_secret_kind_id            :bigint           default(1), not null
@@ -20,6 +21,7 @@
 # Indexes
 #
 #  index_user_secrets_on_expires_at                      (expires_at)
+#  index_user_secrets_on_public_id                       (public_id) UNIQUE
 #  index_user_secrets_on_user_id                         (user_id)
 #  index_user_secrets_on_user_identity_secret_status_id  (user_identity_secret_status_id)
 #  index_user_secrets_on_user_secret_kind_id             (user_secret_kind_id)
@@ -33,6 +35,7 @@
 
 class UserSecret < PrincipalRecord
   alias_attribute :user_secret_status_id, :user_identity_secret_status_id
+  include ::PublicId
   include ::Secret
   include UserSecret::Kinds
 
@@ -74,6 +77,10 @@ class UserSecret < PrincipalRecord
 
   def enabled?
     active?
+  end
+
+  def to_param
+    public_id
   end
 
   private

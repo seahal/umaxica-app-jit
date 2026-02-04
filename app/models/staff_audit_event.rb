@@ -17,6 +17,9 @@ class StaffAuditEvent < AuditRecord
   LOGIN_FAILED = 5
   TOKEN_REFRESHED = 6
   NEYO = 7
+  STAFF_SECRET_CREATED = 8
+  STAFF_SECRET_REMOVED = 9
+  STAFF_SECRET_UPDATED = 10
 
   # Association with staff_audits
   has_many :staff_audits,

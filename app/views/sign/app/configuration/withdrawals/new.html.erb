@@ -1,8 +1,3 @@
-<%= render "shared/page_header",
-           title: t("sign.app.configuration.withdrawal.new.title"),
-           description: t("sign.app.configuration.withdrawal.new.description"),
-           up_to: sign_app_configuration_path %>
-
 <%= form_with url: sign_app_configuration_withdrawal_path, method: :post, local: true do |f| %>
   <div>
     <%= f.check_box :confirm_create_recovery_code %>

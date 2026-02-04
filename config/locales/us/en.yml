@@ -55,6 +55,16 @@ en:
       title_suffix: "(app)"
       header:
         sign: "Sign"
+      reauth:
+        index:
+          title: "Re-authentication Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
       layout:
         nav:
           sign_up: "Sign Up"
@@ -1100,6 +1110,17 @@ en:
             accept_targeting_cookies: "Allow targeting cookies"
             accept_consent_cookies: "Allow consent cookies"
   sign:
+    app:
+      reauth:
+        index:
+          title: "Re-authentication Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
     org:
       root:
         registration: "Sign Up"

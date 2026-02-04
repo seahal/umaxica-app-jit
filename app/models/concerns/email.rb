@@ -81,7 +81,9 @@ module Email
   end
 
   def locked?
-    is_locked_by_time = locked_at.present? && locked_at != -Float::INFINITY
+    is_locked_by_time = locked_at.present? &&
+      locked_at != -Float::INFINITY &&
+      locked_at != Float::INFINITY
     is_locked_by_attempts = otp_attempts_count >= MAX_OTP_ATTEMPTS
     is_locked_by_time || is_locked_by_attempts
   end

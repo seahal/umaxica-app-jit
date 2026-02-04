@@ -18,6 +18,13 @@ class Sign::App::OutsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_sign_app_in_url(rt: rt, host: @host)
   end
 
+  test "should show up link on edit page" do
+    get edit_sign_app_out_url(ri: "jp"), headers: { "Host" => @host, "X-TEST-CURRENT-USER" => @user.id }
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp")
+  end
+
   test "should destroy raises error without session" do
     delete sign_app_out_url(ri: "jp"), headers: { "Host" => @host }
 

@@ -11,12 +11,14 @@
 #  password_digest                 :string
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
+#  public_id                       :string(21)       not null
 #  staff_id                        :bigint           not null
 #  staff_identity_secret_status_id :bigint           default(1), not null
-#  staff_secret_kind_id            :bigint           default(0), not null
+#  staff_secret_kind_id            :bigint           default(2), not null
 #
 # Indexes
 #
+#  index_staff_secrets_on_public_id                        (public_id) UNIQUE
 #  index_staff_secrets_on_staff_id                         (staff_id)
 #  index_staff_secrets_on_staff_identity_secret_status_id  (staff_identity_secret_status_id)
 #  index_staff_secrets_on_staff_secret_kind_id             (staff_secret_kind_id)
@@ -111,6 +113,49 @@ class StaffSecretTest < ActiveSupport::TestCase
     record = StaffSecret.new(staff: @staff, name: "Key", staff_secret_kind_id: StaffSecretKind::TOTP)
     assert_predicate record, :totp_secret?
     assert_not record.login_secret?
+  end
+
+  test "public_id is automatically generated on create" do
+    record = StaffSecret.create!(
+      staff: @staff,
+      name: "Test Secret",
+      password: secure_secret,
+      staff_secret_kind_id: StaffSecretKind::LOGIN,
+    )
+
+    assert_predicate record.public_id, :present?
+    assert_equal 21, record.public_id.length
+  end
+
+  test "to_param returns public_id" do
+    record = StaffSecret.create!(
+      staff: @staff,
+      name: "Test Secret",
+      password: secure_secret,
+      staff_secret_kind_id: StaffSecretKind::LOGIN,
+    )
+
+    assert_equal record.public_id, record.to_param
+  end
+
+  test "public_id is unique" do
+    record1 = StaffSecret.create!(
+      staff: @staff,
+      name: "Test Secret 1",
+      password: secure_secret,
+      staff_secret_kind_id: StaffSecretKind::LOGIN,
+    )
+
+    record2 = StaffSecret.new(
+      staff: @staff,
+      name: "Test Secret 2",
+      password: secure_secret,
+      staff_secret_kind_id: StaffSecretKind::LOGIN,
+    )
+    record2.public_id = record1.public_id
+
+    assert_not record2.valid?
+    assert_not_empty record2.errors[:public_id]
   end
 
   private

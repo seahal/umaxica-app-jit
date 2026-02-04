@@ -17,7 +17,7 @@ module Sign::App::In::Passkey
       UserEmail.create!(
         user: @user,
         address: "one@example.com",
-        user_identity_email_status_id: UserEmailStatus::VERIFIED,
+        user_email_status_id: UserEmailStatus::VERIFIED,
         otp_attempts_count: 0,
         otp_counter: "0",
         otp_private_key: "secret",

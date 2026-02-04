@@ -4,7 +4,12 @@ require "test_helper"
 require "minitest/mock"
 
 class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds, :user_one_time_password_statuses
+  fixtures :users,
+           :user_statuses,
+           :user_token_statuses,
+           :user_token_kinds,
+           :user_one_time_password_statuses,
+           :app_preference_audit_levels
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -20,6 +25,13 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
     get sign_app_configuration_totps_url(ri: "jp"), headers: @headers
 
     assert_response :success
+  end
+
+  test "should show up link on index page" do
+    get sign_app_configuration_totps_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp")
   end
 
   test "should get new" do

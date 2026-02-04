@@ -18,6 +18,10 @@ module SocialAuthConcern
   extend ActiveSupport::Concern
 
   SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
+  SOCIAL_USER_ID_SESSION_KEY = :social_auth_user_id
+  SOCIAL_STARTED_AT_SESSION_KEY = :social_auth_started_at
+  SOCIAL_FLOW_ID_SESSION_KEY = :social_auth_flow_id
+  SOCIAL_PROVIDER_SESSION_KEY = :social_auth_provider
   STATE_TTL = 5.minutes
   REAUTH_TTL = 10.minutes
 
@@ -29,11 +33,11 @@ module SocialAuthConcern
   end
 
   # Prepare social auth intent before redirecting to OmniAuth provider.
-  # Stores intent, state, and expiration in session.
+  # Stores intent context in session (no custom state; OmniAuth handles OAuth state).
   #
   # @param intent [String] One of: "login", "link", "reauth"
-  # @return [String] The generated state parameter to pass to OmniAuth
-  def prepare_social_auth_intent!(intent)
+  # @return [void]
+  def prepare_social_auth_intent!(intent, provider: nil)
     intent = intent.to_s
     raise SocialAuth::UnauthorizedError.new("errors.social_auth.invalid_intent") unless VALID_INTENTS.include?(intent)
 
@@ -42,81 +46,36 @@ module SocialAuthConcern
       raise SocialAuth::UnauthorizedError.new("errors.social_auth.not_logged_in")
     end
 
-    state = SecureRandom.hex(32)
+    return if intent == "login"
 
-    session[SOCIAL_INTENT_SESSION_KEY] = {
-      "intent" => intent,
-      "state" => state,
-      "expires_at" => STATE_TTL.from_now.iso8601,
-      "user_id" => current_resource&.id,
-    }
-
-    state
+    session[SOCIAL_INTENT_SESSION_KEY] = intent
+    session[SOCIAL_USER_ID_SESSION_KEY] = current_resource&.id
+    session[SOCIAL_STARTED_AT_SESSION_KEY] = Time.current.to_i
+    session[SOCIAL_FLOW_ID_SESSION_KEY] = SecureRandom.hex(16)
+    session[SOCIAL_PROVIDER_SESSION_KEY] = provider
   end
 
-  # Validate the state parameter from OmniAuth callback.
-  # Must be called before processing the callback.
+  # Validate social auth context from session for link/reauth.
+  # OAuth state validation is handled by OmniAuth.
   #
-  # IMPORTANT: State validation is applied to ALL providers including Apple.
-  # Apple Sign In sends state back via POST body, which is extracted via params[:state].
-  #
-  # @raise [SocialAuth::UnauthorizedError] if state is invalid, missing, or expired
+  # @raise [SocialAuth::UnauthorizedError] if context is missing or expired
   def validate_social_auth_state!
-    intent_data = session[SOCIAL_INTENT_SESSION_KEY]
-    return if intent_data.blank?
+    intent = current_social_auth_intent
+    return if intent == "login"
+
+    snapshot_social_auth_context(intent)
 
     provider = omniauth_provider
-    callback_state = extract_callback_state
-    expected_state = intent_data["state"].to_s
-
-    validate_state_presence!(callback_state, provider)
-    validate_state_match!(expected_state, callback_state, provider)
-    validate_state_expiry!(intent_data, provider)
-    validate_user_consistency!(intent_data)
+    validate_intent_presence!(intent, provider)
+    validate_intent_ttl!(provider)
+    validate_user_consistency!(intent)
   end
 
-  def validate_state_presence!(callback_state, provider)
-    return if callback_state.present?
+  def validate_intent_presence!(intent, provider)
+    return if %w(link reauth).include?(intent) && session[SOCIAL_FLOW_ID_SESSION_KEY].present?
 
     Rails.event.notify("social_auth.state_missing", provider: provider)
-    session.delete(SOCIAL_INTENT_SESSION_KEY)
     raise SocialAuth::UnauthorizedError.new("errors.social_auth.state_missing")
-  end
-
-  def validate_state_match!(expected_state, callback_state, provider)
-    if ActiveSupport::SecurityUtils.secure_compare(expected_state, callback_state)
-      return
-    end
-
-    Rails.event.notify(
-      "social_auth.state_mismatch",
-      provider: provider,
-      expected_state_prefix: expected_state.first(8),
-      actual_state_prefix: callback_state.first(8),
-    )
-    session.delete(SOCIAL_INTENT_SESSION_KEY)
-    raise SocialAuth::UnauthorizedError.new("errors.social_auth.state_mismatch")
-  end
-
-  def validate_state_expiry!(intent_data, provider)
-    expires_at = Time.zone.parse(intent_data["expires_at"]) rescue nil
-    return if expires_at && Time.current <= expires_at
-
-    Rails.event.notify(
-      "social_auth.state_expired",
-      provider: provider,
-      expires_at: intent_data["expires_at"],
-    )
-    session.delete(SOCIAL_INTENT_SESSION_KEY)
-    raise SocialAuth::UnauthorizedError.new("errors.social_auth.state_expired")
-  end
-
-  def validate_user_consistency!(intent_data)
-    return unless %w(link reauth).include?(intent_data["intent"])
-
-    if intent_data["user_id"] != current_resource&.id
-      raise SocialAuth::UnauthorizedError.new("errors.social_auth.user_changed")
-    end
   end
 
   # Extract state parameter from callback.
@@ -134,14 +93,20 @@ module SocialAuthConcern
   #
   # @return [String] The intent ("login", "link", or "reauth")
   def current_social_auth_intent
-    intent_data = session[SOCIAL_INTENT_SESSION_KEY]
-    intent_data&.dig("intent") || "login"
+    session[SOCIAL_INTENT_SESSION_KEY] || "login"
   end
 
   # Clear the social auth intent from session.
   # Should be called after successful callback processing.
   def clear_social_auth_intent!
     session.delete(SOCIAL_INTENT_SESSION_KEY)
+    session.delete(SOCIAL_USER_ID_SESSION_KEY)
+    session.delete(SOCIAL_STARTED_AT_SESSION_KEY)
+    session.delete(SOCIAL_FLOW_ID_SESSION_KEY)
+    session.delete(SOCIAL_PROVIDER_SESSION_KEY)
+    @social_auth_intent_snapshot = nil
+    @social_auth_provider_snapshot = nil
+    @social_auth_user = nil
   end
 
   # Require recent re-authentication for sensitive operations.
@@ -174,7 +139,7 @@ module SocialAuthConcern
 
     result = SocialAuthService.handle_callback(
       auth_hash: auth_hash,
-      current_user: current_resource,
+      current_user: social_auth_user,
       intent: intent,
     )
 
@@ -205,13 +170,38 @@ module SocialAuthConcern
   # @param provider [String] e.g., "google_oauth2", "apple"
   # @param state [String] The state parameter
   # @return [String] The authorize path
-  def omniauth_authorize_path(provider, state:)
+  def omniauth_authorize_path(provider, state: nil)
+    return "/auth/#{provider}" if state.blank?
+
     "/auth/#{provider}?state=#{CGI.escape(state)}"
+  end
+
+  # Resolve the user for social auth flows.
+  # - Prefer current_resource (auth cookie/header).
+  # - For link/reauth, fall back to session-stored user_id to survive
+  #   cross-site POST callbacks where auth cookies may be missing.
+  def social_auth_user
+    return current_resource if current_resource.present?
+
+    intent = current_social_auth_intent
+    return nil unless %w(link reauth).include?(intent)
+
+    user_id = session[SOCIAL_USER_ID_SESSION_KEY].presence
+    return nil if user_id.blank?
+
+    @social_auth_user ||=
+      begin
+        klass = respond_to?(:resource_class, true) ? resource_class : User
+        klass.find_by(id: user_id)
+      end
   end
 
   private
 
   def handle_social_auth_error(error)
+    intent = @social_auth_intent_snapshot || current_social_auth_intent
+    provider = @social_auth_provider_snapshot || omniauth_provider
+
     Rails.event.notify(
       "social_auth.error",
       error_class: error.class.name,
@@ -222,15 +212,20 @@ module SocialAuthConcern
     respond_to do |format|
       format.html do
         flash[:alert] = error.message
-        redirect_to social_auth_failure_redirect_path
+        clear_social_auth_intent!
+        redirect_to social_auth_failure_redirect_path_for_intent(intent: intent, provider: provider)
       end
       format.json do
+        clear_social_auth_intent!
         render json: { error: error.message }, status: error.status_code
       end
     end
   end
 
   def handle_record_not_unique(error)
+    intent = @social_auth_intent_snapshot || current_social_auth_intent
+    provider = @social_auth_provider_snapshot || omniauth_provider
+
     Rails.event.notify(
       "social_auth.record_not_unique",
       error_message: error.message,
@@ -239,9 +234,11 @@ module SocialAuthConcern
     respond_to do |format|
       format.html do
         flash[:alert] = I18n.t("errors.social_auth.identity_conflict")
-        redirect_to social_auth_failure_redirect_path
+        clear_social_auth_intent!
+        redirect_to social_auth_failure_redirect_path_for_intent(intent: intent, provider: provider)
       end
       format.json do
+        clear_social_auth_intent!
         render json: { error: I18n.t("errors.social_auth.identity_conflict") }, status: :conflict
       end
     end
@@ -255,5 +252,55 @@ module SocialAuthConcern
   # Override this method to customize the success redirect path
   def social_auth_success_redirect_path
     respond_to?(:sign_app_root_path) ? sign_app_root_path : "/"
+  end
+
+  def validate_intent_ttl!(provider)
+    started_at = session[SOCIAL_STARTED_AT_SESSION_KEY]
+    return if started_at.blank?
+    return if Time.current <= Time.zone.at(started_at.to_i) + STATE_TTL
+
+    Rails.event.notify(
+      "social_auth.intent_expired",
+      provider: provider,
+      started_at: started_at,
+    )
+    raise SocialAuth::UnauthorizedError.new("errors.social_auth.state_expired")
+  end
+
+  def validate_user_consistency!(intent)
+    return unless %w(link reauth).include?(intent)
+
+    intent_user_id = session[SOCIAL_USER_ID_SESSION_KEY].to_s
+    current_id = social_auth_user&.id&.to_s
+
+    if intent_user_id.blank? || current_id.blank? || intent_user_id != current_id
+      raise SocialAuth::UnauthorizedError.new("errors.social_auth.user_changed")
+    end
+  end
+
+  def snapshot_social_auth_context(intent)
+    @social_auth_intent_snapshot ||= intent
+    @social_auth_provider_snapshot ||= omniauth_provider
+  end
+
+  def social_auth_failure_redirect_path_for_intent(intent:, provider:)
+    return social_auth_failure_redirect_path unless %w(link reauth).include?(intent)
+
+    provider_from_path = request.path.to_s.split("/auth/").last&.split("/")&.first
+    provider = provider.presence || session[SOCIAL_PROVIDER_SESSION_KEY] || params[:provider] || provider_from_path
+
+    if provider.to_s == "apple"
+      return sign_app_configuration_apple_path if respond_to?(:sign_app_configuration_apple_path, true)
+      if Rails.application.routes.url_helpers.respond_to?(:sign_app_configuration_apple_path)
+        return Rails.application.routes.url_helpers.sign_app_configuration_apple_path
+      end
+    end
+
+    return sign_app_configuration_path if respond_to?(:sign_app_configuration_path, true)
+    if Rails.application.routes.url_helpers.respond_to?(:sign_app_configuration_path)
+      return Rails.application.routes.url_helpers.sign_app_configuration_path
+    end
+
+    social_auth_failure_redirect_path
   end
 end

@@ -9,8 +9,14 @@ require "test_helper"
 # - Link with duplicate user_id+provider -> 409
 # - Successful link creates identity and associates with current user
 class SocialAuthLinkTest < ActionDispatch::IntegrationTest
-  SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
-  fixtures :users, :user_statuses, :user_social_google_statuses, :user_social_apple_statuses
+  include ActiveSupport::Testing::TimeHelpers
+
+  SOCIAL_FLOW_ID_SESSION_KEY = :social_auth_flow_id
+  fixtures :users,
+           :user_statuses,
+           :user_social_google_statuses,
+           :user_social_apple_statuses,
+           :app_preference_audit_levels
 
   setup do
     OmniAuth.config.test_mode = true
@@ -55,10 +61,8 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user_two, host: @host)
     assert_response :redirect
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
     # Callback should fail with conflict
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: as_user_headers(@user_two, host: @host)
 
     # Should redirect with error (409 manifested as redirect with flash)
@@ -92,10 +96,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user_two, host: @host)
     assert_response :redirect
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
          headers: as_user_headers(@user_two, host: @host)
 
     assert_response :redirect
@@ -104,6 +105,49 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     identity = UserSocialApple.find_by(uid: existing_uid)
     assert_equal @user_one.id, identity.user_id
+  end
+
+  test "link Apple fails when flow context is missing" do
+    setup_apple_mock_auth(uid: "apple_state_mismatch_#{SecureRandom.hex(4)}")
+
+    # Do not call /social/start to simulate missing link context
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: as_user_headers(@user_one, host: @host)
+
+    assert_response :redirect
+    assert_includes(
+      [sign_app_configuration_apple_url(ri: "jp"), sign_app_configuration_url(ri: "jp")],
+      response.location,
+    )
+    follow_redirect!
+    assert_predicate flash[:alert], :present?, "Should have error flash for state mismatch"
+
+    identity = UserSocialApple.find_by(uid: OmniAuth.config.mock_auth[:apple].uid)
+    assert_nil identity, "Identity should not be created on state mismatch"
+  end
+
+  test "link Apple fails when intent TTL exceeded" do
+    setup_apple_mock_auth(uid: "apple_state_expired_#{SecureRandom.hex(4)}")
+
+    get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
+        headers: as_user_headers(@user_one, host: @host)
+    assert_response :redirect
+
+    travel_to 6.minutes.from_now do
+      post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+           headers: as_user_headers(@user_one, host: @host)
+    end
+
+    assert_response :redirect
+    assert_includes(
+      [sign_app_configuration_apple_url(ri: "jp"), sign_app_configuration_url(ri: "jp")],
+      response.location,
+    )
+    follow_redirect!
+    assert_predicate flash[:alert], :present?, "Should have error flash for expired intent"
+
+    identity = UserSocialApple.find_by(uid: OmniAuth.config.mock_auth[:apple].uid)
+    assert_nil identity, "Identity should not be created when intent expired"
   end
 
   # ============================================================================
@@ -129,9 +173,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
     assert_response :redirect
@@ -156,9 +198,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
     assert_response :redirect
@@ -212,9 +252,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "google_oauth2", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
     assert_response :redirect
@@ -246,10 +284,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(@user_one, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
          headers: as_user_headers(@user_one, host: @host)
 
     assert_response :redirect

@@ -76,6 +76,9 @@ class ConvertPreferencePks < ActiveRecord::Migration[8.0]
         t.boolean :targetable, null: false, default: false
         t.boolean :performant, null: false, default: false
         t.boolean :functional, null: false, default: false
+        t.boolean :consented, null: false, default: false
+        t.datetime :consented_at
+        t.uuid :consent_version
         t.index :preference_id, unique: true
       end
     end

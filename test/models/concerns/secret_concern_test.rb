@@ -7,6 +7,7 @@ class SecretConcernTest < ActiveSupport::TestCase
 
   class DummySecret < PrincipalRecord
     self.table_name = "user_secrets"
+    include PublicId
     include Secret
 
     belongs_to :user

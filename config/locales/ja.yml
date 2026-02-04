@@ -1,4 +1,9 @@
 ja:
+  messages:
+    totp_successfully_created: "TOTP の登録が完了しました。"
+    totp_successfully_updated: "TOTP の設定が更新されました。"
+  actions:
+    up: "上へ"
   activerecord:
     errors:
       messages:

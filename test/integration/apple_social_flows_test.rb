@@ -3,9 +3,7 @@
 require "test_helper"
 
 class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
-  SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
-
-  fixtures :users, :user_statuses, :user_social_apple_statuses
+  fixtures :users, :user_statuses, :user_social_apple_statuses, :app_preference_audit_levels
 
   setup do
     OmniAuth.config.test_mode = true
@@ -54,10 +52,7 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(user, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
          headers: as_user_headers(user, host: @host)
 
     assert_response :redirect
@@ -65,6 +60,26 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
     assert_predicate flash[:notice], :present?
 
     identity = UserSocialApple.find_by(uid: "apple_flow_link")
+    assert_not_nil identity
+    assert_equal user.id, identity.user_id
+  end
+
+  test "link succeeds even when auth headers are missing on callback" do
+    user = users(:one)
+    setup_apple_mock_auth(uid: "apple_flow_link_session_only")
+
+    get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
+        headers: as_user_headers(user, host: @host)
+
+    # Simulate Apple POST callback without auth cookies/headers
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: { "Host" => @host }
+
+    assert_response :redirect
+    follow_redirect!
+    assert_predicate flash[:notice], :present?
+
+    identity = UserSocialApple.find_by(uid: "apple_flow_link_session_only")
     assert_not_nil identity
     assert_equal user.id, identity.user_id
   end
@@ -87,10 +102,7 @@ class AppleSocialFlowsTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "link", ri: "jp"),
         headers: as_user_headers(other, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
          headers: as_user_headers(other, host: @host)
 
     assert_response :redirect

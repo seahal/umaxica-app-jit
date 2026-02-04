@@ -228,7 +228,8 @@ module Preference
       theme ||= normalize_colortheme(cookies[LEGACY_THEME_COOKIE_KEY])
       theme ||= normalize_colortheme(preference_payload_value("ct"))
       if theme.blank? && @preferences.present?
-        theme = normalize_colortheme(@preferences.public_send(preference_colortheme_association)&.option_id)
+        option_id = @preferences.public_send(preference_colortheme_association)&.option_id
+        theme = colortheme_short_code(option_id_to_colortheme(option_id, preference_prefix))
       end
       # Rails must not trust this value; use jit_preference_access instead.
       # However, for theme, we allow cookie to override stored preference to support local toggling/anonymous.
@@ -239,39 +240,74 @@ module Preference
       nil
     end
 
-    def create_preference_options(preference)
-      prefix = preference.class.name.gsub("Preference", "")
+    def create_preference_options(preference, params_hash = {})
+      prefix = preference_prefix(preference)
+      option_ids = preference_option_ids(prefix, params_hash)
 
-      timezone_option_class = "#{prefix}PreferenceTimezoneOption".constantize
-      language_option_class = "#{prefix}PreferenceLanguageOption".constantize
-      region_option_class = "#{prefix}PreferenceRegionOption".constantize
-      colortheme_option_class = "#{prefix}PreferenceColorthemeOption".constantize
+      create_preference_cookie(prefix, preference)
+      create_preference_option_records(prefix, preference, option_ids)
+    end
 
+    def preference_option_ids(prefix, params_hash)
+      option_classes = preference_option_classes(prefix)
+
+      {
+        timezone: resolve_option_id_from_param(
+          params_hash[:tz],
+          :timezone,
+          option_classes[:timezone]::ASIA_TOKYO,
+          prefix,
+        ),
+        language: resolve_option_id_from_param(
+          params_hash[:lx],
+          :language,
+          option_classes[:language]::JA,
+          prefix,
+        ),
+        region: resolve_option_id_from_param(
+          params_hash[:ri],
+          :region,
+          option_classes[:region]::JP,
+          prefix,
+        ),
+        colortheme: resolve_option_id_from_param(
+          params_hash[:ct],
+          :colortheme,
+          option_classes[:colortheme]::SYSTEM,
+          prefix,
+        ),
+      }
+    end
+
+    def preference_option_classes(prefix)
+      {
+        timezone: "#{prefix}PreferenceTimezoneOption".constantize,
+        language: "#{prefix}PreferenceLanguageOption".constantize,
+        region: "#{prefix}PreferenceRegionOption".constantize,
+        colortheme: "#{prefix}PreferenceColorthemeOption".constantize,
+      }
+    end
+
+    def create_preference_cookie(prefix, preference)
       "#{prefix}PreferenceCookie".constantize.create!(
         preference_id: preference.id,
         targetable: false,
         performant: false,
         functional: false,
       )
+    end
 
-      "#{prefix}PreferenceTimezone".constantize.create!(
-        preference_id: preference.id,
-        option_id: timezone_option_class::ASIA_TOKYO,
-      )
+    def create_preference_option_records(prefix, preference, option_ids)
+      create_preference_option_record(prefix, preference, "Timezone", option_ids[:timezone])
+      create_preference_option_record(prefix, preference, "Language", option_ids[:language])
+      create_preference_option_record(prefix, preference, "Region", option_ids[:region])
+      create_preference_option_record(prefix, preference, "Colortheme", option_ids[:colortheme])
+    end
 
-      "#{prefix}PreferenceLanguage".constantize.create!(
+    def create_preference_option_record(prefix, preference, suffix, option_id)
+      "#{prefix}Preference#{suffix}".constantize.create!(
         preference_id: preference.id,
-        option_id: language_option_class::JA,
-      )
-
-      "#{prefix}PreferenceRegion".constantize.create!(
-        preference_id: preference.id,
-        option_id: region_option_class::JP,
-      )
-
-      "#{prefix}PreferenceColortheme".constantize.create!(
-        preference_id: preference.id,
-        option_id: colortheme_option_class::SYSTEM,
+        option_id: option_id,
       )
     end
 
@@ -315,6 +351,8 @@ module Preference
       candidates = [
         params[:lx],
         locale_from_region_param(params[:ri]),
+        preference_payload_value("lx"),
+        preference_language_from_record,
         session[:language],
         I18n.default_locale,
       ]
@@ -414,7 +452,9 @@ module Preference
       end
     end
 
-    def preference_prefix
+    def preference_prefix(preference = nil)
+      return preference.class.name.gsub("Preference", "") if preference.present?
+
       @preference_prefix ||= preference_class.name.gsub("Preference", "")
     end
 
@@ -445,7 +485,10 @@ module Preference
       child_class = "#{@preferences.class.name}#{child_type}".constantize
       instance_var = "@preference_#{child_type.downcase}"
 
-      child_record = child_class.find_by(preference_id: @preferences.id)
+      child_record =
+        PreferenceRecord.connected_to(role: :writing) do
+          child_class.find_by(preference_id: @preferences.id)
+        end
 
       if child_record.present?
         instance_variable_set(instance_var, child_record)
@@ -476,6 +519,8 @@ module Preference
           )
 
           if @preferences.present?
+            # Reload to avoid stale association cache when issuing new token.
+            @preferences.reload
             refresh_refresh_token_lifetime(@preferences)
             issue_access_token_from(@preferences)
           end
@@ -483,10 +528,51 @@ module Preference
       end
     end
 
+    def resolve_option_id_from_param(param_value, option_type, default_option_id, prefix)
+      return default_option_id if param_value.blank?
+
+      # Convert param_value to uppercase constant name
+      # For example: "jp" -> "JP", "asia/tokyo" -> "ASIA_TOKYO"
+      const_name = param_value.to_s.upcase.tr("/", "_").tr("-", "_")
+
+      # Special handling for colortheme: normalize first
+      if option_type == :colortheme
+        canonical = canonical_colortheme_option_id(param_value)
+        const_name = canonical.to_s.upcase if canonical.present?
+      end
+
+      option_class_name =
+        case option_type
+        when :colortheme then "#{prefix}PreferenceColorthemeOption"
+        when :language then "#{prefix}PreferenceLanguageOption"
+        when :region then "#{prefix}PreferenceRegionOption"
+        when :timezone then "#{prefix}PreferenceTimezoneOption"
+        end
+
+      return default_option_id if option_class_name.blank?
+
+      begin
+        option_class = option_class_name.constantize
+        if option_class.const_defined?(const_name)
+          option_class.const_get(const_name)
+        else
+          default_option_id
+        end
+      rescue NameError
+        default_option_id
+      end
+    end
+
     def sanitize_option_id(params, option_type: nil)
       params[:option_id] = nil if params[:option_id].blank?
 
       return params if params[:option_id].blank?
+
+      # If option_id is already an integer, use it as-is
+      if params[:option_id].is_a?(Integer) || params[:option_id].to_s.match?(/^\d+$/)
+        params[:option_id] = params[:option_id].to_i
+        return params
+      end
 
       prefix = preference_class.name.gsub("Preference", "")
       option_class_name =
@@ -551,7 +637,9 @@ module Preference
       preference =
         if token_value.present?
           digest = refresh_token_lookup_digest(token_value)
-          preference_class.includes(preference_associations_to_preload).find_by(token_digest: digest) if digest
+          PreferenceRecord.connected_to(role: :writing) do
+            preference_class.includes(preference_associations_to_preload).find_by(token_digest: digest) if digest
+          end
         end
 
       if valid_refresh_preference?(preference)
@@ -571,6 +659,7 @@ module Preference
 
       PreferenceRecord.connected_to(role: :writing) do
         ActiveRecord::Base.transaction do
+          ensure_preference_status_defaults!
           @preferences = preference_class.create!(
             expires_at: expires_at,
             jti: Jit::Security::Jwt::JtiGenerator.generate,
@@ -581,7 +670,7 @@ module Preference
             token_digest: digest_refresh_token(verifier),
           )
 
-          create_preference_options(@preferences)
+          create_preference_options(@preferences, params.slice(:ri, :lx, :tz, :ct))
 
           create_audit_log(
             event_id: "CREATE_NEW_PREFERENCE_TOKEN",
@@ -598,6 +687,13 @@ module Preference
       set_refresh_token_cookie(generated_token, expires_at)
 
       @preferences
+    end
+
+    def ensure_preference_status_defaults!
+      status_class = "#{preference_class.name}Status".safe_constantize
+      return unless status_class&.respond_to?(:ensure_defaults!)
+
+      status_class.ensure_defaults!
     end
 
     def refresh_refresh_token_lifetime(preference)
@@ -831,6 +927,16 @@ module Preference
       return nil if value.blank?
 
       value.start_with?(".") ? value : ".#{value}"
+    end
+
+    def preference_language_from_record
+      return if @preferences.blank?
+
+      association = "#{@preferences.class.name.underscore}_language"
+      option_id = @preferences.public_send(association)&.option_id
+      option_id_to_language(option_id, preference_prefix)
+    rescue NoMethodError
+      nil
     end
   end
 end

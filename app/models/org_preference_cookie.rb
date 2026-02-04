@@ -3,13 +3,16 @@
 # Table name: org_preference_cookies
 # Database name: preference
 #
-#  id            :bigint           not null, primary key
-#  functional    :boolean          default(FALSE), not null
-#  performant    :boolean          default(FALSE), not null
-#  targetable    :boolean          default(FALSE), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  preference_id :bigint           not null
+#  id              :bigint           not null, primary key
+#  consent_version :uuid
+#  consented       :boolean          default(FALSE), not null
+#  consented_at    :datetime
+#  functional      :boolean          default(FALSE), not null
+#  performant      :boolean          default(FALSE), not null
+#  targetable      :boolean          default(FALSE), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  preference_id   :bigint           not null
 #
 # Indexes
 #
@@ -32,11 +35,7 @@ class OrgPreferenceCookie < PreferenceRecord
   validates :targetable, inclusion: { in: [true, false] }
   validates :performant, inclusion: { in: [true, false] }
   validates :functional, inclusion: { in: [true, false] }
-
-  attr_accessor :consented
-
-  alias_method :consented?, :consented
-  # validates :consented, inclusion: { in: [true, false] }
+  validates :consented, inclusion: { in: [true, false] }
 
   private
 
@@ -45,7 +44,6 @@ class OrgPreferenceCookie < PreferenceRecord
 
     self.targetable = false if targetable.nil?
     self.performant = false if performant.nil?
-    self.functional = false if functional.nil?
-    #  self.consented = false if consented.nil?
+    self.consented = false if consented.nil?
   end
 end

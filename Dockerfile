@@ -143,6 +143,8 @@ RUN apt-get update -qq \
     unzip \
     zlib1g-dev \
     graphviz \
+    python3 \
+    python-is-python3 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 
@@ -189,6 +191,8 @@ RUN apt-get update -qq \
     wget \
     zip \
     zsh \
+    socat \
+    netcat-openbsd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/*
 

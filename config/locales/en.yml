@@ -45,6 +45,7 @@ en:
     destroy: "Delete"
     save: "Save"
     back: "Back"
+    up: "Up"
     actions: "Actions"
     connect: "Connect"
     disconnect: "Disconnect"

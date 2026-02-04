@@ -3,13 +3,16 @@
 # Table name: com_preference_cookies
 # Database name: preference
 #
-#  id            :bigint           not null, primary key
-#  functional    :boolean          default(FALSE), not null
-#  performant    :boolean          default(FALSE), not null
-#  targetable    :boolean          default(FALSE), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  preference_id :bigint           not null
+#  id              :bigint           not null, primary key
+#  consent_version :uuid
+#  consented       :boolean          default(FALSE), not null
+#  consented_at    :datetime
+#  functional      :boolean          default(FALSE), not null
+#  performant      :boolean          default(FALSE), not null
+#  targetable      :boolean          default(FALSE), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  preference_id   :bigint           not null
 #
 # Indexes
 #

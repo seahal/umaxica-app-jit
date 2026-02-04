@@ -28,6 +28,13 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     assert_response :success
   end
 
+  test "should show up link on index page" do
+    get sign_app_configuration_telephones_url(ri: "jp"), headers: request_headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp")
+  end
+
   test "should get new" do
     get new_sign_app_configuration_telephone_url(ri: "jp"), headers: request_headers
     assert_response :success

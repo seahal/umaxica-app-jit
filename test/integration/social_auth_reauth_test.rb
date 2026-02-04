@@ -9,7 +9,6 @@ require "test_helper"
 # - Reauth requires existing linked identity
 # - Reauth with wrong identity fails
 class SocialAuthReauthTest < ActionDispatch::IntegrationTest
-  SOCIAL_INTENT_SESSION_KEY = :social_auth_intent
   fixtures :user_statuses, :user_social_google_statuses, :user_social_apple_statuses
 
   setup do
@@ -60,10 +59,8 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user, host: @host)
     assert_response :redirect
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
     # Callback with correct state and matching identity
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect
@@ -103,10 +100,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user, host: @host)
     assert_response :redirect
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         params: { state: valid_state },
          headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect
@@ -141,9 +135,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect
@@ -164,9 +156,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "google_oauth2", intent: "reauth", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
-    valid_state = session[SOCIAL_INTENT_SESSION_KEY]["state"]
-
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp", state: valid_state),
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: as_user_headers(@user, host: @host)
 
     assert_response :redirect

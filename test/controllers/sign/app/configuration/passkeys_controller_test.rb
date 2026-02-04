@@ -140,6 +140,13 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     assert_response :ok
   end
 
+  test "should show up link on index page" do
+    get sign_app_configuration_passkeys_path(ri: "jp"), headers: @headers
+
+    assert_response :ok
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp")
+  end
+
   test "should get new" do
     get new_sign_app_configuration_passkey_path(ri: "jp"), headers: @headers
     assert_response :ok

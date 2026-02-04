@@ -4,26 +4,70 @@ module Sign
   module Org
     module Configuration
       class SecretsController < ApplicationController
+        before_action :authenticate_staff!
+        before_action :set_secret, only: %i(show edit update destroy)
+
+        def index
+          @secrets = current_staff.staff_secrets.order(created_at: :desc)
+        end
+
+        def show
+        end
+
+        def new
+          @secret = current_staff.staff_secrets.new
+          @raw_secret = StaffSecret.generate_raw_secret
+          session[:staff_secret_raw] = @raw_secret
+          @secret.name = @raw_secret.first(4)
+        end
+
+        def edit
+        end
+
+        def create
+          raw_secret = session.delete(:staff_secret_raw)
+          result = StaffSecrets::Create.call(
+            actor: current_staff,
+            staff: current_staff,
+            params: secret_params,
+            raw_secret: raw_secret,
+          )
+
+          flash[:raw_secret] = result.raw_secret
+          redirect_to sign_org_configuration_secrets_path
+        rescue ActiveRecord::RecordInvalid => e
+          @secret = e.record
+          @raw_secret = raw_secret.presence || StaffSecret.generate_raw_secret
+          session[:staff_secret_raw] = @raw_secret
+          render :new, status: :unprocessable_content
+        end
+
+        def update
+          StaffSecrets::Update.call(
+            actor: current_staff,
+            secret: @secret,
+            params: secret_params,
+          )
+
+          redirect_to sign_org_configuration_secrets_path
+        rescue ActiveRecord::RecordInvalid => e
+          @secret = e.record
+          render :edit, status: :unprocessable_content
+        end
+
+        def destroy
+          StaffSecrets::Destroy.call(actor: current_staff, secret: @secret)
+          redirect_to sign_org_configuration_secrets_path, status: :see_other
+        end
+
         private
 
-        def authenticate_identity!
-          authenticate_staff!
+        def set_secret
+          @secret = current_staff.staff_secrets.find_by!(public_id: params[:public_id])
         end
 
-        def secret_scope
-          current_staff.staff_secrets
-        end
-
-        def secret_param_key
-          :staff_secret
-        end
-
-        def secrets_index_path
-          sign_org_configuration_secrets_path
-        end
-
-        def secret_path(secret)
-          sign_org_configuration_secret_path(secret)
+        def secret_params
+          params.fetch(:staff_secret, {}).permit(:name, :enabled)
         end
       end
     end

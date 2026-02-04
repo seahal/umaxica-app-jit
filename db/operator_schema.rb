@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_260000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_03_172000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -211,10 +211,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_260000) do
     t.datetime "last_used_at"
     t.string "name", null: false
     t.string "password_digest"
+    t.string "public_id", limit: 21, null: false
     t.bigint "staff_id", null: false
     t.bigint "staff_identity_secret_status_id", default: 0, null: false
     t.bigint "staff_secret_kind_id", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["public_id"], name: "index_staff_secrets_on_public_id", unique: true
     t.index ["staff_id"], name: "index_staff_secrets_on_staff_id"
     t.index ["staff_identity_secret_status_id"], name: "index_staff_secrets_on_staff_identity_secret_status_id"
     t.index ["staff_secret_kind_id"], name: "index_staff_secrets_on_staff_secret_kind_id"

@@ -36,6 +36,13 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     assert_response :success
   end
 
+  test "should show up link on index page" do
+    get sign_app_configuration_emails_url(ri: "jp"), headers: request_headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp")
+  end
+
   test "should get new" do
     get new_sign_app_configuration_email_url(ri: "jp"), headers: request_headers
     assert_response :success
@@ -86,7 +93,7 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
       post sign_app_configuration_emails_url(ri: "jp"),
            params: {
              user_email: {
-               email: invalid_email,
+               address: invalid_email,
              },
              "cf-turnstile-response": "test",
            },
@@ -107,7 +114,7 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
       post sign_app_configuration_emails_url(ri: "jp"),
            params: {
              user_email: {
-               email: valid_email,
+               address: valid_email,
              },
              "cf-turnstile-response": "test",
            },
@@ -130,7 +137,7 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
       post sign_app_configuration_emails_url(ri: "jp"),
            params: {
              user_email: {
-               email: valid_email,
+               address: valid_email,
              },
              "cf-turnstile-response": "test",
            },

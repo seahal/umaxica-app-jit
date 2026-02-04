@@ -13,6 +13,7 @@
 #  uses_remaining                 :integer          default(1), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
+#  public_id                      :string(21)       not null
 #  user_id                        :bigint           not null
 #  user_identity_secret_status_id :bigint           default(1), not null
 #  user_secret_kind_id            :bigint           default(1), not null
@@ -20,6 +21,7 @@
 # Indexes
 #
 #  index_user_secrets_on_expires_at                      (expires_at)
+#  index_user_secrets_on_public_id                       (public_id) UNIQUE
 #  index_user_secrets_on_user_id                         (user_id)
 #  index_user_secrets_on_user_identity_secret_status_id  (user_identity_secret_status_id)
 #  index_user_secrets_on_user_secret_kind_id             (user_secret_kind_id)
@@ -201,6 +203,49 @@ class UserSecretTest < ActiveSupport::TestCase
     record = UserSecret.new(user: @user, name: "Key", user_secret_kind_id: UserSecretKind::API)
     assert_predicate record, :api_secret?
     assert_not record.login_secret?
+  end
+
+  test "public_id is automatically generated on create" do
+    record = UserSecret.create!(
+      user: @user,
+      name: "Test Secret",
+      password: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    assert_predicate record.public_id, :present?
+    assert_equal 21, record.public_id.length
+  end
+
+  test "to_param returns public_id" do
+    record = UserSecret.create!(
+      user: @user,
+      name: "Test Secret",
+      password: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    assert_equal record.public_id, record.to_param
+  end
+
+  test "public_id is unique" do
+    record1 = UserSecret.create!(
+      user: @user,
+      name: "Test Secret 1",
+      password: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    record2 = UserSecret.new(
+      user: @user,
+      name: "Test Secret 2",
+      password: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+    record2.public_id = record1.public_id
+
+    assert_not record2.valid?
+    assert_not_empty record2.errors[:public_id]
   end
 
   private

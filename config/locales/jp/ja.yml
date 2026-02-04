@@ -972,6 +972,10 @@ ja:
         address: メールアドレス
     errors:
       models:
+        staff:
+          attributes:
+            public_id:
+              invalid_format: 英小文字と数字のみ（i, o, 0, 1, s, z, g を除く）で8文字にしてください
         org_document_tagger:
           attributes:
             org_document_tag_id:

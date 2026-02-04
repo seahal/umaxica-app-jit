@@ -46,20 +46,20 @@
           </div>
         </div>
 
-        <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-between items-center">
-          <div>
-            <%= button_to t('actions.delete'),
-                          sign_app_configuration_totp_path(@totp.public_id),
-                          method: :delete,
-                          form: { data: { turbo_confirm: t('messages.confirm_delete_totp') } },
-                          class: "inline-flex justify-center rounded-md border border-transparent bg-red-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" %>
-          </div>
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end items-center">
           <div>
             <%= link_to t('actions.cancel'), sign_app_configuration_totps_path, class: "inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mr-3" %>
             <%= form.submit t('actions.save'), class: "inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
           </div>
         </div>
       <% end %>
+      <div class="mt-4 flex justify-start">
+        <%= button_to t('actions.delete'),
+                      sign_app_configuration_totp_path(@totp.public_id),
+                      method: :delete,
+                      form: { data: { turbo_confirm: t('messages.confirm_delete_totp') } },
+                      class: "inline-flex justify-center rounded-md border border-transparent bg-red-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" %>
+      </div>
     </div>
   </div>
 </div>

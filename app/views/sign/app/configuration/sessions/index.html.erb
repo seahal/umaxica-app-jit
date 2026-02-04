@@ -1,7 +1,5 @@
-<%= render "shared/page_header",
-           title: "Active sessions",
-           description: "Sessions displayed here can be revoked immediately. The session marked with \"current\" is the browser you are using.",
-           up_to: sign_app_configuration_path %>
+          <%= link_to t('sign.app.configuration.show.back'), sign_app_configuration_path, class: "inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+
 
   <% if @sessions.any? %>
     <div class="overflow-x-auto rounded border border-slate-200">

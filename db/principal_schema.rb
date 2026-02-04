@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_03_160000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_04_150845) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -166,7 +166,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_03_160000) do
   create_table "user_emails", force: :cascade do |t|
     t.string "address", default: "", null: false
     t.datetime "created_at", null: false
-    t.datetime "locked_at", default: -::Float::INFINITY, null: false
+    t.datetime "locked_at", default: ::Float::INFINITY, null: false
     t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter", default: "", null: false
     t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
@@ -174,14 +174,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_03_160000) do
     t.string "otp_private_key", default: "", null: false
     t.string "public_id", limit: 21, null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_email_status_id", default: 0, null: false
     t.bigint "user_id", null: false
-    t.bigint "user_identity_email_status_id", default: 0, null: false
     t.binary "verification_token_digest"
     t.index "lower((address)::text)", name: "index_user_identity_emails_on_lower_address", unique: true
     t.index ["otp_last_sent_at"], name: "index_user_emails_on_otp_last_sent_at"
     t.index ["public_id"], name: "index_user_emails_on_public_id", unique: true
+    t.index ["user_email_status_id"], name: "index_user_emails_on_user_email_status_id"
     t.index ["user_id"], name: "index_user_emails_on_user_id"
-    t.index ["user_identity_email_status_id"], name: "index_user_emails_on_user_identity_email_status_id"
   end
 
   create_table "user_identity_audit_events", force: :cascade do |t|
@@ -267,12 +267,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_03_160000) do
     t.datetime "last_used_at"
     t.string "name", default: "", null: false
     t.string "password_digest", default: "", null: false
+    t.string "public_id", limit: 21, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.bigint "user_identity_secret_status_id", default: 0, null: false
     t.bigint "user_secret_kind_id", default: 0, null: false
     t.integer "uses_remaining", default: 1, null: false
     t.index ["expires_at"], name: "index_user_secrets_on_expires_at"
+    t.index ["public_id"], name: "index_user_secrets_on_public_id", unique: true
     t.index ["user_id"], name: "index_user_secrets_on_user_id"
     t.index ["user_identity_secret_status_id"], name: "index_user_secrets_on_user_identity_secret_status_id"
     t.index ["user_secret_kind_id"], name: "index_user_secrets_on_user_secret_kind_id"
@@ -385,7 +387,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_03_160000) do
   add_foreign_key "user_client_suspensions", "users", validate: false
   add_foreign_key "user_clients", "clients", on_delete: :cascade, validate: false
   add_foreign_key "user_clients", "users", on_delete: :cascade, validate: false
-  add_foreign_key "user_emails", "user_email_statuses", column: "user_identity_email_status_id"
+  add_foreign_key "user_emails", "user_email_statuses"
   add_foreign_key "user_emails", "users", validate: false
   add_foreign_key "user_identity_audits", "user_identity_audit_events", column: "event_id", name: "fk_user_identity_audits_on_event_id"
   add_foreign_key "user_identity_audits", "user_identity_audit_levels", column: "level_id", name: "fk_user_identity_audits_on_level_id"

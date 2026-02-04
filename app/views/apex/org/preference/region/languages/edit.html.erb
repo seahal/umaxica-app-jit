@@ -17,6 +17,18 @@
         ) %>
   </p>
 
+  <% selected_language = nil
+     language_options = OrgPreferenceLanguageOption.order(:id).map do |option|
+    label = case option.name
+            when "ja" then t("languages.japanese")
+            when "en" then t("languages.english")
+            else option.name
+            end
+    value = option.name.to_s.upcase
+    selected_language = value if option.id == @preference_language.option_id
+    [label, value]
+  end %>
+
   <%= form_with model: @preference_language, scope: :preference_language, url: apex_org_preference_region_language_path, method: :patch, class: "mt-6 space-y-5" do |f| %>
     <div>
       <%= f.label :option_id,
@@ -27,7 +39,7 @@
                   class: "block text-sm font-semibold text-slate-700" %>
       <div class="mt-1">
         <%= f.select :option_id,
-                     options_for_select([[t("languages.japanese"), 'JA'], [t("languages.english"), 'EN']], @preference_language.option_id),
+                     options_for_select(language_options, selected_language),
                      { class: "block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary" } %>
       </div>
     </div>

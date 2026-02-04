@@ -55,6 +55,16 @@ ja:
     app:
       preferences:
         title: "おこのみせってい"
+      reauth:
+        index:
+          title: "再認証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
     org:
       layout:
         nav:
@@ -1640,6 +1650,16 @@ core:
       apex_preference: "Apexの設定"
   sign:
     app:
+      reauth:
+        index:
+          title: "再認証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
       configuration:
         withdrawal:
           show:

@@ -18,6 +18,13 @@ module Sign::App::Configuration
       assert_response :success
     end
 
+    test "should show up link on show page" do
+      get sign_app_configuration_apple_url(ri: "jp"), headers: @headers
+
+      assert_response :success
+      assert_select "a[href=?]", sign_app_configuration_path(ri: "jp")
+    end
+
     test "should redirect show when not logged in" do
       get sign_app_configuration_apple_url(ri: "jp")
       rt = Base64.strict_encode64(sign_app_configuration_apple_url(ri: "jp"))

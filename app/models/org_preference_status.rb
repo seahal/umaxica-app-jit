@@ -20,4 +20,9 @@ class OrgPreferenceStatus < PreferenceRecord
            inverse_of: :org_preference_status,
            dependent: :restrict_with_error
   scope :ordered, -> { order(:id) }
+
+  def self.ensure_defaults!
+    find_or_create_by!(id: DELETED)
+    find_or_create_by!(id: NEYO)
+  end
 end

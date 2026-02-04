@@ -1,0 +1,99 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
+    StaffStatus.find_or_create_by!(id: StaffStatus::ACTIVE)
+    StaffSecretStatus.find_or_create_by!(id: StaffSecretStatus::ACTIVE)
+    StaffSecretKind.find_or_create_by!(id: StaffSecretKind::LOGIN)
+
+    @staff = Staff.create!(
+      status_id: StaffStatus::ACTIVE,
+    )
+    @staff_secret = StaffSecret.create!(
+      staff: @staff,
+      name: "Test Secret",
+      password_digest: "test_password_digest",
+      last_used_at: Time.zone.now,
+      staff_secret_kind_id: StaffSecret::Kinds::LOGIN,
+    )
+  end
+
+  def authenticated_headers
+    { "X-TEST-CURRENT-STAFF" => @staff.id.to_s }
+  end
+
+  test "should get index" do
+    get sign_org_configuration_secrets_url(ri: "jp"), headers: authenticated_headers
+
+    assert_response :success
+  end
+
+  test "should get show" do
+    get sign_org_configuration_secret_url(@staff_secret, ri: "jp"), headers: authenticated_headers
+
+    assert_response :success
+  end
+
+  test "should get new" do
+    get new_sign_org_configuration_secret_url(ri: "jp"), headers: authenticated_headers
+
+    assert_response :success
+  end
+
+  test "should get edit" do
+    get edit_sign_org_configuration_secret_url(@staff_secret, ri: "jp"), headers: authenticated_headers
+
+    assert_response :success
+  end
+
+  test "should create secret and redirect to index" do
+    assert_difference("StaffSecret.count", 1) do
+      post sign_org_configuration_secrets_url(ri: "jp"),
+           params: { staff_secret: { name: "New Secret", enabled: true } },
+           headers: authenticated_headers
+    end
+
+    assert_redirected_to sign_org_configuration_secrets_url(ri: "jp")
+    assert_predicate flash[:raw_secret], :present?
+  end
+
+  test "should update secret and redirect to index" do
+    patch sign_org_configuration_secret_url(@staff_secret, ri: "jp"),
+          params: { staff_secret: { name: "Updated Secret", enabled: false } },
+          headers: authenticated_headers
+
+    assert_redirected_to sign_org_configuration_secrets_url(ri: "jp")
+    @staff_secret.reload
+    assert_equal "Updated Secret", @staff_secret.name
+  end
+
+  test "should get destroy" do
+    delete sign_org_configuration_secret_url(@staff_secret, ri: "jp"), headers: authenticated_headers
+
+    assert_response :unprocessable_content
+  end
+
+  test "URL uses public_id not numeric ID" do
+    get sign_org_configuration_secret_url(@staff_secret, ri: "jp"), headers: authenticated_headers
+
+    assert_response :success
+    # Verify URL contains public_id, not numeric ID
+    assert_not_includes request.fullpath, "/#{@staff_secret.id}/"
+    assert_includes request.fullpath, "/#{@staff_secret.public_id}/"
+  end
+
+  test "should access secret by public_id" do
+    get sign_org_configuration_secret_url(@staff_secret.public_id, ri: "jp"), headers: authenticated_headers
+
+    assert_response :success
+  end
+
+  test "should not access secret by numeric ID" do
+    assert_raises(ActiveRecord::RecordNotFound) do
+      get sign_org_configuration_secret_url(@staff_secret.id, ri: "jp"), headers: authenticated_headers
+    end
+  end
+end

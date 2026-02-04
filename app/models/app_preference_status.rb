@@ -20,4 +20,9 @@ class AppPreferenceStatus < PreferenceRecord
            inverse_of: :app_preference_status,
            dependent: :restrict_with_error
   scope :ordered, -> { order(:id) }
+
+  def self.ensure_defaults!
+    find_or_create_by!(id: DELETED)
+    find_or_create_by!(id: NEYO)
+  end
 end

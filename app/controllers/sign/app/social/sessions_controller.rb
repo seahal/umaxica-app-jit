@@ -44,12 +44,11 @@ module Sign
                                alert: I18n.t("sign.app.social.sessions.invalid_provider")
           end
 
-          # Prepare session with intent and state
-          state = prepare_social_auth_intent!(intent)
+          # Prepare session with intent context (OmniAuth manages OAuth state)
+          prepare_social_auth_intent!(intent, provider: provider)
 
-          # Redirect to OmniAuth with state parameter
-          # OmniAuth will handle the redirect to the provider
-          redirect_to omniauth_authorize_path(provider, state: state)
+          # Redirect to OmniAuth (no custom state parameter)
+          redirect_to omniauth_authorize_path(provider)
         rescue SocialAuth::BaseError => e
           handle_social_auth_error(e)
         end

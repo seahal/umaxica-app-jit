@@ -190,7 +190,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
       pref, = assert_preference_created(domain)
 
-      state = default_state.merge(ct: "dr")
+      state = default_state
       assert_preference_update(
         domain,
         :theme,
@@ -336,12 +336,27 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       host!(domain[:host])
       pref, _token, cookie_name = assert_preference_created(domain)
       audit_class = "#{domain[:name].capitalize}PreferenceAudit".constantize
+      access_cookie_name = preference_access_cookie_name
+      theme_cookie_name = Preference::Base::THEME_COOKIE_KEY
+      legacy_theme_cookie_name = Preference::Base::LEGACY_THEME_COOKIE_KEY
+      language_cookie_name = Preference::Base::LANGUAGE_COOKIE_KEY
+      timezone_cookie_name = Preference::Base::TIMEZONE_COOKIE_KEY
 
       # Record initial state
       initial_status = pref.status_id
       initial_audit_count = audit_class.where(subject_id: pref.id.to_s).count
 
       assert_equal 2, initial_status, "Initial status should be NEYO"
+      assert_predicate cookies[access_cookie_name], :present?, "Access token cookie should be set"
+
+      cookies[theme_cookie_name] = "dr"
+      cookies[legacy_theme_cookie_name] = "dark"
+      cookies[language_cookie_name] = "en"
+      cookies[timezone_cookie_name] = "etc/utc"
+      assert_predicate cookies[theme_cookie_name], :present?, "Theme cookie should be set"
+      assert_predicate cookies[legacy_theme_cookie_name], :present?, "Legacy theme cookie should be set"
+      assert_predicate cookies[language_cookie_name], :present?, "Language cookie should be set"
+      assert_predicate cookies[timezone_cookie_name], :present?, "Timezone cookie should be set"
 
       # Submit reset form with confirmation
       delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp"),
@@ -364,6 +379,11 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Verify cookies are deleted
       assert_empty cookies[cookie_name].to_s, "Refresh token cookie should be deleted"
+      assert_empty cookies[access_cookie_name].to_s, "Access token cookie should be deleted"
+      assert_empty cookies[theme_cookie_name].to_s, "Theme cookie should be deleted"
+      assert_empty cookies[legacy_theme_cookie_name].to_s, "Legacy theme cookie should be deleted"
+      assert_empty cookies[language_cookie_name].to_s, "Language cookie should be deleted"
+      assert_empty cookies[timezone_cookie_name].to_s, "Timezone cookie should be deleted"
     end
 
     test "#{domain[:name]} domain reset destroy fails without confirmation" do

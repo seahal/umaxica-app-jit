@@ -128,7 +128,7 @@ scope module: :sign, as: :sign do
         resources :telephones
         resource :apple, only: [:show, :destroy]
         resource :google, only: %i(show update destroy)
-        resources :secrets do
+        resources :secrets, param: :public_id do
           post :regenerate, on: :member
         end
         resources :sessions
@@ -201,7 +201,7 @@ scope module: :sign, as: :sign do
           end
         end
 
-        resources :secrets
+        resources :secrets, param: :public_id
         resources :sessions
         resource :withdrawal, only: %i(show)
       end

@@ -28,7 +28,7 @@
           <div class="relative">
             <%= f.select :option_id,
                          options_for_select(
-                           AppPreferenceRegionOption.all.order(:id).map { |o| [t("apex.app.preferences.regions.select_region_selector.#{o.id}", default: o.id), o.id] },
+                           AppPreferenceRegionOption.all.order(:id).map { |o| [t("apex.app.preferences.regions.select_region_selector.#{o.name}", default: o.name), o.id] },
                            @preference_region.option_id
                          ),
                          { prompt: t("apex.app.preferences.regions.select_region_prompt") },

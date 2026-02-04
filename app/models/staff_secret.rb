@@ -11,12 +11,14 @@
 #  password_digest                 :string
 #  created_at                      :datetime         not null
 #  updated_at                      :datetime         not null
+#  public_id                       :string(21)       not null
 #  staff_id                        :bigint           not null
 #  staff_identity_secret_status_id :bigint           default(1), not null
-#  staff_secret_kind_id            :bigint           default(0), not null
+#  staff_secret_kind_id            :bigint           default(2), not null
 #
 # Indexes
 #
+#  index_staff_secrets_on_public_id                        (public_id) UNIQUE
 #  index_staff_secrets_on_staff_id                         (staff_id)
 #  index_staff_secrets_on_staff_identity_secret_status_id  (staff_identity_secret_status_id)
 #  index_staff_secrets_on_staff_secret_kind_id             (staff_secret_kind_id)
@@ -30,11 +32,15 @@
 
 class StaffSecret < OperatorRecord
   alias_attribute :staff_secret_status_id, :staff_identity_secret_status_id
+  include ::PublicId
   include ::Secret
   include StaffSecret::Kinds
 
   MAX_SECRETS_PER_STAFF = 10
+  attr_accessor :raw_secret
+
   attribute :staff_identity_secret_status_id, default: StaffSecretStatus::ACTIVE
+  attribute :staff_secret_kind_id, default: StaffSecretKind::LOGIN
 
   belongs_to :staff
   belongs_to :staff_secret_status,
@@ -53,6 +59,14 @@ class StaffSecret < OperatorRecord
 
   def self.identity_secret_status_id_column
     :staff_identity_secret_status_id
+  end
+
+  def self.generate_raw_secret(length: SECRET_PASSWORD_LENGTH)
+    SecureRandom.base58(length)
+  end
+
+  def to_param
+    public_id
   end
 
   private

@@ -19,12 +19,12 @@
 
   <% timezone_labels = I18n.t("apex.app.preference.locale.edit.timezone_options", default: {}) %>
   <% timezone_options = AppPreferenceTimezoneOption.order(:id).map do |option|
-    label_key = case option.id
+    label_key = case option.name
                 when "Etc/UTC" then "UTC"
                 when "Asia/Tokyo" then "JST"
                 end
     label = label_key ? timezone_labels[label_key] : nil
-    [label.presence || ActiveSupport::TimeZone[option.id]&.to_s || option.id, option.id]
+    [label.presence || ActiveSupport::TimeZone[option.name]&.to_s || option.name, option.id]
   end %>
 
   <%= form_with model: @preference_timezone, scope: :preference_timezone, url: apex_app_preference_region_timezone_path, method: :patch, class: "mt-6 space-y-5" do |f| %>

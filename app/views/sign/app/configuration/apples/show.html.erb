@@ -1,15 +1,16 @@
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-  <div class="md:grid md:grid-cols-3 md:gap-6">
-    <div class="md:col-span-1">
-      <div class="px-4 sm:px-0">
-        <h3 class="text-lg font-medium leading-6 text-gray-900"><%= t('controller.sign.app.setting.index.apple') %></h3>
-        <p class="mt-1 text-sm text-gray-600">
-          Apple IDを使用してこのアカウントにログインできます。
-        </p>
-      </div>
-    </div>
+          <%= link_to t('sign.app.configuration.show.back'), sign_app_configuration_path, class: "inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
 
-    <div class="mt-5 md:col-span-2 md:mt-0">
+<div class="md:grid md:grid-cols-3 md:gap-6">
+  <div class="md:col-span-1">
+    <div class="px-4 sm:px-0">
+      <h3 class="text-lg font-medium leading-6 text-gray-900"><%= t('controller.sign.app.setting.index.apple') %></h3>
+      <p class="mt-1 text-sm text-gray-600">
+        Apple IDを使用してこのアカウントにログインできます。
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-5 md:col-span-2 md:mt-0">
       <div class="shadow sm:overflow-hidden sm:rounded-md">
         <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
           <div class="flex items-center justify-between">
@@ -37,10 +38,6 @@
             </div>
           </div>
         </div>
-        <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
-          <%= link_to t('sign.app.configuration.show.back'), sign_app_configuration_path, class: "inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
-        </div>
       </div>
     </div>
   </div>
-</div>

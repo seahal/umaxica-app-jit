@@ -33,6 +33,7 @@ class UserAuditEvent < AuditRecord
   TOTP_ENABLED = 21
   USER_SECRET_CREATED = 22
   USER_SECRET_REMOVED = 23
+  USER_SECRET_UPDATED = 24
 
   # Association with user_audits
   has_many :user_audits,

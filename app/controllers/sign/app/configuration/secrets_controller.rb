@@ -5,7 +5,7 @@ module Sign
     module Configuration
       class SecretsController < ApplicationController
         before_action :authenticate_user!
-        before_action :set_secret, only: %i(show edit destroy)
+        before_action :set_secret, only: %i(show edit update destroy)
 
         def index
           @secrets = current_user.user_secrets.order(created_at: :desc)
@@ -34,12 +34,25 @@ module Sign
           )
 
           flash[:raw_secret] = result.raw_secret
-          redirect_to sign_app_configuration_secret_path(result.secret)
+          redirect_to sign_app_configuration_secrets_path
         rescue ActiveRecord::RecordInvalid => e
           @secret = e.record
           @raw_secret = raw_secret.presence || UserSecret.generate_raw_secret
           session[:user_secret_raw] = @raw_secret
           render :new, status: :unprocessable_content
+        end
+
+        def update
+          UserSecrets::Update.call(
+            actor: current_user,
+            secret: @secret,
+            params: secret_params,
+          )
+
+          redirect_to sign_app_configuration_secrets_path
+        rescue ActiveRecord::RecordInvalid => e
+          @secret = e.record
+          render :edit, status: :unprocessable_content
         end
 
         def destroy
@@ -50,7 +63,7 @@ module Sign
         private
 
         def set_secret
-          @secret = current_user.user_secrets.find(params[:id])
+          @secret = current_user.user_secrets.find_by!(public_id: params[:public_id])
         end
 
         def secret_params

@@ -106,6 +106,16 @@ class Sign::App::Configuration::WithdrawalsControllerTest < ActionDispatch::Inte
     assert_response :success
   end
 
+  test "should show up link on show page" do
+    @user.update!(withdrawn_at: 1.day.ago, status_id: UserStatus::PRE_WITHDRAWAL_CONDITION)
+
+    get sign_app_configuration_withdrawal_url(ri: "jp"),
+        headers: request_headers
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_path(ri: "jp")
+  end
+
   test "test user is user not staff" do
     assert_predicate @user, :user?, "User should be identified as user"
     assert_not @user.staff?, "User should not be identified as staff"

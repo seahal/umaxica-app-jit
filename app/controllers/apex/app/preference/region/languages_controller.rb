@@ -19,10 +19,13 @@ module Apex
                 @preference_language.option_id,
                 preference_prefix,
               ) if @preference_language.option_id.present?
+            redirect_params = {}
+            if params[:lx].present?
+              redirect_params[:lx] =
+                option_id_to_language(@preference_language.option_id, preference_prefix)
+            end
             redirect_to(
-              edit_apex_app_preference_region_language_url(
-                lx: option_id_to_language(@preference_language.option_id, preference_prefix),
-              ),
+              edit_apex_app_preference_region_language_url(redirect_params),
               notice: t("apex.app.preferences.update_success"),
             )
           end
