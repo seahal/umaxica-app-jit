@@ -17,7 +17,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -36,7 +36,7 @@
 #
 one:
   id: 1
-  subject_id: <%= ActiveRecord::FixtureSet.identify(:one, :uuid) %>
+  subject_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
   subject_type: ComPreference
   event_id: 1
   level_id: 1

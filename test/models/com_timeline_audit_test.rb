@@ -19,7 +19,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -56,7 +56,7 @@ class ComTimelineAuditTest < ActiveSupport::TestCase
 
   test "com_timeline helper method returns nil when subject_type is not ComTimeline" do
     audit = ComTimelineAudit.new(
-      subject_id: "123",
+      subject_id: 123,
       subject_type: "SomeOtherType",
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
@@ -79,15 +79,15 @@ class ComTimelineAuditTest < ActiveSupport::TestCase
   end
 
   test "com_timeline= helper method sets subject_id and subject_type" do
-    test_uuid = SecureRandom.uuid
+    test_id = 123
 
     timeline = ComTimeline.new
-    timeline.define_singleton_method(:id) { test_uuid }
+    timeline.define_singleton_method(:id) { test_id }
 
     audit = ComTimelineAudit.new
     audit.com_timeline = timeline
 
-    assert_equal test_uuid, audit.subject_id
+    assert_equal test_id, audit.subject_id
     assert_equal "ComTimeline", audit.subject_type
   end
 end

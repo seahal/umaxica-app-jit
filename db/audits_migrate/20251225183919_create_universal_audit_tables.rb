@@ -15,10 +15,10 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     create_audit_table :app_timeline_audits, :app_timeline_audit_events, :app_timeline_audit_levels
 
     # App Contact Audits (using app_contact_histories for backward compatibility)
-    create_table :app_contact_histories, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.string :subject_id, null: false
+    create_table :app_contact_histories do |t|
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
-      t.uuid :actor_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+      t.bigint :actor_id, null: false, default: 0
       t.text :actor_type, null: false, default: ""
       t.string :event_id, limit: 255, null: false, default: "NONE"
       t.string :level_id, limit: 255, null: false, default: "NONE"
@@ -28,7 +28,7 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
       t.jsonb :context, null: false, default: {}
       t.text :previous_value, null: false, default: ""
       t.text :current_value, null: false, default: ""
-      t.uuid :parent_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :parent_id, default: 0, null: false
       t.integer :position, default: 0, null: false
       t.timestamps
     end
@@ -40,12 +40,12 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     add_index :app_contact_histories, :level_id
     add_index :app_contact_histories, :parent_id
 
-    create_table :app_contact_audit_events, id: :string, limit: 255 do |t|
+    create_table :app_contact_audit_events, id: { type: :string, limit: 255 } do |t|
       t.timestamps
     end
     set_default_and_seed(:app_contact_audit_events)
 
-    create_table :app_contact_audit_levels, id: :string, limit: 255 do |t|
+    create_table :app_contact_audit_levels, id: { type: :string, limit: 255 } do |t|
       t.timestamps
     end
     set_default_and_seed(:app_contact_audit_levels)
@@ -60,10 +60,10 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     create_audit_table :com_timeline_audits, :com_timeline_audit_events, :com_timeline_audit_levels
 
     # Com Contact Audits
-    create_table :com_contact_audits, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.string :subject_id, null: false
+    create_table :com_contact_audits do |t|
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
-      t.uuid :actor_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+      t.bigint :actor_id, null: false, default: 0
       t.text :actor_type, null: false, default: ""
       t.string :event_id, limit: 255, null: false, default: "NONE"
       t.string :level_id, limit: 255, null: false, default: "NONE"
@@ -73,7 +73,7 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
       t.jsonb :context, null: false, default: {}
       t.text :previous_value, null: false, default: ""
       t.text :current_value, null: false, default: ""
-      t.uuid :parent_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :parent_id, default: 0, null: false
       t.integer :position, default: 0, null: false
       t.timestamps
     end
@@ -85,12 +85,12 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     add_index :com_contact_audits, :level_id
     add_index :com_contact_audits, :parent_id
 
-    create_table :com_contact_audit_events, id: :string, limit: 255 do |t|
+    create_table :com_contact_audit_events, id: { type: :string, limit: 255 } do |t|
       t.timestamps
     end
     set_default_and_seed(:com_contact_audit_events)
 
-    create_table :com_contact_audit_levels, id: :string, limit: 255 do |t|
+    create_table :com_contact_audit_levels, id: { type: :string, limit: 255 } do |t|
       t.timestamps
     end
     set_default_and_seed(:com_contact_audit_levels)
@@ -105,10 +105,10 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     create_audit_table :org_timeline_audits, :org_timeline_audit_events, :org_timeline_audit_levels
 
     # Org Contact Audits (using org_contact_histories for backward compatibility)
-    create_table :org_contact_histories, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.string :subject_id, null: false
+    create_table :org_contact_histories do |t|
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
-      t.uuid :actor_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+      t.bigint :actor_id, null: false, default: 0
       t.text :actor_type, null: false, default: ""
       t.string :event_id, limit: 255, null: false, default: "NONE"
       t.string :level_id, limit: 255, null: false, default: "NONE"
@@ -118,7 +118,7 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
       t.jsonb :context, null: false, default: {}
       t.text :previous_value, null: false, default: ""
       t.text :current_value, null: false, default: ""
-      t.uuid :parent_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :parent_id, default: 0, null: false
       t.integer :position, default: 0, null: false
       t.timestamps
     end
@@ -130,12 +130,12 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     add_index :org_contact_histories, :level_id
     add_index :org_contact_histories, :parent_id
 
-    create_table :org_contact_audit_events, id: :string, limit: 255 do |t|
+    create_table :org_contact_audit_events, id: { type: :string, limit: 255 } do |t|
       t.timestamps
     end
     set_default_and_seed(:org_contact_audit_events)
 
-    create_table :org_contact_audit_levels, id: :string, limit: 255 do |t|
+    create_table :org_contact_audit_levels, id: { type: :string, limit: 255 } do |t|
       t.timestamps
     end
     set_default_and_seed(:org_contact_audit_levels)
@@ -148,13 +148,13 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
 
   # Helper method to create audit table with standard structure
   def create_audit_table(table_name, event_table_name, level_table_name)
-    create_table table_name, id: :uuid, default: -> { "uuidv7()" } do |t|
+    create_table table_name do |t|
       # Subject reference (DB-agnostic polymorphic pattern)
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
 
       # Actor reference (polymorphic)
-      t.uuid :actor_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+      t.bigint :actor_id, null: false, default: 0
       t.text :actor_type, null: false, default: ""
 
       # Event/Level references
@@ -183,13 +183,13 @@ class CreateUniversalAuditTables < ActiveRecord::Migration[8.2]
     add_index table_name, :level_id
 
     # Event table
-    create_table event_table_name, id: :string, limit: 255 do |t|
+    create_table event_table_name, id: { type: :string, limit: 255 } do |t|
       t.timestamps
     end
     set_default_and_seed(event_table_name)
 
     # Level table
-    create_table level_table_name, id: :string, limit: 255 do |t|
+    create_table level_table_name, id: { type: :string, limit: 255 } do |t|
       t.timestamps
     end
     set_default_and_seed(level_table_name)

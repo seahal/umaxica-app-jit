@@ -15,12 +15,13 @@
 #  title          :string
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  edited_by_id   :string
+#  edited_by_id   :bigint
 #  post_id        :bigint           not null
 #  public_id      :string           default(""), not null
 #
 # Indexes
 #
+#  index_post_versions_on_edited_by_id            (edited_by_id)
 #  index_post_versions_on_post_id_and_created_at  (post_id,created_at DESC)
 #  index_post_versions_on_public_id               (public_id) UNIQUE
 #

@@ -66,7 +66,7 @@ class ChangeStaffPasskeyWebauthnIdToString < ActiveRecord::Migration[8.0]
   def add_external_id_if_missing
     return if column_exists?(:staff_passkeys, :external_id)
 
-    add_column :staff_passkeys, :external_id, :uuid
+    add_column :staff_passkeys, :external_id, :bigint
     StaffPasskey.reset_column_information
     StaffPasskey.find_each do |passkey|
       passkey.update!(external_id: SecureRandom.uuid)

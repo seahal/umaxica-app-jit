@@ -2,8 +2,8 @@
 
 class CreateAppleAuths < ActiveRecord::Migration[8.0]
   def change
-    create_table :apple_auths, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.references :user, null: false, foreign_key: true, type: :uuid
+    create_table :apple_auths do |t|
+      t.references :user, null: false, foreign_key: true, type: :bigint
       t.string :provider
       t.string :uid
       t.string :email

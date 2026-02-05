@@ -3,7 +3,7 @@
 class CreateOrgContactEmails < ActiveRecord::Migration[8.1]
   def change
     create_table :org_contact_emails, id: :string do |t|
-      t.references :org_contact, null: false, foreign_key: true, type: :uuid
+      t.references :org_contact, null: false, foreign_key: true, type: :bigint
       t.string :email_address, null: false, default: "", limit: 1000
       t.boolean :activated, null: false, default: false
       t.boolean :deletable, null: false, default: false

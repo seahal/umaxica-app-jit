@@ -15,6 +15,7 @@
 #  refresh_token_generation :integer          default(0), not null
 #  revoked_at               :datetime
 #  rotated_at               :datetime
+#  status                   :string(20)       default("active"), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  public_id                :string(21)       default(""), not null
@@ -31,6 +32,7 @@
 #  index_user_tokens_on_refresh_token_digest         (refresh_token_digest) UNIQUE
 #  index_user_tokens_on_refresh_token_family_id      (refresh_token_family_id)
 #  index_user_tokens_on_revoked_at                   (revoked_at)
+#  index_user_tokens_on_status                       (status)
 #  index_user_tokens_on_user_id_and_last_step_up_at  (user_id,last_step_up_at)
 #  index_user_tokens_on_user_token_kind_id           (user_token_kind_id)
 #  index_user_tokens_on_user_token_status_id         (user_token_status_id)
@@ -120,7 +122,8 @@ class UserTokenTest < ActiveSupport::TestCase
   test "enforces maximum concurrent sessions per user" do
     user = User.create!
 
-    UserToken::MAX_SESSIONS_PER_USER.times do
+    # Create tokens up to the total max (active + restricted)
+    UserToken::MAX_TOTAL_SESSIONS_PER_USER.times do
       UserToken.create!(user: user)
     end
 
@@ -128,7 +131,7 @@ class UserTokenTest < ActiveSupport::TestCase
 
     assert_not extra_token.valid?
     assert_includes extra_token.errors[:base],
-                    "exceeds maximum concurrent sessions per user (#{UserToken::MAX_SESSIONS_PER_USER})"
+                    "exceeds maximum concurrent sessions per user (#{UserToken::MAX_TOTAL_SESSIONS_PER_USER})"
   end
 
   test "refresh token digest updates and authenticates" do

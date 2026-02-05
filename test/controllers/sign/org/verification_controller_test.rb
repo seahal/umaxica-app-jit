@@ -20,7 +20,7 @@ class Sign::Org::VerificationControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get show" do
-    get sign_org_verification_show_url(ri: "jp"), headers: @headers
+    get sign_org_verification_url(ri: "jp"), headers: @headers
     assert_response :success
   end
 end

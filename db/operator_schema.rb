@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_04_170001) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_05_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -176,6 +176,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_170001) do
   create_table "staff_passkeys", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "external_id", null: false
+    t.datetime "last_used_at"
     t.string "name", null: false
     t.text "public_key", null: false
     t.integer "sign_count", null: false

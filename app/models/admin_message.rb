@@ -8,7 +8,7 @@
 #  id               :bigint           not null, primary key
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  public_id        :uuid             not null
+#  public_id        :string           default(""), not null
 #  staff_message_id :bigint
 #
 # Indexes

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_270000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_05_160001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -46,6 +46,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_270000) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["app_timeline_id", "created_at"], name: "index_app_timeline_revisions_on_app_timeline_id_and_created_at"
+    t.index ["edited_by_id"], name: "index_app_timeline_revisions_on_edited_by_id"
     t.index ["public_id"], name: "index_app_timeline_revisions_on_public_id", unique: true
   end
 
@@ -83,6 +84,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_270000) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["app_timeline_id", "created_at"], name: "index_app_timeline_versions_on_app_timeline_id_and_created_at"
+    t.index ["edited_by_id"], name: "index_app_timeline_versions_on_edited_by_id"
     t.index ["public_id"], name: "index_app_timeline_versions_on_public_id", unique: true
   end
 
@@ -138,6 +140,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_270000) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["com_timeline_id", "created_at"], name: "index_com_timeline_revisions_on_com_timeline_id_and_created_at"
+    t.index ["edited_by_id"], name: "index_com_timeline_revisions_on_edited_by_id"
     t.index ["public_id"], name: "index_com_timeline_revisions_on_public_id", unique: true
   end
 
@@ -175,6 +178,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_270000) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["com_timeline_id", "created_at"], name: "index_com_timeline_versions_on_com_timeline_id_and_created_at"
+    t.index ["edited_by_id"], name: "index_com_timeline_versions_on_edited_by_id"
     t.index ["public_id"], name: "index_com_timeline_versions_on_public_id", unique: true
   end
 
@@ -229,6 +233,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_270000) do
     t.string "response_mode", null: false
     t.string "title"
     t.datetime "updated_at", null: false
+    t.index ["edited_by_id"], name: "index_org_timeline_revisions_on_edited_by_id"
     t.index ["org_timeline_id", "created_at"], name: "index_org_timeline_revisions_on_org_timeline_id_and_created_at"
     t.index ["public_id"], name: "index_org_timeline_revisions_on_public_id", unique: true
   end
@@ -266,6 +271,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_270000) do
     t.string "response_mode", null: false
     t.string "title"
     t.datetime "updated_at", null: false
+    t.index ["edited_by_id"], name: "index_org_timeline_versions_on_edited_by_id"
     t.index ["org_timeline_id", "created_at"], name: "index_org_timeline_versions_on_org_timeline_id_and_created_at"
     t.index ["public_id"], name: "index_org_timeline_versions_on_public_id", unique: true
   end

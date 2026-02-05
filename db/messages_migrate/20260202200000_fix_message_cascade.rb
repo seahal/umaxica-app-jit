@@ -14,7 +14,7 @@ class FixMessageCascade < ActiveRecord::Migration[8.2]
       # 3. Ensure public_id NOT NULL for all message tables
       %w(user_messages staff_messages client_messages admin_messages).each do |table|
         if table_exists?(table) && column_exists?(table, :public_id)
-          execute "UPDATE #{table} SET public_id = gen_random_uuid() WHERE public_id IS NULL"
+          execute "UPDATE #{table} SET public_id = '' WHERE public_id IS NULL"
           execute "ALTER TABLE #{table} ALTER COLUMN public_id SET NOT NULL"
         end
       end

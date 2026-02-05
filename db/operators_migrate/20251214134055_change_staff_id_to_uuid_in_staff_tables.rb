@@ -37,7 +37,7 @@ class ChangeStaffIdToUuidInStaffTables < ActiveRecord::Migration[8.2]
     # Remove the old column and add it back as uuid
     # Warning: This will lose existing data in the staff_id column
     remove_column table_name, :staff_id, :bigint
-    add_column table_name, :staff_id, :uuid
+    add_column table_name, :staff_id, :bigint
 
     # Add the index back
     add_index table_name, :staff_id

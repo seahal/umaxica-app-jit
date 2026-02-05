@@ -102,6 +102,7 @@ class RenameNoneToNeyoInUserIdentityReferenceData < ActiveRecord::Migration[8.2]
 
   def update_fk(table, column, from:, to:)
     return unless table_exists?(table) && column_exists?(table, column)
+    return unless string_column?(table, column)
 
     safety_assured do
       execute <<~SQL.squish
@@ -114,6 +115,7 @@ class RenameNoneToNeyoInUserIdentityReferenceData < ActiveRecord::Migration[8.2]
 
   def change_column_default_if_exists(table, column, from:, to:)
     return unless table_exists?(table) && column_exists?(table, column)
+    return unless string_column?(table, column)
 
     change_column_default table, column, from: from, to: to
   end
@@ -130,5 +132,10 @@ class RenameNoneToNeyoInUserIdentityReferenceData < ActiveRecord::Migration[8.2]
     safety_assured do
       # No-op: intentionally left blank.
     end
+  end
+
+  def string_column?(table, column)
+    col = connection.columns(table).find { |c| c.name == column.to_s }
+    col && %i(string text).include?(col.type)
   end
 end

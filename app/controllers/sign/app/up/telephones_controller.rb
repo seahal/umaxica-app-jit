@@ -82,48 +82,29 @@ module Sign
         end
 
         def update
-          # FIXME: write test code!
-
           @user_telephone = UserTelephone.find_by(id: params["id"])
 
-          if @user_telephone.blank?
-            redirect_to new_sign_app_up_telephone_path,
-                        notice: t("sign.app.registration.telephone.edit.session_expired") and return
-          end
+          return redirect_telephone_session_expired unless @user_telephone
 
           registration_session = session[:user_telephone_registration]
-          if registration_session.blank? || registration_session["id"].to_s != params["id"].to_s
-            @user_telephone.errors.add(:base, t("sign.app.registration.telephone.edit.session_expired"))
-            render :edit, status: :unprocessable_content and return
-          end
+          return render_telephone_session_expired unless valid_registration_session?(registration_session)
+          return render_telephone_session_expired if otp_session_expired?(registration_session)
+          return render_invalid_telephone_code unless verify_submitted_telephone_code
 
-          # Retrieve telephone record with OTP
-          if @user_telephone.otp_expired? ||
-              registration_session["expires_at"].to_i <= Time.now.to_i
-            @user_telephone.errors.add(:base, t("sign.app.registration.telephone.edit.session_expired"))
-            render :edit, status: :unprocessable_content and return
-          end
+          verify_telephone!
+          finalize_telephone_registration!
+        end
 
-          # Verify OTP using secure_compare
-          submitted_code = params.dig("user_telephone", "pass_code")
-          result = verify_otp_code(@user_telephone, submitted_code)
+        def destroy
+          @user_telephone = UserTelephone.find(params[:id])
 
-          unless result[:success]
-            increment_otp_attempts!(@user_telephone)
-            @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.invalid_code"))
-            render :edit, status: :unprocessable_content and return
+          unless @user_telephone.user_telephone_status_id == UserTelephoneStatus::VERIFIED_WITH_SIGN_UP
+            render :show, status: :unprocessable_content
+            return
           end
 
           UserTelephone.transaction do
-            # Clear OTP (set confirm flags to avoid validation errors)
-            @user_telephone.confirm_policy = "1"
-            @user_telephone.confirm_using_mfa = "1"
-            clear_otp(@user_telephone)
-            # Update status
-            @user_telephone.user_telephone_status_id = UserTelephoneStatus::VERIFIED_WITH_SIGN_UP
-            @user_telephone.save!
-
-            # Update user status and login
+            # Update user status
             @user = @user_telephone.user
             @user.update!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
 
@@ -139,12 +120,8 @@ module Sign
             log_in(@user, record_login_audit: false)
           end
 
-          session[:user_telephone_registration] = nil
-          redirect_to sign_app_up_telephone_path(@user_telephone),
+          redirect_to sign_app_configuration_path(ri: params[:ri]),
                       notice: t("sign.app.registration.telephone.update.success")
-        end
-
-        def destroy
         end
 
         private
@@ -157,6 +134,64 @@ module Sign
 
         def boolean_value(value)
           ActiveModel::Type::Boolean.new.cast(value)
+        end
+
+        def redirect_telephone_session_expired
+          redirect_to new_sign_app_up_telephone_path,
+                      notice: t("sign.app.registration.telephone.edit.session_expired")
+        end
+
+        def render_telephone_session_expired
+          @user_telephone.errors.add(:base, t("sign.app.registration.telephone.edit.session_expired"))
+          render :edit, status: :unprocessable_content
+        end
+
+        def valid_registration_session?(registration_session)
+          registration_session.present? &&
+            registration_session["id"].to_s == params["id"].to_s
+        end
+
+        def otp_session_expired?(registration_session)
+          @user_telephone.otp_expired? ||
+            registration_session["expires_at"].to_i <= Time.current.to_i
+        end
+
+        def verify_submitted_telephone_code
+          submitted_code = params.dig("user_telephone", "pass_code")
+          result = verify_otp_code(@user_telephone, submitted_code)
+          return true if result[:success]
+
+          increment_otp_attempts!(@user_telephone)
+          @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.invalid_code"))
+          false
+        end
+
+        def render_invalid_telephone_code
+          render :edit, status: :unprocessable_content
+        end
+
+        def verify_telephone!
+          UserTelephone.transaction do
+            # Clear OTP (set confirm flags to avoid validation errors)
+            @user_telephone.confirm_policy = "1"
+            @user_telephone.confirm_using_mfa = "1"
+            clear_otp(@user_telephone)
+            # Update status
+            @user_telephone.user_telephone_status_id = UserTelephoneStatus::VERIFIED_WITH_SIGN_UP
+            @user_telephone.save!
+          end
+        end
+
+        def finalize_telephone_registration!
+          session[:user_telephone_registration] = nil
+
+          session[:signup_passkey_registration] = {
+            "user_id" => @user_telephone.user_id,
+            "expires_at" => 30.minutes.from_now.to_i,
+          }
+
+          redirect_to new_sign_app_up_passkey_path(ri: params[:ri]),
+                      notice: t("sign.app.registration.telephone.update.passkey_required")
         end
       end
     end

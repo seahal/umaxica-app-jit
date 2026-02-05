@@ -106,12 +106,12 @@ module Sign
             # Parse credential from request
             credential = WebAuthn::Credential.from_create(credential_params.to_h)
 
-            # Verify the credential
-            credential.verify(
-              challenge,
-              rp_id: webauthn_rp_id,
-              expected_origin: webauthn_origin,
-            )
+            # Verify the credential with per-request configuration
+            with_webauthn_config do
+              credential.verify(
+                challenge,
+              )
+            end
 
             # Create the passkey record
             passkey = current_user.user_passkeys.new(
@@ -169,6 +169,23 @@ module Sign
         # DELETE /configuration/passkeys/:id
         def destroy
           authorize @passkey
+
+          # Prevent deleting the last passkey
+          if current_user.user_passkeys.active.count <= 1
+            respond_to do |format|
+              format.html do
+                redirect_to sign_app_configuration_passkeys_path,
+                            status: :see_other,
+                            alert: t("messages.cannot_delete_last_passkey")
+              end
+              format.json do
+                render json: { error: t("messages.cannot_delete_last_passkey") },
+                       status: :unprocessable_content
+              end
+            end
+            return
+          end
+
           @passkey.destroy!
 
           respond_to do |format|

@@ -72,15 +72,9 @@ module Sign
     end
 
     def initiate_email_verification!(email_address, confirm_policy: "1")
-      # Validate Cloudflare Turnstile
-      turnstile_result = cloudflare_turnstile_validation
-      unless turnstile_result["success"]
-        @user_email = UserEmail.new(address: email_address, confirm_policy: confirm_policy)
-        @user_email.errors.add(:base, t("sign.app.registration.email.create.turnstile_validation_failed"))
-        return false
-      end
+      return false unless ensure_turnstile!(email_address, confirm_policy)
 
-      @user_email = UserEmail.new(address: email_address, confirm_policy: confirm_policy)
+      build_user_email(email_address, confirm_policy)
       @user_email.user_email_status_id = UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
 
       # Rate limit check (TODO: Implement rate limiting)
@@ -88,51 +82,14 @@ module Sign
 
       begin
         UserEmail.transaction do
-          pending_user_id = session[:pending_sign_up_user_id]
-          pending_email = session[:pending_sign_up_email].to_s.downcase
+          cleanup_pending_signup!
+          remove_existing_unverified_emails!
+          create_pending_user!
 
-          if pending_user_id.present? && pending_email == @user_email.address.to_s.downcase
-            User.find_by(id: pending_user_id)&.destroy!
-          end
-
-          # Delete existing unverified emails and their pending users
-          existing_emails = UserEmail.where(
-            address: @user_email.address,
-            user_email_status_id: [
-              UserEmailStatus::UNVERIFIED_WITH_SIGN_UP,
-              UserEmailStatus::UNVERIFIED,
-            ],
-          ).to_a
-
-          pending_user_ids = existing_emails.map(&:user_id).compact
-          if pending_user_ids.any?
-            User.where(id: pending_user_ids).find_each(&:destroy!)
-          end
-
-          # Clean up any lingering unverified emails without users
-          existing_emails.each do |email|
-            email.destroy! if email.user_id.blank?
-          end
-
-          # Create pending user
-          @pending_user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
-          @user_email.user = @pending_user
-          session[:pending_sign_up_user_id] = @pending_user.id
-          session[:pending_sign_up_email] = @user_email.address.to_s.downcase
-
-          # Generate OTP
           num = generate_otp_attributes(@user_email)
-
           @user_email.save!
 
-          token = @user_email.generate_verification_token
-
-          Email::App::RegistrationMailer.with(
-            hotp_token: num,
-            email_address: @user_email.address,
-            verification_token: token,
-            public_id: @user_email.public_id,
-          ).create.deliver_later
+          send_verification_email(num)
         end
       rescue ActiveRecord::RecordInvalid => e
         @user_email = e.record
@@ -183,6 +140,63 @@ module Sign
       end
 
       true
+    end
+
+    def ensure_turnstile!(email_address, confirm_policy)
+      turnstile_result = cloudflare_turnstile_validation
+      return true if turnstile_result["success"]
+
+      @user_email = UserEmail.new(address: email_address, confirm_policy: confirm_policy)
+      @user_email.errors.add(:base, t("sign.app.registration.email.create.turnstile_validation_failed"))
+      false
+    end
+
+    def build_user_email(email_address, confirm_policy)
+      @user_email = UserEmail.new(address: email_address, confirm_policy: confirm_policy)
+    end
+
+    def cleanup_pending_signup!
+      pending_user_id = session[:pending_sign_up_user_id]
+      pending_email = session[:pending_sign_up_email].to_s.downcase
+      return if pending_user_id.blank?
+      return unless pending_email == @user_email.address.to_s.downcase
+
+      User.find_by(id: pending_user_id)&.destroy!
+    end
+
+    def remove_existing_unverified_emails!
+      existing_emails = UserEmail.where(
+        address: @user_email.address,
+        user_email_status_id: [
+          UserEmailStatus::UNVERIFIED_WITH_SIGN_UP,
+          UserEmailStatus::UNVERIFIED,
+        ],
+      ).to_a
+
+      pending_user_ids = existing_emails.filter_map(&:user_id)
+      User.where(id: pending_user_ids).find_each(&:destroy!) if pending_user_ids.any?
+
+      existing_emails.each do |email|
+        email.destroy! if email.user_id.blank?
+      end
+    end
+
+    def create_pending_user!
+      @pending_user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
+      @user_email.user = @pending_user
+      session[:pending_sign_up_user_id] = @pending_user.id
+      session[:pending_sign_up_email] = @user_email.address.to_s.downcase
+    end
+
+    def send_verification_email(otp_number)
+      token = @user_email.generate_verification_token
+
+      Email::App::RegistrationMailer.with(
+        hotp_token: otp_number,
+        email_address: @user_email.address,
+        verification_token: token,
+        public_id: @user_email.public_id,
+      ).create.deliver_later
     end
   end
 end

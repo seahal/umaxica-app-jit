@@ -16,7 +16,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
 
   create_table "admin_notifications", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "public_id", default: "", null: false
     t.bigint "staff_notification_id", null: false
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_admin_notifications_on_public_id", unique: true
@@ -25,7 +25,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
 
   create_table "client_notifications", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "public_id", default: "", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_notification_id", null: false
     t.index ["public_id"], name: "index_client_notifications_on_public_id", unique: true
@@ -34,7 +34,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
 
   create_table "staff_notifications", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "public_id", default: "", null: false
     t.bigint "staff_id", null: false
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_staff_notifications_on_public_id", unique: true
@@ -43,7 +43,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
 
   create_table "user_notifications", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.string "public_id", default: "", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["public_id"], name: "index_user_notifications_on_public_id", unique: true

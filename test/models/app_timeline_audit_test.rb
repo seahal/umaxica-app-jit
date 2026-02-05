@@ -17,9 +17,9 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  actor_id       :bigint           default(0), not null
-#  event_id       :bigint           default(0), not null
-#  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  event_id       :bigint           default(1), not null
+#  level_id       :bigint           default(1), not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -55,7 +55,7 @@ class AppTimelineAuditTest < ActiveSupport::TestCase
 
   test "app_timeline helper method returns nil when subject_type is not AppTimeline" do
     audit = AppTimelineAudit.new(
-      subject_id: "123",
+      subject_id: 123,
       subject_type: "SomeOtherType",
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
@@ -64,24 +64,23 @@ class AppTimelineAuditTest < ActiveSupport::TestCase
   end
 
   test "app_timeline= helper method sets subject_id and subject_type" do
-    test_uuid = SecureRandom.uuid
+    test_id = 123
 
     timeline = AppTimeline.new
-    timeline.define_singleton_method(:id) { test_uuid }
+    timeline.define_singleton_method(:id) { test_id }
 
     audit = AppTimelineAudit.new
     audit.app_timeline = timeline
 
-    assert_equal test_uuid, audit.subject_id
-    assert_equal test_uuid, audit.subject_id
+    assert_equal test_id, audit.subject_id
     assert_equal "AppTimeline", audit.subject_type
   end
 
   test "app_timeline helper method returns timeline when subject_type is AppTimeline" do
-    AppTimelineAuditEvent.find_or_create_by!(id: "NEYO")
-    AppTimelineAuditLevel.find_or_create_by!(id: "NEYO")
+    AppTimelineAuditEvent.find_or_create_by!(id: AppTimelineAuditEvent::NEYO)
+    AppTimelineAuditLevel.find_or_create_by!(id: AppTimelineAuditLevel::NEYO)
     # Ensure status exists
-    AppTimelineStatus.find_or_create_by!(id: "NEYO")
+    AppTimelineStatus.find_or_create_by!(id: AppTimelineStatus::NEYO)
 
     timeline = AppTimeline.create!(
       status_id: AppTimelineStatus::NEYO,

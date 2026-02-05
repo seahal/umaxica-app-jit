@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import { normalizePublicKeyOptions } from "controllers/webauthn_utils";
 
 // Passkey Registration Controller
 // Handles WebAuthn credential creation for passkey registration.
@@ -37,13 +38,22 @@ export default class extends Controller {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					Accept: "application/json",
 					"X-CSRF-Token": this.csrfToken,
 				},
 			});
 
 			if (!optionsResponse.ok) {
-				const data = await optionsResponse.json();
-				throw new Error(data.error || "オプションの取得に失敗しました");
+				const contentType = optionsResponse.headers.get("content-type") || "";
+				if (contentType.includes("application/json")) {
+					const data = await optionsResponse.json();
+					throw new Error(data.error || "オプションの取得に失敗しました");
+				}
+				if (optionsResponse.status === 401 || optionsResponse.status === 302) {
+					window.location.reload();
+					return;
+				}
+				throw new Error("オプションの取得に失敗しました");
 			}
 
 			const { challenge_id, options } = await optionsResponse.json();
@@ -51,7 +61,7 @@ export default class extends Controller {
 			this.showStatus("認証器でPasskeyを作成中...");
 
 			// Step 2: Create credential with authenticator
-			const publicKeyOptions = this.decodeOptions(options);
+			const publicKeyOptions = normalizePublicKeyOptions(options);
 			const credential = await navigator.credentials.create({
 				publicKey: publicKeyOptions,
 			});
@@ -63,6 +73,7 @@ export default class extends Controller {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					Accept: "application/json",
 					"X-CSRF-Token": this.csrfToken,
 				},
 				body: JSON.stringify({
@@ -72,11 +83,20 @@ export default class extends Controller {
 				}),
 			});
 
-			const result = await verificationResponse.json();
-
 			if (!verificationResponse.ok) {
-				throw new Error(result.error || "登録に失敗しました");
+				const contentType = verificationResponse.headers.get("content-type") || "";
+				if (contentType.includes("application/json")) {
+					const data = await verificationResponse.json();
+					throw new Error(data.error || "登録に失敗しました");
+				}
+				if (verificationResponse.status === 401 || verificationResponse.status === 302) {
+					window.location.reload();
+					return;
+				}
+				throw new Error("登録に失敗しました");
 			}
+
+			const result = await verificationResponse.json();
 
 			// Step 4: Success - redirect
 			this.showStatus("登録完了！リダイレクト中...");
@@ -109,31 +129,6 @@ export default class extends Controller {
 		return "";
 	}
 
-	decodeOptions(options) {
-		// Decode Base64URL-encoded fields
-		const decoded = { ...options };
-
-		if (options.challenge) {
-			decoded.challenge = this.base64urlToBuffer(options.challenge);
-		}
-
-		if (options.user && options.user.id) {
-			decoded.user = {
-				...options.user,
-				id: this.base64urlToBuffer(options.user.id),
-			};
-		}
-
-		if (options.excludeCredentials) {
-			decoded.excludeCredentials = options.excludeCredentials.map((cred) => ({
-				...cred,
-				id: this.base64urlToBuffer(cred.id),
-			}));
-		}
-
-		return decoded;
-	}
-
 	encodeCredential(credential) {
 		const response = credential.response;
 
@@ -148,17 +143,6 @@ export default class extends Controller {
 			},
 			clientExtensionResults: credential.getClientExtensionResults(),
 		};
-	}
-
-	base64urlToBuffer(base64url) {
-		const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
-		const padding = "=".repeat((4 - (base64.length % 4)) % 4);
-		const binary = atob(base64 + padding);
-		const bytes = new Uint8Array(binary.length);
-		for (let i = 0; i < binary.length; i++) {
-			bytes[i] = binary.charCodeAt(i);
-		}
-		return bytes.buffer;
 	}
 
 	bufferToBase64url(buffer) {

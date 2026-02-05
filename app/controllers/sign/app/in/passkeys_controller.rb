@@ -175,28 +175,33 @@ module Sign
         end
 
         def verify_passkey(credential, passkey, challenge)
-          credential.verify(
-            challenge,
-            public_key: passkey.public_key,
-            sign_count: passkey.sign_count,
-            rp_id: webauthn_rp_id,
-            expected_origin: webauthn_origin,
-          )
-          passkey.update!(sign_count: credential.sign_count)
+          with_webauthn_config do
+            credential.verify(
+              challenge,
+              public_key: passkey.public_key,
+              sign_count: passkey.sign_count,
+            )
+          end
+          # Update sign_count and last_used_at
+          passkey.update!(sign_count: credential.sign_count, last_used_at: Time.current)
         end
 
         def handle_login_result(result)
           case result[:status]
           when :totp_required
             render json: { status: "totp_required", redirect_url: new_sign_app_in_totp_path }, status: :ok
-          when :session_limit_exceeded
-            issue_session_limit_gate!(return_to: request.fullpath, flow: "in.passkeys.session")
-            render json: {
-              status: "session_limit_exceeded",
-              redirect_url: new_sign_app_in_passkey_path,
-            }, status: :ok
           when :success
-            render_success(result)
+            # Check if session is restricted (session limit was exceeded)
+            if result[:restricted]
+              issue_session_limit_gate!(return_to: request.fullpath, flow: "in.passkeys.session")
+              render json: {
+                status: "session_restricted",
+                redirect_url: sign_app_in_session_path,
+                message: I18n.t("sign.app.in.session.restricted_notice"),
+              }, status: :ok
+            else
+              render_success(result)
+            end
           else
             render_error("errors.login_failed", :unprocessable_content)
           end

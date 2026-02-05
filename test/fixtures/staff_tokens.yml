@@ -13,6 +13,7 @@
 #  refresh_token_generation :integer          default(0), not null
 #  revoked_at               :datetime
 #  rotated_at               :datetime
+#  status                   :string(20)       default("active"), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  public_id                :string(21)       default(""), not null
@@ -32,6 +33,7 @@
 #  index_staff_tokens_on_staff_id_and_last_step_up_at  (staff_id,last_step_up_at)
 #  index_staff_tokens_on_staff_token_kind_id           (staff_token_kind_id)
 #  index_staff_tokens_on_staff_token_status_id         (staff_token_status_id)
+#  index_staff_tokens_on_status                        (status)
 #
 # Foreign Keys
 #

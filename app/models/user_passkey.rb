@@ -7,6 +7,7 @@
 #
 #  id                     :bigint           not null, primary key
 #  description            :string           default(""), not null
+#  last_used_at           :datetime
 #  public_key             :text             not null
 #  sign_count             :bigint           default(0), not null
 #  created_at             :datetime         not null

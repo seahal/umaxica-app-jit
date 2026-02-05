@@ -91,7 +91,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     assert(
       UserAudit.exists?(
         event_id: UserAuditEvent::TOKEN_REFRESHED,
-        subject_id: @user.id.to_s,
+        subject_id: @user.id,
         subject_type: "User",
       ),
       "TOKEN_REFRESHED audit should be created",

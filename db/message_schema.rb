@@ -16,7 +16,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
 
   create_table "admin_messages", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id", null: false
+    t.string "public_id", default: "", null: false
     t.bigint "staff_message_id"
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_admin_messages_on_public_id", unique: true
@@ -25,7 +25,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
 
   create_table "client_messages", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id", null: false
+    t.string "public_id", default: "", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_message_id"
     t.index ["public_id"], name: "index_client_messages_on_public_id", unique: true
@@ -34,7 +34,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
 
   create_table "staff_messages", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id", null: false
+    t.string "public_id", default: "", null: false
     t.bigint "staff_id", null: false
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_staff_messages_on_public_id", unique: true
@@ -43,7 +43,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_230000) do
 
   create_table "user_messages", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.uuid "public_id", null: false
+    t.string "public_id", default: "", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["public_id"], name: "index_user_messages_on_public_id", unique: true

@@ -16,10 +16,10 @@
 #  subject_type   :text             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  actor_id       :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -55,7 +55,7 @@ class AppDocumentAuditTest < ActiveSupport::TestCase
 
   test "app_document helper method returns nil when subject_type is not AppDocument" do
     audit = AppDocumentAudit.new(
-      subject_id: "123",
+      subject_id: 123,
       subject_type: "SomeOtherType",
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
@@ -64,16 +64,16 @@ class AppDocumentAuditTest < ActiveSupport::TestCase
   end
 
   test "app_document= helper method sets subject_id and subject_type" do
-    test_uuid = SecureRandom.uuid
+    test_id = 123
 
     # Create a mock document object with an ID
     doc = AppDocument.new
-    doc.define_singleton_method(:id) { test_uuid }
+    doc.define_singleton_method(:id) { test_id }
 
     audit = AppDocumentAudit.new
     audit.app_document = doc
 
-    assert_equal test_uuid, audit.subject_id
+    assert_equal test_id, audit.subject_id
     assert_equal "AppDocument", audit.subject_type
   end
   test "app_document helper method returns document when subject_type is AppDocument" do

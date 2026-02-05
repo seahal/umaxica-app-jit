@@ -21,6 +21,7 @@
 #
 # Indexes
 #
+#  index_org_timeline_versions_on_edited_by_id                    (edited_by_id)
 #  index_org_timeline_versions_on_org_timeline_id_and_created_at  (org_timeline_id,created_at)
 #  index_org_timeline_versions_on_public_id                       (public_id) UNIQUE
 #

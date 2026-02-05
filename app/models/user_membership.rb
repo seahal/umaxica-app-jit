@@ -11,7 +11,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  user_id      :bigint           not null
-#  workspace_id :uuid             not null
+#  workspace_id :bigint           not null
 #
 # Indexes
 #

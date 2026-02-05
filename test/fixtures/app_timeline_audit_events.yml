@@ -5,5 +5,14 @@
 #
 #  id :bigint           not null, primary key
 #
-#  id :string(255)      default("NEYO"), not null, primary key
-  #
+neyo:
+  id: 1
+
+created:
+  id: 2
+
+updated:
+  id: 3
+
+deleted:
+  id: 4

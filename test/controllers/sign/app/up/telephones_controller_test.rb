@@ -95,7 +95,7 @@ module Sign::App::Up
         user_telephone: { pass_code: code },
       }
 
-      assert_redirected_to sign_app_up_telephone_url(telephone, regional_defaults)
+      assert_redirected_to new_sign_app_up_passkey_url(regional_defaults)
 
       telephone.reload
 
@@ -103,6 +103,40 @@ module Sign::App::Up
       expires = telephone.otp_expires_at
       assert expires.nil? || expires.to_s == "-infinity" || (expires.is_a?(Float) && expires == -Float::INFINITY)
       assert_equal [nil, nil], [telephone.confirm_policy, telephone.confirm_using_mfa]
+    end
+
+    test "should complete signup and log in on destroy when verified" do
+      user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
+      telephone = UserTelephone.create!(
+        number: "+10000000001",
+        user: user,
+        user_telephone_status_id: UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,
+      )
+
+      assert_difference("UserToken.count", 1) do
+        delete sign_app_up_telephone_url(telephone, ri: "jp")
+      end
+
+      assert_redirected_to sign_app_configuration_url(ri: "jp")
+      assert_equal UserStatus::VERIFIED_WITH_SIGN_UP, user.reload.status_id
+      assert UserToken.exists?(user_id: user.id, revoked_at: nil)
+      assert_predicate cookies[Auth::Base::ACCESS_COOKIE_KEY], :present?
+    end
+
+    test "should not complete signup on destroy when unverified" do
+      user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
+      telephone = UserTelephone.create!(
+        number: "+10000000002",
+        user: user,
+        user_telephone_status_id: UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP,
+      )
+
+      assert_no_difference("UserToken.count") do
+        delete sign_app_up_telephone_url(telephone, ri: "jp")
+      end
+
+      assert_response :unprocessable_content
+      assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, user.reload.status_id
     end
 
     private

@@ -7,7 +7,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  avatar_id  :bigint           not null
-#  client_id  :uuid             not null
+#  client_id  :bigint           not null
 #
 # Indexes
 #

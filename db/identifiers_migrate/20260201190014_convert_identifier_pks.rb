@@ -100,7 +100,7 @@ class ConvertIdentifierPks < ActiveRecord::Migration[8.0]
       t.text :public_key, null: false
       t.string :description, null: false
       t.bigint :sign_count, default: 0, null: false
-      t.uuid :external_id, null: false
+      t.bigint :external_id, null: false
       t.timestamps
       t.index :user_id
     end
@@ -111,7 +111,7 @@ class ConvertIdentifierPks < ActiveRecord::Migration[8.0]
       t.text :public_key, null: false
       t.string :description, null: false
       t.bigint :sign_count, default: 0, null: false
-      t.uuid :external_id, null: false
+      t.bigint :external_id, null: false
       t.timestamps
       t.index :staff_id
     end

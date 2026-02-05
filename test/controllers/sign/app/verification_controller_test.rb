@@ -12,7 +12,7 @@ class Sign::App::VerificationControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get show" do
-    get sign_app_verification_show_url(ri: "jp"), headers: @headers
+    get sign_app_verification_url(ri: "jp"), headers: @headers
     assert_response :success
   end
 end

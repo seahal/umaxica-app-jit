@@ -19,7 +19,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -56,7 +56,7 @@ class OrgTimelineAuditTest < ActiveSupport::TestCase
 
   test "org_timeline helper method returns nil when subject_type is not OrgTimeline" do
     audit = OrgTimelineAudit.new(
-      subject_id: "123",
+      subject_id: 123,
       subject_type: "SomeOtherType",
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
@@ -71,23 +71,23 @@ class OrgTimelineAuditTest < ActiveSupport::TestCase
       subject_type: "OrgTimeline",
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
-      event_id: "NEYO",
-      level_id: "NEYO",
+      event_id: OrgTimelineAuditEvent::NEYO,
+      level_id: OrgTimelineAuditLevel::NEYO,
     )
 
     assert_equal timeline, audit.org_timeline
   end
 
   test "org_timeline= helper method sets subject_id and subject_type" do
-    test_uuid = SecureRandom.uuid
+    test_id = 123
 
     timeline = OrgTimeline.new
-    timeline.define_singleton_method(:id) { test_uuid }
+    timeline.define_singleton_method(:id) { test_id }
 
     audit = OrgTimelineAudit.new
     audit.org_timeline = timeline
 
-    assert_equal test_uuid, audit.subject_id
+    assert_equal test_id, audit.subject_id
     assert_equal "OrgTimeline", audit.subject_type
   end
 end

@@ -26,14 +26,14 @@ module Sign
 
         def create
           raw_secret = session.delete(:user_secret_raw)
-          result = UserSecrets::Create.call(
+          UserSecrets::Create.call(
             actor: current_user,
             user: current_user,
             params: secret_params,
             raw_secret: raw_secret,
           )
 
-          flash[:raw_secret] = result.raw_secret
+          flash[:notice] = t(".created")
           redirect_to sign_app_configuration_secrets_path
         rescue ActiveRecord::RecordInvalid => e
           @secret = e.record
@@ -49,6 +49,7 @@ module Sign
             params: secret_params,
           )
 
+          flash[:notice] = t(".updated")
           redirect_to sign_app_configuration_secrets_path
         rescue ActiveRecord::RecordInvalid => e
           @secret = e.record.is_a?(UserSecret) ? e.record : @secret
@@ -57,6 +58,7 @@ module Sign
 
         def destroy
           UserSecrets::Destroy.call(actor: current_user, secret: @secret)
+          flash[:notice] = t(".destroyed")
           redirect_to sign_app_configuration_secrets_path, status: :see_other
         end
 

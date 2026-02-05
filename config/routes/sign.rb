@@ -31,6 +31,12 @@ scope module: :sign, as: :sign do
         # TODO: implement 2fa at show and update methods
         resources :emails, only: %i(new create edit update show destroy)
         resources :telephones, only: %i(new create edit update show destroy)
+        # Passkey registration during signup (required after SMS verification)
+        resources :passkeys, only: %i(new create) do
+          collection do
+            post :options
+          end
+        end
       end
 
       # Sign in/out

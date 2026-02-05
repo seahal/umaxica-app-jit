@@ -19,7 +19,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #

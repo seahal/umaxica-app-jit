@@ -8,7 +8,7 @@
 #  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  public_id  :uuid             default("00000000-0000-0000-0000-000000000000"), not null
+#  public_id  :string           default(""), not null
 #  staff_id   :bigint           not null
 #
 # Indexes

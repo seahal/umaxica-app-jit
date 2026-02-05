@@ -2,8 +2,8 @@
 
 class CreateAppTimelineCategories < ActiveRecord::Migration[8.2]
   def change
-    create_table :app_timeline_categories, id: :uuid do |t|
-      t.references :app_timeline, null: false, foreign_key: true, type: :uuid
+    create_table :app_timeline_categories do |t|
+      t.references :app_timeline, null: false, foreign_key: true, type: :bigint
       t.string :app_timeline_category_master_id, null: false, limit: 255
 
       t.timestamps

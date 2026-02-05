@@ -11,28 +11,28 @@ class ConvertMessagePks < ActiveRecord::Migration[8.0]
     # Recreate
     create_table :staff_messages do |t|
       t.bigint :staff_id, null: false # Bigint reference to staff
-      t.uuid :public_id
+      t.string :public_id, null: false, default: ""
       t.timestamps
       t.index :staff_id
     end
 
     create_table :user_messages do |t|
       t.bigint :user_id, null: false # Bigint reference to user
-      t.uuid :public_id
+      t.string :public_id, null: false, default: ""
       t.timestamps
       t.index :user_id
     end
 
     create_table :admin_messages do |t|
       t.bigint :staff_message_id
-      t.uuid :public_id
+      t.string :public_id, null: false, default: ""
       t.timestamps
       t.index :staff_message_id
     end
 
     create_table :client_messages do |t|
       t.bigint :user_message_id
-      t.uuid :public_id
+      t.string :public_id, null: false, default: ""
       t.timestamps
       t.index :user_message_id
     end

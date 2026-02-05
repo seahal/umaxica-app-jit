@@ -19,7 +19,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(4), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -47,6 +47,7 @@ class UserAudit < AuditRecord
   validates :subject_type, presence: true
 
   attribute :level_id, default: UserAuditLevel::NEYO
+  attribute :subject_id, :string
 
   validates :event_id, numericality: { only_integer: true }, allow_nil: true
   validates :level_id, numericality: { only_integer: true }, allow_nil: true

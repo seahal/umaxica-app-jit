@@ -140,7 +140,7 @@ class ConvertPrincipalPks < ActiveRecord::Migration[8.0]
       t.text "description", default: "", null: false
       t.string "key", default: "", null: false
       t.string "name", default: "", null: false
-      t.uuid "organization_id", null: false # Org might be external
+      t.bigint "organization_id", null: false # Org might be external
       t.datetime "updated_at", null: false
       t.index ["organization_id"], name: "index_roles_on_organization_id"
     end
@@ -208,11 +208,11 @@ class ConvertPrincipalPks < ActiveRecord::Migration[8.0]
       t.bigint "actor_id", default: 0, null: false
       t.string "actor_type", default: "", null: false
       t.datetime "created_at", null: false
-      t.integer "event_id", limit: 2, default: 0, null: false
+      t.bigint "event_id", default: 0, null: false
       t.string "ip_address", default: "", null: false
-      t.integer "level_id", limit: 2, default: 0, null: false
+      t.bigint "level_id", default: 0, null: false
       t.text "previous_value"
-      t.string "subject_id"
+      t.bigint "subject_id"
       t.string "subject_type", default: "", null: false
       t.datetime "timestamp", null: false
       t.datetime "updated_at", null: false
@@ -230,7 +230,7 @@ class ConvertPrincipalPks < ActiveRecord::Migration[8.0]
       t.datetime "left_at", default: -Float::INFINITY, null: false
       t.datetime "updated_at", null: false
       t.bigint "user_id", null: false
-      t.uuid "workspace_id", null: false
+      t.bigint "workspace_id", null: false
       t.index ["user_id", "workspace_id"], name: "index_user_memberships_on_user_id_and_workspace_id", unique: true
       t.index ["workspace_id"], name: "index_user_memberships_on_workspace_id"
     end

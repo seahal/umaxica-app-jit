@@ -19,7 +19,7 @@ class FixOperatorFksAndPks < ActiveRecord::Migration[8.2]
 
       # 4. Enforce NOT NULL on admins.public_id
       if table_exists?(:admins) && column_exists?(:admins, :public_id)
-        execute "UPDATE admins SET public_id = gen_random_uuid()::text WHERE public_id IS NULL OR public_id = ''"
+        execute "UPDATE admins SET public_id = '' WHERE public_id IS NULL OR public_id = ''"
         execute "ALTER TABLE admins ALTER COLUMN public_id SET NOT NULL"
       end
 

@@ -2,8 +2,8 @@
 
 class CreateComTimelineRevisions < ActiveRecord::Migration[8.2]
   def change
-    create_table :com_timeline_revisions, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.references :com_timeline, null: false, foreign_key: true, type: :uuid
+    create_table :com_timeline_revisions do |t|
+      t.references :com_timeline, null: false, foreign_key: true, type: :bigint
       t.string :permalink, null: false, limit: 200
       t.string :response_mode, null: false
       t.string :redirect_url

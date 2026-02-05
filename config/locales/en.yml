@@ -15,6 +15,59 @@ en:
       no_sessions: "No active sessions found."
       submit: "Revoke Selected Sessions and Log In"
       cancel: "Cancel"
+  sign:
+    app:
+      in:
+        session:
+          title: "Manage Sessions"
+          description: "You have reached the maximum number of concurrent sessions. To continue, revoke at least one active session."
+          restricted_notice: "Your session is restricted until you free up a session slot. You can only manage sessions."
+          restricted_write_blocked: "This action requires an active session. Please manage your sessions first."
+          active_sessions: "Active Sessions"
+          restricted_sessions: "Pending Sessions"
+          session_label: "Session"
+          pending_session: "Pending Session"
+          current: "Current"
+          created_at: "Created"
+          last_used_at: "Last used"
+          revoke: "Revoke"
+          revoke_selected: "Revoke Selected and Continue"
+          cancel: "Cancel and Log Out"
+          cancel_confirm: "Are you sure you want to cancel? You will be logged out."
+          no_sessions_selected: "Please select at least one session to revoke."
+          sessions_revoked: "Selected sessions have been revoked."
+          session_revoked: "Session has been revoked."
+          promoted: "Session activated. You can now use all features."
+          cancelled: "Session cancelled. Please log in again."
+          login_required: "Please log in to manage sessions."
+          invalid_session: "Invalid session reference."
+          cannot_revoke_current: "Cannot revoke current session this way. Use cancel to log out."
+    org:
+      in:
+        session:
+          title: "Manage Sessions"
+          description: "You have reached the maximum number of concurrent sessions. To continue, revoke at least one active session."
+          restricted_notice: "Your session is restricted until you free up a session slot. You can only manage sessions."
+          restricted_write_blocked: "This action requires an active session. Please manage your sessions first."
+          active_sessions: "Active Sessions"
+          restricted_sessions: "Pending Sessions"
+          session_label: "Session"
+          pending_session: "Pending Session"
+          current: "Current"
+          created_at: "Created"
+          last_used_at: "Last used"
+          revoke: "Revoke"
+          revoke_selected: "Revoke Selected and Continue"
+          cancel: "Cancel and Log Out"
+          cancel_confirm: "Are you sure you want to cancel? You will be logged out."
+          no_sessions_selected: "Please select at least one session to revoke."
+          sessions_revoked: "Selected sessions have been revoked."
+          session_revoked: "Session has been revoked."
+          promoted: "Session activated. You can now use all features."
+          cancelled: "Session cancelled. Please log in again."
+          login_required: "Please log in to manage sessions."
+          invalid_session: "Invalid session reference."
+          cannot_revoke_current: "Cannot revoke current session this way. Use cancel to log out."
   auth:
     step_up:
       required: "Re-authentication is required to continue."
@@ -53,6 +106,28 @@ en:
     confirm_destroy: "Are you sure you want to delete this?"
     passkey_successfully_updated: "Passkey updated successfully"
     passkey_successfully_destroyed: "Passkey deleted successfully"
+    cannot_delete_last_passkey: "Cannot delete the last passkey. You must have at least one passkey."
+  sign:
+    default_passkey_description: "My Passkey"
+    app:
+      registration:
+        telephone:
+          update:
+            passkey_required: "Phone verified. Please register a passkey to complete signup."
+        passkey:
+          title: "Register a Passkey"
+          description: "A passkey is required to secure your account. Your passkey will be used for future logins."
+          description_label: "Passkey Name (optional)"
+          description_placeholder: "e.g., My MacBook, iPhone"
+          register_button: "Register Passkey"
+          registering: "Starting registration..."
+          waiting_device: "Please follow the prompts on your device..."
+          verifying: "Verifying..."
+          success: "Passkey registered successfully!"
+          cancelled: "Registration was cancelled."
+          not_supported: "Passkeys are not supported on this device or browser."
+          error: "Failed to register passkey. Please try again."
+          session_expired: "Your session has expired. Please start the registration process again."
   uuid_pk:
     report:
       action_required: "Action required: Run migration to set DEFAULT uuidv7() for all tables."
@@ -176,6 +251,13 @@ en:
             back: "Back to list"
           edit:
             title: "Edit Passkey"
+        secrets:
+          create:
+            created: "Secret has been saved."
+          update:
+            updated: "Secret has been successfully updated."
+          destroy:
+            destroyed: "Secret has been successfully deleted."
       reauth:
         index:
           title: "Re-authentication Sessions"
@@ -399,6 +481,13 @@ en:
             back: "Back to list"
           edit:
             title: "Edit Passkey"
+        secrets:
+          create:
+            created: "Secret has been saved."
+          update:
+            updated: "Secret has been successfully updated."
+          destroy:
+            destroyed: "Secret has been successfully deleted."
       registration:
         email:
           destroy:

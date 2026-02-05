@@ -2,7 +2,7 @@
 
 class CreatePostVersions < ActiveRecord::Migration[8.2]
   def change
-    create_table :post_versions, id: :uuid, default: -> { "uuidv7()" } do |t|
+    create_table :post_versions do |t|
       t.string :post_id, null: false
       t.string :permalink, limit: 200, null: false
       t.string :response_mode, null: false
@@ -13,7 +13,7 @@ class CreatePostVersions < ActiveRecord::Migration[8.2]
       t.datetime :published_at, null: false
       t.datetime :expires_at, null: false
       t.string :edited_by_type
-      t.string :edited_by_id
+      t.bigint :edited_by_id
       t.string :public_id, null: false, default: ""
 
       t.timestamps

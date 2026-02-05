@@ -36,7 +36,7 @@ class AppTimelineAuditLevelTest < ActiveSupport::TestCase
   end
 
   test "can destroy when no audits exist" do
-    level = AppTimelineAuditLevel.create!(id: 2)
+    level = AppTimelineAuditLevel.create!(id: 99)
 
     assert_difference "AppTimelineAuditLevel.count", -1 do
       assert level.destroy

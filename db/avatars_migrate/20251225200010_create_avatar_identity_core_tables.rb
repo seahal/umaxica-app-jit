@@ -40,7 +40,7 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, null: false, default: -> { "'infinity'::timestamptz" }
       t.references :handle_assignment_status, type: :string, foreign_key: true
-      t.string :assigned_by_actor_id
+      t.bigint :assigned_by_actor_id
       t.timestamps
     end
 
@@ -57,7 +57,7 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, null: false, default: -> { "'infinity'::timestamptz" }
       t.references :avatar_moniker_status, type: :string, foreign_key: true
-      t.string :set_by_actor_id
+      t.bigint :set_by_actor_id
       t.timestamps
     end
 
@@ -67,12 +67,12 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
 
     create_table :avatar_memberships, id: :string do |t|
       t.string :avatar_id, null: false
-      t.string :actor_id, null: false
+      t.bigint :actor_id, null: false
       t.string :role_id, null: false
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, null: false, default: -> { "'infinity'::timestamptz" }
       t.references :avatar_membership_status, type: :string, foreign_key: true
-      t.string :granted_by_actor_id
+      t.bigint :granted_by_actor_id
       t.timestamps
     end
 
@@ -87,7 +87,7 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, null: false, default: -> { "'infinity'::timestamptz" }
       t.references :avatar_ownership_status, type: :string, foreign_key: true
-      t.string :transferred_by_actor_id
+      t.bigint :transferred_by_actor_id
       t.timestamps
     end
 
@@ -100,8 +100,8 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
       t.string :author_avatar_id, null: false
       t.references :post_status, type: :string, null: false, foreign_key: true
       t.text :body, null: false
-      t.string :created_by_actor_id, null: false
-      t.string :published_by_actor_id
+      t.bigint :created_by_actor_id, null: false
+      t.bigint :published_by_actor_id
       t.timestamptz :published_at
       t.timestamps
     end
@@ -112,7 +112,7 @@ class CreateAvatarIdentityCoreTables < ActiveRecord::Migration[8.2]
 
     create_table :post_reviews, id: :string do |t|
       t.string :post_id, null: false
-      t.string :reviewer_actor_id, null: false
+      t.bigint :reviewer_actor_id, null: false
       t.references :post_review_status, type: :string, null: false, foreign_key: true
       t.text :comment
       t.timestamptz :decided_at

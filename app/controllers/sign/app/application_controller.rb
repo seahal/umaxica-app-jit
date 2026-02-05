@@ -11,6 +11,8 @@ module Sign
 
       protect_from_forgery with: :exception
 
+      rescue_from ActionController::InvalidCrossOriginRequest, with: :handle_csrf_failure
+
       allow_browser versions: :modern
 
       guest_only!
@@ -19,6 +21,15 @@ module Sign
       prepend_before_action :transparent_refresh_access_token, unless: -> { request.format.json? }
 
       private
+
+      def handle_csrf_failure
+        if request.format.json?
+          render json: { error: I18n.t("errors.invalid_authenticity_token", default: "セッションが期限切れです。ページを再読み込みしてください。") },
+                 status: :unprocessable_content
+        else
+          raise ActionController::InvalidCrossOriginRequest
+        end
+      end
 
       # Redirect logged-in users from guest_only! pages to the configuration page
       def after_login_path

@@ -77,7 +77,8 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     end
 
     assert_redirected_to sign_app_configuration_secrets_url(ri: "jp")
-    assert_predicate flash[:raw_secret], :present?
+    assert_predicate flash[:notice], :present?
+    assert_nil flash[:raw_secret], "raw secret must not be exposed in flash"
   end
 
   test "should update secret and redirect to index" do
@@ -86,6 +87,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
           headers: authenticated_headers
 
     assert_redirected_to sign_app_configuration_secrets_url(ri: "jp")
+    assert_predicate flash[:notice], :present?
     @user_secret.reload
     assert_equal "Updated Secret", @user_secret.name
   end
@@ -94,6 +96,8 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     delete sign_app_configuration_secret_url(@user_secret, ri: "jp"), headers: authenticated_headers
 
     assert_response :see_other
+    assert_redirected_to sign_app_configuration_secrets_url(ri: "jp")
+    assert_predicate flash[:notice], :present?
   end
 
   test "URL uses public_id not numeric ID" do

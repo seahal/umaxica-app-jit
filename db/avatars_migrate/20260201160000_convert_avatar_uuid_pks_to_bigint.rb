@@ -54,7 +54,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
       t.bigint :active_handle_id, null: false # FK to handles
       t.string :avatar_status_id
       t.integer :capability_id, limit: 2, default: 0, null: false
-      t.uuid :client_id # External UUID
+      t.bigint :client_id # External UUID
       t.datetime :created_at, null: false
       t.jsonb :image_data, default: {}, null: false
       t.integer :lock_version, default: 0, null: false
@@ -78,7 +78,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
       t.integer :avatar_moniker_status_id, limit: 2
       t.datetime :created_at, null: false
       t.string :moniker, null: false
-      t.string :set_by_actor_id
+      t.bigint :set_by_actor_id
       t.datetime :updated_at, null: false
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, default: ::Float::INFINITY, null: false
@@ -90,11 +90,11 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :avatar_memberships do |t| # implicit id: :bigint
-      t.string :actor_id, null: false # String/UUID
+      t.bigint :actor_id, null: false # String/UUID
       t.bigint :avatar_id, null: false # FK
       t.integer :avatar_membership_status_id, limit: 2
       t.datetime :created_at, null: false
-      t.string :granted_by_actor_id
+      t.bigint :granted_by_actor_id
       t.integer :role_id, limit: 2, default: 0, null: false
       t.datetime :updated_at, null: false
       t.timestamptz :valid_from, null: false
@@ -112,7 +112,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
       t.integer :avatar_ownership_status_id, limit: 2
       t.datetime :created_at, null: false
       t.string :owner_organization_id, null: false # External
-      t.string :transferred_by_actor_id
+      t.bigint :transferred_by_actor_id
       t.datetime :updated_at, null: false
       t.timestamptz :valid_from, null: false
       t.timestamptz :valid_to, default: ::Float::INFINITY, null: false
@@ -124,7 +124,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :handle_assignments do |t| # implicit id: :bigint
-      t.string :assigned_by_actor_id
+      t.bigint :assigned_by_actor_id
       t.bigint :avatar_id, null: false # FK
       t.datetime :created_at, null: false
       t.integer :handle_assignment_status_id, limit: 2
@@ -145,11 +145,11 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
       t.bigint :author_avatar_id, null: false # FK
       t.text :body, null: false
       t.datetime :created_at, null: false
-      t.string :created_by_actor_id, null: false
+      t.bigint :created_by_actor_id, null: false
       t.integer :post_status_id, limit: 2, default: 0, null: false
       t.string :public_id, null: false
       t.timestamptz :published_at
-      t.string :published_by_actor_id
+      t.bigint :published_by_actor_id
       t.datetime :updated_at, null: false
 
       t.index [:author_avatar_id, :created_at], name: "index_posts_on_author_avatar_id_and_created_at", order: { created_at: :desc }
@@ -164,7 +164,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
       t.timestamptz :decided_at
       t.bigint :post_id, null: false # FK
       t.integer :post_review_status_id, limit: 2, default: 0, null: false
-      t.string :reviewer_actor_id, null: false
+      t.bigint :reviewer_actor_id, null: false
       t.datetime :updated_at, null: false
 
       t.index [:post_id, :reviewer_actor_id], name: "index_post_reviews_on_post_id_and_reviewer_actor_id", unique: true
@@ -177,7 +177,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
       t.text :body
       t.datetime :created_at, null: false
       t.string :description
-      t.string :edited_by_id
+      t.bigint :edited_by_id
       t.string :edited_by_type
       t.datetime :expires_at, null: false
       t.string :permalink, limit: 200, null: false
@@ -198,7 +198,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
       t.datetime :created_at, null: false
       t.string :role, limit: 50, default: "viewer", null: false
       t.datetime :updated_at, null: false
-      t.uuid :user_id, null: false # External UUID
+      t.bigint :user_id, null: false # External UUID
 
       t.index %i(avatar_id user_id role), name: "index_avatar_assignments_unique", unique: true
       t.index :avatar_id, name: "index_avatar_assignments_unique_affiliation", unique: true, where: "((role)::text = 'affiliation'::text)"
@@ -256,7 +256,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
 
     create_table :client_avatar_accesses do |t|
       t.bigint :avatar_id, null: false
-      t.uuid :client_id, null: false
+      t.bigint :client_id, null: false
       t.datetime :created_at, null: false
       t.datetime :updated_at, null: false
 
@@ -267,7 +267,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
 
     create_table :client_avatar_deletions do |t|
       t.bigint :avatar_id, null: false
-      t.uuid :client_id, null: false
+      t.bigint :client_id, null: false
       t.datetime :created_at, null: false
       t.datetime :updated_at, null: false
 
@@ -278,7 +278,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
 
     create_table :client_avatar_extractions do |t|
       t.bigint :avatar_id, null: false
-      t.uuid :client_id, null: false
+      t.bigint :client_id, null: false
       t.datetime :created_at, null: false
       t.datetime :updated_at, null: false
 
@@ -289,7 +289,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
 
     create_table :client_avatar_impersonations do |t|
       t.bigint :avatar_id, null: false
-      t.uuid :client_id, null: false
+      t.bigint :client_id, null: false
       t.datetime :created_at, null: false
       t.datetime :updated_at, null: false
 
@@ -300,7 +300,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
 
     create_table :client_avatar_oversights do |t|
       t.bigint :avatar_id, null: false
-      t.uuid :client_id, null: false
+      t.bigint :client_id, null: false
       t.datetime :created_at, null: false
       t.datetime :updated_at, null: false
 
@@ -311,7 +311,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
 
     create_table :client_avatar_suspensions do |t|
       t.bigint :avatar_id, null: false
-      t.uuid :client_id, null: false
+      t.bigint :client_id, null: false
       t.datetime :created_at, null: false
       t.datetime :updated_at, null: false
 
@@ -322,7 +322,7 @@ class ConvertAvatarUuidPksToBigint < ActiveRecord::Migration[8.2]
 
     create_table :client_avatar_visibilities do |t|
       t.bigint :avatar_id, null: false
-      t.uuid :client_id, null: false
+      t.bigint :client_id, null: false
       t.datetime :created_at, null: false
       t.datetime :updated_at, null: false
 

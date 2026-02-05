@@ -109,11 +109,16 @@ module Sign
           case intent
           when "link"
             Rails.logger.debug { "[OmniAuth] Link intent - redirecting to configuration" }
+            default_notice = I18n.t(
+              "sign.app.social.sessions.link.default",
+              provider: provider_name,
+              default: "%{provider} linked",
+            )
             redirect_to sign_app_configuration_path,
                         notice: I18n.t(
                           "sign.app.social.sessions.link.success",
                           provider: provider_name,
-                          default: "#{provider_name} linked",
+                          default: default_notice,
                         )
           when "reauth"
             Rails.logger.debug { "[OmniAuth] Reauth intent - signing in with reauth" }

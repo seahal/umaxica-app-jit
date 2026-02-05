@@ -2,8 +2,8 @@
 
 class UpdateComContactRelations < ActiveRecord::Migration[8.2]
   def up
-    add_column :com_contact_emails, :com_contact_id, :uuid
-    add_column :com_contact_telephones, :com_contact_id, :uuid
+    add_column :com_contact_emails, :com_contact_id, :bigint
+    add_column :com_contact_telephones, :com_contact_id, :bigint
 
     add_index :com_contact_emails, :com_contact_id
     add_index :com_contact_telephones, :com_contact_id

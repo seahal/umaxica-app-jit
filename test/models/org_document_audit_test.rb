@@ -19,7 +19,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -56,7 +56,7 @@ class OrgDocumentAuditTest < ActiveSupport::TestCase
 
   test "org_document helper method returns nil when subject_type is not OrgDocument" do
     audit = OrgDocumentAudit.new(
-      subject_id: "123",
+      subject_id: 123,
       subject_type: "SomeOtherType",
       occurred_at: Time.current,
       expires_at: 1.year.from_now,
@@ -79,15 +79,15 @@ class OrgDocumentAuditTest < ActiveSupport::TestCase
   end
 
   test "org_document= helper method sets subject_id and subject_type" do
-    test_uuid = SecureRandom.uuid
+    test_id = 123
 
     doc = OrgDocument.new
-    doc.define_singleton_method(:id) { test_uuid }
+    doc.define_singleton_method(:id) { test_id }
 
     audit = OrgDocumentAudit.new
     audit.org_document = doc
 
-    assert_equal test_uuid, audit.subject_id
+    assert_equal test_id, audit.subject_id
     assert_equal "OrgDocument", audit.subject_type
   end
 end

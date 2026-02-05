@@ -2,9 +2,9 @@
 
 class CreateReauthSessions < ActiveRecord::Migration[8.2]
   def change
-    create_table :reauth_sessions, id: :uuid, if_not_exists: true do |t|
+    create_table :reauth_sessions, if_not_exists: true do |t|
       t.string :actor_type, null: false
-      t.uuid :actor_id, null: false
+      t.bigint :actor_id, null: false
       t.string :scope, null: false
       t.text :return_to, null: false
       t.string :method, null: false

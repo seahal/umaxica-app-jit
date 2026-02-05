@@ -45,10 +45,54 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
     assert_not_nil json["challenge_id"]
     assert_not_nil json["options"]
+    assert_kind_of String, json["options"]["challenge"]
+    assert_kind_of String, json["options"]["user"]["id"]
+
+    if json["options"]["excludeCredentials"].is_a?(Array)
+      json["options"]["excludeCredentials"].each do |credential|
+        assert_kind_of String, credential["id"]
+      end
+    end
 
     # Check session
     assert_not_nil session[:passkey_challenges][json["challenge_id"]]
     assert_equal "registration", session[:passkey_challenges][json["challenge_id"]]["purpose"]
+  end
+
+  # Case D-2b: JSON response format validation (regression test for Base64URL encoding bugs)
+  test "options returns valid Base64URL encoded values" do
+    post options_sign_app_configuration_passkeys_path(ri: "jp"), headers: @headers
+
+    assert_response :ok
+    json = response.parsed_body
+    options = json["options"]
+
+    # Verify challenge is Base64URL encoded
+    challenge = options["challenge"]
+    assert_match(/\A[A-Za-z0-9_-]+\z/, challenge, "challenge should be Base64URL format")
+    padding_needed = (4 - (challenge.length % 4)) % 4
+    assert_operator padding_needed, :<=, 2,
+                    "challenge should have valid Base64URL padding (0-2 chars), but would need #{padding_needed}"
+
+    # Verify user.id is Base64URL encoded
+    user_id = options["user"]["id"]
+    assert_match(/\A[A-Za-z0-9_-]+\z/, user_id, "user.id should be Base64URL format")
+    user_id_padding = (4 - (user_id.length % 4)) % 4
+    assert_operator user_id_padding, :<=, 2,
+                    "user.id should have valid Base64URL padding, but would need #{user_id_padding}"
+
+    # Verify no duplicate keys in JSON (regression test for symbol/string key mismatch)
+    json_string = response.body
+    challenge_count = json_string.scan(/"challenge"/).count
+    assert_equal 1, challenge_count, "JSON should contain exactly one 'challenge' key (found #{challenge_count})"
+
+    # Verify excludeCredentials IDs are properly encoded
+    if options["excludeCredentials"].is_a?(Array)
+      options["excludeCredentials"].each_with_index do |credential, index|
+        cred_id = credential["id"]
+        assert_match(/\A[A-Za-z0-9_-]+\z/, cred_id, "excludeCredentials[#{index}].id should be Base64URL format")
+      end
+    end
   end
 
   # Case D-3: Untrusted origin

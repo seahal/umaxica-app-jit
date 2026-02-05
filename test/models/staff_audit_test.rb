@@ -19,7 +19,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(1), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -185,7 +185,7 @@ class StaffAuditTest < ActiveSupport::TestCase
 
     audit.staff = @staff
 
-    assert_equal @staff.id.to_s, audit.subject_id
+    assert_equal @staff.id, audit.subject_id
     assert_equal "Staff", audit.subject_type
     assert_equal @staff, audit.staff
   end

@@ -16,8 +16,8 @@ class FixDatabaseConsistencyIdentityRelations < ActiveRecord::Migration[8.2]
 
     if table_exists?(:departments)
       add_column :departments, :department_status_id, :string, limit: 255 unless column_exists?(:departments, :department_status_id)
-      add_column :departments, :workspace_id, :uuid unless column_exists?(:departments, :workspace_id)
-      add_column :departments, :parent_id, :uuid unless column_exists?(:departments, :parent_id)
+      add_column :departments, :workspace_id, :bigint unless column_exists?(:departments, :workspace_id)
+      add_column :departments, :parent_id, :bigint unless column_exists?(:departments, :parent_id)
 
       add_index :departments, :department_status_id, algorithm: :concurrently unless index_exists?(:departments, :department_status_id)
       add_index :departments, :workspace_id, algorithm: :concurrently unless index_exists?(:departments, :workspace_id)

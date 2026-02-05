@@ -2,8 +2,8 @@
 
 class CreateClientAvatarVisibilities < ActiveRecord::Migration[8.2]
   def change
-    create_table :client_avatar_visibilities, id: :uuid do |t|
-      t.references :client, null: false, type: :uuid
+    create_table :client_avatar_visibilities do |t|
+      t.references :client, null: false, type: :bigint
       t.references :avatar, null: false, foreign_key: { to_table: :avatars, primary_key: :id }, type: :string
 
       t.timestamps

@@ -1,4 +1,107 @@
-<div>
-  <h1 class="font-bold text-4xl">Sign::App::In::Sessions#show</h1>
-  <p>Find me in app/views/sign/app/in/sessions/show.html.erb</p>
+<div class="max-w-2xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-4"><%= t("sign.app.in.session.title") %></h1>
+
+  <% if current_session_restricted? %>
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+      <div class="flex">
+        <div class="ml-3">
+          <p class="text-sm text-yellow-700">
+            <%= t("sign.app.in.session.restricted_notice") %>
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <p class="text-gray-600 mb-6"><%= t("sign.app.in.session.description") %></p>
+
+  <%= form_with url: sign_app_in_session_path, method: :patch, class: "space-y-6" do |form| %>
+    <% if @active_sessions.present? %>
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-3 bg-gray-50 border-b">
+          <h2 class="text-lg font-medium text-gray-900">
+            <%= t("sign.app.in.session.active_sessions") %>
+            <span class="text-sm font-normal text-gray-500">
+              (<%= @active_sessions.count %>/<%= UserToken::MAX_SESSIONS_PER_USER %>)
+            </span>
+          </h2>
+        </div>
+        <ul class="divide-y divide-gray-200">
+          <% @active_sessions.each do |session| %>
+            <li class="px-4 py-4 flex items-center justify-between">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                  <%= t("sign.app.in.session.session_label") %>
+                  <% if session.public_id == @current_session_public_id %>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <%= t("sign.app.in.session.current") %>
+                    </span>
+                  <% end %>
+                </p>
+                <p class="text-sm text-gray-500">
+                  <%= t("sign.app.in.session.created_at") %>: <%= l(session.created_at, format: :short) %>
+                </p>
+                <% if session.last_used_at %>
+                  <p class="text-sm text-gray-500">
+                    <%= t("sign.app.in.session.last_used_at") %>: <%= l(session.last_used_at, format: :short) %>
+                  </p>
+                <% end %>
+              </div>
+              <div class="ml-4 flex-shrink-0">
+                <% if session.public_id != @current_session_public_id %>
+                  <label class="inline-flex items-center">
+                    <%= check_box_tag "revoke_refs[]", session.signed_ref, false,
+                                      class: "h-4 w-4 text-indigo-600 border-gray-300 rounded" %>
+                    <span class="ml-2 text-sm text-gray-600"><%= t("sign.app.in.session.revoke") %></span>
+                  </label>
+                <% end %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <% if @restricted_sessions.present? %>
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-3 bg-yellow-50 border-b">
+          <h2 class="text-lg font-medium text-yellow-800">
+            <%= t("sign.app.in.session.restricted_sessions") %>
+          </h2>
+        </div>
+        <ul class="divide-y divide-gray-200">
+          <% @restricted_sessions.each do |session| %>
+            <li class="px-4 py-4 flex items-center justify-between">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                  <%= t("sign.app.in.session.pending_session") %>
+                  <% if session.public_id == @current_session_public_id %>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <%= t("sign.app.in.session.current") %>
+                    </span>
+                  <% end %>
+                </p>
+                <p class="text-sm text-gray-500">
+                  <%= t("sign.app.in.session.created_at") %>: <%= l(session.created_at, format: :short) %>
+                </p>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="flex justify-between items-center pt-4">
+      <% if current_session_restricted? %>
+        <%= link_to t("sign.app.in.session.cancel"),
+                    sign_app_in_session_path,
+                    method: :delete,
+                    data: { turbo_method: :delete, turbo_confirm: t("sign.app.in.session.cancel_confirm") },
+                    class: "text-sm text-gray-600 hover:text-gray-900" %>
+      <% end %>
+
+      <%= form.submit t("sign.app.in.session.revoke_selected"),
+                      class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+    </div>
+  <% end %>
 </div>

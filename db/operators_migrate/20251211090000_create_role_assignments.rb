@@ -2,10 +2,10 @@
 
 class CreateRoleAssignments < ActiveRecord::Migration[8.2]
   def change
-    create_table :role_assignments, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.uuid :user_id
-      t.uuid :staff_id
-      t.uuid :role_id, null: false
+    create_table :role_assignments do |t|
+      t.bigint :user_id
+      t.bigint :staff_id
+      t.bigint :role_id, null: false
 
       t.timestamps
     end

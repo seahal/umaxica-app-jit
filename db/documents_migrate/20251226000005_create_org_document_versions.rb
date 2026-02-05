@@ -2,8 +2,8 @@
 
 class CreateOrgDocumentVersions < ActiveRecord::Migration[8.2]
   def change
-    create_table :org_document_versions, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.references :org_document, null: false, foreign_key: true, type: :uuid
+    create_table :org_document_versions do |t|
+      t.references :org_document, null: false, foreign_key: true, type: :bigint
       t.string :permalink, null: false, limit: 200
       t.string :response_mode, null: false
       t.string :redirect_url

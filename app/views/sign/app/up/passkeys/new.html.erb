@@ -1,0 +1,196 @@
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">
+      <%= t("sign.app.registration.passkey.title") %>
+    </h2>
+    <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+      <%= t("sign.app.registration.passkey.description") %>
+    </p>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white dark:bg-gray-800 px-6 py-8 shadow rounded-lg sm:px-10">
+      <div class="space-y-6">
+        <div>
+          <label for="passkey_description" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">
+            <%= t("sign.app.registration.passkey.description_label") %>
+          </label>
+          <div class="mt-2">
+            <input type="text"
+                   id="passkey_description"
+                   name="description"
+                   placeholder="<%= t('sign.app.registration.passkey.description_placeholder') %>"
+                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:bg-gray-700 dark:text-white dark:ring-gray-600 sm:text-sm sm:leading-6">
+          </div>
+        </div>
+
+        <div>
+          <button type="button"
+                  id="register-passkey-btn"
+                  class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400">
+            <%= t("sign.app.registration.passkey.register_button") %>
+          </button>
+        </div>
+
+        <div id="passkey-error" class="hidden text-sm text-red-600 dark:text-red-400"></div>
+        <div id="passkey-status" class="hidden text-sm text-gray-600 dark:text-gray-400"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const registerBtn = document.getElementById('register-passkey-btn');
+  const descriptionInput = document.getElementById('passkey_description');
+  const errorDiv = document.getElementById('passkey-error');
+  const statusDiv = document.getElementById('passkey-status');
+
+  function showError(message) {
+    errorDiv.textContent = message;
+    errorDiv.classList.remove('hidden');
+    statusDiv.classList.add('hidden');
+  }
+
+  function showStatus(message) {
+    statusDiv.textContent = message;
+    statusDiv.classList.remove('hidden');
+    errorDiv.classList.add('hidden');
+  }
+
+  function hideMessages() {
+    errorDiv.classList.add('hidden');
+    statusDiv.classList.add('hidden');
+  }
+
+  registerBtn.addEventListener('click', async function() {
+    hideMessages();
+    showStatus('<%= t("sign.app.registration.passkey.registering") %>');
+    registerBtn.disabled = true;
+
+    try {
+      // Get CSRF token
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+      // Get registration options from server
+      const optionsResponse = await fetch('<%= options_sign_app_up_passkeys_path %>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        }
+      });
+
+      if (!optionsResponse.ok) {
+        const errorData = await optionsResponse.json();
+        throw new Error(errorData.error || 'Failed to get registration options');
+      }
+
+      const { challenge_id, options } = await optionsResponse.json();
+
+      // Decode challenge and user.id for WebAuthn
+      options.challenge = base64UrlToArrayBuffer(options.challenge);
+      options.user.id = base64UrlToArrayBuffer(options.user.id);
+      if (options.excludeCredentials) {
+        options.excludeCredentials = options.excludeCredentials.map(cred => ({
+          ...cred,
+          id: base64UrlToArrayBuffer(cred.id)
+        }));
+      }
+
+      showStatus('<%= t("sign.app.registration.passkey.waiting_device") %>');
+
+      // Create credential using WebAuthn API
+      const credential = await navigator.credentials.create({ publicKey: options });
+
+      showStatus('<%= t("sign.app.registration.passkey.verifying") %>');
+
+      // Prepare credential data for server
+      const credentialData = {
+        id: credential.id,
+        rawId: arrayBufferToBase64Url(credential.rawId),
+        type: credential.type,
+        authenticatorAttachment: credential.authenticatorAttachment,
+        response: {
+          clientDataJSON: arrayBufferToBase64Url(credential.response.clientDataJSON),
+          attestationObject: arrayBufferToBase64Url(credential.response.attestationObject)
+        },
+        clientExtensionResults: credential.getClientExtensionResults()
+      };
+
+      if (credential.response.getTransports) {
+        credentialData.transports = credential.response.getTransports();
+      }
+
+      // Send credential to server for verification
+      const verifyResponse = await fetch('<%= sign_app_up_passkeys_path %>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify({
+          challenge_id: challenge_id,
+          credential: credentialData,
+          description: descriptionInput.value || null,
+          ri: '<%= params[:ri] %>'
+        })
+      });
+
+      const result = await verifyResponse.json();
+
+      if (verifyResponse.ok && result.status === 'ok') {
+        showStatus('<%= t("sign.app.registration.passkey.success") %>');
+        // Redirect to configuration page
+        window.location.href = result.redirect_url;
+      } else {
+        throw new Error(result.error || 'Verification failed');
+      }
+    } catch (error) {
+      console.error('Passkey registration error:', error);
+      if (error.name === 'NotAllowedError') {
+        showError('<%= t("sign.app.registration.passkey.cancelled") %>');
+      } else if (error.name === 'NotSupportedError') {
+        showError('<%= t("sign.app.registration.passkey.not_supported") %>');
+      } else {
+        showError(error.message || '<%= t("sign.app.registration.passkey.error") %>');
+      }
+    } finally {
+      registerBtn.disabled = false;
+    }
+  });
+
+  // Helper functions for base64url encoding/decoding
+  function base64UrlToArrayBuffer(input, label = 'value') {
+    if (typeof input === 'string') {
+      const base64 = input.replace(/-/g, '+').replace(/_/g, '/');
+      const padding = '='.repeat((4 - base64.length % 4) % 4);
+      const binary = atob(base64 + padding);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    if (input instanceof ArrayBuffer) {
+      return input;
+    }
+
+    if (Array.isArray(input)) {
+      return Uint8Array.from(input).buffer;
+    }
+
+    throw new TypeError(`Expected ${label} to be base64url string, ArrayBuffer, or byte array`);
+  }
+
+  function arrayBufferToBase64Url(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  }
+});
+</script>

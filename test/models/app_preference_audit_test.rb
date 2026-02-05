@@ -17,7 +17,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -62,7 +62,7 @@ class AppPreferenceAuditTest < ActiveSupport::TestCase
   test "can set app_preference" do
     new_pref = app_preferences(:two)
     @audit.app_preference = new_pref
-    assert_equal new_pref.id.to_s, @audit.subject_id
+    assert_equal new_pref.id, @audit.subject_id
     assert_equal "AppPreference", @audit.subject_type
     assert_equal new_pref, @audit.app_preference
   end

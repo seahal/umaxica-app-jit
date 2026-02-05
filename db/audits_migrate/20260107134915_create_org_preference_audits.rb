@@ -2,13 +2,13 @@
 
 class CreateOrgPreferenceAudits < ActiveRecord::Migration[8.2]
   def change
-    create_table :org_preference_audits, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.string :subject_id, null: false
+    create_table :org_preference_audits do |t|
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
-      t.uuid :actor_id, null: false, default: "00000000-0000-0000-0000-000000000000"
+      t.bigint :actor_id, null: false, default: 0
       t.text :actor_type, null: false, default: ""
-      t.string :event_id, limit: 255, null: false, default: "NEYO"
-      t.string :level_id, limit: 255, null: false, default: "NEYO"
+      t.bigint :event_id, null: false, default: 0
+      t.bigint :level_id, null: false, default: 0
       t.datetime :occurred_at, null: false, default: -> { "CURRENT_TIMESTAMP" }
       t.datetime :expires_at, null: false, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }
       t.inet :ip_address, null: false, default: "0.0.0.0"

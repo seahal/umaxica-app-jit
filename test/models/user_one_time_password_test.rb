@@ -32,11 +32,8 @@ require "test_helper"
 class UserOneTimePasswordTest < ActiveSupport::TestCase
   def setup
     @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
+    UserOneTimePasswordStatus.find_or_create_by!(id: UserOneTimePasswordStatus::NEYO)
     @status = UserOneTimePasswordStatus.find(UserOneTimePasswordStatus::ACTIVE)
-    # Ensure NEYO status exists for defaults
-    unless UserOneTimePasswordStatus.exists?("NEYO")
-      UserOneTimePasswordStatus.create!(id: "NEYO")
-    end
 
     @private_key = "test-secret-key-12345"
     @last_otp_at = Time.current

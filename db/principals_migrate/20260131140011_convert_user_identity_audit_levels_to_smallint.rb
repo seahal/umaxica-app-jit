@@ -5,7 +5,7 @@ class ConvertUserIdentityAuditLevelsToSmallint < ActiveRecord::Migration[8.2]
     safety_assured do
       add_column :user_identity_audit_levels, :id_small, :integer, limit: 2
 
-      execute("UPDATE user_identity_audit_levels SET id_small = 0 WHERE id IN ('NEYO', '')")
+      execute("UPDATE user_identity_audit_levels SET id_small = 0 WHERE id::text IN ('NEYO', '')")
       execute <<~SQL.squish
         WITH numbered AS (
           SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS rn

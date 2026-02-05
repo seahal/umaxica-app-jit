@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import { normalizePublicKeyOptions } from "controllers/webauthn_utils";
 
 export default class extends Controller {
 	static targets = ["challengeId", "credentialJson", "error", "status"];
@@ -24,7 +25,7 @@ export default class extends Controller {
 		try {
 			this.showStatus("認証器でPasskeyを確認中...");
 			const options = JSON.parse(this.optionsValue);
-			const publicKey = this.decodeOptions(options);
+			const publicKey = normalizePublicKeyOptions(options);
 			const credential = await navigator.credentials.get({ publicKey });
 
 			this.credentialJsonTarget.value = JSON.stringify(
@@ -46,23 +47,6 @@ export default class extends Controller {
 		}
 	}
 
-	decodeOptions(options) {
-		const decoded = { ...options };
-
-		if (options.challenge) {
-			decoded.challenge = this.base64urlToBuffer(options.challenge);
-		}
-
-		if (options.allowCredentials) {
-			decoded.allowCredentials = options.allowCredentials.map((cred) => ({
-				...cred,
-				id: this.base64urlToBuffer(cred.id),
-			}));
-		}
-
-		return decoded;
-	}
-
 	encodeCredential(credential) {
 		const response = credential.response;
 
@@ -81,17 +65,6 @@ export default class extends Controller {
 			},
 			clientExtensionResults: credential.getClientExtensionResults(),
 		};
-	}
-
-	base64urlToBuffer(base64url) {
-		const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
-		const padding = "=".repeat((4 - (base64.length % 4)) % 4);
-		const binary = atob(base64 + padding);
-		const bytes = new Uint8Array(binary.length);
-		for (let i = 0; i < binary.length; i++) {
-			bytes[i] = binary.charCodeAt(i);
-		}
-		return bytes.buffer;
 	}
 
 	bufferToBase64url(buffer) {

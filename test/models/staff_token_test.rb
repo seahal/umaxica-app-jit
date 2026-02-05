@@ -15,6 +15,7 @@
 #  refresh_token_generation :integer          default(0), not null
 #  revoked_at               :datetime
 #  rotated_at               :datetime
+#  status                   :string(20)       default("active"), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  public_id                :string(21)       default(""), not null
@@ -34,6 +35,7 @@
 #  index_staff_tokens_on_staff_id_and_last_step_up_at  (staff_id,last_step_up_at)
 #  index_staff_tokens_on_staff_token_kind_id           (staff_token_kind_id)
 #  index_staff_tokens_on_staff_token_status_id         (staff_token_status_id)
+#  index_staff_tokens_on_status                        (status)
 #
 # Foreign Keys
 #
@@ -117,14 +119,16 @@ class StaffTokenTest < ActiveSupport::TestCase
 
   test "enforces maximum concurrent sessions per staff" do
     staff = Staff.create!(staff_status: StaffStatus.find(StaffStatus::NEYO))
-    StaffToken::MAX_SESSIONS_PER_STAFF.times do
+    # Create tokens up to the total max (active + restricted)
+    StaffToken::MAX_TOTAL_SESSIONS_PER_STAFF.times do
       StaffToken.create!(staff: staff)
     end
 
     extra_token = StaffToken.new(staff: staff)
 
     assert_not extra_token.valid?
-    assert_includes extra_token.errors[:base], "exceeds maximum concurrent sessions per staff (#{StaffToken::MAX_SESSIONS_PER_STAFF})"
+    assert_includes extra_token.errors[:base],
+                    "exceeds maximum concurrent sessions per staff (#{StaffToken::MAX_TOTAL_SESSIONS_PER_STAFF})"
   end
 
   test "refresh token digest updates and authenticates" do

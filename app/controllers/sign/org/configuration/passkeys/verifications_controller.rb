@@ -22,11 +22,11 @@ module Sign
 
             with_challenge(challenge_id, purpose: :registration) do |challenge|
               credential = WebAuthn::Credential.from_create(credential_params.to_h)
-              credential.verify(
-                challenge,
-                rp_id: webauthn_rp_id,
-                expected_origin: webauthn_origin,
-              )
+              with_webauthn_config do
+                credential.verify(
+                  challenge,
+                )
+              end
 
               passkey = current_staff.staff_passkeys.new(
                 webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false),

@@ -182,13 +182,13 @@ module Sign
         end
 
         def verify_passkey(credential, passkey, challenge)
-          credential.verify(
-            challenge,
-            public_key: passkey.public_key,
-            sign_count: passkey.sign_count,
-            rp_id: webauthn_rp_id,
-            expected_origin: webauthn_origin,
-          )
+          with_webauthn_config do
+            credential.verify(
+              challenge,
+              public_key: passkey.public_key,
+              sign_count: passkey.sign_count,
+            )
+          end
           passkey.update!(sign_count: credential.sign_count)
         end
 

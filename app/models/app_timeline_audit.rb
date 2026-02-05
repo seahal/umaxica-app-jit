@@ -17,9 +17,9 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  actor_id       :bigint           default(0), not null
-#  event_id       :bigint           default(0), not null
-#  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  event_id       :bigint           default(1), not null
+#  level_id       :bigint           default(1), not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -52,6 +52,9 @@ class AppTimelineAudit < AuditRecord
   validates :subject_type, presence: true
   validates :event_id, length: { maximum: 255 }
   validates :level_id, length: { maximum: 255 }
+
+  attribute :event_id, default: AppTimelineAuditEvent::NEYO
+  attribute :level_id, default: AppTimelineAuditLevel::NEYO
 
   def app_timeline
     AppTimeline.find(subject_id) if subject_type == "AppTimeline"

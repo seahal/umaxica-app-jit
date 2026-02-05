@@ -56,7 +56,7 @@ module Auth
       )
 
       assert result
-      assert UserAudit.exists?(event_id: UserAuditEvent::LOGGED_IN, subject_id: @user.id.to_s)
+      assert UserAudit.exists?(event_id: UserAuditEvent::LOGGED_IN, subject_id: @user.id)
     end
 
     test "write returns false on failure" do
@@ -79,7 +79,7 @@ module Auth
       assert_not result, "write should return false when audit save fails"
 
       # Verify audit was not saved
-      assert_not UserAudit.exists?(event_id: invalid_event_id, subject_id: @user.id.to_s),
+      assert_not UserAudit.exists?(event_id: invalid_event_id, subject_id: @user.id),
                  "Failed audit should not be saved to database"
     end
 

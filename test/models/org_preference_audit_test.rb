@@ -17,7 +17,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -67,7 +67,7 @@ class OrgPreferenceAuditTest < ActiveSupport::TestCase
   test "can set org_preference" do
     new_pref = org_preferences(:two)
     @audit.org_preference = new_pref
-    assert_equal new_pref.id.to_s, @audit.subject_id
+    assert_equal new_pref.id, @audit.subject_id
     assert_equal "OrgPreference", @audit.subject_type
     assert_equal new_pref, @audit.org_preference
   end

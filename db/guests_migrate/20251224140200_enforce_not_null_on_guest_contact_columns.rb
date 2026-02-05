@@ -239,21 +239,21 @@ class EnforceNotNullOnGuestContactColumns < ActiveRecord::Migration[8.2]
     audit_tables.each do |table|
       reversible do |dir|
         dir.up do
-          execute "UPDATE #{table} SET actor_id = '#{NIL_UUID}' WHERE actor_id IS NULL"
+          execute "UPDATE #{table} SET actor_id = 0 WHERE actor_id IS NULL"
           execute "UPDATE #{table} SET actor_type = '' WHERE actor_type IS NULL"
-          execute "UPDATE #{table} SET parent_id = '#{NIL_UUID}' WHERE parent_id IS NULL"
+          execute "UPDATE #{table} SET parent_id = 0 WHERE parent_id IS NULL"
         end
       end
 
       change_table table.to_sym, bulk: true do |t|
-        t.change_null :actor_id, false, NIL_UUID
-        t.change_default :actor_id, from: nil, to: NIL_UUID
+        t.change_null :actor_id, false, 0
+        t.change_default :actor_id, from: nil, to: 0
 
         t.change_null :actor_type, false, ''
         t.change_default :actor_type, from: nil, to: ''
 
-        t.change_null :parent_id, false, NIL_UUID
-        t.change_default :parent_id, from: nil, to: NIL_UUID
+        t.change_null :parent_id, false, 0
+        t.change_default :parent_id, from: nil, to: 0
       end
     end
   end

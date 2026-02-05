@@ -101,7 +101,7 @@ class ConvertAuditChildFkColumnsToSmallint < ActiveRecord::Migration[8.2]
       UPDATE #{table_name}
       SET #{small_column_name} = COALESCE(parent_table.id_small, 0)
       FROM #{parent_table} AS parent_table
-      WHERE #{table_name}.#{column} = parent_table.id
+      WHERE #{table_name}.#{column}::text = parent_table.id::text
     SQL
 
     execute <<~SQL.squish

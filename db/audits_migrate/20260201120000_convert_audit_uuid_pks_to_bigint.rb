@@ -66,20 +66,20 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
 
   def recreate_audit_tables
     create_table :app_contact_histories, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
-      t.uuid :parent_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :parent_id, default: 0, null: false
       t.integer :position, default: 0, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_app_contact_histories_on_actor_id_and_occurred_at"
@@ -94,18 +94,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :app_document_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_app_document_audits_on_actor_id_and_occurred_at"
@@ -120,18 +120,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :app_preference_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_app_preference_audits_on_actor_id_and_occurred_at"
@@ -146,18 +146,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :app_timeline_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_app_timeline_audits_on_actor_id_and_occurred_at"
@@ -172,20 +172,20 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :com_contact_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
-      t.uuid :parent_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :parent_id, default: 0, null: false
       t.integer :position, default: 0, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_com_contact_audits_on_actor_id_and_occurred_at"
@@ -200,18 +200,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :com_document_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_com_document_audits_on_actor_id_and_occurred_at"
@@ -226,18 +226,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :com_preference_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_com_preference_audits_on_actor_id_and_occurred_at"
@@ -252,18 +252,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :com_timeline_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_com_timeline_audits_on_actor_id_and_occurred_at"
@@ -278,20 +278,20 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :org_contact_histories, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
-      t.uuid :parent_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :parent_id, default: 0, null: false
       t.integer :position, default: 0, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_org_contact_histories_on_actor_id_and_occurred_at"
@@ -306,18 +306,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :org_document_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_org_document_audits_on_actor_id_and_occurred_at"
@@ -332,18 +332,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :org_preference_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_org_preference_audits_on_actor_id_and_occurred_at"
@@ -358,18 +358,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :org_timeline_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_org_timeline_audits_on_actor_id_and_occurred_at"
@@ -384,18 +384,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :staff_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_staff_identity_audits_on_actor_id_and_occurred_at"
@@ -411,18 +411,18 @@ class ConvertAuditUuidPksToBigint < ActiveRecord::Migration[8.2]
     end
 
     create_table :user_audits, id: :bigint do |t|
-      t.uuid :actor_id, default: "00000000-0000-0000-0000-000000000000", null: false
+      t.bigint :actor_id, default: 0, null: false
       t.text :actor_type, default: "", null: false
       t.jsonb :context, default: {}, null: false
       t.datetime :created_at, null: false
       t.text :current_value, default: "", null: false
-      t.integer :event_id, limit: 2, default: 0, null: false
+      t.bigint :event_id, default: 0, null: false
       t.datetime :expires_at, default: -> { "(CURRENT_TIMESTAMP + 'P7Y'::interval)" }, null: false
       t.inet :ip_address, default: "0.0.0.0", null: false
-      t.integer :level_id, limit: 2, default: 0, null: false
+      t.bigint :level_id, default: 0, null: false
       t.datetime :occurred_at, default: -> { "CURRENT_TIMESTAMP" }, null: false
       t.text :previous_value, default: "", null: false
-      t.string :subject_id, null: false
+      t.bigint :subject_id, null: false
       t.text :subject_type, null: false
       t.datetime :updated_at, null: false
       t.index [:actor_id, :occurred_at], name: "index_user_identity_audits_on_actor_id_and_occurred_at"

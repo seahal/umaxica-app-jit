@@ -167,6 +167,13 @@ ja:
             back: "一覧に戻る"
           edit:
             title: "パスキーを編集"
+        secrets:
+          create:
+            created: "シークレットキーを保存しました。"
+          update:
+            updated: "正常に変更されました。"
+          destroy:
+            destroyed: "正常に削除されました。"
       reauth:
         index:
           title: "再認証セッション"
@@ -400,6 +407,13 @@ ja:
             back: "一覧に戻る"
           edit:
             title: "パスキーを編集"
+        secrets:
+          create:
+            created: "シークレットキーを保存しました。"
+          update:
+            updated: "正常に変更されました。"
+          destroy:
+            destroyed: "正常に削除されました。"
   apex:
     org:
       preferences:

@@ -27,7 +27,7 @@ class FixClientsStatusRelations < ActiveRecord::Migration[8.2]
 
         # Enforce NOT NULL on public_id (backfill with UUIDv7)
         if column_exists?(:clients, :public_id)
-          execute "UPDATE clients SET public_id = gen_random_uuid()::text WHERE public_id IS NULL OR public_id = ''"
+          execute "UPDATE clients SET public_id = '' WHERE public_id IS NULL OR public_id = ''"
           execute "ALTER TABLE clients ALTER COLUMN public_id SET NOT NULL"
         end
       end

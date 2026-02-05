@@ -15,7 +15,7 @@ class SeedUserReferenceData < ActiveRecord::Migration[8.2]
 
   USER_DEFINITIONS = {
     placeholder: {
-      id: "00000000-0000-0000-0000-000000000000",
+      id: "0",
       public_id: "placeholder_id",
       status_id: "NEYO",
     },

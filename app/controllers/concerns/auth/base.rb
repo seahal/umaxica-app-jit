@@ -470,7 +470,7 @@ module Auth
       @current_resource = load_current_resource
     end
 
-    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def log_in(resource, record_login_audit: true, token_kind_id: "BROWSER_WEB", require_totp_check: true)
       reset_session
 
@@ -479,10 +479,14 @@ module Auth
         return totp_result if totp_result
       end
 
-      # Check session limit before creating token
-      if session_limit_exceeded?(resource)
+      # Determine if we need to create a restricted session
+      is_restricted = session_limit_exceeded?(resource)
+
+      if is_restricted
+        # Enforce invariant: max 1 pending/restricted session per user
+        # Revoke any existing restricted sessions before creating a new one
+        revoke_existing_restricted_sessions(resource)
         store_pending_login_resource(resource)
-        return { status: :session_limit_exceeded, resource: resource }
       end
 
       kind_id = token_kind_id
@@ -499,7 +503,9 @@ module Auth
           end
       end
 
-      token_record = create_login_token_record(resource, kind_id)
+      # Create token with appropriate status
+      token_status = is_restricted ? token_class::STATUS_RESTRICTED : token_class::STATUS_ACTIVE
+      token_record = create_login_token_record(resource, kind_id, status: token_status)
 
       # Generate SHA3-based refresh token
       refresh_plain = token_record.rotate_refresh_token!
@@ -522,18 +528,26 @@ module Auth
         ip: request&.remote_ip,
         user_agent: request&.user_agent,
         request_id: request&.request_id,
-        meta: { auth_method: token_kind_id },
+        meta: { auth_method: token_kind_id, restricted: is_restricted },
       )
 
       record_audit(AUDIT_EVENTS[:logged_in], resource: resource) if record_login_audit
 
-      {
+      result = {
         status: :success,
         access_token: access_token,
         refresh_token: refresh_plain,
         token_type: "Bearer",
         expires_in: ACCESS_TOKEN_TTL.to_i,
       }
+
+      # If session is restricted, indicate need for session management
+      if is_restricted
+        result[:restricted] = true
+        result[:session_management_required] = true
+      end
+
+      result
     end
 
     def refresh_access_token(refresh_plain)
@@ -669,7 +683,9 @@ module Auth
     included do
       # Important: prepend first so this runs before other before_action hooks.
       prepend_before_action :enforce_access_policy! if respond_to?(:prepend_before_action)
-      helper_method :current_account, :current_session_public_id if respond_to?(:helper_method)
+      if respond_to?(:helper_method)
+        helper_method :current_account, :current_session_public_id, :current_session_restricted?
+      end
     end
 
     class_methods do
@@ -1214,12 +1230,15 @@ module Auth
       end
     end
 
-    def create_login_token_record(resource, token_kind_id)
+    def create_login_token_record(resource, token_kind_id, status: nil)
       TokenRecord.connected_to(role: :writing) do
         token_attributes = { resource_foreign_key => resource.id }
         # Determine kind column based on resource type (user_token_kind_id or staff_token_kind_id)
         kind_column = "#{resource_type}_token_kind_id"
         token_attributes[kind_column] = token_kind_id if token_class.column_names.include?(kind_column)
+
+        # Set status if provided (for restricted sessions)
+        token_attributes[:status] = status if status.present?
 
         token_class.create!(token_attributes)
       end
@@ -1250,16 +1269,35 @@ module Auth
       end
     end
 
-    # Count active (non-revoked) sessions for a resource
+    # Count active (non-revoked, non-restricted) sessions for a resource
     def count_active_sessions(resource)
       TokenRecord.connected_to(role: :reading) do
         if resource.is_a?(User)
-          UserToken.where(user_id: resource.id, revoked_at: nil).count
+          UserToken.active_status.where(user_id: resource.id).count
         elsif resource.is_a?(Staff)
-          StaffToken.where(staff_id: resource.id, revoked_at: nil).count
+          StaffToken.active_status.where(staff_id: resource.id).count
         else
           0
         end
+      end
+    end
+
+    # Revoke any existing restricted sessions for the resource
+    # Enforces invariant: max 1 restricted session per user
+    def revoke_existing_restricted_sessions(resource)
+      TokenRecord.connected_to(role: :writing) do
+        scope = find_restricted_sessions_scope(resource)
+        return unless scope
+
+        scope.find_each(&:revoke!)
+      end
+    end
+
+    def find_restricted_sessions_scope(resource)
+      if resource.is_a?(User)
+        UserToken.restricted_status.where(user_id: resource.id)
+      elsif resource.is_a?(Staff)
+        StaffToken.restricted_status.where(staff_id: resource.id)
       end
     end
 
@@ -1270,6 +1308,27 @@ module Auth
       elsif resource.is_a?(Staff)
         session[:pending_login_staff_id] = resource.id
       end
+    end
+
+    # Get the current session token record
+    def current_session
+      return @current_session if defined?(@current_session)
+      return nil unless current_session_public_id
+
+      find_logic = -> { token_class.find_by(public_id: current_session_public_id, revoked_at: nil) }
+
+      @current_session =
+        if Rails.env.test?
+          # Ensure visibility by using writing connection which holds the test transaction
+          TokenRecord.connected_to(role: :writing, &find_logic)
+        else
+          TokenRecord.connected_to(role: :reading, &find_logic)
+        end
+    end
+
+    # Check if the current session is restricted
+    def current_session_restricted?
+      current_session&.restricted?
     end
 
     def handle_auth_required_json(options)

@@ -84,6 +84,35 @@ module Sign::App::In
       assert_equal "authentication", session[:passkey_challenges][json["challenge_id"]]["purpose"]
     end
 
+    # Case F-3b: JSON response format validation for authentication options (regression test)
+    test "options returns valid Base64URL encoded challenge" do
+      email = UserEmail.find_by(user: @user).address
+
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { email: email }
+
+      assert_response :ok
+      json = response.parsed_body
+      options = json["options"]
+
+      # Verify challenge is Base64URL encoded
+      challenge = options["challenge"]
+      assert_match(/\A[A-Za-z0-9_-]+\z/, challenge, "challenge should be Base64URL format")
+      padding_needed = (4 - (challenge.length % 4)) % 4
+      assert_operator padding_needed, :<=, 2,
+                      "challenge should have valid Base64URL padding (0-2 chars), but would need #{padding_needed}"
+
+      # Verify no duplicate keys in JSON
+      json_string = response.body
+      challenge_count = json_string.scan(/"challenge"/).count
+      assert_equal 1, challenge_count, "JSON should contain exactly one 'challenge' key (found #{challenge_count})"
+
+      # Verify allowCredentials IDs are properly encoded
+      options["allowCredentials"].each_with_index do |credential, index|
+        cred_id = credential["id"]
+        assert_match(/\A[A-Za-z0-9_-]+\z/, cred_id, "allowCredentials[#{index}].id should be Base64URL format")
+      end
+    end
+
     # Case G-1: Verification success
     test "verification logs user in on success" do
       assert_not_nil @passkey, "Passkey must exist"

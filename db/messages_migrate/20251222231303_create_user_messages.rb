@@ -2,9 +2,9 @@
 
 class CreateUserMessages < ActiveRecord::Migration[8.2]
   def change
-    create_table :user_messages, id: :uuid, default: -> { "uuidv7()" } do |t|
-      t.uuid :user_id
-      t.uuid :public_id
+    create_table :user_messages do |t|
+      t.bigint :user_id, null: false
+      t.string :public_id, null: false, default: ""
 
       t.timestamps
     end

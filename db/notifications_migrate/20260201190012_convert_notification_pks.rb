@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class ConvertNotificationPks < ActiveRecord::Migration[8.0]
-  NIL_UUID = "00000000-0000-0000-0000-000000000000"
-
   def up
 
     # Drop
@@ -14,27 +12,27 @@ class ConvertNotificationPks < ActiveRecord::Migration[8.0]
     # Recreate
     create_table :staff_notifications do |t|
       t.bigint :staff_id, null: false # Changed from uuid to bigint (Staff is now bigint)
-      t.uuid :public_id, default: NIL_UUID, null: false
+      t.string :public_id, null: false, default: ""
       t.timestamps
       t.index :staff_id
     end
 
     create_table :user_notifications do |t|
       t.bigint :user_id, null: false # Changed from uuid to bigint (User is now bigint)
-      t.uuid :public_id, default: NIL_UUID, null: false
+      t.string :public_id, null: false, default: ""
       t.timestamps
       t.index :user_id
     end
 
     create_table :admin_notifications do |t|
-      t.uuid :public_id, default: NIL_UUID, null: false
+      t.string :public_id, null: false, default: ""
       t.bigint :staff_notification_id, null: false
       t.timestamps
       t.index :staff_notification_id
     end
 
     create_table :client_notifications do |t|
-      t.uuid :public_id, default: NIL_UUID, null: false
+      t.string :public_id, null: false, default: ""
       t.bigint :user_notification_id, null: false
       t.timestamps
       t.index :user_notification_id

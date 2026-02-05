@@ -22,6 +22,7 @@
 # Indexes
 #
 #  index_com_document_revisions_on_com_document_id_and_created_at  (com_document_id,created_at)
+#  index_com_document_revisions_on_edited_by_id                    (edited_by_id)
 #  index_com_document_revisions_on_public_id                       (public_id) UNIQUE
 #
 # Foreign Keys

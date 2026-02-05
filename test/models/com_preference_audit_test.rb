@@ -17,7 +17,7 @@
 #  actor_id       :bigint           default(0), not null
 #  event_id       :bigint           default(0), not null
 #  level_id       :bigint           default(0), not null
-#  subject_id     :string           not null
+#  subject_id     :bigint           not null
 #
 # Indexes
 #
@@ -68,7 +68,7 @@ class ComPreferenceAuditTest < ActiveSupport::TestCase
   test "can set com_preference" do
     new_pref = com_preferences(:two)
     @audit.com_preference = new_pref
-    assert_equal new_pref.id.to_s, @audit.subject_id
+    assert_equal new_pref.id, @audit.subject_id
     assert_equal "ComPreference", @audit.subject_type
     assert_equal new_pref, @audit.com_preference
   end

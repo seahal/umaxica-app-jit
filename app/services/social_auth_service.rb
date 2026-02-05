@@ -436,7 +436,7 @@ class SocialAuthService
     end
 
     if @current_user.respond_to?(:user_secrets)
-      auth_methods_count += @current_user.user_secrets.where(user_secret_status_id: UserSecretStatus::ACTIVE).count
+      auth_methods_count += @current_user.user_secrets.where(user_identity_secret_status_id: UserSecretStatus::ACTIVE).count
     end
 
     auth_methods_count <= 1

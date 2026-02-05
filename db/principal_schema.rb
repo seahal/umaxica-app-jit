@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_05_140539) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_05_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -82,7 +82,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_05_140539) do
     t.text "description", default: "", null: false
     t.string "key", default: "", null: false
     t.string "name", default: "", null: false
-    t.uuid "organization_id", null: false
+    t.bigint "organization_id", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_roles_on_organization_id"
   end
@@ -198,7 +198,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_05_140539) do
     t.string "ip_address", default: "", null: false
     t.bigint "level_id", default: 0, null: false
     t.text "previous_value"
-    t.string "subject_id"
+    t.bigint "subject_id"
     t.string "subject_type", default: "", null: false
     t.datetime "timestamp", null: false
     t.datetime "updated_at", null: false
@@ -215,7 +215,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_05_140539) do
     t.datetime "left_at", default: -::Float::INFINITY, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.uuid "workspace_id", null: false
+    t.bigint "workspace_id", null: false
     t.index ["user_id", "workspace_id"], name: "index_user_memberships_on_user_id_and_workspace_id", unique: true
     t.index ["workspace_id"], name: "index_user_memberships_on_workspace_id"
   end
@@ -244,6 +244,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_05_140539) do
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
     t.uuid "external_id", null: false
+    t.datetime "last_used_at"
     t.text "public_key", null: false
     t.bigint "sign_count", default: 0, null: false
     t.datetime "updated_at", null: false

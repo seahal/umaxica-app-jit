@@ -2,7 +2,7 @@
 
 class CreateAvatarBlocks < ActiveRecord::Migration[8.2]
   def change
-    create_table :avatar_blocks, id: :uuid do |t|
+    create_table :avatar_blocks do |t|
       t.references :blocker_avatar,
                    null: false,
                    foreign_key: { to_table: :avatars, validate: false },

@@ -3,33 +3,114 @@
 require "test_helper"
 
 class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
-  test "edit without gate redirects to login with alert" do
-    get edit_sign_app_in_email_url(ri: "jp"),
-        headers: browser_headers.merge("Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+  fixtures :users
 
-    assert_redirected_to new_sign_app_in_email_url(ri: "jp")
+  setup do
+    @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @user = users(:one)
+    # Clean up any existing tokens for this user
+    UserToken.where(user: @user).delete_all
   end
 
-  test "update without gate redirects to login with alert" do
-    patch sign_app_in_email_url(ri: "jp"),
-          params: { revoke_session_ids: ["some-id"] },
-          headers: browser_headers.merge("Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+  # Test: show without authentication redirects to login
+  test "show without authentication redirects to login" do
+    get sign_app_in_session_url(ri: "jp"),
+        headers: browser_headers.merge("Host" => @host)
 
-    assert_redirected_to new_sign_app_in_email_url(ri: "jp")
+    assert_redirected_to new_sign_app_in_url(ri: "jp")
   end
 
-  test "edit for secret session without gate redirects to login" do
-    get new_sign_app_in_secret_url(ri: "jp"),
-        headers: browser_headers.merge("Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+  # Test: show with restricted session displays session management
+  test "show with restricted session displays sessions" do
+    # Create a restricted session
+    token = create_restricted_session(@user)
+    headers = as_user_headers_with_token(@user, token, host: @host)
+
+    get sign_app_in_session_url(ri: "jp"), headers: headers
 
     assert_response :success
   end
 
-  test "update for secret session without gate redirects to login" do
-    post sign_app_in_secret_url(ri: "jp"),
-         params: { revoke_session_ids: ["some-id"] },
-         headers: browser_headers.merge("Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+  # Test: update without authentication redirects to login
+  test "update without authentication redirects to login" do
+    patch sign_app_in_session_url(ri: "jp"),
+          params: { revoke_refs: ["some-ref"] },
+          headers: browser_headers.merge("Host" => @host)
 
-    assert_response :unprocessable_content
+    assert_redirected_to new_sign_app_in_url(ri: "jp")
+  end
+
+  # Test: destroy without authentication redirects to login
+  test "destroy without authentication redirects to login" do
+    delete sign_app_in_session_url(ri: "jp"),
+           headers: browser_headers.merge("Host" => @host)
+
+    assert_redirected_to new_sign_app_in_url(ri: "jp")
+  end
+
+  # Test: destroy cancels restricted session and logs out
+  test "destroy cancels restricted session and redirects to login" do
+    token = create_restricted_session(@user)
+    headers = as_user_headers_with_token(@user, token, host: @host)
+
+    delete sign_app_in_session_url(ri: "jp"), headers: headers
+
+    assert_redirected_to new_sign_app_in_url(ri: "jp")
+
+    # Verify the session was revoked
+    token.reload
+    assert_not_nil token.revoked_at
+    assert_equal UserToken::STATUS_REVOKED, token.status
+  end
+
+  # Test: update revokes selected sessions
+  test "update revokes selected sessions and promotes restricted session" do
+    # Create 2 active sessions first
+    active_token1 = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    active_token1.rotate_refresh_token!
+
+    active_token2 = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    active_token2.rotate_refresh_token!
+
+    # Create a restricted session (3rd session)
+    restricted_token = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
+    restricted_token.rotate_refresh_token!
+
+    headers = as_user_headers_with_token(@user, restricted_token, host: @host)
+
+    # Revoke one active session to make room
+    patch sign_app_in_session_url(ri: "jp"),
+          params: { revoke_refs: [active_token1.signed_ref] },
+          headers: headers
+
+    # The restricted session should be promoted to active
+    restricted_token.reload
+    assert_equal UserToken::STATUS_ACTIVE, restricted_token.status
+
+    # The revoked session should be marked as revoked
+    active_token1.reload
+    assert_not_nil active_token1.revoked_at
+  end
+
+  private
+
+  def create_restricted_session(user)
+    token = UserToken.create!(
+      user: user,
+      status: UserToken::STATUS_RESTRICTED,
+      user_token_status_id: UserTokenStatus::NEYO,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+    )
+    token.rotate_refresh_token!
+    token
+  end
+
+  def as_user_headers_with_token(user, token, host:)
+    access_token = Auth::Base::Token.encode(user, host: host, session_public_id: token.public_id)
+    browser_headers.merge(
+      "Host" => host,
+      "Authorization" => "Bearer #{access_token}",
+      "Cookie" => "#{Auth::Base::ACCESS_COOKIE_KEY}=#{access_token}",
+    )
   end
 end

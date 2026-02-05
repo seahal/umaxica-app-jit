@@ -2,7 +2,7 @@
 
 class CreateBillingStripeEvents < ActiveRecord::Migration[8.2]
   def change
-    create_table :billing_stripe_events, id: :uuid, default: -> { "uuidv7()" } do |t|
+    create_table :billing_stripe_events do |t|
       t.string :event_id, null: false
       t.string :event_type, null: false
       t.boolean :livemode, null: false, default: false

@@ -2,7 +2,7 @@
 
 class CreateComContacts < ActiveRecord::Migration[8.1]
   def change
-    create_table :com_contacts, id: :uuid, default: -> { "uuidv7()" } do |t|
+    create_table :com_contacts do |t|
       t.string :public_id, null: false, index: true, limit: 21
       t.string :token, null: false, index: true, default: '', limit: 32
       t.string      :token_digest, limit: 255

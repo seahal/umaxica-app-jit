@@ -104,12 +104,12 @@ module Sign
             # Parse credential from request
             credential = WebAuthn::Credential.from_create(credential_params.to_h)
 
-            # Verify the credential
-            credential.verify(
-              challenge,
-              rp_id: webauthn_rp_id,
-              expected_origin: webauthn_origin,
-            )
+            # Verify the credential with per-request configuration
+            with_webauthn_config do
+              credential.verify(
+                challenge,
+              )
+            end
 
             # Create the passkey record
             passkey = current_staff.staff_passkeys.new(

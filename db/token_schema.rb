@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_02_250001) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_05_150001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250001) do
     t.bigint "staff_id", null: false
     t.bigint "staff_token_kind_id", default: 0, null: false
     t.bigint "staff_token_status_id", default: 0, null: false
+    t.string "status", limit: 20, default: "active", null: false
     t.datetime "updated_at", null: false
     t.index ["compromised_at"], name: "index_staff_tokens_on_compromised_at"
     t.index ["public_id"], name: "index_staff_tokens_on_public_id", unique: true
@@ -64,6 +65,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250001) do
     t.index ["staff_id", "last_step_up_at"], name: "index_staff_tokens_on_staff_id_and_last_step_up_at"
     t.index ["staff_token_kind_id"], name: "index_staff_tokens_on_staff_token_kind_id"
     t.index ["staff_token_status_id"], name: "index_staff_tokens_on_staff_token_status_id"
+    t.index ["status"], name: "index_staff_tokens_on_status"
     t.check_constraint "staff_token_kind_id >= 0", name: "chk_staff_tokens_kind_id_positive"
     t.check_constraint "staff_token_status_id >= 0", name: "chk_staff_tokens_status_id_positive"
   end
@@ -87,6 +89,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250001) do
     t.integer "refresh_token_generation", default: 0, null: false
     t.datetime "revoked_at"
     t.datetime "rotated_at"
+    t.string "status", limit: 20, default: "active", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.bigint "user_token_kind_id", default: 0, null: false
@@ -97,6 +100,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_02_250001) do
     t.index ["refresh_token_digest"], name: "index_user_tokens_on_refresh_token_digest", unique: true
     t.index ["refresh_token_family_id"], name: "index_user_tokens_on_refresh_token_family_id"
     t.index ["revoked_at"], name: "index_user_tokens_on_revoked_at"
+    t.index ["status"], name: "index_user_tokens_on_status"
     t.index ["user_id", "last_step_up_at"], name: "index_user_tokens_on_user_id_and_last_step_up_at"
     t.index ["user_token_kind_id"], name: "index_user_tokens_on_user_token_kind_id"
     t.index ["user_token_status_id"], name: "index_user_tokens_on_user_token_status_id"

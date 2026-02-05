@@ -339,7 +339,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Record initial state
       initial_status = pref.status_id
-      initial_audit_count = audit_class.where(subject_id: pref.id.to_s).count
+      initial_audit_count = audit_class.where(subject_id: pref.id).count
 
       assert_equal 2, initial_status, "Initial status should be NEYO"
 
@@ -351,7 +351,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Verify database changes
       pref.reload
-      final_audit_count = audit_class.where(subject_id: pref.id.to_s).count
+      final_audit_count = audit_class.where(subject_id: pref.id).count
 
       assert_equal 1, pref.status_id, "Status should be DELETED after reset"
       assert_operator final_audit_count, :>, initial_audit_count,
@@ -359,7 +359,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
 
       # Verify audit log event
       event_class = "#{domain[:name].capitalize}PreferenceAuditEvent".constantize
-      audit = audit_class.where(subject_id: pref.id.to_s).order(id: :desc).first
+      audit = audit_class.where(subject_id: pref.id).order(id: :desc).first
       assert_equal event_class::RESET_BY_USER_DECISION, audit.event_id
     end
 

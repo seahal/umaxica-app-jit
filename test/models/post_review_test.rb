@@ -12,7 +12,7 @@
 #  updated_at            :datetime         not null
 #  post_id               :bigint           not null
 #  post_review_status_id :bigint           default(0), not null
-#  reviewer_actor_id     :string           not null
+#  reviewer_actor_id     :bigint           not null
 #
 # Indexes
 #

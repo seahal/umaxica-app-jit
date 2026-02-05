@@ -22,7 +22,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
   end
 
   create_table "app_contact_histories", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -32,10 +32,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "parent_id", default: 0, null: false
     t.integer "position", default: 0, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_app_contact_histories_on_actor_id_and_occurred_at"
@@ -56,7 +56,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
   end
 
   create_table "app_document_audits", force: :cascade do |t|
-    t.uuid "actor_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "actor_id", default: 0, null: false
     t.text "actor_type", default: "", null: false
     t.jsonb "context", default: {}, null: false
     t.datetime "created_at", null: false
@@ -67,7 +67,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_app_document_audits_on_actor_id_and_occurred_at"
@@ -99,7 +99,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_app_preference_audits_on_actor_id_and_occurred_at"
@@ -131,7 +131,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_app_timeline_audits_on_actor_id_and_occurred_at"
@@ -162,10 +162,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "parent_id", default: 0, null: false
     t.integer "position", default: 0, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_com_contact_audits_on_actor_id_and_occurred_at"
@@ -197,7 +197,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_com_document_audits_on_actor_id_and_occurred_at"
@@ -229,7 +229,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_com_preference_audits_on_actor_id_and_occurred_at"
@@ -261,7 +261,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_com_timeline_audits_on_actor_id_and_occurred_at"
@@ -292,10 +292,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.inet "ip_address", default: "0.0.0.0", null: false
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.uuid "parent_id", default: "00000000-0000-0000-0000-000000000000", null: false
+    t.bigint "parent_id", default: 0, null: false
     t.integer "position", default: 0, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_org_contact_histories_on_actor_id_and_occurred_at"
@@ -327,7 +327,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_org_document_audits_on_actor_id_and_occurred_at"
@@ -359,7 +359,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_org_preference_audits_on_actor_id_and_occurred_at"
@@ -391,7 +391,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_org_timeline_audits_on_actor_id_and_occurred_at"
@@ -423,7 +423,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_staff_identity_audits_on_actor_id_and_occurred_at"
@@ -456,7 +456,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_04_000001) do
     t.bigint "level_id", default: 0, null: false
     t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "previous_value", default: "", null: false
-    t.string "subject_id", null: false
+    t.bigint "subject_id", null: false
     t.text "subject_type", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id", "occurred_at"], name: "index_user_identity_audits_on_actor_id_and_occurred_at"

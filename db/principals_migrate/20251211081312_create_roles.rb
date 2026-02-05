@@ -2,7 +2,7 @@
 
 class CreateRoles < ActiveRecord::Migration[8.2]
   def change
-    create_table :roles, id: :uuid, default: -> { "uuidv7()" } do |t|
+    create_table :roles do |t|
       t.string :key
       t.string :name
       t.text :description

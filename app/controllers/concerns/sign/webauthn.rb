@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "base64"
+
 module Sign
   module Webauthn
     extend ActiveSupport::Concern
@@ -43,6 +45,28 @@ module Sign
       origin
     end
 
+    # Temporarily configures WebAuthn gem with per-request rp_id and origin.
+    # webauthn gem 3.x requires these to be set in WebAuthn.configuration
+    # during credential verification.
+    #
+    # @yield Block to execute with temporary configuration
+    def with_webauthn_config
+      original_allowed_origins = WebAuthn.configuration.allowed_origins
+      original_rp_id = WebAuthn.configuration.rp_id
+
+      begin
+        # Temporarily set configuration for this request
+        WebAuthn.configuration.allowed_origins = [webauthn_origin]
+        WebAuthn.configuration.rp_id = webauthn_rp_id
+
+        yield
+      ensure
+        # Restore original configuration
+        WebAuthn.configuration.allowed_origins = original_allowed_origins
+        WebAuthn.configuration.rp_id = original_rp_id
+      end
+    end
+
     # Creates a WebAuthn registration challenge for the given user/staff.
     #
     # @param resource [User, Staff] The user or staff to create credential for
@@ -58,7 +82,7 @@ module Sign
 
       options = WebAuthn::Credential.options_for_create(
         user: {
-          id: resource.id,
+          id: resource.id.to_s.b,
           name: resource_display_name(resource),
           display_name: resource_display_name(resource),
         },
@@ -76,7 +100,7 @@ module Sign
         purpose: :registration,
       )
 
-      [challenge_id, options]
+      [challenge_id, normalize_webauthn_options_for_json(options)]
     end
 
     # Creates a WebAuthn authentication challenge.
@@ -101,7 +125,7 @@ module Sign
         purpose: :authentication,
       )
 
-      [challenge_id, options]
+      [challenge_id, normalize_webauthn_options_for_json(options)]
     end
 
     # Executes a block with the challenge, then deletes it.
@@ -203,6 +227,70 @@ module Sign
       else
         resource.id.to_s
       end
+    end
+
+    def normalize_webauthn_options_for_json(options)
+      data = options.respond_to?(:as_json) ? options.as_json : options
+      normalized = data.deep_stringify_keys
+
+      source_challenge =
+        if options.respond_to?(:challenge)
+          options.challenge
+        else
+          normalized["challenge"]
+        end
+      normalized["challenge"] = normalize_webauthn_id(source_challenge)
+
+      if normalized["user"].is_a?(Hash)
+        source_user_id =
+          if options.respond_to?(:user) && options.user.respond_to?(:id)
+            options.user.id
+          else
+            normalized["user"]["id"]
+          end
+        # User IDs from the WebAuthn gem are raw bytes, not Base64URL encoded.
+        # Always force-encode to avoid passing numeric strings (e.g. "980190962")
+        # that match Base64URL character set but produce invalid padding in atob().
+        normalized["user"]["id"] = Base64.urlsafe_encode64(source_user_id.to_s.b, padding: false)
+      end
+
+      normalize_credential_list_ids!(normalized, "excludeCredentials")
+      normalize_credential_list_ids!(normalized, "allowCredentials")
+
+      normalized
+    end
+
+    def normalize_credential_list_ids!(data, key)
+      list = data[key] || data[key.underscore]
+      return if list.nil?
+      return unless list.is_a?(Array)
+
+      normalized_list =
+        list.map do |credential|
+          next credential unless credential.is_a?(Hash)
+
+          credential.merge("id" => normalize_webauthn_id(credential["id"]))
+        end
+
+      if data.key?(key)
+        data[key] = normalized_list
+      else
+        data[key.underscore] = normalized_list
+      end
+    end
+
+    def normalize_webauthn_id(value)
+      return value if value.nil?
+
+      if value.is_a?(String)
+        return value if value.match?(/\A[A-Za-z0-9_-]+\z/)
+
+        return Base64.urlsafe_encode64(value.b, padding: false)
+      end
+      return Base64.urlsafe_encode64(value.pack("C*"), padding: false) if value.is_a?(Array)
+      return Base64.urlsafe_encode64(value.to_s.b, padding: false) if value.is_a?(Integer)
+
+      value
     end
   end
 end
