@@ -29,7 +29,7 @@ module Auth
       return if step_up_satisfied?(scope: scope)
 
       flash[:alert] = I18n.t("auth.step_up.required")
-      reauth_new_path = am_i_staff? ? :new_sign_org_reauth_path : :new_sign_app_reauth_path
+      reauth_new_path = am_i_staff? ? :sign_org_verification_path : :sign_app_verification_path
       redirect_to send(
         reauth_new_path,
         scope: scope,

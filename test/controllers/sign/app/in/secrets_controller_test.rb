@@ -3,7 +3,7 @@
 require "test_helper"
 
 class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_statuses, :user_secret_kinds
+  fixtures :users, :user_statuses, :user_secret_kinds, :user_email_statuses
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")

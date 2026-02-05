@@ -22,7 +22,7 @@
       <% else %>
         <%= link_to t("sign.app.layout.nav.configuration"), sign_app_configuration_url(host: ENV['SIGN_SERVICE_URL']),
                     class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
-        <%= link_to t("sign.app.layout.nav.logout"), edit_sign_app_out_url(host: ENV['SIGN_SERVICE_URL']),
+        <%= link_to t("sign.app.layout.nav.logout"), edit_sign_app_configuration_out_url(host: ENV['SIGN_SERVICE_URL']),
                     class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
       <% end %>
     <% end %>

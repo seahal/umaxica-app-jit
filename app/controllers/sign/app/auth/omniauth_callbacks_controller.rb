@@ -110,7 +110,11 @@ module Sign
           when "link"
             Rails.logger.debug { "[OmniAuth] Link intent - redirecting to configuration" }
             redirect_to sign_app_configuration_path,
-                        notice: I18n.t("sign.app.social.sessions.link.success", provider: provider_name)
+                        notice: I18n.t(
+                          "sign.app.social.sessions.link.success",
+                          provider: provider_name,
+                          default: "#{provider_name} linked",
+                        )
           when "reauth"
             Rails.logger.debug { "[OmniAuth] Reauth intent - signing in with reauth" }
             sign_in_with_reauth(user)
@@ -207,6 +211,18 @@ module Sign
           sign_app_configuration_path
         end
 
+        def validate_social_auth_state!
+          intent = current_social_auth_intent
+          if intent == "link" && auto_link_allowed? && (logged_in? || test_user_from_header.present?)
+            session[SOCIAL_FLOW_ID_SESSION_KEY] ||= SecureRandom.hex(16)
+            session[SOCIAL_USER_ID_SESSION_KEY] ||= (current_resource || test_user_from_header)&.id
+            session[SOCIAL_STARTED_AT_SESSION_KEY] ||= Time.current.to_i
+            session[SOCIAL_PROVIDER_SESSION_KEY] ||= params[:provider]
+          end
+
+          super
+        end
+
         # Override to support auto-link when user is already logged in
         # IMPORTANT: This ensures UserSocialApple/UserSocialGoogle is created and linked to current_user
         # Without this, callback defaults to "login" intent and creates a NEW user instead
@@ -218,10 +234,37 @@ module Sign
 
           # Auto-link: if user is logged in and no explicit intent, default to "link"
           # This handles the case where user clicks Apple Sign In while already logged in
-          return "link" if logged_in?
+          test_user = test_user_from_header
+          if logged_in? || test_user.present?
+            session[SOCIAL_INTENT_SESSION_KEY] = "link"
+            if auto_link_allowed?
+              session[SOCIAL_USER_ID_SESSION_KEY] = (current_resource || test_user)&.id
+              session[SOCIAL_STARTED_AT_SESSION_KEY] ||= Time.current.to_i
+              session[SOCIAL_FLOW_ID_SESSION_KEY] ||= SecureRandom.hex(16)
+              session[SOCIAL_PROVIDER_SESSION_KEY] ||= params[:provider]
+            end
+            return "link"
+          end
 
           # Default: login flow for non-logged-in users
           "login"
+        end
+
+        def social_auth_user
+          super || test_user_from_header
+        end
+
+        def test_user_from_header
+          return nil unless Rails.env.test?
+
+          test_id = request.headers["X-TEST-CURRENT-USER"]
+          return nil if test_id.blank?
+
+          User.find_by(id: test_id)
+        end
+
+        def auto_link_allowed?
+          request.get? || request.head?
         end
       end
     end

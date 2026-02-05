@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 45ee3bf84f20af55b8619b5dcc22a5e22a4ac0e7
+  revision: 6174579627650c7464bdff52896e7b96806e362c
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -584,7 +584,7 @@ GEM
     opentelemetry-semantic_conventions (1.36.0)
       opentelemetry-api (~> 1.0)
     ostruct (0.6.3)
-    pagy (43.2.8)
+    pagy (43.2.9)
       json
       yaml
     parallel (1.27.0)
@@ -777,14 +777,14 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12914)
-      sorbet-static (= 0.6.12914)
-    sorbet-runtime (0.6.12914)
-    sorbet-static (0.6.12914-aarch64-linux)
-    sorbet-static (0.6.12914-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12914)
-      sorbet (= 0.6.12914)
-      sorbet-runtime (= 0.6.12914)
+    sorbet (0.6.12915)
+      sorbet-static (= 0.6.12915)
+    sorbet-runtime (0.6.12915)
+    sorbet-static (0.6.12915-aarch64-linux)
+    sorbet-static (0.6.12915-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12915)
+      sorbet (= 0.6.12915)
+      sorbet-runtime (= 0.6.12915)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)

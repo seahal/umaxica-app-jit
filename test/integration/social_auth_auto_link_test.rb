@@ -148,7 +148,6 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
 
     # Should redirect with alert (conflict)
     assert_response :redirect
-    follow_redirect!
     assert_match(/conflict|linked|already|別のユーザー/i, flash[:alert] || "") if flash[:alert]
 
     # userB should NOT have UserSocialApple
@@ -168,7 +167,7 @@ class SocialAuthAutoLinkTest < ActionDispatch::IntegrationTest
 
     # Callback without login (no headers)
     get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     assert_response :redirect
 

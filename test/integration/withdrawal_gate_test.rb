@@ -22,7 +22,7 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
       user: @withdrawn_user,
       user_token_status_id: UserTokenStatus::NEYO,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
-      public_id: "withdrawn_#{SecureRandom.hex(5)}",
+      public_id: "withdrawn_#{SecureRandom.hex(4)}",
       refresh_expires_at: 1.day.from_now,
       last_step_up_at: 1.minute.ago,
       last_step_up_scope: "withdrawal",
@@ -62,7 +62,7 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
   # Test 4: Logout should be allowed
   test "PRE_WITHDRAWAL user can logout" do
     # Assuming there's a logout endpoint - adjust path if different
-    delete sign_app_out_url, headers: @headers
+    delete sign_app_configuration_out_url, headers: @headers
 
     # Should not redirect to withdrawal page (allow logout)
     assert_response :redirect
@@ -92,7 +92,7 @@ class WithdrawalGateTest < ActionDispatch::IntegrationTest
       user: normal_user,
       user_token_status_id: UserTokenStatus::NEYO,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
-      public_id: "normal_#{SecureRandom.hex(5)}",
+      public_id: "normal_#{SecureRandom.hex(4)}",
       refresh_expires_at: 1.day.from_now,
       last_step_up_at: 1.minute.ago,
       last_step_up_scope: "withdrawal",

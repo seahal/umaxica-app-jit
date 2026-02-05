@@ -23,6 +23,11 @@ ja:
     default_user_name: ユーザー
     default_staff_name: スタッフ
     default_passkey_description: パスキー
+    shared:
+      sign_out:
+        title: "ログアウトしますか？"
+        button: "ログアウトします"
+        success: "ログアウトします"
     app:
       authentication:
         passkey:
@@ -224,11 +229,36 @@ ja:
           confirm_cancel: "キャンセルしますか？"
         success:
           complete: "再認証が完了しました"
-      exits:
+      verification:
+        index:
+          title: "検証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "検証"
+          description: "続行するには検証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+            email_otp: "メール（ワンタイムコード）"
+          submit: "続行"
+          back: "戻る"
         edit:
-          title: ログアウトしますか？
-        destroy:
-          success: ログアウトします
+          title: "検証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          back: "戻る"
+        success:
+          complete: "検証が完了しました"
     token_refresh:
       errors:
         missing_refresh_token: リフレッシュトークンが必要です
@@ -271,6 +301,35 @@ ja:
           confirm_cancel: "キャンセルしますか？"
         success:
           complete: "再認証が完了しました"
+      verification:
+        index:
+          title: "検証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "検証"
+          description: "続行するには検証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+          submit: "続行"
+          back: "戻る"
+        edit:
+          title: "検証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          back: "戻る"
+        success:
+          complete: "検証が完了しました"
       layout:
         nav:
           sign_up: 新規登録
@@ -441,11 +500,6 @@ ja:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
             success: 電話番号の確認が完了しました。
-      exits:
-        edit:
-          title: ログアウトしますか？
-        destroy:
-          success: ログアウトします
   languages:
     english: English
     japanese: 日本語
@@ -582,17 +636,13 @@ ja:
             label: 電話で登録
             create:
               verification_code_sent: 確認コードをSMSで送信しました。
+              turnstile_validation_failed: 認証に失敗しました。もう一度お試しください。
               locked: アカウントがロックされています。しばらく経ってから再度お試しください。
             edit:
               return_page: 戻る
               session_expired: セッションの有効期限が切れました。最初からやり直してください。
             update:
               success: 電話番号が確認されました。
-        exits:
-          edit:
-            title: ログアウトしますか？
-          destroy:
-            success: ログアウトします
         authentication:
           edit:
             title: 認証情報の編集

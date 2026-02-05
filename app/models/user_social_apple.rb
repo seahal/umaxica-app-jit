@@ -7,7 +7,6 @@
 #
 #  id                                   :bigint           not null, primary key
 #  expires_at                           :integer          not null
-#  image                                :string           default(""), not null
 #  last_authenticated_at                :datetime
 #  provider                             :string           default("apple"), not null
 #  refresh_token                        :string           default(""), not null
@@ -33,6 +32,8 @@
 
 class UserSocialApple < PrincipalRecord
   include SocialIdentifiable
+
+  self.ignored_columns += ["image"]
 
   alias_attribute :user_social_apple_status_id, :user_identity_social_apple_status_id
   attribute :user_identity_social_apple_status_id, default: UserSocialAppleStatus::ACTIVE
@@ -62,8 +63,6 @@ class UserSocialApple < PrincipalRecord
     identity = find_or_initialize_by(uid: auth.uid, provider: auth.provider)
 
     # Update attributes
-    # Apple might not provide image in the same way, but keeping consistency
-    identity.image = auth.info.respond_to?(:image) ? (auth.info.image.presence || "") : ""
     identity.token = auth.credentials.token
     identity.refresh_token = auth.credentials.refresh_token if auth.credentials.refresh_token.present?
     identity.expires_at = auth.credentials.expires_at
@@ -86,8 +85,6 @@ class UserSocialApple < PrincipalRecord
       expires_at: auth.credentials.expires_at,
       last_authenticated_at: Time.current,
     }
-    attrs[:image] =
-      auth.info.respond_to?(:image) ? (auth.info.image.presence || image.presence || "") : (image.presence || "")
     update!(attrs)
   end
 end

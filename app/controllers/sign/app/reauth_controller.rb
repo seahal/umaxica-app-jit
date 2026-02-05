@@ -52,7 +52,7 @@ module Sign
 
         if @reauth_session.save
           prepare_method_side_effects!(@reauth_session)
-          redirect_to edit_sign_app_reauth_path(@reauth_session, ri: params[:ri])
+          redirect_to sign_app_verification_path(ri: params[:ri])
         else
           render :new, status: :unprocessable_content
         end
@@ -76,7 +76,7 @@ module Sign
 
       def destroy
         @reauth_session.update!(status: "CANCELLED")
-        redirect_to new_sign_app_reauth_path(
+        redirect_to sign_app_verification_path(
           scope: @reauth_session.scope,
           return_to: @reauth_session.return_to,
           ri: params[:ri],

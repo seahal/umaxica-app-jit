@@ -1,0 +1,28 @@
+<% title t("sign.org.verification.edit.title") %>
+
+<div class="mx-auto max-w-xl px-4 py-10">
+  <h1 class="text-2xl font-bold text-slate-900"><%= t("sign.org.verification.edit.title") %></h1>
+  <p class="mt-2 text-sm text-slate-600"><%= t("sign.org.verification.edit.description") %></p>
+
+  <% if @reauth_session.errors.any? %>
+    <div class="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+      <%= @reauth_session.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <%= form_with url: sign_org_verification_totp_path(ri: params[:ri]), method: :post, data: { turbo: false } do |f| %>
+    <%= f.hidden_field :session_id, value: @reauth_session.id, name: "verification[session_id]" %>
+    <div class="mt-6">
+      <%= f.label :code, t("sign.org.verification.edit.code_label"), class: "block text-sm font-medium text-slate-900" %>
+      <%= f.text_field :code, inputmode: "numeric", autocomplete: "one-time-code", class: "mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm", placeholder: t("sign.org.verification.edit.code_placeholder"), name: "verification[code]" %>
+    </div>
+
+    <div class="mt-8">
+      <%= f.submit t("sign.org.verification.edit.submit"), class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500" %>
+    </div>
+  <% end %>
+
+  <div class="mt-6 flex items-center gap-3">
+    <%= link_to t("sign.org.verification.edit.back"), sign_org_verification_path(ri: params[:ri]), class: "text-sm text-slate-600 hover:text-slate-900" %>
+  </div>
+</div>

@@ -27,6 +27,7 @@ module UserSecrets
 
       audit_class.transaction do
         UserSecret.transaction do
+          ensure_audit_dependencies!
           secret.save!
           audit_class.create!(
             actor: @actor,
@@ -52,6 +53,13 @@ module UserSecrets
       enabled = ActiveModel::Type::Boolean.new.cast(enabled_param)
       status = enabled ? :active : :revoked
       UserSecret.status_id_for(status)
+    end
+
+    def ensure_audit_dependencies!
+      AuditRecord.connected_to(role: :writing) do
+        UserAuditEvent.find_or_create_by!(id: EVENT_ID)
+        UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+      end
     end
   end
 end

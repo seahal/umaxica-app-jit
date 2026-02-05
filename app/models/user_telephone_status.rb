@@ -13,5 +13,8 @@ class UserTelephoneStatus < PrincipalRecord
   SUSPENDED = 3
   DELETED = 4
   NEYO = 5
+  UNVERIFIED_WITH_SIGN_UP = 6
+  VERIFIED_WITH_SIGN_UP = 7
+
   has_many :user_telephones, inverse_of: :user_telephone_status, dependent: :restrict_with_error
 end

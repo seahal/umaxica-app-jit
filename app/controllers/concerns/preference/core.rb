@@ -165,44 +165,51 @@ module Preference::Core
   end
 
   def delete_preference_cookie
-    preference = @preferences
+    preference = find_preference_for_delete
+    delete_preference_record(preference) if preference.present?
+    delete_preference_cookies
+    reset_preference_state
+    nil
+  end
 
-    if preference.blank?
-      token_value = refresh_token_value
-      @refresh_token_value = token_value
-      if token_value.present?
-        token_digest = refresh_token_lookup_digest(token_value)
-        PreferenceRecord.connected_to(role: :writing) do
-          preference = preference_class.find_by(token_digest: token_digest) if token_digest
-        end
+  private
+
+  def find_preference_for_delete
+    return @preferences if @preferences.present?
+
+    token_value = refresh_token_value
+    @refresh_token_value = token_value
+    return nil if token_value.blank?
+
+    token_digest = refresh_token_lookup_digest(token_value)
+    return nil unless token_digest
+
+    PreferenceRecord.connected_to(role: :writing) do
+      preference_class.find_by(token_digest: token_digest)
+    end
+  end
+
+  def delete_preference_record(preference)
+    PreferenceRecord.connected_to(role: :writing) do
+      PreferenceRecord.transaction do
+        preference.update!(
+          status_id: preference_status_class::DELETED,
+          expires_at: Time.current,
+        )
+
+        @preferences = preference
+        create_audit_log(
+          event_id: preference_audit_event_class::RESET_BY_USER_DECISION,
+          context: { preference_deleted: true },
+        )
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::InvalidForeignKey => e
+        Rails.logger.error("delete_preference_cookie failed: #{e.class} - #{e.message}")
+        raise PreferenceOperationError
       end
     end
+  end
 
-    if preference.present?
-      # Update preference status and create audit log in transaction
-      PreferenceRecord.connected_to(role: :writing) do
-        PreferenceRecord.transaction do
-          # Update preference to deleted status
-          preference.update!(
-            status_id: preference_status_class::DELETED,
-            expires_at: Time.current,
-          )
-
-          # Set @preferences temporarily for create_audit_log
-          @preferences = preference
-          create_audit_log(
-            event_id: preference_audit_event_class::RESET_BY_USER_DECISION,
-            context: { preference_deleted: true },
-          )
-        rescue ActiveRecord::RecordInvalid, ActiveRecord::InvalidForeignKey => e
-          # Log the error for debugging
-          Rails.logger.error("delete_preference_cookie failed: #{e.class} - #{e.message}")
-          raise PreferenceOperationError
-        end
-      end
-    end
-
-    # Always delete preference cookies, even if the preference record is missing.
+  def delete_preference_cookies
     delete_options = {
       httponly: true,
       secure: Rails.env.production?,
@@ -222,11 +229,11 @@ module Preference::Core
     cookie_names.each do |cookie_name|
       cookies.delete(cookie_name, **delete_options)
     end
+  end
 
+  def reset_preference_state
     @preferences = nil
     @preference_payload = nil
     @refresh_token_value = nil
-
-    nil
   end
 end

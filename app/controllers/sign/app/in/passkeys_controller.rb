@@ -193,7 +193,7 @@ module Sign
             issue_session_limit_gate!(return_to: request.fullpath, flow: "in.passkeys.session")
             render json: {
               status: "session_limit_exceeded",
-              redirect_url: edit_sign_app_in_passkey_sessions_path(passkey_id: "_"),
+              redirect_url: new_sign_app_in_passkey_path,
             }, status: :ok
           when :success
             render_success(result)

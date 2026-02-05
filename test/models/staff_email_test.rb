@@ -35,6 +35,8 @@
 require "test_helper"
 
 class StaffEmailTest < ActiveSupport::TestCase
+  fixtures :staffs, :staff_statuses, :staff_email_statuses
+
   setup do
     @staff = Staff.find_by!(public_id: "cdef4567")
     @valid_attributes = {

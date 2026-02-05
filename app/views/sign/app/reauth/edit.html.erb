@@ -10,7 +10,7 @@
     </div>
   <% end %>
 
-  <%= form_with model: @reauth_session, url: sign_app_reauth_path(@reauth_session, ri: params[:ri]), method: :patch, data: { turbo: false } do |f| %>
+  <%= form_with model: @reauth_session, url: sign_app_verification_path(ri: params[:ri]), method: :patch, data: { turbo: false } do |f| %>
     <% if @reauth_session.method == "passkey" %>
       <% options_json = @passkey_request_options ? json_escape(@passkey_request_options.to_json) : "" %>
       <div
@@ -42,6 +42,6 @@
   <% end %>
 
   <div class="mt-6 flex items-center gap-3">
-    <%= link_to t("sign.app.reauth.edit.cancel"), sign_app_reauth_path(@reauth_session, ri: params[:ri]), data: { turbo_method: :delete, turbo_confirm: t("sign.app.reauth.edit.confirm_cancel") }, class: "text-sm text-slate-600 hover:text-slate-900" %>
+    <%= link_to t("sign.app.reauth.edit.cancel"), sign_app_verification_path(ri: params[:ri]), data: { turbo_method: :delete, turbo_confirm: t("sign.app.reauth.edit.confirm_cancel") }, class: "text-sm text-slate-600 hover:text-slate-900" %>
   </div>
 </div>

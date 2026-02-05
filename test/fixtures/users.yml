@@ -3,14 +3,15 @@
 # Table name: users
 # Database name: principal
 #
-#  id             :bigint           not null, primary key
-#  last_reauth_at :datetime
-#  lock_version   :integer          default(0), not null
-#  withdrawn_at   :datetime         default(Infinity)
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  public_id      :string(255)      default(""), not null
-#  status_id      :bigint           default(13), not null
+#  id                   :bigint           not null, primary key
+#  last_reauth_at       :datetime
+#  lock_version         :integer          default(0), not null
+#  multi_factor_enabled :boolean          default(FALSE), not null
+#  withdrawn_at         :datetime         default(Infinity)
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  public_id            :string(255)      default(""), not null
+#  status_id            :bigint           default(13), not null
 #
 # Indexes
 #

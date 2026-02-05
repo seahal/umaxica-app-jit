@@ -20,24 +20,22 @@
 		"vscode": {
 			"extensions": [
 				"Shopify.ruby-lsp",
-				"Shopify.ruby-extensions-pack",
 				"bradlc.vscode-tailwindcss",
-				"ms-vscode.vscode-typescript-next",
 				"ms-azuretools.vscode-docker",
 				"GitHub.vscode-pull-request-github",
 				"ms-vscode.remote-explorer",
 				"rubocop.vscode-rubocop",
 				"oven.bun-vscode",
+				"openai.chatgpt",
 				"-sorbet.sorbet-vscode-extension",
 				"-dbaeumer.vscode-eslint",
 				"-esbenp.prettier-vscode",
 				"-eamodio.gitlens",
 				"-KoichiSasada.vscode-rdbg",
-				"openai.chatgpt",
 				"anthropic.claude-code",
 				"-sorbet.sorbet-vscode-extension",
 				"-GitHub.copilot",
-				"-GitHub.copilot-chat"
+				"-GitHub.copilot-chat",
 			],
 			"settings": {
 				"claude.allowDangerouslySkipPermissions": true,

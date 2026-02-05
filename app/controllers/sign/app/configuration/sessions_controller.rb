@@ -9,6 +9,13 @@ module Sign
 
         def index
           @sessions = current_user.user_tokens.where(revoked_at: nil).order(created_at: :desc)
+
+          respond_to do |format|
+            format.html
+            format.json do
+              render json: { sessions: @sessions.map { |s| { public_id: s.public_id, created_at: s.created_at } } }
+            end
+          end
         end
 
         def destroy

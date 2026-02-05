@@ -4,6 +4,7 @@ module Sign
   module App
     module Up
       class TelephonesController < ApplicationController
+        include CloudflareTurnstile
         include Common::Redirect
         include Common::Otp
 
@@ -20,17 +21,11 @@ module Sign
         end
 
         def edit
-          render plain: t("sign.app.registration.telephone.edit.forbidden_action"),
-                 status: :bad_request and return if session[:user_telephone_registration].nil?
+          @user_telephone = UserTelephone.find_by(id: params["id"])
+          return if valid_telephone_session?
 
-          registration_session = session[:user_telephone_registration]
-          if [registration_session["id"] == params["id"],
-              registration_session["expires_at"].to_i > Time.now.to_i,].all?
-            @user_telephone = UserTelephone.find_by(id: params["id"]) || UserTelephone.new
-          else
-            redirect_to new_sign_app_up_telephone_path,
-                        notice: t("sign.app.registration.telephone.edit.session_expired")
-          end
+          redirect_to new_sign_app_up_telephone_path,
+                      notice: t("sign.app.registration.telephone.edit.session_expired")
         end
 
         def create
@@ -42,15 +37,25 @@ module Sign
           )
 
           res = cloudflare_turnstile_validation
-          num = generate_otp_attributes(@user_telephone)
-          expires_at = @user_telephone.otp_expires_at
 
-          if res["success"]
+          unless res["success"]
+            @user_telephone.errors.add(:base, t("sign.app.registration.telephone.create.turnstile_validation_failed"))
+            render :new, status: :unprocessable_content
+            return
+          end
 
-            if @user_telephone.valid?
-              # Save telephone and store OTP in database
+          begin
+            UserTelephone.transaction do
+              # Create pending user
+              @pending_user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
+              @user_telephone.user = @pending_user
+              @user_telephone.user_telephone_status_id = UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP
+
+              # Generate OTP
+              num = generate_otp_attributes(@user_telephone)
+              expires_at = @user_telephone.otp_expires_at
+
               @user_telephone.save!
-              # @user_telephone.store_otp(otp_private_key, otp_count_number, expires_at) # Already set above
 
               # Store only the reference ID and expiry in session
               session[:user_telephone_registration] = {
@@ -69,10 +74,9 @@ module Sign
 
               redirect_to edit_sign_app_up_telephone_path(@user_telephone.id),
                           notice: t("sign.app.registration.telephone.create.verification_code_sent")
-            else
-              render :new, status: :unprocessable_content
             end
-          else
+          rescue ActiveRecord::RecordInvalid => e
+            @user_telephone = e.record
             render :new, status: :unprocessable_content
           end
         end
@@ -88,7 +92,7 @@ module Sign
           end
 
           registration_session = session[:user_telephone_registration]
-          if registration_session.blank? || registration_session["id"] != params["id"]
+          if registration_session.blank? || registration_session["id"].to_s != params["id"].to_s
             @user_telephone.errors.add(:base, t("sign.app.registration.telephone.edit.session_expired"))
             render :edit, status: :unprocessable_content and return
           end
@@ -110,12 +114,31 @@ module Sign
             render :edit, status: :unprocessable_content and return
           end
 
-          # Update attributes and clear OTP
-          @user_telephone.update!(
-            confirm_policy: registration_session.fetch("confirm_policy", true),
-            confirm_using_mfa: registration_session.fetch("confirm_using_mfa", true),
-          )
-          clear_otp(@user_telephone)
+          UserTelephone.transaction do
+            # Clear OTP (set confirm flags to avoid validation errors)
+            @user_telephone.confirm_policy = "1"
+            @user_telephone.confirm_using_mfa = "1"
+            clear_otp(@user_telephone)
+            # Update status
+            @user_telephone.user_telephone_status_id = UserTelephoneStatus::VERIFIED_WITH_SIGN_UP
+            @user_telephone.save!
+
+            # Update user status and login
+            @user = @user_telephone.user
+            @user.update!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+
+            # Create audit record
+            audit = UserAudit.new
+            audit.actor_type = "User"
+            audit.actor_id = @user.id
+            audit.event_id = UserAuditEvent::SIGNED_UP_WITH_TELEPHONE
+            audit.subject_id = @user.id.to_s
+            audit.subject_type = "User"
+            audit.save!
+
+            log_in(@user, record_login_audit: false)
+          end
+
           session[:user_telephone_registration] = nil
           redirect_to sign_app_up_telephone_path(@user_telephone),
                       notice: t("sign.app.registration.telephone.update.success")
@@ -125,6 +148,12 @@ module Sign
         end
 
         private
+
+        def valid_telephone_session?
+          @user_telephone.present? &&
+            !@user_telephone.otp_expired? &&
+            @user_telephone.user_telephone_status_id == UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP
+        end
 
         def boolean_value(value)
           ActiveModel::Type::Boolean.new.cast(value)

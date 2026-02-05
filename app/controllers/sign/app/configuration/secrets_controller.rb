@@ -51,7 +51,7 @@ module Sign
 
           redirect_to sign_app_configuration_secrets_path
         rescue ActiveRecord::RecordInvalid => e
-          @secret = e.record
+          @secret = e.record.is_a?(UserSecret) ? e.record : @secret
           render :edit, status: :unprocessable_content
         end
 

@@ -7,7 +7,6 @@
 #
 #  id                                    :bigint           not null, primary key
 #  expires_at                            :integer          not null
-#  image                                 :string           default(""), not null
 #  last_authenticated_at                 :datetime
 #  provider                              :string           default("google_oauth2"), not null
 #  refresh_token                         :string           default(""), not null
@@ -33,6 +32,8 @@
 
 class UserSocialGoogle < PrincipalRecord
   include SocialIdentifiable
+
+  self.ignored_columns += ["image"]
 
   alias_attribute :user_social_google_status_id, :user_identity_social_google_status_id
   attribute :user_identity_social_google_status_id, default: UserSocialGoogleStatus::ACTIVE
@@ -62,7 +63,6 @@ class UserSocialGoogle < PrincipalRecord
     identity = find_or_initialize_by(uid: auth.uid, provider: auth.provider)
 
     # Update attributes
-    identity.image = auth.info.image.presence || ""
     identity.token = auth.credentials.token
     identity.refresh_token = auth.credentials.refresh_token if auth.credentials.refresh_token.present?
     identity.expires_at = auth.credentials.expires_at
@@ -80,7 +80,6 @@ class UserSocialGoogle < PrincipalRecord
   # Update from OmniAuth hash (for link/reauth scenarios)
   def update_from_auth_hash!(auth)
     update!(
-      image: auth.info.image.presence || image.presence || "",
       token: auth.credentials.token,
       refresh_token: auth.credentials.refresh_token.presence || refresh_token,
       expires_at: auth.credentials.expires_at,

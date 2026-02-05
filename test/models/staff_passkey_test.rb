@@ -6,7 +6,7 @@
 # Database name: operator
 #
 #  id                      :bigint           not null, primary key
-#  name                    :string
+#  name                    :string           not null
 #  public_key              :text             not null
 #  sign_count              :integer          not null
 #  transports              :string

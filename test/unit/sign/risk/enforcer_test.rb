@@ -102,7 +102,7 @@ module Sign
         token = UserToken.create!(
           user: @user,
           refresh_expires_at: 1.day.from_now,
-          public_id: "test_#{SecureRandom.hex(5)}",
+          public_id: "test_#{SecureRandom.hex(4)}",
           # Default status/kind should trigger if FKs exist.
           # If FK check fails, we might need to assume fixtures loaded statuses.
         )

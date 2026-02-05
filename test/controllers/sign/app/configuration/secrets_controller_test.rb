@@ -3,12 +3,10 @@
 require "test_helper"
 
 class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :user_statuses, :user_secret_statuses, :user_secret_kinds
+
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
-    UserStatus.find_or_create_by!(id: UserStatus::NEYO)
-    UserSecretStatus.find_or_create_by!(id: UserSecretStatus::ACTIVE)
-    UserSecretKind.find_or_create_by!(id: UserSecretKind::LOGIN)
-
     @user = User.create!(
       status_id: UserStatus::NEYO,
       public_id: "secret_user_#{SecureRandom.hex(4)}",
@@ -23,7 +21,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   def authenticated_headers
-    { "X-TEST-CURRENT-USER" => @user.id.to_s }
+    browser_headers.merge("X-TEST-CURRENT-USER" => @user.id.to_s)
   end
 
   test "should get index" do
@@ -95,7 +93,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   test "should get destroy" do
     delete sign_app_configuration_secret_url(@user_secret, ri: "jp"), headers: authenticated_headers
 
-    assert_response :unprocessable_content
+    assert_response :see_other
   end
 
   test "URL uses public_id not numeric ID" do
@@ -104,7 +102,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_response :success
     # Verify URL contains public_id, not numeric ID
     assert_not_includes request.fullpath, "/#{@user_secret.id}/"
-    assert_includes request.fullpath, "/#{@user_secret.public_id}/"
+    assert_includes request.fullpath, "/#{@user_secret.public_id}"
   end
 
   test "should access secret by public_id" do
@@ -114,8 +112,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "should not access secret by numeric ID" do
-    assert_raises(ActiveRecord::RecordNotFound) do
-      get sign_app_configuration_secret_url(@user_secret.id, ri: "jp"), headers: authenticated_headers
-    end
+    get sign_app_configuration_secret_url(@user_secret.id, ri: "jp"), headers: authenticated_headers
+    assert_response :not_found
   end
 end

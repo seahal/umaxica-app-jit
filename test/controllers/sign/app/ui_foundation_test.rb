@@ -42,7 +42,7 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
       sign_app_configuration_sessions_path(ri: "jp"),
       sign_app_configuration_google_path(ri: "jp"),
       sign_app_configuration_withdrawal_path(ri: "jp"),
-      edit_sign_app_out_path(ri: "jp"),
+      edit_sign_app_configuration_out_path(ri: "jp"),
     ]
 
     pages.each do |path|

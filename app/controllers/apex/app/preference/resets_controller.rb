@@ -19,7 +19,7 @@ module Apex
             return
           end
 
-          # TODO: たぶんこのコードがどうさしていない。jit_ct jit_lx jit_tz のみっつが、リセットされていない。
+          # TODO: This likely is not running; jit_ct/jit_lx/jit_tz are not reset.
           delete_preference_cookie
 
           # Preserve ri parameter on redirect

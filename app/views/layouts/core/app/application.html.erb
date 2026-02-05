@@ -19,7 +19,7 @@
         <%= link_to t("core.app.layout.nav.log_in"), new_sign_app_in_url, class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
       <% else %>
         <%= link_to t("core.app.layout.nav.configuration"), sign_app_configuration_url, class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
-        <%= link_to t("core.app.layout.nav.logout"), edit_sign_app_out_url, class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+        <%= link_to t("core.app.layout.nav.logout"), edit_sign_app_configuration_out_url, class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
       <% end %>
     <% end %>
 

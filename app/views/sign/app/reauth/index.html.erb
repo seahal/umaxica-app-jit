@@ -4,7 +4,7 @@
 <div class="mx-auto max-w-3xl px-4 py-10">
   <div class="flex items-center justify-between">
     <h1 class="text-xl font-semibold text-slate-900"><%= t("sign.app.reauth.index.title") %></h1>
-    <%= link_to t("sign.app.reauth.index.new"), new_sign_app_reauth_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+    <%= link_to t("sign.app.reauth.index.new"), sign_app_verification_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
   </div>
 
   <div class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
@@ -21,7 +21,7 @@
       <% @reauth_sessions.each do |s| %>
         <tr class="hover:bg-slate-50">
           <td class="px-4 py-3 text-sm text-slate-900">
-            <%= link_to s.scope, sign_app_reauth_path(s), class: "text-indigo-600 hover:text-indigo-500" %>
+            <%= link_to s.scope, sign_app_verification_path, class: "text-indigo-600 hover:text-indigo-500" %>
           </td>
           <td class="px-4 py-3 text-sm text-slate-700"><%= s.method %></td>
           <td class="px-4 py-3 text-sm text-slate-700"><%= s.status %></td>

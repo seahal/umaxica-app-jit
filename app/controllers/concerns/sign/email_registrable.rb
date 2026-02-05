@@ -41,6 +41,10 @@ module Sign
       return unless required_state
 
       current_state = email_flow_state
+      if action_name.to_sym == :create && current_state == STATE_EMAIL_CREATED
+        reset_email_flow!
+        return
+      end
       return if current_state == required_state
 
       redirect_flow_violation
@@ -84,24 +88,37 @@ module Sign
 
       begin
         UserEmail.transaction do
+          pending_user_id = session[:pending_sign_up_user_id]
+          pending_email = session[:pending_sign_up_email].to_s.downcase
+
+          if pending_user_id.present? && pending_email == @user_email.address.to_s.downcase
+            User.find_by(id: pending_user_id)&.destroy!
+          end
+
           # Delete existing unverified emails and their pending users
           existing_emails = UserEmail.where(
             address: @user_email.address,
-            user_email_status_id: UserEmailStatus::UNVERIFIED_WITH_SIGN_UP,
+            user_email_status_id: [
+              UserEmailStatus::UNVERIFIED_WITH_SIGN_UP,
+              UserEmailStatus::UNVERIFIED,
+            ],
           ).to_a
 
+          pending_user_ids = existing_emails.map(&:user_id).compact
+          if pending_user_ids.any?
+            User.where(id: pending_user_ids).find_each(&:destroy!)
+          end
+
+          # Clean up any lingering unverified emails without users
           existing_emails.each do |email|
-            pending_user = email.user
-            # For signup flow, each pending user should only have one email
-            # Delete the user first (which will cascade delete the email via dependent: :destroy)
-            if pending_user && pending_user.status_id == UserStatus::UNVERIFIED_WITH_SIGN_UP
-              pending_user.destroy!
-            end
+            email.destroy! if email.user_id.blank?
           end
 
           # Create pending user
           @pending_user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
           @user_email.user = @pending_user
+          session[:pending_sign_up_user_id] = @pending_user.id
+          session[:pending_sign_up_email] = @user_email.address.to_s.downcase
 
           # Generate OTP
           num = generate_otp_attributes(@user_email)

@@ -31,7 +31,7 @@
       </div>
     <% end %>
 
-    <%= form_with url: sign_org_in_secret_sessions_path, method: :patch, class: "space-y-6" do |f| %>
+    <%= form_with url: sign_org_in_secret_path, method: :post, class: "space-y-6" do |f| %>
       <div class="rounded-2xl bg-white/50 p-6 ring-1 ring-slate-900/5">
         <h2 class="mb-4 text-xs font-bold uppercase tracking-wider text-slate-400">
           <%= t("session_limit.edit.active_sessions", default: "アクティブなセッション") %>

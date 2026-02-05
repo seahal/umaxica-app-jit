@@ -162,7 +162,7 @@ module Sign
             elsif result[:status] == :session_limit_exceeded
               # Issue gate and redirect to session management
               issue_session_limit_gate!(return_to: request.fullpath, flow: "in.email.session")
-              { success: true, redirect_path: edit_sign_app_in_email_session_path }
+              { success: true, redirect_path: edit_sign_app_in_email_path }
             else
               { success: true, tokens: result }
             end

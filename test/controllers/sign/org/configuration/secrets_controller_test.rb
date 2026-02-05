@@ -3,12 +3,10 @@
 require "test_helper"
 
 class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::IntegrationTest
+  fixtures :staff_statuses, :staff_secret_statuses, :staff_secret_kinds
+
   setup do
     host! ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
-    StaffStatus.find_or_create_by!(id: StaffStatus::ACTIVE)
-    StaffSecretStatus.find_or_create_by!(id: StaffSecretStatus::ACTIVE)
-    StaffSecretKind.find_or_create_by!(id: StaffSecretKind::LOGIN)
-
     @staff = Staff.create!(
       status_id: StaffStatus::ACTIVE,
     )
@@ -22,7 +20,7 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   def authenticated_headers
-    { "X-TEST-CURRENT-STAFF" => @staff.id.to_s }
+    browser_headers.merge("X-TEST-CURRENT-STAFF" => @staff.id.to_s)
   end
 
   test "should get index" do
@@ -73,7 +71,7 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   test "should get destroy" do
     delete sign_org_configuration_secret_url(@staff_secret, ri: "jp"), headers: authenticated_headers
 
-    assert_response :unprocessable_content
+    assert_response :see_other
   end
 
   test "URL uses public_id not numeric ID" do
@@ -82,7 +80,7 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_response :success
     # Verify URL contains public_id, not numeric ID
     assert_not_includes request.fullpath, "/#{@staff_secret.id}/"
-    assert_includes request.fullpath, "/#{@staff_secret.public_id}/"
+    assert_includes request.fullpath, "/#{@staff_secret.public_id}"
   end
 
   test "should access secret by public_id" do
@@ -92,8 +90,7 @@ class Sign::Org::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "should not access secret by numeric ID" do
-    assert_raises(ActiveRecord::RecordNotFound) do
-      get sign_org_configuration_secret_url(@staff_secret.id, ri: "jp"), headers: authenticated_headers
-    end
+    get sign_org_configuration_secret_url(@staff_secret.id, ri: "jp"), headers: authenticated_headers
+    assert_response :not_found
   end
 end

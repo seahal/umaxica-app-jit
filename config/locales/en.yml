@@ -213,6 +213,37 @@ en:
           confirm_cancel: "Are you sure?"
         success:
           complete: "Re-authentication completed."
+
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
     social:
       sessions:
         invalid_provider: "Invalid provider specified"
@@ -258,6 +289,36 @@ en:
             email_otp: "Email (One-time code)"
           submit: "Continue"
           back: "Back"
+
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
         show:
           title: "Re-authentication Session"
           list: "List"
@@ -275,6 +336,37 @@ en:
           confirm_cancel: "Are you sure?"
         success:
           complete: "Re-authentication completed."
+
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
       authentication:
         new:
           back: "Back"

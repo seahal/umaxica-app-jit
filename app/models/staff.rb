@@ -5,12 +5,13 @@
 # Table name: staffs
 # Database name: operator
 #
-#  id           :bigint           not null, primary key
-#  withdrawn_at :datetime
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  public_id    :string           not null
-#  status_id    :bigint           default(2), not null
+#  id                   :bigint           not null, primary key
+#  multi_factor_enabled :boolean          default(FALSE), not null
+#  withdrawn_at         :datetime
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  public_id            :string           not null
+#  status_id            :bigint           default(2), not null
 #
 # Indexes
 #

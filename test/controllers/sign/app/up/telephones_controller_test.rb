@@ -4,12 +4,15 @@ require "test_helper"
 
 module Sign::App::Up
   class TelephonesControllerTest < ActionDispatch::IntegrationTest
+    fixtures :app_preference_audit_levels, :app_preference_audit_events,
+             :user_statuses, :user_telephone_statuses,
+             :user_audit_events, :user_audit_levels
+
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
       # Mock Cloudflare Turnstile validation
-      Sign::App::Up::TelephonesController.send(:define_method, :cloudflare_turnstile_validation) do
-        { "success" => true }
-      end
+      CloudflareTurnstile.test_mode = true
+      CloudflareTurnstile.test_validation_response = { "success" => true }
 
       # Mock AWS SMS Service
       if defined?(AwsSmsService)
@@ -21,6 +24,9 @@ module Sign::App::Up
     end
 
     teardown do
+      CloudflareTurnstile.test_mode = false
+      CloudflareTurnstile.test_validation_response = nil
+
       if defined?(AwsSmsService) && @original_aws_sms_service_send_message
         original = @original_aws_sms_service_send_message
         AwsSmsService.singleton_class.send(:define_method, :send_message) do |**kwargs|
@@ -37,7 +43,12 @@ module Sign::App::Up
 
     test "should get show" do
       # Show requires an ID, using a dummy one or creating one if needed, though controller action is empty
-      telephone = UserTelephone.create!(number: "+10000000000")
+      user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+      telephone = UserTelephone.create!(
+        number: "+10000000000",
+        user: user,
+        user_telephone_status_id: UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,
+      )
       get sign_app_up_telephone_url(telephone, ri: "jp")
 
       assert_response :success
@@ -52,6 +63,7 @@ module Sign::App::Up
             confirm_policy: "1",
             confirm_using_mfa: "1",
           },
+          "cf-turnstile-response": "test",
         }
       end
 
@@ -69,6 +81,7 @@ module Sign::App::Up
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
+        "cf-turnstile-response": "test",
       }
       telephone = registration_telephone
 

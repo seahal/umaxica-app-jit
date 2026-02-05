@@ -29,7 +29,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge("Host" => @host)
     assert_redirected_to sign_app_configuration_url(ri: "jp")
     follow_redirect!
 
@@ -60,7 +61,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge("Host" => @host)
     assert_redirected_to sign_app_configuration_url(ri: "jp")
 
     assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: "Apple"), flash[:notice]
@@ -90,7 +92,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
     # Should create user and identity
     assert_difference("User.count", 1) do
       assert_difference("UserSocialApple.count", 1) do
-        get sign_app_auth_callback_url(provider: "apple", ri: "jp"), headers: { "Host" => @host }
+        get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+            headers: browser_headers.merge("Host" => @host)
       end
     end
 
@@ -126,7 +129,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     uid = OmniAuth.config.mock_auth[:apple].uid
 
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+        headers: browser_headers.merge("Host" => @host)
     assert_response :redirect
 
     identity = UserSocialApple.find_by(uid: uid)
@@ -159,7 +163,8 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     assert_difference("User.count", 1) do
       assert_difference("UserSocialGoogle.count", 1) do
-        get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"), headers: { "Host" => @host }
+        get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+            headers: browser_headers.merge("Host" => @host)
       end
     end
 

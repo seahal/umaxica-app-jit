@@ -17,6 +17,7 @@ module UserSecrets
     def call
       audit_class.transaction do
         UserSecret.transaction do
+          ensure_audit_dependencies!
           audit_class.create!(
             actor: @actor,
             subject_type: "UserSecret",
@@ -34,6 +35,13 @@ module UserSecrets
 
     def audit_class
       @audit_class ||= @actor.is_a?(Staff) ? StaffAudit : UserAudit
+    end
+
+    def ensure_audit_dependencies!
+      AuditRecord.connected_to(role: :writing) do
+        UserAuditEvent.find_or_create_by!(id: EVENT_ID)
+        UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+      end
     end
   end
 end

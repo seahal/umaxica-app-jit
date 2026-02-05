@@ -51,6 +51,11 @@ en:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
+    shared:
+      sign_out:
+        title: "Do you want to sign out?"
+        button: "Sign out"
+        success: "You have been signed out."
     app:
       title_suffix: "(app)"
       header:
@@ -65,6 +70,36 @@ en:
             method: "Method"
             status: "Status"
             expires: "Expires"
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
       layout:
         nav:
           sign_up: "Sign Up"
@@ -181,11 +216,6 @@ en:
           new:
             page_title: "Sign in with your phone number"
             description: "Provide your registered phone number to receive a one-time verification code."
-        exits:
-          edit:
-            title: "Do you want to sign out?"
-          destroy:
-            success: "You have been signed out."
       social:
         sessions:
           create:
@@ -400,11 +430,6 @@ en:
           log_in: "Log In"
           configuration: "Settings"
           logout: "Log Out"
-      exits:
-        edit:
-          title: "Do you want to sign out?"
-        destroy:
-          success: "You have been signed out."
       withdrawal:
         create:
           already_withdrawn: "You have already withdrawn your account."
@@ -1121,6 +1146,36 @@ en:
             method: "Method"
             status: "Status"
             expires: "Expires"
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
     org:
       root:
         registration: "Sign Up"

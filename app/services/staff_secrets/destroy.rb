@@ -17,6 +17,7 @@ module StaffSecrets
     def call
       StaffAudit.transaction do
         StaffSecret.transaction do
+          ensure_audit_dependencies!
           StaffAudit.create!(
             actor: @actor,
             subject_type: "StaffSecret",
@@ -27,6 +28,15 @@ module StaffSecrets
           )
           @secret.destroy!
         end
+      end
+    end
+
+    private
+
+    def ensure_audit_dependencies!
+      AuditRecord.connected_to(role: :writing) do
+        StaffAuditEvent.find_or_create_by!(id: EVENT_ID)
+        StaffAuditLevel.find_or_create_by!(id: StaffAuditLevel::NEYO)
       end
     end
   end

@@ -11,6 +11,8 @@
 require "test_helper"
 
 class ComTimelineAuditLevelTest < ActiveSupport::TestCase
+  fixtures :com_timeline_audit_levels, :com_timeline_audit_events, :com_timeline_statuses
+
   test "restrict_with_error on destroy when audits exist" do
     level = ComTimelineAuditLevel.find(ComTimelineAuditLevel::NEYO)
     timeline = ComTimeline.create!(

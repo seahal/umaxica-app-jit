@@ -3,17 +3,19 @@
 require "test_helper"
 
 class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds
+  fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds,
+           :app_preference_audit_levels, :app_preference_audit_events
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
-    @headers = { "Host" => @host, "X-TEST-CURRENT-USER" => @user.id }.freeze
+    @headers = as_user_headers(@user, host: @host)
   end
 
   test "index returns active sessions" do
-    get sign_app_configuration_sessions_url(ri: "jp", format: :json), headers: @headers
+    headers = as_user_headers(@user, host: @host, headers: { "Accept" => "application/json" })
+    get sign_app_configuration_sessions_url(ri: "jp", format: :json), headers: headers
 
     assert_response :success
     assert response.parsed_body.key?("sessions")

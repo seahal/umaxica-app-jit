@@ -15,6 +15,7 @@
 module AuthHelpers
   TEST_USER_HEADER = "X-TEST-CURRENT-USER"
   TEST_STAFF_HEADER = "X-TEST-CURRENT-STAFF"
+  MODERN_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
   def host_headers(host = nil)
     host_value =
@@ -22,7 +23,13 @@ module AuthHelpers
       (respond_to?(:request, true) ? request&.host : nil) ||
       ENV["DEFAULT_URL_HOST"]
 
-    host_value.present? ? { "Host" => host_value } : {}
+    headers = { "User-Agent" => MODERN_USER_AGENT }
+    headers["Host"] = host_value if host_value.present?
+    headers
+  end
+
+  def browser_headers
+    { "User-Agent" => MODERN_USER_AGENT }
   end
 
   def as_user_headers(user, host: nil, headers: {})

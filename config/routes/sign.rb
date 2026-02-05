@@ -37,37 +37,19 @@ scope module: :sign, as: :sign do
       resource :in, only: %i(new)
       namespace :in do
         # TODO: added show delete methods for 2FA
-        resource :email, only: %i(new create edit update) do
-          resource :session, only: %i(edit update)
-        end
-        # Passkey authentication for sign-in
-        # GET  /in/passkeys/new          -> new (login page with passkey button)
-        # POST /in/passkeys/options      -> options for authentication challenge
-        # POST /in/passkeys/verification -> verify authentication response
+        resource :email, only: %i(new create edit update)
+        # Passkey authentication for sign-in is so nasty... i want to use crud way.
         resources :passkeys, only: [:new] do
-          resource :session, only: %i(edit update)
           # TODO: fix them and merget to passkeys.
           collection do
             post :options
             post :verification
           end
         end
-        resource :secret, only: %i(new create) do
-          resource :session, only: %i(edit update)
-        end
+        resource :secret, only: %i(new create)
+        resource :session, only: %i(show update destroy)
+        resource :mfa, only: %i(show create) # MFA submit uses create
       end
-
-      # ==========================================================================
-      # Social Authentication (OmniAuth)
-      # ==========================================================================
-      # Standard OmniAuth paths:
-      #   Start:    POST /auth/:provider (handled by OmniAuth middleware)
-      #   Callback: GET/POST /auth/:provider/callback
-      #   Failure:  GET/POST /auth/failure
-      #
-      # Our custom entry point:
-      #   GET /social/start?provider=...&intent=... -> prepares intent, redirects to /auth/:provider
-      # ==========================================================================
 
       # Entry point for social auth with intent management
       namespace :social do
@@ -99,31 +81,26 @@ scope module: :sign, as: :sign do
               via: %i(get post)
       end
 
-      resources :reauth, only: %i(index show new create edit update destroy)
+      resource :verification, only: %i(show)
+      namespace :verification do
+        resource :passkey, only: %i(new create)
+        resource :totp,    only: %i(new create)
+        resources :emails, only: %i(new create edit update)
+      end
 
       # Settings with logged-in user
       resource :configuration, only: :show
       namespace :configuration do
         # TODO: Implement TOTP settings management
         resources :totps, only: %i(index new create edit update destroy)
-
-        # Passkey management (CRUD-based)
-        # GET    /configuration/passkeys           -> index
-        # GET    /configuration/passkeys/new       -> new (registration form)
-        # POST   /configuration/passkeys           -> create
-        # GET    /configuration/passkeys/:id       -> show
-        # GET    /configuration/passkeys/:id/edit  -> edit
-        # PATCH  /configuration/passkeys/:id       -> update
-        # DELETE /configuration/passkeys/:id       -> destroy
-        # POST   /configuration/passkeys/options      -> WebAuthn registration options
-        # POST   /configuration/passkeys/verification -> WebAuthn registration verification
+        # Passkey authentication for sign-in is so nasty... i want to use crud way.
         resources :passkeys do
           collection do
             post :options
             post :verification
           end
         end
-
+        resource :mfa, only: %i(show update)
         resources :emails
         resources :telephones
         resource :apple, only: [:show, :destroy]
@@ -132,11 +109,9 @@ scope module: :sign, as: :sign do
           post :regenerate, on: :member
         end
         resources :sessions
+        resource :out, only: %i(edit destroy)
         resource :withdrawal
       end
-
-      # Sign out
-      resource :out, only: %i(edit destroy)
     end
   end
 
@@ -170,23 +145,23 @@ scope module: :sign, as: :sign do
       # Login
       resource :in, only: [:new]
       namespace :in do
-        # Passkey authentication for sign-in
-        # GET  /in/passkeys/new          -> new (login page with passkey button)
-        # POST /in/passkeys/options      -> options for authentication challenge
-        # POST /in/passkeys/verification -> verify authentication response
+        # Passkey authentication for sign-in is so nasty... i want to use crud way.
         resources :passkeys, only: [:new] do
           collection do
             post :options
             post :verification
           end
-          resource :session, only: %i(edit update)
         end
-        resource :secret, only: %i(new create) do
-          resource :session, only: %i(edit update)
-        end
+        resource :secret, only: %i(new create)
+        resource :session, only: %i(show update destroy)
+        resource :mfa, only: %i(show create)
       end
 
-      resources :reauth, only: %i(index show new create edit update destroy)
+      resource :verification, only: %i(show)
+      namespace :verification do
+        resource :passkey, only: %i(new create)
+        resource :totp,    only: %i(new create)
+      end
 
       # Settings
       resource :configuration, only: :show
@@ -200,14 +175,12 @@ scope module: :sign, as: :sign do
             post :verification
           end
         end
-
+        resource :mfa, only: %i(show update)
         resources :secrets, param: :public_id
         resources :sessions
+        resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(show)
       end
-
-      # Sign out
-      resource :out, only: %i(edit destroy)
     end
   end
 end

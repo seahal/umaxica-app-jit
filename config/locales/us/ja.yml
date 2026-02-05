@@ -52,6 +52,11 @@ ja:
     contact_topic_description: "トピックの詳細です。"
     inquiry_detail: "問い合わせの詳細です。"
   sign:
+    shared:
+      sign_out:
+        title: "ログアウトしますか？"
+        button: "ログアウトします"
+        success: "ログアウトします"
     app:
       preferences:
         title: "おこのみせってい"
@@ -65,6 +70,36 @@ ja:
             method: "Method"
             status: "Status"
             expires: "Expires"
+      verification:
+        index:
+          title: "検証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "検証"
+          description: "続行するには検証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+            email_otp: "メール（ワンタイムコード）"
+          submit: "続行"
+          back: "戻る"
+        edit:
+          title: "検証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          back: "戻る"
+        success:
+          complete: "検証が完了しました"
     org:
       layout:
         nav:
@@ -595,11 +630,7 @@ core:
               dark: 夜間の作業や目の疲れを軽減したいときに最適です。
               system: OS のテーマ変更に連動して切り替わります。
             submit: テーマ設定を保存
-      exits:
-        edit:
-          title: "ログアウトしますか？"
-        destroy:
-          success: "ログアウトします"
+      
       configuration:
         withdrawal:
           show:
@@ -654,11 +685,7 @@ core:
           log_in: "ログイン"
           configuration: "設定"
           logout: "ログアウト"
-      exits:
-        edit:
-          title: "ログアウトしますか？"
-        destroy:
-          success: "ログアウトします"
+      
       withdrawal:
         create:
           already_withdrawn: "既に退会済みです。"
@@ -1660,6 +1687,36 @@ core:
             method: "Method"
             status: "Status"
             expires: "Expires"
+      verification:
+        index:
+          title: "検証セッション"
+          new: "新規"
+          empty: "セッションはありません"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "検証"
+          description: "続行するには検証が必要です。方法を選択してください。"
+          method_legend: "認証方法"
+          methods:
+            passkey: "パスキー"
+            totp: "認証アプリ（TOTP）"
+            email_otp: "メール（ワンタイムコード）"
+          submit: "続行"
+          back: "戻る"
+        edit:
+          title: "検証"
+          description: "本人確認のため、コードの入力またはパスキー認証を行ってください。"
+          authenticate_with_passkey: "パスキーで認証"
+          code_label: "確認コード"
+          code_placeholder: "6桁"
+          submit: "確認"
+          back: "戻る"
+        success:
+          complete: "検証が完了しました"
       configuration:
         withdrawal:
           show:

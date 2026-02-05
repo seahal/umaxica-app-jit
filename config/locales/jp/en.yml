@@ -57,6 +57,11 @@ en:
     default_user_name: "User"
     default_passkey_name: "Passkey"
     default_passkey_description: "My Passkey"
+    shared:
+      sign_out:
+        title: "Do you want to sign out?"
+        button: "Sign out"
+        success: "You have been signed out."
     app:
       layout:
         nav:
@@ -237,6 +242,37 @@ en:
           confirm_cancel: "Are you sure?"
         success:
           complete: "Re-authentication completed."
+
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
       preferences:
         title: "Preference settings"
         footer:
@@ -291,6 +327,67 @@ en:
           confirm_cancel: "Are you sure?"
         success:
           complete: "Re-authentication completed."
+
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
+
+      verification:
+        index:
+          title: "Verification Sessions"
+          new: "New"
+          empty: "No sessions found"
+          table:
+            scope: "Scope"
+            method: "Method"
+            status: "Status"
+            expires: "Expires"
+        new:
+          title: "Verification"
+          description: "Verification is required to continue. Please select a method."
+          method_legend: "Authentication Method"
+          methods:
+            passkey: "Passkey"
+            totp: "Authenticator App (TOTP)"
+            email_otp: "Email (One-time code)"
+          submit: "Continue"
+          back: "Back"
+        edit:
+          title: "Verification"
+          description: "Please enter the code or use passkey authentication for identity verification."
+          authenticate_with_passkey: "Authenticate with Passkey"
+          code_label: "Verification Code"
+          code_placeholder: "6 digits"
+          submit: "Confirm"
+          back: "Back"
+        success:
+          complete: "Verification completed."
       preferences:
         footer:
           preference: "Preferences"
@@ -337,11 +434,6 @@ en:
           new:
             page_title: "Sign in with your phone number"
             description: "Provide your registered phone number to receive a one-time verification code."
-        exits:
-          edit:
-            title: "Do you want to sign out?"
-          destroy:
-            success: "You have been signed out."
         email:
           new:
             page_title: "sign up with email address"
@@ -573,11 +665,6 @@ en:
           log_in: "Log In"
           configuration: "Settings"
           logout: "Log Out"
-      exits:
-        edit:
-          title: "Do you want to sign out?"
-        destroy:
-          success: "You have been signed out."
       authentication:
         new:
           page_title: "Choose how to sign in"

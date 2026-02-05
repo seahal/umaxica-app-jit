@@ -1,163 +1,161 @@
 # frozen_string_literal: true
 
-Rails.application.routes.draw do
-  scope module: :core, as: :core do
-    # for client site
-    constraints host: (ENV["CORE_CORPORATE_URL"]) do
-      scope module: :com, as: :com do
-        root to: "roots#index"
-        # health check for html
-        resource :health, only: :show, format: :html
-        # Edge API endpoint (browser/SPA)
-        namespace :edge do
-          namespace :v1 do
-            resource :health, only: :show
-            resource :csrf, only: :show
-            resource :preference, only: :show
-            # TODO: Add preference refresh endpoint (CSRF-protected) for React Router 401/419 recovery.
-          end
+scope module: :core, as: :core do
+  # for client site
+  constraints host: (ENV["CORE_CORPORATE_URL"]) do
+    scope module: :com, as: :com do
+      root to: "roots#index"
+      # health check for html
+      resource :health, only: :show, format: :html
+      # Edge API endpoint (browser/SPA)
+      namespace :edge do
+        namespace :v1 do
+          resource :health, only: :show
+          resource :csrf, only: :show
+          resource :preference, only: :show
+          # TODO: Add preference refresh endpoint (CSRF-protected) for React Router 401/419 recovery.
         end
-        # configuration
-        resource :configuration, only: [:show]
-        # contact page
-        resources :contacts, only: %i(new create show edit update) do
-          scope module: :contact do
-            resource :email, only: [:new, :create]
-            resource :telephone, only: [:new, :create]
-          end
+      end
+      # configuration
+      resource :configuration, only: [:show]
+      # contact page
+      resources :contacts, only: %i(new create show edit update) do
+        scope module: :contact do
+          resource :email, only: [:new, :create]
+          resource :telephone, only: [:new, :create]
         end
       end
     end
+  end
 
-    # service page
-    constraints host: (ENV["CORE_SERVICE_URL"]) do
-      scope module: :app, as: :app do
-        root to: "roots#index"
-        # endpoint of health check
-        resource :health, only: :show
-        # Edge API endpoint (browser/SPA)
-        namespace :edge do
-          namespace :v1 do
-            resource :health, only: :show
-            resource :csrf, only: :show
-            resource :preference, only: :show
-          end
+  # service page
+  constraints host: (ENV["CORE_SERVICE_URL"]) do
+    scope module: :app, as: :app do
+      root to: "roots#index"
+      # endpoint of health check
+      resource :health, only: :show
+      # Edge API endpoint (browser/SPA)
+      namespace :edge do
+        namespace :v1 do
+          resource :health, only: :show
+          resource :csrf, only: :show
+          resource :preference, only: :show
         end
-        # configuration
-        resource :configuration, only: [:show] do
-          scope module: :configuration do
-            resources :emails, only: [:new, :create]
-          end
+      end
+      # configuration
+      resource :configuration, only: [:show] do
+        scope module: :configuration do
+          resources :emails, only: [:new, :create]
         end
-        # contact page
-        resources :contacts, only: %i(new create show edit update) do
-          scope module: :contact do
-            resource :email, only: [:new, :create]
-            resource :telephone, only: [:new, :create]
-          end
+      end
+      # contact page
+      resources :contacts, only: %i(new create show edit update) do
+        scope module: :contact do
+          resource :email, only: [:new, :create]
+          resource :telephone, only: [:new, :create]
         end
       end
     end
+  end
 
-    # For Staff's webpages
-    constraints host: (ENV["CORE_STAFF_URL"]) do
-      # mount Karafka::Web::App, at: "/karafka"
-      scope module: :org, as: :org do
-        root to: "roots#index"
-        # health check for html
-        resource :health, only: :show
-        # Edge API endpoint (browser/SPA)
-        namespace :edge do
-          namespace :v1 do
-            resource :health, only: :show
-            resource :csrf, only: :show
-            resource :preference, only: :show
-          end
+  # For Staff's webpages
+  constraints host: (ENV["CORE_STAFF_URL"]) do
+    # mount Karafka::Web::App, at: "/karafka"
+    scope module: :org, as: :org do
+      root to: "roots#index"
+      # health check for html
+      resource :health, only: :show
+      # Edge API endpoint (browser/SPA)
+      namespace :edge do
+        namespace :v1 do
+          resource :health, only: :show
+          resource :csrf, only: :show
+          resource :preference, only: :show
         end
-        # configuration
-        resource :configuration, only: [:show] do
-          scope module: :configuration do
-            resources :emails, only: [:new, :create]
-          end
+      end
+      # configuration
+      resource :configuration, only: [:show] do
+        scope module: :configuration do
+          resources :emails, only: [:new, :create]
         end
-        # contact page
-        resources :contacts, only: %i(new create show edit) do
-          scope module: :contact do
-            resource :email, only: [:new, :create]
-            resource :telephone, only: [:new, :create]
-          end
+      end
+      # contact page
+      resources :contacts, only: %i(new create show edit) do
+        scope module: :contact do
+          resource :email, only: [:new, :create]
+          resource :telephone, only: [:new, :create]
         end
-        # for owner
-        namespace :owner do
-          namespace :app do
-            resource :outage, only: %i(show update)
-            resource :token, only: %i(show update)
-          end
-          namespace :com do
-            resource :outage, only: %i(show update)
-            resource :token, only: %i(show update)
-          end
-          namespace :org do
-            resource :outage, only: %i(show update)
-            resource :token, only: %i(show update)
-          end
+      end
+      # for owner
+      namespace :owner do
+        namespace :app do
+          resource :outage, only: %i(show update)
+          resource :token, only: %i(show update)
         end
-        # for docs
-        namespace :docs do
-          namespace :com do
-            resources :posts do
-              resources :versions
-              resources :revisions
-            end
-          end
-          namespace :org do
-            resources :posts do
-              resources :versions
-              resources :revisions
-            end
-          end
-          namespace :app do
-            resources :posts do
-              resources :versions
-              resources :revisions
-            end
-          end
+        namespace :com do
+          resource :outage, only: %i(show update)
+          resource :token, only: %i(show update)
         end
-        # for news
-        namespace :news do
-          namespace :com do
-            resources :posts do
-              resources :versions
-              resources :revisions
-            end
-          end
-          namespace :org do
-            resources :posts do
-              resources :versions
-              resources :revisions
-            end
-          end
-          namespace :app do
-            resources :posts do
-              resources :versions
-              resources :revisions
-            end
-          end
+        namespace :org do
+          resource :outage, only: %i(show update)
+          resource :token, only: %i(show update)
         end
-        # for help contacts
-        namespace :help do
-          namespace :com do
-            resources :contacts
+      end
+      # for docs
+      namespace :docs do
+        namespace :com do
+          resources :posts do
+            resources :versions
             resources :revisions
           end
-          namespace :org do
-            resources :contacts
+        end
+        namespace :org do
+          resources :posts do
+            resources :versions
             resources :revisions
           end
-          namespace :app do
-            resources :contacts
+        end
+        namespace :app do
+          resources :posts do
+            resources :versions
             resources :revisions
           end
+        end
+      end
+      # for news
+      namespace :news do
+        namespace :com do
+          resources :posts do
+            resources :versions
+            resources :revisions
+          end
+        end
+        namespace :org do
+          resources :posts do
+            resources :versions
+            resources :revisions
+          end
+        end
+        namespace :app do
+          resources :posts do
+            resources :versions
+            resources :revisions
+          end
+        end
+      end
+      # for help contacts
+      namespace :help do
+        namespace :com do
+          resources :contacts
+          resources :revisions
+        end
+        namespace :org do
+          resources :contacts
+          resources :revisions
+        end
+        namespace :app do
+          resources :contacts
+          resources :revisions
         end
       end
     end

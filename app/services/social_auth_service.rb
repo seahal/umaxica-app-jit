@@ -202,7 +202,7 @@ class SocialAuthService
     else
       # New identity - create user and identity
       Rails.logger.debug { "[SocialAuth] Creating new user and identity" }
-      user = User.new(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
+      user = build_login_user
       identity = build_identity_for_user(identity_class, user, provider, uid)
 
       user.save!
@@ -346,18 +346,34 @@ class SocialAuthService
   end
 
   def create_user_for_identity(identity, identity_class, provider)
-    user = User.new(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
+    user = build_login_user
     assign_identity_to_user(user, identity, identity_class, provider)
     user.save!
     identity.update!(user: user)
     user
   end
 
+  def build_login_user
+    user = User.new
+    ensure_user_status(user)
+    user
+  end
+
+  def ensure_user_status(user)
+    # If status is unset or defaulted to NONE, set it to UNVERIFIED_WITH_SIGN_UP for social sign-up.
+    if user.user_status.present? && user.status_id.present? && user.status_id != UserStatus::NONE
+      return
+    end
+
+    status = UserStatus.find_by(id: UserStatus::UNVERIFIED_WITH_SIGN_UP) ||
+      UserStatus.find_by(id: UserStatus::NONE)
+    user.user_status = status if status
+  end
+
   def build_identity_for_user(identity_class, user, provider, uid)
     identity = identity_class.new(
       uid: uid,
       provider: provider,
-      image: @auth_hash.dig("info", "image") || @auth_hash.dig(:info, :image) || "",
       token: @auth_hash.dig("credentials", "token") || @auth_hash.dig(:credentials, :token) || "",
       refresh_token: @auth_hash.dig(
         "credentials",

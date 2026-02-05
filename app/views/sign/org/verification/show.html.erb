@@ -1,0 +1,61 @@
+<% content_for :page_title, t("sign.org.verification.index.title") %>
+<% title t("sign.org.verification.index.title") %>
+
+<div class="mx-auto max-w-3xl px-4 py-10">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold text-slate-900"><%= t("sign.org.verification.index.title") %></h1>
+  </div>
+
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6">
+    <h2 class="text-lg font-semibold text-slate-900"><%= t("sign.org.verification.new.title") %></h2>
+    <p class="mt-2 text-sm text-slate-600"><%= t("sign.org.verification.new.description") %></p>
+
+    <% if @reauth_session&.errors&.any? %>
+      <div class="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <%= @reauth_session.errors.full_messages.to_sentence %>
+      </div>
+    <% end %>
+
+    <div class="mt-6 space-y-3">
+      <%= form_with url: sign_org_verification_passkey_path(ri: params[:ri]), method: :post, data: { turbo: false } do |f| %>
+        <%= f.hidden_field :scope, value: @reauth_session&.scope, name: "verification[scope]" %>
+        <%= f.hidden_field :return_to, value: @reauth_session&.return_to, name: "verification[return_to]" %>
+        <%= f.submit t("sign.org.verification.new.methods.passkey"), class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-900 hover:bg-slate-50" %>
+      <% end %>
+
+      <%= form_with url: sign_org_verification_totp_path(ri: params[:ri]), method: :post, data: { turbo: false } do |f| %>
+        <%= f.hidden_field :scope, value: @reauth_session&.scope, name: "verification[scope]" %>
+        <%= f.hidden_field :return_to, value: @reauth_session&.return_to, name: "verification[return_to]" %>
+        <%= f.submit t("sign.org.verification.new.methods.totp"), class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-900 hover:bg-slate-50" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <table class="min-w-full divide-y divide-slate-200">
+      <thead class="bg-slate-50">
+      <tr>
+        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.verification.index.table.scope") %></th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.verification.index.table.method") %></th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.verification.index.table.status") %></th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.org.verification.index.table.expires") %></th>
+      </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+      <% @reauth_sessions.each do |s| %>
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 text-sm text-slate-900"><%= s.scope %></td>
+          <td class="px-4 py-3 text-sm text-slate-700"><%= s.method %></td>
+          <td class="px-4 py-3 text-sm text-slate-700"><%= s.status %></td>
+          <td class="px-4 py-3 text-sm text-slate-700"><%= l(s.expires_at, format: :short) %></td>
+        </tr>
+      <% end %>
+      <% if @reauth_sessions.empty? %>
+        <tr>
+          <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500"><%= t("sign.org.verification.index.empty") %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

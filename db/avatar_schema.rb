@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_03_130000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_04_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_03_130000) do
     t.string "role", limit: 50, default: "viewer", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["avatar_id", "user_id", "role"], name: "index_avatar_assignments_unique", unique: true
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_affiliation", unique: true, where: "((role)::text = 'affiliation'::text)"
     t.index ["avatar_id"], name: "index_avatar_assignments_unique_owner", unique: true, where: "((role)::text = 'owner'::text)"
     t.index ["user_id"], name: "index_avatar_assignments_on_user_id"

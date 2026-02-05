@@ -7,7 +7,6 @@
 #
 #  id                                    :bigint           not null, primary key
 #  expires_at                            :integer          not null
-#  image                                 :string           default(""), not null
 #  last_authenticated_at                 :datetime
 #  provider                              :string           default("google_oauth2"), not null
 #  refresh_token                         :string           default(""), not null
@@ -90,7 +89,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     auth = MockAuth.new(
       uid: "new-google-uid",
       provider: "google_oauth2",
-      info: OpenStruct.new(email: "google@example.com", image: "http://image.com"),
+      info: OpenStruct.new(email: "google@example.com"),
       credentials: OpenStruct.new(token: "google-token", expires_at: 123),
     )
 
@@ -99,22 +98,8 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     assert_predicate identity, :new_record?
     assert_equal "new-google-uid", identity.uid
     assert_equal "google_oauth2", identity.provider
-    assert_equal "http://image.com", identity.image
     assert_equal "google-token", identity.token
     assert_equal 123, identity.expires_at
-  end
-
-  test "find_or_create_from_auth_hash handles missing image" do
-    auth = MockAuth.new(
-      uid: "no-image-uid",
-      provider: "google_oauth2",
-      info: OpenStruct.new(email: "google@example.com", image: ""),
-      credentials: OpenStruct.new(token: "google-token", expires_at: 123),
-    )
-
-    identity = UserSocialGoogle.find_or_create_from_auth_hash(auth)
-
-    assert_equal "", identity.image
   end
 
   test "find_or_create_from_auth_hash returns existing record with updated attributes" do
@@ -130,7 +115,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     auth = MockAuth.new(
       uid: "existing-google-uid",
       provider: "google_oauth2",
-      info: OpenStruct.new(email: "updated-google@example.com", image: "http://new-image.com"),
+      info: OpenStruct.new(email: "updated-google@example.com"),
       credentials: OpenStruct.new(token: "updated-token", expires_at: 456),
     )
 
@@ -138,7 +123,6 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
 
     assert_predicate identity, :persisted?
     assert_equal "updated-token", identity.token
-    assert_equal "http://new-image.com", identity.image
     assert identity.changes.key?("token")
   end
 
@@ -146,7 +130,7 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
     auth = MockAuth.new(
       uid: "",
       provider: "google_oauth2",
-      info: OpenStruct.new(email: "google@example.com", image: "http://image.com"),
+      info: OpenStruct.new(email: "google@example.com"),
       credentials: OpenStruct.new(token: "google-token", expires_at: 123),
       extra: OpenStruct.new(raw_info: OpenStruct.new(sub: "fallback-sub")),
     )
@@ -161,20 +145,18 @@ class UserSocialGoogleTest < ActiveSupport::TestCase
       token: "old-token",
       refresh_token: "old-refresh",
       expires_at: 123,
-      image: "old-image",
     )
 
     auth = MockAuth.new(
       uid: "update-google-uid",
       provider: "google_oauth2",
-      info: OpenStruct.new(email: "new-google@example.com", image: "new-image"),
+      info: OpenStruct.new(email: "new-google@example.com"),
       credentials: OpenStruct.new(token: "new-token", refresh_token: "new-refresh", expires_at: 456),
     )
 
     assert_nil identity.last_authenticated_at
     identity.update_from_auth_hash!(auth)
 
-    assert_equal "new-image", identity.image
     assert_equal "new-token", identity.token
     assert_equal "new-refresh", identity.refresh_token
     assert_equal 456, identity.expires_at

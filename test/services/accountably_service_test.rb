@@ -64,7 +64,7 @@ class AccountablyServiceTest < ActiveSupport::TestCase
   end
 
   test "find should return nil for non-existent id" do
-    accountably = AccountablyService.find(SecureRandom.uuid)
+    accountably = AccountablyService.find(99_999_999_999)
 
     assert_nil accountably
   end

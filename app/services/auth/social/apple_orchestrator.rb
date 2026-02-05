@@ -147,7 +147,6 @@ module Auth
         identity = UserSocialApple.new(
           uid: normalized.uid,
           provider: normalized.provider,
-          image: dig_auth(@auth_hash, :info, :image).presence || "",
           token: dig_auth(@auth_hash, :credentials, :token).presence || "",
           refresh_token: dig_auth(@auth_hash, :credentials, :refresh_token).presence || "",
           expires_at: dig_auth(@auth_hash, :credentials, :expires_at) || 0,

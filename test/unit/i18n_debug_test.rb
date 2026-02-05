@@ -10,7 +10,7 @@ class I18nDebugTest < ActiveSupport::TestCase
     end
 
     I18n.with_locale(:en) do
-      assert I18n.exists?("sign.app.reauth.index.title"), "en.sign.app.reauth.index.title missing"
+      assert I18n.exists?("sign.app.verification.index.title"), "en.sign.app.verification.index.title missing"
     end
   end
 end

@@ -44,17 +44,20 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
 
     # Start login flow
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
     assert_response :redirect
 
     # Callback
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     assert_response :redirect
 
     # User count should NOT increase
     assert_equal user_count_before, User.count, "Existing user login should NOT create new user"
+
+    existing_user.reload
+    assert_equal UserStatus::NEYO, existing_user.status_id
 
     follow_redirect!
     assert_predicate flash[:notice], :present?, "Should have success message"
@@ -78,10 +81,10 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     user_count_before = User.count
 
     get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     assert_equal user_count_before, User.count
   end
@@ -97,10 +100,10 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     identity_count_before = UserSocialGoogle.count
 
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     assert_response :redirect
 
@@ -111,6 +114,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     identity = UserSocialGoogle.find_by(uid: new_uid)
     assert_not_nil identity
     assert_not_nil identity.user
+    assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, identity.user.status_id
     assert_not_nil identity.last_authenticated_at
   end
 
@@ -122,10 +126,10 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     identity_count_before = UserSocialApple.count
 
     get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     assert_response :redirect
 
@@ -145,10 +149,10 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     setup_google_mock_auth(uid: new_uid)
 
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     assert_response :redirect
 
@@ -183,10 +187,10 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     time_before = Time.current
 
     get sign_app_social_start_url(provider: "google_oauth2", intent: "login", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: { "Host" => @host }
+        headers: browser_headers.merge("Host" => @host)
 
     identity.reload
     assert_operator identity.last_authenticated_at, :>=, time_before, "last_authenticated_at should be updated on login"

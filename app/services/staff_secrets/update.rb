@@ -23,6 +23,7 @@ module StaffSecrets
 
       StaffAudit.transaction do
         StaffSecret.transaction do
+          ensure_audit_dependencies!
           @secret.save!
           StaffAudit.create!(
             actor: @actor,
@@ -44,6 +45,13 @@ module StaffSecrets
       enabled = ActiveModel::Type::Boolean.new.cast(enabled_param)
       status = enabled ? :active : :revoked
       StaffSecret.status_id_for(status)
+    end
+
+    def ensure_audit_dependencies!
+      AuditRecord.connected_to(role: :writing) do
+        StaffAuditEvent.find_or_create_by!(id: EVENT_ID)
+        StaffAuditLevel.find_or_create_by!(id: StaffAuditLevel::NEYO)
+      end
     end
   end
 end

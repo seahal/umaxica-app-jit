@@ -91,7 +91,7 @@ module Sign
           result = log_in(user, require_totp_check: false)
           if result[:status] == :session_limit_exceeded
             issue_session_limit_gate!(return_to: request.fullpath, flow: "in.secret.session")
-            redirect_to edit_sign_app_in_secret_session_path
+            redirect_to new_sign_app_in_secret_path
           else
             redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
           end
@@ -118,7 +118,7 @@ module Sign
             redirect_to new_sign_app_in_totp_path, notice: t("sign.app.authentication.totp.required")
           elsif result[:status] == :session_limit_exceeded
             issue_session_limit_gate!(return_to: request.fullpath, flow: "in.secret.session")
-            redirect_to edit_sign_app_in_secret_session_path
+            redirect_to new_sign_app_in_secret_path
           else
             redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
           end

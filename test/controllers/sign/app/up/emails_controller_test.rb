@@ -502,7 +502,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal user.id.to_s, audit.user_id
     assert_equal user.id, audit.actor_id
     assert_equal "User", audit.actor_type
-    assert_equal "SIGNED_UP_WITH_EMAIL", audit.event_id
+    assert_equal UserAuditEvent::SIGNED_UP_WITH_EMAIL, audit.event_id
   end
   # rubocop:enable Minitest/MultipleAssertions
 

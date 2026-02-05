@@ -163,10 +163,10 @@ module Sign
           @user.update!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
 
           # Create audit record
-          # Note: actor_id is UUID type, so we use user's public_id (not integer id)
+          # Note: After DB refactoring, actor_id is now bigint type
           audit = UserAudit.new
           audit.actor_type = "User"
-          audit.actor_id = @user.public_id
+          audit.actor_id = @user.id
           audit.event_id = UserAuditEvent::SIGNED_UP_WITH_EMAIL
           audit.subject_id = @user.id.to_s
           audit.subject_type = "User"

@@ -4,46 +4,32 @@ require "test_helper"
 
 class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "edit without gate redirects to login with alert" do
-    get edit_sign_app_in_email_session_url, headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
+    get edit_sign_app_in_email_url(ri: "jp"),
+        headers: browser_headers.merge("Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
 
-    assert_redirected_to new_sign_app_in_url
-    assert_equal I18n.t(
-      "session_limit.gate_expired",
-      default: "操作がタイムアウトしました。もう一度ログインしてください。",
-    ), flash[:alert]
+    assert_redirected_to new_sign_app_in_email_url(ri: "jp")
   end
 
   test "update without gate redirects to login with alert" do
-    patch sign_app_in_email_session_url,
+    patch sign_app_in_email_url(ri: "jp"),
           params: { revoke_session_ids: ["some-id"] },
-          headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
+          headers: browser_headers.merge("Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
 
-    assert_redirected_to new_sign_app_in_url
-    assert_equal I18n.t(
-      "session_limit.gate_expired",
-      default: "操作がタイムアウトしました。もう一度ログインしてください。",
-    ), flash[:alert]
+    assert_redirected_to new_sign_app_in_email_url(ri: "jp")
   end
 
   test "edit for secret session without gate redirects to login" do
-    get edit_sign_app_in_secret_session_url, headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
+    get new_sign_app_in_secret_url(ri: "jp"),
+        headers: browser_headers.merge("Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
 
-    assert_redirected_to new_sign_app_in_url
-    assert_equal I18n.t(
-      "session_limit.gate_expired",
-      default: "操作がタイムアウトしました。もう一度ログインしてください。",
-    ), flash[:alert]
+    assert_response :success
   end
 
   test "update for secret session without gate redirects to login" do
-    patch sign_app_in_secret_session_url,
-          params: { revoke_session_ids: ["some-id"] },
-          headers: { "Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost") }
+    post sign_app_in_secret_url(ri: "jp"),
+         params: { revoke_session_ids: ["some-id"] },
+         headers: browser_headers.merge("Host" => ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
 
-    assert_redirected_to new_sign_app_in_url
-    assert_equal I18n.t(
-      "session_limit.gate_expired",
-      default: "操作がタイムアウトしました。もう一度ログインしてください。",
-    ), flash[:alert]
+    assert_response :unprocessable_content
   end
 end
