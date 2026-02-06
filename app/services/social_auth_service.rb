@@ -99,6 +99,8 @@ class SocialAuthService
 
       identity.update!(identity_class.status_column => revoked_status)
 
+      create_audit_event!(UserAuditEvent::SOCIAL_UNLINKED, subject: identity)
+
       Rails.event.notify(
         "social_auth.unlinked",
         user_id: @current_user.id,
@@ -405,6 +407,22 @@ class SocialAuthService
     end
   end
 
+  def create_audit_event!(event_id, subject:)
+    AuditRecord.connected_to(role: :writing) do
+      UserAuditEvent.find_or_create_by!(id: event_id)
+      UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+    end
+
+    UserAudit.create!(
+      actor_type: "User",
+      actor_id: @current_user.id,
+      event_id: event_id,
+      subject_id: subject.id.to_s,
+      subject_type: subject.class.name,
+      occurred_at: Time.current,
+    )
+  end
+
   def last_authentication_method?
     auth_methods_count = 0
 
@@ -428,7 +446,9 @@ class SocialAuthService
     end
 
     if @current_user.respond_to?(:user_telephones)
-      auth_methods_count += @current_user.user_telephones.where(user_telephone_status_id: UserTelephoneStatus::VERIFIED).count
+      auth_methods_count += @current_user.user_telephones.where(
+        user_telephone_status_id: [UserTelephoneStatus::VERIFIED, UserTelephoneStatus::VERIFIED_WITH_SIGN_UP],
+      ).count
     end
 
     if @current_user.respond_to?(:user_passkeys)

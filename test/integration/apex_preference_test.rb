@@ -252,9 +252,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       delete public_send("apex_#{domain[:name]}_preference_reset_url", ri: "jp")
       assert_response :unprocessable_content
 
-      assert_select ".bg-red-50" do
-        assert_select "li"
-      end
+      assert_select "form ul li", minimum: 1
 
       pref.reload
       assert_equal 2, pref.status_id

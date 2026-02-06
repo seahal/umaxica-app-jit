@@ -34,6 +34,9 @@ class UserAuditEvent < AuditRecord
   USER_SECRET_CREATED = 22
   USER_SECRET_REMOVED = 23
   USER_SECRET_UPDATED = 24
+  EMAIL_REMOVED = 25
+  TELEPHONE_REMOVED = 26
+  SOCIAL_UNLINKED = 27
 
   # Association with user_audits
   has_many :user_audits,

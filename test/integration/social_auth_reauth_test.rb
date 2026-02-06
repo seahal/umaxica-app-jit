@@ -14,6 +14,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
   setup do
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @callback_headers = SocialCallbackTestHelper.callback_headers(@host)
 
     # Create test user
     UserStatus.find_or_create_by!(id: UserStatus::NEYO)
@@ -61,7 +62,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
 
     # Callback with correct state and matching identity
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: as_user_headers(@user, host: @host)
+        headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -101,7 +102,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
     assert_response :redirect
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: as_user_headers(@user, host: @host)
+         headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -136,7 +137,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user, host: @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: as_user_headers(@user, host: @host)
+        headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -157,7 +158,7 @@ class SocialAuthReauthTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user, host: @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: as_user_headers(@user, host: @host)
+        headers: @callback_headers.merge(as_user_headers(@user, host: @host))
 
     assert_response :redirect
     follow_redirect!

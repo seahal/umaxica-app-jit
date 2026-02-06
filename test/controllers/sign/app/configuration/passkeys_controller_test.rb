@@ -4,11 +4,12 @@ require "test_helper"
 require "minitest/mock"
 
 class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_statuses
+  fixtures :users, :user_statuses, :user_secret_kinds, :user_secret_statuses
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
+    @other_user = users(:two)
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
 
     # Cleanup potentially corrupted UserEmails
@@ -24,6 +25,15 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       "https://#{ENV.fetch("SIGN_SERVICE_URL", "sign.umaxica.app")}",
     ].uniq
     Webauthn.define_singleton_method(:trusted_origins) { allowed_origins }
+
+    @passkey =
+      UserPasskey.create!(
+        user: @user,
+        webauthn_id: "webauthn_#{SecureRandom.hex(4)}",
+        public_key: "public_key_#{SecureRandom.hex(4)}",
+        sign_count: 0,
+        description: "My Passkey",
+      )
   end
 
   teardown do
@@ -148,6 +158,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
       assert_response :created
       assert_equal "ok", response.parsed_body["status"]
+      assert_equal sign_app_configuration_emergency_key_path(ri: "jp"), response.parsed_body["redirect_url"]
     end
   end
 
@@ -194,6 +205,56 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   test "should get new" do
     get new_sign_app_configuration_passkey_path(ri: "jp"), headers: @headers
     assert_response :ok
+  end
+
+  test "should get edit with public_id" do
+    get edit_sign_app_configuration_passkey_path(@passkey.public_id, ri: "jp"), headers: @headers
+    assert_response :ok
+  end
+
+  test "should update description with public_id" do
+    patch sign_app_configuration_passkey_path(@passkey.public_id, ri: "jp"),
+          params: { passkey: { description: "Updated" } },
+          headers: @headers
+
+    assert_redirected_to sign_app_configuration_passkey_path(@passkey.public_id, ri: "jp")
+    assert_equal "Updated", @passkey.reload.description
+  end
+
+  test "should destroy with public_id" do
+    UserPasskey.create!(
+      user: @user,
+      webauthn_id: "webauthn_extra_#{SecureRandom.hex(4)}",
+      public_key: "public_key_extra_#{SecureRandom.hex(4)}",
+      sign_count: 0,
+      description: "Extra Passkey",
+    )
+
+    assert_difference("UserPasskey.count", -1) do
+      delete sign_app_configuration_passkey_path(@passkey.public_id, ri: "jp"), headers: @headers
+    end
+
+    assert_redirected_to sign_app_configuration_passkeys_path(ri: "jp")
+  end
+
+  test "should 404 when accessing other user's passkey" do
+    other_passkey =
+      UserPasskey.create!(
+        user: @other_user,
+        webauthn_id: "webauthn_other_#{SecureRandom.hex(4)}",
+        public_key: "public_key_other_#{SecureRandom.hex(4)}",
+        sign_count: 0,
+        description: "Other Passkey",
+      )
+
+    get edit_sign_app_configuration_passkey_path(other_passkey.public_id, ri: "jp"), headers: @headers
+    assert_response :not_found
+  end
+
+  test "index uses public_id in edit link" do
+    get sign_app_configuration_passkeys_path(ri: "jp"), headers: @headers
+    assert_response :ok
+    assert_select "a[href=?]", edit_sign_app_configuration_passkey_path(@passkey.public_id, ri: "jp")
   end
 
   private

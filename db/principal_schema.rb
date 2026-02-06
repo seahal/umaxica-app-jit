@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_05_150000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_06_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -245,12 +245,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_05_150000) do
     t.string "description", default: "", null: false
     t.uuid "external_id", null: false
     t.datetime "last_used_at"
+    t.string "public_id", limit: 21, null: false
     t.text "public_key", null: false
     t.bigint "sign_count", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.bigint "user_passkey_status_id", default: 0, null: false
     t.string "webauthn_id", default: "", null: false
+    t.index ["public_id"], name: "index_user_passkeys_on_public_id", unique: true
     t.index ["user_id"], name: "index_user_identity_passkeys_on_user_id"
     t.index ["user_passkey_status_id"], name: "index_user_passkeys_on_user_passkey_status_id"
     t.index ["webauthn_id"], name: "index_user_identity_passkeys_on_webauthn_id", unique: true

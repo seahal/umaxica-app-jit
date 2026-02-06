@@ -11,11 +11,11 @@
               scope: :com_contact_telephone,
               method: :post do |form| %>
   <% if @contact_telephone&.errors&.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+    <div id="error_explanation">
       <h2><%= pluralize(@contact_telephone.errors.count, "error") %> prohibited this verification from being
         completed:</h2>
 
-      <ul class="list-disc ml-6">
+      <ul>
         <% @contact_telephone.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -31,8 +31,7 @@
   <%= form.submit t('help.com.contact.telephones.edit.submit') %>
 <% end %>
 
-<div class="mt-4 text-sm">
+<div>
   <%= link_to t('help.com.contact.telephones.edit.retry'),
-              new_core_com_contact_path(retry_contact_params),
-              class: "font-medium text-sky-700 hover:underline" %>
+              new_core_com_contact_path(retry_contact_params) %>
 </div>

@@ -3,13 +3,17 @@
 require "test_helper"
 
 class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::IntegrationTest
-  fixtures :user_statuses, :user_secret_statuses, :user_secret_kinds
+  fixtures :user_statuses, :user_secret_statuses, :user_secret_kinds, :user_email_statuses
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = User.create!(
       status_id: UserStatus::NEYO,
       public_id: "secret_user_#{SecureRandom.hex(4)}",
+    )
+    @token = UserToken.create!(
+      user_id: @user.id, last_step_up_at: 1.minute.ago,
+      last_step_up_scope: "configuration_secret",
     )
     @user_secret = UserSecret.create!(
       user: @user,
@@ -18,10 +22,18 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
       last_used_at: Time.zone.now,
       user_secret_kind_id: UserSecret::Kinds::LOGIN,
     )
+    UserEmail.create!(
+      user: @user,
+      address: "secret-user@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
   end
 
   def authenticated_headers
-    browser_headers.merge("X-TEST-CURRENT-USER" => @user.id.to_s)
+    browser_headers.merge(
+      "X-TEST-CURRENT-USER" => @user.id.to_s,
+      "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
+    )
   end
 
   test "should get index" do
@@ -118,5 +130,72 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   test "should not access secret by numeric ID" do
     get sign_app_configuration_secret_url(@user_secret.id, ri: "jp"), headers: authenticated_headers
     assert_response :not_found
+  end
+
+  test "should return 404 for other user's secret" do
+    other_user = users(:two)
+    other_secret = UserSecret.create!(
+      user: other_user,
+      name: "Other Secret",
+      password_digest: "test_password_digest",
+      user_secret_kind_id: UserSecret::Kinds::LOGIN,
+      public_id: "secret_other_#{SecureRandom.hex(4)}",
+    )
+
+    get sign_app_configuration_secret_url(other_secret.public_id, ri: "jp"), headers: authenticated_headers
+
+    assert_response :not_found
+  end
+
+  test "update blocks disabling last method" do
+    user = User.create!(status_id: UserStatus::NEYO)
+    token = UserToken.create!(
+      user_id: user.id, last_step_up_at: 1.minute.ago,
+      last_step_up_scope: "configuration_secret",
+    )
+    secret = UserSecret.create!(
+      user: user,
+      name: "Only Secret",
+      password_digest: "test_password_digest",
+      user_secret_kind_id: UserSecret::Kinds::LOGIN,
+    )
+
+    patch sign_app_configuration_secret_url(secret, ri: "jp"),
+          params: { user_secret: { enabled: false } },
+          headers: {
+            "Host" => ENV["SIGN_SERVICE_URL"] || "sign.app.localhost",
+            "X-TEST-CURRENT-USER" => user.id.to_s,
+            "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
+          }
+
+    assert_redirected_to sign_app_configuration_secrets_url(ri: "jp")
+    assert_equal I18n.t("sign.app.configuration.secrets.update.last_method"), flash[:alert]
+    assert_equal UserSecretStatus::ACTIVE, secret.reload.user_identity_secret_status_id
+  end
+
+  test "destroy blocks last method" do
+    user = User.create!(status_id: UserStatus::NEYO)
+    token = UserToken.create!(
+      user_id: user.id, last_step_up_at: 1.minute.ago,
+      last_step_up_scope: "configuration_secret",
+    )
+    secret = UserSecret.create!(
+      user: user,
+      name: "Only Secret",
+      password_digest: "test_password_digest",
+      user_secret_kind_id: UserSecret::Kinds::LOGIN,
+    )
+
+    assert_no_difference("UserSecret.count") do
+      delete sign_app_configuration_secret_url(secret, ri: "jp"),
+             headers: {
+               "Host" => ENV["SIGN_SERVICE_URL"] || "sign.app.localhost",
+               "X-TEST-CURRENT-USER" => user.id.to_s,
+               "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
+             }
+    end
+
+    assert_redirected_to sign_app_configuration_secrets_url(ri: "jp")
+    assert_equal I18n.t("sign.app.configuration.secrets.destroy.last_method"), flash[:alert]
   end
 end

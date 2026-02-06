@@ -7,9 +7,9 @@
   error ||= nil
 %>
 
-<div class="flex flex-col gap-2 w-full">
+<div>
   <% if label %>
-    <label class="text-sm font-medium text-fg leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+    <label>
       <%= label %>
     </label>
   <% end %>
@@ -17,8 +17,8 @@
          name="<%= name %>"
          value="<%= value %>"
          placeholder="<%= placeholder %>"
-         class="flex h-11 w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm ring-offset-bg file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 <%= "border-danger ring-danger" if error %> <%= local_assigns[:class] %>">
+         class="<%= "border-danger ring-danger" if error %> <%= local_assigns[:class] %>">
   <% if error %>
-    <p class="text-xs font-medium text-danger"><%= error %></p>
+    <p><%= error %></p>
   <% end %>
 </div>

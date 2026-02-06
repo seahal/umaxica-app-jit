@@ -3,12 +3,11 @@
   variant_classes = {
     info: "bg-muted text-muted-fg border-border",
     danger: "bg-danger/10 text-danger border-danger/20",
-    success: "bg-primary/10 text-primary border-primary/20",
-  }[variant.to_sym]
+    success: "bg-primary/10 text-primary border-primary/20"}[variant.to_sym]
 %>
 
-<div class="relative w-full rounded-lg border p-4 <%= variant_classes %> <%= local_assigns[:class] %>">
-  <div class="text-sm [&_p]:leading-relaxed font-medium">
+<div class="<%= variant_classes %> <%= local_assigns[:class] %>">
+  <div>
     <%= yield %>
   </div>
 </div>

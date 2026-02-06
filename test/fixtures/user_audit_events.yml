@@ -49,3 +49,15 @@ totp_disabled:
   id: 20
 totp_enabled:
   id: 21
+user_secret_created:
+  id: 22
+user_secret_removed:
+  id: 23
+user_secret_updated:
+  id: 24
+email_removed:
+  id: 25
+telephone_removed:
+  id: 26
+social_unlinked:
+  id: 27

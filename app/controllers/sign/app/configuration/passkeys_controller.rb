@@ -124,10 +124,11 @@ module Sign
             authorize passkey, :create?
             passkey.save!
 
+            issue_emergency_key!
+
             render json: {
               status: "ok",
-              passkey_id: passkey.id,
-              redirect_url: sign_app_configuration_passkeys_path,
+              redirect_url: sign_app_configuration_emergency_key_path(ri: params[:ri]),
             }, status: :created
           end
         rescue Sign::Webauthn::ChallengeNotFoundError,
@@ -201,7 +202,7 @@ module Sign
         private
 
         def set_passkey
-          @passkey = current_user.user_passkeys.find(params[:id])
+          @passkey = current_user.user_passkeys.find_by!(public_id: params[:public_id])
         end
 
         def credential_params
@@ -220,6 +221,11 @@ module Sign
 
         def update_params
           params.expect(passkey: [:description])
+        end
+
+        def issue_emergency_key!
+          result = UserSecrets::IssueRecovery.call(actor: current_user, user: current_user)
+          session[:recovery_secret_raw] = result.raw_secret
         end
 
         def passkey_description

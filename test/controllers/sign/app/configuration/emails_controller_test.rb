@@ -11,7 +11,10 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
     @user = users(:one)
-    @token = UserToken.create!(user_id: @user.id)
+    @token = UserToken.create!(
+      user_id: @user.id, last_step_up_at: 1.minute.ago,
+      last_step_up_scope: "configuration_email",
+    )
     @email = OpenStruct.new(id: "1")
 
     CloudflareTurnstile.test_mode = true
@@ -173,5 +176,50 @@ class Sign::App::Configuration::EmailsControllerTest < ActionDispatch::Integrati
     # Count status badges
     assert_match(/認証済み/, @response.body)
     assert_match(/未認証/, @response.body)
+  end
+
+  test "destroy removes email when not last method" do
+    email1 = UserEmail.create!(
+      address: "delete1@example.com",
+      user: @user,
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+    UserEmail.create!(
+      address: "delete2@example.com",
+      user: @user,
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    assert_difference("UserEmail.count", -1) do
+      delete sign_app_configuration_email_url(email1, ri: "jp"), headers: request_headers
+    end
+
+    assert_response :see_other
+    assert_predicate flash[:notice], :present?
+  end
+
+  test "destroy blocks removal when last method" do
+    user = User.create!(status_id: UserStatus::NEYO)
+    token = UserToken.create!(
+      user_id: user.id, last_step_up_at: 1.minute.ago,
+      last_step_up_scope: "configuration_email",
+    )
+    email = UserEmail.create!(
+      address: "last@example.com",
+      user: user,
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    assert_no_difference("UserEmail.count") do
+      delete sign_app_configuration_email_url(email, ri: "jp"),
+             headers: {
+               "Host" => @host,
+               "X-TEST-CURRENT-USER" => user.id,
+               "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
+             }
+    end
+
+    assert_redirected_to sign_app_configuration_emails_url(ri: "jp")
+    assert_equal I18n.t("sign.app.configuration.email.destroy.last_method"), flash[:alert]
   end
 end

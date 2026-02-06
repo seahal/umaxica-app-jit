@@ -1,15 +1,15 @@
 <% content_for :title, "Showing sample" %>
 
-<div class="md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">Showing sample</h1>
+<div>
+  <h1>Showing sample</h1>
 
   <%= form_with model: @user_telephone, url: sign_app_up_telephone_path, method: :patch do |form| %>
 
     <% if @user_telephone.errors.any? %>
-      <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <div id="error_explanation">
         <h2><%= pluralize(@user_telephone.errors.count, "error") %> prohibited this sample from being saved:</h2>
 
-        <ul class="list-disc ml-6">
+        <ul>
           <% @user_telephone.errors.each do |error| %>
             <li><%= error.full_message %></li>
           <% end %>
@@ -25,8 +25,14 @@
     <%= form.submit %>
   <% end %>
 
-  <div class="mt-6">
-    <%= link_to t("controller.sign.app.registration.telephone.edit.return_page"), new_sign_app_up_path, class: "inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition" %>
+  <div>
+    <%= button_to t("sign.app.registration.telephone.edit.resend_code"),
+                  resend_sign_app_up_telephones_path(ri: params[:ri]),
+                  method: :post %>
+  </div>
+
+  <div>
+    <%= link_to t("controller.sign.app.registration.telephone.edit.return_page"), new_sign_app_up_path %>
   </div>
 
 </div>

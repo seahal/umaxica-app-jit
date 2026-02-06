@@ -163,10 +163,37 @@ ja:
             title: "メールアドレス"
             description: "メールアドレスを管理します"
             new_link: "メールアドレスを追加"
+            delete: "削除"
+            delete_confirm: "このメールアドレスを削除しますか？"
+          destroy:
+            success: "メールアドレスを削除しました。"
+            last_method: "最後のログイン手段のため削除できません。"
           update:
             success: "メールアドレスが認証されました。"
             code_required: "確認コードを入力してください。"
             attempts_exceeded: "試行回数の上限を超えました。最初からやり直してください。"
+        telephone:
+          index:
+            title: "電話番号"
+            description: "電話番号を管理します"
+            new_link: "電話番号を追加"
+            delete: "削除"
+            delete_confirm: "この電話番号を削除しますか？"
+          destroy:
+            success: "電話番号を削除しました。"
+            last_method: "最後のログイン手段のため削除できません。"
+        secrets:
+          update:
+            last_method: "最後のログイン手段のため無効化できません。"
+          destroy:
+            last_method: "最後のログイン手段のため削除できません。"
+        emergency_key:
+          missing: "緊急キーの表示期限が切れました。"
+          show:
+            title: "緊急キー"
+            description: "緊急時に利用できるキーを発行しました。安全な場所に保管してください。"
+            one_time_notice: "このキーは一度しか表示されません。スクリーンショットまたは安全な保管場所に保存してください。"
+            back_to_settings: "設定に戻る"
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
@@ -422,11 +449,36 @@ ja:
           description: アカウントの高度なセキュリティ設定を管理します。
           withdrawal: 退会
           back: もどる
+          mfa: MFA設定
+          mfa_desc: 多要素認証の有効化と管理
         passkeys:
           new:
             page_title: "パスキーを登録"
           index:
             title: "パスキー管理"
+          edit:
+            title: "パスキーを編集"
+            description: "パスキーの名称を変更できます。"
+          show:
+            title: "パスキーの詳細"
+            description: "登録済みパスキーの情報を確認します。"
+        mfa:
+          show:
+            title: "MFA設定"
+            description: "多要素認証の利用状況を確認し、設定を変更できます。"
+            toggle_title: "多要素認証を有効化"
+            toggle_description: "有効にすると追加認証が要求されます。"
+            enabled: "有効"
+            disabled: "無効"
+            passkeys: "パスキー"
+            passkeys_desc: "登録済み %{count} 件"
+            totps: "認証アプリ（TOTP）"
+            totps_desc: "登録済み %{count} 件"
+            secrets: "シークレット"
+            secrets_desc: "有効 %{count} 件"
+          update:
+            success: "MFA設定を更新しました。"
+            failure: "MFA設定の更新に失敗しました。"
         recovery:
           index:
             description: 登録済みのリカバリーコードを確認し、必要に応じて更新します。
@@ -641,8 +693,13 @@ ja:
             edit:
               return_page: 戻る
               session_expired: セッションの有効期限が切れました。最初からやり直してください。
+              resend_code: 確認コードを再送する
+            resend:
+              sent: 確認コードをSMSで再送しました。
+              rate_limited: 短時間での再送はできません。しばらくしてから再度お試しください。
             update:
               success: 電話番号が確認されました。
+              passkey_required: 電話番号の確認が完了しました。パスキーの登録を続けてください。
         authentication:
           edit:
             title: 認証情報の編集

@@ -1,36 +1,36 @@
 <% content_for :page_title, t("sign.app.reauth.index.title") %>
 <% title t("sign.app.reauth.index.title") %>
 
-<div class="mx-auto max-w-3xl px-4 py-10">
-  <div class="flex items-center justify-between">
-    <h1 class="text-xl font-semibold text-slate-900"><%= t("sign.app.reauth.index.title") %></h1>
-    <%= link_to t("sign.app.reauth.index.new"), sign_app_verification_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+<div>
+  <div>
+    <h1><%= t("sign.app.reauth.index.title") %></h1>
+    <%= link_to t("sign.app.reauth.index.new"), sign_app_verification_path %>
   </div>
 
-  <div class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
-    <table class="min-w-full divide-y divide-slate-200">
-      <thead class="bg-slate-50">
+  <div>
+    <table>
+      <thead>
       <tr>
-        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.app.reauth.index.table.scope") %></th>
-        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.app.reauth.index.table.method") %></th>
-        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.app.reauth.index.table.status") %></th>
-        <th class="px-4 py-3 text-left text-xs font-medium text-slate-600"><%= t("sign.app.reauth.index.table.expires") %></th>
+        <th><%= t("sign.app.reauth.index.table.scope") %></th>
+        <th><%= t("sign.app.reauth.index.table.method") %></th>
+        <th><%= t("sign.app.reauth.index.table.status") %></th>
+        <th><%= t("sign.app.reauth.index.table.expires") %></th>
       </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100">
+      <tbody>
       <% @reauth_sessions.each do |s| %>
-        <tr class="hover:bg-slate-50">
-          <td class="px-4 py-3 text-sm text-slate-900">
-            <%= link_to s.scope, sign_app_verification_path, class: "text-indigo-600 hover:text-indigo-500" %>
+        <tr>
+          <td>
+            <%= link_to s.scope, sign_app_verification_path %>
           </td>
-          <td class="px-4 py-3 text-sm text-slate-700"><%= s.method %></td>
-          <td class="px-4 py-3 text-sm text-slate-700"><%= s.status %></td>
-          <td class="px-4 py-3 text-sm text-slate-700"><%= l(s.expires_at, format: :short) %></td>
+          <td><%= s.method %></td>
+          <td><%= s.status %></td>
+          <td><%= l(s.expires_at, format: :short) %></td>
         </tr>
       <% end %>
       <% if @reauth_sessions.empty? %>
         <tr>
-          <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500"><%= t("sign.app.reauth.index.empty") %></td>
+          <td colspan="4"><%= t("sign.app.reauth.index.empty") %></td>
         </tr>
       <% end %>
       </tbody>

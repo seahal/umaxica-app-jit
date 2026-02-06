@@ -13,6 +13,7 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  external_id            :uuid             not null
+#  public_id              :string(21)       not null
 #  user_id                :bigint           not null
 #  user_passkey_status_id :bigint           default(1), not null
 #  webauthn_id            :string           default(""), not null
@@ -21,6 +22,7 @@
 #
 #  index_user_identity_passkeys_on_user_id        (user_id)
 #  index_user_identity_passkeys_on_webauthn_id    (webauthn_id) UNIQUE
+#  index_user_passkeys_on_public_id               (public_id) UNIQUE
 #  index_user_passkeys_on_user_passkey_status_id  (user_passkey_status_id)
 #
 # Foreign Keys

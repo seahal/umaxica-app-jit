@@ -4,7 +4,9 @@
 # These tables act as enums - each row is identified by a fixed constant ID.
 # Run with: bin/rails db:seed
 
+# rubocop:disable I18n/RailsI18n/DecorateString
 Rails.logger.debug "Seeding status tables..."
+# rubocop:enable I18n/RailsI18n/DecorateString
 
 # Helper to seed a status model from its constants
 def seed_status(klass)

@@ -1,11 +1,11 @@
 <% title t("sign.app.verification.edit.title") %>
 
-<div class="mx-auto max-w-xl px-4 py-10">
-  <h1 class="text-2xl font-bold text-slate-900"><%= t("sign.app.verification.edit.title") %></h1>
-  <p class="mt-2 text-sm text-slate-600"><%= t("sign.app.verification.edit.description") %></p>
+<div>
+  <h1><%= t("sign.app.verification.edit.title") %></h1>
+  <p><%= t("sign.app.verification.edit.description") %></p>
 
   <% if @reauth_session.errors.any? %>
-    <div class="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+    <div>
       <%= @reauth_session.errors.full_messages.to_sentence %>
     </div>
   <% end %>
@@ -22,16 +22,15 @@
       <%= f.hidden_field :credential_json, value: "", data: { "reauth-passkey-target": "credentialJson" }, name: "verification[credential_json]" %>
 
       <button type="button"
-              data-action="click->reauth-passkey#authenticate"
-              class="mt-6 inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+              data-action="click->reauth-passkey#authenticate">
         <%= t("sign.app.verification.edit.authenticate_with_passkey") %>
       </button>
-      <p data-reauth-passkey-target="error" class="mt-3 hidden text-sm text-red-600"></p>
-      <p data-reauth-passkey-target="status" class="mt-3 hidden text-sm text-slate-600"></p>
+      <p data-reauth-passkey-target="error" class="hidden"></p>
+      <p data-reauth-passkey-target="status" class="hidden"></p>
     </div>
   <% end %>
 
-  <div class="mt-6 flex items-center gap-3">
-    <%= link_to t("sign.app.verification.edit.back"), sign_app_verification_path(ri: params[:ri]), class: "text-sm text-slate-600 hover:text-slate-900" %>
+  <div>
+    <%= link_to t("sign.app.verification.edit.back"), sign_app_verification_path(ri: params[:ri]) %>
   </div>
 </div>

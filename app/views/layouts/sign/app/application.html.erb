@@ -7,47 +7,47 @@
              title: "#{ENV['BRAND_NAME']} (app)" %>
 </head>
 
-<body class="min-h-screen bg-bg text-fg antialiased selection:bg-primary/10">
-  <div class="mx-auto flex w-full max-w-screen-sm flex-col min-h-screen px-4">
-    <header class="flex h-16 items-center justify-between border-b border-border">
-      <div class="flex items-center gap-2">
-        <h1 class="text-xl font-bold tracking-tight">
-           <%= link_to ENV.fetch("BRAND_NAME", "Umaxica"), sign_app_root_path, class: "hover:opacity-80 transition-opacity" %>
+<body class="antialiased">
+  <div>
+    <header>
+      <div>
+        <h1>
+           <%= link_to ENV.fetch("BRAND_NAME", "Umaxica"), sign_app_root_path %>
         </h1>
-        <span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-fg leading-none">
+        <span>
           App
         </span>
       </div>
-      <div class="flex items-center gap-2">
-        <nav class="flex items-center gap-1">
+      <div>
+        <nav>
           <% if logged_in? %>
-             <%= link_to sign_app_configuration_path, class: "flex h-10 w-10 items-center justify-center rounded-lg hover:bg-muted transition-colors", title: t("sign.app.layout.nav.configuration") do %>
+             <%= link_to sign_app_configuration_path, title: t("sign.app.layout.nav.configuration") do %>
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>
              <% end %>
           <% else %>
-            <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_up_path, class: "text-sm font-medium hover:text-primary transition-colors" %>
-            <%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_in_url, class: "text-sm font-medium hover:text-primary transition-colors" %>
+            <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_app_up_path %>
+            <%= link_to t("sign.app.layout.nav.log_in"), new_sign_app_in_url %>
           <% end %>
         </nav>
       </div>
     </header>
 
-    <div class="mt-4">
+    <div>
       <%= render "shared/flash_messages" %>
     </div>
 
-    <main class="flex-1 py-8">
+    <main>
       <%= yield %>
     </main>
 
-    <footer class="mt-auto border-t border-border py-8 text-sm text-muted-fg">
-      <div class="flex flex-col gap-6">
-        <nav class="flex flex-wrap gap-x-6 gap-y-2">
-          <%= link_to t("sign.app.preferences.footer.home"), sign_app_root_path, class: "hover:text-fg transition-colors" %>
-          <%= link_to t("sign.app.preferences.footer.preference"), apex_app_preference_url, class: "hover:text-fg transition-colors" %>
-          <%= link_to t("sign.app.preferences.footer.configuration"), sign_app_configuration_path, class: "hover:text-fg transition-colors" %>
+    <footer>
+      <div>
+        <nav>
+          <%= link_to t("sign.app.preferences.footer.home"), sign_app_root_path %>
+          <%= link_to t("sign.app.preferences.footer.preference"), apex_app_preference_url %>
+          <%= link_to t("sign.app.preferences.footer.configuration"), sign_app_configuration_path %>
         </nav>
-        <div class="flex items-center justify-between">
+        <div>
           <%= render "shared/copyright" %>
         </div>
       </div>

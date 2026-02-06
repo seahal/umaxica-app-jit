@@ -14,6 +14,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
   setup do
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @callback_headers = SocialCallbackTestHelper.callback_headers(@host)
   end
 
   teardown do
@@ -49,7 +50,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
 
     # Callback
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: browser_headers.merge("Host" => @host)
+        headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
 
@@ -83,8 +84,8 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
         headers: browser_headers.merge("Host" => @host)
 
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-        headers: browser_headers.merge("Host" => @host)
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: browser_headers.merge(@callback_headers)
 
     assert_equal user_count_before, User.count
   end
@@ -103,7 +104,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
         headers: browser_headers.merge("Host" => @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: browser_headers.merge("Host" => @host)
+        headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
 
@@ -128,8 +129,8 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
     get sign_app_social_start_url(provider: "apple", intent: "login", ri: "jp"),
         headers: browser_headers.merge("Host" => @host)
 
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-        headers: browser_headers.merge("Host" => @host)
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
 
@@ -152,7 +153,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
         headers: browser_headers.merge("Host" => @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: browser_headers.merge("Host" => @host)
+        headers: browser_headers.merge(@callback_headers)
 
     assert_response :redirect
 
@@ -190,7 +191,7 @@ class SocialAuthLoginTest < ActionDispatch::IntegrationTest
         headers: browser_headers.merge("Host" => @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: browser_headers.merge("Host" => @host)
+        headers: browser_headers.merge(@callback_headers)
 
     identity.reload
     assert_operator identity.last_authenticated_at, :>=, time_before, "last_authenticated_at should be updated on login"

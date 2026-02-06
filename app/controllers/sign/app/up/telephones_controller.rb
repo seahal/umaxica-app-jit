@@ -92,7 +92,11 @@ module Sign
           return render_invalid_telephone_code unless verify_submitted_telephone_code
 
           verify_telephone!
-          finalize_telephone_registration!
+          if sms_login_ready?
+            complete_sms_login!
+          else
+            finalize_telephone_registration!
+          end
         end
 
         def destroy
@@ -103,25 +107,39 @@ module Sign
             return
           end
 
-          UserTelephone.transaction do
-            # Update user status
-            @user = @user_telephone.user
-            @user.update!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+          @user = @user_telephone.user
+          session[:signup_passkey_registration] = {
+            "user_id" => @user.id,
+            "expires_at" => 30.minutes.from_now.to_i,
+          }
 
-            # Create audit record
-            audit = UserAudit.new
-            audit.actor_type = "User"
-            audit.actor_id = @user.id
-            audit.event_id = UserAuditEvent::SIGNED_UP_WITH_TELEPHONE
-            audit.subject_id = @user.id.to_s
-            audit.subject_type = "User"
-            audit.save!
+          redirect_to new_sign_app_up_passkey_path(ri: params[:ri]),
+                      notice: t("sign.app.registration.telephone.update.passkey_required")
+        end
 
-            log_in(@user, record_login_audit: false)
+        def resend
+          registration_session = session[:user_telephone_registration]
+          @user_telephone = load_registration_telephone(registration_session)
+
+          if otp_resend_rate_limited?
+            flash[:alert] = t("sign.app.registration.telephone.resend.rate_limited")
+            return redirect_to resend_redirect_path
           end
 
-          redirect_to sign_app_configuration_path(ri: params[:ri]),
-                      notice: t("sign.app.registration.telephone.update.success")
+          if @user_telephone
+            otp_code = generate_otp_for(@user_telephone)
+            AwsSmsService.send_message(
+              to: @user_telephone.number,
+              message: "PassCode => #{otp_code}",
+              subject: "PassCode => #{otp_code}",
+            )
+          else
+            perform_dummy_otp_generation
+          end
+
+          session[:user_telephone_otp_last_sent_at] = Time.current.to_i
+          redirect_to resend_redirect_path,
+                      notice: t("sign.app.registration.telephone.resend.sent")
         end
 
         private
@@ -192,6 +210,51 @@ module Sign
 
           redirect_to new_sign_app_up_passkey_path(ri: params[:ri]),
                       notice: t("sign.app.registration.telephone.update.passkey_required")
+        end
+
+        def sms_login_ready?
+          user = @user_telephone.user
+          return false unless user
+
+          user.user_passkeys.active.exists?
+        end
+
+        def complete_sms_login!
+          user = @user_telephone.user
+          return finalize_telephone_registration! unless user
+
+          User.transaction do
+            if user.status_id == UserStatus::UNVERIFIED_WITH_SIGN_UP
+              user.update!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+            end
+          end
+
+          log_in(user, record_login_audit: true)
+          session[:user_telephone_registration] = nil
+          redirect_to sign_app_configuration_path(ri: params[:ri]),
+                      notice: t("sign.app.registration.telephone.update.success")
+        end
+
+        def otp_resend_rate_limited?
+          last_sent_at = session[:user_telephone_otp_last_sent_at]
+          return false if last_sent_at.blank?
+
+          last_sent_at.to_i > 60.seconds.ago.to_i
+        end
+
+        def load_registration_telephone(registration_session)
+          return nil if registration_session.blank?
+
+          id = registration_session[:id] || registration_session["id"]
+          UserTelephone.find_by(id: id)
+        end
+
+        def resend_redirect_path
+          if @user_telephone
+            edit_sign_app_up_telephone_path(@user_telephone.id, ri: params[:ri])
+          else
+            new_sign_app_up_telephone_path(ri: params[:ri])
+          end
         end
       end
     end

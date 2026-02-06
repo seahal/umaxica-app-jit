@@ -71,15 +71,16 @@ module Sign
 
             verify_credential!(credential, challenge)
 
-            passkey = create_passkey!(user, credential)
+            create_passkey!(user, credential)
+
+            issue_emergency_key!(user)
 
             complete_signup!(user)
 
-            redirect_url = sign_app_configuration_path(ri: params[:ri])
+            redirect_url = sign_app_configuration_emergency_key_path(ri: params[:ri])
 
             render json: {
               status: "ok",
-              passkey_id: passkey.id,
               redirect_url: redirect_url,
             }, status: :created
           end
@@ -165,6 +166,11 @@ module Sign
             sign_count: credential.sign_count,
             description: passkey_description,
           )
+        end
+
+        def issue_emergency_key!(user)
+          result = UserSecrets::IssueRecovery.call(actor: user, user: user)
+          session[:recovery_secret_raw] = result.raw_secret
         end
 
         def complete_signup!(user)

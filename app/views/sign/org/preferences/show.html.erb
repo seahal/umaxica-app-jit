@@ -1,10 +1,9 @@
 <% content_for :page_title, t("sign.org.preferences.title") %>
 
-<div class="mx-auto max-w-xl">
-  <h1 class="text-3xl font-semibold text-slate-900"><%= t("sign.org.preferences.title") %></h1>
-  <div class="mt-6 space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+<div>
+  <h1><%= t("sign.org.preferences.title") %></h1>
+  <div>
     <%= link_to t("shared.links.apex_preference"),
-                apex_org_preference_url,
-                class: "block w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+                apex_org_preference_url %>
   </div>
 </div>

@@ -17,6 +17,7 @@ module Sign
       # Both are accessible via params[:state].
       class OmniauthCallbacksController < Sign::App::ApplicationController
         include SocialAuthConcern
+        include SocialCallbackGuard
 
         # Allow unauthenticated access for login intent
         # For link/reauth, auth is checked in prepare_social_auth_intent!

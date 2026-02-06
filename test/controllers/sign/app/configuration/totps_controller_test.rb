@@ -19,6 +19,13 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
       "X-TEST-CURRENT-USER" => @user.id,
       "X-TEST-SESSION-PUBLIC-ID" => @token.public_id,
     }.freeze
+    @totp = UserOneTimePassword.create!(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      last_otp_at: Time.zone.at(0),
+      title: "Main TOTP",
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+    )
   end
 
   test "should get index" do
@@ -38,6 +45,44 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
     get new_sign_app_configuration_totp_url(ri: "jp"), headers: @headers
 
     assert_response :success
+  end
+
+  test "should get edit with public_id" do
+    get edit_sign_app_configuration_totp_url(@totp.public_id, ri: "jp"), headers: @headers
+
+    assert_response :success
+  end
+
+  test "should update title with public_id" do
+    patch sign_app_configuration_totp_url(@totp.public_id, ri: "jp"),
+          params: { user_one_time_password: { title: "Updated TOTP" } },
+          headers: @headers
+
+    assert_redirected_to sign_app_configuration_totps_url(ri: "jp")
+    assert_equal "Updated TOTP", @totp.reload.title
+  end
+
+  test "should destroy with public_id" do
+    assert_difference("UserOneTimePassword.count", -1) do
+      delete sign_app_configuration_totp_url(@totp.public_id, ri: "jp"), headers: @headers
+    end
+
+    assert_redirected_to sign_app_configuration_totps_url(ri: "jp")
+  end
+
+  test "should return 404 for other user's totp" do
+    other_user = users(:two)
+    other_totp = UserOneTimePassword.create!(
+      user: other_user,
+      private_key: ROTP::Base32.random_base32,
+      last_otp_at: Time.zone.at(0),
+      title: "Other TOTP",
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+    )
+
+    get edit_sign_app_configuration_totp_url(other_totp.public_id, ri: "jp"), headers: @headers
+
+    assert_response :not_found
   end
 
   test "should create totp with valid token" do

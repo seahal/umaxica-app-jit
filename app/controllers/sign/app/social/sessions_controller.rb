@@ -45,10 +45,9 @@ module Sign
           end
 
           # Prepare session with intent context (OmniAuth manages OAuth state)
-          prepare_social_auth_intent!(intent, provider: provider)
+          state = prepare_social_auth_intent!(intent, provider: provider)
 
-          # Redirect to OmniAuth (no custom state parameter)
-          redirect_to omniauth_authorize_path(provider)
+          redirect_to omniauth_authorize_path(provider, state: state)
         rescue SocialAuth::BaseError => e
           handle_social_auth_error(e)
         end

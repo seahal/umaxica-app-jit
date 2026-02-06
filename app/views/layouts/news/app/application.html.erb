@@ -15,19 +15,19 @@
   <link rel="icon" href="https://perm.umaxica.app/favicon.ico" sizes="32x32">
 </head>
 
-<body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+<body>
 <% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
 <% edge_host = ENV["EDGE_SERVICE_URL"].presence %>
 
-<div class="min-h-screen">    <%= render "shared/flash_messages" %>
-  <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
+<div>    <%= render "shared/flash_messages" %>
+  <div>
 
-    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
-      <div class="flex flex-col">
-        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">News</span>
-        <h1 class="text-2xl font-semibold tracking-tight">
+    <header>
+      <div>
+        <span>News</span>
+        <h1>
           <% if edge_host.present? %>
-            <a class="transition hover:text-[hsl(var(--primary))]" href="http://<%= edge_host %>/"><%= code_name %></a>
+            <a href="http://<%= edge_host %>/"><%= code_name %></a>
           <% else %>
             <%= code_name %>
           <% end %>
@@ -36,18 +36,18 @@
       </div>
     </header>
 
-    <main class="flex-1 py-10">
+    <main>
       <%= yield %>
     </main>
 
-    <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
-      <nav class="flex flex-wrap items-center gap-4">
+    <footer>
+      <nav>
         <% if edge_host.present? %>
-          <a class="font-semibold text-[hsl(var(--foreground))]" href="http://<%= edge_host %>/">Home</a>
+          <a href="http://<%= edge_host %>/">Home</a>
         <% end %>
-        <%= link_to t("news.app.preferences.footer.preference"), apex_app_preference_url, class: "transition hover:text-[hsl(var(--primary))]" %>
+        <%= link_to t("news.app.preferences.footer.preference"), apex_app_preference_url %>
       </nav>
-      <div class="mt-4">
+      <div>
         <%= render "shared/copyright" %>
       </div>
     </footer>

@@ -1,4 +1,61 @@
+<% content_for :page_title, t("sign.app.configuration.mfa.show.title") %>
+
 <div>
-  <h1 class="font-bold text-4xl">Sign::App::Configuration::Mfas#show</h1>
-  <p>Find me in app/views/sign/app/configuration/mfas/show.html.erb</p>
+  <div>
+    <h1><%= t("sign.app.configuration.mfa.show.title") %></h1>
+    <p><%= t("sign.app.configuration.mfa.show.description") %></p>
+  </div>
+
+  <%= form_with model: @user, url: sign_app_configuration_mfa_path, method: :patch do |form| %>
+    <% if flash[:alert].present? %>
+      <div><%= flash[:alert] %></div>
+    <% end %>
+
+    <div>
+      <div>
+        <p><%= t("sign.app.configuration.mfa.show.toggle_title") %></p>
+        <p><%= t("sign.app.configuration.mfa.show.toggle_description") %></p>
+      </div>
+      <div>
+        <span><%= @user.multi_factor_enabled? ? t("sign.app.configuration.mfa.show.enabled") : t("sign.app.configuration.mfa.show.disabled") %></span>
+        <%= form.check_box :multi_factor_enabled,
+                           {  },
+                           "1", "0" %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.submit t("actions.save") %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= render "shared/ui/card" do %>
+      <div>
+        <%= link_to sign_app_configuration_passkeys_path do %>
+          <div>
+            <p><%= t("sign.app.configuration.mfa.show.passkeys") %></p>
+            <p><%= t("sign.app.configuration.mfa.show.passkeys_desc", count: @passkeys.size) %></p>
+          </div>
+          <span><%= @passkeys.size %></span>
+        <% end %>
+
+        <%= link_to sign_app_configuration_totps_path do %>
+          <div>
+            <p><%= t("sign.app.configuration.mfa.show.totps") %></p>
+            <p><%= t("sign.app.configuration.mfa.show.totps_desc", count: @totps.size) %></p>
+          </div>
+          <span><%= @totps.size %></span>
+        <% end %>
+
+        <%= link_to sign_app_configuration_secrets_path do %>
+          <div>
+            <p><%= t("sign.app.configuration.mfa.show.secrets") %></p>
+            <p><%= t("sign.app.configuration.mfa.show.secrets_desc", count: @secrets.size) %></p>
+          </div>
+          <span><%= @secrets.size %></span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 </div>

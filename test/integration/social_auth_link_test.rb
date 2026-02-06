@@ -21,6 +21,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
   setup do
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    @callback_headers = SocialCallbackTestHelper.callback_headers(@host)
 
     # Create test users
     @user_one = users(:one)
@@ -63,7 +64,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     # Callback should fail with conflict
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: as_user_headers(@user_two, host: @host)
+        headers: @callback_headers.merge(as_user_headers(@user_two, host: @host))
 
     # Should redirect with error (409 manifested as redirect with flash)
     assert_response :redirect
@@ -97,7 +98,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
     assert_response :redirect
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: as_user_headers(@user_two, host: @host)
+         headers: @callback_headers.merge(as_user_headers(@user_two, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -112,7 +113,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     # Do not call /social/start to simulate missing link context
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: as_user_headers(@user_one, host: @host)
+         headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     assert_includes(
@@ -135,16 +136,10 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
 
     travel_to 6.minutes.from_now do
       post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-           headers: as_user_headers(@user_one, host: @host)
+           headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
     end
 
-    assert_response :redirect
-    assert_includes(
-      [sign_app_configuration_apple_url(ri: "jp"), sign_app_configuration_url(ri: "jp")],
-      response.location,
-    )
-    follow_redirect!
-    assert_predicate flash[:alert], :present?, "Should have error flash for expired intent"
+    assert_response :forbidden
 
     identity = UserSocialApple.find_by(uid: OmniAuth.config.mock_auth[:apple].uid)
     assert_nil identity, "Identity should not be created when intent expired"
@@ -174,7 +169,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user_one, host: @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: as_user_headers(@user_one, host: @host)
+        headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -199,7 +194,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user_one, host: @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: as_user_headers(@user_one, host: @host)
+        headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -253,7 +248,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user_one, host: @host)
 
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-        headers: as_user_headers(@user_one, host: @host)
+        headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     follow_redirect!
@@ -285,7 +280,7 @@ class SocialAuthLinkTest < ActionDispatch::IntegrationTest
         headers: as_user_headers(@user_one, host: @host)
 
     post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
-         headers: as_user_headers(@user_one, host: @host)
+         headers: @callback_headers.merge(as_user_headers(@user_one, host: @host))
 
     assert_response :redirect
     follow_redirect!

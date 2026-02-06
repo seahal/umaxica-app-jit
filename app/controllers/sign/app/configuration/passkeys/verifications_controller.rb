@@ -41,7 +41,6 @@ module Sign
 
               render json: {
                 status: "ok",
-                passkey_id: passkey.id,
                 redirect_url: sign_app_configuration_passkeys_path,
               }, status: :created
             end

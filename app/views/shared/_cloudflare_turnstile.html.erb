@@ -3,7 +3,7 @@
 <% site_key = Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY) || ENV["CLOUDFLARE_TURNSTILE_SITE_KEY"] %>
 
 <% if site_key.blank? %>
-  <div class="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+  <div>
     Cloudflare Turnstile site key is missing. Set credentials or CLOUDFLARE_TURNSTILE_SITE_KEY.
   </div>
 <% else %>
@@ -39,8 +39,7 @@
                       },
                       'expired-callback': function () {
                           console.debug('Turnstile token expired');
-                      },
-                  });
+                      }});
               } catch (e) {
                   console.error('Turnstile render error:', e);
               }

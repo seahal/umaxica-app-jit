@@ -1,30 +1,30 @@
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-  <div class="md:grid md:grid-cols-3 md:gap-6">
-    <div class="md:col-span-1">
-      <div class="px-4 sm:px-0">
-        <h3 class="text-lg font-medium leading-6 text-gray-900"><%= t('sign.app.configuration.telephone.new.title') %></h3>
-        <p class="mt-1 text-sm text-gray-600">
+<div>
+  <div>
+    <div>
+      <div>
+        <h3><%= t('sign.app.configuration.telephone.new.title') %></h3>
+        <p>
           新しい電話番号を追加して、アカウントの管理をより安全にします。
         </p>
       </div>
     </div>
 
-    <div class="mt-5 md:col-span-2 md:mt-0">
-      <%= form_with(model: @user_telephone, url: sign_app_configuration_telephones_path, class: "shadow sm:overflow-hidden sm:rounded-md") do |form| %>
-        <div class="space-y-6 bg-white px-4 py-5 sm:p-6">
-          <div class="grid grid-cols-3 gap-6">
-            <div class="col-span-3">
-              <%= form.label :telephone_number, t('activerecord.attributes.user_telephone.number'), class: "block text-sm font-medium text-gray-700" %>
-              <div class="mt-1">
-                <%= form.telephone_field :telephone_number, placeholder: "+819012345678", class: "block w-full flex-1 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    <div>
+      <%= form_with(model: @user_telephone, url: sign_app_configuration_telephones_path) do |form| %>
+        <div>
+          <div>
+            <div>
+              <%= form.label :telephone_number, t('activerecord.attributes.user_telephone.number') %>
+              <div>
+                <%= form.telephone_field :telephone_number, placeholder: "+819012345678" %>
               </div>
-              <p class="mt-2 text-xs text-gray-500">入力された電話番号にSMS等で確認コードを送信します。</p>
+              <p>入力された電話番号にSMS等で確認コードを送信します。</p>
             </div>
           </div>
         </div>
-        <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
-          <%= link_to t('actions.cancel'), sign_app_configuration_telephones_path, class: "inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mr-3" %>
-          <%= form.submit t('actions.submit'), class: "inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+        <div>
+          <%= link_to t('actions.cancel'), sign_app_configuration_telephones_path %>
+          <%= form.submit t('actions.submit') %>
         </div>
       <% end %>
     </div>

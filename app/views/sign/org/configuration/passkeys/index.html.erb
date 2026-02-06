@@ -1,42 +1,42 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-xl font-semibold text-gray-900"><%= t('sign.org.configuration.passkeys.index.title') %></h1>
-      <p class="mt-2 text-sm text-gray-700"><%= t('sign.org.configuration.passkeys.index.description') %></p>
+<div>
+  <div>
+    <div>
+      <h1><%= t('sign.org.configuration.passkeys.index.title') %></h1>
+      <p><%= t('sign.org.configuration.passkeys.index.description') %></p>
     </div>
-    <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-      <%= link_to t('sign.org.configuration.passkeys.index.add'), new_sign_org_configuration_passkey_path, class: "inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" %>
+    <div>
+      <%= link_to t('sign.org.configuration.passkeys.index.add'), new_sign_org_configuration_passkey_path %>
     </div>
   </div>
 
-  <div class="mt-8 flex flex-col">
-    <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300">
-            <thead class="bg-gray-50">
+  <div>
+    <div>
+      <div>
+        <div>
+          <table>
+            <thead>
             <tr>
-              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"><%= t('activerecord.attributes.staff_passkey.description') %></th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"><%= t('activerecord.attributes.staff_passkey.created_at') %></th>
-              <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                <span class="sr-only"><%= t('actions.actions') %></span>
+              <th scope="col"><%= t('activerecord.attributes.staff_passkey.description') %></th>
+              <th scope="col"><%= t('activerecord.attributes.staff_passkey.created_at') %></th>
+              <th scope="col">
+                <span><%= t('actions.actions') %></span>
               </th>
             </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
+            <tbody>
             <% @passkeys.each do |passkey| %>
               <tr>
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"><%= passkey.description %></td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= l(passkey.created_at, format: :short) %></td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                  <%= link_to t('actions.edit'), edit_sign_org_configuration_passkey_path(passkey), class: "text-indigo-600 hover:text-indigo-900 mr-4" %>
-                  <%= link_to t('actions.destroy'), sign_org_configuration_passkey_path(passkey), data: { turbo_method: :delete, turbo_confirm: t('messages.confirm_destroy') }, class: "text-red-600 hover:text-red-900" %>
+                <td><%= passkey.description %></td>
+                <td><%= l(passkey.created_at, format: :short) %></td>
+                <td>
+                  <%= link_to t('actions.edit'), edit_sign_org_configuration_passkey_path(passkey) %>
+                  <%= link_to t('actions.destroy'), sign_org_configuration_passkey_path(passkey), data: { turbo_method: :delete, turbo_confirm: t('messages.confirm_destroy') } %>
                 </td>
               </tr>
             <% end %>
             <% if @passkeys.empty? %>
               <tr>
-                <td colspan="3" class="px-6 py-10 text-center text-sm text-gray-500 italic">
+                <td colspan="3" class="italic">
                   <%= t('sign.org.configuration.passkeys.index.empty') %>
                 </td>
               </tr>
@@ -48,7 +48,7 @@
     </div>
   </div>
 
-  <div class="mt-6">
-    <%= link_to t('sign.org.configuration.passkeys.index.back'), sign_org_configuration_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+  <div>
+    <%= link_to t('sign.org.configuration.passkeys.index.back'), sign_org_configuration_path %>
   </div>
 </div>

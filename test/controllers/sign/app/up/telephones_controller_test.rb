@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "base64"
 
 module Sign::App::Up
   class TelephonesControllerTest < ActionDispatch::IntegrationTest
@@ -105,7 +106,42 @@ module Sign::App::Up
       assert_equal [nil, nil], [telephone.confirm_policy, telephone.confirm_using_mfa]
     end
 
-    test "should complete signup and log in on destroy when verified" do
+    test "should log in after sms verification when passkey already exists" do
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          number: "+1234567891",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+      telephone = registration_telephone
+      user = telephone.user
+
+      UserPasskey.create!(
+        user: user,
+        webauthn_id: Base64.urlsafe_encode64("preexisting_passkey", padding: false),
+        public_key: "public_key",
+        sign_count: 0,
+        description: "Existing Passkey",
+        user_passkey_status_id: UserPasskeyStatus::ACTIVE,
+      )
+
+      otp_data = telephone.get_otp
+      hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+      code = hotp.at(otp_data[:otp_counter])
+
+      assert_difference("UserToken.count", 1) do
+        patch sign_app_up_telephone_url(telephone, ri: "jp"), params: {
+          user_telephone: { pass_code: code },
+        }
+      end
+
+      assert_redirected_to sign_app_configuration_url(ri: "jp")
+      assert_predicate cookies[Auth::Base::ACCESS_COOKIE_KEY], :present?
+    end
+
+    test "should require passkey registration on destroy when verified" do
       user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
       telephone = UserTelephone.create!(
         number: "+10000000001",
@@ -113,14 +149,13 @@ module Sign::App::Up
         user_telephone_status_id: UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,
       )
 
-      assert_difference("UserToken.count", 1) do
+      assert_no_difference("UserToken.count") do
         delete sign_app_up_telephone_url(telephone, ri: "jp")
       end
 
-      assert_redirected_to sign_app_configuration_url(ri: "jp")
-      assert_equal UserStatus::VERIFIED_WITH_SIGN_UP, user.reload.status_id
-      assert UserToken.exists?(user_id: user.id, revoked_at: nil)
-      assert_predicate cookies[Auth::Base::ACCESS_COOKIE_KEY], :present?
+      assert_redirected_to new_sign_app_up_passkey_url(ri: "jp")
+      assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, user.reload.status_id
+      assert_not UserToken.exists?(user_id: user.id, revoked_at: nil)
     end
 
     test "should not complete signup on destroy when unverified" do
@@ -137,6 +172,49 @@ module Sign::App::Up
 
       assert_response :unprocessable_content
       assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, user.reload.status_id
+    end
+
+    test "resend sends code for active registration session" do
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          number: "+1234567890",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+      telephone = registration_telephone
+
+      post resend_sign_app_up_telephones_url(ri: "jp")
+
+      assert_redirected_to edit_sign_app_up_telephone_url(telephone, ri: "jp")
+      assert_predicate session[:user_telephone_otp_last_sent_at], :present?
+    end
+
+    test "resend returns success even without registration session" do
+      assert_no_difference("UserTelephone.count") do
+        post resend_sign_app_up_telephones_url(ri: "jp")
+      end
+
+      assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
+    end
+
+    test "resend rate limits repeated requests" do
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          number: "+1234567890",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+      telephone = registration_telephone
+
+      post resend_sign_app_up_telephones_url(ri: "jp")
+      post resend_sign_app_up_telephones_url(ri: "jp")
+
+      assert_redirected_to edit_sign_app_up_telephone_url(telephone, ri: "jp")
+      assert_equal I18n.t("sign.app.registration.telephone.resend.rate_limited"), flash[:alert]
     end
 
     private

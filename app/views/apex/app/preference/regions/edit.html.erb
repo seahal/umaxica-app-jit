@@ -1,40 +1,38 @@
 <% content_for :page_title, t('apex.app.preferences.regions.title') %>
 
-<section class="mx-auto max-w-2xl">
-  <div class="relative overflow-hidden rounded-3xl border border-white/20 bg-white/80 p-8 shadow-2xl backdrop-blur-xl ring-1 ring-black/5 sm:p-10">
-    <div class="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-50/50 via-white/50 to-blue-50/50 opacity-100"></div>
+<section>
+  <div>
+    <div></div>
 
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold tracking-tight text-slate-900">
+    <div>
+      <h1>
         <%= t("apex.app.preferences.regions.title") %>
       </h1>
-      <p class="mt-2 text-base text-slate-500 leading-relaxed">
+      <p>
         <%= t("apex.app.preferences.regions.select_region_prompt") %>
       </p>
     </div>
 
     <%= form_with model: @preference_region, scope: :preference_region, url: apex_app_preference_region_url, method: :patch,
-                  class: "space-y-8",
                   data: { controller: "unsaved-changes",
                           unsaved_changes_message_value: t("common.unsaved_changes") } do |f| %>
 
-      <div class="rounded-2xl bg-white/50 p-6 ring-1 ring-slate-900/5">
-        <h2 class="mb-4 text-xs font-bold uppercase tracking-wider text-slate-400">
+      <div>
+        <h2>
           <%= t("apex.app.preferences.regions.region_section") %>
         </h2>
 
-        <div class="space-y-3">
-          <%= f.label :option_id, t("apex.app.preferences.regions.select_region"), class: "block text-sm font-medium text-slate-700" %>
-          <div class="relative">
+        <div>
+          <%= f.label :option_id, t("apex.app.preferences.regions.select_region") %>
+          <div>
             <%= f.select :option_id,
                          options_for_select(
                            AppPreferenceRegionOption.all.order(:id).map { |o| [t("apex.app.preferences.regions.select_region_selector.#{o.name}", default: o.name), o.id] },
                            @preference_region.option_id
                          ),
-                         { prompt: t("apex.app.preferences.regions.select_region_prompt") },
-                         class: "block w-full appearance-none rounded-xl border-0 bg-white py-3 pl-4 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 transition-shadow" %>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                         { prompt: t("apex.app.preferences.regions.select_region_prompt") } %>
+            <div>
+              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
               </svg>
             </div>
@@ -42,44 +40,40 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-4 pt-4">
+      <div>
         <%= f.submit t("apex.app.preferences.update_settings"),
-                     data: { turbo_submits_with: t("apex.app.preferences.submitting") },
-                     class: "inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 transition-all active:scale-95" %>
+                     data: { turbo_submits_with: t("apex.app.preferences.submitting") } %>
         <%= link_to t("apex.app.preferences.back_to_settings"),
-                    apex_app_preference_url,
-                    class: "inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-all active:scale-95" %>
+                    apex_app_preference_url %>
       </div>
     <% end %>
 
-    <div class="mt-12 border-t border-slate-200/60 pt-8">
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <%= link_to edit_apex_app_preference_region_timezone_path(lx: params[:lx], ri: params[:ri]),
-                    class: "group relative flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5 transition-all hover:shadow-md hover:ring-slate-900/10 active:scale-98" do %>
-          <div class="flex items-center gap-4">
-            <div class="rounded-lg bg-indigo-50 p-2 group-hover:bg-indigo-100 transition-colors">
-              <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+    <div>
+      <div>
+        <%= link_to edit_apex_app_preference_region_timezone_path(lx: params[:lx], ri: params[:ri]) do %>
+          <div>
+            <div>
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <span class="font-semibold text-slate-900"><%= t("apex.app.preferences.region.timezone.link") %></span>
+            <span><%= t("apex.app.preferences.region.timezone.link") %></span>
           </div>
-          <svg class="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-1" viewBox="0 0 20 20" fill="currentColor">
+          <svg viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
           </svg>
         <% end %>
 
-        <%= link_to edit_apex_app_preference_region_language_path(lx: params[:lx], ri: params[:ri]),
-                    class: "group relative flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-900/5 transition-all hover:shadow-md hover:ring-slate-900/10 active:scale-98" do %>
-          <div class="flex items-center gap-4">
-            <div class="rounded-lg bg-emerald-50 p-2 group-hover:bg-emerald-100 transition-colors">
-              <svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <%= link_to edit_apex_app_preference_region_language_path(lx: params[:lx], ri: params[:ri]) do %>
+          <div>
+            <div>
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802" />
               </svg>
             </div>
-            <span class="font-semibold text-slate-900"><%= t("apex.app.preferences.region.language.link") %></span>
+            <span><%= t("apex.app.preferences.region.language.link") %></span>
           </div>
-          <svg class="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-1" viewBox="0 0 20 20" fill="currentColor">
+          <svg viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
           </svg>
         <% end %>

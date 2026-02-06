@@ -1,17 +1,17 @@
 <% content_for :page_title, t("apex.org.preferences.theme_settings") %>
 
-<section class="mx-auto mt-8 max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-  <h1 class="text-2xl font-semibold text-slate-900">
+<section>
+  <h1>
     <%= t("apex.org.preference.theme.edit.title") %>
   </h1>
-  <p class="mt-2 text-sm text-slate-600">
+  <p>
     <%= t("apex.org.preference.theme.edit.description") %>
   </p>
 
-  <%= form_with model: @preference_colortheme, scope: :preference_colortheme, url: apex_org_preference_theme_path, method: :patch, class: "mt-6 space-y-5" do |f| %>
+  <%= form_with model: @preference_colortheme, scope: :preference_colortheme, url: apex_org_preference_theme_path, method: :patch do |f| %>
     <div>
-      <%= f.label :option_id, t("apex.org.preferences.theme.select_theme"), class: "block text-sm font-semibold text-slate-700" %>
-      <div class="mt-1">
+      <%= f.label :option_id, t("apex.org.preferences.theme.select_theme") %>
+      <div>
         <%= f.select :option_id,
                      options_for_select(
                        [
@@ -19,17 +19,15 @@
                          [t("apex.org.preference.theme.edit.options.dark"), "dark"],
                          [t("apex.org.preference.theme.edit.options.system"), "system"]
                        ],
-                       @preference_colortheme.option&.name || "system",
-                     ),
-                     { class: "block w-full rounded-lg border-2 border-amber-400 bg-white px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-200" } %>
+                       @preference_colortheme.option&.name || "system"),
+                     {  } %>
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div>
       <%= f.submit t("apex.org.preferences.update_settings"),
-                   data: { turbo_submits_with: t("apex.org.preferences.submitting") },
-                   class: "inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900/60" %>
-      <%= link_to t("apex.org.preferences.back_to_settings"), apex_org_preference_url, class: "text-sm font-semibold text-slate-700 transition hover:text-slate-900" %>
+                   data: { turbo_submits_with: t("apex.org.preferences.submitting") } %>
+      <%= link_to t("apex.org.preferences.back_to_settings"), apex_org_preference_url %>
     </div>
   <% end %>
 </section>

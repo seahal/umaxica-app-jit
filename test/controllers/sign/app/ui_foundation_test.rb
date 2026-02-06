@@ -36,6 +36,7 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
     pages = [
       sign_app_configuration_totps_path(ri: "jp"),
       sign_app_configuration_passkeys_path(ri: "jp"),
+      sign_app_configuration_mfa_path(ri: "jp"),
       sign_app_configuration_secrets_path(ri: "jp"),
       sign_app_configuration_emails_path(ri: "jp"),
       sign_app_configuration_telephones_path(ri: "jp"),
@@ -70,10 +71,8 @@ class Sign::App::UiFoundationTest < ActionDispatch::IntegrationTest
     get sign_app_configuration_url, headers: head
     follow_redirect!(headers: head) if response.redirect?
 
-    # Cards (we used shared/ui/card which has rounded-lg border etc)
-    assert_select ".rounded-lg.border.bg-card"
-
-    # Links with grid gap (the new layout)
-    assert_select "section div.grid.gap-3"
+    assert_select "section", minimum: 3
+    assert_select "a[href*='configuration/totps']"
+    assert_select "a[href*='configuration/passkeys']"
   end
 end

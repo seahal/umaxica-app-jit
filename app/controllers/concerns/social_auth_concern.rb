@@ -46,13 +46,22 @@ module SocialAuthConcern
       raise SocialAuth::UnauthorizedError.new("errors.social_auth.not_logged_in")
     end
 
-    return if intent == "login"
-
     session[SOCIAL_INTENT_SESSION_KEY] = intent
-    session[SOCIAL_USER_ID_SESSION_KEY] = current_resource&.id
     session[SOCIAL_STARTED_AT_SESSION_KEY] = Time.current.to_i
     session[SOCIAL_FLOW_ID_SESSION_KEY] = SecureRandom.hex(16)
     session[SOCIAL_PROVIDER_SESSION_KEY] = provider
+    session[SocialCallbackGuard::SOCIAL_STATE_SESSION_KEY] = SecureRandom.hex(24)
+    session[SocialCallbackGuard::SOCIAL_STATE_STARTED_AT_SESSION_KEY] = Time.current.to_i
+    session[SocialCallbackGuard::SOCIAL_STATE_USED_AT_SESSION_KEY] = nil
+    session[SocialCallbackGuard::SOCIAL_STATE_PROVIDER_SESSION_KEY] = provider
+
+    if %w(link reauth).include?(intent)
+      session[SOCIAL_USER_ID_SESSION_KEY] = current_resource&.id
+    else
+      session.delete(SOCIAL_USER_ID_SESSION_KEY)
+    end
+
+    session[SocialCallbackGuard::SOCIAL_STATE_SESSION_KEY]
   end
 
   # Validate social auth context from session for link/reauth.
@@ -104,6 +113,10 @@ module SocialAuthConcern
     session.delete(SOCIAL_STARTED_AT_SESSION_KEY)
     session.delete(SOCIAL_FLOW_ID_SESSION_KEY)
     session.delete(SOCIAL_PROVIDER_SESSION_KEY)
+    session.delete(SocialCallbackGuard::SOCIAL_STATE_SESSION_KEY)
+    session.delete(SocialCallbackGuard::SOCIAL_STATE_STARTED_AT_SESSION_KEY)
+    session.delete(SocialCallbackGuard::SOCIAL_STATE_USED_AT_SESSION_KEY)
+    session.delete(SocialCallbackGuard::SOCIAL_STATE_PROVIDER_SESSION_KEY)
     @social_auth_intent_snapshot = nil
     @social_auth_provider_snapshot = nil
     @social_auth_user = nil

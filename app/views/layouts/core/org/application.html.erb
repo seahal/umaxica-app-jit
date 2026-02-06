@@ -14,46 +14,42 @@
   <%= javascript_importmap_tags %>
   <link rel="icon" href="https://perm.umaxica.org/favicon.ico" sizes="32x32">
 </head>
-<body class="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-<div class="min-h-screen">
+<body>
+<div>
   <%= render "shared/flash_messages" %>
-  <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-6">
-    <header class="flex flex-wrap items-center justify-between gap-4 border-b border-[hsl(var(--border))] py-6">
-      <div class="flex flex-col">
-        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--muted-foreground))]">Core</span>
-        <h1 class="text-2xl font-semibold tracking-tight">
-          <a class="transition hover:text-[hsl(var(--primary))]" href="http://localhost:4444/">Umaxica</a>
-          <span class="text-[hsl(var(--muted-foreground))]">(org)</span>
+  <div>
+    <header>
+      <div>
+        <span>Core</span>
+        <h1>
+          <a href="http://localhost:4444/">Umaxica</a>
+          <span>(org)</span>
         </h1>
       </div>
-      <nav class="flex flex-wrap gap-3">
+      <nav>
         <% unless logged_in? %>
-          <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_org_up_url(host: ENV["SIGN_STAFF_URL"]),
-                      class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
-          <%= link_to t("sign.app.layout.nav.log_in"), new_sign_org_in_url(host: ENV["SIGN_STAFF_URL"]),
-                      class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" %>
+          <%= link_to t("sign.app.layout.nav.sign_up"), new_sign_org_up_url(host: ENV["SIGN_STAFF_URL"]) %>
+          <%= link_to t("sign.app.layout.nav.log_in"), new_sign_org_in_url(host: ENV["SIGN_STAFF_URL"]) %>
         <% else %>
-          <%= link_to t("sign.app.layout.nav.configuration"), sign_org_configuration_url(host: ENV["SIGN_STAFF_URL"]),
-                      class: "rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 text-sm font-semibold" %>
-          <%= link_to t("sign.app.layout.nav.logout"), sign_org_configuration_out_url(host: ENV["SIGN_STAFF_URL"]), data: { turbo_method: :delete },
-                      class: "rounded-full bg-[hsl(var(--primary))] px-4 py-2 text-sm font-semibold text-[hsl(var(--primary-foreground))]" %>
+          <%= link_to t("sign.app.layout.nav.configuration"), sign_org_configuration_url(host: ENV["SIGN_STAFF_URL"]) %>
+          <%= link_to t("sign.app.layout.nav.logout"), sign_org_configuration_out_url(host: ENV["SIGN_STAFF_URL"]), data: { turbo_method: :delete } %>
         <% end %>
       </nav>
     </header>
 
-    <main class="flex-1 py-10">
+    <main>
       <%= yield %>
     </main>
 
-    <footer class="border-t border-[hsl(var(--border))] py-6 text-sm text-[hsl(var(--muted-foreground))]">
-      <nav class="flex flex-wrap items-center gap-4">
+    <footer>
+      <nav>
 
-        <%= link_to t("core.org.preferences.footer.preference"), apex_org_preference_url, class: "transition hover:text-[hsl(var(--primary))]" %>
+        <%= link_to t("core.org.preferences.footer.preference"), apex_org_preference_url %>
         <% if defined?(edit_www_org_preference_cookie_path) %>
-          <%= link_to "Cookie", edit_www_org_preference_cookie_path, class: "font-semibold text-[hsl(var(--foreground))]" %>
+          <%= link_to "Cookie", edit_www_org_preference_cookie_path %>
         <% end %>
       </nav>
-      <div class="mt-4">
+      <div>
         <%= render "shared/copyright" %>
       </div>
     </footer>

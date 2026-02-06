@@ -142,10 +142,13 @@ module Sign
         end
 
         def verify_and_consume_secret(user, raw_secret)
-          user.user_secrets
+          secret = user.user_secrets
             .where(user_identity_secret_status_id: UserSecretStatus::ACTIVE)
             .order(created_at: :desc)
             .find { |s| s.verify_and_consume!(raw_secret.to_s) }
+
+          audit_recovery_code_used!(user, secret) if secret&.recovery_secret?
+          secret
         end
 
         def active_secret_hints_for(user)
@@ -166,6 +169,22 @@ module Sign
 
         def mfa_secret_params
           params.fetch(:mfa_secret_form, {}).permit(:secret_value, :confirm_saved)
+        end
+
+        def audit_recovery_code_used!(user, secret)
+          AuditRecord.connected_to(role: :writing) do
+            UserAuditEvent.find_or_create_by!(id: UserAuditEvent::RECOVERY_CODE_USED)
+            UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+          end
+
+          UserAudit.create!(
+            actor_type: "User",
+            actor_id: user.id,
+            event_id: UserAuditEvent::RECOVERY_CODE_USED,
+            subject_id: secret.id.to_s,
+            subject_type: "UserSecret",
+            occurred_at: Time.current,
+          )
         end
       end
     end

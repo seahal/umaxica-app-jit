@@ -1,45 +1,44 @@
 <% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
 
-<div class="relative min-h-screen overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_hsl(var(--secondary)),_transparent_55%)] opacity-70"></div>
+<div>
+  <div></div>
 
-  <div class="relative mx-auto max-w-6xl px-6 py-16">
-    <section class="grid gap-6 lg:grid-cols-2">
-      <div class="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 shadow-[0_20px_60px_-45px_hsl(var(--foreground)/0.25)]">
-        <h2 class="text-lg font-semibold"><%= code_name %> Staff Help</h2>
-        <p class="mt-3 text-sm text-[hsl(var(--muted-foreground))]">
+  <div>
+    <section>
+      <div>
+        <h2><%= code_name %> Staff Help</h2>
+        <p>
           スタッフ向けのサポート窓口です。社内の問い合わせフローや日次の対応手順を確認できます。
         </p>
-        <div class="mt-5 flex flex-wrap gap-3">
+        <div>
           <% contact_params = request.query_parameters.slice("ct", "lx", "ri", "tz").compact %>
           <% contact_host = ENV.fetch("CORE_STAFF_URL", request.host) %>
-          <%= link_to "Contact Support", new_core_org_contact_url(contact_params.merge(host: contact_host)),
-                      class: "rounded-full bg-[hsl(var(--primary))] px-6 py-3 text-sm font-semibold text-[hsl(var(--primary-foreground))] shadow-[0_10px_30px_-18px_hsl(var(--primary))] transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[hsl(var(--primary))]" %>
+          <%= link_to "Contact Support", new_core_org_contact_url(contact_params.merge(host: contact_host)) %>
         </div>
       </div>
 
-      <div class="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6">
-        <h3 class="text-lg font-semibold">クイックステータス</h3>
-        <dl class="mt-4 grid gap-3 text-sm text-[hsl(var(--muted-foreground))]">
-          <div class="flex items-center justify-between">
+      <div>
+        <h3>クイックステータス</h3>
+        <dl>
+          <div>
             <dt>Current language</dt>
-            <dd class="font-medium text-[hsl(var(--foreground))]"><%= I18n.locale %></dd>
+            <dd><%= I18n.locale %></dd>
           </div>
-          <div class="flex items-center justify-between">
+          <div>
             <dt>TimeZone</dt>
-            <dd class="font-medium text-[hsl(var(--foreground))]"><%= params[:tz].to_s.downcase == "utc" ? "utc" : "jst" %></dd>
+            <dd><%= params[:tz].to_s.downcase == "utc" ? "utc" : "jst" %></dd>
           </div>
-          <div class="flex items-center justify-between">
+          <div>
             <dt>Hello</dt>
-            <dd class="font-medium text-[hsl(var(--foreground))]"><%= I18n.t "hello" %></dd>
+            <dd><%= I18n.t "hello" %></dd>
           </div>
-          <div class="flex items-center justify-between">
+          <div>
             <dt>Local time</dt>
-            <dd class="font-medium text-[hsl(var(--foreground))]"><%= to_localetime Time.current, "jst" %></dd>
+            <dd><%= to_localetime Time.current, "jst" %></dd>
           </div>
-          <div class="flex items-center justify-between">
+          <div>
             <dt>UTC time</dt>
-            <dd class="font-medium text-[hsl(var(--foreground))]"><%= Time.current.in_time_zone("UTC") %></dd>
+            <dd><%= Time.current.in_time_zone("UTC") %></dd>
           </div>
         </dl>
       </div>

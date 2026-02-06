@@ -37,7 +37,8 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
     assert_redirected_to @expected_redirect
     follow_redirect!
 
@@ -62,7 +63,8 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "apple", ri: "jp"), headers: { "Host" => @host }
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: SocialCallbackTestHelper.callback_headers(@host)
     assert_redirected_to @expected_redirect
     follow_redirect!
 
@@ -98,7 +100,8 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"), headers: { "Host" => @host }
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
     assert_redirected_to @expected_redirect
     follow_redirect!
 

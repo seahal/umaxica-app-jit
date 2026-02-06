@@ -1,11 +1,11 @@
 <% title t("sign.org.reauth.new.title") %>
 
-<div class="mx-auto max-w-xl px-4 py-10">
-  <h1 class="text-2xl font-bold text-slate-900"><%= t("sign.org.reauth.new.title") %></h1>
-  <p class="mt-2 text-sm text-slate-600"><%= t("sign.org.reauth.new.description") %></p>
+<div>
+  <h1><%= t("sign.org.reauth.new.title") %></h1>
+  <p><%= t("sign.org.reauth.new.description") %></p>
 
   <% if @reauth_session.errors.any? %>
-    <div class="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+    <div>
       <%= @reauth_session.errors.full_messages.to_sentence %>
     </div>
   <% end %>
@@ -14,28 +14,28 @@
     <%= f.hidden_field :scope, value: @reauth_session.scope %>
     <%= f.hidden_field :return_to, value: @reauth_session.return_to %>
 
-    <fieldset class="mt-6 space-y-3">
-      <legend class="text-sm font-medium text-slate-900"><%= t("sign.org.reauth.new.method_legend") %></legend>
+    <fieldset>
+      <legend><%= t("sign.org.reauth.new.method_legend") %></legend>
 
-      <label class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
+      <label>
         <%= f.radio_button :method, "passkey", checked: true %>
-        <span class="text-sm text-slate-900"><%= t("sign.org.reauth.new.methods.passkey") %></span>
+        <span><%= t("sign.org.reauth.new.methods.passkey") %></span>
       </label>
 
-      <label class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
+      <label>
         <%= f.radio_button :method, "totp" %>
-        <span class="text-sm text-slate-900"><%= t("sign.org.reauth.new.methods.totp") %></span>
+        <span><%= t("sign.org.reauth.new.methods.totp") %></span>
       </label>
 
-      <label class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
+      <label>
         <%= f.radio_button :method, "email_otp" %>
-        <span class="text-sm text-slate-900"><%= t("sign.org.reauth.new.methods.email_otp") %></span>
+        <span><%= t("sign.org.reauth.new.methods.email_otp") %></span>
       </label>
     </fieldset>
 
-    <div class="mt-8 flex items-center gap-3">
-      <%= f.submit t("sign.org.reauth.new.submit"), class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500" %>
-      <%= link_to t("sign.org.reauth.new.back"), sign_org_configuration_path(ri: params[:ri]), class: "text-sm text-slate-600 hover:text-slate-900" %>
+    <div>
+      <%= f.submit t("sign.org.reauth.new.submit") %>
+      <%= link_to t("sign.org.reauth.new.back"), sign_org_configuration_path(ri: params[:ri]) %>
     </div>
   <% end %>
 </div>

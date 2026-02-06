@@ -4,8 +4,11 @@ module Sign
   module App
     module Configuration
       class SecretsController < ApplicationController
+        include ::Auth::StepUp
+
         before_action :authenticate_user!
         before_action :set_secret, only: %i(show edit update destroy)
+        before_action -> { require_step_up!(scope: "configuration_secret") }, only: %i(update destroy)
 
         def index
           @secrets = current_user.user_secrets.order(created_at: :desc)
@@ -43,6 +46,11 @@ module Sign
         end
 
         def update
+          if disabling_secret? && AuthMethodGuard.last_method?(current_user, excluding: @secret)
+            flash[:alert] = t(".last_method")
+            return redirect_to sign_app_configuration_secrets_path
+          end
+
           UserSecrets::Update.call(
             actor: current_user,
             secret: @secret,
@@ -57,6 +65,11 @@ module Sign
         end
 
         def destroy
+          if AuthMethodGuard.last_method?(current_user, excluding: @secret)
+            flash[:alert] = t(".last_method")
+            return redirect_to sign_app_configuration_secrets_path
+          end
+
           UserSecrets::Destroy.call(actor: current_user, secret: @secret)
           flash[:notice] = t(".destroyed")
           redirect_to sign_app_configuration_secrets_path, status: :see_other
@@ -70,6 +83,12 @@ module Sign
 
         def secret_params
           params.fetch(:user_secret, {}).permit(:name, :enabled)
+        end
+
+        def disabling_secret?
+          params[:user_secret].present? &&
+            params[:user_secret].key?(:enabled) &&
+            ActiveModel::Type::Boolean.new.cast(params[:user_secret][:enabled]) == false
         end
       end
     end

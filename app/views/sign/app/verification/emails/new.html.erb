@@ -1,11 +1,11 @@
 <% title t("sign.app.verification.new.title") %>
 
-<div class="mx-auto max-w-xl px-4 py-10">
-  <h1 class="text-2xl font-bold text-slate-900"><%= t("sign.app.verification.new.title") %></h1>
-  <p class="mt-2 text-sm text-slate-600"><%= t("sign.app.verification.new.description") %></p>
+<div>
+  <h1><%= t("sign.app.verification.new.title") %></h1>
+  <p><%= t("sign.app.verification.new.description") %></p>
 
   <% if @reauth_session.errors.any? %>
-    <div class="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+    <div>
       <%= @reauth_session.errors.full_messages.to_sentence %>
     </div>
   <% end %>
@@ -14,12 +14,12 @@
     <%= f.hidden_field :scope, value: @reauth_session.scope, name: "verification[scope]" %>
     <%= f.hidden_field :return_to, value: @reauth_session.return_to, name: "verification[return_to]" %>
 
-    <div class="mt-8">
-      <%= f.submit t("sign.app.verification.new.methods.email_otp"), class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500" %>
+    <div>
+      <%= f.submit t("sign.app.verification.new.methods.email_otp") %>
     </div>
   <% end %>
 
-  <div class="mt-6 flex items-center gap-3">
-    <%= link_to t("sign.app.verification.new.back"), sign_app_verification_path(ri: params[:ri]), class: "text-sm text-slate-600 hover:text-slate-900" %>
+  <div>
+    <%= link_to t("sign.app.verification.new.back"), sign_app_verification_path(ri: params[:ri]) %>
   </div>
 </div>

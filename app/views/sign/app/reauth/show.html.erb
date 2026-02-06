@@ -1,35 +1,35 @@
 <% title t("sign.app.reauth.show.title") %>
 
-<div class="mx-auto max-w-3xl px-4 py-10">
-  <div class="flex items-center justify-between">
-    <h1 class="text-xl font-semibold text-slate-900"><%= t("sign.app.reauth.show.title") %></h1>
-    <%= link_to t("sign.app.reauth.show.list"), sign_app_verification_path, class: "text-sm text-slate-600 hover:text-slate-900" %>
+<div>
+  <div>
+    <h1><%= t("sign.app.reauth.show.title") %></h1>
+    <%= link_to t("sign.app.reauth.show.list"), sign_app_verification_path %>
   </div>
 
-  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6">
-    <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <div>
+    <dl>
       <div>
-        <dt class="text-xs font-medium text-slate-500"><%= t("sign.app.reauth.index.table.scope") %></dt>
-        <dd class="mt-1 text-sm text-slate-900"><%= @reauth_session.scope %></dd>
+        <dt><%= t("sign.app.reauth.index.table.scope") %></dt>
+        <dd><%= @reauth_session.scope %></dd>
       </div>
       <div>
-        <dt class="text-xs font-medium text-slate-500"><%= t("sign.app.reauth.index.table.method") %></dt>
-        <dd class="mt-1 text-sm text-slate-900"><%= @reauth_session.method %></dd>
+        <dt><%= t("sign.app.reauth.index.table.method") %></dt>
+        <dd><%= @reauth_session.method %></dd>
       </div>
       <div>
-        <dt class="text-xs font-medium text-slate-500"><%= t("sign.app.reauth.index.table.status") %></dt>
-        <dd class="mt-1 text-sm text-slate-900"><%= @reauth_session.status %></dd>
+        <dt><%= t("sign.app.reauth.index.table.status") %></dt>
+        <dd><%= @reauth_session.status %></dd>
       </div>
       <div>
-        <dt class="text-xs font-medium text-slate-500"><%= t("sign.app.reauth.index.table.expires") %></dt>
-        <dd class="mt-1 text-sm text-slate-900"><%= l(@reauth_session.expires_at, format: :short) %></dd>
+        <dt><%= t("sign.app.reauth.index.table.expires") %></dt>
+        <dd><%= l(@reauth_session.expires_at, format: :short) %></dd>
       </div>
     </dl>
 
-    <div class="mt-6 flex items-center gap-3">
-      <%= link_to t("sign.app.reauth.show.to_edit"), sign_app_verification_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500" %>
+    <div>
+      <%= link_to t("sign.app.reauth.show.to_edit"), sign_app_verification_path %>
       <% if @reauth_session.status == "PENDING" %>
-        <%= link_to t("sign.app.reauth.show.cancel"), sign_app_verification_path, data: { turbo_method: :delete, turbo_confirm: t("sign.app.reauth.show.confirm_cancel") }, class: "text-sm text-slate-600 hover:text-slate-900" %>
+        <%= link_to t("sign.app.reauth.show.cancel"), sign_app_verification_path, data: { turbo_method: :delete, turbo_confirm: t("sign.app.reauth.show.confirm_cancel") } %>
       <% end %>
     </div>
   </div>
