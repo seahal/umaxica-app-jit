@@ -1,3 +1,4 @@
+<% content_for :page_title, 'New Withdrawal' %>
 <%= form_with url: sign_app_configuration_withdrawal_path, method: :post, local: true do |f| %>
   <div>
     <%= f.check_box :confirm_create_recovery_code %>

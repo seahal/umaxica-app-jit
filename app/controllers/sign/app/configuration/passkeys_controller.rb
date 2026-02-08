@@ -131,7 +131,7 @@ module Sign
 
             # Create the passkey record
             passkey = current_user.user_passkeys.new(
-              webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false),
+              webauthn_id: credential.id,
               public_key: credential.public_key,
               sign_count: credential.sign_count,
               description: passkey_description,
@@ -157,6 +157,8 @@ module Sign
         rescue WebAuthn::Error => e
           Rails.logger.warn("WebAuthn registration failed: #{e.message}")
           render json: { error: I18n.t("errors.webauthn.verification_failed") }, status: :unprocessable_content
+        rescue ActiveRecord::RecordNotUnique
+          render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict
         rescue ActiveRecord::RecordInvalid => e
           Rails.logger.warn("WebAuthn passkey creation failed: #{e.message}")
           render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_entity
@@ -236,7 +238,8 @@ module Sign
         end
 
         def update_params
-          params.expect(passkey: [:description])
+          key = params.key?(:user_passkey) ? :user_passkey : :passkey
+          params.expect(key => [:description])
         end
 
         def create_params

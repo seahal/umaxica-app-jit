@@ -11,153 +11,138 @@ module Sign
         include Sign::Webauthn
 
         auth_required!
+
+        REAUTH_TTL = 15.minutes
+        REAUTH_SESSION_KEY = :reauth
         EMAIL_OTP_SESSION_KEY = :reauth_email_otp
+
+        # scope => allowed return_to prefix pattern
+        ALLOWED_SCOPES = {
+          "configuration_email" => %r{\A/configuration/emails},
+          "configuration_telephone" => %r{\A/configuration/telephones},
+          "configuration_passkey" => %r{\A/configuration/passkeys},
+          "configuration_mfa" => %r{\A/configuration/mfa},
+          "configuration_secret" => %r{\A/configuration/secrets},
+          "manage_totp" => %r{\A/configuration/totps},
+          "withdrawal" => %r{\A/configuration/withdrawal},
+          "social_unlink" => %r{\A/social/},
+        }.freeze
 
         before_action :authenticate_user!
         before_action :set_actor_token
+        before_action :require_ri!
 
         private
+
+        def require_ri!
+          params.require(:ri)
+        end
 
         def set_actor_token
           @actor_token = token_class.find_by!(public_id: current_session_public_id)
         end
 
-        def load_reauth_session!(id)
-          @reauth_session = ReauthSession.for_actor(@actor_token).find(id)
+        # ------------------------------------------------------------------
+        # Session-based reauth state management
+        # ------------------------------------------------------------------
+
+        # Called only at the entry point (/verification#show).
+        # Decodes Base64-encoded return_to, validates scope + return_to, stores in session.
+        def start_reauth_session!(scope:, return_to_param:)
+          decoded = Base64.urlsafe_decode64(return_to_param.to_s)
+          safe_path = safe_internal_path(decoded)
+          raise ActionController::BadRequest, "invalid return_to" if safe_path.blank?
+
+          scope_str = scope.to_s
+          raise ActionController::BadRequest, "invalid scope" unless ALLOWED_SCOPES.key?(scope_str)
+
+          pattern = ALLOWED_SCOPES[scope_str]
+          raise ActionController::BadRequest, "scope mismatch" unless safe_path.match?(pattern)
+
+          session[REAUTH_SESSION_KEY] = {
+            "user_id" => current_user.id,
+            "scope" => scope_str,
+            "return_to" => safe_path,
+            "expires_at" => REAUTH_TTL.from_now.to_i,
+          }
+        rescue ArgumentError
+          raise ActionController::BadRequest, "invalid return_to encoding"
         end
 
-        def ensure_pending_and_not_expired!
-          return true if @reauth_session.status == "PENDING" && @reauth_session.expires_at > Time.current
+        def current_reauth_session
+          session[REAUTH_SESSION_KEY]
+        end
 
-          head(:gone)
+        # Validates the reauth session stored in Rails session.
+        # Redirects and returns false if invalid; returns true if valid.
+        def require_reauth_session!
+          rs = current_reauth_session
+          if rs.present? &&
+              rs["expires_at"].to_i > Time.current.to_i &&
+              rs["user_id"] == current_user.id &&
+              rs["scope"].present?
+            return true
+          end
+
+          session.delete(REAUTH_SESSION_KEY)
+          session.delete(EMAIL_OTP_SESSION_KEY)
+          redirect_to sign_app_configuration_path(ri: params[:ri]),
+                      alert: I18n.t("auth.step_up.session_expired", default: "再認証が必要です")
+          false
+        end
+
+        # Consumes the reauth session after successful verification.
+        # Updates the step-up token, deletes session, and redirects to return_to.
+        def consume_reauth_session!
+          rs = current_reauth_session
+          return_to = rs["return_to"]
+          scope = rs["scope"]
+
+          now = Time.current
+          @actor_token.update!(last_step_up_at: now, last_step_up_scope: scope)
+
+          session.delete(REAUTH_SESSION_KEY)
+          session.delete(EMAIL_OTP_SESSION_KEY)
+
+          flash[:notice] = I18n.t("sign.app.verification.success.complete")
+          safe_redirect_to(return_to, fallback: sign_app_configuration_path(ri: params[:ri]))
+        end
+
+        # Checks that the given verification method is available for the current user.
+        # Redirects and returns false if unavailable.
+        def require_method_available!(method_sym)
+          return true if available_step_up_methods.include?(method_sym)
+
+          redirect_to sign_app_verification_path(ri: params[:ri]),
+                      alert: I18n.t("auth.step_up.method_unavailable", default: "この認証方法は利用できません")
           false
         end
 
         def verification_params
-          params.fetch(:verification, {}).permit(
-            :scope,
-            :return_to,
-            :session_id,
-            :code,
-            :challenge_id,
-            :credential_json,
-          )
+          params.fetch(:verification, {}).permit(:code, :challenge_id, :credential_json)
         end
 
-        def build_reauth_session!(method:, scope:, return_to:)
-          @reauth_session =
-            ReauthSession.new(
-              actor: @actor_token,
-              scope: scope.to_s,
-              return_to: normalize_encoded_return_to!(return_to.to_s),
-              method: method,
-              status: "PENDING",
-              expires_at: 10.minutes.from_now,
-            )
-          @reauth_session.save!
-          @reauth_session
-        end
-
-        def normalize_encoded_return_to!(encoded)
-          decoded = Base64.urlsafe_decode64(encoded)
-          safe = safe_internal_path(decoded)
-          raise ArgumentError, "unsafe return_to" if safe.blank?
-
-          Base64.urlsafe_encode64(safe)
-        rescue ArgumentError
-          raise
-        end
-
-        def prepare_method_side_effects!(reauth_session)
-          case reauth_session.method
-          when "email_otp"
-            send_email_otp!(reauth_session)
-          end
-        end
-
-        def send_email_otp!(reauth_session)
-          user_email =
-            current_user.user_emails.where(
-              user_email_status_id: UserEmailStatus::VERIFIED,
-            ).order(created_at: :desc).first
-          unless user_email
-            reauth_session.update!(status: "CANCELLED")
-            reauth_session.errors.add(:base, "メールアドレスが未確認です")
-            raise ActiveRecord::RecordInvalid, reauth_session
-          end
-
-          secret, counter, pass_code = generate_hotp_code
-          session[EMAIL_OTP_SESSION_KEY] ||= {}
-          session[EMAIL_OTP_SESSION_KEY][reauth_session.id] = {
-            "secret" => secret,
-            "counter" => counter,
-            "expires_at" => reauth_session.expires_at.to_i,
-          }
-
-          Email::App::RegistrationMailer.with(
-            hotp_token: pass_code,
-            email_address: user_email.address,
-            public_id: current_user.public_id,
-            verification_token: nil,
-          ).create.deliver_later
-        end
-
-        def verify_totp!
-          code = verification_params[:code].to_s
-          unless code.match?(/\A\d{6}\z/)
-            @reauth_session.errors.add(:base, "確認コードが不正です")
-            return false
-          end
-
-          totps =
-            current_user.user_one_time_passwords
-              .where(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
-              .order(created_at: :desc)
-
-          totps.any? do |totp|
-            ROTP::TOTP.new(totp.private_key).verify(code)
-          end
-        end
-
-        def verify_email_otp!
-          code = verification_params[:code].to_s
-          unless code.match?(/\A\d{6}\z/)
-            @reauth_session.errors.add(:base, "確認コードが不正です")
-            return false
-          end
-
-          data = session.dig(EMAIL_OTP_SESSION_KEY, @reauth_session.id)
-          unless data
-            @reauth_session.errors.add(:base, "確認コードの再送信が必要です")
-            return false
-          end
-
-          if Time.current.to_i > data["expires_at"].to_i
-            @reauth_session.errors.add(:base, "確認コードの有効期限が切れました")
-            return false
-          end
-
-          ok = verify_hotp_code(secret: data["secret"], counter: data["counter"], pass_code: code)
-          session[EMAIL_OTP_SESSION_KEY].delete(@reauth_session.id) if ok
-          ok
-        end
+        # ------------------------------------------------------------------
+        # Passkey verification
+        # ------------------------------------------------------------------
 
         def prepare_passkey_challenge!
-          allow_credentials = current_user.user_passkeys.map { |pk| { id: pk.webauthn_id } }
+          allow_credentials = current_user.user_passkeys.active.map { |pk| { id: pk.webauthn_id } }
           if allow_credentials.empty?
-            @reauth_session.errors.add(:base, "パスキーが登録されていません")
-            return
+            @verification_errors = [I18n.t("sign.app.verification.errors.no_passkey", default: "パスキーが登録されていません")]
+            return false
           end
 
           @passkey_challenge_id, @passkey_request_options =
             create_authentication_challenge(allow_credentials: allow_credentials)
+          true
         end
 
         def verify_passkey!
           challenge_id = verification_params[:challenge_id].to_s
           credential_json = verification_params[:credential_json].to_s
           if challenge_id.blank? || credential_json.blank?
-            @reauth_session.errors.add(:base, "パスキー認証データが不足しています")
+            @verification_errors = ["パスキー認証データが不足しています"]
             return false
           end
 
@@ -165,9 +150,9 @@ module Sign
 
           with_challenge(challenge_id, purpose: :authentication) do |challenge|
             credential = WebAuthn::Credential.from_get(credential_hash, relying_party: webauthn_relying_party)
-            passkey = UserPasskey.find_by(webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false))
+            passkey = UserPasskey.find_by(webauthn_id: credential.id)
             unless passkey && passkey.user_id == current_user.id
-              @reauth_session.errors.add(:base, I18n.t("errors.webauthn.credential_not_found"))
+              @verification_errors = [I18n.t("errors.webauthn.credential_not_found")]
               next false
             end
 
@@ -182,28 +167,91 @@ module Sign
         rescue Sign::Webauthn::ChallengeNotFoundError,
                Sign::Webauthn::ChallengeExpiredError,
                Sign::Webauthn::ChallengePurposeMismatchError
-          @reauth_session.errors.add(:base, I18n.t("errors.webauthn.challenge_invalid"))
+          @verification_errors = [I18n.t("errors.webauthn.challenge_invalid")]
           false
         rescue WebAuthn::Error, JSON::ParserError
-          @reauth_session.errors.add(:base, I18n.t("errors.webauthn.verification_failed"))
+          @verification_errors = [I18n.t("errors.webauthn.verification_failed")]
           false
         end
 
-        def verify_success!
-          now = Time.current
-          ReauthSession.transaction do
-            @reauth_session.update!(status: "VERIFIED", verified_at: now)
-            @actor_token.update!(last_step_up_at: now, last_step_up_scope: @reauth_session.scope)
+        # ------------------------------------------------------------------
+        # TOTP verification
+        # ------------------------------------------------------------------
+
+        def verify_totp!
+          code = verification_params[:code].to_s
+          unless code.match?(/\A\d{6}\z/)
+            @verification_errors = ["確認コードが不正です"]
+            return false
           end
 
-          flash[:notice] = I18n.t("sign.app.verification.success.complete")
-          jump_to_generated_url(@reauth_session.return_to, fallback: sign_app_configuration_path(ri: params[:ri]))
+          totps =
+            current_user.user_one_time_passwords
+              .where(user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
+              .order(created_at: :desc)
+
+          result = totps.any? { |totp| ROTP::TOTP.new(totp.private_key).verify(code) }
+          @verification_errors = ["確認コードが正しくありません"] unless result
+          result
         end
 
-        def render_verification_show(status: :unprocessable_content)
-          @available_methods = available_step_up_methods
-          @reauth_sessions = ReauthSession.for_actor(@actor_token).recent_first.limit(50)
-          render "sign/app/verification/show", status: status
+        # ------------------------------------------------------------------
+        # Email OTP
+        # ------------------------------------------------------------------
+
+        def send_email_otp!
+          user_email =
+            current_user.user_emails.where(
+              user_email_status_id: UserEmailStatus::VERIFIED,
+            ).order(created_at: :desc).first
+          unless user_email
+            @verification_errors = ["メールアドレスが未確認です"]
+            return false
+          end
+
+          secret, counter, pass_code = generate_hotp_code
+          rs = current_reauth_session
+          session[EMAIL_OTP_SESSION_KEY] = {
+            "secret" => secret,
+            "counter" => counter,
+            "expires_at" => rs["expires_at"],
+          }
+
+          Email::App::RegistrationMailer.with(
+            hotp_token: pass_code,
+            email_address: user_email.address,
+            public_id: current_user.public_id,
+            verification_token: nil,
+          ).create.deliver_later
+
+          true
+        end
+
+        def verify_email_otp!
+          code = verification_params[:code].to_s
+          unless code.match?(/\A\d{6}\z/)
+            @verification_errors = ["確認コードが不正です"]
+            return false
+          end
+
+          data = session[EMAIL_OTP_SESSION_KEY]
+          unless data
+            @verification_errors = ["確認コードの再送信が必要です"]
+            return false
+          end
+
+          if Time.current.to_i > data["expires_at"].to_i
+            @verification_errors = ["確認コードの有効期限が切れました"]
+            return false
+          end
+
+          ok = verify_hotp_code(secret: data["secret"], counter: data["counter"], pass_code: code)
+          unless ok
+            @verification_errors = ["確認コードが正しくありません"]
+            return false
+          end
+
+          true
         end
       end
     end

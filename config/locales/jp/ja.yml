@@ -1199,6 +1199,7 @@ ja:
       challenge_id_required: "チャレンジIDが必要です"
       challenge_invalid: WebAuthn認証に失敗しました。もう一度やり直してください。
       credential_not_found: パスキーが見つかりませんでした。
+      credential_already_registered: このパスキーは既に登録されています。
       verification_failed: パスキーの検証に失敗しました。
       sign_count_mismatch: パスキーのセキュリティカウンターに問題があります。
     login_failed: ログインに失敗しました。

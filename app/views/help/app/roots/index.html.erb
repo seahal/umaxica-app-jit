@@ -1,3 +1,4 @@
+<% content_for :page_title, 'クイックステータス' %>
 <% content_for :help_app_react_shell, true %>
 <% code_name = ENV.fetch("BRAND_NAME") { ENV.fetch("NAME") } %>
 <% help_service_host = ENV["HELP_SERVICE_URL"].presence || "" %>

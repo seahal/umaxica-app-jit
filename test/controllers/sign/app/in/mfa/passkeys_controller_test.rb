@@ -39,7 +39,7 @@ class Sign::App::In::Mfa::PasskeysControllerTest < ActionDispatch::IntegrationTe
       public_key: "dummy-public-key",
       sign_count: 10,
       description: "MFA passkey",
-      user_passkey_status_id: UserPasskeyStatus::ACTIVE,
+      status_id: UserPasskeyStatus::ACTIVE,
     )
 
     @original_trusted_origins = Webauthn.method(:trusted_origins)
@@ -68,7 +68,7 @@ class Sign::App::In::Mfa::PasskeysControllerTest < ActionDispatch::IntegrationTe
     assert_not_nil challenge_id
 
     mock_credential = OpenStruct.new(
-      id: @raw_credential_id,
+      id: @passkey.webauthn_id,
       sign_count: 11,
     )
     def mock_credential.verify(_challenge, **)

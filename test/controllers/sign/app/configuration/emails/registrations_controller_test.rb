@@ -11,8 +11,6 @@ class Sign::App::Configuration::Emails::RegistrationsControllerTest < ActionDisp
     @user = users(:one)
     @token = UserToken.create!(
       user: @user,
-      last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_email",
     )
 
     CloudflareTurnstile.test_mode = true

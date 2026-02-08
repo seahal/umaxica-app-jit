@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_08_170000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_08_193000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -250,14 +250,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_08_170000) do
     t.string "public_id", limit: 21, null: false
     t.text "public_key", null: false
     t.bigint "sign_count", default: 0, null: false
+    t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.bigint "user_passkey_status_id", default: 0, null: false
     t.string "webauthn_id", default: "", null: false
     t.index ["public_id"], name: "index_user_passkeys_on_public_id", unique: true
+    t.index ["status_id"], name: "index_user_passkeys_on_status_id"
     t.index ["user_id"], name: "index_user_identity_passkeys_on_user_id"
-    t.index ["user_passkey_status_id"], name: "index_user_passkeys_on_user_passkey_status_id"
     t.index ["webauthn_id"], name: "index_user_identity_passkeys_on_webauthn_id", unique: true
+    t.index ["webauthn_id"], name: "index_user_passkeys_on_webauthn_id", unique: true
   end
 
   create_table "user_secret_kinds", force: :cascade do |t|
@@ -402,7 +403,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_08_170000) do
   add_foreign_key "user_memberships", "users", validate: false
   add_foreign_key "user_one_time_passwords", "user_one_time_password_statuses", column: "user_identity_one_time_password_status_id"
   add_foreign_key "user_one_time_passwords", "users", validate: false
-  add_foreign_key "user_passkeys", "user_passkey_statuses"
+  add_foreign_key "user_passkeys", "user_passkey_statuses", column: "status_id", validate: false
   add_foreign_key "user_passkeys", "users", validate: false
   add_foreign_key "user_secrets", "user_secret_kinds"
   add_foreign_key "user_secrets", "user_secret_statuses", column: "user_identity_secret_status_id"

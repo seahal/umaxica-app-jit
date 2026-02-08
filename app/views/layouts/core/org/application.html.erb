@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= get_language %>" data-theme="<%= theme_cookie_value %>" class="<%= theme_html_class %>">
 <head>
-  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (org) JP" %>
+  <%= display_meta_tags site: "#{ENV['BRAND_NAME']} (org) JP", title: (content_for(:page_title) if content_for?(:page_title)) %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="turbo-refresh-method" content="morph">
   <meta name="turbo-refresh-scroll" content="preserve">

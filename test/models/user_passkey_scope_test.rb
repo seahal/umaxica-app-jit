@@ -12,7 +12,7 @@ class UserPasskeyScopeTest < ActiveSupport::TestCase
       external_id: SecureRandom.uuid,
       public_key: "pk",
       description: "Active Key",
-      user_passkey_status_id: UserPasskeyStatus::ACTIVE,
+      status_id: UserPasskeyStatus::ACTIVE,
     )
 
     @inactive_passkey = UserPasskey.create!(
@@ -21,7 +21,7 @@ class UserPasskeyScopeTest < ActiveSupport::TestCase
       external_id: SecureRandom.uuid,
       public_key: "pk",
       description: "Inactive Key",
-      user_passkey_status_id: UserPasskeyStatus::DISABLED,
+      status_id: UserPasskeyStatus::DISABLED,
     )
   end
 

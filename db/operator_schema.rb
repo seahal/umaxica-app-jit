@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_05_150000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_08_193100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -181,14 +181,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_05_150000) do
     t.text "public_key", null: false
     t.integer "sign_count", null: false
     t.bigint "staff_id", null: false
-    t.bigint "staff_passkey_status_id", default: 0, null: false
+    t.bigint "status_id", default: 0, null: false
     t.string "transports"
     t.datetime "updated_at", null: false
     t.string "user_handle"
     t.string "webauthn_id", default: "", null: false
     t.index ["external_id"], name: "index_staff_passkeys_on_external_id"
     t.index ["staff_id"], name: "index_staff_passkeys_on_staff_id"
-    t.index ["staff_passkey_status_id"], name: "index_staff_passkeys_on_staff_passkey_status_id"
+    t.index ["status_id"], name: "index_staff_passkeys_on_status_id"
     t.index ["webauthn_id"], name: "index_staff_passkeys_on_webauthn_id", unique: true
   end
 
@@ -295,7 +295,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_05_150000) do
   add_foreign_key "staff_identity_passkeys", "staffs", validate: false
   add_foreign_key "staff_one_time_passwords", "staff_one_time_password_statuses", name: "fk_staff_one_time_passwords_on_staff_one_time_password_status_i"
   add_foreign_key "staff_one_time_passwords", "staffs", on_delete: :cascade, validate: false
-  add_foreign_key "staff_passkeys", "staff_passkey_statuses"
+  add_foreign_key "staff_passkeys", "staff_passkey_statuses", column: "status_id", validate: false
   add_foreign_key "staff_passkeys", "staffs", validate: false
   add_foreign_key "staff_recovery_codes", "staffs", validate: false
   add_foreign_key "staff_secrets", "staff_secret_kinds", name: "fk_staff_secrets_on_staff_secret_kind_id"

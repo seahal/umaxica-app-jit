@@ -68,6 +68,7 @@ ja:
       challenge_id_required: "チャレンジIDが必要です"
       challenge_invalid: "チャレンジが無効または期限切れです"
       credential_not_found: "パスキーが見つかりません"
+      credential_already_registered: "このパスキーは既に登録されています"
       sign_count_mismatch: "パスキーのセキュリティ検証に失敗しました"
       verification_failed: "パスキーの検証に失敗しました"
     not_implemented: "この機能は実装されていません"
@@ -86,6 +87,7 @@ ja:
       challenge_id_required: "チャレンジIDが必要です"
       challenge_invalid: "チャレンジが無効または期限切れです"
       credential_not_found: "パスキーが見つかりません"
+      credential_already_registered: "このパスキーは既に登録されています"
       sign_count_mismatch: "パスキーのセキュリティ検証に失敗しました"
       verification_failed: "パスキーの検証に失敗しました"
     social_auth:

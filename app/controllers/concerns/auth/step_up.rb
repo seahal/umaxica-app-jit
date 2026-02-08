@@ -30,8 +30,12 @@ module Auth
         non_get_actions: [],
       },
       "sign/app/configuration/emails/registrations" => {
-        get_actions: %w(new),
-        non_get_actions: %w(create),
+        get_actions: %w(new edit),
+        non_get_actions: %w(create update),
+      },
+      "sign/app/configuration/telephones/registrations" => {
+        get_actions: %w(new edit),
+        non_get_actions: %w(create update),
       },
     }.freeze
 
@@ -86,7 +90,7 @@ module Auth
       return false unless actor
 
       if actor.respond_to?(:user_emails)
-        return true if actor.user_emails.exists?(user_email_status_id: UserEmailStatus::VERIFIED)
+        return true if actor.user_emails.exists?(user_email_status_id: AuthMethodGuard::VERIFIED_EMAIL_STATUSES)
       end
       if actor.respond_to?(:user_passkeys)
         return true if actor.user_passkeys.active.exists?

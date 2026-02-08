@@ -12,7 +12,7 @@ class StaffPasskeyScopeTest < ActiveSupport::TestCase
       external_id: SecureRandom.uuid,
       public_key: "pk",
       description: "Active Key",
-      staff_passkey_status_id: StaffPasskeyStatus::ACTIVE,
+      status_id: StaffPasskeyStatus::ACTIVE,
     )
 
     @inactive_passkey = StaffPasskey.create!(
@@ -21,7 +21,7 @@ class StaffPasskeyScopeTest < ActiveSupport::TestCase
       external_id: SecureRandom.uuid,
       public_key: "pk",
       description: "Inactive Key",
-      staff_passkey_status_id: StaffPasskeyStatus::REVOKED,
+      status_id: StaffPasskeyStatus::REVOKED,
     )
   end
 

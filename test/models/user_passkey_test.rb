@@ -5,30 +5,31 @@
 # Table name: user_passkeys
 # Database name: principal
 #
-#  id                     :bigint           not null, primary key
-#  description            :string           default(""), not null
-#  last_used_at           :datetime
-#  public_key             :text             not null
-#  sign_count             :bigint           default(0), not null
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  external_id            :uuid             not null
-#  public_id              :string(21)       not null
-#  user_id                :bigint           not null
-#  user_passkey_status_id :bigint           default(1), not null
-#  webauthn_id            :string           default(""), not null
+#  id           :bigint           not null, primary key
+#  description  :string           default(""), not null
+#  last_used_at :datetime
+#  public_key   :text             not null
+#  sign_count   :bigint           default(0), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  external_id  :uuid             not null
+#  public_id    :string(21)       not null
+#  status_id    :bigint           default(1), not null
+#  user_id      :bigint           not null
+#  webauthn_id  :string           default(""), not null
 #
 # Indexes
 #
-#  index_user_identity_passkeys_on_user_id        (user_id)
-#  index_user_identity_passkeys_on_webauthn_id    (webauthn_id) UNIQUE
-#  index_user_passkeys_on_public_id               (public_id) UNIQUE
-#  index_user_passkeys_on_user_passkey_status_id  (user_passkey_status_id)
+#  index_user_identity_passkeys_on_user_id      (user_id)
+#  index_user_identity_passkeys_on_webauthn_id  (webauthn_id) UNIQUE
+#  index_user_passkeys_on_public_id             (public_id) UNIQUE
+#  index_user_passkeys_on_status_id             (status_id)
+#  index_user_passkeys_on_webauthn_id           (webauthn_id) UNIQUE
 #
 # Foreign Keys
 #
+#  fk_rails_...  (status_id => user_passkey_statuses.id)
 #  fk_rails_...  (user_id => users.id)
-#  fk_rails_...  (user_passkey_status_id => user_passkey_statuses.id)
 #
 
 require "test_helper"
@@ -54,6 +55,21 @@ class UserPasskeyTest < ActiveSupport::TestCase
 
   test "should be valid" do
     assert_predicate @passkey, :valid?
+  end
+
+  test "defaults status_id to active" do
+    passkey = UserPasskey.new(user: @user, webauthn_id: "id3", public_key: "key3")
+
+    assert_equal UserPasskeyStatus::ACTIVE, passkey.status_id
+  end
+
+  test "status association uses status_id" do
+    status = UserPasskeyStatus.find(UserPasskeyStatus::ACTIVE)
+    @passkey.status = status
+    @passkey.save!
+
+    assert_equal status, @passkey.reload.status
+    assert_equal status.id, @passkey.status_id
   end
 
   # rubocop:disable Minitest/MultipleAssertions
@@ -82,6 +98,28 @@ class UserPasskeyTest < ActiveSupport::TestCase
     duplicate = @passkey.dup
 
     assert_not duplicate.valid?
+  end
+
+  test "db unique index rejects duplicate webauthn_id" do
+    @passkey.save!
+
+    now = Time.current
+    duplicate_row = {
+      user_id: @user.id,
+      webauthn_id: @passkey.webauthn_id,
+      external_id: SecureRandom.uuid,
+      public_key: "duplicate-key",
+      description: "Duplicate Passkey",
+      sign_count: 0,
+      status_id: UserPasskeyStatus::ACTIVE,
+      public_id: SecureRandom.urlsafe_base64(16)[0, 21],
+      created_at: now,
+      updated_at: now,
+    }
+
+    assert_raises(ActiveRecord::RecordNotUnique) do
+      UserPasskey.insert_all!([duplicate_row])
+    end
   end
 
   test "enforces maximum passkeys per user" do

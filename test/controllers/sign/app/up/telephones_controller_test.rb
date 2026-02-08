@@ -117,7 +117,7 @@ module Sign::App::Up
         public_key: "public_key",
         sign_count: 0,
         description: "Existing Passkey",
-        user_passkey_status_id: UserPasskeyStatus::ACTIVE,
+        status_id: UserPasskeyStatus::ACTIVE,
       )
 
       otp_data = telephone.get_otp
@@ -159,7 +159,7 @@ module Sign::App::Up
         public_key: "public_key",
         sign_count: 0,
         description: "Audit Test Passkey",
-        user_passkey_status_id: UserPasskeyStatus::ACTIVE,
+        status_id: UserPasskeyStatus::ACTIVE,
       )
 
       otp_data = telephone.get_otp

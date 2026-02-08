@@ -49,7 +49,7 @@ module Sign
           user = find_active_user_by_identifier(identifier)
           return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) unless user
 
-          passkeys = user.user_passkeys.where(user_passkey_status_id: UserPasskeyStatus::ACTIVE)
+          passkeys = user.user_passkeys.where(status_id: UserPasskeyStatus::ACTIVE)
           return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) if passkeys.empty?
 
           challenge_id, request_options = generate_challenge_options(passkeys, user)
@@ -163,7 +163,7 @@ module Sign
 
         def verify_and_login(challenge, user_id)
           credential = WebAuthn::Credential.from_get(credential_params.to_h)
-          passkey = UserPasskey.find_by(webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false))
+          passkey = UserPasskey.find_by(webauthn_id: credential.id)
 
           unless passkey && passkey.user_id == user_id
             Rails.logger.warn("WebAuthn: Credential not found or user mismatch")

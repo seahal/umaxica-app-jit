@@ -2,12 +2,16 @@
 
 class Sign::App::VerificationController < Sign::App::Verification::BaseController
   def show
-    @available_methods = available_step_up_methods
-    @reauth_session = ReauthSession.new(
-      scope: params[:scope].to_s,
-      return_to: params[:return_to].to_s,
-    )
+    if params[:scope].present? && params[:return_to].present?
+      start_reauth_session!(scope: params[:scope], return_to_param: params[:return_to])
+    end
 
-    @reauth_sessions = ReauthSession.for_actor(@actor_token).recent_first.limit(50)
+    return unless require_reauth_session!
+
+    @available_methods = available_step_up_methods
+  rescue ActionController::BadRequest
+    session.delete(REAUTH_SESSION_KEY)
+    redirect_to sign_app_configuration_path(ri: params[:ri]),
+                alert: I18n.t("auth.step_up.invalid_request", default: "不正なリクエストです")
   end
 end

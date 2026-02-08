@@ -21,7 +21,7 @@ module Sign::App::In
         external_id: SecureRandom.uuid,
         public_key: "login_key",
         description: "Login Key",
-        user_passkey_status_id: UserPasskeyStatus::ACTIVE,
+        status_id: UserPasskeyStatus::ACTIVE,
       )
 
       # Mock TRUSTED_ORIGINS
@@ -74,10 +74,9 @@ module Sign::App::In
       Rails.logger.debug { "DEBUG: allowCredentials = #{options["allowCredentials"].inspect}" }
       Rails.logger.debug { "DEBUG: passkey_id = #{@passkey.webauthn_id}" }
 
-      # Verify allowCredentials contains our passkey ID (encoded or raw)
-      encoded_id = Base64.urlsafe_encode64(@passkey.webauthn_id, padding: false)
-      match = options["allowCredentials"].any? { |c| c["id"] == encoded_id || c["id"] == @passkey.webauthn_id }
-      assert match, "Expected allowCredentials to contain #{@passkey.webauthn_id} or #{encoded_id}"
+      # Verify allowCredentials contains our passkey ID
+      match = options["allowCredentials"].any? { |c| c["id"] == @passkey.webauthn_id }
+      assert match, "Expected allowCredentials to contain #{@passkey.webauthn_id}"
 
       # Case F-4: Challenge saved with correct purpose
       assert_not_nil session[:passkey_challenges][json["challenge_id"]]
@@ -134,7 +133,7 @@ module Sign::App::In
       # Mock WebAuthn verification
       mock_credential = Object.new
       passkey_id = @passkey.webauthn_id
-      mock_credential.define_singleton_method(:id) { Base64.urlsafe_decode64(passkey_id) }
+      mock_credential.define_singleton_method(:id) { passkey_id }
       mock_credential.define_singleton_method(:sign_count) { 1 }
       mock_credential.define_singleton_method(:verify) { |*_args| true }
 

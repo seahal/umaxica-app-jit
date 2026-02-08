@@ -29,7 +29,7 @@ module Sign
               end
 
               passkey = current_staff.staff_passkeys.new(
-                webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false),
+                webauthn_id: credential.id,
                 public_key: credential.public_key,
                 sign_count: credential.sign_count,
                 external_id: SecureRandom.uuid,
@@ -52,6 +52,8 @@ module Sign
           rescue WebAuthn::Error => e
             Rails.logger.warn("WebAuthn verification failed: #{e.message}")
             render json: { error: e.message }, status: :unprocessable_content
+          rescue ActiveRecord::RecordNotUnique
+            render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict
           rescue ActiveRecord::RecordInvalid => e
             render json: { error: e.record.errors.full_messages.to_sentence }, status: :unprocessable_content
           end

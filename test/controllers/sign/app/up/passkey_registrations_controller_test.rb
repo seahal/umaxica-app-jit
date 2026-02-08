@@ -113,6 +113,65 @@ module Sign::App::Up
       assert_equal UserStatus::VERIFIED_WITH_SIGN_UP, telephone.user.reload.status_id
     end
 
+    test "POST create establishes login session for configuration access" do
+      telephone = verify_telephone_via_otp!
+
+      post sign_app_up_telephone_passkey_registration_begin_url(telephone, ri: "jp")
+      challenge_id = response.parsed_body["challenge_id"]
+
+      mock_credential = Object.new
+      mock_credential.define_singleton_method(:id) { "login_webauthn_id" }
+      mock_credential.define_singleton_method(:public_key) { "login_public_key" }
+      mock_credential.define_singleton_method(:sign_count) { 1 }
+      mock_credential.define_singleton_method(:verify) { |_challenge| true }
+
+      WebAuthn::Credential.stub :from_create, mock_credential do
+        post sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp"), params: {
+          challenge_id: challenge_id,
+          credential: {
+            id: "login_webauthn_id",
+            response: { clientDataJSON: "e30=", attestationObject: "e30=" },
+          },
+          description: "Login Passkey",
+        }
+      end
+
+      assert_response :created
+
+      get sign_app_configuration_url(ri: "jp")
+      assert_response :success
+    end
+
+    test "POST create respects rt parameter for redirect" do
+      telephone = verify_telephone_via_otp!
+
+      post sign_app_up_telephone_passkey_registration_begin_url(telephone, ri: "jp")
+      challenge_id = response.parsed_body["challenge_id"]
+
+      mock_credential = Object.new
+      mock_credential.define_singleton_method(:id) { "rt_webauthn_id" }
+      mock_credential.define_singleton_method(:public_key) { "rt_public_key" }
+      mock_credential.define_singleton_method(:sign_count) { 1 }
+      mock_credential.define_singleton_method(:verify) { |_challenge| true }
+
+      rt = "/welcome?ri=jp"
+
+      WebAuthn::Credential.stub :from_create, mock_credential do
+        post sign_app_up_telephone_passkey_registration_url(telephone, ri: "jp"), params: {
+          rt: rt,
+          challenge_id: challenge_id,
+          credential: {
+            id: "rt_webauthn_id",
+            response: { clientDataJSON: "e30=", attestationObject: "e30=" },
+          },
+          description: "RT Passkey",
+        }
+      end
+
+      assert_response :created
+      assert_equal rt, response.parsed_body["redirect_url"]
+    end
+
     test "POST create creates audit record on success" do
       telephone = verify_telephone_via_otp!
 

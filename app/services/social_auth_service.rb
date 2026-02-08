@@ -452,7 +452,7 @@ class SocialAuthService
     end
 
     if @current_user.respond_to?(:user_passkeys)
-      auth_methods_count += @current_user.user_passkeys.where(user_passkey_status_id: UserPasskeyStatus::ACTIVE).count
+      auth_methods_count += @current_user.user_passkeys.where(status_id: UserPasskeyStatus::ACTIVE).count
     end
 
     if @current_user.respond_to?(:user_secrets)

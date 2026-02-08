@@ -230,7 +230,7 @@ module Sign
 
         with_challenge(challenge_id, purpose: :authentication) do |challenge|
           credential = WebAuthn::Credential.from_get(credential_hash, relying_party: webauthn_relying_party)
-          passkey = UserPasskey.find_by(webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false))
+          passkey = UserPasskey.find_by(webauthn_id: credential.id)
           unless passkey && passkey.user_id == current_user.id
             @reauth_session.errors.add(:base, I18n.t("errors.webauthn.credential_not_found"))
             next false

@@ -7,10 +7,12 @@ module Sign
     module Up
       class PasskeyRegistrationsController < ApplicationController
         include Sign::Webauthn
+        include Common::Redirect
 
         before_action :set_user_telephone
 
         def show
+          @success_redirect_url = success_redirect_url
         end
 
         def begin
@@ -52,7 +54,7 @@ module Sign
             end
 
             passkey = @user.user_passkeys.new(
-              webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false),
+              webauthn_id: credential.id,
               public_key: credential.public_key,
               sign_count: credential.sign_count,
               description: passkey_description,
@@ -64,11 +66,12 @@ module Sign
             end
 
             record_signup_audit!(@user)
+            log_in(@user, record_login_audit: false)
             session[:user_telephone_registration] = nil
 
             render json: {
               status: "ok",
-              redirect_url: sign_app_configuration_path(ri: params[:ri]),
+              redirect_url: success_redirect_url,
             }, status: :created
           end
         rescue Sign::Webauthn::ChallengeNotFoundError,
@@ -79,6 +82,8 @@ module Sign
         rescue WebAuthn::Error => e
           Rails.logger.warn("WebAuthn verification failed: #{e.message}")
           render json: { error: e.message }, status: :unprocessable_content
+        rescue ActiveRecord::RecordNotUnique
+          render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict
         rescue ActiveRecord::RecordInvalid => e
           render json: { error: e.record.errors.full_messages.to_sentence }, status: :unprocessable_content
         end
@@ -143,6 +148,17 @@ module Sign
 
         def passkey_description
           params[:description].presence || I18n.t("sign.default_passkey_description")
+        end
+
+        def success_redirect_url
+          redirect_target = safe_redirect_target(params[:rt])
+          redirect_target || sign_app_configuration_path(ri: params[:ri])
+        end
+
+        def safe_redirect_target(target)
+          return nil if target.blank?
+
+          safe_internal_path(target) || safe_external_url(target)
         end
       end
     end

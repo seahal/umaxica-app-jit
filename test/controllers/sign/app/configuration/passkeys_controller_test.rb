@@ -2,6 +2,7 @@
 
 require "test_helper"
 require "minitest/mock"
+require "base64"
 
 class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses, :user_secret_kinds, :user_secret_statuses, :user_email_statuses
@@ -31,10 +32,11 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     ].uniq
     Webauthn.define_singleton_method(:trusted_origins) { allowed_origins }
 
+    @passkey_webauthn_id = Base64.urlsafe_encode64("existing_credential", padding: false)
     @passkey =
       UserPasskey.create!(
         user: @user,
-        webauthn_id: "webauthn_#{SecureRandom.hex(4)}",
+        webauthn_id: @passkey_webauthn_id,
         public_key: "public_key_#{SecureRandom.hex(4)}",
         sign_count: 0,
         description: "My Passkey",
@@ -67,6 +69,8 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       json["options"]["excludeCredentials"].each do |credential|
         assert_kind_of String, credential["id"]
       end
+      exclude_ids = json["options"]["excludeCredentials"].map { |credential| credential["id"] }
+      assert_includes exclude_ids, @passkey_webauthn_id
     end
 
     # Check session
@@ -167,6 +171,37 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
     end
   end
 
+  test "verification rejects duplicate webauthn_id" do
+    post options_sign_app_configuration_passkeys_path(ri: "jp"), headers: @headers
+    challenge_id = response.parsed_body["challenge_id"]
+
+    mock_credential = Object.new
+    mock_credential.define_singleton_method(:id) { @passkey_webauthn_id }
+    mock_credential.define_singleton_method(:public_key) { "new_public_key" }
+    mock_credential.define_singleton_method(:sign_count) { 1 }
+    mock_credential.define_singleton_method(:verify) do |*_args|
+      true
+    end
+
+    WebAuthn::Credential.stub :from_create, mock_credential do
+      params = {
+        challenge_id: challenge_id,
+        credential: {
+          id: @passkey_webauthn_id,
+          response: { clientDataJSON: "e30=", attestationObject: "e30=" },
+        },
+        description: "Duplicate Passkey",
+      }
+
+      assert_no_difference("UserPasskey.count") do
+        post verification_sign_app_configuration_passkeys_path(ri: "jp"), params: params, headers: @headers
+      end
+    end
+
+    assert_response :conflict
+    assert_equal I18n.t("errors.webauthn.credential_already_registered"), response.parsed_body["error"]
+  end
+
   # Case E-4: Verify failure
   test "verification fails on WebAuthn error" do
     # Get challenge
@@ -248,7 +283,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
   test "should update description with public_id" do
     patch sign_app_configuration_passkey_path(@passkey.public_id, ri: "jp"),
-          params: { passkey: { description: "Updated" } },
+          params: { user_passkey: { description: "Updated" } },
           headers: @headers
 
     assert_redirected_to sign_app_configuration_passkey_path(@passkey.public_id, ri: "jp")

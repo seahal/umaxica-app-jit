@@ -137,6 +137,8 @@ module Sign
         rescue WebAuthn::Error => e
           Rails.logger.warn("WebAuthn registration failed: #{e.message}")
           render json: { error: I18n.t("errors.webauthn.verification_failed") }, status: :unprocessable_content
+        rescue ActiveRecord::RecordNotUnique
+          render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict
         rescue ActiveRecord::RecordInvalid => e
           Rails.logger.warn("WebAuthn passkey creation failed: #{e.message}")
           render json: { error: e.record.errors.full_messages.to_sentence }, status: :unprocessable_content
@@ -196,7 +198,8 @@ module Sign
         end
 
         def update_params
-          params.expect(passkey: [:description])
+          key = params.key?(:staff_passkey) ? :staff_passkey : :passkey
+          params.expect(key => [:description])
         end
 
         def passkey_description

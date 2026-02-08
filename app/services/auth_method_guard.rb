@@ -46,7 +46,7 @@ class AuthMethodGuard
     end
 
     if user.respond_to?(:user_passkeys)
-      passkeys = user.user_passkeys.where(user_passkey_status_id: UserPasskeyStatus::ACTIVE)
+      passkeys = user.user_passkeys.where(status_id: UserPasskeyStatus::ACTIVE)
       count += passkeys.count
       if excluding.is_a?(UserPasskey) && passkeys.exists?(id: excluding.id)
         count -= 1

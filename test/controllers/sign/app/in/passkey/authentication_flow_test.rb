@@ -36,7 +36,7 @@ module Sign::App::In::Passkey
         sign_count: 10,
         description: "Test Passkey",
         external_id: SecureRandom.uuid,
-        user_passkey_status_id: UserPasskeyStatus::ACTIVE,
+        status_id: UserPasskeyStatus::ACTIVE,
       )
     end
 
@@ -70,7 +70,7 @@ module Sign::App::In::Passkey
 
       # 2. Mock WebAuthn verification
       mock_credential = OpenStruct.new(
-        id: @raw_credential_id,
+        id: @encoded_credential_id,
         sign_count: 11,
       )
 
@@ -122,7 +122,7 @@ module Sign::App::In::Passkey
       challenge_id = response.parsed_body["challenge_id"]
 
       mock_credential = OpenStruct.new(
-        id: @raw_credential_id,
+        id: @encoded_credential_id,
         sign_count: 12,
       )
       def mock_credential.verify(_challenge, **)

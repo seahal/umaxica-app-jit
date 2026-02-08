@@ -53,7 +53,7 @@ module Sign
           end
 
           def active_passkeys_for(user)
-            user.user_passkeys.where(user_passkey_status_id: UserPasskeyStatus::ACTIVE)
+            user.user_passkeys.where(status_id: UserPasskeyStatus::ACTIVE)
           end
 
           def passkey_params
@@ -63,7 +63,7 @@ module Sign
           def verify_passkey!(challenge)
             credential_payload = JSON.parse(passkey_params[:credential_json].to_s)
             credential = WebAuthn::Credential.from_get(credential_payload)
-            passkey = UserPasskey.find_by(webauthn_id: Base64.urlsafe_encode64(credential.id, padding: false))
+            passkey = UserPasskey.find_by(webauthn_id: credential.id)
 
             user = pending_mfa_user
             unless passkey && user && passkey.user_id == user.id

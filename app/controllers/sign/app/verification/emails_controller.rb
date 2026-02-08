@@ -2,43 +2,53 @@
 
 class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseController
   def new
-    @reauth_session = ReauthSession.new(
-      scope: params[:scope].to_s,
-      return_to: params[:return_to].to_s,
-    )
-  end
-
-  def edit
-    load_reauth_session!(params[:id])
-    nil unless ensure_pending_and_not_expired!
+    return unless require_reauth_session!
+    return unless require_method_available!(:email_otp)
   end
 
   def create
-    build_reauth_session!(
-      method: "email_otp",
-      scope: verification_params[:scope],
-      return_to: verification_params[:return_to],
-    )
-    prepare_method_side_effects!(@reauth_session)
-    redirect_to edit_sign_app_verification_email_path(@reauth_session.id, ri: params[:ri])
-  rescue ArgumentError
-    @reauth_session ||= ReauthSession.new
-    @reauth_session.errors.add(:return_to, :invalid)
-    render :new, status: :unprocessable_content
-  rescue ActiveRecord::RecordInvalid => e
-    @reauth_session = e.record
-    render :new, status: :unprocessable_content
+    return unless require_reauth_session!
+    return unless require_method_available!(:email_otp)
+
+    unless send_email_otp!
+      render :new, status: :unprocessable_content
+      return
+    end
+
+    nonce = SecureRandom.urlsafe_base64(16)
+    rs = current_reauth_session
+    rs["email_nonce"] = nonce
+    session[REAUTH_SESSION_KEY] = rs
+
+    redirect_to edit_sign_app_verification_email_path(nonce, ri: params[:ri])
+  end
+
+  def edit
+    return unless require_reauth_session!
+    return unless require_email_nonce!
   end
 
   def update
-    load_reauth_session!(params[:id])
-    return unless ensure_pending_and_not_expired!
+    return unless require_reauth_session!
+    return unless require_email_nonce!
 
     if verify_email_otp!
-      verify_success!
+      consume_reauth_session!
     else
-      @reauth_session.update!(attempt_count: @reauth_session.attempt_count + 1)
       render :edit, status: :unprocessable_content
     end
+  end
+
+  private
+
+  def require_email_nonce!
+    rs = current_reauth_session
+    if rs.present? && rs["email_nonce"].present? && params[:id] == rs["email_nonce"]
+      return true
+    end
+
+    redirect_to sign_app_verification_path(ri: params[:ri]),
+                alert: I18n.t("auth.step_up.invalid_request", default: "不正なリクエストです")
+    false
   end
 end

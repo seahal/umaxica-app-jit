@@ -11,8 +11,6 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     @user = users(:one)
     @token = UserToken.create!(
       user_id: @user.id,
-      last_step_up_at: 1.minute.ago,
-      last_step_up_scope: "configuration_telephone",
     )
   end
 

@@ -4,14 +4,13 @@
   <h1><%= t("sign.app.verification.edit.title") %></h1>
   <p><%= t("sign.app.verification.edit.description") %></p>
 
-  <% if @reauth_session.errors.any? %>
+  <% if @verification_errors&.any? %>
     <div>
-      <%= @reauth_session.errors.full_messages.to_sentence %>
+      <%= @verification_errors.to_sentence %>
     </div>
   <% end %>
 
   <%= form_with url: sign_app_verification_passkey_path(ri: params[:ri]), method: :post, data: { turbo: false } do |f| %>
-    <%= f.hidden_field :session_id, value: @reauth_session.id, name: "verification[session_id]" %>
     <% options_json = @passkey_request_options ? json_escape(@passkey_request_options.to_json) : "" %>
     <div
       data-controller="reauth-passkey"
