@@ -48,11 +48,17 @@ class UserSecretTest < ActiveSupport::TestCase
     UserSecretKind.find_or_create_by!(id: UserSecretKind::TOTP)
     UserSecretKind.find_or_create_by!(id: UserSecretKind::RECOVERY)
     UserSecretKind.find_or_create_by!(id: UserSecretKind::API)
+    UserEmailStatus.find_or_create_by!(id: UserEmailStatus::VERIFIED)
 
     @user =
       User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
         u.status_id = UserStatus::NONE
       end
+    UserEmail.create!(
+      user: @user,
+      address: "secret-model-#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
   end
 
   test "allows up to the maximum number of secrets per user" do
@@ -246,6 +252,24 @@ class UserSecretTest < ActiveSupport::TestCase
 
     assert_not record2.valid?
     assert_not_empty record2.errors[:public_id]
+  end
+
+  test "is invalid on create when user has no verified recovery identity" do
+    user_without_identity =
+      User.create!(public_id: "u_#{SecureRandom.hex(8)}") do |u|
+        u.status_id = UserStatus::NONE
+      end
+
+    record = UserSecret.new(
+      user: user_without_identity,
+      name: "No Identity Secret",
+      password: secure_secret,
+      password_confirmation: secure_secret,
+      user_secret_kind_id: UserSecretKind::LOGIN,
+    )
+
+    assert_not record.valid?
+    assert_includes record.errors[:base], User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
   end
 
   private

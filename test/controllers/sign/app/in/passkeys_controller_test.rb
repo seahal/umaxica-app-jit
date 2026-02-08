@@ -6,12 +6,13 @@ require "base64"
 
 module Sign::App::In
   class PasskeysControllerTest < ActionDispatch::IntegrationTest
-    fixtures :users, :user_statuses, :user_email_statuses
+    fixtures :users, :user_statuses, :user_email_statuses, :user_telephone_statuses
 
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
       @user = users(:one) # Ensure this user has an email in fixtures
       @user_email = UserEmail.create!(user: @user, address: "user@example.com") unless UserEmail.find_by(user: @user)
+      @user_telephone = UserTelephone.create!(user: @user, number: "+819012345678") unless UserTelephone.find_by(user: @user)
 
       # Setup user passkey for login
       @passkey = UserPasskey.create!(
@@ -38,30 +39,29 @@ module Sign::App::In
       assert_response :success
     end
 
-    # Case F-1: Email does not exist
-    test "options returns error if email not found" do
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { email: "unknown@example.com" }
+    # Case F-1: Identifier does not exist
+    test "options returns error if identifier not found" do
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: "unknown@example.com" }
 
       assert_response :unprocessable_content
       assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
     end
 
-    # Case F-2: Email exists but no passkey
+    # Case F-2: Identifier exists but no passkey
     test "options returns error if no passkeys" do
       user_no_passkey = users(:two)
       user_no_passkey_email = UserEmail.create!(user: user_no_passkey, address: "nopasskey@example.com")
 
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { email: user_no_passkey_email.address }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: user_no_passkey_email.address }
 
       assert_response :unprocessable_content
       assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
     end
 
-    # Case F-3: Email exists and has passkey
-    test "options returns challenge and allowCredentials" do
+    test "options returns challenge and allowCredentials for email identifier" do
       email = UserEmail.find_by(user: @user).address
 
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { email: email }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email }
 
       assert_response :ok
       json = response.parsed_body
@@ -84,11 +84,20 @@ module Sign::App::In
       assert_equal "authentication", session[:passkey_challenges][json["challenge_id"]]["purpose"]
     end
 
+    test "options returns challenge and allowCredentials for telephone identifier" do
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: @user_telephone.number }
+
+      assert_response :ok
+      json = response.parsed_body
+      assert_not_nil json["challenge_id"]
+      assert_not_empty json.dig("options", "allowCredentials")
+    end
+
     # Case F-3b: JSON response format validation for authentication options (regression test)
     test "options returns valid Base64URL encoded challenge" do
       email = UserEmail.find_by(user: @user).address
 
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { email: email }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email }
 
       assert_response :ok
       json = response.parsed_body
@@ -118,7 +127,7 @@ module Sign::App::In
       assert_not_nil @passkey, "Passkey must exist"
       # Get challenge
       email = UserEmail.find_by(user: @user).address
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { email: email }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email }
       explanation = response.parsed_body
       challenge_id = explanation["challenge_id"]
 

@@ -1,7 +1,7 @@
 # == Schema Information
 #
 # Table name: app_preference_audits
-# Database name: audit
+# Database name: activity
 #
 #  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
@@ -37,7 +37,7 @@
 
 # frozen_string_literal: true
 
-class AppPreferenceAudit < AuditRecord
+class AppPreferenceAudit < ActivityRecord
   belongs_to :app_preference,
              class_name: "AppPreference",
              foreign_key: :subject_id,

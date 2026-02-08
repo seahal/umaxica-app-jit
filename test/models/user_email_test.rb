@@ -7,6 +7,7 @@
 #
 #  id                        :bigint           not null, primary key
 #  address                   :string           default(""), not null
+#  address_bidx              :string
 #  locked_at                 :datetime         default(Infinity), not null
 #  otp_attempts_count        :integer          default(0), not null
 #  otp_counter               :text             default(""), not null
@@ -22,6 +23,7 @@
 #
 # Indexes
 #
+#  index_user_emails_on_address_bidx            (address_bidx) UNIQUE WHERE (address_bidx IS NOT NULL)
 #  index_user_emails_on_otp_last_sent_at        (otp_last_sent_at)
 #  index_user_emails_on_public_id               (public_id) UNIQUE
 #  index_user_emails_on_user_email_status_id    (user_email_status_id)

@@ -49,6 +49,7 @@ class UserPasskey < PrincipalRecord
   validates :user_passkey_status_id, numericality: { only_integer: true }
   validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validate :enforce_user_passkey_limit, on: :create
+  validate :require_verified_recovery_identity, on: :create
 
   before_validation :set_defaults
 
@@ -65,6 +66,12 @@ class UserPasskey < PrincipalRecord
     return if count < MAX_PASSKEYS_PER_USER
 
     errors.add(:base, :too_many, message: "exceeds maximum passkeys per user (#{MAX_PASSKEYS_PER_USER})")
+  end
+
+  def require_verified_recovery_identity
+    return if user&.has_verified_recovery_identity?
+
+    errors.add(:base, User::RECOVERY_IDENTITY_REQUIRED_MESSAGE)
   end
 
   def set_defaults

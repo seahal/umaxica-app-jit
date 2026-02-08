@@ -10,3 +10,21 @@ ja:
         code_format: "大文字・数字・アンダースコアのみを使用してください"
   errors:
     otp_locked: "試行回数の上限を超えました。最初からやり直してください。"
+    messages:
+      validation_failed: "入力内容を確認してください。"
+  sign:
+    app:
+      authentication:
+        secret:
+          new:
+            page_title: "シークレットでサインイン"
+            pii_label: "メールアドレスまたは電話番号"
+            pii_placeholder: "user@example.com または +81 90 1234 5678"
+            secret_label: "シークレット"
+            hints: "利用可能なシークレット"
+          create:
+            success: "ログインしました。"
+            invalid: "認証に失敗しました。入力内容をご確認ください。"
+      layout:
+        nav:
+          log_out: "ログアウト"

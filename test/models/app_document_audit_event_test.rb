@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: app_document_audit_events
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #

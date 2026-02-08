@@ -31,7 +31,7 @@ module Sign
       include Common::Redirect
       include Common::Otp
 
-      before_action :enforce_email_flow!, only: FLOW_REQUIREMENTS.keys
+      before_action :enforce_email_flow!
     end
 
     private

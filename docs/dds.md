@@ -216,7 +216,7 @@ Browser ⇄ Fastly/Cloudflare ⇄ Rails (Top/Sign/Help/Docs/News/API/BFF)
 ---
 
 ## 7. Configuration & Environment
-- `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`, `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`, including the new `POSTGRESQL_AUDIT_PUB/SUB` pair), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Kafka brokers (`KAFKA_BROKERS`), Cloudflare Turnstile keys, JWT keys, AWS/Infobip credentials, OTLP endpoint.
+- `.env` / credentials must define hostnames (`TOP_*`, `AUTH_*`, `DOCS_*`, `NEWS_*`, `HELP_*`, `BFF_*`, `API_*`, `EDGE_*`, `PEAK_*`), DB hosts (`POSTGRESQL_*`, including the `POSTGRESQL_ACTIVITY_PUB/SUB` pair and `POSTGRESQL_BEHAVIOR_PUB`), Redis URLs (`REDIS_RACK_ATTACK_URL`, `REDIS_SESSION_URL`), Kafka brokers (`KAFKA_BROKERS`), Cloudflare Turnstile keys, JWT keys, AWS/Infobip credentials, OTLP endpoint.
 - `compose.yml` launches all infra dependencies with sensible defaults; volumes store data per service.
 - `Procfile.dev` ensures the Rails server (and optionally Karafka) run concurrently; Tailwind watcher runs via `bin/rails tailwindcss:watch`.
 - Build/test commands:

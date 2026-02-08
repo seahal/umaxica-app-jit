@@ -19,6 +19,8 @@ module Sign
       # the user's registered passkeys.
       class PasskeysController < ApplicationController
         include Sign::Webauthn
+        include EmailValidation
+        include IdentifierDetection
         include SessionLimitGate
 
         before_action :reject_logged_in_session
@@ -41,10 +43,10 @@ module Sign
         #   }
         # rubocop:disable Metrics/AbcSize
         def options
-          email = params[:email].to_s.strip.downcase
-          return render_error("errors.webauthn.email_required", :unprocessable_content) if email.blank?
+          identifier = params[:identifier].to_s.strip
+          return render_error("errors.webauthn.pii_required", :unprocessable_content) if identifier.blank?
 
-          user = find_active_user_by_email(email)
+          user = find_active_user_by_identifier(identifier)
           return render_error("errors.webauthn.no_passkeys_available", :unprocessable_content) unless user
 
           passkeys = user.user_passkeys.where(user_passkey_status_id: UserPasskeyStatus::ACTIVE)
@@ -139,9 +141,8 @@ module Sign
           end
         end
 
-        def find_active_user_by_email(email)
-          user_email = UserEmail.find_by(address: email)
-          user = user_email&.user
+        def find_active_user_by_identifier(identifier)
+          user = find_user_by_identifier(identifier)
           user if user&.active?
         end
 
@@ -170,7 +171,7 @@ module Sign
           end
 
           verify_passkey(credential, passkey, challenge)
-          result = log_in(passkey.user, record_login_audit: true)
+          result = log_in(passkey.user, record_login_audit: true, require_totp_check: false)
           handle_login_result(result)
         end
 
@@ -189,7 +190,12 @@ module Sign
         def handle_login_result(result)
           case result[:status]
           when :totp_required
-            render json: { status: "totp_required", redirect_url: new_sign_app_in_totp_path }, status: :ok
+            render json: { status: "totp_required", redirect_url: sign_app_in_mfa_path }, status: :ok
+          when :session_limit_hard_reject
+            render json: {
+              status: "session_limit_hard_reject",
+              error: result[:message],
+            }, status: (result[:http_status] || :conflict)
           when :success
             # Check if session is restricted (session limit was exceeded)
             if result[:restricted]

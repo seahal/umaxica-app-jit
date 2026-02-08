@@ -29,10 +29,16 @@ module Sign
           if result
             render json: result, status: :ok
           else
+            status = refresh_failure_status
+            code = refresh_failure_code
             render json: {
-              error: I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
-              error_code: "invalid_refresh_token",
-            }, status: :unauthorized
+              error: if code == "restricted_session"
+                       "きんそくじこうです"
+                     else
+                       I18n.t("sign.token_refresh.errors.invalid_refresh_token")
+                     end,
+              error_code: code,
+            }, status: status
           end
         end
       end

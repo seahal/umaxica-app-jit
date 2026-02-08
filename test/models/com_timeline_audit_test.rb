@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: com_timeline_audits
-# Database name: audit
+# Database name: activity
 #
 #  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null

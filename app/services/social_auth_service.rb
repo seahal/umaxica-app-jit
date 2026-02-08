@@ -408,7 +408,7 @@ class SocialAuthService
   end
 
   def create_audit_event!(event_id, subject:)
-    AuditRecord.connected_to(role: :writing) do
+    ActivityRecord.connected_to(role: :writing) do
       UserAuditEvent.find_or_create_by!(id: event_id)
       UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
     end

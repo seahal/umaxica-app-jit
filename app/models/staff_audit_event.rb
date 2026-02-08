@@ -3,12 +3,12 @@
 # == Schema Information
 #
 # Table name: staff_audit_events
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #
 
-class StaffAuditEvent < AuditRecord
+class StaffAuditEvent < ActivityRecord
   # Fixed IDs - do not modify these values
   LOGIN_SUCCESS = 1
   AUTHORIZATION_FAILED = 2

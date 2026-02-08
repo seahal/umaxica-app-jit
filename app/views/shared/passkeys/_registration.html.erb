@@ -1,0 +1,29 @@
+<div>
+  <div
+       data-controller="passkey-registration"
+       data-passkey-registration-begin-url-value="<%= begin_url %>"
+       data-passkey-registration-finish-url-value="<%= finish_url %>"
+       data-passkey-registration-success-redirect-url-value="<%= success_redirect_url %>">
+
+    <div>
+      <label for="description">
+        <%= t("sign.app.configuration.passkeys.new.description_label") %>
+      </label>
+      <input type="text"
+             id="description"
+             data-passkey-registration-target="description"
+             placeholder="<%= t("sign.app.configuration.passkeys.new.description_placeholder") %>"
+             maxlength="100">
+    </div>
+
+    <p data-passkey-registration-target="error" class="hidden"></p>
+    <p data-passkey-registration-target="status" class="hidden"></p>
+
+    <div>
+      <button type="button"
+              data-action="click->passkey-registration#register">
+        <%= t("sign.app.configuration.passkeys.new.submit") %>
+      </button>
+    </div>
+  </div>
+</div>

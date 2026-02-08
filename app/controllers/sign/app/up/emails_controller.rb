@@ -8,17 +8,6 @@ module Sign
 
         guest_only! message: I18n.t("sign.app.registration.email.already_logged_in")
 
-        def show
-          @user_email = UserEmail.find_by(public_id: params["id"])
-
-          # TODO: 2FA setup hook
-          # When implementing 2FA:
-          #   - Display 2FA options (TOTP, SMS, etc.)
-          #   - Call `setup_two_factor_auth(@user)` concern method
-          #   - On success, complete registration flow
-          prepare_two_factor_auth_options
-        end
-
         def new
           @user_email = UserEmail.new
         end
@@ -88,45 +77,7 @@ module Sign
           redirect_to sign_app_configuration_path, notice: t("sign.app.registration.email.update.success")
         end
 
-        def destroy
-          # Reset flow and start over
-          reset_flow!
-
-          # TODO: 2FA cleanup hook
-          # When implementing 2FA:
-          #   - Clear any pending 2FA setup state
-          #   - Call `cleanup_two_factor_auth_state` concern method
-          cleanup_two_factor_auth_state
-
-          redirect_params = build_notice_params(
-            t("sign.app.registration.email.destroy.cancelled"),
-          )
-          flash[:notice] = redirect_params.delete(:notice)
-          redirect_to new_sign_app_up_email_path(redirect_params)
-        end
-
         private
-
-        # ==========================================================================
-        # 2FA Hooks (Future Implementation)
-        # ==========================================================================
-
-        # TODO: Implement 2FA setup options for show action
-        def prepare_two_factor_auth_options
-          # Future implementation:
-          # @two_factor_methods = TwoFactorAuth.available_methods
-          # @qr_code = TwoFactorAuth.generate_totp_qr(@user)
-        end
-
-        # TODO: Cleanup 2FA state on destroy/cancel
-        def cleanup_two_factor_auth_state
-          # Future implementation:
-          # TwoFactorAuth.clear_pending_setup(session)
-        end
-
-        # ==========================================================================
-        # Helpers
-        # ==========================================================================
 
         def sanitize_redirect_params!(redirect_params)
           return if redirect_params[:rd].blank?

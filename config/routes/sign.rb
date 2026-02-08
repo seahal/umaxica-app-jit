@@ -4,33 +4,36 @@ scope module: :sign, as: :sign do
   constraints host: ENV["SIGN_SERVICE_URL"] do
     scope module: :app, as: :app do
       root to: "roots#index"
+
       resource :health, only: :show, defaults: { format: :html }
 
       namespace :edge do
         namespace :v1 do
           resource :health, only: :show
           resource :csrf, only: :show
+          resource :signed_in, only: :show
           namespace :token do
             resource :check, only: :show
             resource :refresh, only: :create
           end
         end
       end
-      resource :client, only: :show
+
+      namespace :client do
+        namespace :v1 do
+          resource :health, only: :show
+        end
+      end
 
       resource :up, only: :new
       namespace :up do
-        # TODO: implement 2fa at show and update methods
-        resources :emails, only: %i(new create edit update show destroy)
-        resources :telephones, only: %i(new create edit update show destroy) do
+        resources :emails, only: %i(new create edit update)
+        resources :telephones, only: %i(new create edit update), param: :public_id do
           collection do
             post :resend
           end
-        end
-        resources :passkeys, only: %i(new create) do
-          collection do
-            post :options
-          end
+          resource :passkey_registration, only: %i(show create)
+          post "passkey_registration/begin", to: "passkey_registrations#begin"
         end
       end
 
@@ -47,7 +50,11 @@ scope module: :sign, as: :sign do
         end
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
-        resource :mfa, only: %i(show create)
+        resource :mfa, only: %i(show)
+        namespace :mfa do
+          resource :totp, only: %i(new create)
+          resource :passkey, only: %i(new create)
+        end
       end
 
       # Social auth: start sets intent/state then redirects to /auth/:provider
@@ -73,7 +80,7 @@ scope module: :sign, as: :sign do
       resource :verification, only: %i(show)
       namespace :verification do
         resource :passkey, only: %i(new create)
-        resource :totp,    only: %i(new create)
+        resource :totp, only: %i(new create)
         resources :emails, only: %i(new create edit update)
       end
 
@@ -89,16 +96,27 @@ scope module: :sign, as: :sign do
           end
         end
         resource :mfa, only: %i(show update)
-        resources :emails
-        resources :telephones
+        resources :emails, only: %i(index edit update destroy)
+        namespace :emails do
+          resource :registration, only: %i(new create edit update), controller: :registrations
+        end
+        resources :telephones, only: %i(index edit update destroy)
+        namespace :telephones do
+          resource :registration, only: %i(new create edit update), controller: :registrations
+        end
         resource :apple, only: [:show, :destroy]
         resource :google, only: %i(show update destroy)
+        # refactor to standard CRUD
         resources :secrets, param: :public_id do
           post :regenerate, on: :member
         end
+        # what is this?
         resource :emergency_key, only: :show
+        # i want this code more precisely routing.
         resources :sessions
+        resources :activities, only: :index
         resource :out, only: %i(edit destroy)
+        # i want this code more precisely routing.
         resource :withdrawal
       end
     end
@@ -114,6 +132,7 @@ scope module: :sign, as: :sign do
         namespace :v1 do
           resource :health, only: :show
           resource :csrf, only: :show
+          resource :signed_in, only: :show
           namespace :token do
             resource :check, only: :show
             resource :refresh, only: :create
@@ -140,7 +159,7 @@ scope module: :sign, as: :sign do
       resource :verification, only: %i(show)
       namespace :verification do
         resource :passkey, only: %i(new create)
-        resource :totp,    only: %i(new create)
+        resource :totp, only: %i(new create)
       end
 
       resource :configuration, only: :show

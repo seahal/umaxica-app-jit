@@ -51,8 +51,12 @@ module Sign
           )
 
           clear_mfa_session!
-          log_in(user, require_totp_check: false)
-          redirect_with_notice("/", t("sign.app.authentication.totp.success"))
+          result = log_in(user, require_totp_check: false)
+          if result[:status] == :session_limit_hard_reject
+            render plain: result[:message], status: (result[:http_status] || :conflict)
+          else
+            redirect_with_notice("/", t("sign.app.authentication.totp.success"))
+          end
         end
 
         def handle_totp_failure(user)
@@ -77,7 +81,10 @@ module Sign
         def mfa_user
           return @mfa_user if defined?(@mfa_user)
 
-          @mfa_user = User.find_by(id: session[MFA_USER_SESSION_KEY])
+          user_id = session[MFA_USER_SESSION_KEY]
+          return @mfa_user = nil if user_id.blank?
+
+          @mfa_user = User.find_by(id: user_id)
         end
 
         def clear_mfa_session!

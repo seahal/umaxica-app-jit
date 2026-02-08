@@ -1,0 +1,82 @@
+# frozen_string_literal: true
+
+module Sign
+  module App
+    module In
+      module Mfa
+        class TotpsController < ApplicationController
+          TotpChallengeForm =
+            Struct.new(:token, keyword_init: true) do
+              include ActiveModel::Model
+
+              validates :token, presence: true, length: { is: 6 }
+
+              def self.model_name
+                ActiveModel::Name.new(self, nil, "totp_challenge_form")
+              end
+            end
+
+          before_action :reject_logged_in_session
+          before_action :ensure_pending_mfa!
+
+          def new
+            @totp_form = TotpChallengeForm.new
+          end
+
+          def create
+            @totp_form = TotpChallengeForm.new(totp_params)
+            return render :new, status: :unprocessable_content unless @totp_form.valid?
+
+            user = pending_mfa_user
+            last_otp_at, totp_record = verify_totp_for(user, @totp_form.token)
+
+            if last_otp_at
+              handle_totp_success(user, totp_record, last_otp_at)
+            else
+              @totp_form.errors.add(:token, t("sign.app.authentication.totp.invalid"))
+              render :new, status: :unprocessable_content
+            end
+          end
+
+          private
+
+          def ensure_pending_mfa!
+            if !pending_mfa_valid? || pending_mfa_user.nil?
+              clear_pending_mfa!
+              redirect_to new_sign_app_in_path, status: :see_other
+            end
+          end
+
+          def verify_totp_for(user, token)
+            user.user_one_time_passwords
+              .where(user_identity_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE)
+              .order(created_at: :desc)
+              .each do |totp|
+                last_otp_at = ROTP::TOTP.new(totp.private_key).verify(token.to_s)
+                return [last_otp_at, totp] if last_otp_at
+              end
+            [nil, nil]
+          end
+
+          def handle_totp_success(user, totp_record, last_otp_at)
+            totp_record&.update!(last_otp_at: Time.zone.at(last_otp_at))
+            return_to = pending_mfa[:return_to]
+
+            clear_pending_mfa!
+            result = log_in(user, require_totp_check: false)
+
+            if result[:status] == :session_limit_hard_reject
+              render plain: result[:message], status: (result[:http_status] || :conflict)
+            else
+              redirect_to(return_to.presence || sign_app_root_path, notice: t("sign.app.authentication.totp.success"))
+            end
+          end
+
+          def totp_params
+            params.fetch(:totp_challenge_form, {}).permit(:token)
+          end
+        end
+      end
+    end
+  end
+end

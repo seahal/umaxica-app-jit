@@ -8,20 +8,19 @@ module Sign
         include Common::Redirect
         include Common::Otp
 
-        before_action :reject_logged_in_session
-
-        def show
-        end
+        guest_only! message: I18n.t(
+          "sign.app.registration.telephone.already_logged_in",
+        )
 
         def new
           @user_telephone = UserTelephone.new
 
-          # # to avoid session attack
+          # to avoid session attack
           session[:user_telephone_registration] = nil
         end
 
         def edit
-          @user_telephone = UserTelephone.find_by(id: params["id"])
+          @user_telephone = UserTelephone.find_by(public_id: params["public_id"])
           return if valid_telephone_session?
 
           redirect_to new_sign_app_up_telephone_path,
@@ -46,6 +45,12 @@ module Sign
 
           begin
             UserTelephone.transaction do
+              # Cleanup pending signup from same session
+              cleanup_pending_telephone_signup!
+
+              # Remove existing unverified telephones with same number
+              remove_existing_unverified_telephones!
+
               # Create pending user
               @pending_user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
               @user_telephone.user = @pending_user
@@ -57,9 +62,9 @@ module Sign
 
               @user_telephone.save!
 
-              # Store only the reference ID and expiry in session
+              # Store public_id and expiry in session
               session[:user_telephone_registration] = {
-                id: @user_telephone.id,
+                public_id: @user_telephone.public_id,
                 confirm_policy: boolean_value(@user_telephone.confirm_policy),
                 confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
                 expires_at: expires_at.to_i,
@@ -72,7 +77,7 @@ module Sign
                 subject: "PassCode => #{num}",
               )
 
-              redirect_to edit_sign_app_up_telephone_path(@user_telephone.id),
+              redirect_to edit_sign_app_up_telephone_path(@user_telephone),
                           notice: t("sign.app.registration.telephone.create.verification_code_sent")
             end
           rescue ActiveRecord::RecordInvalid => e
@@ -82,14 +87,30 @@ module Sign
         end
 
         def update
-          @user_telephone = UserTelephone.find_by(id: params["id"])
+          @user_telephone = UserTelephone.find_by(public_id: params["public_id"])
 
           return redirect_telephone_session_expired unless @user_telephone
 
           registration_session = session[:user_telephone_registration]
           return render_telephone_session_expired unless valid_registration_session?(registration_session)
           return render_telephone_session_expired if otp_session_expired?(registration_session)
-          return render_invalid_telephone_code unless verify_submitted_telephone_code
+
+          # Blank code check
+          submitted_code = params.dig("user_telephone", "pass_code")
+          if submitted_code.blank?
+            @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.code_required"))
+            render :edit, status: :unprocessable_content
+            return
+          end
+
+          # Verify OTP code with lockout handling
+          verification_result = verify_submitted_telephone_code
+          if verification_result == :locked
+            flash[:alert] = t("sign.app.registration.telephone.update.attempts_exceeded")
+            redirect_to new_sign_app_up_telephone_path(ri: params[:ri])
+            return
+          end
+          return render_invalid_telephone_code unless verification_result
 
           verify_telephone!
           if sms_login_ready?
@@ -97,24 +118,6 @@ module Sign
           else
             finalize_telephone_registration!
           end
-        end
-
-        def destroy
-          @user_telephone = UserTelephone.find(params[:id])
-
-          unless @user_telephone.user_telephone_status_id == UserTelephoneStatus::VERIFIED_WITH_SIGN_UP
-            render :show, status: :unprocessable_content
-            return
-          end
-
-          @user = @user_telephone.user
-          session[:signup_passkey_registration] = {
-            "user_id" => @user.id,
-            "expires_at" => 30.minutes.from_now.to_i,
-          }
-
-          redirect_to new_sign_app_up_passkey_path(ri: params[:ri]),
-                      notice: t("sign.app.registration.telephone.update.passkey_required")
         end
 
         def resend
@@ -165,8 +168,9 @@ module Sign
         end
 
         def valid_registration_session?(registration_session)
+          session_public_id = registration_session&.dig("public_id") || registration_session&.dig(:public_id)
           registration_session.present? &&
-            registration_session["id"].to_s == params["id"].to_s
+            session_public_id.to_s == params["public_id"].to_s
         end
 
         def otp_session_expired?(registration_session)
@@ -180,6 +184,16 @@ module Sign
           return true if result[:success]
 
           increment_otp_attempts!(@user_telephone)
+
+          # Lockout: destroy telephone and pending user if locked
+          if @user_telephone.locked?
+            user = @user_telephone.user
+            @user_telephone.destroy!
+            user.destroy! if user&.status_id == UserStatus::UNVERIFIED_WITH_SIGN_UP
+            session[:user_telephone_registration] = nil
+            return :locked
+          end
+
           @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.invalid_code"))
           false
         end
@@ -201,14 +215,7 @@ module Sign
         end
 
         def finalize_telephone_registration!
-          session[:user_telephone_registration] = nil
-
-          session[:signup_passkey_registration] = {
-            "user_id" => @user_telephone.user_id,
-            "expires_at" => 30.minutes.from_now.to_i,
-          }
-
-          redirect_to new_sign_app_up_passkey_path(ri: params[:ri]),
+          redirect_to sign_app_up_telephone_passkey_registration_path(@user_telephone, ri: params[:ri]),
                       notice: t("sign.app.registration.telephone.update.passkey_required")
         end
 
@@ -227,6 +234,15 @@ module Sign
             if user.status_id == UserStatus::UNVERIFIED_WITH_SIGN_UP
               user.update!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
             end
+
+            # Audit record
+            audit = UserAudit.new
+            audit.actor_type = "User"
+            audit.actor_id = user.id
+            audit.event_id = UserAuditEvent::SIGNED_UP_WITH_TELEPHONE
+            audit.subject_id = user.id.to_s
+            audit.subject_type = "User"
+            audit.save!
           end
 
           log_in(user, record_login_audit: true)
@@ -245,16 +261,47 @@ module Sign
         def load_registration_telephone(registration_session)
           return nil if registration_session.blank?
 
-          id = registration_session[:id] || registration_session["id"]
-          UserTelephone.find_by(id: id)
+          public_id = registration_session[:public_id] || registration_session["public_id"]
+          UserTelephone.find_by(public_id: public_id)
         end
 
         def resend_redirect_path
           if @user_telephone
-            edit_sign_app_up_telephone_path(@user_telephone.id, ri: params[:ri])
+            edit_sign_app_up_telephone_path(@user_telephone, ri: params[:ri])
           else
             new_sign_app_up_telephone_path(ri: params[:ri])
           end
+        end
+
+        def cleanup_pending_telephone_signup!
+          pending_public_id =
+            session.dig(:user_telephone_registration, "public_id") ||
+            session.dig(:user_telephone_registration, :public_id)
+          return if pending_public_id.blank?
+
+          pending_telephone = UserTelephone.find_by(public_id: pending_public_id)
+          return unless pending_telephone
+
+          pending_user = pending_telephone.user
+          pending_telephone.destroy!
+          pending_user.destroy! if pending_user&.status_id == UserStatus::UNVERIFIED_WITH_SIGN_UP
+        end
+
+        def remove_existing_unverified_telephones!
+          existing_telephones = UserTelephone.where(
+            number: @user_telephone.number,
+            user_identity_telephone_status_id: [
+              UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP,
+              UserTelephoneStatus::UNVERIFIED,
+            ],
+          ).to_a
+
+          pending_user_ids = existing_telephones.filter_map(&:user_id)
+          if pending_user_ids.any?
+            User.where(id: pending_user_ids, status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
+              .find_each(&:destroy!)
+          end
+          existing_telephones.each(&:destroy!)
         end
       end
     end

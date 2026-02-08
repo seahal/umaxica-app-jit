@@ -434,7 +434,7 @@ module Preference
       expires_at_value = expires_at || Preference::Core::COOKIE_EXPIRY.from_now
       normalized_event_id = normalize_preference_audit_event_id(event_id)
 
-      AuditRecord.connected_to(role: :writing) do
+      ActivityRecord.connected_to(role: :writing) do
         if normalized_event_id.present?
           preference_audit_event_class.find_or_create_by!(id: normalized_event_id)
         end

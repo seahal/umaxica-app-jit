@@ -1,7 +1,7 @@
 # == Schema Information
 #
 # Table name: app_preference_audit_events
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #

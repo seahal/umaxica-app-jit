@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: staff_audits
-# Database name: audit
+# Database name: activity
 #
 #  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
@@ -62,8 +62,8 @@ class StaffAuditTest < ActiveSupport::TestCase
     assert_kind_of Integer, @audit.id
   end
 
-  test "inherits from AuditRecord" do
-    assert_operator StaffAudit, :<, AuditRecord
+  test "inherits from ActivityRecord" do
+    assert_operator StaffAudit, :<, ActivityRecord
   end
 
   test "ip_address can be stored" do

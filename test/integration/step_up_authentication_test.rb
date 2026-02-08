@@ -27,7 +27,7 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
   end
 
   test "GET sensitive page redirects to verification when step-up is not satisfied" do
-    get new_sign_app_configuration_email_url(ri: "jp"), headers: @headers
+    get new_sign_app_configuration_emails_registration_url(ri: "jp"), headers: @headers
 
     assert_response :redirect
     uri = URI.parse(response.location)
@@ -36,25 +36,18 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
     assert_equal sign_app_verification_path, uri.path
     assert_equal "configuration_email", query["scope"]
     assert_equal "jp", query["ri"]
-    assert_equal new_sign_app_configuration_email_path(ri: "jp"),
+    assert_equal new_sign_app_configuration_emails_registration_path(ri: "jp"),
                  Base64.urlsafe_decode64(query["return_to"]).force_encoding("UTF-8")
   end
 
-  test "POST sensitive action redirects to verification when step-up is not satisfied" do
-    post sign_app_configuration_emails_url(ri: "jp"),
-         params: { user_email: { email: "new@example.com" } },
+  test "POST sensitive action returns 422 when step-up is not satisfied" do
+    post sign_app_configuration_emails_registration_url(ri: "jp"),
+         params: { user_email: { address: "new@example.com" } },
          headers: @headers
 
-    assert_response :redirect
-    uri = URI.parse(response.location)
-    query = Rack::Utils.parse_query(uri.query)
-
-    assert_equal sign_app_verification_path, uri.path
-    assert_equal "configuration_email", query["scope"]
-    assert_equal "jp", query["ri"]
-    assert_equal sign_app_configuration_emails_path(ri: "jp"),
-                 Base64.urlsafe_decode64(query["return_to"]).force_encoding("UTF-8")
-    assert_equal I18n.t("auth.step_up.required"), flash[:alert]
+    assert_response :unprocessable_content
+    assert_includes response.body, "再認証が必要です"
+    assert_includes response.body, "操作は保存されていません"
   end
 
   test "scope mismatch is not satisfied" do

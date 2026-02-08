@@ -7,6 +7,7 @@
 #
 #  id                        :bigint           not null, primary key
 #  address                   :string           default(""), not null
+#  address_bidx              :string
 #  locked_at                 :datetime         default(Infinity), not null
 #  otp_attempts_count        :integer          default(0), not null
 #  otp_counter               :text             default(""), not null
@@ -22,6 +23,7 @@
 #
 # Indexes
 #
+#  index_user_emails_on_address_bidx            (address_bidx) UNIQUE WHERE (address_bidx IS NOT NULL)
 #  index_user_emails_on_otp_last_sent_at        (otp_last_sent_at)
 #  index_user_emails_on_public_id               (public_id) UNIQUE
 #  index_user_emails_on_user_email_status_id    (user_email_status_id)
@@ -52,6 +54,7 @@ class UserEmail < PrincipalRecord
   validates :otp_private_key, presence: true, length: { maximum: 255 }
   validates :user_email_status_id, numericality: { only_integer: true }
   validate :enforce_user_email_limit, on: :create
+  before_validation :set_address_bidx
 
   def to_param
     public_id
@@ -83,6 +86,10 @@ class UserEmail < PrincipalRecord
   end
 
   private
+
+  def set_address_bidx
+    self.address_bidx = IdentifierBlindIndex.bidx_for_email(address)
+  end
 
   def enforce_user_email_limit
     return unless user_id

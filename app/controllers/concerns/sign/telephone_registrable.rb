@@ -9,18 +9,21 @@ module Sign
       include Common::Otp
     end
 
-    def initiate_telephone_verification(number)
+    def initiate_telephone_verification(user, number)
+      return false if user.blank?
+
       # TODO: Rate limit check
 
       # Normalize number (using existing implementation)
       # Assuming UserTelephone has normalization or similar
       # For now, we trust params or basic validation
-      @user_telephone = UserTelephone.new(telephone_number: number)
+      @user_telephone = user.user_telephones.build(number: number)
       @user_telephone.user_telephone_status_id = UserTelephoneStatus::UNVERIFIED
 
       # Delete existing unverified
       UserTelephone.where(
-        telephone_number: @user_telephone.telephone_number,
+        number: @user_telephone.number,
+        user_id: user.id,
         user_telephone_status_id: UserTelephoneStatus::UNVERIFIED,
       ).destroy_all
 

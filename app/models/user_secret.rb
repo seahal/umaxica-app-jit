@@ -40,6 +40,8 @@ class UserSecret < PrincipalRecord
   include UserSecret::Kinds
 
   MAX_SECRETS_PER_USER = 10
+  SIGN_IN_ALLOWED_STATUS_IDS = [UserSecretStatus::ACTIVE].freeze
+  SIGN_IN_ALLOWED_KIND_IDS = UserSecretKind::ALLOWED_FOR_SECRET_SIGN_IN
   attr_accessor :raw_secret
 
   attribute :user_identity_secret_status_id, default: UserSecretStatus::ACTIVE
@@ -53,6 +55,14 @@ class UserSecret < PrincipalRecord
   validates :password_digest, presence: true, length: { maximum: 255 }
 
   validate :enforce_secret_limit, on: :create
+  validate :require_verified_recovery_identity, on: :create
+
+  scope :allowed_for_secret_sign_in, lambda {
+    where(
+      user_identity_secret_status_id: SIGN_IN_ALLOWED_STATUS_IDS,
+      user_secret_kind_id: SIGN_IN_ALLOWED_KIND_IDS,
+    )
+  }
 
   def self.identity_secret_status_class
     UserSecretStatus
@@ -79,11 +89,62 @@ class UserSecret < PrincipalRecord
     active?
   end
 
+  def usable_for_secret_sign_in?(now: Time.current)
+    return false unless sign_in_status_allowed?
+    return false unless sign_in_kind_allowed?
+    return false if expired_for_secret_sign_in?(now)
+    return true if permanent_secret?
+
+    uses_remaining.to_i.positive?
+  end
+
+  def verify_for_secret_sign_in!(raw_secret, now: Time.current)
+    with_lock do
+      reload
+
+      auth_result = authenticate(raw_secret)
+      return false unless sign_in_status_allowed?
+      return false unless sign_in_kind_allowed?
+      return false if expired_for_secret_sign_in?(now)
+      return false unless auth_result
+
+      self.last_used_at = now
+      if one_time_secret?
+        return false unless uses_remaining.to_i.positive?
+
+        self.uses_remaining -= 1
+        self[self.class.identity_secret_status_id_column] = self.class.status_id_for(:used) if uses_remaining.zero?
+      end
+
+      save!
+    end
+
+    true
+  end
+
   def to_param
     public_id
   end
 
   private
+
+  def sign_in_status_allowed?
+    SIGN_IN_ALLOWED_STATUS_IDS.include?(user_secret_status_id)
+  end
+
+  def sign_in_kind_allowed?
+    SIGN_IN_ALLOWED_KIND_IDS.include?(user_secret_kind_id)
+  end
+
+  # Secret sign-in keeps expiry inclusive: now <= expires_at is valid.
+  def expired_for_secret_sign_in?(now)
+    return false unless respond_to?(:expires_at)
+    return false if expires_at.nil?
+    return false if expires_at.is_a?(Float) && expires_at.infinite?
+
+    comparable_time = expires_at.is_a?(Float) ? Time.zone.at(expires_at) : expires_at
+    now > comparable_time
+  end
 
   def enforce_secret_limit
     return unless user_id
@@ -92,5 +153,11 @@ class UserSecret < PrincipalRecord
     return if count < MAX_SECRETS_PER_USER
 
     errors.add(:base, :too_many, message: "exceeds maximum secrets per user (#{MAX_SECRETS_PER_USER})")
+  end
+
+  def require_verified_recovery_identity
+    return if user&.has_verified_recovery_identity?
+
+    errors.add(:base, User::RECOVERY_IDENTITY_REQUIRED_MESSAGE)
   end
 end

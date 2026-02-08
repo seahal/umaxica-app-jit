@@ -39,7 +39,8 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
   end
 
   test "should get new" do
-    get new_sign_app_configuration_telephone_url(ri: "jp"), headers: request_headers
+    get new_sign_app_configuration_telephones_registration_url(ri: "jp"),
+        headers: request_headers
     assert_response :success
   end
 

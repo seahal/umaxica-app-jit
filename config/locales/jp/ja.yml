@@ -14,6 +14,9 @@ ja:
   common:
     ok: OK
     unsaved_changes: 変更は保存されていません。移動しますか？
+  errors:
+    messages:
+      validation_failed: 入力内容を確認してください。
   actions:
     submit: 送信
     cancel: キャンセル
@@ -35,6 +38,8 @@ ja:
           new:
             page_title: パスキーでログイン
             description: パスキーを使って安全にログインします。
+            pii_label: メールアドレスまたは電話番号
+            pii_placeholder: "user@example.com または +81 90 1234 5678"
             submit: パスキーでログイン
         new:
           page_title: サインイン方法を選ぶ
@@ -54,9 +59,13 @@ ja:
         secret:
           new:
             page_title: シークレットでサインイン
-            pii_label: 本人確認情報
+            pii_label: メールアドレスまたは電話番号
+            pii_placeholder: "user@example.com または +81 90 1234 5678"
             secret_label: シークレット
-            confirm_label: シークレットを保存しました
+            hints: 利用可能なシークレット
+          create:
+            success: ログインしました。
+            invalid: 認証に失敗しました。入力内容をご確認ください。
         email:
           new:
             page_title: メールでログイン
@@ -141,10 +150,15 @@ ja:
             link_to_sign_in: ログインしますか？
           create:
             verification_code_sent: 確認コードをSMSで送信しました。
+            turnstile_validation_failed: セキュリティ検証に失敗しました。もう一度お試しください。
           edit:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
             success: 電話番号の確認が完了しました。
+            passkey_required: 電話番号が確認されました。パスキーを登録してください。
+            code_required: 確認コードを入力してください。
+            invalid_code: パスコードが正しくありません。
+            attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
           complete:
             page_title: 登録が完了しました
             description: アカウントの登録が正常に完了しました。引き続きサービスをご利用ください。
@@ -403,6 +417,7 @@ ja:
           new:
             page_title: シークレットでサインイン
             pii_label: 本人確認情報
+            pii_placeholder: 電話番号またはメールアドレス
             secret_label: シークレット
             confirm_label: シークレットを保存しました
         passkey:
@@ -552,6 +567,10 @@ ja:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:
             success: 電話番号の確認が完了しました。
+            passkey_required: 電話番号が確認されました。パスキーを登録してください。
+            code_required: 確認コードを入力してください。
+            invalid_code: パスコードが正しくありません。
+            attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
   languages:
     english: English
     japanese: 日本語

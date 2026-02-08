@@ -5,12 +5,6 @@
     <div>
       <div>
         <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-        </div>
-        <div>
           <h1>
             <%= t("apex.org.preferences.title") %>
           </h1>
@@ -27,22 +21,12 @@
         <div>
           <span><%= t("apex.org.preferences.region_settings") %></span>
         </div>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </div>
       <% end %>
 
       <!-- Timezone -->
       <%= link_to edit_apex_org_preference_region_timezone_path do %>
         <div>
           <span><%= t("apex.org.preferences.timezone_settings") %></span>
-        </div>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
         </div>
       <% end %>
 
@@ -51,22 +35,12 @@
         <div>
           <span><%= t("apex.org.preferences.language_settings") %></span>
         </div>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </div>
       <% end %>
 
       <!-- Theme -->
       <%= link_to edit_apex_org_preference_theme_path do %>
         <div>
           <span><%= t("apex.org.preferences.theme_settings") %></span>
-        </div>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
         </div>
       <% end %>
 
@@ -75,11 +49,6 @@
         <div>
           <span><%= t("apex.org.preferences.cookie_settings") %></span>
         </div>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </div>
       <% end %>
 
       <!-- Reset -->
@@ -87,20 +56,12 @@
         <div>
           <span><%= t("apex.org.preferences.reset_settings") %></span>
         </div>
-        <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </div>
       <% end %>
     </div>
   </div>
 
   <div>
     <%= link_to apex_org_root_path(ct: "dr", lx: "en", ri: "us", tz: "jst") do %>
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m15 18-6-6 6-6" />
-      </svg>
       <span><%= t("apex.org.preferences.up_link") %></span>
     <% end %>
   </div>

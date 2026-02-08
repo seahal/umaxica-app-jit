@@ -97,7 +97,7 @@ module SocialCallbackGuard
   end
 
   def allowed_hosts
-    @allowed_hosts ||=
+    @allowed_hosts ||= # rubocop:disable ThreadSafety/ClassInstanceVariable
       begin
         hosts = [ENV["SIGN_SERVICE_URL"], ENV["SIGN_STAFF_URL"]].compact.filter_map { |v| normalize_host_port(v) }
         hosts.uniq
@@ -105,7 +105,7 @@ module SocialCallbackGuard
   end
 
   def allowed_request_origins
-    @allowed_request_origins ||=
+    @allowed_request_origins ||= # rubocop:disable ThreadSafety/ClassInstanceVariable
       begin
         origins = []
         schemes = %w(https)
@@ -191,47 +191,69 @@ module SocialCallbackGuard
   end
 
   def valid_callback_state?(provider)
-    callback_state = params[:state].to_s.presence
-    expected_state = session[SOCIAL_STATE_SESSION_KEY].to_s.presence
-    expected_state ||= request.env.dig("omniauth.params", "state").to_s.presence
-    started_at = session[SOCIAL_STATE_STARTED_AT_SESSION_KEY].to_i
-    used_at = session[SOCIAL_STATE_USED_AT_SESSION_KEY]
-    stored_provider = session[SOCIAL_STATE_PROVIDER_SESSION_KEY].to_s.presence
+    state = load_callback_state_data(provider)
+    apply_test_mode_state_bypass!(state, provider)
 
-    if callback_state.blank? || expected_state.blank?
-      if allow_test_mode_state_bypass?
-        synthetic_state = callback_state || expected_state || SecureRandom.hex(16)
-        session[SOCIAL_STATE_SESSION_KEY] = synthetic_state
-        session[SOCIAL_STATE_PROVIDER_SESSION_KEY] ||= provider
-        session[SOCIAL_STATE_STARTED_AT_SESSION_KEY] = Time.current.to_i
-        session[SOCIAL_STATE_USED_AT_SESSION_KEY] = nil
-        callback_state ||= synthetic_state
-        expected_state ||= synthetic_state
-      end
+    error = detect_callback_state_error(state, provider)
+    if error
+      clear_social_state!
+      return [false, error]
     end
 
-    return [clear_social_state! && false, "missing_callback_state"] if callback_state.blank?
-    return [clear_social_state! && false, "missing_expected_state"] if expected_state.blank?
+    record_social_state_used!(state[:expected], provider)
+    [true, nil]
+  rescue StandardError
+    clear_social_state!
+    [false, "state_parse_error"]
+  end
 
-    return [clear_social_state! && false,
-            "provider_mismatch",] if stored_provider.present? && stored_provider != provider
-    return [clear_social_state! && false, "state_reused"] if used_at.present?
-    return [clear_social_state! && false, "state_mismatch"] unless ActiveSupport::SecurityUtils.secure_compare(
-      callback_state, expected_state,
-    )
+  def load_callback_state_data(provider) # rubocop:disable Lint/UnusedMethodArgument
+    {
+      callback: params[:state].to_s.presence,
+      expected: session[SOCIAL_STATE_SESSION_KEY].to_s.presence ||
+        request.env.dig("omniauth.params", "state").to_s.presence,
+      started_at: session[SOCIAL_STATE_STARTED_AT_SESSION_KEY].to_i,
+      used_at: session[SOCIAL_STATE_USED_AT_SESSION_KEY],
+      stored_provider: session[SOCIAL_STATE_PROVIDER_SESSION_KEY].to_s.presence,
+    }
+  end
 
-    return [clear_social_state! && false,
-            "state_expired",] if started_at.positive? && Time.current > Time.zone.at(started_at) + STATE_TTL
+  def apply_test_mode_state_bypass!(state, provider)
+    return unless state[:callback].blank? || state[:expected].blank?
+    return unless allow_test_mode_state_bypass?
 
+    synthetic = state[:callback] || state[:expected] || SecureRandom.hex(16)
+    session[SOCIAL_STATE_SESSION_KEY] = synthetic
+    session[SOCIAL_STATE_PROVIDER_SESSION_KEY] ||= provider
+    session[SOCIAL_STATE_STARTED_AT_SESSION_KEY] = Time.current.to_i
+    session[SOCIAL_STATE_USED_AT_SESSION_KEY] = nil
+    state[:callback] ||= synthetic
+    state[:expected] ||= synthetic
+  end
+
+  def detect_callback_state_error(state, provider)
+    return "missing_callback_state" if state[:callback].blank?
+    return "missing_expected_state" if state[:expected].blank?
+    return "provider_mismatch" if state[:stored_provider].present? && state[:stored_provider] != provider
+    return "state_reused" if state[:used_at].present?
+
+    unless ActiveSupport::SecurityUtils.secure_compare(state[:callback], state[:expected])
+      return "state_mismatch"
+    end
+
+    if state[:started_at].positive? && Time.current > Time.zone.at(state[:started_at]) + STATE_TTL
+      return "state_expired"
+    end
+
+    nil
+  end
+
+  def record_social_state_used!(expected_state, provider)
     session[SOCIAL_STATE_SESSION_KEY] = expected_state
     session[SOCIAL_STATE_PROVIDER_SESSION_KEY] ||= provider
     session[SOCIAL_STATE_STARTED_AT_SESSION_KEY] =
       Time.current.to_i if session[SOCIAL_STATE_STARTED_AT_SESSION_KEY].blank?
     session[SOCIAL_STATE_USED_AT_SESSION_KEY] = Time.current.to_i
-    [true, nil]
-  rescue StandardError
-    clear_social_state!
-    [false, "state_parse_error"]
   end
 
   def allow_test_mode_state_bypass?
@@ -257,7 +279,7 @@ module SocialCallbackGuard
 
     Rails.logger.info(
       "[SocialCallbackGuard] phase=callback provider=#{provider.inspect} " \
-      "reason=source_observed details=#{source.inspect}"
+      "reason=source_observed details=#{source.inspect}",
     )
   end
 

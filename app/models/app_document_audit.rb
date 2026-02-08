@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: app_document_audits
-# Database name: audit
+# Database name: activity
 #
 #  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
@@ -37,7 +37,7 @@
 #  fk_rails_...  (level_id => app_document_audit_levels.id)
 #
 
-class AppDocumentAudit < AuditRecord
+class AppDocumentAudit < ActivityRecord
   # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
   belongs_to :app_document, optional: true, foreign_key: :subject_id, inverse_of: :app_document_audits
   belongs_to :actor, polymorphic: true, optional: true # Helper methods for compatibility

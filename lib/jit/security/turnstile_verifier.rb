@@ -3,6 +3,7 @@
 require "net/http"
 require "json"
 require "uri"
+require_relative "turnstile_config"
 
 module Jit
   module Security
@@ -20,14 +21,15 @@ module Jit
       end
       # rubocop:enable ThreadSafety/ClassAndModuleAttributes, ThreadSafety/ClassInstanceVariable
 
-      def self.verify(token:, remote_ip:, secret_key: nil)
-        new(token: token, remote_ip: remote_ip, secret_key: secret_key).verify
+      def self.verify(token:, remote_ip:, secret_key: nil, mode: nil)
+        new(token: token, remote_ip: remote_ip, secret_key: secret_key, mode: mode).verify
       end
 
-      def initialize(token:, remote_ip:, secret_key: nil)
+      def initialize(token:, remote_ip:, secret_key: nil, mode: nil)
         @token = token
         @remote_ip = remote_ip
-        @secret_key = secret_key || default_secret_key
+        @mode = mode
+        @secret_key = secret_key || resolve_secret_key
       end
 
       def verify
@@ -37,7 +39,11 @@ module Jit
         end
 
         return failure("missing cf-turnstile-response") if @token.blank?
-        return failure("missing turnstile secret") if @secret_key.blank?
+
+        if @secret_key.blank?
+          log_missing_secret
+          return failure("missing turnstile secret")
+        end
 
         perform_request
       rescue StandardError => e
@@ -49,6 +55,18 @@ module Jit
       end
 
       private
+
+      def resolve_secret_key
+        case @mode
+        when :stealth
+          TurnstileConfig.stealth_secret_key
+        when :default
+          TurnstileConfig.default_secret_key
+        else
+          # Legacy path: no mode specified -- preserves existing dig-based lookup
+          default_secret_key
+        end
+      end
 
       def perform_request
         response = Net::HTTP.post_form(
@@ -67,6 +85,12 @@ module Jit
 
         Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SECRET_KEY) ||
           ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"]
+      end
+
+      def log_missing_secret
+        return unless defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
+
+        Rails.logger.warn("[Turnstile] Secret key is missing (mode=#{@mode || :legacy}). Verification skipped.")
       end
 
       def failure(message)

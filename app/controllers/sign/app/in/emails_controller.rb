@@ -82,10 +82,20 @@ module Sign
               end
             end
           else
-            @user_email.errors.add(:pass_code, result[:error])
-            respond_to do |format|
-              format.html { render :edit, status: :unprocessable_content }
-              format.json { render json: { error: result[:error] }, status: :unprocessable_content }
+            if result[:hard_reject]
+              respond_to do |format|
+                format.html { render plain: result[:error], status: (result[:http_status] || :conflict) }
+                format.json {
+                  render json: { error: result[:error], error_code: "session_limit_hard_reject" },
+                         status: (result[:http_status] || :conflict)
+                }
+              end
+            else
+              @user_email.errors.add(:pass_code, result[:error])
+              respond_to do |format|
+                format.html { render :edit, status: :unprocessable_content }
+                format.json { render json: { error: result[:error] }, status: :unprocessable_content }
+              end
             end
           end
         end
@@ -158,11 +168,9 @@ module Sign
             session[:user_email_authentication_id] = nil
             result = log_in(user)
             if result[:status] == :totp_required
-              { success: true, redirect_path: new_sign_app_in_totp_path }
-            elsif result[:status] == :session_limit_exceeded
-              # Issue gate and redirect to session management
-              issue_session_limit_gate!(return_to: request.fullpath, flow: "in.email.session")
-              { success: true, redirect_path: edit_sign_app_in_email_path }
+              { success: true, redirect_path: sign_app_in_mfa_path }
+            elsif result[:status] == :session_limit_hard_reject
+              { success: false, error: result[:message], hard_reject: true, http_status: result[:http_status] }
             else
               { success: true, tokens: result }
             end

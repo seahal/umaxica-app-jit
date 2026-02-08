@@ -49,7 +49,7 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
     assert_bigint_pk(ComContactCategory)
   end
 
-  test "audit schema tables use bigint primary keys" do
+  test "activity schema tables use bigint primary keys" do
     assert_bigint_pk(StaffAuditEvent)
     assert_bigint_pk(UserAuditLevel)
   end

@@ -18,7 +18,7 @@ module Auth
     def self.write!(audit_class, event_id, resource:, actor: nil, ip_address: nil)
       actor ||= resource
 
-      AuditRecord.connected_to(role: :writing) do
+      ActivityRecord.connected_to(role: :writing) do
         normalized_event_id = normalize_event_id(audit_class, event_id)
         audit = build_audit(audit_class, normalized_event_id, resource: resource, actor: actor, ip_address: ip_address)
 

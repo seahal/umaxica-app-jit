@@ -3,12 +3,12 @@
 # == Schema Information
 #
 # Table name: org_document_audit_events
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #
 
-class OrgDocumentAuditEvent < AuditRecord
+class OrgDocumentAuditEvent < ActivityRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   CREATED = 1

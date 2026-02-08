@@ -7,6 +7,7 @@ module Sign
     module Verification
       class BaseController < ApplicationController
         include Common::Otp
+        include ::Auth::StepUp
         include Sign::Webauthn
 
         auth_required!
@@ -59,10 +60,10 @@ module Sign
 
         def normalize_encoded_return_to!(encoded)
           decoded = Base64.urlsafe_decode64(encoded)
-          safe = generate_redirect_url(decoded)
+          safe = safe_internal_path(decoded)
           raise ArgumentError, "unsafe return_to" if safe.blank?
 
-          safe
+          Base64.urlsafe_encode64(safe)
         rescue ArgumentError
           raise
         end
@@ -200,6 +201,7 @@ module Sign
         end
 
         def render_verification_show(status: :unprocessable_content)
+          @available_methods = available_step_up_methods
           @reauth_sessions = ReauthSession.for_actor(@actor_token).recent_first.limit(50)
           render "sign/app/verification/show", status: status
         end

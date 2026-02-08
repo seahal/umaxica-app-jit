@@ -3,11 +3,11 @@
 # == Schema Information
 #
 # Table name: user_audit_levels
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #
-class UserAuditLevel < AuditRecord
+class UserAuditLevel < ActivityRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   DEBUG = 1
@@ -21,7 +21,7 @@ class UserAuditLevel < AuditRecord
            dependent: :restrict_with_error,
            inverse_of: :user_audit_level
 
-  DEFAULTS = [NEYO, INFO, WARN, ERROR].freeze
+  DEFAULTS = [DEBUG, ERROR, INFO, NEYO, WARN].freeze
 
   def self.ensure_defaults!
     DEFAULTS.each do |id|

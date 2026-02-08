@@ -8,18 +8,22 @@
 #  id                                :bigint           not null, primary key
 #  locked_at                         :datetime         default(-Infinity), not null
 #  number                            :string           default(""), not null
+#  number_bidx                       :string
 #  otp_attempts_count                :integer          default(0), not null
 #  otp_counter                       :text             default(""), not null
 #  otp_expires_at                    :datetime         default(-Infinity), not null
 #  otp_private_key                   :string           default(""), not null
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
+#  public_id                         :string(21)       not null
 #  user_id                           :bigint           not null
 #  user_identity_telephone_status_id :bigint           default(1), not null
 #
 # Indexes
 #
 #  index_user_telephones_on_lower_number                       (lower((number)::text)) UNIQUE
+#  index_user_telephones_on_number_bidx                        (number_bidx) UNIQUE WHERE (number_bidx IS NOT NULL)
+#  index_user_telephones_on_public_id                          (public_id) UNIQUE
 #  index_user_telephones_on_user_id                            (user_id)
 #  index_user_telephones_on_user_identity_telephone_status_id  (user_identity_telephone_status_id)
 #
@@ -33,6 +37,11 @@ class UserTelephone < PrincipalRecord
   alias_attribute :user_telephone_status_id, :user_identity_telephone_status_id
   include Telephone
   include Turnstile
+  include PublicId
+
+  def to_param
+    public_id
+  end
 
   MAX_TELEPHONES_PER_USER = 4
   attribute :user_identity_telephone_status_id, default: UserTelephoneStatus::UNVERIFIED
@@ -46,9 +55,7 @@ class UserTelephone < PrincipalRecord
   validates :otp_private_key, presence: true, length: { maximum: 255 }
   validates :user_identity_telephone_status_id, numericality: { only_integer: true }
   validate :enforce_user_telephone_limit, on: :create
-  before_validation do
-    self.user_id ||= 0
-  end
+  before_validation :set_number_bidx
 
   after_initialize do
     self.number ||= ""
@@ -57,6 +64,10 @@ class UserTelephone < PrincipalRecord
   # Note: :number encryption is handled by Telephone concern
 
   private
+
+  def set_number_bidx
+    self.number_bidx = IdentifierBlindIndex.bidx_for_telephone(number)
+  end
 
   def enforce_user_telephone_limit
     return unless user_id

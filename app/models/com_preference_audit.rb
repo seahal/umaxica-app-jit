@@ -1,7 +1,7 @@
 # == Schema Information
 #
 # Table name: com_preference_audits
-# Database name: audit
+# Database name: activity
 #
 #  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
@@ -37,7 +37,7 @@
 
 # frozen_string_literal: true
 
-class ComPreferenceAudit < AuditRecord
+class ComPreferenceAudit < ActivityRecord
   belongs_to :com_preference,
              class_name: "ComPreference",
              foreign_key: :subject_id,

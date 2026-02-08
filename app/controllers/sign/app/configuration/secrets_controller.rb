@@ -9,6 +9,7 @@ module Sign
         before_action :authenticate_user!
         before_action :set_secret, only: %i(show edit update destroy)
         before_action -> { require_step_up!(scope: "configuration_secret") }, only: %i(update destroy)
+        before_action :ensure_verified_recovery_identity_for_registration!, only: [:new]
 
         def index
           @secrets = current_user.user_secrets.order(created_at: :desc)
@@ -39,10 +40,7 @@ module Sign
           flash[:notice] = t(".created")
           redirect_to sign_app_configuration_secrets_path
         rescue ActiveRecord::RecordInvalid => e
-          @secret = e.record
-          @raw_secret = raw_secret.presence || UserSecret.generate_raw_secret
-          session[:user_secret_raw] = @raw_secret
-          render :new, status: :unprocessable_content
+          render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_entity
         end
 
         def update
@@ -89,6 +87,12 @@ module Sign
           params[:user_secret].present? &&
             params[:user_secret].key?(:enabled) &&
             ActiveModel::Type::Boolean.new.cast(params[:user_secret][:enabled]) == false
+        end
+
+        def ensure_verified_recovery_identity_for_registration!
+          return if current_user.has_verified_recovery_identity?
+
+          render plain: User::RECOVERY_IDENTITY_REQUIRED_MESSAGE, status: :forbidden
         end
       end
     end

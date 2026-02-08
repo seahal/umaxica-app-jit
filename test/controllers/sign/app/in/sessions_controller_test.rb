@@ -29,6 +29,7 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     get sign_app_in_session_url(ri: "jp"), headers: headers
 
     assert_response :success
+    assert_not response.redirect?
   end
 
   # Test: update without authentication redirects to login
@@ -92,16 +93,37 @@ class Sign::App::In::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil active_token1.revoked_at
   end
 
+  test "restricted session expires after 15 minutes and is locked on in/session" do
+    token = create_restricted_session(@user, expires_at: 15.minutes.from_now)
+    headers = as_user_headers_with_token(@user, token, host: @host)
+    events = []
+
+    travel 16.minutes do
+      Rails.event.stub(
+        :notify, lambda { |*args|
+                   events << [args.first, args.last.is_a?(Hash) ? args.last : {}]
+                 },
+      ) do
+        get sign_app_in_session_url(ri: "jp"), headers: headers
+      end
+    end
+
+    assert_response :locked
+    assert_equal "きんそくじこうです", response.body
+    assert_not response.redirect?
+    assert_includes events.map(&:first), "session.restricted.expired"
+  end
+
   private
 
-  def create_restricted_session(user)
+  def create_restricted_session(user, expires_at: nil)
     token = UserToken.create!(
       user: user,
       status: UserToken::STATUS_RESTRICTED,
       user_token_status_id: UserTokenStatus::NEYO,
       user_token_kind_id: UserTokenKind::BROWSER_WEB,
     )
-    token.rotate_refresh_token!
+    token.rotate_refresh_token!(expires_at: expires_at)
     token
   end
 

@@ -4,34 +4,48 @@ module Sign
   module App
     module In
       class SecretsController < ApplicationController
+        include ::CloudflareTurnstile
+        include EmailValidation
+        include IdentifierDetection
         include Common::Redirect
         include SessionLimitGate
 
         class SecretLoginForm
           include ActiveModel::Model
 
-          attr_accessor :account_identifiable_information, :secret_value, :confirm_saved
+          attr_accessor :identifier, :secret_value, :turnstile_response
 
-          validates :account_identifiable_information, :secret_value, presence: true
-          validates :confirm_saved, acceptance: { accept: "1" }
+          validates :secret_value, presence: true
+          validate :identifier_present_and_valid
 
           def self.model_name
             ActiveModel::Name.new(self, nil, "secret_login_form")
+          end
+
+          private
+
+          def identifier_present_and_valid
+            value = identifier.to_s.strip
+            return errors.add(:base, :blank) if value.blank?
+            return if value.include?("@") || value.include?("+")
+
+            errors.add(:identifier, :invalid)
           end
         end
 
         class MfaSecretForm
           include ActiveModel::Model
 
-          attr_accessor :secret_value, :confirm_saved
+          attr_accessor :secret_value, :turnstile_response
 
           validates :secret_value, presence: true
-          validates :confirm_saved, acceptance: { accept: "1" }
 
           def self.model_name
             ActiveModel::Name.new(self, nil, "mfa_secret_form")
           end
         end
+
+        SecretVerificationResult = Struct.new(:secret, :reason, :details, keyword_init: true)
 
         MFA_USER_SESSION_KEY = :mfa_user_id
 
@@ -56,30 +70,66 @@ module Sign
 
         def handle_mfa_login
           @secret_form = MfaSecretForm.new(mfa_secret_params)
-          return render :new, status: :unprocessable_content unless @secret_form.valid?
+          @secret_form.turnstile_response = params["cf-turnstile-response"].to_s
+          unless @secret_form.valid?
+            return render_failed_login(
+              reason: :form_invalid,
+              user: mfa_user,
+              details: { errors: @secret_form.errors.full_messages },
+            )
+          end
+          unless cloudflare_turnstile_validation["success"]
+            return render_failed_login(reason: :turnstile_failed, user: mfa_user)
+          end
 
           user = mfa_user
-          secret = verify_and_consume_secret(user, @secret_form.secret_value)
+          verification = verify_secret_for_sign_in(user: user, raw_secret: @secret_form.secret_value)
 
-          if secret
-            handle_successful_mfa(user, secret)
+          if verification.secret
+            handle_successful_mfa(user, verification.secret)
           else
-            handle_failed_mfa(user)
+            handle_failed_mfa(user, verification.reason, verification.details)
           end
+        rescue StandardError => e
+          report_authentication_error(e, flow: "mfa_secret")
+          render_failed_login(reason: :internal_error, user: mfa_user, details: { error_class: e.class.name })
         end
 
         def handle_standard_login
           @secret_form = SecretLoginForm.new(secret_params)
-          return render :new, status: :unprocessable_content unless @secret_form.valid?
+          @secret_form.turnstile_response = params["cf-turnstile-response"].to_s
+          unless @secret_form.valid?
+            return render_failed_login(
+              reason: :form_invalid,
+              identifier: @secret_form.identifier,
+              details: { errors: @secret_form.errors.full_messages },
+            )
+          end
+          unless cloudflare_turnstile_validation["success"]
+            return render_failed_login(reason: :turnstile_failed, identifier: @secret_form.identifier)
+          end
 
-          user = find_user_by_info(@secret_form.account_identifiable_information)
-          secret = user ? verify_and_consume_secret(user, @secret_form.secret_value) : nil
+          user = find_user_by_identifier(@secret_form.identifier)
+          verification = verify_secret_for_sign_in(user: user, raw_secret: @secret_form.secret_value)
 
-          if user && secret
+          if user && verification.secret
             process_standard_login(user)
           else
-            handle_failed_standard_login
+            failure_reason = verification.reason || :identifier_not_found
+            render_failed_login(
+              reason: failure_reason,
+              identifier: @secret_form.identifier,
+              user: user,
+              details: verification.details,
+            )
           end
+        rescue StandardError => e
+          report_authentication_error(e, flow: "secret")
+          render_failed_login(
+            reason: :internal_error,
+            identifier: @secret_form&.identifier,
+            details: { error_class: e.class.name },
+          )
         end
 
         def handle_successful_mfa(user, secret)
@@ -89,44 +139,31 @@ module Sign
           )
           clear_mfa_session!
           result = log_in(user, require_totp_check: false)
-          if result[:status] == :session_limit_exceeded
-            issue_session_limit_gate!(return_to: request.fullpath, flow: "in.secret.session")
-            redirect_to new_sign_app_in_secret_path
+          if result[:status] == :session_limit_hard_reject
+            render plain: result[:message], status: (result[:http_status] || :conflict)
           else
-            redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
+            redirect_with_notice(success_redirect_path, t("sign.app.authentication.secret.create.success"))
           end
         end
 
-        def handle_failed_mfa(user)
+        def handle_failed_mfa(user, reason, details = {})
           Rails.event.notify(
-            "authentication.totp.failed", user_id: user.id, ip_address: request.remote_ip,
+            "authentication.totp.failed", user_id: user&.id, ip_address: request.remote_ip,
                                           method: "secret",
           )
-          @secret_form.errors.add(:secret_value, t("sign.app.authentication.secret.create.invalid"))
-          @secret_hints = active_secret_hints_for(user)
-          render :new, status: :unprocessable_content
-        end
-
-        def find_user_by_info(info)
-          UserEmail.find_by(address: info)&.user ||
-            UserTelephone.find_by(number: info)&.user
+          @secret_hints = active_secret_hints_for(user) if user
+          render_failed_login(reason: reason, user: user, details: details)
         end
 
         def process_standard_login(user)
           result = log_in(user, require_totp_check: true)
           if result[:status] == :totp_required
-            redirect_to new_sign_app_in_totp_path, notice: t("sign.app.authentication.totp.required")
-          elsif result[:status] == :session_limit_exceeded
-            issue_session_limit_gate!(return_to: request.fullpath, flow: "in.secret.session")
-            redirect_to new_sign_app_in_secret_path
+            redirect_to sign_app_in_mfa_path(ri: params[:ri]), notice: t("sign.app.authentication.totp.required")
+          elsif result[:status] == :session_limit_hard_reject
+            render plain: result[:message], status: (result[:http_status] || :conflict)
           else
-            redirect_with_notice("/", t("sign.app.authentication.secret.create.success"))
+            redirect_with_notice(success_redirect_path, t("sign.app.authentication.secret.create.success"))
           end
-        end
-
-        def handle_failed_standard_login
-          @secret_form.errors.add(:secret_value, t("sign.app.authentication.secret.create.invalid"))
-          render :new, status: :unprocessable_content
         end
 
         private
@@ -134,45 +171,119 @@ module Sign
         def mfa_user
           return @mfa_user if defined?(@mfa_user)
 
-          @mfa_user = User.find_by(id: session[MFA_USER_SESSION_KEY])
+          user_id = session[MFA_USER_SESSION_KEY]
+          # Ensure user_id is clearly present before querying
+          if user_id.blank?
+            @mfa_user = nil
+            return nil
+          end
+
+          @mfa_user = User.find_by(id: user_id)
         end
 
         def clear_mfa_session!
           session[MFA_USER_SESSION_KEY] = nil
         end
 
-        def verify_and_consume_secret(user, raw_secret)
-          secret = user.user_secrets
-            .where(user_identity_secret_status_id: UserSecretStatus::ACTIVE)
-            .order(created_at: :desc)
-            .find { |s| s.verify_and_consume!(raw_secret.to_s) }
+        # Secret sign-in uses the most recently issued eligible secret.
+        # This keeps verification deterministic and logging easier to reason about.
+        def verify_secret_for_sign_in(user:, raw_secret:)
+          return SecretVerificationResult.new(reason: :identifier_not_found, details: {}) unless user
 
-          audit_recovery_code_used!(user, secret) if secret&.recovery_secret?
-          secret
+          latest_secret = user.user_secrets.order(created_at: :desc).first
+          return SecretVerificationResult.new(reason: :secret_not_found, details: {}) unless latest_secret
+
+          latest_eligible_secret = user.user_secrets.allowed_for_secret_sign_in.order(created_at: :desc).first
+          unless latest_eligible_secret
+            return SecretVerificationResult.new(
+              reason: :secret_expired,
+              details: {
+                latest_secret_id: latest_secret.id,
+                latest_status_id: latest_secret.user_secret_status_id,
+                latest_kind_id: latest_secret.user_secret_kind_id,
+              },
+            )
+          end
+          unless latest_eligible_secret.usable_for_secret_sign_in?
+            return SecretVerificationResult.new(
+              reason: :secret_expired,
+              details: {
+                secret_id: latest_eligible_secret.id,
+                uses_remaining: latest_eligible_secret.uses_remaining,
+                expires_at: latest_eligible_secret.expires_at,
+              },
+            )
+          end
+
+          unless latest_eligible_secret.verify_for_secret_sign_in!(raw_secret.to_s)
+            return SecretVerificationResult.new(
+              reason: :secret_mismatch,
+              details: { secret_id: latest_eligible_secret.id },
+            )
+          end
+
+          audit_recovery_code_used!(user, latest_eligible_secret) if latest_eligible_secret.recovery_secret?
+          SecretVerificationResult.new(
+            secret: latest_eligible_secret,
+            reason: :success,
+            details: { secret_id: latest_eligible_secret.id },
+          )
         end
 
         def active_secret_hints_for(user)
           user.user_secrets
-            .where(user_identity_secret_status_id: UserSecretStatus::ACTIVE)
+            .allowed_for_secret_sign_in
             .order(created_at: :desc)
             .limit(10)
-            .map { |s| s.name.to_s.first(4) }
+            .filter_map { |s| s.name.to_s.first(4) if s.usable_for_secret_sign_in? }
         end
 
         def secret_params
           params.fetch(:secret_login_form, {}).permit(
-            :account_identifiable_information,
+            :identifier,
             :secret_value,
-            :confirm_saved,
           )
         end
 
         def mfa_secret_params
-          params.fetch(:mfa_secret_form, {}).permit(:secret_value, :confirm_saved)
+          params.fetch(:mfa_secret_form, {}).permit(:secret_value)
+        end
+
+        def invalid_secret_message
+          t("sign.app.authentication.secret.create.invalid")
+        end
+
+        def success_redirect_path
+          params[:ri].present? ? "/?ri=#{params[:ri]}" : "/"
+        end
+
+        def report_authentication_error(error, flow:)
+          Rails.logger.error(
+            "[SecretSignIn] flow=#{flow} error=#{error.class} message=#{error.message} " \
+            "user_id=#{mfa_user&.id || "n/a"} ip=#{request.remote_ip}",
+          )
+        end
+
+        def render_failed_login(reason:, identifier: nil, user: nil, details: {})
+          @secret_form.errors.add(:base, invalid_secret_message)
+
+          # Detailed failure logging (failure_reason=...) as requested
+          Rails.logger.info(
+            "[SecretSignIn] failed reason=#{reason} " \
+            "identifier_type=#{detect_identifier_type(identifier.to_s)} " \
+            "identifier_present=#{identifier.present?} " \
+            "user_id=#{user&.id || "n/a"} ip=#{request.remote_ip} " \
+            "errors=#{@secret_form.errors.full_messages.join(" | ")} details=#{details.inspect}",
+          )
+          render_new_with_unprocessable_entity
+        end
+
+        def render_new_with_unprocessable_entity
+          render :new, status: :unprocessable_content, formats: :html
         end
 
         def audit_recovery_code_used!(user, secret)
-          AuditRecord.connected_to(role: :writing) do
+          ActivityRecord.connected_to(role: :writing) do
             UserAuditEvent.find_or_create_by!(id: UserAuditEvent::RECOVERY_CODE_USED)
             UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
           end

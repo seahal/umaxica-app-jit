@@ -4,16 +4,21 @@ require "test_helper"
 require "minitest/mock"
 
 class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_statuses, :user_secret_kinds, :user_secret_statuses
+  fixtures :users, :user_statuses, :user_secret_kinds, :user_secret_statuses, :user_email_statuses
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
     @other_user = users(:two)
-    @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
+    @headers = as_user_headers(@user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")).freeze
 
     # Cleanup potentially corrupted UserEmails
     UserEmail.delete_all
+    UserEmail.create!(
+      user: @user,
+      address: "passkey-user-#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
 
     # Mock TRUSTED_ORIGINS
     @original_trusted_origins = Webauthn.method(:trusted_origins)
@@ -205,6 +210,35 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   test "should get new" do
     get new_sign_app_configuration_passkey_path(ri: "jp"), headers: @headers
     assert_response :ok
+  end
+
+  test "new returns forbidden plain message when user has no verified recovery identity" do
+    headers = as_user_headers(@other_user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+
+    get new_sign_app_configuration_passkey_path(ri: "jp"), headers: headers
+
+    assert_response :forbidden
+    assert_includes response.body, User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
+  end
+
+  test "create returns unprocessable entity plain message when user has no verified recovery identity" do
+    headers = as_user_headers(@other_user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+
+    assert_no_difference("UserPasskey.count") do
+      post sign_app_configuration_passkeys_path(ri: "jp"),
+           params: {
+             user_passkey: {
+               webauthn_id: "wk_#{SecureRandom.hex(8)}",
+               public_key: "public_key",
+               sign_count: 0,
+               description: "Test",
+             },
+           },
+           headers: headers
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
   end
 
   test "should get edit with public_id" do

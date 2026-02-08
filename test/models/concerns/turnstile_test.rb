@@ -65,34 +65,27 @@ class TurnstileTest < ActiveSupport::TestCase
   end
 
   test "verify_turnstile returns missing secret error" do
-    old_env = ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"]
-    ENV.delete("CLOUDFLARE_TURNSTILE_SECRET_KEY")
-
-    Rails.application.credentials.stub(:dig, nil) do
+    Jit::Security::TurnstileConfig.stub(:default_secret_key, nil) do
       result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
 
       assert_equal({ "success" => false, "error" => "missing turnstile secret" }, result)
     end
-  ensure
-    ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"] = old_env
   end
 
   test "verify_turnstile returns error result on exception" do
-    Net::HTTP.stub(:post_form, ->(_uri, _params) { raise StandardError, "Network error" }) do
-      # Set a dummy secret so it doesn't fail on missing secret
-      ENV["CLOUDFLARE_TURNSTILE_SECRET_KEY"] = "dummy"
-      result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
-      assert_not result["success"]
-      assert_equal "Network error", result["error"]
+    Jit::Security::TurnstileConfig.stub(:default_secret_key, "dummy") do
+      Net::HTTP.stub(:post_form, ->(_uri, _params) { raise StandardError, "Network error" }) do
+        result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
+        assert_not result["success"]
+        assert_equal "Network error", result["error"]
+      end
     end
-  ensure
-    ENV.delete("CLOUDFLARE_TURNSTILE_SECRET_KEY")
   end
 
   test "verify_turnstile returns parsed response on success" do
     response = Struct.new(:body).new('{"success":true}')
 
-    Rails.application.credentials.stub(:dig, "secret") do
+    Jit::Security::TurnstileConfig.stub(:default_secret_key, "secret") do
       Net::HTTP.stub(:post_form, response) do
         result = DummyTurnstile.verify_turnstile(turnstile_response: "token", remote_ip: "127.0.0.1")
 

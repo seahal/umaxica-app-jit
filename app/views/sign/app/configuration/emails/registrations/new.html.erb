@@ -1,0 +1,20 @@
+<div>
+  <div>
+    <div>
+      <div>
+        <h3><%= t("sign.app.configuration.email.new.page_title") %></h3>
+        <p><%= t("sign.app.configuration.email.new.description") %></p>
+      </div>
+    </div>
+
+    <div>
+      <%= form_with model: @user_email, url: sign_app_configuration_emails_registration_path do |form| %>
+        <%= render "sign/app/emails/registrations/new_fields", form: form, user_email: @user_email, show_confirm_policy: false %>
+        <div>
+          <%= link_to t("actions.cancel"), sign_app_configuration_emails_path %>
+          <%= form.submit t("actions.submit") %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

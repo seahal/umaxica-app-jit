@@ -16,6 +16,9 @@ import { normalizePublicKeyOptions } from "controllers/webauthn_utils";
 export default class extends Controller {
 	static targets = ["description", "error", "status"];
 	static values = {
+		beginUrl: String,
+		finishUrl: String,
+		successRedirectUrl: String,
 		optionsUrl: String,
 		verificationUrl: String,
 	};
@@ -34,7 +37,7 @@ export default class extends Controller {
 			this.showStatus("認証オプションを取得中...");
 
 			// Step 1: Get registration options from server
-			const optionsResponse = await fetch(this.optionsUrlValue, {
+			const optionsResponse = await fetch(this.requestBeginUrl, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -69,7 +72,7 @@ export default class extends Controller {
 			this.showStatus("サーバーで検証中...");
 
 			// Step 3: Send credential to server for verification
-			const verificationResponse = await fetch(this.verificationUrlValue, {
+			const verificationResponse = await fetch(this.requestFinishUrl, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -100,8 +103,8 @@ export default class extends Controller {
 
 			// Step 4: Success - redirect
 			this.showStatus("登録完了！リダイレクト中...");
-			if (result.redirect_url) {
-				window.location.href = result.redirect_url;
+			if (result.redirect_url || this.redirectUrl) {
+				window.location.href = result.redirect_url || this.redirectUrl;
 			} else {
 				window.location.reload();
 			}
@@ -125,6 +128,27 @@ export default class extends Controller {
 	get descriptionValue() {
 		if (this.hasDescriptionTarget) {
 			return this.descriptionTarget.value || "";
+		}
+		return "";
+	}
+
+	get requestBeginUrl() {
+		if (this.hasBeginUrlValue) {
+			return this.beginUrlValue;
+		}
+		return this.optionsUrlValue;
+	}
+
+	get requestFinishUrl() {
+		if (this.hasFinishUrlValue) {
+			return this.finishUrlValue;
+		}
+		return this.verificationUrlValue;
+	}
+
+	get redirectUrl() {
+		if (this.hasSuccessRedirectUrlValue) {
+			return this.successRedirectUrlValue;
 		}
 		return "";
 	}

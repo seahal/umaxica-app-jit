@@ -3,11 +3,11 @@
 # == Schema Information
 #
 # Table name: com_preference_audit_events
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #
-class ComPreferenceAuditEvent < AuditRecord
+class ComPreferenceAuditEvent < ActivityRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   CREATE_NEW_PREFERENCE_TOKEN = 1

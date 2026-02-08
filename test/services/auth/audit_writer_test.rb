@@ -64,7 +64,7 @@ module Auth
       invalid_event_id = "NONEXISTENT_#{SecureRandom.hex(16).upcase}"
 
       # Ensure this event doesn't exist in the database
-      AuditRecord.connected_to(role: :writing) do
+      ActivityRecord.connected_to(role: :writing) do
         UserAuditEvent.where(id: invalid_event_id).delete_all
       end
 
@@ -88,7 +88,7 @@ module Auth
       invalid_event_id = "NONEXISTENT_#{SecureRandom.hex(16).upcase}"
 
       # Ensure event doesn't exist
-      AuditRecord.connected_to(role: :writing) do
+      ActivityRecord.connected_to(role: :writing) do
         UserAuditEvent.where(id: invalid_event_id).delete_all
       end
 
@@ -139,12 +139,12 @@ module Auth
     end
 
     test "write uses writing role for audit database" do
-      # Verify that AuditRecord.connected_to is called with role: :writing
+      # Verify that ActivityRecord.connected_to is called with role: :writing
       # This ensures audit writes go to the primary database, not replica
-      original_method = AuditRecord.method(:connected_to)
+      original_method = ActivityRecord.method(:connected_to)
 
       connection_calls = []
-      AuditRecord.define_singleton_method(:connected_to) do |**options, &block|
+      ActivityRecord.define_singleton_method(:connected_to) do |**options, &block|
         connection_calls << options
         original_method.call(**options, &block)
       end
@@ -160,7 +160,7 @@ module Auth
       assert connection_calls.any? { |opts| opts[:role] == :writing }
     ensure
       # Restore original method
-      AuditRecord.define_singleton_method(:connected_to, original_method)
+      ActivityRecord.define_singleton_method(:connected_to, original_method)
     end
   end
 end

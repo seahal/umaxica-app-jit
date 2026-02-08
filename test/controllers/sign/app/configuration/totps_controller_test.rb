@@ -128,6 +128,43 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
     assert_response :unprocessable_content
   end
 
+  test "initial setup user can access totp pages without step-up" do
+    user = User.create!
+    token = UserToken.create!(user_id: user.id)
+    token.update!(created_at: 1.hour.ago)
+    headers = {
+      "X-TEST-CURRENT-USER" => user.id,
+      "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
+    }
+
+    get sign_app_configuration_totps_url(ri: "jp"), headers: headers
+
+    assert_response :success
+  end
+
+  test "initial setup user can create first totp without step-up" do
+    user = User.create!
+    token = UserToken.create!(user_id: user.id)
+    token.update!(created_at: 1.hour.ago)
+    headers = {
+      "X-TEST-CURRENT-USER" => user.id,
+      "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
+    }
+
+    with_mocked_totp do |secret|
+      get new_sign_app_configuration_totp_url(ri: "jp"), headers: headers
+      first_code = ROTP::TOTP.new(secret).now
+
+      assert_difference("UserOneTimePassword.count", 1) do
+        post sign_app_configuration_totps_url(ri: "jp"),
+             params: { user_one_time_password: { first_token: first_code } },
+             headers: headers
+      end
+    end
+
+    assert_redirected_to sign_app_configuration_totps_url(ri: "jp")
+  end
+
   private
 
   def with_mocked_totp

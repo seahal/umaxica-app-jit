@@ -1,23 +1,11 @@
 # frozen_string_literal: true
 
-# Enforces write restrictions for restricted sessions.
-#
-# When a user logs in and exceeds their session limit, they get a "restricted"
-# session that only allows session management operations. This concern prevents
-# write operations (POST/PUT/PATCH/DELETE) from controllers that include it.
-#
-# Usage:
-#   include RestrictedSessionGuard
-#
-# The guard automatically skips:
-#   - /in/session endpoints (session management itself)
-#   - Read operations (GET, HEAD, OPTIONS)
-#   - JSON API requests (handled separately)
-#
-# When a restricted user attempts a write operation, they are redirected
-# to /in/session with an explanatory message.
+# Enforces isolation mode for restricted sessions.
+# Restricted sessions can only access /in/session and are blocked everywhere else.
 module RestrictedSessionGuard
   extend ActiveSupport::Concern
+
+  BLOCKED_MESSAGE = "きんそくじこうです"
 
   included do
     before_action :enforce_restricted_session_guard!
@@ -26,41 +14,51 @@ module RestrictedSessionGuard
   private
 
   def enforce_restricted_session_guard!
-    return unless should_enforce_restricted_guard?
-
-    # Check if current session is restricted
+    current_resource if respond_to?(:current_resource, true)
     return unless respond_to?(:current_session_restricted?, true)
     return unless current_session_restricted?
+    return if allowlisted_for_restricted_session?
 
-    handle_restricted_session_write
+    handle_restricted_session_block
   end
 
-  def should_enforce_restricted_guard?
-    # Only enforce for write operations
-    return false unless request.post? || request.put? || request.patch? || request.delete?
+  def allowlisted_for_restricted_session?
+    return false if restricted_session_expired?
 
-    # Skip for session management endpoints
-    return false if controller_path.end_with?("in/sessions")
+    controller_path.end_with?("in/sessions")
+  end
 
-    # Skip for logout endpoints
-    return false if controller_path.end_with?("/outs")
+  def restricted_session_expired?
+    session = current_session
+    return false unless session&.restricted?
 
-    # Skip for token refresh/check endpoints
-    return false if controller_path.include?("edge/v1/token")
+    expired = session.refresh_expires_at.present? && session.refresh_expires_at <= Time.current
+    return false unless expired
+
+    return true if session.revoked_at.present?
+
+    TokenRecord.connected_to(role: :writing) do
+      session.revoke!
+    end
+
+    Rails.event.notify(
+      "session.restricted.expired",
+      user_token_id: session.public_id,
+      user_id: session.respond_to?(:user_id) ? session.user_id : nil,
+    )
 
     true
   end
 
-  def handle_restricted_session_write
-    if request.format.json?
-      render json: {
-        error: "session_restricted",
-        message: I18n.t("sign.app.in.session.restricted_write_blocked"),
-        redirect_url: sign_app_in_session_path,
-      }, status: :forbidden
-    else
-      redirect_to sign_app_in_session_path,
-                  alert: I18n.t("sign.app.in.session.restricted_write_blocked")
-    end
+  def handle_restricted_session_block
+    Rails.event.notify(
+      "session.restricted.blocked_route",
+      path: request.path,
+      method: request.request_method,
+      user_token_id: current_session&.public_id,
+      user_id: current_session.respond_to?(:user_id) ? current_session.user_id : nil,
+    )
+
+    render plain: BLOCKED_MESSAGE, status: :locked
   end
 end

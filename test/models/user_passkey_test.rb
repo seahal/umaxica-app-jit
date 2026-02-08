@@ -35,7 +35,13 @@ require "test_helper"
 
 class UserPasskeyTest < ActiveSupport::TestCase
   def setup
+    UserEmailStatus.find_or_create_by!(id: UserEmailStatus::VERIFIED)
     @user = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
+    UserEmail.create!(
+      user: @user,
+      address: "passkey-model-#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
     @passkey = UserPasskey.new(
       user: @user,
       webauthn_id: SecureRandom.uuid,
@@ -118,5 +124,20 @@ class UserPasskeyTest < ActiveSupport::TestCase
     @passkey.save!
     @user.destroy
     assert_raise(ActiveRecord::RecordNotFound) { @passkey.reload }
+  end
+
+  test "is invalid on create when user has no verified recovery identity" do
+    user_without_identity = User.create!(public_id: "u_#{SecureRandom.hex(8)}", status_id: UserStatus::NEYO)
+    passkey = UserPasskey.new(
+      user: user_without_identity,
+      webauthn_id: SecureRandom.uuid,
+      external_id: SecureRandom.uuid,
+      public_key: "test-key",
+      description: "No Identity",
+      sign_count: 0,
+    )
+
+    assert_not passkey.valid?
+    assert_includes passkey.errors[:base], User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
   end
 end

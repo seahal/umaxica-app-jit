@@ -18,6 +18,7 @@ en:
     not_implemented: "Feature not yet implemented"
     messages:
       not_authorized: "You are not authorized to perform this action."
+      validation_failed: "Please review the highlighted errors."
   seed:
     roles:
       admin:
@@ -87,13 +88,19 @@ en:
         secret:
           new:
             page_title: "Sign in with a secret"
-            pii_label: "Identification"
+            pii_label: "Email or telephone"
+            pii_placeholder: "user@example.com or +81 90 1234 5678"
             secret_label: "Secret"
-            confirm_label: "I have saved my secret"
+            hints: "Available secret hints"
+          create:
+            success: "Signed in successfully."
+            invalid: "Authentication failed. Please check your credentials."
         passkey:
           new:
             page_title: "Sign in with a passkey"
             description: "Use your device's security features for a faster and safer login."
+            pii_label: "Email or telephone"
+            pii_placeholder: "user@example.com or +81 90 1234 5678"
             submit: "Sign in using passkey"
         email:
           new:
@@ -159,6 +166,7 @@ en:
         telephone:
           create:
             verification_code_sent: "Verification code has been sent via SMS."
+            turnstile_validation_failed: "Security verification failed. Please try again."
             locked: "Your account is locked. Please try again later."
           edit:
             return_page: "Back"
@@ -170,6 +178,9 @@ en:
           update:
             success: "Phone number has been verified."
             passkey_required: "Phone verified. Please register a passkey to continue."
+            code_required: "Verification code is required."
+            invalid_code: "Invalid verification code."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
           complete:
             page_title: "Registration Complete"
             description: "Your account registration has been successfully completed. You can now continue to use our services."
@@ -481,6 +492,7 @@ en:
           new:
             page_title: "Sign in with a secret"
             pii_label: "Account identifiable information"
+            pii_placeholder: "Telephone or email address"
             secret_label: "Secret"
             confirm_label: "I have saved the secret"
         passkey:
@@ -587,6 +599,10 @@ en:
             session_expired: "Your session has expired. Please start over."
           update:
             success: "Phone number has been verified."
+            passkey_required: "Phone verified. Please register a passkey to continue."
+            code_required: "Verification code is required."
+            invalid_code: "Invalid verification code."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
         configuration:
           withdrawal:
             show:
@@ -745,6 +761,7 @@ en:
           new:
             page_title: "Sign in with a secret"
             pii_label: "Account identifiable information"
+            pii_placeholder: "Telephone or email address"
             secret_label: "Secret"
             confirm_label: "I have saved the secret"
       registration:

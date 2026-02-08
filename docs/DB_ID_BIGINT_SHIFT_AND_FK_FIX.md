@@ -32,7 +32,7 @@ We converted primary keys and foreign keys from `integer` (or `smallint`) to `bi
 - `AnnotateRb` post-migration hook might fail on some environments due to schema introspection issues, but migrations themselves are committed.
 
 ## Migrations
-- `db/audits_migrate/20260202180000_fix_audit_pks_and_fks.rb`
+- `db/activity_migrate/20260202180000_fix_audit_pks_and_fks.rb`
 - `db/preferences_migrate/20260202181000_fix_preference_fks.rb`
 - `db/tokens_migrate/20260202182000_fix_token_pks.rb`
 - `db/tokens_migrate/20260202190000_ensure_token_tables.rb`

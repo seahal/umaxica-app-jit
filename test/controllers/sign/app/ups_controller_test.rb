@@ -79,6 +79,13 @@ class Sign::App::UpsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a", text: "メールで登録する"
   end
 
+  test "includes link to activities page" do
+    get new_sign_app_up_url(format: :html, ri: "jp")
+
+    assert_response :success
+    assert_select "a[href=?]", sign_app_configuration_activities_path, text: "Activities"
+  end
+
   test "should fail when logged in" do
     user = users(:one)
     get new_sign_app_up_url(format: :html, ri: "jp"), headers: { "X-TEST-CURRENT-USER" => user.id }

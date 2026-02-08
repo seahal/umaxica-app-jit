@@ -3,12 +3,12 @@
 # == Schema Information
 #
 # Table name: staff_audit_levels
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #
 
-class StaffAuditLevel < AuditRecord
+class StaffAuditLevel < ActivityRecord
   # Fixed IDs - do not modify these values
   NEYO = 1
 

@@ -3,13 +3,13 @@
 # == Schema Information
 #
 # Table name: org_timeline_audit_levels
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #
 #  id :string(255)      default("NEYO"), not null, primary key
 
-class OrgTimelineAuditLevel < AuditRecord
+class OrgTimelineAuditLevel < ActivityRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   NEYO = 1

@@ -27,10 +27,23 @@
 #
 
 class User < PrincipalRecord
-  self.ignored_columns += ["webauthn_id"]
   include ::PublicId
   include ::Accountably
   include ::Withdrawable
+
+  # what is this?
+  VERIFIED_RECOVERY_EMAIL_STATUS_IDS = [
+    UserEmailStatus::VERIFIED,
+    UserEmailStatus::VERIFIED_WITH_SIGN_UP,
+  ].freeze
+  VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS = [
+    UserTelephoneStatus::VERIFIED,
+    UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,
+  ].freeze
+  RECOVERY_IDENTITY_REQUIRED_MESSAGE = "パスキー/シークレットを登録するには、先にメールアドレスまたは電話番号を1つ以上登録（確認）してください。"
+
+  # TODO: i want to delete this.
+  self.ignored_columns += ["webauthn_id"]
 
   attribute :status_id, default: UserStatus::NONE
 
@@ -129,5 +142,11 @@ class User < PrincipalRecord
 
   def user?
     true
+  end
+
+  # what is this?
+  def has_verified_recovery_identity?
+    user_emails.where(user_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS).exists? ||
+      user_telephones.where(user_identity_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS).exists?
   end
 end

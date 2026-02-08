@@ -25,10 +25,12 @@ class Sign::Org::Edge::V1::Token::RefreshesController < Sign::Org::Edge::V1::Bas
     if credentials
       render json: { refreshed: true }, status: :ok
     else
+      status = refresh_failure_status
+      code = refresh_failure_code
       render json: {
-        error: I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
-        error_code: "invalid_refresh_token",
-      }, status: :unauthorized
+        error: (code == "restricted_session") ? "きんそくじこうです" : I18n.t("sign.token_refresh.errors.invalid_refresh_token"),
+        error_code: code,
+      }, status: status
     end
   end
 end

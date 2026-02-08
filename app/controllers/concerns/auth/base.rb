@@ -30,6 +30,8 @@ module Auth
     # Token TTLs
     ACCESS_TOKEN_TTL = ENV.fetch("AUTH_ACCESS_TOKEN_TTL", 1.hour.to_i).to_i.seconds
     REFRESH_TOKEN_TTL = 30.days
+    RESTRICTED_SESSION_TTL = 15.minutes
+    SESSION_LIMIT_HARD_REJECT_MESSAGE = "セッション数上限に達しています"
 
     AUDIT_EVENTS = {
       logged_in: "LOGGED_IN",
@@ -479,15 +481,23 @@ module Auth
         return totp_result if totp_result
       end
 
-      # Determine if we need to create a restricted session
-      is_restricted = session_limit_exceeded?(resource)
+      session_limit_state = session_limit_state_for(resource)
 
-      if is_restricted
-        # Enforce invariant: max 1 pending/restricted session per user
-        # Revoke any existing restricted sessions before creating a new one
-        revoke_existing_restricted_sessions(resource)
-        store_pending_login_resource(resource)
+      if session_limit_state == :hard_reject
+        Rails.event.notify(
+          "session.limit.hard_reject",
+          "#{resource_type}_id": resource.id,
+          ip_address: request_ip_address,
+        )
+        return {
+          status: :session_limit_hard_reject,
+          http_status: :conflict,
+          message: SESSION_LIMIT_HARD_REJECT_MESSAGE,
+        }
       end
+
+      is_restricted = session_limit_state == :issue_restricted
+      store_pending_login_resource(resource) if is_restricted
 
       kind_id = token_kind_id
       if token_class.columns_hash["#{resource_type}_token_kind_id"]&.type == :integer && kind_id.is_a?(String)
@@ -508,7 +518,18 @@ module Auth
       token_record = create_login_token_record(resource, kind_id, status: token_status)
 
       # Generate SHA3-based refresh token
-      refresh_plain = token_record.rotate_refresh_token!
+      restricted_expires_at = is_restricted ? restricted_session_expires_at : nil
+      refresh_plain = token_record.rotate_refresh_token!(expires_at: restricted_expires_at)
+
+      if is_restricted
+        Rails.event.notify(
+          "session.restricted.issued",
+          "#{resource_type}_id": resource.id,
+          user_token_id: token_record.public_id,
+          expires_at: restricted_expires_at&.iso8601,
+          ip_address: request_ip_address,
+        )
+      end
 
       # Generate JWT access token with explicit resource_type
       access_token = Token.encode(
@@ -551,7 +572,12 @@ module Auth
     end
 
     def refresh_access_token(refresh_plain)
+      clear_refresh_failure!
+
       refresh_public_id, = token_class.parse_refresh_token(refresh_plain.to_s)
+      token_record = find_refresh_token_record(refresh_public_id)
+      return handle_restricted_refresh_rejected(token_record, refresh_public_id) if token_record&.restricted?
+
       result = Sign::RefreshTokenService.call(refresh_token: refresh_plain)
       token_record = result[:token]
       new_refresh_plain = result[:refresh_token]
@@ -571,6 +597,14 @@ module Auth
       Rails.logger.error "[Auth] Refresh Error: #{e.class}: #{e.message}"
       Rails.logger.error e.backtrace.first(10).join("\n")
       handle_refresh_error(e, refresh_public_id, resource)
+    end
+
+    def refresh_failure_status
+      @refresh_failure_status || :unauthorized
+    end
+
+    def refresh_failure_code
+      @refresh_failure_code || "invalid_refresh_token"
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -891,6 +925,8 @@ module Auth
     end
 
     def handle_missing_refresh_token(refresh_public_id)
+      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+
       Rails.event.notify(
         "#{resource_type}.token.refresh.failed",
         refresh_token_id: refresh_public_id,
@@ -911,6 +947,8 @@ module Auth
     end
 
     def handle_inactive_resource(resource, refresh_public_id, token_record)
+      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+
       Rails.event.notify(
         "#{resource_type}.token.refresh.failed",
         "#{resource_type}_id": resource&.id,
@@ -984,6 +1022,8 @@ module Auth
     end
 
     def handle_invalid_refresh_token(exception, refresh_public_id)
+      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+
       Rails.event.notify(
         "#{resource_type}.token.refresh.failed",
         refresh_token_id: refresh_public_id,
@@ -1004,6 +1044,8 @@ module Auth
     end
 
     def handle_refresh_error(exception, refresh_public_id, resource)
+      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+
       Rails.event.notify(
         "#{resource_type}.token.refresh.error",
         "#{resource_type}_id": resource&.id,
@@ -1023,6 +1065,49 @@ module Auth
       )
 
       nil
+    end
+
+    def handle_restricted_refresh_rejected(token_record, refresh_public_id)
+      expired = token_record.refresh_expires_at.present? && token_record.refresh_expires_at <= Time.current
+
+      if expired && token_record.revoked_at.nil?
+        TokenRecord.connected_to(role: :writing) do
+          token_record.revoke!
+        end
+        Rails.event.notify(
+          "session.restricted.expired",
+          user_token_id: token_record.public_id,
+          "#{resource_type}_id": token_record.public_send("#{resource_type}_id"),
+        )
+      end
+
+      set_refresh_failure!(:forbidden, "restricted_session")
+
+      Rails.event.notify(
+        "#{resource_type}.token.refresh.failed",
+        refresh_token_id: refresh_public_id,
+        reason: expired ? "restricted_expired" : "restricted_session",
+        ip_address: request_ip_address,
+      )
+
+      nil
+    end
+
+    def find_refresh_token_record(refresh_public_id)
+      return nil if refresh_public_id.blank?
+
+      find_logic = -> { token_class.find_by(public_id: refresh_public_id, rotated_at: nil) }
+      TokenRecord.connected_to(role: :reading, &find_logic)
+    end
+
+    def set_refresh_failure!(status, code)
+      @refresh_failure_status = status
+      @refresh_failure_code = code
+    end
+
+    def clear_refresh_failure!
+      @refresh_failure_status = nil
+      @refresh_failure_code = nil
     end
 
     def load_current_resource
@@ -1247,23 +1332,74 @@ module Auth
     def check_totp_requirement(resource)
       return unless resource.respond_to?(:totp_enabled?) && resource.totp_enabled?
 
-      session[:mfa_user_id] = resource.id
+      set_pending_mfa!(resource: resource, primary: "totp")
       { status: :totp_required }
     end
 
-    # Check if the resource has reached their concurrent session limit
-    def session_limit_exceeded?(resource)
+    def set_pending_mfa!(resource:, primary:, return_to: nil)
+      issued_at = Time.current.to_i
+      session[:pending_mfa] = {
+        "user_id" => resource.id,
+        "primary" => primary.to_s,
+        "return_to" => return_to.presence,
+        "issued_at" => issued_at,
+      }
+      # Backward compatibility for existing controllers still using mfa_user_id.
+      session[:mfa_user_id] = resource.id
+    end
+
+    def pending_mfa
+      raw = session[:pending_mfa]
+      return nil unless raw.is_a?(Hash)
+
+      raw.with_indifferent_access
+    end
+
+    def pending_mfa_ttl
+      10.minutes
+    end
+
+    def pending_mfa_valid?
+      data = pending_mfa
+      return false unless data
+
+      issued_at = data[:issued_at].to_i
+      return false if issued_at <= 0
+
+      Time.zone.at(issued_at) >= pending_mfa_ttl.ago
+    end
+
+    def pending_mfa_user
+      return nil unless pending_mfa_valid?
+
+      user_id = pending_mfa[:user_id]
+      return nil if user_id.blank?
+
+      ::User.find_by(id: user_id)
+    end
+
+    def clear_pending_mfa!
+      session.delete(:pending_mfa)
+      session.delete(:mfa_user_id)
+    end
+
+    # Determine concurrent-session handling state for the resource.
+    def session_limit_state_for(resource)
       max_sessions = max_sessions_for_resource(resource)
       active_count = count_active_sessions(resource)
-      active_count >= max_sessions
+
+      return :within_limit if active_count < max_sessions
+      return :hard_reject if restricted_session_exists?(resource)
+
+      :issue_restricted
     end
 
     # Returns the maximum allowed concurrent sessions for a resource
     def max_sessions_for_resource(resource)
-      if resource.is_a?(User)
-        UserToken::MAX_SESSIONS_PER_USER
-      elsif resource.is_a?(Staff)
-        StaffToken::MAX_SESSIONS_PER_STAFF
+      if resource.is_a?(::User)
+        ::UserToken::MAX_SESSIONS_PER_USER
+      elsif resource.is_a?(::Staff)
+        ::StaffToken::MAX_SESSIONS_PER_STAFF
       else
         2 # Default fallback
       end
@@ -1271,41 +1407,38 @@ module Auth
 
     # Count active (non-revoked, non-restricted) sessions for a resource
     def count_active_sessions(resource)
-      TokenRecord.connected_to(role: :reading) do
-        if resource.is_a?(User)
-          UserToken.active_status.where(user_id: resource.id).count
-        elsif resource.is_a?(Staff)
-          StaffToken.active_status.where(staff_id: resource.id).count
-        else
-          0
-        end
+      if resource.is_a?(::User)
+        ::UserToken.active_status.where(user_id: resource.id).count
+      elsif resource.is_a?(::Staff)
+        ::StaffToken.active_status.where(staff_id: resource.id).count
+      else
+        0
       end
     end
 
-    # Revoke any existing restricted sessions for the resource
-    # Enforces invariant: max 1 restricted session per user
-    def revoke_existing_restricted_sessions(resource)
-      TokenRecord.connected_to(role: :writing) do
-        scope = find_restricted_sessions_scope(resource)
-        return unless scope
-
-        scope.find_each(&:revoke!)
-      end
+    def restricted_session_exists?(resource)
+      scope = find_restricted_sessions_scope(resource)
+      scope.present? && scope.exists?
     end
 
     def find_restricted_sessions_scope(resource)
-      if resource.is_a?(User)
-        UserToken.restricted_status.where(user_id: resource.id)
-      elsif resource.is_a?(Staff)
-        StaffToken.restricted_status.where(staff_id: resource.id)
+      if resource.is_a?(::User)
+        ::UserToken.restricted_status.where(user_id: resource.id)
+      elsif resource.is_a?(::Staff)
+        ::StaffToken.restricted_status.where(staff_id: resource.id)
       end
+    end
+
+    def restricted_session_expires_at
+      ttl = token_class.const_defined?(:RESTRICTED_TTL) ? token_class::RESTRICTED_TTL : RESTRICTED_SESSION_TTL
+      Time.current + ttl
     end
 
     # Store the pending login resource ID for session management
     def store_pending_login_resource(resource)
-      if resource.is_a?(User)
+      if resource.is_a?(::User)
         session[:pending_login_user_id] = resource.id
-      elsif resource.is_a?(Staff)
+      elsif resource.is_a?(::Staff)
         session[:pending_login_staff_id] = resource.id
       end
     end

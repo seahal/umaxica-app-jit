@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: staff_audits
-# Database name: audit
+# Database name: activity
 #
 #  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
@@ -38,7 +38,7 @@
 #  fk_rails_...  (level_id => staff_audit_levels.id)
 #
 
-class StaffAudit < AuditRecord
+class StaffAudit < ActivityRecord
   belongs_to :staff_audit_event, foreign_key: :event_id, inverse_of: :staff_audits
   belongs_to :actor, polymorphic: true, optional: true
   belongs_to :staff_audit_level, foreign_key: :level_id, inverse_of: :staff_audits
@@ -76,7 +76,7 @@ class StaffAudit < AuditRecord
 
     # Always use writing role to check event existence (avoid read replica lag)
     exists =
-      AuditRecord.connected_to(role: :writing) do
+      ActivityRecord.connected_to(role: :writing) do
         StaffAuditEvent.exists?(id: event_id)
       end
 

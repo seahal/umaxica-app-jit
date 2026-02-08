@@ -42,20 +42,6 @@ module Sign::App::Up
       assert_response :success
     end
 
-    test "should get show" do
-      # Show requires an ID, using a dummy one or creating one if needed, though controller action is empty
-      user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
-      telephone = UserTelephone.create!(
-        number: "+10000000000",
-        user: user,
-        user_telephone_status_id: UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,
-      )
-      get sign_app_up_telephone_url(telephone, ri: "jp")
-
-      assert_response :success
-      assert_select "h2", text: "登録が完了しました"
-    end
-
     test "should create telephone and redirect to edit" do
       assert_difference("UserTelephone.count") do
         post sign_app_up_telephones_url(ri: "jp"), params: {
@@ -96,7 +82,7 @@ module Sign::App::Up
         user_telephone: { pass_code: code },
       }
 
-      assert_redirected_to new_sign_app_up_passkey_url(regional_defaults)
+      assert_redirected_to sign_app_up_telephone_passkey_registration_url(telephone, regional_defaults)
 
       telephone.reload
 
@@ -117,6 +103,13 @@ module Sign::App::Up
       }
       telephone = registration_telephone
       user = telephone.user
+
+      UserEmail.create!(
+        user: user,
+        address: "test_verified_#{user.id}@example.com",
+        user_email_status_id: UserEmailStatus::VERIFIED,
+        otp_private_key: ROTP::Base32.random,
+      )
 
       UserPasskey.create!(
         user: user,
@@ -141,37 +134,122 @@ module Sign::App::Up
       assert_predicate cookies[Auth::Base::ACCESS_COOKIE_KEY], :present?
     end
 
-    test "should require passkey registration on destroy when verified" do
-      user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
-      telephone = UserTelephone.create!(
-        number: "+10000000001",
+    test "should create audit record on sms login with existing passkey" do
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          number: "+1234567892",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+      telephone = registration_telephone
+      user = telephone.user
+
+      UserEmail.create!(
         user: user,
-        user_telephone_status_id: UserTelephoneStatus::VERIFIED_WITH_SIGN_UP,
+        address: "audit_test_verified_#{user.id}@example.com",
+        user_email_status_id: UserEmailStatus::VERIFIED,
+        otp_private_key: ROTP::Base32.random,
       )
 
-      assert_no_difference("UserToken.count") do
-        delete sign_app_up_telephone_url(telephone, ri: "jp")
-      end
+      UserPasskey.create!(
+        user: user,
+        webauthn_id: Base64.urlsafe_encode64("audit_test_passkey", padding: false),
+        public_key: "public_key",
+        sign_count: 0,
+        description: "Audit Test Passkey",
+        user_passkey_status_id: UserPasskeyStatus::ACTIVE,
+      )
 
-      assert_redirected_to new_sign_app_up_passkey_url(ri: "jp")
-      assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, user.reload.status_id
-      assert_not UserToken.exists?(user_id: user.id, revoked_at: nil)
+      otp_data = telephone.get_otp
+      hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+      code = hotp.at(otp_data[:otp_counter])
+
+      patch sign_app_up_telephone_url(telephone, ri: "jp"), params: {
+        user_telephone: { pass_code: code },
+      }
+
+      signup_audit = UserAudit.where(
+        event_id: UserAuditEvent::SIGNED_UP_WITH_TELEPHONE,
+        actor_id: user.id,
+      ).last
+      assert_not_nil signup_audit
+      assert_equal "User", signup_audit.actor_type
     end
 
-    test "should not complete signup on destroy when unverified" do
-      user = User.create!(status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
-      telephone = UserTelephone.create!(
-        number: "+10000000002",
-        user: user,
-        user_telephone_status_id: UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP,
-      )
+    test "should reject blank pass code" do
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          number: "+1234567890",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+      telephone = registration_telephone
 
-      assert_no_difference("UserToken.count") do
-        delete sign_app_up_telephone_url(telephone, ri: "jp")
-      end
+      patch sign_app_up_telephone_url(telephone, ri: "jp"), params: {
+        user_telephone: { pass_code: "" },
+      }
 
       assert_response :unprocessable_content
-      assert_equal UserStatus::UNVERIFIED_WITH_SIGN_UP, user.reload.status_id
+    end
+
+    test "should lockout after max failed otp attempts" do
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          number: "+1234567893",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+      telephone = registration_telephone
+      user = telephone.user
+
+      # Submit wrong OTP 3 times (max attempts)
+      3.times do
+        patch sign_app_up_telephone_url(telephone, ri: "jp"), params: {
+          user_telephone: { pass_code: "000000" },
+        }
+      end
+
+      assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
+      assert_equal I18n.t("sign.app.registration.telephone.update.attempts_exceeded"), flash[:alert]
+
+      # Telephone and pending user should be destroyed
+      assert_not UserTelephone.exists?(telephone.id)
+      assert_not User.exists?(user.id)
+      assert_nil session[:user_telephone_registration]
+    end
+
+    test "should cleanup existing unverified telephones on create" do
+      # Create first registration
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          number: "+1234567894",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+      first_telephone = registration_telephone
+      first_user = first_telephone.user
+
+      # Create second registration with the same number
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          number: "+1234567894",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+
+      # First telephone and its pending user should be cleaned up
+      assert_not UserTelephone.exists?(first_telephone.id)
+      assert_not User.exists?(first_user.id)
     end
 
     test "resend sends code for active registration session" do
@@ -225,8 +303,8 @@ module Sign::App::Up
 
     def registration_telephone
       registration_session = session[:user_telephone_registration] || {}
-      telephone_id = registration_session[:id] || registration_session["id"]
-      UserTelephone.find(telephone_id)
+      public_id = registration_session[:public_id] || registration_session["public_id"]
+      UserTelephone.find_by!(public_id: public_id)
     end
   end
 end

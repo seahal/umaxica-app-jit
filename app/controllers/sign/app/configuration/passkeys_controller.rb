@@ -21,9 +21,13 @@ module Sign
       # - PATCH /configuration/passkeys/:id (update - description only)
       # - DELETE /configuration/passkeys/:id (destroy)
       class PasskeysController < ApplicationController
+        include ::Auth::StepUp
         include Sign::Webauthn
 
         before_action :authenticate_user!
+        before_action -> { require_step_up!(scope: "configuration_passkey") },
+                      only: %i(new options verification edit update destroy)
+        before_action :ensure_verified_recovery_identity_for_registration!, only: [:new]
         before_action :set_passkey, only: %i(show edit update destroy)
 
         # GET /configuration/passkeys
@@ -39,6 +43,18 @@ module Sign
         # GET /configuration/passkeys/new
         def new
           @passkey = current_user.user_passkeys.new
+        end
+
+        # POST /configuration/passkeys
+        def create
+          @passkey = current_user.user_passkeys.new(create_params)
+          authorize @passkey, :create?
+
+          if @passkey.save
+            render plain: "ok", status: :created
+          else
+            render plain: @passkey.errors.full_messages.join("\n"), status: :unprocessable_entity
+          end
         end
 
         # GET /configuration/passkeys/:id/edit
@@ -143,7 +159,7 @@ module Sign
           render json: { error: I18n.t("errors.webauthn.verification_failed") }, status: :unprocessable_content
         rescue ActiveRecord::RecordInvalid => e
           Rails.logger.warn("WebAuthn passkey creation failed: #{e.message}")
-          render json: { error: e.record.errors.full_messages.to_sentence }, status: :unprocessable_content
+          render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_entity
         end
 
         # PATCH/PUT /configuration/passkeys/:id
@@ -223,9 +239,19 @@ module Sign
           params.expect(passkey: [:description])
         end
 
+        def create_params
+          params.fetch(:user_passkey, {}).permit(:webauthn_id, :public_key, :sign_count, :description, :external_id)
+        end
+
         def issue_emergency_key!
           result = UserSecrets::IssueRecovery.call(actor: current_user, user: current_user)
           session[:recovery_secret_raw] = result.raw_secret
+        end
+
+        def ensure_verified_recovery_identity_for_registration!
+          return if current_user.has_verified_recovery_identity?
+
+          render plain: User::RECOVERY_IDENTITY_REQUIRED_MESSAGE, status: :forbidden
         end
 
         def passkey_description

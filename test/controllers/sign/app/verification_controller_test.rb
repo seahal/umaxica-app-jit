@@ -15,4 +15,14 @@ class Sign::App::VerificationControllerTest < ActionDispatch::IntegrationTest
     get sign_app_verification_url(ri: "jp"), headers: @headers
     assert_response :success
   end
+
+  test "shows setup message when no verification methods are registered" do
+    user = User.create!
+    headers = as_user_headers(user, host: @host)
+
+    get sign_app_verification_url(ri: "jp"), headers: headers
+
+    assert_response :success
+    assert_includes response.body, "email/passkey/totp を登録してください"
+  end
 end

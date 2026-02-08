@@ -3,11 +3,11 @@
 # == Schema Information
 #
 # Table name: org_preference_audit_levels
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #
-class OrgPreferenceAuditLevel < AuditRecord
+class OrgPreferenceAuditLevel < ActivityRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   INFO = 1

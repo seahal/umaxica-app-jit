@@ -6,6 +6,7 @@ module Sign
       include ::RateLimit
       include ::Preference::Global
       include ::Auth::User
+      include ::RestrictedSessionGuard
       include ::Sign::ErrorResponses
       include Pundit::Authorization
 

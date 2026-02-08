@@ -55,6 +55,7 @@ class UserToken < TokenRecord
   # Total maximum sessions (active + restricted)
   # DB trigger enforces this limit
   MAX_TOTAL_SESSIONS_PER_USER = 3
+  RESTRICTED_TTL = 15.minutes
 
   # Status values for session state management
   STATUS_ACTIVE = "active"

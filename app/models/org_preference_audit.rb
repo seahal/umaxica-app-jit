@@ -1,7 +1,7 @@
 # == Schema Information
 #
 # Table name: org_preference_audits
-# Database name: audit
+# Database name: activity
 #
 #  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
@@ -37,7 +37,7 @@
 
 # frozen_string_literal: true
 
-class OrgPreferenceAudit < AuditRecord
+class OrgPreferenceAudit < ActivityRecord
   # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
   belongs_to :org_preference,
              class_name: "OrgPreference",

@@ -8,6 +8,8 @@ module UserSecret::Kinds
   TOTP = UserSecretKind::TOTP
   RECOVERY = UserSecretKind::RECOVERY
   API = UserSecretKind::API
+  PERMANENT = UserSecretKind::PERMANENT
+  ONE_TIME = UserSecretKind::ONE_TIME
 
   ALL = [LOGIN, TOTP, RECOVERY, API].freeze
 
@@ -26,5 +28,13 @@ module UserSecret::Kinds
 
   def api_secret?
     user_secret_kind_id == API
+  end
+
+  def permanent_secret?
+    user_secret_kind_id == PERMANENT
+  end
+
+  def one_time_secret?
+    user_secret_kind_id == ONE_TIME
   end
 end

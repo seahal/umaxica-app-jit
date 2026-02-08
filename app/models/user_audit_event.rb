@@ -3,11 +3,11 @@
 # == Schema Information
 #
 # Table name: user_audit_events
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #
-class UserAuditEvent < AuditRecord
+class UserAuditEvent < ActivityRecord
   self.record_timestamps = false
   # Fixed IDs - do not modify these values
   ACCOUNT_RECOVERED = 1
@@ -45,10 +45,33 @@ class UserAuditEvent < AuditRecord
            inverse_of: :user_audit_event
 
   DEFAULTS = [
+    ACCOUNT_RECOVERED,
+    ACCOUNT_WITHDRAWN,
+    AUTHORIZATION_FAILED,
     LOGGED_IN,
     LOGGED_OUT,
     LOGIN_FAILED,
+    LOGIN_SUCCESS,
+    LOGOUT,
+    NEYO,
+    NON_EXISTENT_EVENT,
+    PASSKEY_REGISTERED,
+    PASSKEY_REMOVED,
+    RECOVERY_CODES_GENERATED,
+    RECOVERY_CODE_USED,
+    SIGNED_UP_WITH_APPLE,
+    SIGNED_UP_WITH_EMAIL,
+    SIGNED_UP_WITH_GOOGLE,
+    SIGNED_UP_WITH_TELEPHONE,
     TOKEN_REFRESHED,
+    TOTP_DISABLED,
+    TOTP_ENABLED,
+    USER_SECRET_CREATED,
+    USER_SECRET_REMOVED,
+    USER_SECRET_UPDATED,
+    EMAIL_REMOVED,
+    TELEPHONE_REMOVED,
+    SOCIAL_UNLINKED,
   ].freeze
 
   def self.ensure_defaults!

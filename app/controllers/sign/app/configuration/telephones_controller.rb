@@ -23,8 +23,11 @@ module Sign
         end
 
         def create
-          tel_params = params.expect(user_telephone: [:telephone_number])
-          if initiate_telephone_verification(tel_params[:telephone_number])
+          user = current_user
+          return head :unauthorized if user.blank?
+
+          tel_params = params.expect(user_telephone: [:number])
+          if initiate_telephone_verification(user, tel_params[:number])
             redirect_to edit_sign_app_configuration_telephone_path(@user_telephone.id)
           else
             render :new, status: :unprocessable_content
@@ -67,7 +70,7 @@ module Sign
         private
 
         def create_audit_event!(event_id, subject:)
-          AuditRecord.connected_to(role: :writing) do
+          ActivityRecord.connected_to(role: :writing) do
             UserAuditEvent.find_or_create_by!(id: event_id)
             UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
           end

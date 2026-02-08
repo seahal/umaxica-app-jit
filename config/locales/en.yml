@@ -42,6 +42,9 @@ en:
           login_required: "Please log in to manage sessions."
           invalid_session: "Invalid session reference."
           cannot_revoke_current: "Cannot revoke current session this way. Use cancel to log out."
+      layout:
+        nav:
+          log_out: "logout"
     org:
       in:
         session:
@@ -114,6 +117,9 @@ en:
         telephone:
           update:
             passkey_required: "Phone verified. Please register a passkey to complete signup."
+            code_required: "Verification code is required."
+            invalid_code: "Invalid verification code."
+            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
         passkey:
           title: "Register a Passkey"
           description: "A passkey is required to secure your account. Your passkey will be used for future logins."
@@ -132,10 +138,13 @@ en:
     report:
       action_required: "Action required: Run migration to set DEFAULT uuidv7() for all tables."
   errors:
+    messages:
+      validation_failed: "Please review the highlighted errors."
     login_failed: "Login failed"
     webauthn:
       email_required: "Please enter your email address"
       identifier_required: "Please enter your email or staff code"
+      pii_required: "Please enter your email address or telephone number"
       no_passkeys_available: "No passkeys available"
       origin_invalid: "Authentication from this site is not allowed"
       origin_not_trusted: "Origin '%{origin}' is not trusted. Configure TRUSTED_ORIGINS environment variable."
@@ -153,6 +162,7 @@ en:
       webauthn:
         email_required: "Please enter your email address"
         identifier_required: "Please enter your email or staff code"
+        pii_required: "Please enter your email address or telephone number"
         no_passkeys_available: "No passkeys available"
         origin_invalid: "Authentication from this site is not allowed"
         origin_not_trusted: "Origin '%{origin}' is not trusted. Configure TRUSTED_ORIGINS environment variable."
@@ -198,12 +208,22 @@ en:
             google: "Google"
             apple: "Apple"
             registration: "Sign Up"
+        secret:
+          new:
+            page_title: "Sign in with a secret"
+            pii_label: "Email or telephone"
+            pii_placeholder: "user@example.com or +81 90 1234 5678"
+            secret_label: "Secret"
+            hints: "Available secret hints"
+          create:
+            success: "Signed in successfully."
+            invalid: "Authentication failed. Please check your credentials."
         passkey:
           new:
             page_title: "Sign in with Passkey"
             description: "Sign in using your registered passkey"
-            email_label: "Email address"
-            email_placeholder: "example@email.com"
+            pii_label: "Email or telephone"
+            pii_placeholder: "user@example.com or +81 90 1234 5678"
             submit: "Sign in with Passkey"
       outs:
         destroy:

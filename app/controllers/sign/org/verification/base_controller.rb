@@ -58,10 +58,10 @@ module Sign
 
         def normalize_encoded_return_to!(encoded)
           decoded = Base64.urlsafe_decode64(encoded)
-          safe = generate_redirect_url(decoded)
+          safe = safe_internal_path(decoded)
           raise ArgumentError, "unsafe return_to" if safe.blank?
 
-          safe
+          Base64.urlsafe_encode64(safe)
         rescue ArgumentError
           raise
         end

@@ -135,7 +135,7 @@ module Sign
               Rails.logger.warn do
                 "[OmniAuth] Login failed - status: #{login_result[:status]}, user_id: #{user.id}"
               end
-              return handle_login_failure(login_result, provider_name)
+              return handle_login_failure(login_result, provider_name, user)
             end
 
             Rails.logger.debug { "[OmniAuth] Login successful - redirecting" }
@@ -180,17 +180,21 @@ module Sign
         end
 
         # Handle login failures (session limit, TOTP required, etc.)
-        def handle_login_failure(login_result, _provider_name)
+        def handle_login_failure(login_result, _provider_name, user = nil)
           status = login_result[:status]
 
           case status
+          when :session_limit_hard_reject
+            render plain: (login_result[:message] || Auth::Base::SESSION_LIMIT_HARD_REJECT_MESSAGE),
+                   status: (login_result[:http_status] || :conflict)
           when :session_limit_exceeded
             Rails.logger.debug { "[OmniAuth] Session limit exceeded for user" }
             redirect_to new_sign_app_in_path,
                         alert: I18n.t("sign.app.social.sessions.create.session_limit")
           when :totp_required
             Rails.logger.debug { "[OmniAuth] TOTP required for user" }
-            redirect_to new_sign_app_in_path,
+            set_pending_mfa!(resource: user, primary: "social") if user
+            redirect_to sign_app_in_mfa_path,
                         alert: I18n.t("sign.app.social.sessions.create.totp_required")
           else
             Rails.logger.warn { "[OmniAuth] Unknown login failure status: #{status}" }

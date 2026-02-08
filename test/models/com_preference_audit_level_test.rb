@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: com_preference_audit_levels
-# Database name: audit
+# Database name: activity
 #
 #  id :bigint           not null, primary key
 #

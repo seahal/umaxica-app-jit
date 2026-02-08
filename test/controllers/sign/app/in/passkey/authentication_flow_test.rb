@@ -5,7 +5,7 @@ require "minitest/mock"
 
 module Sign::App::In::Passkey
   class AuthenticationFlowTest < ActionDispatch::IntegrationTest
-    fixtures :users, :user_statuses, :user_email_statuses, :user_passkey_statuses
+    fixtures :users, :user_statuses, :user_email_statuses, :user_passkey_statuses, :user_one_time_password_statuses
 
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -46,7 +46,7 @@ module Sign::App::In::Passkey
 
     test "should generate authentication options and store challenge in session" do
       email = @user.user_emails.first.address
-      post options_sign_app_in_passkeys_url(ri: "jp"), params: { email: email }, as: :json
+      post options_sign_app_in_passkeys_url(ri: "jp"), params: { identifier: email }, as: :json
 
       assert_response :success
       json_response = response.parsed_body
@@ -62,7 +62,7 @@ module Sign::App::In::Passkey
     test "should verify valid credential and log in" do
       # 1. Get options to setup session
       email = @user.user_emails.first.address
-      post options_sign_app_in_passkeys_url(ri: "jp"), params: { email: email }, as: :json
+      post options_sign_app_in_passkeys_url(ri: "jp"), params: { identifier: email }, as: :json
 
       json_response = response.parsed_body
       challenge_id = json_response["challenge_id"]
@@ -107,6 +107,48 @@ module Sign::App::In::Passkey
       assert_nil session[:passkey_challenges]
       @passkey.reload
       assert_equal 11, @passkey.sign_count # updated
+    end
+
+    test "passkey login completes even when user has active totp" do
+      UserOneTimePassword.create!(
+        user: @user,
+        private_key: ROTP::Base32.random_base32,
+        user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+        title: "app",
+      )
+
+      email = @user.user_emails.first.address
+      post options_sign_app_in_passkeys_url(ri: "jp"), params: { identifier: email }, as: :json
+      challenge_id = response.parsed_body["challenge_id"]
+
+      mock_credential = OpenStruct.new(
+        id: @raw_credential_id,
+        sign_count: 12,
+      )
+      def mock_credential.verify(_challenge, **)
+        true
+      end
+
+      WebAuthn::Credential.stub :from_get, mock_credential do
+        post verification_sign_app_in_passkeys_url(ri: "jp"), params: {
+          challenge_id: challenge_id,
+          credential: {
+            id: @encoded_credential_id,
+            rawId: @encoded_credential_id,
+            type: "public-key",
+            response: {
+              clientDataJSON: "dummy",
+              authenticatorData: "dummy",
+              signature: "dummy",
+              userHandle: @user.public_id,
+            },
+          },
+        }, as: :json
+      end
+
+      assert_response :success
+      assert_equal "ok", response.parsed_body["status"]
+      assert_not_equal "totp_required", response.parsed_body["status"]
     end
 
     test "should fail verification with invalid challenge" do

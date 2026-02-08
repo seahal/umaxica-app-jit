@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: org_timeline_audits
-# Database name: audit
+# Database name: activity
 #
 #  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null
@@ -37,7 +37,7 @@
 #  fk_rails_...  (level_id => org_timeline_audit_levels.id)
 #
 
-class OrgTimelineAudit < AuditRecord
+class OrgTimelineAudit < ActivityRecord
   # Virtual belongs_to for ERD - uses subject_id/subject_type instead of FK
   belongs_to :org_timeline, optional: true, foreign_key: :subject_id, inverse_of: :org_timeline_audits
   belongs_to :actor, polymorphic: true, optional: true

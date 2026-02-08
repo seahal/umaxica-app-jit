@@ -3,7 +3,7 @@
 # == Schema Information
 #
 # Table name: org_document_audits
-# Database name: audit
+# Database name: activity
 #
 #  id             :bigint           not null, primary key
 #  actor_type     :text             default(""), not null

@@ -125,7 +125,7 @@ The SRS defines the business goals, functional expectations, and quality attribu
 
 ### 6.1 Technical constraints
 - Ruby 3.4.7, Rails 8.x, pnpm 10+, Node.js 20+ (for tooling), PostgreSQL 18.
-- Multi-database config defined in `config/database.yml` requires environment variables for each host (e.g., `POSTGRESQL_IDENTITY_PUB` and the new `POSTGRESQL_AUDIT_PUB`/`POSTGRESQL_AUDIT_SUB` pair).
+- Multi-database config defined in `config/database.yml` requires environment variables for each host (e.g., `POSTGRESQL_IDENTITY_PUB`, `POSTGRESQL_ACTIVITY_PUB`/`POSTGRESQL_ACTIVITY_SUB`, and `POSTGRESQL_BEHAVIOR_PUB`).
 - Asset pipeline relies on Rails Tailwind CLI and pnpm-managed JS tooling; Vite is intentionally not used.
 - Dependencies include Karafka, ROTP, WebAuthn, OmniAuth (Google/Apple), Rswag, Pundit, Shrine, SolidCache, Fastly gem, AWS SDK.
 

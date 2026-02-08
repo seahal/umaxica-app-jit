@@ -9,6 +9,7 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
+    @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @headers = { "X-TEST-CURRENT-USER" => @user.id }.freeze
   end
 
@@ -33,6 +34,28 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     target_path = new_sign_app_in_path
     assert_match %r{#{Regexp.escape(target_path)}\?.*ri=jp}, response.headers["Location"]
+  end
+
+  test "restricted session is blocked on configuration with locked plain response" do
+    token = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
+    token.rotate_refresh_token!(expires_at: 15.minutes.from_now)
+    headers = as_user_headers(@user, host: @host).merge("X-TEST-SESSION-PUBLIC-ID" => token.public_id)
+
+    get sign_app_configuration_url(ri: "jp"), headers: headers
+
+    assert_response :locked
+    assert_equal "きんそくじこうです", response.body
+    assert_not response.redirect?
+  end
+
+  test "active session can access configuration normally" do
+    token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+    token.rotate_refresh_token!
+    headers = as_user_headers(@user, host: @host).merge("X-TEST-SESSION-PUBLIC-ID" => token.public_id)
+
+    get sign_app_configuration_url(ri: "jp"), headers: headers
+
+    assert_response :success
   end
 
   test "should succeed with valid refresh cookie (transparent refresh)" do

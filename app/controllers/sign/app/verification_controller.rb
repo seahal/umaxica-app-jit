@@ -2,6 +2,7 @@
 
 class Sign::App::VerificationController < Sign::App::Verification::BaseController
   def show
+    @available_methods = available_step_up_methods
     @reauth_session = ReauthSession.new(
       scope: params[:scope].to_s,
       return_to: params[:return_to].to_s,

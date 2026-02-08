@@ -15,17 +15,17 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
       user_id: @user.id, last_step_up_at: 1.minute.ago,
       last_step_up_scope: "configuration_secret",
     )
+    UserEmail.create!(
+      user: @user,
+      address: "secret-user@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
     @user_secret = UserSecret.create!(
       user: @user,
       name: "Test Secret",
       password_digest: "test_password_digest",
       last_used_at: Time.zone.now,
       user_secret_kind_id: UserSecret::Kinds::LOGIN,
-    )
-    UserEmail.create!(
-      user: @user,
-      address: "secret-user@example.com",
-      user_email_status_id: UserEmailStatus::VERIFIED,
     )
   end
 
@@ -61,6 +61,17 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_response :success
   end
 
+  test "new returns forbidden plain message when user has no verified recovery identity" do
+    user = User.create!(status_id: UserStatus::NEYO, public_id: "secret_user_no_identity_#{SecureRandom.hex(4)}")
+    token = UserToken.create!(user_id: user.id, last_step_up_at: 1.minute.ago, last_step_up_scope: "configuration_secret")
+    headers = browser_headers.merge("X-TEST-CURRENT-USER" => user.id.to_s, "X-TEST-SESSION-PUBLIC-ID" => token.public_id)
+
+    get new_sign_app_configuration_secret_url(ri: "jp"), headers: headers
+
+    assert_response :forbidden
+    assert_includes response.body, User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
+  end
+
   test "should show back link on new page" do
     get new_sign_app_configuration_secret_url(ri: "jp"), headers: authenticated_headers
 
@@ -91,6 +102,21 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_redirected_to sign_app_configuration_secrets_url(ri: "jp")
     assert_predicate flash[:notice], :present?
     assert_nil flash[:raw_secret], "raw secret must not be exposed in flash"
+  end
+
+  test "create returns unprocessable entity plain message when user has no verified recovery identity" do
+    user = User.create!(status_id: UserStatus::NEYO, public_id: "secret_user_no_identity_create_#{SecureRandom.hex(4)}")
+    token = UserToken.create!(user_id: user.id, last_step_up_at: 1.minute.ago, last_step_up_scope: "configuration_secret")
+    headers = browser_headers.merge("X-TEST-CURRENT-USER" => user.id.to_s, "X-TEST-SESSION-PUBLIC-ID" => token.public_id)
+
+    assert_no_difference("UserSecret.count") do
+      post sign_app_configuration_secrets_url(ri: "jp"),
+           params: { user_secret: { name: "Blocked Secret", enabled: true } },
+           headers: headers
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
   end
 
   test "should update secret and redirect to index" do

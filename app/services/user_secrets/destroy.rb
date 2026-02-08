@@ -38,7 +38,7 @@ module UserSecrets
     end
 
     def ensure_audit_dependencies!
-      AuditRecord.connected_to(role: :writing) do
+      ActivityRecord.connected_to(role: :writing) do
         UserAuditEvent.find_or_create_by!(id: EVENT_ID)
         UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
       end

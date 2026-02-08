@@ -69,6 +69,7 @@ class Auth::UserTest < ActiveSupport::TestCase
   setup do
     @obj = DummyClass.new
     @user = User.create!(status_id: UserStatus::NEYO, public_id: SecureRandom.alphanumeric(21))
+    UserToken.where(user_id: @user.id).delete_all
   end
 
   test "module can be included" do
@@ -198,5 +199,39 @@ class Auth::UserTest < ActiveSupport::TestCase
     @obj.request.headers["Authorization"] = "Bearer #{access_token}"
 
     assert_equal @user, @obj.current_user
+  end
+
+  test "log_in hard rejects when active and restricted sessions already exist" do
+    2.times do
+      token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+    restricted = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
+    restricted.rotate_refresh_token!(expires_at: 15.minutes.from_now)
+    before_ids = UserToken.where(user_id: @user.id).order(:id).pluck(:id, :status, :revoked_at)
+
+    result = @obj.send(:log_in, @user, require_totp_check: false)
+
+    assert_equal :session_limit_hard_reject, result[:status]
+    assert_equal :conflict, result[:http_status]
+    assert_equal Auth::Base::SESSION_LIMIT_HARD_REJECT_MESSAGE, result[:message]
+    assert_equal before_ids, UserToken.where(user_id: @user.id).order(:id).pluck(:id, :status, :revoked_at)
+  end
+
+  test "log_in issues restricted session with 15 minute ttl when active sessions reach limit" do
+    2.times do
+      token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+
+    freeze_time do
+      result = @obj.send(:log_in, @user, require_totp_check: false)
+      assert_equal :success, result[:status]
+      assert result[:restricted]
+
+      restricted = UserToken.where(user_id: @user.id, status: UserToken::STATUS_RESTRICTED).order(:created_at).last
+      assert_not_nil restricted
+      assert_in_delta 15.minutes.from_now.to_i, restricted.refresh_expires_at.to_i, 1
+    end
   end
 end

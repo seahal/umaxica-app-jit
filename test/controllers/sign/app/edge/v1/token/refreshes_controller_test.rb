@@ -155,6 +155,27 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_response :unauthorized
   end
 
+  test "POST refresh with restricted token returns 403 and does not rotate token" do
+    token_record = UserToken.create!(user: @user, status: UserToken::STATUS_RESTRICTED)
+    refresh_plain = token_record.rotate_refresh_token!(expires_at: 15.minutes.from_now)
+    before_generation = token_record.refresh_token_generation
+    before_digest = token_record.refresh_token_digest
+
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    post "/edge/v1/token/refresh",
+         headers: { "Host" => @host, "Accept" => "application/json" },
+         as: :json
+
+    assert_response :forbidden
+    json = response.parsed_body
+    assert_equal "restricted_session", json["error_code"]
+
+    token_record.reload
+    assert_equal before_generation, token_record.refresh_token_generation
+    assert_equal before_digest, token_record.refresh_token_digest
+  end
+
   test "refresh cookie is not encrypted (plain value)" do
     # Create a token record and generate a refresh token
     token_record = UserToken.create!(user: @user)

@@ -54,6 +54,7 @@ class StaffToken < TokenRecord
 
   # Total maximum sessions (active + restricted)
   MAX_TOTAL_SESSIONS_PER_STAFF = 3
+  RESTRICTED_TTL = 15.minutes
 
   # Status values for session state management
   STATUS_ACTIVE = "active"

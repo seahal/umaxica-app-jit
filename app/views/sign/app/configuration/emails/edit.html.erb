@@ -1,61 +1,23 @@
 <div>
   <div>
     <h1><%= t("sign.app.configuration.email.edit.title") %></h1>
-    <p><%= t("sign.app.configuration.email.edit.description") %></p>
   </div>
 
   <div>
     <%= form_with model: @user_email, url: sign_app_configuration_email_path(@user_email), method: :patch do |f| %>
       <% if @user_email.errors.any? %>
         <div>
-          <div>
-            <div>
-              <svg viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-              </svg>
-            </div>
-            <div>
-              <h3>
-                <%= t("errors.messages.validation_errors", count: @user_email.errors.count) %>
-              </h3>
-              <div>
-                <ul>
-                  <% @user_email.errors.full_messages.each do |msg| %>
-                    <li><%= msg %></li>
-                  <% end %>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% end %>
-
-      <% if @verification_token %>
-        <%= f.hidden_field :token, value: @verification_token %>
-        <div>
-          <div>
-            <div>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-              </svg>
-            </div>
-            <div>
-              <p>
-                <%= t("sign.app.configuration.email.edit.link_verified") %>
-              </p>
-            </div>
-          </div>
+          <ul>
+            <% @user_email.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
         </div>
       <% end %>
 
       <div>
-        <%= f.label :pass_code, t("sign.app.configuration.email.edit.pass_code_label") %>
-        <div>
-          <%= f.text_field :pass_code, placeholder: "123456", required: true, autocomplete: "one-time-code", inputmode: "numeric", pattern: "[0-9]*" %>
-        </div>
-        <p>
-          <%= t("sign.app.configuration.email.edit.pass_code_hint") %>
-        </p>
+        <%= f.label :address, t("activerecord.attributes.user_email.address") %>
+        <%= f.email_field :address, autocomplete: "email", required: true %>
       </div>
 
       <div>

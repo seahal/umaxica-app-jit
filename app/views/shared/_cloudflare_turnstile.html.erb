@@ -1,6 +1,6 @@
 <%# Generate unique ID for this widget instance %>
 <% widget_id = "cf-turnstile-#{SecureRandom.hex(4)}" %>
-<% site_key = Rails.application.credentials.dig(:CLOUDFLARE, :TURNSTILE_SITE_KEY) || ENV["CLOUDFLARE_TURNSTILE_SITE_KEY"] %>
+<% site_key = Jit::Security::TurnstileConfig.default_site_key %>
 
 <% if site_key.blank? %>
   <div>
