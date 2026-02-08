@@ -3,6 +3,22 @@
 # Umaxica App (JIT)
 （ ＾ν＾） Hello, World!
 
+## What Can You Do With This?
+
+**Umaxica App (JIT)** is an enterprise-grade, multi-domain web application platform featuring:
+
+- 🔐 **Advanced Authentication**: WebAuthn/Passkeys, TOTP, OTP via email/SMS, Apple/Google OAuth
+- 🌐 **Multi-Domain Architecture**: Corporate (.com), Service (.app), and Staff (.org) sites
+- 📞 **Contact & Support**: Structured inquiry forms with bot protection
+- 🎨 **User Preferences**: Language, region, timezone, theme, and cookie consent management
+- 🔒 **Security-First**: Multi-factor authentication, JWT tokens, encryption, rate limiting
+- 📊 **Full Observability**: OpenTelemetry tracing, structured logging, health checks
+- 🗄️ **Multi-Database**: 10 PostgreSQL databases for data isolation and scalability
+
+**📖 For a complete feature overview, see:**
+- **[FEATURES.ja.md](FEATURES.ja.md)** - 日本語での機能説明（完全版）
+- **[FEATURES.md](FEATURES.md)** - Full feature documentation in English
+
 ## Prerequisites
 
 - Ruby 4.0+ (see `Gemfile` for the exact version)
