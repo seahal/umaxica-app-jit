@@ -25,6 +25,7 @@ module Sign
     }.freeze
 
     SESSION_KEY = :sign_up_email_flow_state
+    EXISTING_EMAIL_SESSION_KEY = :sign_up_existing_email_id
 
     included do
       include ::CloudflareTurnstile
@@ -64,6 +65,7 @@ module Sign
 
     def reset_email_flow!
       session[SESSION_KEY] = STATE_INIT
+      session.delete(EXISTING_EMAIL_SESSION_KEY)
     end
 
     def redirect_flow_violation
@@ -71,11 +73,26 @@ module Sign
       redirect_to new_sign_app_up_email_path
     end
 
-    def initiate_email_verification!(email_address, confirm_policy: "1")
+    def initiate_email_verification!(email_address, confirm_policy: "1", allow_existing: false)
       return false unless ensure_turnstile!(email_address, confirm_policy)
 
       build_user_email(email_address, confirm_policy)
       @user_email.user_email_status_id = UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
+
+      @user_email.validate
+      existing_email = allow_existing ? UserEmail.find_by(address: @user_email.address) : nil
+      uniqueness_only = email_uniqueness_only_error?(@user_email)
+
+      if allow_existing && existing_email &&
+          existing_email.user_email_status_id != UserEmailStatus::UNVERIFIED_WITH_SIGN_UP &&
+          (uniqueness_only || @user_email.errors.empty?)
+        return dispatch_existing_email_verification!(existing_email)
+      end
+
+      if @user_email.errors.any?
+        return false unless allow_existing && uniqueness_only &&
+          existing_email&.user_email_status_id == UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
+      end
 
       # Rate limit check (TODO: Implement rate limiting)
       # if rate_limited? ...
@@ -169,7 +186,6 @@ module Sign
         address: @user_email.address,
         user_email_status_id: [
           UserEmailStatus::UNVERIFIED_WITH_SIGN_UP,
-          UserEmailStatus::UNVERIFIED,
         ],
       ).to_a
 
@@ -188,6 +204,14 @@ module Sign
       session[:pending_sign_up_email] = @user_email.address.to_s.downcase
     end
 
+    def dispatch_existing_email_verification!(existing_email)
+      @user_email = existing_email
+      otp_number = generate_otp_for(@user_email)
+      send_verification_email(otp_number)
+      session[EXISTING_EMAIL_SESSION_KEY] = @user_email.id
+      true
+    end
+
     def send_verification_email(otp_number)
       token = @user_email.generate_verification_token
 
@@ -197,6 +221,18 @@ module Sign
         verification_token: token,
         public_id: @user_email.public_id,
       ).create.deliver_later
+    end
+
+    def email_uniqueness_only_error?(user_email)
+      return false if user_email.errors.empty?
+
+      address_errors = user_email.errors.details[:address] || []
+      return false if address_errors.empty?
+
+      other_errors = user_email.errors.details.except(:address).values.flatten
+      return false if other_errors.any?
+
+      address_errors.all? { |error| error[:error] == :taken }
     end
   end
 end

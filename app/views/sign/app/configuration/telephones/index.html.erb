@@ -25,9 +25,9 @@
             <tbody>
             <% @user_telephones.each do |telephone| %>
               <tr>
-                <td><%= telephone.address %></td>
+                <td><%= telephone.number %></td>
                 <td>
-                  <% if telephone.try(:confirmed_at) %>
+                  <% if [UserTelephoneStatus::VERIFIED, UserTelephoneStatus::VERIFIED_WITH_SIGN_UP].include?(telephone.user_telephone_status_id) %>
                       <span>
                         認証済み
                       </span>

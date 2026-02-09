@@ -6,9 +6,9 @@
 # and looks up the user accordingly.
 #
 # Detection rules:
-#   - Contains "@" → email
-#   - Contains "+" → telephone (E.164 international format required)
-#   - Neither → unknown (rejected)
+#   - Contains "@" -> email
+#   - Contains "+" -> telephone (E.164 international format required)
+#   - Neither -> unknown (rejected)
 #
 module IdentifierDetection
   extend ActiveSupport::Concern

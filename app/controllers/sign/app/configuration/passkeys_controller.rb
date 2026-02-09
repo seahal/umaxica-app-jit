@@ -45,6 +45,11 @@ module Sign
           @passkey = current_user.user_passkeys.new
         end
 
+        # GET /configuration/passkeys/:id/edit
+        def edit
+          authorize @passkey
+        end
+
         # POST /configuration/passkeys
         def create
           @passkey = current_user.user_passkeys.new(create_params)
@@ -53,13 +58,8 @@ module Sign
           if @passkey.save
             render plain: "ok", status: :created
           else
-            render plain: @passkey.errors.full_messages.join("\n"), status: :unprocessable_entity
+            render plain: @passkey.errors.full_messages.join("\n"), status: :unprocessable_content
           end
-        end
-
-        # GET /configuration/passkeys/:id/edit
-        def edit
-          authorize @passkey
         end
 
         # POST /configuration/passkeys/options
@@ -111,41 +111,17 @@ module Sign
         #   }
         def verification
           challenge_id = params[:challenge_id]
-
-          if challenge_id.blank?
-            return render json: {
-              error: I18n.t("errors.webauthn.challenge_id_required"),
-            }, status: :bad_request
-          end
+          return render_missing_challenge_id if challenge_id.blank?
 
           with_challenge(challenge_id, purpose: :registration) do |challenge|
-            # Parse credential from request
-            credential = WebAuthn::Credential.from_create(credential_params.to_h)
+            credential = build_registration_credential
+            verify_registration_credential!(credential, challenge)
 
-            # Verify the credential with per-request configuration
-            with_webauthn_config do
-              credential.verify(
-                challenge,
-              )
-            end
-
-            # Create the passkey record
-            passkey = current_user.user_passkeys.new(
-              webauthn_id: credential.id,
-              public_key: credential.public_key,
-              sign_count: credential.sign_count,
-              description: passkey_description,
-            )
-
-            authorize passkey, :create?
-            passkey.save!
+            passkey = build_passkey_from_credential(credential)
+            persist_passkey!(passkey)
 
             issue_emergency_key!
-
-            render json: {
-              status: "ok",
-              redirect_url: sign_app_configuration_emergency_key_path(ri: params[:ri]),
-            }, status: :created
+            render_verification_success
           end
         rescue Sign::Webauthn::ChallengeNotFoundError,
                Sign::Webauthn::ChallengeExpiredError => e
@@ -161,7 +137,7 @@ module Sign
           render json: { error: I18n.t("errors.webauthn.credential_already_registered") }, status: :conflict
         rescue ActiveRecord::RecordInvalid => e
           Rails.logger.warn("WebAuthn passkey creation failed: #{e.message}")
-          render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_entity
+          render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_content
         end
 
         # PATCH/PUT /configuration/passkeys/:id
@@ -235,6 +211,43 @@ module Sign
               { clientExtensionResults: {} },
             ],
           )
+        end
+
+        def render_missing_challenge_id
+          render json: {
+            error: I18n.t("errors.webauthn.challenge_id_required"),
+          }, status: :bad_request
+        end
+
+        def build_registration_credential
+          WebAuthn::Credential.from_create(credential_params.to_h)
+        end
+
+        def verify_registration_credential!(credential, challenge)
+          with_webauthn_config do
+            credential.verify(challenge)
+          end
+        end
+
+        def build_passkey_from_credential(credential)
+          current_user.user_passkeys.new(
+            webauthn_id: credential.id,
+            public_key: credential.public_key,
+            sign_count: credential.sign_count,
+            description: passkey_description,
+          )
+        end
+
+        def persist_passkey!(passkey)
+          authorize passkey, :create?
+          passkey.save!
+        end
+
+        def render_verification_success
+          render json: {
+            status: "ok",
+            redirect_url: sign_app_configuration_emergency_key_path(ri: params[:ri]),
+          }, status: :created
         end
 
         def update_params

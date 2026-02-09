@@ -162,6 +162,7 @@ en:
             code_required: "Verification code is required."
             invalid_code: "Invalid verification code."
             attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
+            sign_in_required: "We could not complete registration. Please sign in to continue."
             session_expired: "Your session has expired. Please start over."
         telephone:
           create:
@@ -181,6 +182,7 @@ en:
             code_required: "Verification code is required."
             invalid_code: "Invalid verification code."
             attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
+            sign_in_required: "We could not complete registration. Please sign in to continue."
           complete:
             page_title: "Registration Complete"
             description: "Your account registration has been successfully completed. You can now continue to use our services."

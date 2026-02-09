@@ -117,8 +117,26 @@ class UserPasskeyTest < ActiveSupport::TestCase
       updated_at: now,
     }
 
+    connection = UserPasskey.connection
+    insert_sql = <<~SQL.squish
+      INSERT INTO user_passkeys
+        (user_id, webauthn_id, external_id, public_key, description, sign_count,
+         status_id, public_id, created_at, updated_at)
+      VALUES
+        (#{duplicate_row[:user_id]},
+         #{connection.quote(duplicate_row[:webauthn_id])},
+         #{connection.quote(duplicate_row[:external_id])},
+         #{connection.quote(duplicate_row[:public_key])},
+         #{connection.quote(duplicate_row[:description])},
+         #{duplicate_row[:sign_count]},
+         #{duplicate_row[:status_id]},
+         #{connection.quote(duplicate_row[:public_id])},
+         #{connection.quote(duplicate_row[:created_at])},
+         #{connection.quote(duplicate_row[:updated_at])})
+    SQL
+
     assert_raises(ActiveRecord::RecordNotUnique) do
-      UserPasskey.insert_all!([duplicate_row])
+      connection.insert(insert_sql)
     end
   end
 

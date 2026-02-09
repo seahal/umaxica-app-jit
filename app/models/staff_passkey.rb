@@ -39,7 +39,7 @@ class StaffPasskey < OperatorRecord
   alias_attribute :description, :name
 
   belongs_to :staff, inverse_of: :staff_passkeys
-  belongs_to :status, class_name: "StaffPasskeyStatus", foreign_key: :status_id, optional: true
+  belongs_to :status, class_name: "StaffPasskeyStatus", optional: true
 
   scope :active, -> { where(status_id: StaffPasskeyStatus::ACTIVE) }
 

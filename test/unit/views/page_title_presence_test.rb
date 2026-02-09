@@ -11,37 +11,38 @@ class PageTitlePresenceTest < ActiveSupport::TestCase
   PAGE_TITLE_PATTERNS = [
     /content_for\s+:page_title/,
     /provide\s*\(\s*:page_title/,
-    /<%=?\s*title\s+/,           # meta-tags gem helper
-    /set_meta_tags.*title/
+    /<%=?\s*title\s+/, # meta-tags gem helper
+    /set_meta_tags.*title/,
   ].freeze
 
   # Files excluded from page_title requirement with reasons
   EXCLUDED_PATHS = [
     # Email/mailer views: rendered inside mailer layouts (separate title mechanism)
-    %r{^app/views/email/}
+    %r{^app/views/email/},
   ].freeze
 
   test "all non-partial views have a page_title declaration" do
-    view_root = Rails.root.join("app", "views")
-    view_files = Dir.glob(view_root.join("**", "*.html.erb")).sort
+    view_root = Rails.root.join("app/views")
+    view_files = Dir.glob(view_root.join("**", "*.html.erb"))
 
     # Filter to non-partial, non-layout views
-    page_views = view_files.reject do |path|
-      relative = path.sub("#{Rails.root}/", "")
-      File.basename(path).start_with?("_") ||           # partials
-        relative.start_with?("app/views/layouts/") ||    # layouts
-        EXCLUDED_PATHS.any? { |pat| relative.match?(pat) }
-    end
+    page_views =
+      view_files.reject do |path|
+        relative = path.sub("#{Rails.root.join}", "")
+        File.basename(path).start_with?("_") || # partials
+          relative.start_with?("app/views/layouts/") || # layouts
+          EXCLUDED_PATHS.any? { |pat| relative.match?(pat) }
+      end
 
     missing = []
     page_views.each do |path|
       content = File.read(path)
       has_title = PAGE_TITLE_PATTERNS.any? { |pat| content.match?(pat) }
-      relative = path.sub("#{Rails.root}/", "")
+      relative = path.sub("#{Rails.root.join}", "")
       missing << relative unless has_title
     end
 
-    assert missing.empty?,
-      "#{missing.size} view(s) missing page_title declaration:\n  #{missing.join("\n  ")}"
+    assert_empty missing,
+                 "#{missing.size} view(s) missing page_title declaration:\n  #{missing.join("\n  ")}"
   end
 end

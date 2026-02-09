@@ -8,7 +8,7 @@ class Sign::App::Configuration::EmergencyKeysControllerTest < ActionDispatch::In
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @host = ENV["SIGN_SERVICE_URL"] || "sign.app.localhost"
-    @user = users(:one)
+    @user = create_verified_user_with_email(email_address: "emergency_key_test@example.com")
     @token = UserToken.create!(user_id: @user.id)
     @headers = {
       "Host" => @host,

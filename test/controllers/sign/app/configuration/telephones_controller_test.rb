@@ -88,4 +88,29 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     assert_redirected_to sign_app_configuration_telephones_url(ri: "jp")
     assert_equal I18n.t("sign.app.configuration.telephone.destroy.last_method"), flash[:alert]
   end
+
+  test "destroy rejects other user's public_id" do
+    other_user = User.create!(status_id: UserStatus::NEYO)
+    other_telephone = UserTelephone.create!(
+      number: "+10000000003",
+      user: other_user,
+      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    )
+
+    assert_no_difference("UserTelephone.count") do
+      assert_raises(ActiveRecord::RecordNotFound) do
+        delete sign_app_configuration_telephone_url(other_telephone, ri: "jp"),
+               headers: request_headers
+      end
+    end
+  end
+
+  test "destroy rejects missing public_id" do
+    assert_no_difference("UserTelephone.count") do
+      assert_raises(ActiveRecord::RecordNotFound) do
+        delete sign_app_configuration_telephone_url("missing-public-id", ri: "jp"),
+               headers: request_headers
+      end
+    end
+  end
 end

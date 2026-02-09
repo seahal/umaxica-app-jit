@@ -39,7 +39,7 @@ class UserPasskey < PrincipalRecord
   attribute :status_id, default: UserPasskeyStatus::ACTIVE
 
   belongs_to :user, inverse_of: :user_passkeys
-  belongs_to :status, class_name: "UserPasskeyStatus", foreign_key: :status_id, optional: true
+  belongs_to :status, class_name: "UserPasskeyStatus", optional: true
 
   scope :active, -> { where(status_id: UserPasskeyStatus::ACTIVE) }
 

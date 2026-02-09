@@ -51,16 +51,16 @@ module Sign
         end
 
         def destroy
-          @user_telephone = current_user.user_telephones.find(params[:id])
+          telephone = current_user.user_telephones.find_by!(public_id: params[:id])
 
-          if AuthMethodGuard.last_method?(current_user, excluding: @user_telephone)
+          if AuthMethodGuard.last_method?(current_user, excluding: telephone)
             redirect_to sign_app_configuration_telephones_path,
                         alert: t("sign.app.configuration.telephone.destroy.last_method")
             return
           end
 
-          @user_telephone.destroy!
-          create_audit_event!(UserAuditEvent::TELEPHONE_REMOVED, subject: @user_telephone)
+          telephone.destroy!
+          create_audit_event!(UserAuditEvent::TELEPHONE_REMOVED, subject: telephone)
 
           redirect_to sign_app_configuration_telephones_path,
                       notice: t("sign.app.configuration.telephone.destroy.success"),

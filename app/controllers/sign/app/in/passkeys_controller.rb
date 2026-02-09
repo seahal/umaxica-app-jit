@@ -198,8 +198,8 @@ module Sign
             }, status: (result[:http_status] || :conflict)
           when :success
             # Check if session is restricted (session limit was exceeded)
+            # Gate is already issued by log_in() in Auth::Base
             if result[:restricted]
-              issue_session_limit_gate!(return_to: request.fullpath, flow: "in.passkeys.session")
               render json: {
                 status: "session_restricted",
                 redirect_url: sign_app_in_session_path,

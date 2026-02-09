@@ -60,6 +60,47 @@ module Sign::App::Up
       assert_not_nil session[:user_telephone_registration]
     end
 
+    test "create with existing telephone still redirects and does not create a new record" do
+      user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+      existing_telephone = UserTelephone.create!(
+        user: user,
+        number: "+1234567898",
+        user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+        confirm_policy: "1",
+        confirm_using_mfa: "1",
+      )
+
+      assert_no_difference("User.count") do
+        assert_no_difference("UserTelephone.count") do
+          post sign_app_up_telephones_url(ri: "jp"), params: {
+            user_telephone: {
+              number: existing_telephone.number,
+              confirm_policy: "1",
+              confirm_using_mfa: "1",
+            },
+            "cf-turnstile-response": "test",
+          }
+        end
+      end
+
+      assert_redirected_to edit_sign_app_up_telephone_url(existing_telephone, regional_defaults)
+      assert_equal I18n.t("sign.app.registration.telephone.create.verification_code_sent"), flash[:notice]
+      assert_nil flash[:alert]
+    end
+
+    test "rejects invalid telephone format" do
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          number: "invalid-telephone",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+
+      assert_response :unprocessable_content
+    end
+
     test "should update telephone with valid otp" do
       # 1. Create telephone via request to set up session
       post sign_app_up_telephones_url(ri: "jp"), params: {

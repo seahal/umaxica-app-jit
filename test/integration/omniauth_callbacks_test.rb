@@ -44,6 +44,7 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
 
     user = UserSocialGoogle.find_by(uid: "123456789").user
     assert_not_nil user
+    assert UserToken.exists?(user_id: user.id), "UserToken should be created for Google login"
   end
 
   test "should sign in with Apple" do
@@ -142,4 +143,74 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     assert_not_equal new_sign_app_in_url(ri: "jp"), response.redirect_url
     assert_equal user.id, session[:pending_mfa]["user_id"]
   end
+
+  test "google login raises when user_token_kind is missing" do
+    UserTokenKind.delete_all
+
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      {
+        provider: "google_oauth2",
+        uid: "missing_kind_uid",
+        info: {
+          image: "http://example.com/image.jpg",
+        },
+        credentials: {
+          token: "token",
+          refresh_token: "refresh_token",
+          expires_at: 1.week.from_now.to_i,
+        },
+      },
+    )
+
+    assert_raises(ActiveRecord::RecordNotFound) do
+      get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+          headers: SocialCallbackTestHelper.callback_headers(@host)
+    end
+  end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "google login with session limit exceeded redirects to session management" do
+    # Create an existing user with Google social identity
+    user = User.create!
+    UserSocialGoogle.create!(
+      user: user,
+      uid: "session_limit_uid",
+      provider: "google_oauth2",
+      token: "existing_token",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:active),
+    )
+
+    # Create 2 active sessions to hit the limit
+    UserToken.where(user_id: user.id).delete_all
+    2.times do
+      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      {
+        provider: "google_oauth2",
+        uid: "session_limit_uid",
+        info: { image: "http://example.com/image.jpg" },
+        credentials: {
+          token: "new_token",
+          refresh_token: "new_refresh_token",
+          expires_at: 1.week.from_now.to_i,
+        },
+      },
+    )
+
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
+
+    assert_response :found
+    assert_redirected_to sign_app_in_session_url(host: @host)
+    assert_equal I18n.t("sign.app.in.session.restricted_notice"), flash[:notice]
+
+    # A restricted token should have been created
+    restricted = UserToken.where(user_id: user.id, status: UserToken::STATUS_RESTRICTED)
+    assert_equal 1, restricted.count
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 end

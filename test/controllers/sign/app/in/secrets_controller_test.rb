@@ -10,7 +10,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
     @raw_email = "secret_login_#{SecureRandom.hex(4)}@example.com".freeze
-    @email = @user.user_emails.create!(address: @raw_email)
+    @email = @user.user_emails.create!(address: @raw_email, user_email_status_id: UserEmailStatus::VERIFIED)
     @telephone = @user.user_telephones.create!(number: "+819012345678")
     CloudflareTurnstile.test_mode = true
     CloudflareTurnstile.test_validation_response = { "success" => true }
@@ -197,13 +197,14 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "guest request does not query users with null mfa_user_id" do
-    queries = capture_sql_queries do
-      get new_sign_app_in_secret_url(ri: "jp"), headers: default_headers
-    end
+    queries =
+      capture_sql_queries do
+        get new_sign_app_in_secret_url(ri: "jp"), headers: default_headers
+      end
 
     assert_response :success
-    refute queries.any? { |sql| sql.match?(/FROM "users".*"users"."id" IS NULL/i) },
-           "expected no users.id IS NULL query, got: #{queries.grep(/users/i).join("\n")}"
+    assert_not queries.any? { |sql| sql.match?(/FROM "users".*"users"."id" IS NULL/i) },
+               "expected no users.id IS NULL query, got: #{queries.grep(/users/i).join("\n")}"
   end
 
   private
@@ -235,18 +236,48 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
   def capture_sql_queries
     queries = []
-    callback = lambda do |_name, _started, _finished, _id, payload|
-      sql = payload[:sql].to_s
-      next if sql.blank?
-      next if payload[:name].to_s == "SCHEMA"
-      next if payload[:cached]
+    callback =
+      lambda do |_name, _started, _finished, _id, payload|
+        sql = payload[:sql].to_s
+        next if sql.blank?
+        next if payload[:name].to_s == "SCHEMA"
+        next if payload[:cached]
 
-      queries << sql
-    end
+        queries << sql
+      end
 
     ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
       yield
     end
     queries
   end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "secret login with session limit exceeded redirects to session management" do
+    UserToken.where(user_id: @user.id).delete_all
+
+    # Create 2 active sessions to hit the limit
+    2.times do
+      token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+
+    _secret, raw_secret = issue_secret!(kind: UserSecretKind::PERMANENT, uses: 10)
+
+    post sign_app_in_secret_url(ri: "jp"),
+         params: login_params(identifier: @raw_email, secret_value: raw_secret),
+         headers: default_headers
+
+    assert_response :found
+    assert_redirected_to sign_app_in_session_path
+    assert_equal I18n.t("sign.app.in.session.restricted_notice"), flash[:notice]
+
+    # A restricted token should have been created
+    restricted = UserToken.where(user_id: @user.id, status: UserToken::STATUS_RESTRICTED)
+    assert_equal 1, restricted.count
+
+    # Session limit gate should be issued
+    assert_predicate session[SessionLimitGate::GATE_SESSION_KEY], :present?
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 end

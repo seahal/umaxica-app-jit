@@ -9,17 +9,9 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
-    @user = users(:one)
-    @other_user = users(:two)
+    @user = create_verified_user_with_email(email_address: "passkey_config_test_user@example.com")
+    @other_user = create_verified_user_with_email(email_address: "other_passkey_config_test_user@example.com")
     @headers = as_user_headers(@user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")).freeze
-
-    # Cleanup potentially corrupted UserEmails
-    UserEmail.delete_all
-    UserEmail.create!(
-      user: @user,
-      address: "passkey-user-#{SecureRandom.hex(4)}@example.com",
-      user_email_status_id: UserEmailStatus::VERIFIED,
-    )
 
     # Mock TRUSTED_ORIGINS
     @original_trusted_origins = Webauthn.method(:trusted_origins)
@@ -69,7 +61,7 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
       json["options"]["excludeCredentials"].each do |credential|
         assert_kind_of String, credential["id"]
       end
-      exclude_ids = json["options"]["excludeCredentials"].map { |credential| credential["id"] }
+      exclude_ids = json["options"]["excludeCredentials"].pluck("id")
       assert_includes exclude_ids, @passkey_webauthn_id
     end
 
@@ -248,7 +240,8 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "new returns forbidden plain message when user has no verified recovery identity" do
-    headers = as_user_headers(@other_user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+    unverified_user = User.create!(status_id: UserStatus::NEYO, public_id: SecureRandom.hex(10))
+    headers = as_user_headers(unverified_user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
 
     get new_sign_app_configuration_passkey_path(ri: "jp"), headers: headers
 
@@ -257,7 +250,8 @@ class Sign::App::Configuration::PasskeysControllerTest < ActionDispatch::Integra
   end
 
   test "create returns unprocessable entity plain message when user has no verified recovery identity" do
-    headers = as_user_headers(@other_user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
+    unverified_user = User.create!(status_id: UserStatus::NEYO, public_id: SecureRandom.hex(10))
+    headers = as_user_headers(unverified_user, host: ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost"))
 
     assert_no_difference("UserPasskey.count") do
       post sign_app_configuration_passkeys_path(ri: "jp"),

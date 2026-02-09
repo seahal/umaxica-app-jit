@@ -84,6 +84,25 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
   end
   # rubocop:enable Minitest/MultipleAssertions
 
+  test "POST create responds the same for existing and missing emails" do
+    user = users(:one)
+    existing_email = user.user_emails.create!(address: "enum_test@example.com")
+
+    existing_session = open_session
+    existing_session.post sign_app_in_email_url(ri: "jp"),
+                          params: { user_email: { address: existing_email.address } },
+                          headers: { "Host" => @host }
+
+    missing_session = open_session
+    missing_session.post sign_app_in_email_url(ri: "jp"),
+                         params: { user_email: { address: "missing-enum@example.com" } },
+                         headers: { "Host" => @host }
+
+    assert_equal existing_session.response.status, missing_session.response.status
+    assert_equal existing_session.response.location, missing_session.response.location
+    assert_equal existing_session.flash[:notice], missing_session.flash[:notice]
+  end
+
   test "POST create with existing email generates OTP and redirects to edit" do
     # Create a test email in the database
     user = users(:one)
@@ -475,4 +494,89 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil session.id
     assert_not_equal old_session_id, session.id
   end
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "email login with session limit exceeded redirects to session management" do
+    user = users(:one)
+    UserToken.where(user_id: user.id).delete_all
+
+    # Create 2 active sessions to hit the limit
+    2.times do
+      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+
+    test_email = user.user_emails.create!(
+      address: "session_limit_email_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    # Start authentication
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    # Generate valid OTP code
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 12_345
+    hotp = ROTP::HOTP.new(otp_private_key)
+    valid_pass_code = hotp.at(otp_counter).to_s
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    # Verify OTP — should redirect to session management, not "/"
+    patch sign_app_in_email_url(ri: "jp"),
+          params: { user_email: { pass_code: valid_pass_code } },
+          headers: { "Host" => @host }
+
+    assert_response :found
+    assert_redirected_to sign_app_in_session_path
+    assert_equal I18n.t("sign.app.in.session.restricted_notice"), flash[:notice]
+
+    # A restricted token should have been created
+    restricted = UserToken.where(user_id: user.id, status: UserToken::STATUS_RESTRICTED)
+    assert_equal 1, restricted.count
+
+    # Session limit gate should be issued
+    assert_predicate session[SessionLimitGate::GATE_SESSION_KEY], :present?
+  end
+
+  test "email login (JSON) with session limit exceeded returns session_restricted" do
+    user = users(:one)
+    UserToken.where(user_id: user.id).delete_all
+
+    2.times do
+      token = UserToken.create!(user: user, status: UserToken::STATUS_ACTIVE)
+      token.rotate_refresh_token!
+    end
+
+    test_email = user.user_emails.create!(
+      address: "session_limit_json_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 12_345
+    hotp = ROTP::HOTP.new(otp_private_key)
+    valid_pass_code = hotp.at(otp_counter).to_s
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    patch sign_app_in_email_url(ri: "jp"),
+          params: { user_email: { pass_code: valid_pass_code } },
+          headers: { "Host" => @host, "Accept" => "application/json" },
+          as: :json
+
+    assert_response :ok
+    json = response.parsed_body
+    assert_equal "session_restricted", json["status"]
+    assert_equal sign_app_in_session_path, json["redirect_url"]
+  end
+  # rubocop:enable Minitest/MultipleAssertions
 end

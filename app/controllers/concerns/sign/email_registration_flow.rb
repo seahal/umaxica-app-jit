@@ -85,8 +85,38 @@ module Sign
 
     private
 
+    def build_user_email(email_address, confirm_policy)
+      super
+      target_user = email_registration_target_user
+      @user_email.user = target_user if target_user
+    end
+
+    def create_pending_user!
+      target_user = email_registration_target_user
+      return super unless target_user
+
+      @user_email.user = target_user
+    end
+
     def current_registration_email
-      UserEmail.find_by(public_id: session[registration_email_session_key])
+      user_email = UserEmail.find_by(public_id: session[registration_email_session_key])
+      return user_email if user_email.present?
+
+      target_user = email_registration_target_user
+      return nil unless target_user
+
+      user_email =
+        target_user
+        .user_emails
+        .where(user_email_status_id: UserEmailStatus::UNVERIFIED_WITH_SIGN_UP)
+        .order(created_at: :desc)
+        .first
+
+      if user_email
+        session[registration_email_session_key] = user_email.public_id
+      end
+
+      user_email
     end
 
     def valid_registration_email_session?

@@ -107,6 +107,7 @@ ja:
       linked_to_another_user: "この%{provider}アカウントは既に別のユーザーに紐付けられています"
       identity_not_found: "%{provider}アカウントが紐付けられていません"
       last_identity: "最後のログイン方法を削除することはできません"
+      insufficient_login_methods: "解除前に、メールアドレス、電話番号確認済みのパスキー、または別のソーシャル連携を登録してください"
       reauth_identity_mismatch: "プロフィールに紐付けられている%{provider}アカウントを使用してください"
       provider_error: "プロバイダーとの通信中にエラーが発生しました"
   sign:

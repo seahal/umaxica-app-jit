@@ -40,7 +40,7 @@ module Sign
           flash[:notice] = t(".created")
           redirect_to sign_app_configuration_secrets_path
         rescue ActiveRecord::RecordInvalid => e
-          render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_entity
+          render plain: e.record.errors.full_messages.join("\n"), status: :unprocessable_content
         end
 
         def update

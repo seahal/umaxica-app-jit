@@ -49,7 +49,7 @@ module Jit
           return value if value.present?
 
           # Fallback: try nested key (e.g., CLOUDFLARE -> TURNSTILE_SITE_KEY)
-          nested_key = key_name.to_s.sub(/\ACLOUDFLARE_/, "").to_sym
+          nested_key = key_name.to_s.delete_prefix("CLOUDFLARE_").to_sym
           Rails.application.credentials.dig(:CLOUDFLARE, nested_key)
         end
       end

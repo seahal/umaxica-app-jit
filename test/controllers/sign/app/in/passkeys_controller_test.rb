@@ -10,9 +10,14 @@ module Sign::App::In
 
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
-      @user = users(:one) # Ensure this user has an email in fixtures
-      @user_email = UserEmail.create!(user: @user, address: "user@example.com") unless UserEmail.find_by(user: @user)
-      @user_telephone = UserTelephone.create!(user: @user, number: "+819012345678") unless UserTelephone.find_by(user: @user)
+      @user = create_verified_user_with_email(email_address: "passkey_test_user@example.com")
+      @user_email = @user.user_emails.first # Use the email created by the helper
+
+      @user_telephone = UserTelephone.create!(
+        user: @user,
+        number: "+819012345678",
+        user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+      ) unless UserTelephone.find_by(user: @user)
 
       # Setup user passkey for login
       @passkey = UserPasskey.create!(
@@ -158,5 +163,53 @@ module Sign::App::In
         assert_equal 1, @passkey.reload.sign_count
       end
     end
+
+    # rubocop:disable Minitest/MultipleAssertions
+    test "verification with session limit exceeded returns session_restricted" do
+      # Create 2 active sessions to hit the limit
+      UserToken.where(user_id: @user.id).delete_all
+      2.times do
+        token = UserToken.create!(user: @user, status: UserToken::STATUS_ACTIVE)
+        token.rotate_refresh_token!
+      end
+
+      # Get challenge
+      email = UserEmail.find_by(user: @user).address
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email }
+      explanation = response.parsed_body
+      challenge_id = explanation["challenge_id"]
+
+      # Mock WebAuthn verification
+      mock_credential = Object.new
+      passkey_id = @passkey.webauthn_id
+      mock_credential.define_singleton_method(:id) { passkey_id }
+      mock_credential.define_singleton_method(:sign_count) { 1 }
+      mock_credential.define_singleton_method(:verify) { |*_args| true }
+
+      WebAuthn::Credential.stub :from_get, mock_credential do
+        params = {
+          challenge_id: challenge_id,
+          credential: {
+            id: @passkey.webauthn_id,
+            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+          },
+        }
+
+        post verification_sign_app_in_passkeys_path(ri: "jp"), params: params
+
+        assert_response :ok
+        json = response.parsed_body
+        assert_equal "session_restricted", json["status"]
+        assert_equal sign_app_in_session_path, json["redirect_url"]
+
+        # A restricted token should have been created
+        restricted = UserToken.where(user_id: @user.id, status: UserToken::STATUS_RESTRICTED)
+        assert_equal 1, restricted.count
+
+        # Session limit gate should be issued
+        assert_predicate session[SessionLimitGate::GATE_SESSION_KEY], :present?
+      end
+    end
+    # rubocop:enable Minitest/MultipleAssertions
   end
 end

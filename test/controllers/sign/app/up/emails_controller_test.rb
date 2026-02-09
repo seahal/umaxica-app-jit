@@ -143,6 +143,35 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_match(%r{/up/emails/[^/]+/edit}, path)
   end
 
+  test "create with existing email still redirects and does not create a new record" do
+    user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+    existing_email = UserEmail.create!(
+      user: user,
+      address: "existing_signup@example.com",
+      confirm_policy: "1",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    assert_no_difference("User.count") do
+      assert_no_difference("UserEmail.count") do
+        post sign_app_up_emails_url(ri: "jp"),
+             params: {
+               user_email: {
+                 address: existing_email.address,
+                 confirm_policy: "1",
+               },
+               "cf-turnstile-response": "test",
+             },
+             headers: default_headers
+      end
+    end
+
+    assert_response :redirect
+    assert_includes response.location, "/up/emails/#{existing_email.public_id}/edit"
+    assert_equal I18n.t("sign.app.registration.email.create.verification_code_sent"), flash[:notice]
+    assert_nil flash[:alert]
+  end
+
   test "create enqueues exactly one email" do
     email = "enqueue_test@example.com"
 

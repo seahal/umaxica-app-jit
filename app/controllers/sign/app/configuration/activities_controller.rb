@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
-class Sign::App::Configuration::ActivitiesController < ApplicationController
-  def index
+module Sign
+  module App
+    module Configuration
+      class ActivitiesController < ApplicationController
+        def index
+        end
+      end
+    end
   end
 end

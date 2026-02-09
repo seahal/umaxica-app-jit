@@ -160,7 +160,6 @@ class Sign::App::In::SessionsController < Sign::App::ApplicationController
 
   def revoke_session_by_ref(user, ref)
     token = UserToken.find_by(signed_ref: ref)
-
     unless token && token.user_id == user.id
       flash[:alert] = I18n.t("sign.app.in.session.invalid_session")
       return

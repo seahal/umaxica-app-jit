@@ -191,6 +191,7 @@ en:
       linked_to_another_user: "This %{provider} account is already linked to another user"
       identity_not_found: "No %{provider} account linked"
       last_identity: "Cannot remove your last login method"
+      insufficient_login_methods: "Please add another login method (email, passkey with verified phone, or another social account) before unlinking"
       reauth_identity_mismatch: "Please use the same %{provider} account that is linked to your profile"
       provider_error: "Error communicating with provider"
   sign:

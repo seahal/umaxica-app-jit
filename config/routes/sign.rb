@@ -57,6 +57,7 @@ scope module: :sign, as: :sign do
         end
       end
 
+      # TODO: どっちが、うごいてるん？
       # Social auth: start sets intent/state then redirects to /auth/:provider
       namespace :social do
         get "start", to: "sessions#start"
@@ -65,7 +66,6 @@ scope module: :sign, as: :sign do
                as: :unlink,
                constraints: { provider: /google_oauth2|apple/ }
       end
-
       # OmniAuth callbacks (GET for Google, POST for Apple)
       namespace :auth, path: "auth" do
         match ":provider/callback",
@@ -96,14 +96,14 @@ scope module: :sign, as: :sign do
           end
         end
         resource :mfa, only: %i(show update)
-        resources :emails, only: %i(index edit update destroy)
         namespace :emails do
           resource :registration, only: %i(new create edit update), controller: :registrations
         end
-        resources :telephones, only: %i(index edit update destroy)
+        resources :emails, only: %i(index edit update destroy)
         namespace :telephones do
           resource :registration, only: %i(new create edit update), controller: :registrations
         end
+        resources :telephones, only: %i(index edit update destroy)
         resource :apple, only: [:show, :destroy]
         resource :google, only: %i(show update destroy)
         # refactor to standard CRUD

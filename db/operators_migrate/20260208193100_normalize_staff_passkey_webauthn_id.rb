@@ -45,7 +45,7 @@ class NormalizeStaffPasskeyWebauthnId < ActiveRecord::Migration[8.2]
         normalized = normalize_value(old_value)
         next if normalized == old_value
 
-        passkey.update_columns(webauthn_id: normalized, updated_at: Time.current)
+        passkey.update!(webauthn_id: normalized, updated_at: Time.current)
       rescue StandardError => e
         say "Failed to normalize staff_passkeys id=#{passkey.id}: #{e.class}: #{e.message}", true
       end

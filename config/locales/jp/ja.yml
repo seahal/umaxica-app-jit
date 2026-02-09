@@ -142,6 +142,7 @@ ja:
             invalid_code: パスコードが正しくありません
             attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
             success: 登録が完了しました。
+            sign_in_required: 登録を続行できませんでした。ログインをお試しください。
             failed: 登録処理に失敗しました。もう一度やり直してください。
         telephone:
           new:
@@ -159,6 +160,7 @@ ja:
             code_required: 確認コードを入力してください。
             invalid_code: パスコードが正しくありません。
             attempts_exceeded: 試行回数の上限を超えました。最初からやり直してください。
+            sign_in_required: 登録を続行できませんでした。ログインをお試しください。
           complete:
             page_title: 登録が完了しました
             description: アカウントの登録が正常に完了しました。引き続きサービスをご利用ください。

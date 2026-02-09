@@ -54,7 +54,7 @@ class AddIdentifierBlindIndexesPrincipal < ActiveRecord::Migration[8.2]
         bidx = IdentifierBlindIndex.bidx_for_email(record.address)
         next if bidx.blank? || record.address_bidx == bidx
 
-        record.update_columns(address_bidx: bidx)
+        record.update!(address_bidx: bidx)
       end
     end
   end
@@ -66,7 +66,7 @@ class AddIdentifierBlindIndexesPrincipal < ActiveRecord::Migration[8.2]
         bidx = IdentifierBlindIndex.bidx_for_telephone(record.number)
         next if bidx.blank? || record.number_bidx == bidx
 
-        record.update_columns(number_bidx: bidx)
+        record.update!(number_bidx: bidx)
       end
     end
   end

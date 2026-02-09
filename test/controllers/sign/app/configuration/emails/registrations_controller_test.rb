@@ -37,15 +37,17 @@ class Sign::App::Configuration::Emails::RegistrationsControllerTest < ActionDisp
   end
 
   test "create sends OTP email" do
-    assert_enqueued_emails 1 do
-      post sign_app_configuration_emails_registration_url(ri: "jp"),
-           params: {
-             user_email: {
-               address: "config-registration@example.com",
+    assert_no_difference("User.count") do
+      assert_enqueued_emails 1 do
+        post sign_app_configuration_emails_registration_url(ri: "jp"),
+             params: {
+               user_email: {
+                 address: "config-registration@example.com",
+               },
+               "cf-turnstile-response": "test",
              },
-             "cf-turnstile-response": "test",
-           },
-           headers: request_headers
+             headers: request_headers
+      end
     end
 
     assert_response :redirect
@@ -79,6 +81,23 @@ class Sign::App::Configuration::Emails::RegistrationsControllerTest < ActionDisp
     assert_redirected_to sign_app_configuration_emails_url(ri: "jp")
     assert_equal UserEmailStatus::VERIFIED_WITH_SIGN_UP, user_email.reload.user_email_status_id
     assert_equal @user.id, user_email.user_id
+  end
+
+  test "edit falls back to latest unverified email when session is missing" do
+    post sign_app_configuration_emails_registration_url(ri: "jp"),
+         params: {
+           user_email: {
+             address: "config-session-recovery@example.com",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: request_headers
+
+    session.delete(:email_registration_public_id)
+
+    get edit_sign_app_configuration_emails_registration_url(ri: "jp"), headers: request_headers
+
+    assert_response :success
   end
 
   test "legacy /configuration/emails/new redirects to registration/new" do

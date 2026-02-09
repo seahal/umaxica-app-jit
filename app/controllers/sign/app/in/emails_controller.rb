@@ -69,7 +69,9 @@ module Sign
           if result[:success]
             respond_to do |format|
               format.html do
-                if result[:redirect_path]
+                if result[:restricted]
+                  redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
+                elsif result[:redirect_path]
                   redirect_to result[:redirect_path], notice: t("sign.app.authentication.totp.required")
                 else
                   # Redirect to rd parameter if provided, otherwise to root
@@ -77,8 +79,16 @@ module Sign
                 end
               end
               format.json do
-                # Return tokens for JSON API clients
-                render json: result[:tokens], status: :ok
+                if result[:restricted]
+                  render json: {
+                    status: "session_restricted",
+                    redirect_url: result[:redirect_path],
+                    message: I18n.t("sign.app.in.session.restricted_notice"),
+                  }, status: :ok
+                else
+                  # Return tokens for JSON API clients
+                  render json: result[:tokens], status: :ok
+                end
               end
             end
           else
@@ -131,10 +141,7 @@ module Sign
             session[:user_email_authentication_id] = existing_email.id
             session[:user_email_authentication_address] = nil
 
-            if otp_request_rate_limited?(existing_email)
-              flash[:alert] = t("sign.app.authentication.email.create.rate_limited")
-              return
-            end
+            return if otp_request_rate_limited?(existing_email)
 
             otp_code = generate_otp_for(existing_email)
 
@@ -171,6 +178,8 @@ module Sign
               { success: true, redirect_path: sign_app_in_mfa_path }
             elsif result[:status] == :session_limit_hard_reject
               { success: false, error: result[:message], hard_reject: true, http_status: result[:http_status] }
+            elsif result[:restricted]
+              { success: true, restricted: true, redirect_path: sign_app_in_session_path }
             else
               { success: true, tokens: result }
             end

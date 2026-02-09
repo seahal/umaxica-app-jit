@@ -63,8 +63,14 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
 
   test "new returns forbidden plain message when user has no verified recovery identity" do
     user = User.create!(status_id: UserStatus::NEYO, public_id: "secret_user_no_identity_#{SecureRandom.hex(4)}")
-    token = UserToken.create!(user_id: user.id, last_step_up_at: 1.minute.ago, last_step_up_scope: "configuration_secret")
-    headers = browser_headers.merge("X-TEST-CURRENT-USER" => user.id.to_s, "X-TEST-SESSION-PUBLIC-ID" => token.public_id)
+    token = UserToken.create!(
+      user_id: user.id, last_step_up_at: 1.minute.ago,
+      last_step_up_scope: "configuration_secret",
+    )
+    headers = browser_headers.merge(
+      "X-TEST-CURRENT-USER" => user.id.to_s,
+      "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
+    )
 
     get new_sign_app_configuration_secret_url(ri: "jp"), headers: headers
 
@@ -106,8 +112,14 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
 
   test "create returns unprocessable entity plain message when user has no verified recovery identity" do
     user = User.create!(status_id: UserStatus::NEYO, public_id: "secret_user_no_identity_create_#{SecureRandom.hex(4)}")
-    token = UserToken.create!(user_id: user.id, last_step_up_at: 1.minute.ago, last_step_up_scope: "configuration_secret")
-    headers = browser_headers.merge("X-TEST-CURRENT-USER" => user.id.to_s, "X-TEST-SESSION-PUBLIC-ID" => token.public_id)
+    token = UserToken.create!(
+      user_id: user.id, last_step_up_at: 1.minute.ago,
+      last_step_up_scope: "configuration_secret",
+    )
+    headers = browser_headers.merge(
+      "X-TEST-CURRENT-USER" => user.id.to_s,
+      "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
+    )
 
     assert_no_difference("UserSecret.count") do
       post sign_app_configuration_secrets_url(ri: "jp"),
@@ -159,7 +171,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "should return 404 for other user's secret" do
-    other_user = users(:two)
+    other_user = create_verified_user_with_email(email_address: "other_secret_user@example.com")
     other_secret = UserSecret.create!(
       user: other_user,
       name: "Other Secret",
@@ -174,7 +186,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "update blocks disabling last method" do
-    user = User.create!(status_id: UserStatus::NEYO)
+    user = create_verified_user_with_email(email_address: "update_block_user@example.com")
     token = UserToken.create!(
       user_id: user.id, last_step_up_at: 1.minute.ago,
       last_step_up_scope: "configuration_secret",
@@ -200,7 +212,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "destroy blocks last method" do
-    user = User.create!(status_id: UserStatus::NEYO)
+    user = create_verified_user_with_email(email_address: "destroy_block_user@example.com")
     token = UserToken.create!(
       user_id: user.id, last_step_up_at: 1.minute.ago,
       last_step_up_scope: "configuration_secret",

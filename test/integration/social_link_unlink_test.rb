@@ -9,7 +9,7 @@ class SocialLinkUnlinkTest < ActionDispatch::IntegrationTest
     OmniAuth.config.test_mode = true
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     host! @host
-    @user = users(:one) # Assumes users(:one) exists and has some login method (e.g. password/secret)
+    @user = create_verified_user_with_email(email_address: "social_link_test@example.com")
     # Ensure @user has at least one auth method to start (e.g. password secret)
     # Check fixtures or add one.
     # Note: UserSecretKind should be seeded. If validation fails, check seeded values.
@@ -61,7 +61,7 @@ class SocialLinkUnlinkTest < ActionDispatch::IntegrationTest
     follow_redirect!(headers: @headers)
 
     # Should show error
-    assert_equal I18n.t("errors.social_auth.last_identity"), flash[:alert]
+    assert_equal I18n.t("errors.social_auth.insufficient_login_methods"), flash[:alert]
     assert UserSocialApple.find_by(uid: "apple_uid_solo")
   end
 end

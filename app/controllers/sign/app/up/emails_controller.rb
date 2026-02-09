@@ -25,7 +25,11 @@ module Sign
         def create
           email_params = params.expect(user_email: [:address, :confirm_policy])
 
-          unless initiate_email_verification!(email_params[:address], confirm_policy: email_params[:confirm_policy])
+          unless initiate_email_verification!(
+            email_params[:address],
+            confirm_policy: email_params[:confirm_policy],
+            allow_existing: true,
+          )
             render :new, status: :unprocessable_content
             return
           end
@@ -57,11 +61,15 @@ module Sign
             return
           end
 
-          # Complete email verification
-          result =
-            complete_email_verification!(params["id"], submitted_code) do |user_email|
-              create_user_and_login(user_email)
-            end
+          if existing_signup_email_flow?
+            result = handle_existing_email_verification(submitted_code)
+            return if result == :redirected
+          else
+            result =
+              complete_email_verification!(params["id"], submitted_code) do |user_email|
+                create_user_and_login(user_email)
+              end
+          end
 
           if result == :locked
             reset_email_flow!
@@ -102,9 +110,42 @@ module Sign
         end
 
         def valid_email_session?
-          @user_email.present? &&
-            !@user_email.otp_expired? &&
+          return false unless @user_email.present? && !@user_email.otp_expired?
+
+          if existing_signup_email_flow?
+            session_existing_email_id.to_i == @user_email.id
+          else
             @user_email.user_email_status_id == UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
+          end
+        end
+
+        def existing_signup_email_flow?
+          session_existing_email_id.present?
+        end
+
+        def session_existing_email_id
+          session[Sign::EmailRegistrable::EXISTING_EMAIL_SESSION_KEY]
+        end
+
+        def handle_existing_email_verification(submitted_code)
+          result = verify_otp_code(@user_email, submitted_code)
+          unless result[:success]
+            increment_otp_attempts!(@user_email)
+            if @user_email.locked?
+              reset_email_flow!
+              return :locked
+            end
+
+            @user_email.errors.add(:pass_code, t("sign.app.registration.email.update.invalid_code"))
+            return false
+          end
+
+          clear_otp(@user_email)
+          reset_email_flow!
+          session.delete(Sign::EmailRegistrable::EXISTING_EMAIL_SESSION_KEY)
+          redirect_to new_sign_app_in_path,
+                      notice: t("sign.app.registration.email.update.sign_in_required")
+          :redirected
         end
 
         def create_user_and_login(user_email)

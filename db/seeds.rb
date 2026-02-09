@@ -20,6 +20,21 @@ rescue => e
   Rails.logger.debug { "  #{klass.name}: SKIPPED (#{e.message})" }
 end
 
+def seed_token_kinds(klass, mapping)
+  mapping.each do |id, code|
+    record = klass.find_or_initialize_by(id: id)
+    if record.new_record?
+      record.code = code if record.respond_to?(:code=)
+      record.save!
+    elsif record.respond_to?(:code) && record.code.to_s.casecmp(code) != 0
+      record.update!(code: code)
+    end
+  end
+  Rails.logger.debug { "  #{klass.name}: #{mapping.size} records ensured" }
+rescue => e
+  Rails.logger.debug { "  #{klass.name}: SKIPPED (#{e.message})" }
+end
+
 # --- Principal database statuses ---
 seed_status(UserStatus)
 seed_status(UserEmailStatus)
@@ -34,6 +49,24 @@ seed_status(ClientStatus)
 # --- Token database statuses ---
 seed_status(UserTokenStatus)
 seed_status(StaffTokenStatus)
+
+# --- Token database kinds ---
+seed_token_kinds(
+  UserTokenKind,
+  {
+    UserTokenKind::BROWSER_WEB => "BROWSER_WEB",
+    UserTokenKind::CLIENT_IOS => "CLIENT_IOS",
+    UserTokenKind::CLIENT_ANDROID => "CLIENT_ANDROID",
+  },
+)
+seed_token_kinds(
+  StaffTokenKind,
+  {
+    StaffTokenKind::BROWSER_WEB => "BROWSER_WEB",
+    StaffTokenKind::CLIENT_IOS => "CLIENT_IOS",
+    StaffTokenKind::CLIENT_ANDROID => "CLIENT_ANDROID",
+  },
+)
 
 # --- Operator database statuses ---
 seed_status(AdminStatus)

@@ -27,7 +27,7 @@ module Sign
         user_telephone_status_id: UserTelephoneStatus::UNVERIFIED,
       ).destroy_all
 
-      generate_otp_attributes(@user_telephone)
+      otp_number = generate_otp_attributes(@user_telephone)
 
       unless @user_telephone.valid?
         return false
@@ -35,10 +35,7 @@ module Sign
 
       @user_telephone.save!
 
-      # Send SMS (Mock or Real)
-      # Sms::App::RegistrationMailer equivalent?
-      # Assuming SmsService exist
-      # Services::SmsService.send(...)
+      send_telephone_verification_sms(@user_telephone, otp_number)
 
       true
     end
@@ -69,6 +66,14 @@ module Sign
       yield(@user_telephone) if block_given?
 
       :success
+    end
+
+    def send_telephone_verification_sms(user_telephone, otp_number)
+      AwsSmsService.send_message(
+        to: user_telephone.number,
+        message: "PassCode => #{otp_number}",
+        subject: "PassCode => #{otp_number}",
+      )
     end
   end
 end

@@ -10,7 +10,31 @@
 
     <div>
       <%= form_with model: @user_email, url: sign_app_configuration_emails_registration_path do |form| %>
-        <%= render "sign/app/emails/registrations/new_fields", form: form, user_email: @user_email, show_confirm_policy: false %>
+        <% if @user_email.errors.any? %>
+          <div>
+            <ul role="list">
+              <% @user_email.errors.each do |error| %>
+                <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :address %>
+          <div>
+            <%= form.email_field :address, autocomplete: "email", required: true %>
+          </div>
+        </div>
+
+        <%# TODO: Switch to the stealth Turnstile once it is ready. %>
+        <div>
+          <%= render "shared/cloudflare_turnstile" %>
+        </div>
+
+        <div>
+          <%= form.submit %>
+        </div>
         <div>
           <%= link_to t("actions.cancel"), sign_app_configuration_emails_path %>
           <%= form.submit t("actions.submit") %>

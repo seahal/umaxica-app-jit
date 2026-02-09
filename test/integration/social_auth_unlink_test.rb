@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "base64"
 
 # Integration tests for social auth unlink functionality
 #
 # These tests verify:
-# - MANDATORY TEST 4: Unlink when only 1 identity returns 422 (LastIdentityError)
+# - Unlink when only 1 login method returns an error
 # - Successful unlink removes identity
 # - Unlink requires authentication
 class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
@@ -28,8 +29,58 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
+  test "unlink Google requires recent reauth" do
+    google_identity = UserSocialGoogle.create!(
+      user: @user,
+      uid: "reauth_google_#{SecureRandom.hex(4)}",
+      provider: "google_oauth2",
+      token: "token",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:active),
+    )
+
+    UserToken.create!(
+      user_id: @user.id,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      created_at: 2.hours.ago,
+      updated_at: 2.hours.ago,
+    )
+
+    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+           headers: as_user_headers(@user, host: @host)
+
+    assert_response :unprocessable_content
+    google_identity.reload
+    assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.user_identity_social_google_status_id
+  end
+
+  test "unlink Apple requires recent reauth" do
+    apple_identity = UserSocialApple.create!(
+      user: @user,
+      uid: "reauth_apple_#{SecureRandom.hex(4)}",
+      provider: "apple",
+      token: "token",
+      expires_at: 1.week.from_now.to_i,
+      user_social_apple_status: user_social_apple_statuses(:active),
+    )
+
+    UserToken.create!(
+      user_id: @user.id,
+      user_token_kind_id: UserTokenKind::BROWSER_WEB,
+      created_at: 2.hours.ago,
+      updated_at: 2.hours.ago,
+    )
+
+    delete sign_app_social_unlink_url(provider: "apple", ri: "jp"),
+           headers: as_user_headers(@user, host: @host)
+
+    assert_response :unprocessable_content
+    apple_identity.reload
+    assert_equal UserSocialAppleStatus::ACTIVE, apple_identity.user_identity_social_apple_status_id
+  end
+
   # ============================================================================
-  # MANDATORY TEST 4: Unlink last identity returns 422 (LastIdentityError)
+  # Unlink last login method returns error
   # ============================================================================
   test "unlink last Google identity returns 422 LastIdentityError" do
     # User has only one identity (Google)
@@ -50,8 +101,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     follow_redirect!
 
-    # Verify error about last identity
-    assert_predicate flash[:alert], :present?, "Should have error about last identity"
+    assert_equal I18n.t("errors.social_auth.insufficient_login_methods"), flash[:alert]
 
     # Identity should still exist
     assert UserSocialGoogle.exists?(id: google_identity.id), "Last identity should NOT be deleted"
@@ -73,7 +123,7 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     follow_redirect!
 
-    assert_predicate flash[:alert], :present?, "Should have error about last identity"
+    assert_equal I18n.t("errors.social_auth.insufficient_login_methods"), flash[:alert]
     assert UserSocialApple.exists?(id: apple_identity.id), "Last identity should NOT be deleted"
   end
 
@@ -156,10 +206,82 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
                  "Apple identity should be REVOKED"
   end
 
+  test "unlink Google fails when passkey exists without verified telephone" do
+    google_identity = UserSocialGoogle.create!(
+      user: @user,
+      uid: "google_only_#{SecureRandom.hex(4)}",
+      provider: "google_oauth2",
+      token: "token",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:active),
+    )
+
+    email = UserEmail.create!(
+      user: @user,
+      address: "passkey_tmp_#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    UserPasskey.create!(
+      user: @user,
+      webauthn_id: Base64.urlsafe_encode64("passkey_#{SecureRandom.hex(4)}", padding: false),
+      public_key: "public_key_#{SecureRandom.hex(4)}",
+      sign_count: 0,
+      description: "Test Passkey",
+    )
+
+    email.destroy!
+
+    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+           headers: as_user_headers(@user, host: @host)
+
+    assert_response :redirect
+    follow_redirect!
+    assert_equal I18n.t("errors.social_auth.insufficient_login_methods"), flash[:alert]
+
+    google_identity.reload
+    assert_equal UserSocialGoogleStatus::ACTIVE, google_identity.user_identity_social_google_status_id
+  end
+
+  test "unlink Google succeeds with passkey and verified telephone" do
+    google_identity = UserSocialGoogle.create!(
+      user: @user,
+      uid: "google_with_passkey_#{SecureRandom.hex(4)}",
+      provider: "google_oauth2",
+      token: "token",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:active),
+    )
+
+    UserTelephone.create!(
+      user: @user,
+      number: "+15551234567",
+      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    )
+
+    UserPasskey.create!(
+      user: @user,
+      webauthn_id: Base64.urlsafe_encode64("passkey_tel_#{SecureRandom.hex(4)}", padding: false),
+      public_key: "public_key_#{SecureRandom.hex(4)}",
+      sign_count: 0,
+      description: "Test Passkey",
+    )
+
+    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+           headers: as_user_headers(@user, host: @host)
+
+    assert_response :redirect
+    follow_redirect!
+    assert_predicate flash[:notice], :present?
+
+    google_identity.reload
+    assert_equal UserSocialGoogleStatus::REVOKED, google_identity.user_identity_social_google_status_id
+  end
+
   # ============================================================================
   # Error cases
   # ============================================================================
-  test "unlink non-existent identity returns error" do
+  test "unlink non-existent identity is idempotent" do
     # User has no Google identity but tries to unlink
     UserSocialApple.create!(
       user: @user,
@@ -176,7 +298,25 @@ class SocialAuthUnlinkTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     follow_redirect!
 
-    assert_predicate flash[:alert], :present?, "Should have error about identity not found"
+    assert_predicate flash[:notice], :present?, "Should succeed as no-op"
+  end
+
+  test "unlink already revoked identity is idempotent" do
+    UserSocialGoogle.create!(
+      user: @user,
+      uid: "revoked_google_#{SecureRandom.hex(4)}",
+      provider: "google_oauth2",
+      token: "token",
+      expires_at: 1.week.from_now.to_i,
+      user_social_google_status: user_social_google_statuses(:revoked),
+    )
+
+    delete sign_app_social_unlink_url(provider: "google_oauth2", ri: "jp"),
+           headers: as_user_headers(@user, host: @host)
+
+    assert_response :redirect
+    follow_redirect!
+    assert_predicate flash[:notice], :present?
   end
 
   test "unlink requires authentication" do

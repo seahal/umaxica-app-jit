@@ -3,7 +3,8 @@
 class Sign::App::Verification::TotpsController < Sign::App::Verification::BaseController
   def new
     return unless require_reauth_session!
-    return unless require_method_available!(:totp)
+
+    nil unless require_method_available!(:totp)
   end
 
   def create

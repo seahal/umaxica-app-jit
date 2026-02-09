@@ -77,15 +77,15 @@ class SocialAuthService
     identity_class = SocialIdentifiable.model_for_provider(provider)
     identity = identity_for_user(identity_class, provider)
 
-    raise SocialAuth::ProviderError.new("errors.social_auth.identity_not_found", provider: provider) unless identity
+    return { success: true, provider: provider, already_unlinked: true } unless identity&.active?
 
     PrincipalRecord.transaction do
       # Lock the user to prevent race conditions
       @current_user.lock!
 
       # Check if this is the last authentication method
-      if last_authentication_method?
-        raise SocialAuth::LastIdentityError.new("errors.social_auth.last_identity")
+      unless @current_user.login_methods_remaining?(excluding_provider: provider)
+        raise SocialAuth::LastIdentityError.new("errors.social_auth.insufficient_login_methods")
       end
 
       # Soft delete: set status to REVOKED instead of destroying
@@ -423,43 +423,8 @@ class SocialAuthService
     )
   end
 
-  def last_authentication_method?
-    auth_methods_count = 0
-
-    # Count social identities (only ACTIVE ones)
-    google = @current_user.user_social_google
-    if google&.user_identity_social_google_status_id == UserSocialGoogleStatus::ACTIVE
-      auth_methods_count += 1
-    end
-
-    apple = @current_user.user_social_apple
-    if apple&.user_identity_social_apple_status_id == UserSocialAppleStatus::ACTIVE
-      auth_methods_count += 1
-    end
-
-    # Count other auth methods (email, telephone, passkey, secret)
-    if @current_user.respond_to?(:user_emails)
-      # UserEmailStatus uses VERIFIED/VERIFIED_WITH_SIGN_UP, not ACTIVE
-      auth_methods_count += @current_user.user_emails.where(
-        user_email_status_id: [UserEmailStatus::VERIFIED, UserEmailStatus::VERIFIED_WITH_SIGN_UP],
-      ).count
-    end
-
-    if @current_user.respond_to?(:user_telephones)
-      auth_methods_count += @current_user.user_telephones.where(
-        user_telephone_status_id: [UserTelephoneStatus::VERIFIED, UserTelephoneStatus::VERIFIED_WITH_SIGN_UP],
-      ).count
-    end
-
-    if @current_user.respond_to?(:user_passkeys)
-      auth_methods_count += @current_user.user_passkeys.where(status_id: UserPasskeyStatus::ACTIVE).count
-    end
-
-    if @current_user.respond_to?(:user_secrets)
-      auth_methods_count += @current_user.user_secrets.where(user_identity_secret_status_id: UserSecretStatus::ACTIVE).count
-    end
-
-    auth_methods_count <= 1
+  def last_authentication_method?(excluding_provider: nil)
+    !@current_user.login_methods_remaining?(excluding_provider: excluding_provider)
   end
 
   def build_result(user, identity, reauthenticated:, reauth_at: nil, existing_account: nil)

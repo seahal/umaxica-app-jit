@@ -499,19 +499,7 @@ module Auth
       is_restricted = session_limit_state == :issue_restricted
       store_pending_login_resource(resource) if is_restricted
 
-      kind_id = token_kind_id
-      if token_class.columns_hash["#{resource_type}_token_kind_id"]&.type == :integer && kind_id.is_a?(String)
-        kind_id =
-          case [resource_type, kind_id]
-          when ["staff", "BROWSER_WEB"] then StaffTokenKind::BROWSER_WEB
-          when ["staff", "CLIENT_IOS"] then StaffTokenKind::CLIENT_IOS
-          when ["staff", "CLIENT_ANDROID"] then StaffTokenKind::CLIENT_ANDROID
-          when ["user", "BROWSER_WEB"] then UserTokenKind::BROWSER_WEB
-          when ["user", "CLIENT_IOS"] then UserTokenKind::CLIENT_IOS
-          when ["user", "CLIENT_ANDROID"] then UserTokenKind::CLIENT_ANDROID
-          else kind_id
-          end
-      end
+      kind_id = resolve_token_kind_id(token_kind_id)
 
       # Create token with appropriate status
       token_status = is_restricted ? token_class::STATUS_RESTRICTED : token_class::STATUS_ACTIVE
@@ -562,10 +550,14 @@ module Auth
         expires_in: ACCESS_TOKEN_TTL.to_i,
       }
 
-      # If session is restricted, indicate need for session management
+      # If session is restricted, issue session limit gate and indicate need for session management
       if is_restricted
         result[:restricted] = true
         result[:session_management_required] = true
+        issue_session_limit_gate!(
+          return_to: request.fullpath,
+          flow: "#{controller_path}.session",
+        )
       end
 
       result
@@ -715,6 +707,8 @@ module Auth
     end
 
     included do
+      include ::SessionLimitGate
+
       # Important: prepend first so this runs before other before_action hooks.
       prepend_before_action :enforce_access_policy! if respond_to?(:prepend_before_action)
       if respond_to?(:helper_method)
@@ -1320,12 +1314,71 @@ module Auth
         token_attributes = { resource_foreign_key => resource.id }
         # Determine kind column based on resource type (user_token_kind_id or staff_token_kind_id)
         kind_column = "#{resource_type}_token_kind_id"
-        token_attributes[kind_column] = token_kind_id if token_class.column_names.include?(kind_column)
+        if token_class.column_names.include?(kind_column)
+          ensure_token_kind_exists!(token_kind_id)
+          token_attributes[kind_column] = token_kind_id
+        end
 
         # Set status if provided (for restricted sessions)
         token_attributes[:status] = status if status.present?
 
         token_class.create!(token_attributes)
+      end
+    end
+
+    def resolve_token_kind_id(raw_kind_id)
+      return raw_kind_id unless raw_kind_id.is_a?(String)
+
+      kind_column = "#{resource_type}_token_kind_id"
+      return raw_kind_id unless token_class.columns_hash[kind_column]&.type == :integer
+
+      kind_model = token_kind_model
+      if kind_model.column_names.include?("code")
+        begin
+          return kind_model.find_by!(code: raw_kind_id).id
+        rescue ActiveRecord::RecordNotFound
+          Rails.logger.error(
+            "AUTH_TOKEN_KIND_MISSING: #{kind_model.name} code=#{raw_kind_id} resource_type=#{resource_type}",
+          )
+          raise ActiveRecord::RecordNotFound,
+                "Missing #{kind_model.name} code=#{raw_kind_id} for #{resource_type} login"
+        end
+      end
+
+      resolved =
+        case [resource_type, raw_kind_id]
+        when ["staff", "BROWSER_WEB"] then StaffTokenKind::BROWSER_WEB
+        when ["staff", "CLIENT_IOS"] then StaffTokenKind::CLIENT_IOS
+        when ["staff", "CLIENT_ANDROID"] then StaffTokenKind::CLIENT_ANDROID
+        when ["user", "BROWSER_WEB"] then UserTokenKind::BROWSER_WEB
+        when ["user", "CLIENT_IOS"] then UserTokenKind::CLIENT_IOS
+        when ["user", "CLIENT_ANDROID"] then UserTokenKind::CLIENT_ANDROID
+        end
+
+      return resolved if resolved
+
+      raise ActiveRecord::RecordNotFound, "Missing #{kind_model.name} for code=#{raw_kind_id}"
+    end
+
+    def ensure_token_kind_exists!(token_kind_id)
+      return if token_kind_id.blank?
+
+      kind_model = token_kind_model
+      kind_model.find(token_kind_id)
+    rescue ActiveRecord::RecordNotFound
+      Rails.logger.error(
+        "AUTH_TOKEN_KIND_MISSING: #{kind_model.name} id=#{token_kind_id} resource_type=#{resource_type}",
+      )
+      raise ActiveRecord::RecordNotFound,
+            "Missing #{kind_model.name} id=#{token_kind_id} for #{resource_type} login"
+    end
+
+    def token_kind_model
+      case resource_type
+      when "user" then UserTokenKind
+      when "staff" then StaffTokenKind
+      else
+        raise ActiveRecord::RecordNotFound, "Missing token kind model for resource_type=#{resource_type}"
       end
     end
 

@@ -3,7 +3,14 @@
 class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseController
   def new
     return unless require_reauth_session!
-    return unless require_method_available!(:email_otp)
+
+    nil unless require_method_available!(:email_otp)
+  end
+
+  def edit
+    return unless require_reauth_session!
+
+    nil unless require_email_nonce!
   end
 
   def create
@@ -21,11 +28,6 @@ class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseC
     session[REAUTH_SESSION_KEY] = rs
 
     redirect_to edit_sign_app_verification_email_path(nonce, ri: params[:ri])
-  end
-
-  def edit
-    return unless require_reauth_session!
-    return unless require_email_nonce!
   end
 
   def update

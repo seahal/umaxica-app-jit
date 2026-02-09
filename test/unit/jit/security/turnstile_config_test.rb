@@ -138,7 +138,7 @@ module Jit
 
       # Stub a single flat credential key, with nested keys returning nil
       def stub_credential(key, value)
-        flat = value.nil? || value == "" ? (value == "" ? { key => value } : {}) : { key => value }
+        flat = (value.nil? || value == "") ? ((value == "") ? { key => value } : {}) : { key => value }
         fake_creds = fake_credentials(flat: flat, nested: {})
         Rails.application.stub(:credentials, fake_creds) do
           yield

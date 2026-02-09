@@ -43,6 +43,23 @@ module Sign
             return
           end
 
+          @user_telephone.validate
+          existing_telephone =
+            @user_telephone.number.present? ? UserTelephone.find_by(number: @user_telephone.number) : nil
+          uniqueness_only = telephone_uniqueness_only_error?(@user_telephone)
+
+          if @user_telephone.errors.any? && !uniqueness_only
+            render :new, status: :unprocessable_content
+            return
+          end
+
+          if uniqueness_only && existing_telephone &&
+              existing_telephone.user_telephone_status_id != UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP
+            cleanup_pending_telephone_signup!
+            dispatch_existing_telephone_verification!(existing_telephone)
+            return
+          end
+
           begin
             UserTelephone.transaction do
               # Cleanup pending signup from same session
@@ -103,14 +120,29 @@ module Sign
             return
           end
 
+          existing_flow = existing_signup_telephone_flow?(registration_session)
+
           # Verify OTP code with lockout handling
-          verification_result = verify_submitted_telephone_code
+          verification_result =
+            if existing_flow
+              verify_existing_telephone_code
+            else
+              verify_submitted_telephone_code
+            end
           if verification_result == :locked
             flash[:alert] = t("sign.app.registration.telephone.update.attempts_exceeded")
             redirect_to new_sign_app_up_telephone_path(ri: params[:ri])
             return
           end
           return render_invalid_telephone_code unless verification_result
+
+          if existing_flow
+            clear_otp(@user_telephone)
+            session[:user_telephone_registration] = nil
+            redirect_to new_sign_app_in_path,
+                        notice: t("sign.app.registration.telephone.update.sign_in_required")
+            return
+          end
 
           verify_telephone!
           if sms_login_ready?
@@ -148,9 +180,14 @@ module Sign
         private
 
         def valid_telephone_session?
-          @user_telephone.present? &&
-            !@user_telephone.otp_expired? &&
+          return false unless @user_telephone.present? && !@user_telephone.otp_expired?
+
+          if existing_signup_telephone_flow?(session[:user_telephone_registration])
+            session_public_id = session_public_id_from_registration
+            session_public_id.to_s == @user_telephone.public_id.to_s
+          else
             @user_telephone.user_telephone_status_id == UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP
+          end
         end
 
         def boolean_value(value)
@@ -168,9 +205,13 @@ module Sign
         end
 
         def valid_registration_session?(registration_session)
-          session_public_id = registration_session&.dig("public_id") || registration_session&.dig(:public_id)
+          session_public_id = session_public_id_from_registration(registration_session)
           registration_session.present? &&
             session_public_id.to_s == params["public_id"].to_s
+        end
+
+        def session_public_id_from_registration(registration_session = session[:user_telephone_registration])
+          registration_session&.dig("public_id") || registration_session&.dig(:public_id)
         end
 
         def otp_session_expired?(registration_session)
@@ -193,6 +234,18 @@ module Sign
             session[:user_telephone_registration] = nil
             return :locked
           end
+
+          @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.invalid_code"))
+          false
+        end
+
+        def verify_existing_telephone_code
+          submitted_code = params.dig("user_telephone", "pass_code")
+          result = verify_otp_code(@user_telephone, submitted_code)
+          return true if result[:success]
+
+          increment_otp_attempts!(@user_telephone)
+          return :locked if @user_telephone.locked?
 
           @user_telephone.errors.add(:pass_code, t("sign.app.registration.telephone.update.invalid_code"))
           false
@@ -292,7 +345,6 @@ module Sign
             number: @user_telephone.number,
             user_identity_telephone_status_id: [
               UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP,
-              UserTelephoneStatus::UNVERIFIED,
             ],
           ).to_a
 
@@ -302,6 +354,44 @@ module Sign
               .find_each(&:destroy!)
           end
           existing_telephones.each(&:destroy!)
+        end
+
+        def existing_signup_telephone_flow?(registration_session)
+          registration_session&.dig(:existing) == true || registration_session&.dig("existing") == true
+        end
+
+        def dispatch_existing_telephone_verification!(existing_telephone)
+          @user_telephone = existing_telephone
+          otp_code = generate_otp_for(@user_telephone)
+
+          session[:user_telephone_registration] = {
+            public_id: @user_telephone.public_id,
+            confirm_policy: boolean_value(@user_telephone.confirm_policy),
+            confirm_using_mfa: boolean_value(@user_telephone.confirm_using_mfa),
+            expires_at: @user_telephone.otp_expires_at.to_i,
+            existing: true,
+          }
+
+          AwsSmsService.send_message(
+            to: @user_telephone.number,
+            message: "PassCode => #{otp_code}",
+            subject: "PassCode => #{otp_code}",
+          )
+
+          redirect_to edit_sign_app_up_telephone_path(@user_telephone, ri: params[:ri]),
+                      notice: t("sign.app.registration.telephone.create.verification_code_sent")
+        end
+
+        def telephone_uniqueness_only_error?(user_telephone)
+          return false if user_telephone.errors.empty?
+
+          number_errors = user_telephone.errors.details[:number] || []
+          return false if number_errors.empty?
+
+          other_errors = user_telephone.errors.details.except(:number).values.flatten
+          return false if other_errors.any?
+
+          number_errors.all? { |error| error[:error] == :taken }
         end
       end
     end

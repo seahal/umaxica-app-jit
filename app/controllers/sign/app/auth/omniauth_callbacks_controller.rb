@@ -123,7 +123,17 @@ module Sign
                         )
           when "reauth"
             Rails.logger.debug { "[OmniAuth] Reauth intent - signing in with reauth" }
-            sign_in_with_reauth(user)
+            login_result = sign_in_with_reauth(user)
+
+            if login_result.is_a?(Hash) && login_result[:status] != :success
+              return handle_login_failure(login_result, provider_name, user)
+            end
+
+            if login_result.is_a?(Hash) && login_result[:restricted]
+              return redirect_to sign_app_in_session_path,
+                                 notice: I18n.t("sign.app.in.session.restricted_notice")
+            end
+
             redirect_to social_auth_success_redirect_path,
                         notice: I18n.t("sign.app.social.sessions.reauth.success", provider: provider_name)
           else
@@ -136,6 +146,12 @@ module Sign
                 "[OmniAuth] Login failed - status: #{login_result[:status]}, user_id: #{user.id}"
               end
               return handle_login_failure(login_result, provider_name, user)
+            end
+
+            # Check if session is restricted (session limit exceeded)
+            if login_result.is_a?(Hash) && login_result[:restricted]
+              return redirect_to sign_app_in_session_path,
+                                 notice: I18n.t("sign.app.in.session.restricted_notice")
             end
 
             Rails.logger.debug { "[OmniAuth] Login successful - redirecting" }

@@ -146,7 +146,49 @@ class User < PrincipalRecord
 
   # what is this?
   def has_verified_recovery_identity?
-    user_emails.where(user_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS).exists? ||
-      user_telephones.where(user_identity_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS).exists?
+    user_emails.exists?(user_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS) ||
+      user_telephones.exists?(user_identity_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS)
+  end
+
+  def login_methods_remaining?(excluding_provider: nil)
+    remaining_login_methods(excluding_provider: excluding_provider).any?
+  end
+
+  def remaining_login_methods(excluding_provider: nil)
+    excluded = excluding_provider.present? ? SocialIdentifiable.normalize_provider(excluding_provider) : nil
+    methods = []
+
+    methods << :google if active_social_provider?("google") && excluded != "google"
+    methods << :apple if active_social_provider?("apple") && excluded != "apple"
+    methods << :email if verified_email?
+    methods << :passkey if passkey_login_available?
+
+    methods
+  end
+
+  def active_social_provider?(provider)
+    normalized = SocialIdentifiable.normalize_provider(provider)
+    case normalized
+    when "google"
+      user_social_google&.user_identity_social_google_status_id == UserSocialGoogleStatus::ACTIVE
+    when "apple"
+      user_social_apple&.user_identity_social_apple_status_id == UserSocialAppleStatus::ACTIVE
+    else
+      false
+    end
+  end
+
+  def verified_email?
+    user_emails.exists?(user_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS)
+  end
+
+  def verified_telephone?
+    user_telephones.exists?(user_identity_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS)
+  end
+
+  def passkey_login_available?
+    return false unless user_passkeys.active.exists?
+
+    verified_telephone?
   end
 end

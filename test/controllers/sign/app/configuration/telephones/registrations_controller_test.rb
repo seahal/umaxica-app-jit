@@ -12,6 +12,25 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     @token = UserToken.create!(
       user_id: @user.id,
     )
+
+    @sms_calls = []
+    sms_calls = @sms_calls
+    if defined?(AwsSmsService)
+      @original_aws_sms_service_send_message = AwsSmsService.method(:send_message)
+      AwsSmsService.singleton_class.send(:define_method, :send_message) do |**kwargs|
+        sms_calls << kwargs
+        true
+      end
+    end
+  end
+
+  teardown do
+    return unless defined?(AwsSmsService) && @original_aws_sms_service_send_message
+
+    original = @original_aws_sms_service_send_message
+    AwsSmsService.singleton_class.send(:define_method, :send_message) do |**kwargs|
+      original.call(**kwargs)
+    end
   end
 
   def request_headers
@@ -36,5 +55,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     assert_equal @user.id, user_telephone.user_id
     assert_equal UserTelephoneStatus::UNVERIFIED, user_telephone.user_telephone_status_id
     assert_equal 0, UserTelephone.where(user_id: 0).count
+    assert_equal 1, @sms_calls.size
+    assert_equal "+10000000009", @sms_calls.last[:to]
   end
 end

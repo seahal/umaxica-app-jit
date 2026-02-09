@@ -142,6 +142,22 @@ class ActiveSupport::TestCase
   # instead of loading all fixtures globally
   # To use fixtures in a specific test file, add:
   # fixtures :all unless ENV["SKIP_DB"] == "1"
+
+  # Helper to create a user with a verified email for tests requiring this prerequisite.
+  def create_verified_user_with_email(email_address: "test@example.com", status: UserStatus::NEYO)
+    user = User.create!(
+      status_id: status, public_id: SecureRandom.hex(10), created_at: Time.current,
+      updated_at: Time.current,
+    )
+    UserEmail.create!(
+      user: user,
+      address: email_address,
+      user_email_status_id: UserEmailStatus::VERIFIED, # Using the confirmed ID for VERIFIED
+      created_at: Time.current,
+      updated_at: Time.current,
+    )
+    user # Return the user object
+  end
 end
 
 # Provide a sane default `@headers` for tests that expect it but don't set it.

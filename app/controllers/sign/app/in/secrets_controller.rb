@@ -141,6 +141,8 @@ module Sign
           result = log_in(user, require_totp_check: false)
           if result[:status] == :session_limit_hard_reject
             render plain: result[:message], status: (result[:http_status] || :conflict)
+          elsif result[:restricted]
+            redirect_to sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice")
           else
             redirect_with_notice(success_redirect_path, t("sign.app.authentication.secret.create.success"))
           end
@@ -161,6 +163,8 @@ module Sign
             redirect_to sign_app_in_mfa_path(ri: params[:ri]), notice: t("sign.app.authentication.totp.required")
           elsif result[:status] == :session_limit_hard_reject
             render plain: result[:message], status: (result[:http_status] || :conflict)
+          elsif result[:restricted]
+            redirect_to sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice")
           else
             redirect_with_notice(success_redirect_path, t("sign.app.authentication.secret.create.success"))
           end
