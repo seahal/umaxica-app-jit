@@ -107,10 +107,10 @@ module Sign
 
       user_email =
         target_user
-        .user_emails
-        .where(user_email_status_id: UserEmailStatus::UNVERIFIED_WITH_SIGN_UP)
-        .order(created_at: :desc)
-        .first
+          .user_emails
+          .where(user_email_status_id: UserEmailStatus::UNVERIFIED_WITH_SIGN_UP)
+          .order(created_at: :desc)
+          .first
 
       if user_email
         session[registration_email_session_key] = user_email.public_id

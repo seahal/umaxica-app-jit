@@ -27,23 +27,6 @@ class OrgVerificationTest < ActionDispatch::IntegrationTest
     }.freeze
   end
 
-  test "create makes a PENDING verification session with 10-minute expiry" do
-    return_to = Base64.urlsafe_encode64(sign_org_configuration_path(ri: "jp"))
-
-    assert_difference -> { ReauthSession.count }, +1 do
-      post sign_org_verification_totp_url(ri: "jp"),
-           params: { verification: { scope: "configuration_email", return_to: return_to } },
-           headers: @headers
-    end
-
-    assert_response :redirect
-    reauth_session = ReauthSession.order(created_at: :desc).first
-    assert_equal "PENDING", reauth_session.status
-    assert_equal "StaffToken", reauth_session.actor_type
-    assert_equal @token.id, reauth_session.actor_id
-    assert_in_delta 10.minutes.from_now.to_i, reauth_session.expires_at.to_i, 5
-  end
-
   test "verify success updates token step-up and redirects to return_to" do
     private_key = "JBSWY3DPEHPK3PXP"
     StaffOneTimePassword.create!(
@@ -52,75 +35,40 @@ class OrgVerificationTest < ActionDispatch::IntegrationTest
       staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
     )
 
-    encoded_return_to = Base64.urlsafe_encode64(sign_org_configuration_path(ri: "jp"))
-    reauth_session =
-      ReauthSession.create!(
-        actor: @token,
-        scope: "configuration_email",
-        return_to: encoded_return_to,
-        method: "totp",
-        status: "PENDING",
-        expires_at: 10.minutes.from_now,
-      )
+    encoded_return_to = Base64.urlsafe_encode64(sign_org_configuration_totps_path(ri: "jp"))
+    get sign_org_verification_url(scope: "manage_totp", return_to: encoded_return_to, ri: "jp"),
+        headers: @headers
 
     code = ROTP::TOTP.new(private_key).at(Time.current.to_i)
 
     post sign_org_verification_totp_url(ri: "jp"),
-         params: { verification: { session_id: reauth_session.id, code: code } },
+         params: { verification: { code: code } },
          headers: @headers
 
     assert_response :redirect
-    assert_redirected_to sign_org_configuration_url(ri: "jp")
+    assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
 
     @token.reload
     assert_not_nil @token.last_step_up_at
-    assert_equal "configuration_email", @token.last_step_up_scope
-
-    reauth_session.reload
-    assert_equal "VERIFIED", reauth_session.status
-    assert_not_nil reauth_session.verified_at
+    assert_equal "manage_totp", @token.last_step_up_scope
   end
 
-  test "verify failure returns 422 and increments attempt_count" do
-    encoded_return_to = Base64.urlsafe_encode64(sign_org_configuration_path(ri: "jp"))
-    reauth_session =
-      ReauthSession.create!(
-        actor: @token,
-        scope: "configuration_email",
-        return_to: encoded_return_to,
-        method: "totp",
-        status: "PENDING",
-        expires_at: 10.minutes.from_now,
-      )
+  test "verify failure returns 422" do
+    private_key = "JBSWY3DPEHPK3PXP"
+    StaffOneTimePassword.create!(
+      staff: @staff,
+      private_key: private_key,
+      staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
+    )
 
-    assert_equal 0, reauth_session.attempt_count
+    encoded_return_to = Base64.urlsafe_encode64(sign_org_configuration_totps_path(ri: "jp"))
+    get sign_org_verification_url(scope: "manage_totp", return_to: encoded_return_to, ri: "jp"),
+        headers: @headers
 
     post sign_org_verification_totp_url(ri: "jp"),
-         params: { verification: { session_id: reauth_session.id, code: "000000" } },
+         params: { verification: { code: "000000" } },
          headers: @headers
 
     assert_response :unprocessable_content
-    assert_equal 1, reauth_session.reload.attempt_count
-  end
-
-  test "expired verification session returns 410 Gone" do
-    encoded_return_to = Base64.urlsafe_encode64(sign_org_configuration_path(ri: "jp"))
-    reauth_session =
-      ReauthSession.create!(
-        actor: @token,
-        scope: "configuration_email",
-        return_to: encoded_return_to,
-        method: "totp",
-        status: "PENDING",
-        expires_at: 1.minute.ago,
-      )
-
-    get new_sign_org_verification_totp_url(session_id: reauth_session.id, ri: "jp"), headers: @headers
-    assert_response :gone
-
-    post sign_org_verification_totp_url(ri: "jp"),
-         params: { verification: { session_id: reauth_session.id, code: "000000" } },
-         headers: @headers
-    assert_response :gone
   end
 end

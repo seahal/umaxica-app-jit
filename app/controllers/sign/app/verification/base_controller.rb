@@ -9,6 +9,7 @@ module Sign
         include Common::Otp
         include ::Auth::StepUp
         include Sign::Webauthn
+        include Sign::VerificationTiming
 
         auth_required!
 
@@ -40,6 +41,10 @@ module Sign
 
         def set_actor_token
           @actor_token = token_class.find_by!(public_id: current_session_public_id)
+        end
+
+        def actor_token
+          @actor_token
         end
 
         # ------------------------------------------------------------------
@@ -105,7 +110,7 @@ module Sign
           session.delete(EMAIL_OTP_SESSION_KEY)
 
           flash[:notice] = I18n.t("sign.app.verification.success.complete")
-          safe_redirect_to(return_to, fallback: sign_app_configuration_path(ri: params[:ri]))
+          safe_redirect_to(return_to, fallback: sign_app_verification_path(ri: params[:ri]))
         end
 
         # Checks that the given verification method is available for the current user.
@@ -120,6 +125,42 @@ module Sign
 
         def verification_params
           params.fetch(:verification, {}).permit(:code, :challenge_id, :credential_json)
+        end
+
+        def verification_scope
+          current_reauth_session&.fetch("scope", nil)
+        end
+
+        def redirect_if_recent_verification_for_get!
+          scope = verification_scope
+          return false unless scope
+          return false unless verification_recent_for_get?(scope: scope)
+
+          consume_reauth_session!
+          true
+        end
+
+        def redirect_if_recent_verification_for_post!
+          scope = verification_scope
+          return false unless scope
+          return false unless verification_recent_for_post?(scope: scope)
+
+          consume_reauth_session!
+          true
+        end
+
+        def email_otp_session_active?
+          data = session[EMAIL_OTP_SESSION_KEY]
+          return false unless data
+
+          Time.current.to_i <= data["expires_at"].to_i
+        end
+
+        def ensure_email_nonce!
+          rs = current_reauth_session
+          rs["email_nonce"] ||= SecureRandom.urlsafe_base64(16)
+          session[REAUTH_SESSION_KEY] = rs
+          rs["email_nonce"]
         end
 
         # ------------------------------------------------------------------

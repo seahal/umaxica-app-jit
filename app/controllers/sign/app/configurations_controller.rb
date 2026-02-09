@@ -8,6 +8,12 @@ module Sign
 
       def show
       end
+
+      def edit
+        return if current_user.deactivated?
+
+        redirect_to sign_app_configuration_path(ri: params[:ri])
+      end
     end
   end
 end

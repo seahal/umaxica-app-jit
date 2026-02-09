@@ -3,35 +3,54 @@
 class Sign::App::Verification::EmailsController < Sign::App::Verification::BaseController
   def new
     return unless require_reauth_session!
-
-    nil unless require_method_available!(:email_otp)
-  end
-
-  def edit
-    return unless require_reauth_session!
-
-    nil unless require_email_nonce!
-  end
-
-  def create
-    return unless require_reauth_session!
+    return if redirect_if_recent_verification_for_get!
     return unless require_method_available!(:email_otp)
+
+    if email_otp_session_active?
+      nonce = ensure_email_nonce!
+      redirect_to edit_sign_app_verification_email_path(nonce, ri: params[:ri])
+      return
+    end
 
     unless send_email_otp!
       render :new, status: :unprocessable_content
       return
     end
 
-    nonce = SecureRandom.urlsafe_base64(16)
-    rs = current_reauth_session
-    rs["email_nonce"] = nonce
-    session[REAUTH_SESSION_KEY] = rs
+    nonce = ensure_email_nonce!
+    redirect_to edit_sign_app_verification_email_path(nonce, ri: params[:ri])
+  end
 
+  def edit
+    return unless require_reauth_session!
+    return if redirect_if_recent_verification_for_get!
+
+    nil unless require_email_nonce!
+  end
+
+  def create
+    return unless require_reauth_session!
+    return if redirect_if_recent_verification_for_post!
+    return unless require_method_available!(:email_otp)
+
+    if email_otp_session_active?
+      nonce = ensure_email_nonce!
+      redirect_to edit_sign_app_verification_email_path(nonce, ri: params[:ri])
+      return
+    end
+
+    unless send_email_otp!
+      render :new, status: :unprocessable_content
+      return
+    end
+
+    nonce = ensure_email_nonce!
     redirect_to edit_sign_app_verification_email_path(nonce, ri: params[:ri])
   end
 
   def update
     return unless require_reauth_session!
+    return if redirect_if_recent_verification_for_post!
     return unless require_email_nonce!
 
     if verify_email_otp!

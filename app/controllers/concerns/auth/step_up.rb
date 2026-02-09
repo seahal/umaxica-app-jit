@@ -14,7 +14,7 @@ module Auth
   module StepUp
     extend ActiveSupport::Concern
 
-    STEP_UP_TTL = 10.minutes
+    STEP_UP_TTL = 15.minutes
     STEP_UP_REQUIRED_MESSAGE = "再認証が必要です\n操作は保存されていません"
     INITIAL_SETUP_CONTROLLERS = {
       "sign/app/configuration/totps" => {

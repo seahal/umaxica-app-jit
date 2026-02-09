@@ -13,7 +13,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
       user_id: @user.id,
     )
 
-    @sms_calls = []
+    @sms_calls = [].freeze
     sms_calls = @sms_calls
     if defined?(AwsSmsService)
       @original_aws_sms_service_send_message = AwsSmsService.method(:send_message)

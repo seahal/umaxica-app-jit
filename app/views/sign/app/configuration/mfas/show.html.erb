@@ -13,9 +13,3 @@
 
   <%= form.submit t("actions.save") %>
 <% end %>
-
-<ul>
-  <li><%= link_to t("sign.app.configuration.mfa.show.passkeys"), sign_app_configuration_passkeys_path %> (<%= @passkeys.size %>)</li>
-  <li><%= link_to t("sign.app.configuration.mfa.show.totps"), sign_app_configuration_totps_path %> (<%= @totps.size %>)</li>
-  <li><%= link_to t("sign.app.configuration.mfa.show.secrets"), sign_app_configuration_secrets_path %> (<%= @secrets.size %>)</li>
-</ul>

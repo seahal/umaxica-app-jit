@@ -96,6 +96,17 @@ en:
           attributes:
             public_id:
               invalid_format: "must be 8 lowercase alphanumeric characters (excluding i, o, 0, 1, s, z, g)"
+  activemodel:
+    errors:
+      models:
+        sign/app/configuration/withdrawal/schedule_form:
+          attributes:
+            ack_schedule_purge:
+              accepted: "You must check this box."
+        sign/app/configuration/withdrawal/deactivate_form:
+          attributes:
+            ack_deactivate_today:
+              accepted: "You must check this box."
   actions:
     edit: "Edit"
     destroy: "Delete"
@@ -252,6 +263,25 @@ en:
           back: "Back to top"
           session_header: "Session"
           logout: "Logout"
+        edit:
+          page_title: "Account Status"
+          deactivated_notice: "Withdrawal is in progress. Settings cannot be changed."
+          scheduled_purge_notice: "Scheduled for deletion on %{date}."
+          withdrawal_link: "Review withdrawal details"
+          not_deactivated: "Your account is active."
+        withdrawal:
+          new:
+            page_title: "Withdraw Account"
+            already_deactivated: "Your account is already deactivated."
+          schedule:
+            title: "Schedule deletion"
+            ack_label: "I understand the account will be scheduled for deletion in 31 days."
+            submit: "Continue"
+          deactivate:
+            title: "Deactivate today"
+            ack_label: "I understand my account will be deactivated today."
+            submit: "Deactivate account"
+            confirm: "Deactivate your account today?"
         passkey:
           index:
             title: "Passkey Management"

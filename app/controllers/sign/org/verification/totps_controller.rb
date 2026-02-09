@@ -3,12 +3,14 @@
 class Sign::Org::Verification::TotpsController < Sign::Org::Verification::BaseController
   def new
     return unless require_reauth_session!
+    return if redirect_if_recent_verification_for_get!
 
     nil unless require_method_available!(:totp)
   end
 
   def create
     return unless require_reauth_session!
+    return if redirect_if_recent_verification_for_post!
     return unless require_method_available!(:totp)
 
     if verify_totp!

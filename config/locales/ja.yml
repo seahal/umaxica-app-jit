@@ -8,6 +8,17 @@ ja:
     errors:
       messages:
         code_format: "大文字・数字・アンダースコアのみを使用してください"
+  activemodel:
+    errors:
+      models:
+        sign/app/configuration/withdrawal/schedule_form:
+          attributes:
+            ack_schedule_purge:
+              accepted: "チェックが必要です"
+        sign/app/configuration/withdrawal/deactivate_form:
+          attributes:
+            ack_deactivate_today:
+              accepted: "チェックが必要です"
   errors:
     otp_locked: "試行回数の上限を超えました。最初からやり直してください。"
     messages:
@@ -28,3 +39,23 @@ ja:
       layout:
         nav:
           log_out: "ログアウト"
+      configuration:
+        edit:
+          page_title: "アカウントの状態"
+          deactivated_notice: "退会手続き中です。設定の変更はできません。"
+          scheduled_purge_notice: "%{date} に削除が予定されています。"
+          withdrawal_link: "退会手続きを確認する"
+          not_deactivated: "アカウントは利用可能です。"
+        withdrawal:
+          new:
+            page_title: "退会"
+            already_deactivated: "すでに退会手続きが完了しています。"
+          schedule:
+            title: "削除予約の確認"
+            ack_label: "31日後に削除（削除予約）されることを理解しました"
+            submit: "続行"
+          deactivate:
+            title: "本日中の利用停止"
+            ack_label: "本日中に利用停止（論理削除）されることを理解しました"
+            submit: "退会する"
+            confirm: "本日中に利用停止します。よろしいですか？"

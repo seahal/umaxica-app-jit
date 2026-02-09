@@ -13,30 +13,24 @@ class Sign::App::Verification::PasskeysControllerTest < ActionDispatch::Integrat
     @token = UserToken.find_by!(public_id: @headers["X-TEST-SESSION-PUBLIC-ID"])
   end
 
-  test "create initializes a verification session" do
+  test "creates verification on success" do
     return_to = Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp"))
 
-    post sign_app_verification_passkey_url(ri: "jp"),
-         params: { verification: { scope: "configuration_email", return_to: return_to } },
-         headers: @headers
+    Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:passkey]) do
+      Sign::App::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
+        Sign::App::Verification::PasskeysController.any_instance.stub(:verify_passkey!, true) do
+          get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
+              headers: @headers
 
-    assert_response :redirect
-    reauth_session = ReauthSession.order(created_at: :desc).first
-    assert_equal "passkey", reauth_session.method
-    assert_equal @token.id, reauth_session.actor_id
-  end
+          get new_sign_app_verification_passkey_url(ri: "jp"), headers: @headers
+          assert_response :success
 
-  test "should get new" do
-    reauth_session = ReauthSession.create!(
-      actor: @token,
-      scope: "configuration_email",
-      return_to: Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp")),
-      method: "passkey",
-      status: "PENDING",
-      expires_at: 10.minutes.from_now,
-    )
+          post sign_app_verification_passkey_url(ri: "jp"), headers: @headers
 
-    get new_sign_app_verification_passkey_url(session_id: reauth_session.id, ri: "jp"), headers: @headers
-    assert_response :success
+          assert_response :redirect
+          assert_redirected_to sign_app_configuration_url(ri: "jp")
+        end
+      end
+    end
   end
 end

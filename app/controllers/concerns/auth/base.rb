@@ -5,6 +5,7 @@ require "jwt"
 module Auth
   module Base
     extend ActiveSupport::Concern
+    include Common::Redirect
 
     # --- Policy errors ---
     class MissingPolicyError < StandardError; end
@@ -784,16 +785,16 @@ module Auth
     private
 
     # ======================================================================
-    # Withdrawal Gate - Confines PRE_WITHDRAWAL users to withdrawal page
+    # Withdrawal Gate - Confines deactivated users to configuration edit
     # ======================================================================
 
     def enforce_withdrawal_gate!
       return unless logged_in?
       return unless current_resource
-      return unless current_resource.respond_to?(:status_id)
-      return unless current_resource.status_id == UserStatus::PRE_WITHDRAWAL_CONDITION
+      return unless current_resource.respond_to?(:deactivated?)
+      return unless current_resource.deactivated?
 
-      # Allowlist: withdrawal controller and logout
+      # Allowlist: configuration edit and withdrawal flow
       return if withdrawal_gate_allowlisted?
 
       # API/JSON: return 403 Forbidden
@@ -802,19 +803,16 @@ module Auth
         return
       end
 
-      # HTML: redirect to withdrawal edit page
-      withdrawal_edit_path = resolve_withdrawal_edit_path
-      return if withdrawal_edit_path.nil?
-
-      redirect_to withdrawal_edit_path, status: :found
+      # HTML: redirect to configuration edit page
+      safe_redirect_to(withdrawal_gate_redirect_path, fallback: "/configuration/edit", status: :found)
     end
 
     def withdrawal_gate_allowlisted?
-      # Allowlist: withdrawal controller actions
-      return true if controller_path.end_with?("configuration/withdrawals")
+      # Allowlist: configuration edit
+      return true if controller_path.end_with?("/configurations") && action_name == "edit"
 
-      # Allowlist: logout actions (outs controller)
-      return true if controller_path.end_with?("/outs")
+      # Allowlist: withdrawal controller actions
+      return true if controller_path.end_with?("configuration/withdrawals") && %w(new update).include?(action_name)
 
       # Allowlist: health/assets (rarely needed but safe)
       return true if controller_path == "rails/health"
@@ -822,23 +820,17 @@ module Auth
       false
     end
 
-    def resolve_withdrawal_edit_path
-      # Try to resolve the edit_*_configuration_withdrawal_path helper
-      # Format: edit_sign_app_configuration_withdrawal_path or edit_sign_org_configuration_withdrawal_path
-      if respond_to?(:edit_sign_app_configuration_withdrawal_path, true)
-        edit_sign_app_configuration_withdrawal_path
-      elsif respond_to?(:edit_sign_org_configuration_withdrawal_path, true)
-        edit_sign_org_configuration_withdrawal_path
-      elsif respond_to?(:sign_app_configuration_withdrawal_path, true)
-        # Fallback: try the show path and append /edit
-        "#{sign_app_configuration_withdrawal_path}/edit"
+    def withdrawal_gate_redirect_path
+      if respond_to?(:edit_sign_app_configuration_path, true)
+        edit_sign_app_configuration_path(ri: params[:ri])
+      elsif respond_to?(:edit_sign_org_configuration_path, true)
+        edit_sign_org_configuration_path(ri: params[:ri])
       else
-        # Last resort: construct path manually
-        "/configuration/withdrawal/edit"
+        "/configuration/edit"
       end
     rescue StandardError => e
-      Rails.logger.error("Failed to resolve withdrawal edit path: #{e.message}")
-      "/configuration/withdrawal/edit"
+      Rails.logger.error("Failed to resolve configuration edit path: #{e.message}")
+      "/configuration/edit"
     end
 
     def cookie_options
@@ -1297,8 +1289,8 @@ module Auth
       # Guest-only policy: block logged-in users.
       return true unless respond_to?(:logged_in?) && logged_in?
 
-      # Exception: PRE_WITHDRAWAL users should be handled by withdrawal gate, not guest_only
-      if current_resource.respond_to?(:status_id) && current_resource.status_id == UserStatus::PRE_WITHDRAWAL_CONDITION
+      # Exception: deactivated users should be handled by withdrawal gate, not guest_only
+      if current_resource.respond_to?(:deactivated?) && current_resource.deactivated?
         return true
       end
 

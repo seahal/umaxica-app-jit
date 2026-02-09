@@ -60,8 +60,8 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
     assert_equal "configuration_email", query["scope"]
   end
 
-  test "step-up older than 10 minutes is expired" do
-    @token.update!(last_step_up_at: 10.minutes.ago, last_step_up_scope: "configuration_email")
+  test "step-up older than 15 minutes is expired" do
+    @token.update!(last_step_up_at: 15.minutes.ago, last_step_up_scope: "configuration_email")
 
     get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
 
@@ -70,7 +70,7 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
   end
 
   test "step-up within TTL and matching scope passes through" do
-    @token.update!(last_step_up_at: 5.minutes.ago, last_step_up_scope: "configuration_email")
+    @token.update!(last_step_up_at: 10.minutes.ago, last_step_up_scope: "configuration_email")
 
     get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
 

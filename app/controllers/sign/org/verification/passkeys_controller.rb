@@ -3,6 +3,7 @@
 class Sign::Org::Verification::PasskeysController < Sign::Org::Verification::BaseController
   def new
     return unless require_reauth_session!
+    return if redirect_if_recent_verification_for_get!
     return unless require_method_available!(:passkey)
 
     prepare_passkey_challenge!
@@ -10,6 +11,7 @@ class Sign::Org::Verification::PasskeysController < Sign::Org::Verification::Bas
 
   def create
     return unless require_reauth_session!
+    return if redirect_if_recent_verification_for_post!
     return unless require_method_available!(:passkey)
 
     if verify_passkey!

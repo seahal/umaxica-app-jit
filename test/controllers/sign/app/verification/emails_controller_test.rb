@@ -20,21 +20,42 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
     )
   end
 
-  test "should get new" do
-    get new_sign_app_verification_email_url(ri: "jp"), headers: @headers
-    assert_response :success
-  end
-
-  test "create initializes a verification session" do
+  test "new sends otp and redirects to edit" do
     return_to = Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp"))
 
-    post sign_app_verification_emails_url(ri: "jp"),
-         params: { verification: { scope: "configuration_email", return_to: return_to } },
-         headers: @headers
+    Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
+      Sign::App::Verification::BaseController.any_instance.stub(:send_email_otp!, true) do
+        get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
+            headers: @headers
 
-    assert_response :redirect
-    reauth_session = ReauthSession.order(created_at: :desc).first
-    assert_equal "email_otp", reauth_session.method
-    assert_equal @token.id, reauth_session.actor_id
+        get new_sign_app_verification_email_url(ri: "jp"), headers: @headers
+        assert_response :redirect
+
+        assert_match %r{/verification/emails/.+/edit}, response.location
+      end
+    end
+  end
+
+  test "update verifies otp and redirects to return_to" do
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp"))
+
+    Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
+      Sign::App::Verification::BaseController.any_instance.stub(:send_email_otp!, true) do
+        get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
+            headers: @headers
+
+        get new_sign_app_verification_email_url(ri: "jp"), headers: @headers
+        nonce = response.location[%r{/verification/emails/([^/]+)/edit}, 1]
+
+        Sign::App::Verification::BaseController.any_instance.stub(:verify_email_otp!, true) do
+          patch sign_app_verification_email_url(nonce, ri: "jp"),
+                params: { verification: { code: "123456" } },
+                headers: @headers
+
+          assert_response :redirect
+          assert_redirected_to sign_app_configuration_url(ri: "jp")
+        end
+      end
+    end
   end
 end

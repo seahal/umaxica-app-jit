@@ -258,7 +258,7 @@ module Sign
         end
 
         def success_redirect_path
-          params[:ri].present? ? "/?ri=#{params[:ri]}" : "/"
+          sign_app_configuration_path(ri: params[:ri])
         end
 
         def report_authentication_error(error, flow:)

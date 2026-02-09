@@ -84,7 +84,7 @@ scope module: :sign, as: :sign do
         resources :emails, only: %i(new create edit update)
       end
 
-      resource :configuration, only: :show
+      resource :configuration, only: %i(show edit)
       namespace :configuration do
         # TODO: implement TOTP settings management
         resources :totps, only: %i(index new create edit update destroy), param: :public_id
@@ -117,7 +117,7 @@ scope module: :sign, as: :sign do
         resources :activities, only: :index
         resource :out, only: %i(edit destroy)
         # i want this code more precisely routing.
-        resource :withdrawal
+        resource :withdrawal, only: %i(new update)
       end
     end
   end

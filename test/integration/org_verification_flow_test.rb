@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "base64"
 
 # Integration tests for Org verification flow
 #
@@ -26,62 +27,55 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "org verification show page does not display email option" do
-    get sign_org_verification_url(ri: "jp"), headers: @headers
-    assert_response :success
+    Sign::Org::VerificationController.any_instance.stub(:available_step_up_methods, [:passkey, :totp]) do
+      get sign_org_verification_url(ri: "jp"), headers: @headers
+      assert_response :success
 
-    # Should have passkey and totp buttons
-    assert_select "form[action=?]", sign_org_verification_passkey_path(ri: "jp")
-    assert_select "form[action=?]", sign_org_verification_totp_path(ri: "jp")
+      # Should have passkey and totp links
+      assert_select "a[href=?]", new_sign_org_verification_passkey_path(ri: "jp")
+      assert_select "a[href=?]", new_sign_org_verification_totp_path(ri: "jp")
 
-    # Should NOT have email button (no emails route for org)
-    assert_select "form[action*='email']", count: 0
-  end
-
-  test "org can create passkey verification session" do
-    return_to_path = sign_org_configuration_path(ri: "jp")
-    return_to_encoded = Base64.urlsafe_encode64(return_to_path)
-
-    assert_difference "ReauthSession.count", 1 do
-      post sign_org_verification_passkey_url(ri: "jp"),
-           params: { verification: { scope: "configuration_passkey", return_to: return_to_encoded } },
-           headers: @headers
+      # Should NOT have email link (no emails route for org)
+      assert_select "a[href*='email']", count: 0
     end
-
-    assert_response :redirect
-    reauth_session = ReauthSession.order(created_at: :desc).first
-    assert_equal "passkey", reauth_session.method
-    assert_equal "PENDING", reauth_session.status
-    assert_equal @token.id, reauth_session.actor_id
   end
 
-  test "org can create totp verification session" do
-    return_to_path = sign_org_configuration_path(ri: "jp")
-    return_to_encoded = Base64.urlsafe_encode64(return_to_path)
+  test "org can verify with passkey" do
+    return_to = Base64.urlsafe_encode64(sign_org_configuration_passkeys_path(ri: "jp"))
 
-    assert_difference "ReauthSession.count", 1 do
-      post sign_org_verification_totp_url(ri: "jp"),
-           params: { verification: { scope: "configuration_totp", return_to: return_to_encoded } },
-           headers: @headers
+    Sign::Org::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:passkey]) do
+      Sign::Org::Verification::PasskeysController.any_instance.stub(:prepare_passkey_challenge!, true) do
+        Sign::Org::Verification::PasskeysController.any_instance.stub(:verify_passkey!, true) do
+          get sign_org_verification_url(scope: "configuration_passkey", return_to: return_to, ri: "jp"),
+              headers: @headers
+
+          post sign_org_verification_passkey_url(ri: "jp"), headers: @headers
+          assert_response :redirect
+          assert_redirected_to sign_org_configuration_passkeys_url(ri: "jp")
+        end
+      end
     end
-
-    assert_response :redirect
-    reauth_session = ReauthSession.order(created_at: :desc).first
-    assert_equal "totp", reauth_session.method
-    assert_equal "PENDING", reauth_session.status
   end
 
-  test "expired org verification session returns 410 Gone" do
-    reauth_session = ReauthSession.create!(
-      actor: @token,
-      scope: "configuration_passkey",
-      return_to: sign_org_configuration_path(ri: "jp"),
-      method: "passkey",
-      status: "PENDING",
-      expires_at: 1.minute.ago, # Expired
+  test "org can verify with totp" do
+    private_key = "JBSWY3DPEHPK3PXP"
+    StaffOneTimePassword.create!(
+      staff: @staff,
+      private_key: private_key,
+      staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
     )
 
-    get new_sign_org_verification_passkey_url(session_id: reauth_session.id, ri: "jp"),
+    return_to = Base64.urlsafe_encode64(sign_org_configuration_totps_path(ri: "jp"))
+    get sign_org_verification_url(scope: "manage_totp", return_to: return_to, ri: "jp"),
         headers: @headers
-    assert_response :gone
+
+    code = ROTP::TOTP.new(private_key).at(Time.current.to_i)
+
+    post sign_org_verification_totp_url(ri: "jp"),
+         params: { verification: { code: code } },
+         headers: @headers
+
+    assert_response :redirect
+    assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
   end
 end

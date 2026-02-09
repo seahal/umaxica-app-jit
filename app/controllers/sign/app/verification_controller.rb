@@ -6,7 +6,11 @@ class Sign::App::VerificationController < Sign::App::Verification::BaseControlle
       start_reauth_session!(scope: params[:scope], return_to_param: params[:return_to])
     end
 
-    return unless require_reauth_session!
+    if current_reauth_session.present?
+      return unless require_reauth_session!
+    elsif verification_recent_for_get?(scope: @actor_token&.last_step_up_scope)
+      flash.now[:notice] = I18n.t("sign.app.verification.success.complete")
+    end
 
     @available_methods = available_step_up_methods
   rescue ActionController::BadRequest

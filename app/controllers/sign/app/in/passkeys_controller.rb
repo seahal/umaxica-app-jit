@@ -214,7 +214,7 @@ module Sign
         end
 
         def render_success(result)
-          redirect_url = retrieve_redirect_url || sign_app_root_path
+          redirect_url = retrieve_redirect_url || sign_app_configuration_path(ri: params[:ri])
           render json: {
             status: "ok",
             access_token: result[:access_token],

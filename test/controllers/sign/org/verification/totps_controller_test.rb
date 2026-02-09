@@ -4,7 +4,7 @@ require "test_helper"
 require "base64"
 
 class Sign::Org::Verification::TotpsControllerTest < ActionDispatch::IntegrationTest
-  fixtures :staffs
+  fixtures :staffs, :staff_one_time_password_statuses
 
   setup do
     @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
@@ -20,30 +20,28 @@ class Sign::Org::Verification::TotpsControllerTest < ActionDispatch::Integration
     @headers["X-TEST-SESSION-PUBLIC-ID"] = @token.public_id
   end
 
-  test "create initializes a verification session" do
-    return_to = Base64.urlsafe_encode64(sign_org_configuration_path(ri: "jp"))
+  test "creates verification on success" do
+    private_key = "JBSWY3DPEHPK3PXP"
+    StaffOneTimePassword.create!(
+      staff: @staff,
+      private_key: private_key,
+      staff_one_time_password_status_id: StaffOneTimePasswordStatus::ACTIVE,
+    )
+
+    return_to = Base64.urlsafe_encode64(sign_org_configuration_totps_path(ri: "jp"))
+    get sign_org_verification_url(scope: "manage_totp", return_to: return_to, ri: "jp"),
+        headers: @headers
+
+    get new_sign_org_verification_totp_url(ri: "jp"), headers: @headers
+    assert_response :success
+
+    code = ROTP::TOTP.new(private_key).at(Time.current.to_i)
 
     post sign_org_verification_totp_url(ri: "jp"),
-         params: { verification: { scope: "configuration_email", return_to: return_to } },
+         params: { verification: { code: code } },
          headers: @headers
 
     assert_response :redirect
-    reauth_session = ReauthSession.order(created_at: :desc).first
-    assert_equal "totp", reauth_session.method
-    assert_equal @token.id, reauth_session.actor_id
-  end
-
-  test "should get new" do
-    reauth_session = ReauthSession.create!(
-      actor: @token,
-      scope: "configuration_email",
-      return_to: Base64.urlsafe_encode64(sign_org_configuration_path(ri: "jp")),
-      method: "totp",
-      status: "PENDING",
-      expires_at: 10.minutes.from_now,
-    )
-
-    get new_sign_org_verification_totp_url(session_id: reauth_session.id, ri: "jp"), headers: @headers
-    assert_response :success
+    assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
   end
 end
