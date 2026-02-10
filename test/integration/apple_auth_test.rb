@@ -40,6 +40,43 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
     assert_nil UserEmail.find_by(user: user)
   end
 
+  test "callback initializes preference timezone options when missing" do
+    PreferenceRecord.connected_to(role: :writing) do
+      AppPreferenceTimezone.delete_all
+      AppPreferenceRegion.delete_all
+      AppPreferenceLanguage.delete_all
+      AppPreferenceColortheme.delete_all
+      AppPreferenceCookie.delete_all
+      AppPreference.delete_all
+      AppPreferenceTimezoneOption.delete_all
+      AppPreferenceRegionOption.delete_all
+      AppPreferenceLanguageOption.delete_all
+      AppPreferenceColorthemeOption.delete_all
+    end
+
+    OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
+      {
+        provider: "apple",
+        uid: "apple_uid_pref_#{SecureRandom.hex(4)}",
+        info: {},
+        credentials: {
+          token: "apple_token",
+          expires_at: 1.week.from_now.to_i,
+        },
+      },
+    )
+
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: browser_headers.merge(@callback_headers)
+
+    assert_redirected_to sign_app_configuration_url(ri: "jp")
+
+    PreferenceRecord.connected_to(role: :writing) do
+      assert AppPreferenceTimezoneOption.exists?(id: AppPreferenceTimezoneOption::ASIA_TOKYO)
+      assert AppPreferenceTimezone.exists?
+    end
+  end
+
   test "should sign in existing user normally" do
     user = User.create!(status_id: UserStatus::ACTIVE)
     UserSocialApple.create!(

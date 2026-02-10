@@ -7,9 +7,10 @@ module Email
   OTP_COOLDOWN_PERIOD = Common::OtpPolicy::SEND_COOLDOWN
 
   attr_accessor :confirm_policy, :pass_code
+  attr_writer :raw_address
 
   included do
-    before_save { self.address&.downcase! }
+    before_validation :normalize_address_from_raw
 
     after_initialize do
       self.otp_counter = "0" if otp_counter.blank?
@@ -19,16 +20,13 @@ module Email
 
     encrypts :address, downcase: true, deterministic: true
 
-    validates :address, format: { with: URI::MailTo::EMAIL_REGEXP },
-                        presence: true,
-                        uniqueness: { case_sensitive: false },
-                        unless: Proc.new { |a| a.address.blank? && a.pass_code.present? }
+    validate :validate_email_address
     validates :confirm_policy, acceptance: true, on: :create,
-                               unless: Proc.new { |a| a.address.blank? && a.pass_code.present? }
+                               unless: Proc.new { |a| a.raw_address.blank? && a.pass_code.present? }
     validates :pass_code, numericality: { only_integer: true },
                           length: { is: 6 },
                           presence: true,
-                          unless: Proc.new { |a| a.pass_code.blank? && a.address.present? }
+                          unless: Proc.new { |a| a.pass_code.blank? && a.raw_address.present? }
   end
 
   # OTP-related methods for email authentication
@@ -116,5 +114,38 @@ module Email
       .update_all(locked_at: Time.current)
     # rubocop:enable Rails/SkipsModelValidations
     reload if affected.positive?
+  end
+
+  def raw_address
+    @raw_address.presence || address
+  end
+
+  private
+
+  def normalize_address_from_raw
+    value = raw_address
+    return if value.blank?
+
+    normalized = Jit::Utils::EmailValidator.normalize(value)
+    self.address = normalized if normalized.present?
+  end
+
+  def validate_email_address
+    return if raw_address.blank? && pass_code.present?
+
+    if raw_address.blank?
+      errors.add(:address, :blank)
+      return
+    end
+
+    normalized = Jit::Utils::EmailValidator.normalize(raw_address)
+    unless normalized
+      errors.add(:address, :invalid)
+      return
+    end
+
+    if normalized.length > 255
+      errors.add(:address, :too_long, count: 255)
+    end
   end
 end

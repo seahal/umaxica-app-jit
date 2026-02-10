@@ -27,5 +27,11 @@ class AppPreferenceTimezoneOption < PreferenceRecord
     end
   end
 
+  def self.ensure_defaults!
+    ids = [ETC_UTC, ASIA_TOKYO]
+    existing = where(id: ids).pluck(:id)
+    (ids - existing).each { |id| create!(id: id) }
+  end
+
   self.primary_key = :id
 end

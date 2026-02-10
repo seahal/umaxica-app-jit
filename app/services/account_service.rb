@@ -85,7 +85,8 @@ class AccountService
   def self.find_by_telephone(number)
     return nil if number.blank?
 
-    user = User.joins(:user_telephones).find_by(user_telephones: { number: number })
+    digest = IdentifierBlindIndex.bidx_for_telephone(number)
+    user = digest ? User.joins(:user_telephones).find_by(user_telephones: { number_digest: digest }) : nil
     # Staff doesn't have phone authentication in current implementation
     new(user) if user
   end

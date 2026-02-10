@@ -98,10 +98,10 @@ scope module: :sign, as: :sign do
           end
         end
         resource :challenge, only: %i(show update)
-        resources :emails, only: %i(index edit destroy)
         namespace :emails do
           resource :registration, only: %i(new create edit update), controller: :registrations
         end
+        resources :emails, only: %i(index edit destroy)
         namespace :telephones do
           resource :registration, only: %i(new create edit update), controller: :registrations
         end

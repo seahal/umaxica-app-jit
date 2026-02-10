@@ -4,6 +4,7 @@ require "test_helper"
 
 class Sign::App::Configuration::Telephones::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses, :user_telephone_statuses
+  include ActiveJob::TestHelper
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -13,24 +14,9 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
       user_id: @user.id,
     )
 
-    @sms_calls = [].freeze
-    sms_calls = @sms_calls
-    if defined?(AwsSmsService)
-      @original_aws_sms_service_send_message = AwsSmsService.method(:send_message)
-      AwsSmsService.singleton_class.send(:define_method, :send_message) do |**kwargs|
-        sms_calls << kwargs
-        true
-      end
-    end
   end
 
   teardown do
-    return unless defined?(AwsSmsService) && @original_aws_sms_service_send_message
-
-    original = @original_aws_sms_service_send_message
-    AwsSmsService.singleton_class.send(:define_method, :send_message) do |**kwargs|
-      original.call(**kwargs)
-    end
   end
 
   def request_headers
@@ -42,10 +28,12 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
   end
 
   test "create registers telephone for current user" do
-    assert_difference("UserTelephone.count", 1) do
-      post sign_app_configuration_telephones_registration_url(ri: "jp"),
-           params: { user_telephone: { number: "+10000000009" } },
-           headers: request_headers
+    assert_enqueued_jobs 1, only: SmsDeliveryJob do
+      assert_difference("UserTelephone.count", 1) do
+        post sign_app_configuration_telephones_registration_url(ri: "jp"),
+             params: { user_telephone: { raw_number: "+10000000009" } },
+             headers: request_headers
+      end
     end
 
     assert_response :redirect
@@ -55,7 +43,8 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     assert_equal @user.id, user_telephone.user_id
     assert_equal UserTelephoneStatus::UNVERIFIED, user_telephone.user_telephone_status_id
     assert_equal 0, UserTelephone.where(user_id: 0).count
-    assert_equal 1, @sms_calls.size
-    assert_equal "+10000000009", @sms_calls.last[:to]
+    job = enqueued_jobs.last
+    assert_equal SmsDeliveryJob, job[:job]
+    assert_equal "+10000000009", job[:args].first["to"]
   end
 end

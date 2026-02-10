@@ -79,8 +79,13 @@ module Sign
       build_user_email(email_address, confirm_policy)
       @user_email.user_email_status_id = UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
 
+      @user_email.skip_user_presence_validation = true
       @user_email.validate
-      existing_email = allow_existing ? UserEmail.find_by(address: @user_email.address) : nil
+      @user_email.skip_user_presence_validation = false
+      existing_email =
+        if allow_existing && @user_email.address_digest.present?
+          UserEmail.find_by(address_digest: @user_email.address_digest)
+        end
       uniqueness_only = email_uniqueness_only_error?(@user_email)
 
       if allow_existing && existing_email &&
@@ -163,13 +168,13 @@ module Sign
       turnstile_result = cloudflare_turnstile_validation
       return true if turnstile_result["success"]
 
-      @user_email = UserEmail.new(address: email_address, confirm_policy: confirm_policy)
+      @user_email = UserEmail.new(raw_address: email_address, confirm_policy: confirm_policy)
       @user_email.errors.add(:base, t("sign.app.registration.email.create.turnstile_validation_failed"))
       false
     end
 
     def build_user_email(email_address, confirm_policy)
-      @user_email = UserEmail.new(address: email_address, confirm_policy: confirm_policy)
+      @user_email = UserEmail.new(raw_address: email_address, confirm_policy: confirm_policy)
     end
 
     def cleanup_pending_signup!
@@ -182,8 +187,10 @@ module Sign
     end
 
     def remove_existing_unverified_emails!
+      return if @user_email.address_digest.blank?
+
       existing_emails = UserEmail.where(
-        address: @user_email.address,
+        address_digest: @user_email.address_digest,
         user_email_status_id: [
           UserEmailStatus::UNVERIFIED_WITH_SIGN_UP,
         ],
@@ -226,7 +233,7 @@ module Sign
     def email_uniqueness_only_error?(user_email)
       return false if user_email.errors.empty?
 
-      address_errors = user_email.errors.details[:address] || []
+      address_errors = user_email.errors.details[:address] || user_email.errors.details[:raw_address] || []
       return false if address_errors.empty?
 
       other_errors = user_email.errors.details.except(:address).values.flatten

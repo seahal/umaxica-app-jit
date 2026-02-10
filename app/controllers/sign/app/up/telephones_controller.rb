@@ -31,7 +31,7 @@ module Sign
         def create
           @user_telephone = UserTelephone.new(
             params.expect(
-              user_telephone: %i(number confirm_policy
+              user_telephone: %i(raw_number number confirm_policy
                                  confirm_using_mfa),
             ),
           )
@@ -44,12 +44,15 @@ module Sign
             return
           end
 
+          @user_telephone.skip_user_presence_validation = true
           @user_telephone.validate
+          @user_telephone.skip_user_presence_validation = false
           existing_telephone =
-            @user_telephone.number.present? ? UserTelephone.find_by(number: @user_telephone.number) : nil
+            @user_telephone.number_digest.present? ? UserTelephone.find_by(number_digest: @user_telephone.number_digest) : nil
           uniqueness_only = telephone_uniqueness_only_error?(@user_telephone)
 
           if @user_telephone.errors.any? && !uniqueness_only
+            log_signup_telephone_errors
             render :new, status: :unprocessable_content
             return
           end
@@ -89,7 +92,7 @@ module Sign
               }
 
               # Send SMS with OTP
-              AwsSmsService.send_message(
+              SmsDeliveryJob.perform_later(
                 to: @user_telephone.number,
                 message: "PassCode => #{num}",
                 subject: "PassCode => #{num}",
@@ -100,6 +103,7 @@ module Sign
             end
           rescue ActiveRecord::RecordInvalid => e
             @user_telephone = e.record
+            log_signup_telephone_errors
             render :new, status: :unprocessable_content
           end
         end
@@ -165,7 +169,7 @@ module Sign
 
           if @user_telephone
             otp_code = generate_otp_for(@user_telephone)
-            AwsSmsService.send_message(
+            SmsDeliveryJob.perform_later(
               to: @user_telephone.number,
               message: "PassCode => #{otp_code}",
               subject: "PassCode => #{otp_code}",
@@ -343,8 +347,10 @@ module Sign
         end
 
         def remove_existing_unverified_telephones!
+          return if @user_telephone.number_digest.blank?
+
           existing_telephones = UserTelephone.where(
-            number: @user_telephone.number,
+            number_digest: @user_telephone.number_digest,
             user_identity_telephone_status_id: [
               UserTelephoneStatus::UNVERIFIED_WITH_SIGN_UP,
             ],
@@ -374,7 +380,7 @@ module Sign
             existing: true,
           }
 
-          AwsSmsService.send_message(
+          SmsDeliveryJob.perform_later(
             to: @user_telephone.number,
             message: "PassCode => #{otp_code}",
             subject: "PassCode => #{otp_code}",
@@ -387,13 +393,19 @@ module Sign
         def telephone_uniqueness_only_error?(user_telephone)
           return false if user_telephone.errors.empty?
 
-          number_errors = user_telephone.errors.details[:number] || []
+          number_errors = user_telephone.errors.details[:number] || user_telephone.errors.details[:raw_number] || []
           return false if number_errors.empty?
 
           other_errors = user_telephone.errors.details.except(:number).values.flatten
           return false if other_errors.any?
 
           number_errors.all? { |error| error[:error] == :taken }
+        end
+
+        def log_signup_telephone_errors
+          return unless @user_telephone&.errors&.any?
+
+          Rails.logger.warn("signup telephone invalid: #{@user_telephone.errors.full_messages.join(', ')}")
         end
       end
     end

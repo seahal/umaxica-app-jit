@@ -42,7 +42,7 @@ class Sign::App::Configuration::Emails::RegistrationsControllerTest < ActionDisp
         post sign_app_configuration_emails_registration_url(ri: "jp"),
              params: {
                user_email: {
-                 address: "config-registration@example.com",
+                 raw_address: "config-registration@example.com",
                },
                "cf-turnstile-response": "test",
              },
@@ -59,7 +59,7 @@ class Sign::App::Configuration::Emails::RegistrationsControllerTest < ActionDisp
       post sign_app_configuration_emails_registration_url(ri: "jp"),
            params: {
              user_email: {
-               address: "config-verify@example.com",
+               raw_address: "config-verify@example.com",
              },
              "cf-turnstile-response": "test",
            },
@@ -87,7 +87,7 @@ class Sign::App::Configuration::Emails::RegistrationsControllerTest < ActionDisp
     post sign_app_configuration_emails_registration_url(ri: "jp"),
          params: {
            user_email: {
-             address: "config-session-recovery@example.com",
+             raw_address: "config-session-recovery@example.com",
            },
            "cf-turnstile-response": "test",
          },

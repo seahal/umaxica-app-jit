@@ -8,32 +8,18 @@ module Sign::App::Up
     fixtures :app_preference_audit_levels, :app_preference_audit_events,
              :user_statuses, :user_telephone_statuses,
              :user_audit_events, :user_audit_levels
+    include ActiveJob::TestHelper
 
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
       # Mock Cloudflare Turnstile validation
       CloudflareTurnstile.test_mode = true
       CloudflareTurnstile.test_validation_response = { "success" => true }
-
-      # Mock AWS SMS Service
-      if defined?(AwsSmsService)
-        @original_aws_sms_service_send_message = AwsSmsService.method(:send_message)
-        AwsSmsService.singleton_class.send(:define_method, :send_message) do |**_kwargs|
-          true
-        end
-      end
     end
 
     teardown do
       CloudflareTurnstile.test_mode = false
       CloudflareTurnstile.test_validation_response = nil
-
-      if defined?(AwsSmsService) && @original_aws_sms_service_send_message
-        original = @original_aws_sms_service_send_message
-        AwsSmsService.singleton_class.send(:define_method, :send_message) do |**kwargs|
-          original.call(**kwargs)
-        end
-      end
     end
 
     test "should get new" do
@@ -43,15 +29,17 @@ module Sign::App::Up
     end
 
     test "should create telephone and redirect to edit" do
-      assert_difference("UserTelephone.count") do
-        post sign_app_up_telephones_url(ri: "jp"), params: {
-          user_telephone: {
-            number: "+1234567890",
-            confirm_policy: "1",
-            confirm_using_mfa: "1",
-          },
-          "cf-turnstile-response": "test",
-        }
+      assert_enqueued_jobs 1, only: SmsDeliveryJob do
+        assert_difference("UserTelephone.count") do
+          post sign_app_up_telephones_url(ri: "jp"), params: {
+            user_telephone: {
+              raw_number: "+1234567890",
+              confirm_policy: "1",
+              confirm_using_mfa: "1",
+            },
+            "cf-turnstile-response": "test",
+          }
+        end
       end
 
       telephone = registration_telephone
@@ -70,16 +58,18 @@ module Sign::App::Up
         confirm_using_mfa: "1",
       )
 
-      assert_no_difference("User.count") do
-        assert_no_difference("UserTelephone.count") do
-          post sign_app_up_telephones_url(ri: "jp"), params: {
-            user_telephone: {
-              number: existing_telephone.number,
-              confirm_policy: "1",
-              confirm_using_mfa: "1",
-            },
-            "cf-turnstile-response": "test",
-          }
+      assert_enqueued_jobs 1, only: SmsDeliveryJob do
+        assert_no_difference("User.count") do
+          assert_no_difference("UserTelephone.count") do
+            post sign_app_up_telephones_url(ri: "jp"), params: {
+              user_telephone: {
+                raw_number: existing_telephone.number,
+                confirm_policy: "1",
+                confirm_using_mfa: "1",
+              },
+              "cf-turnstile-response": "test",
+            }
+          end
         end
       end
 
@@ -88,10 +78,47 @@ module Sign::App::Up
       assert_nil flash[:alert]
     end
 
+    test "create shows identical user-facing response for existing and new telephones" do
+      user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+      existing_telephone = UserTelephone.create!(
+        user: user,
+        number: "+819012345678",
+        user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+        confirm_policy: "1",
+        confirm_using_mfa: "1",
+      )
+
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          raw_number: existing_telephone.number,
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+
+      existing_location = response.location
+      existing_notice = flash[:notice]
+
+      post sign_app_up_telephones_url(ri: "jp"), params: {
+        user_telephone: {
+          raw_number: "+819012300000",
+          confirm_policy: "1",
+          confirm_using_mfa: "1",
+        },
+        "cf-turnstile-response": "test",
+      }
+
+      assert_response :redirect
+      assert_match(%r{/up/telephones/[^/]+/edit}, response.location)
+      assert_equal existing_notice, flash[:notice]
+      assert_match(%r{/up/telephones/[^/]+/edit}, existing_location)
+    end
+
     test "rejects invalid telephone format" do
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "invalid-telephone",
+          raw_number: "invalid-telephone",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -105,7 +132,7 @@ module Sign::App::Up
       # 1. Create telephone via request to set up session
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567890",
+          raw_number: "+1234567890",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -136,7 +163,7 @@ module Sign::App::Up
     test "should log in after sms verification when passkey already exists" do
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567891",
+          raw_number: "+1234567891",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -178,7 +205,7 @@ module Sign::App::Up
     test "should create audit record on sms login with existing passkey" do
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567892",
+          raw_number: "+1234567892",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -222,7 +249,7 @@ module Sign::App::Up
     test "should reject blank pass code" do
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567890",
+          raw_number: "+1234567890",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -240,7 +267,7 @@ module Sign::App::Up
     test "should lockout after max failed otp attempts" do
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567893",
+          raw_number: "+1234567893",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -269,7 +296,7 @@ module Sign::App::Up
       # Create first registration
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567894",
+          raw_number: "+1234567894",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -281,7 +308,7 @@ module Sign::App::Up
       # Create second registration with the same number
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567894",
+          raw_number: "+1234567894",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -296,7 +323,7 @@ module Sign::App::Up
     test "resend sends code for active registration session" do
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567890",
+          raw_number: "+1234567890",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -304,7 +331,9 @@ module Sign::App::Up
       }
       telephone = registration_telephone
 
-      post resend_sign_app_up_telephones_url(ri: "jp")
+      assert_enqueued_jobs 1, only: SmsDeliveryJob do
+        post resend_sign_app_up_telephones_url(ri: "jp")
+      end
 
       assert_redirected_to edit_sign_app_up_telephone_url(telephone, ri: "jp")
       assert_predicate session[:user_telephone_otp_last_sent_at], :present?
@@ -312,7 +341,9 @@ module Sign::App::Up
 
     test "resend returns success even without registration session" do
       assert_no_difference("UserTelephone.count") do
-        post resend_sign_app_up_telephones_url(ri: "jp")
+        assert_enqueued_jobs 0, only: SmsDeliveryJob do
+          post resend_sign_app_up_telephones_url(ri: "jp")
+        end
       end
 
       assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
@@ -321,7 +352,7 @@ module Sign::App::Up
     test "resend rate limits repeated requests" do
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567890",
+          raw_number: "+1234567890",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },
@@ -329,28 +360,38 @@ module Sign::App::Up
       }
       telephone = registration_telephone
 
-      post resend_sign_app_up_telephones_url(ri: "jp")
-      post resend_sign_app_up_telephones_url(ri: "jp")
+      assert_enqueued_jobs 1, only: SmsDeliveryJob do
+        post resend_sign_app_up_telephones_url(ri: "jp")
+      end
+      assert_enqueued_jobs 0, only: SmsDeliveryJob do
+        post resend_sign_app_up_telephones_url(ri: "jp")
+      end
 
       assert_redirected_to edit_sign_app_up_telephone_url(telephone, ri: "jp")
       assert_equal I18n.t("sign.app.registration.telephone.resend.rate_limited"), flash[:alert]
     end
 
     test "resend cooldown is 30 seconds" do
-      post resend_sign_app_up_telephones_url(ri: "jp")
+      assert_enqueued_jobs 0, only: SmsDeliveryJob do
+        post resend_sign_app_up_telephones_url(ri: "jp")
+      end
       sent_at = session[:user_telephone_otp_last_sent_at]
       assert_predicate sent_at, :present?
       assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
       assert_equal I18n.t("sign.app.registration.telephone.resend.sent"), flash[:notice]
 
       travel 29.seconds do
-        post resend_sign_app_up_telephones_url(ri: "jp")
+        assert_enqueued_jobs 0, only: SmsDeliveryJob do
+          post resend_sign_app_up_telephones_url(ri: "jp")
+        end
         assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
         assert_equal I18n.t("sign.app.registration.telephone.resend.rate_limited"), flash[:alert]
       end
 
       travel 31.seconds do
-        post resend_sign_app_up_telephones_url(ri: "jp")
+        assert_enqueued_jobs 0, only: SmsDeliveryJob do
+          post resend_sign_app_up_telephones_url(ri: "jp")
+        end
         assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
         assert_equal I18n.t("sign.app.registration.telephone.resend.sent"), flash[:notice]
       end

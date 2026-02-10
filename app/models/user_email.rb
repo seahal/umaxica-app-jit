@@ -8,6 +8,7 @@
 #  id                        :bigint           not null, primary key
 #  address                   :string           default(""), not null
 #  address_bidx              :string
+#  address_digest            :string
 #  locked_at                 :datetime         default(Infinity), not null
 #  otp_attempts_count        :integer          default(0), not null
 #  otp_counter               :text             default(""), not null
@@ -24,6 +25,7 @@
 # Indexes
 #
 #  index_user_emails_on_address_bidx            (address_bidx) UNIQUE WHERE (address_bidx IS NOT NULL)
+#  index_user_emails_on_address_digest          (address_digest) UNIQUE WHERE (address_digest IS NOT NULL)
 #  index_user_emails_on_otp_last_sent_at        (otp_last_sent_at)
 #  index_user_emails_on_public_id               (public_id) UNIQUE
 #  index_user_emails_on_user_email_status_id    (user_email_status_id)
@@ -42,19 +44,22 @@ class UserEmail < PrincipalRecord
 
   include Turnstile
 
+  attr_accessor :skip_user_presence_validation
+
   MAX_EMAILS_PER_USER = 4
   attribute :user_email_status_id, default: UserEmailStatus::UNVERIFIED
   belongs_to :user_email_status,
              optional: true,
              inverse_of: :user_emails
-  belongs_to :user, optional: false, inverse_of: :user_emails
-  validates :address, presence: true, length: { maximum: 255 }
+  belongs_to :user, optional: true, inverse_of: :user_emails
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
   validates :user_email_status_id, numericality: { only_integer: true }
+  validate :ensure_unique_address_digest
+  validate :require_user_presence
   validate :enforce_user_email_limit, on: :create
-  before_validation :set_address_bidx
+  before_validation :set_address_digests
 
   def to_param
     public_id
@@ -87,8 +92,24 @@ class UserEmail < PrincipalRecord
 
   private
 
-  def set_address_bidx
-    self.address_bidx = IdentifierBlindIndex.bidx_for_email(address)
+  def set_address_digests
+    digest = IdentifierBlindIndex.bidx_for_email(raw_address)
+    self.address_bidx = digest
+    self.address_digest = digest if respond_to?(:address_digest=)
+  end
+
+  def ensure_unique_address_digest
+    return if address_digest.blank?
+
+    if self.class.where(address_digest: address_digest).where.not(id: id).exists?
+      errors.add(:address, :taken)
+    end
+  end
+
+  def require_user_presence
+    return if skip_user_presence_validation
+
+    errors.add(:user, :blank) if user.blank?
   end
 
   def enforce_user_email_limit

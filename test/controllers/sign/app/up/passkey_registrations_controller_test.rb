@@ -234,7 +234,7 @@ module Sign::App::Up
     def verify_telephone_via_otp!
       post sign_app_up_telephones_url(ri: "jp"), params: {
         user_telephone: {
-          number: "+1234567890",
+          raw_number: "+1234567890",
           confirm_policy: "1",
           confirm_using_mfa: "1",
         },

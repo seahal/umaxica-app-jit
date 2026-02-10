@@ -27,10 +27,10 @@ class EmailDeliveryTest < ActionDispatch::IntegrationTest
     email = "delivery_test_#{SecureRandom.hex(4)}@example.com"
 
     assert_difference -> { SolidQueue::Job.where(class_name: "ActionMailer::MailDeliveryJob").count }, 1 do
-      post sign_app_up_emails_registration_url(ri: "jp"),
+      post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test_token",

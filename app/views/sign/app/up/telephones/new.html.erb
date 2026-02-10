@@ -25,9 +25,9 @@
       <% end %>
 
       <div>
-        <%= form.label :number %>
+        <%= form.label :raw_number, UserTelephone.human_attribute_name(:number) %>
         <div>
-          <%= form.text_field :number, autocomplete: "tel", required: true %>
+          <%= form.text_field :raw_number, autocomplete: "tel", required: true %>
         </div>
       </div>
 

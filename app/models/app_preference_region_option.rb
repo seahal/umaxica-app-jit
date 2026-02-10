@@ -27,5 +27,11 @@ class AppPreferenceRegionOption < PreferenceRecord
     end
   end
 
+  def self.ensure_defaults!
+    ids = [US, JP]
+    existing = where(id: ids).pluck(:id)
+    (ids - existing).each { |id| create!(id: id) }
+  end
+
   self.primary_key = :id
 end

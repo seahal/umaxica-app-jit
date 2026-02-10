@@ -35,7 +35,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
 
-    assert_select "a[href=?]", new_sign_app_up_path(ri: "jp"), count: 2
+    assert_select "a[href=?]", new_sign_app_up_path(ri: "jp"), count: 1
     assert_select "a[href=?]", new_sign_app_in_email_path(ri: "jp"), count: 1
   end
 
@@ -44,7 +44,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             address: "flow_setup@example.com",
+             raw_address: "flow_setup@example.com",
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
@@ -81,7 +81,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             address: email,
+             raw_address: email,
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
@@ -97,12 +97,14 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil first_email
     assert_equal UserEmailStatus::UNVERIFIED_WITH_SIGN_UP, first_email.user_email_status_id
 
-    # Second registration attempt immediately after
+    assert_not_nil first_email.address_digest
+
+    # Second registration attempt immediately after (case-variant)
     # This should delete the previous unverified record and create a new one
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             address: email,
+             raw_address: "TEST_RE_REG@EXAMPLE.COM",
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
@@ -128,7 +130,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             address: email,
+             raw_address: email,
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
@@ -157,7 +159,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
         post sign_app_up_emails_url(ri: "jp"),
              params: {
                user_email: {
-                 address: existing_email.address,
+                 raw_address: existing_email.address,
                  confirm_policy: "1",
                },
                "cf-turnstile-response": "test",
@@ -172,6 +174,44 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_nil flash[:alert]
   end
 
+  test "create shows identical user-facing response for existing and new emails" do
+    existing_user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+    existing_email = UserEmail.create!(
+      user: existing_user,
+      address: "enum-safe@example.com",
+      confirm_policy: "1",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: "enum-safe@example.com",
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    existing_location = response.location
+    existing_notice = flash[:notice]
+
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: "brand-new@example.com",
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    assert_response :redirect
+    assert_match(%r{/up/emails/[^/]+/edit}, response.location)
+    assert_equal existing_notice, flash[:notice]
+    assert_match(%r{/up/emails/[^/]+/edit}, existing_location)
+  end
+
   test "create enqueues exactly one email" do
     email = "enqueue_test@example.com"
 
@@ -179,7 +219,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -197,7 +237,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -217,7 +257,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -240,7 +280,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -276,7 +316,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -309,7 +349,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -345,7 +385,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -429,7 +469,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             address: email,
+             raw_address: email,
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
@@ -477,7 +517,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -544,7 +584,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -591,7 +631,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -635,7 +675,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
       post sign_app_up_emails_url(ri: "jp"),
            params: {
              user_email: {
-               address: email,
+               raw_address: email,
                confirm_policy: "1",
              },
              "cf-turnstile-response": "test",
@@ -677,7 +717,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             address: email,
+             raw_address: email,
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
@@ -707,7 +747,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             address: email,
+             raw_address: email,
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
@@ -737,7 +777,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             address: email,
+             raw_address: email,
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
@@ -758,7 +798,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             address: email,
+             raw_address: email,
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",

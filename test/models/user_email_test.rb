@@ -8,6 +8,7 @@
 #  id                        :bigint           not null, primary key
 #  address                   :string           default(""), not null
 #  address_bidx              :string
+#  address_digest            :string
 #  locked_at                 :datetime         default(Infinity), not null
 #  otp_attempts_count        :integer          default(0), not null
 #  otp_counter               :text             default(""), not null
@@ -24,6 +25,7 @@
 # Indexes
 #
 #  index_user_emails_on_address_bidx            (address_bidx) UNIQUE WHERE (address_bidx IS NOT NULL)
+#  index_user_emails_on_address_digest          (address_digest) UNIQUE WHERE (address_digest IS NOT NULL)
 #  index_user_emails_on_otp_last_sent_at        (otp_last_sent_at)
 #  index_user_emails_on_public_id               (public_id) UNIQUE
 #  index_user_emails_on_user_email_status_id    (user_email_status_id)
@@ -113,6 +115,17 @@ class UserEmailTest < ActiveSupport::TestCase
     duplicate_email = UserEmail.new(@valid_attributes)
     assert_not duplicate_email.valid?
     assert_not_empty duplicate_email.errors[:address]
+  end
+
+  test "sets address_digest from normalized input" do
+    user_email = UserEmail.create!(
+      raw_address: "TEST@EXAMPLE.COM",
+      confirm_policy: true,
+      user: @user,
+    )
+
+    expected = IdentifierBlindIndex.bidx_for_email("test@example.com")
+    assert_equal expected, user_email.address_digest
   end
 
   test "should downcase email address before saving" do

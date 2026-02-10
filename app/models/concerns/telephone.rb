@@ -5,8 +5,11 @@ module Telephone
   include TelephoneNormalization
 
   attr_accessor :confirm_policy, :confirm_using_mfa, :pass_code
+  attr_writer :raw_number
 
   included do
+    before_validation :normalize_number_from_raw
+
     after_initialize do
       self.otp_counter = "0" if otp_counter.blank?
       self.otp_private_key = ROTP::Base32.random_base32 if otp_private_key.blank?
@@ -15,20 +18,16 @@ module Telephone
 
     encrypts :number, deterministic: true
 
-    # E.164 normalization and validation (from TelephoneNormalization)
-    normalize_telephone_field :number
-
-    # Uniqueness check on normalized E.164 number
-    validates :number, uniqueness: { case_sensitive: false }
+    validate :validate_telephone_number
 
     validates :confirm_policy, acceptance: true,
-                               unless: Proc.new { |a| a.number.blank? && a.pass_code.present? }
+                               unless: Proc.new { |a| a.raw_number.blank? && a.pass_code.present? }
     validates :confirm_using_mfa, acceptance: true,
-                                  unless: Proc.new { |a| a.number.blank? && a.pass_code.present? }
+                                  unless: Proc.new { |a| a.raw_number.blank? && a.pass_code.present? }
     validates :pass_code, numericality: { only_integer: true },
                           length: { is: 6 },
                           presence: true,
-                          unless: Proc.new { |a| a.pass_code.blank? && a.number.present? }
+                          unless: Proc.new { |a| a.pass_code.blank? && a.raw_number.present? }
   end
 
   # OTP-related methods for telephone authentication
@@ -99,5 +98,53 @@ module Telephone
       .update_all(locked_at: Time.current)
     # rubocop:enable Rails/SkipsModelValidations
     reload if affected.positive?
+  end
+
+  def raw_number
+    @raw_number.presence || number
+  end
+
+  private
+
+  def normalize_number_from_raw
+    value = raw_number
+    return if value.blank?
+
+    normalized = TelephoneNormalization.normalize_to_e164(value)
+    self.number = normalized if normalized.present?
+  end
+
+  def validate_telephone_number
+    return if raw_number.blank? && pass_code.present?
+
+    if raw_number.blank?
+      errors.add(:number, :blank)
+      return
+    end
+
+    normalized = TelephoneNormalization.normalize_to_e164(raw_number)
+    unless normalized
+      errors.add(:number, :invalid_e164_format)
+      return
+    end
+
+    if normalized.start_with?("+0")
+      errors.add(:number, :country_code_cannot_start_with_zero)
+      return
+    end
+
+    unless normalized.match?(TelephoneNormalization::E164_FORMAT)
+      errors.add(:number, :invalid_e164_format)
+      return
+    end
+
+    digit_count = normalized.delete("+").length
+    if digit_count > TelephoneNormalization::MAX_E164_DIGITS
+      errors.add(:number, :exceeds_e164_length, max: TelephoneNormalization::MAX_E164_DIGITS)
+    end
+
+    if normalized.length > 16
+      errors.add(:number, :too_long, count: 16)
+    end
   end
 end

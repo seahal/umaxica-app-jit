@@ -28,4 +28,10 @@ class AppPreferenceColorthemeOption < PreferenceRecord
     when SYSTEM then "system"
     end
   end
+
+  def self.ensure_defaults!
+    ids = [LIGHT, DARK, SYSTEM]
+    existing = where(id: ids).pluck(:id)
+    (ids - existing).each { |id| create!(id: id) }
+  end
 end

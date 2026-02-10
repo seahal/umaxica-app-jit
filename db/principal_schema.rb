@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_09_090000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_10_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -166,6 +166,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_09_090000) do
   create_table "user_emails", force: :cascade do |t|
     t.string "address", default: "", null: false
     t.string "address_bidx"
+    t.string "address_digest"
     t.datetime "created_at", null: false
     t.datetime "locked_at", default: ::Float::INFINITY, null: false
     t.integer "otp_attempts_count", default: 0, null: false
@@ -180,6 +181,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_09_090000) do
     t.binary "verification_token_digest"
     t.index "lower((address)::text)", name: "index_user_identity_emails_on_lower_address", unique: true
     t.index ["address_bidx"], name: "index_user_emails_on_address_bidx", unique: true, where: "(address_bidx IS NOT NULL)"
+    t.index ["address_digest"], name: "index_user_emails_on_address_digest", unique: true, where: "(address_digest IS NOT NULL)"
     t.index ["otp_last_sent_at"], name: "index_user_emails_on_otp_last_sent_at"
     t.index ["public_id"], name: "index_user_emails_on_public_id", unique: true
     t.index ["user_email_status_id"], name: "index_user_emails_on_user_email_status_id"
@@ -337,6 +339,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_09_090000) do
     t.datetime "locked_at", default: -::Float::INFINITY, null: false
     t.string "number", default: "", null: false
     t.string "number_bidx"
+    t.string "number_digest"
     t.integer "otp_attempts_count", default: 0, null: false
     t.text "otp_counter", default: "", null: false
     t.datetime "otp_expires_at", default: -::Float::INFINITY, null: false
@@ -347,6 +350,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_09_090000) do
     t.bigint "user_identity_telephone_status_id", default: 0, null: false
     t.index "lower((number)::text)", name: "index_user_telephones_on_lower_number", unique: true
     t.index ["number_bidx"], name: "index_user_telephones_on_number_bidx", unique: true, where: "(number_bidx IS NOT NULL)"
+    t.index ["number_digest"], name: "index_user_telephones_on_number_digest", unique: true, where: "(number_digest IS NOT NULL)"
     t.index ["public_id"], name: "index_user_telephones_on_public_id", unique: true
     t.index ["user_id"], name: "index_user_telephones_on_user_id"
     t.index ["user_identity_telephone_status_id"], name: "index_user_telephones_on_user_identity_telephone_status_id"

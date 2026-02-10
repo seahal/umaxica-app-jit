@@ -15,9 +15,9 @@
         <div>
           <div>
             <div>
-              <%= form.label :number, t('activerecord.attributes.user_telephone.number') %>
+              <%= form.label :raw_number, t('activerecord.attributes.user_telephone.number') %>
               <div>
-                <%= form.telephone_field :number, placeholder: "+819012345678" %>
+                <%= form.telephone_field :raw_number, placeholder: "+819012345678" %>
               </div>
               <p>入力された電話番号にSMS等で確認コードを送信します。</p>
             </div>

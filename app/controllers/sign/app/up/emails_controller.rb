@@ -23,13 +23,15 @@ module Sign
         end
 
         def create
-          email_params = params.expect(user_email: [:address, :confirm_policy])
+          email_params = params.expect(user_email: [:raw_address, :address, :confirm_policy])
+          email_address = email_params[:raw_address] || email_params[:address]
 
           unless initiate_email_verification!(
-            email_params[:address],
+            email_address,
             confirm_policy: email_params[:confirm_policy],
             allow_existing: true,
           )
+            log_signup_email_errors
             render :new, status: :unprocessable_content
             return
           end
@@ -171,3 +173,8 @@ module Sign
     end
   end
 end
+        def log_signup_email_errors
+          return unless @user_email&.errors&.any?
+
+          Rails.logger.warn("signup email invalid: #{@user_email.errors.full_messages.join(', ')}")
+        end

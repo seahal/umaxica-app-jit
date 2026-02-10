@@ -29,9 +29,10 @@ module Sign
             user = current_user
             return head :unauthorized if user.blank?
 
-            tel_params = params.expect(user_telephone: [:number])
+            tel_params = params.expect(user_telephone: [:raw_number, :number])
+            number = tel_params[:raw_number] || tel_params[:number]
 
-            unless initiate_telephone_verification(user, tel_params[:number])
+            unless initiate_telephone_verification(user, number)
               render :new, status: :unprocessable_content
               return
             end

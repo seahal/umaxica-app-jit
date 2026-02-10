@@ -14,18 +14,18 @@ module Sign
 
       # TODO: Rate limit check
 
-      # Normalize number (using existing implementation)
-      # Assuming UserTelephone has normalization or similar
-      # For now, we trust params or basic validation
-      @user_telephone = user.user_telephones.build(number: number)
+      @user_telephone = user.user_telephones.build(raw_number: number)
       @user_telephone.user_telephone_status_id = UserTelephoneStatus::UNVERIFIED
+      @user_telephone.skip_user_presence_validation = false
 
       # Delete existing unverified
-      UserTelephone.where(
-        number: @user_telephone.number,
-        user_id: user.id,
-        user_telephone_status_id: UserTelephoneStatus::UNVERIFIED,
-      ).destroy_all
+      if @user_telephone.number_digest.present?
+        UserTelephone.where(
+          number_digest: @user_telephone.number_digest,
+          user_id: user.id,
+          user_telephone_status_id: UserTelephoneStatus::UNVERIFIED,
+        ).destroy_all
+      end
 
       otp_number = generate_otp_attributes(@user_telephone)
 
@@ -69,7 +69,7 @@ module Sign
     end
 
     def send_telephone_verification_sms(user_telephone, otp_number)
-      AwsSmsService.send_message(
+      SmsDeliveryJob.perform_later(
         to: user_telephone.number,
         message: "PassCode => #{otp_number}",
         subject: "PassCode => #{otp_number}",

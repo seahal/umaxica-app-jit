@@ -207,7 +207,7 @@ class SocialAuthService
       user = build_login_user
       identity = build_identity_for_user(identity_class, user, provider, uid)
 
-      user.save!
+      persist_user!(user, context: "login_new_identity")
       identity.save!
       identity.touch_authenticated!
       Rails.logger.debug { "[SocialAuth] New user created - user_id: #{user.id}" }
@@ -350,7 +350,7 @@ class SocialAuthService
   def create_user_for_identity(identity, identity_class, provider)
     user = build_login_user
     assign_identity_to_user(user, identity, identity_class, provider)
-    user.save!
+    persist_user!(user, context: "login_orphaned_identity")
     identity.update!(user: user)
     user
   end
@@ -363,13 +363,39 @@ class SocialAuthService
 
   def ensure_user_status(user)
     # If status is unset or defaulted to NONE, set it to UNVERIFIED_WITH_SIGN_UP for social sign-up.
-    if user.user_status.present? && user.status_id.present? && user.status_id != UserStatus::NONE
+    if user.status_id.present? && user.status_id != UserStatus::NONE
       return
     end
 
-    status = UserStatus.find_by(id: UserStatus::UNVERIFIED_WITH_SIGN_UP) ||
-      UserStatus.find_by(id: UserStatus::NONE)
-    user.user_status = status if status
+    status_id =
+      if UserStatus.exists?(id: UserStatus::UNVERIFIED_WITH_SIGN_UP)
+        UserStatus::UNVERIFIED_WITH_SIGN_UP
+      elsif UserStatus.exists?(id: UserStatus::NONE)
+        UserStatus::NONE
+      else
+        UserStatus.first&.id
+      end
+
+    if status_id.present?
+      user.status_id = status_id
+    else
+      Rails.logger.error("[SocialAuth] User status missing - unable to assign default status")
+    end
+  end
+
+  def persist_user!(user, context:)
+    user.save!
+  rescue ActiveRecord::RecordInvalid => e
+    log_user_status_error(user, e, context: context)
+    raise SocialAuth::ProviderError.new("errors.social_auth.provider_error")
+  end
+
+  def log_user_status_error(user, error, context:)
+    details = user.errors.details.slice(:user_status, :status_id)
+    Rails.logger.warn(
+      "[SocialAuth] User creation failed (#{context}) - " \
+      "status_id: #{user.status_id.inspect}, errors: #{details.inspect}, message: #{error.message}",
+    )
   end
 
   def build_identity_for_user(identity_class, user, provider, uid)

@@ -245,6 +245,7 @@ module Preference
       option_ids = preference_option_ids(prefix, params_hash)
 
       create_preference_cookie(prefix, preference)
+      ensure_preference_option_defaults(prefix)
       create_preference_option_records(prefix, preference, option_ids)
     end
 
@@ -302,6 +303,36 @@ module Preference
       create_preference_option_record(prefix, preference, "Language", option_ids[:language])
       create_preference_option_record(prefix, preference, "Region", option_ids[:region])
       create_preference_option_record(prefix, preference, "Colortheme", option_ids[:colortheme])
+    end
+
+    def ensure_preference_option_defaults(prefix)
+      option_classes = preference_option_classes(prefix).values
+
+      PreferenceRecord.connected_to(role: :writing) do
+        option_classes.each do |option_class|
+          if option_class.respond_to?(:ensure_defaults!)
+            option_class.ensure_defaults!
+            next
+          end
+
+          ids = option_class.constants(false).filter_map do |const_name|
+            value = option_class.const_get(const_name)
+            value if value.is_a?(Integer)
+          end
+          next if ids.empty?
+
+          existing_ids = option_class.where(id: ids).pluck(:id)
+          missing_ids = ids - existing_ids
+          next if missing_ids.empty?
+
+          option_class.insert_all(
+            missing_ids.map { |id| { id: id } },
+            unique_by: :primary_key,
+          )
+        end
+      end
+    rescue StandardError => e
+      Rails.logger.error("ensure_preference_option_defaults failed: #{e.class} - #{e.message}")
     end
 
     def create_preference_option_record(prefix, preference, suffix, option_id)

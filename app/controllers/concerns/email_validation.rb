@@ -22,7 +22,8 @@ module EmailValidation
     target_seconds = 0.05
     start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-    result = UserEmail.find_by(address: email)
+    digest = IdentifierBlindIndex.bidx_for_email(email)
+    result = digest ? UserEmail.find_by(address_digest: digest) : nil
 
     elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
     remaining = target_seconds - elapsed

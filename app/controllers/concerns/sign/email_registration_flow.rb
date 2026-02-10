@@ -25,11 +25,12 @@ module Sign
     end
 
     def create
-      email_params = params.expect(user_email: [:address])
+      email_params = params.expect(user_email: [:raw_address, :address])
       confirm_policy = params.dig(:user_email, :confirm_policy)
+      email_address = email_params[:raw_address] || email_params[:address]
 
       unless initiate_email_verification!(
-        email_params[:address],
+        email_address,
         confirm_policy: confirm_policy || "1",
       )
         render :new, status: :unprocessable_content
