@@ -4,7 +4,7 @@ module Email
   extend ActiveSupport::Concern
 
   MAX_OTP_ATTEMPTS = 3
-  OTP_COOLDOWN_PERIOD = 1.minute
+  OTP_COOLDOWN_PERIOD = Common::OtpPolicy::SEND_COOLDOWN
 
   attr_accessor :confirm_policy, :pass_code
 

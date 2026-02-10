@@ -22,7 +22,7 @@ class Sign::App::Verification::TotpsControllerTest < ActionDispatch::Integration
       last_otp_at: Time.zone.at(0),
     )
 
-    return_to = Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp"))
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
     get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
         headers: @headers
 
@@ -36,7 +36,7 @@ class Sign::App::Verification::TotpsControllerTest < ActionDispatch::Integration
          headers: @headers
 
     assert_response :redirect
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    assert_redirected_to sign_app_configuration_emails_url(ri: "jp")
 
     @token.reload
     assert_not_nil @token.last_step_up_at
@@ -52,7 +52,7 @@ class Sign::App::Verification::TotpsControllerTest < ActionDispatch::Integration
       last_otp_at: Time.zone.at(0),
     )
 
-    return_to = Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp"))
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
     get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
         headers: @headers
 
@@ -61,5 +61,29 @@ class Sign::App::Verification::TotpsControllerTest < ActionDispatch::Integration
          headers: @headers
 
     assert_response :unprocessable_content
+  end
+
+  test "new keeps scope and return_to in form hidden fields" do
+    private_key = "JBSWY3DPEHPK3PXP"
+    UserOneTimePassword.create!(
+      user: @user,
+      private_key: private_key,
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+      last_otp_at: Time.zone.at(0),
+    )
+
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
+    get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
+        headers: @headers
+
+    get new_sign_app_verification_totp_url(
+      ri: "jp",
+      scope: "configuration_email",
+      return_to: return_to,
+    ), headers: @headers
+
+    assert_response :success
+    assert_select "input[name='verification[scope]'][value='configuration_email']"
+    assert_select "input[name='verification[return_to]'][value='#{return_to}']"
   end
 end

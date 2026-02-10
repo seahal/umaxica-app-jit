@@ -8,6 +8,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
   setup do
     @user = users(:one)
     @host = ENV.fetch("SIGN_SERVICE_URL", "test.umaxica.com")
+    @csrf_token = nil
   end
 
   test "POST refresh with valid refresh token sets both access and refresh cookies" do
@@ -19,7 +20,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: json_headers(with_csrf: true),
          as: :json
 
     assert_response :ok
@@ -52,7 +53,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     # First, refresh to get new tokens
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: json_headers(with_csrf: true),
          as: :json
 
     assert_response :ok
@@ -85,7 +86,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = old_refresh_plain
 
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: json_headers(with_csrf: true),
          as: :json
 
     assert_response :unauthorized
@@ -118,7 +119,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
   test "POST refresh with missing refresh token returns 400" do
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: json_headers(with_csrf: true),
          as: :json
 
     assert_response :bad_request
@@ -134,7 +135,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: json_headers(with_csrf: true),
          as: :json
 
     assert_response :unauthorized
@@ -149,7 +150,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: json_headers(with_csrf: true),
          as: :json
 
     assert_response :unauthorized
@@ -164,7 +165,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: json_headers(with_csrf: true),
          as: :json
 
     assert_response :forbidden
@@ -185,7 +186,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: json_headers(with_csrf: true),
          as: :json
 
     assert_response :ok
@@ -208,7 +209,7 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
 
     freeze_time do
       post "/edge/v1/token/refresh",
-           headers: { "Host" => @host, "Accept" => "application/json" },
+           headers: json_headers(with_csrf: true),
            as: :json
 
       assert_response :ok
@@ -222,5 +223,39 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
       assert_in_delta expected_expiry.to_i, expiry.to_i, 5,
                       "Access cookie expiry should be ~1 hour from now"
     end
+  end
+
+  test "POST refresh without CSRF token returns 403" do
+    token_record = UserToken.create!(user: @user)
+    refresh_plain = token_record.rotate_refresh_token!
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    post "/edge/v1/token/refresh",
+         headers: json_headers(with_csrf: false),
+         as: :json
+
+    assert_response :forbidden
+    json = response.parsed_body
+    assert_equal "invalid_csrf_token", json["error"]
+  end
+
+  private
+
+  def json_headers(with_csrf:)
+    headers = { "Host" => @host, "Accept" => "application/json" }
+    headers["X-CSRF-Token"] = csrf_token if with_csrf
+    headers
+  end
+
+  def csrf_token
+    @csrf_token ||=
+      begin
+        get "/edge/v1/csrf",
+            params: { ri: "jp" },
+            headers: { "Host" => @host, "Accept" => "application/json" },
+            as: :json
+        assert_response :ok
+        response.parsed_body.fetch("csrf_token")
+      end
   end
 end

@@ -1375,19 +1375,26 @@ module Auth
     end
 
     def check_totp_requirement(resource)
-      return unless resource.respond_to?(:totp_enabled?) && resource.totp_enabled?
+      return unless mfa_required_for?(resource)
 
-      set_pending_mfa!(resource: resource, primary: "totp")
-      { status: :totp_required }
+      set_pending_mfa!(resource: resource, primary: "mfa")
+      { status: :mfa_required }
     end
 
-    def set_pending_mfa!(resource:, primary:, return_to: nil)
+    def set_pending_mfa!(resource:, primary:, return_to: nil, ri: nil, auth_method: nil)
       issued_at = Time.current.to_i
+      expires_at = pending_mfa_ttl.from_now.to_i
       session[:pending_mfa] = {
+        "public_id" => SecureRandom.hex(16),
         "user_id" => resource.id,
+        "resource_type" => resource_type,
         "primary" => primary.to_s,
+        "auth_method" => auth_method.to_s.presence || primary.to_s,
         "return_to" => return_to.presence,
+        "ri" => ri.to_s.presence,
         "issued_at" => issued_at,
+        "expires_at" => expires_at,
+        "attempts" => 0,
       }
       # Backward compatibility for existing controllers still using mfa_user_id.
       session[:mfa_user_id] = resource.id
@@ -1408,10 +1415,16 @@ module Auth
       data = pending_mfa
       return false unless data
 
-      issued_at = data[:issued_at].to_i
-      return false if issued_at <= 0
+      expires_at = data[:expires_at].to_i
+      if expires_at.positive?
+        return false if Time.current.to_i >= expires_at
+      else
+        issued_at = data[:issued_at].to_i
+        return false if issued_at <= 0
+        return false if Time.zone.at(issued_at) < pending_mfa_ttl.ago
+      end
 
-      Time.zone.at(issued_at) >= pending_mfa_ttl.ago
+      true
     end
 
     def pending_mfa_user
@@ -1420,12 +1433,76 @@ module Auth
       user_id = pending_mfa[:user_id]
       return nil if user_id.blank?
 
-      ::User.find_by(id: user_id)
+      klass = respond_to?(:resource_class, true) ? resource_class : ::User
+      klass.find_by(id: user_id)
     end
 
     def clear_pending_mfa!
       session.delete(:pending_mfa)
       session.delete(:mfa_user_id)
+    end
+
+    # Completes login after successful MFA verification.
+    # Consumes the pending MFA session, logs in the user, and returns a result hash
+    # with redirect information.
+    #
+    # @param user [User] the user to log in
+    # @return [Hash] result with :status, :redirect_path, etc.
+    def finalize_mfa_login!(user)
+      return_to = pending_mfa&.dig(:return_to)
+      clear_pending_mfa!
+
+      result = log_in(user, require_totp_check: false)
+
+      if result[:status] == :session_limit_hard_reject
+        { status: :session_limit_hard_reject, message: result[:message], http_status: result[:http_status] }
+      elsif result[:restricted]
+        { status: :restricted, redirect_path: session_management_path }
+      else
+        { status: :success, redirect_path: return_to.presence || default_after_login_path }
+      end
+    end
+
+    def session_management_path
+      if respond_to?(:sign_app_in_session_path, true)
+        sign_app_in_session_path
+      elsif respond_to?(:sign_org_in_session_path, true)
+        sign_org_in_session_path
+      else
+        "/in/session"
+      end
+    rescue StandardError
+      "/in/session"
+    end
+
+    def default_after_login_path
+      if respond_to?(:sign_app_root_path, true)
+        sign_app_root_path
+      elsif respond_to?(:sign_org_root_path, true)
+        sign_org_root_path
+      else
+        "/"
+      end
+    rescue StandardError
+      "/"
+    end
+
+    def complete_sign_in_or_start_mfa!(resource, rt:, ri:, auth_method:, token_kind_id: "BROWSER_WEB",
+                                       record_login_audit: true)
+      auth_method = auth_method.to_s
+      return log_in(
+        resource, record_login_audit: record_login_audit, token_kind_id: token_kind_id,
+                  require_totp_check: false,
+      ) if mfa_bypassed_for_auth_method?(auth_method) || !mfa_required_for?(resource)
+
+      return_to = resolve_mfa_return_to(rt)
+      set_pending_mfa!(resource: resource, primary: auth_method, return_to: return_to, ri: ri, auth_method: auth_method)
+
+      {
+        status: :mfa_required,
+        redirect_path: mfa_entry_path(ri: ri),
+        return_to: return_to,
+      }
     end
 
     # Determine concurrent-session handling state for the resource.
@@ -1507,6 +1584,44 @@ module Auth
     # Check if the current session is restricted
     def current_session_restricted?
       current_session&.restricted?
+    end
+
+    def mfa_required_for?(resource)
+      return false unless resource.is_a?(::User)
+      return false unless resource.respond_to?(:multi_factor_enabled?)
+
+      resource.multi_factor_enabled?
+    end
+
+    def mfa_bypassed_for_auth_method?(auth_method)
+      %w(passkey social google apple).include?(auth_method.to_s)
+    end
+
+    def resolve_mfa_return_to(raw_value)
+      return nil if raw_value.blank?
+
+      decoded = decode_base64_urlsafe(raw_value)
+      candidate = decoded.presence || raw_value
+
+      safe_internal_path(candidate) || safe_external_url(candidate)
+    end
+
+    def decode_base64_urlsafe(value)
+      Base64.urlsafe_decode64(value.to_s)
+    rescue ArgumentError
+      nil
+    end
+
+    def mfa_entry_path(ri: nil)
+      if respond_to?(:sign_app_in_challenge_path, true)
+        sign_app_in_challenge_path(ri: ri)
+      elsif respond_to?(:sign_org_in_challenge_path, true)
+        sign_org_in_challenge_path(ri: ri)
+      else
+        "/in/challenge"
+      end
+    rescue StandardError
+      "/in/challenge"
     end
 
     def handle_auth_required_json(options)

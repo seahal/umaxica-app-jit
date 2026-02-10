@@ -136,7 +136,7 @@ class UserPasskeyTest < ActiveSupport::TestCase
     SQL
 
     assert_raises(ActiveRecord::RecordNotUnique) do
-      connection.insert(insert_sql)
+      connection.insert(insert_sql) # rubocop:disable Rails/SkipsModelValidations
     end
   end
 

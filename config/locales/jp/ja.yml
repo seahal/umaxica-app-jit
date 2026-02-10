@@ -174,7 +174,23 @@ ja:
           back: もどる
           logout: ログアウト
           logout_desc: アカウントからログアウトします
+        activity:
+          index:
+            page_title: アクティビティ
+            description: アカウントに関連するログイン履歴を表示します。
+            empty: 表示できるログはありません。
+            table:
+              occurred_at: 発生時刻
+              event: イベント
+              ip_address: IPアドレス
+              context: コンテキスト
+          events:
+            logged_in: ログイン成功
+            login_success: ログイン成功
+            unknown: "不明なイベント (%{event_id})"
         email:
+          edit:
+            title: "メールアドレスの削除"
           index:
             title: "メールアドレス"
             description: "メールアドレスを管理します"
@@ -184,11 +200,9 @@ ja:
           destroy:
             success: "メールアドレスを削除しました。"
             last_method: "最後のログイン手段のため削除できません。"
-          update:
-            success: "メールアドレスが認証されました。"
-            code_required: "確認コードを入力してください。"
-            attempts_exceeded: "試行回数の上限を超えました。最初からやり直してください。"
         telephone:
+          edit:
+            title: "電話番号の削除"
           index:
             title: "電話番号"
             description: "電話番号を管理します"

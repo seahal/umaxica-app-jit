@@ -179,6 +179,42 @@ ja:
             updated: "正常に変更されました。"
           destroy:
             destroyed: "正常に削除されました。"
+        email:
+          index:
+            new_link: "メールアドレスを追加"
+            edit: "編集"
+            delete: "削除"
+            delete_confirm: "本当に削除しますか？"
+          edit:
+            title: "メールアドレスを編集"
+          new:
+            page_title: "メールアドレスを追加"
+            description: "新しいメールアドレスを登録してください"
+            help_text: "確認メールが送信されます"
+          update:
+            success: "メールアドレスが更新されました"
+          destroy:
+            success: "メールアドレスが削除されました"
+            last_method: "最後の認証方法です。削除できません。"
+        telephone:
+          index:
+            new_link: "電話番号を追加"
+            edit: "編集"
+            delete: "削除"
+            delete_confirm: "本当に削除しますか？"
+          edit:
+            title: "電話番号を編集"
+            pass_code_label: "確認コード"
+            pass_code_placeholder: "SMSで受け取ったコードを入力"
+          new:
+            page_title: "電話番号を追加"
+            description: "新しい電話番号を登録してください"
+            help_text: "確認コードがSMSで送信されます"
+          update:
+            success: "電話番号が更新されました"
+          destroy:
+            success: "電話番号が削除されました"
+            last_method: "最後の認証方法です。削除できません。"
       reauth:
         index:
           title: "再認証セッション"

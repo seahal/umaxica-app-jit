@@ -84,6 +84,11 @@ module Jit
 
     # Rack Attack Middleware
     config.middleware.use Rack::Attack
+
+    # CSRF Validation Middleware for API endpoints
+    # Load middleware explicitly before use (required for test environment)
+    require_relative "../app/middleware/csrf_validation" unless defined?(CsrfValidation)
+    config.middleware.use CsrfValidation
     # Active Record Encryption Configuration
     if %w(test production development).include? Rails.env
       config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key

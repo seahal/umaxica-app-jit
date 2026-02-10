@@ -27,6 +27,7 @@ module Sign
                       notice: t("sign.app.registration.telephone.edit.session_expired")
         end
 
+        # rubocop:disable Metrics/MethodLength
         def create
           @user_telephone = UserTelephone.new(
             params.expect(
@@ -102,6 +103,7 @@ module Sign
             render :new, status: :unprocessable_content
           end
         end
+        # rubocop:enable Metrics/MethodLength
 
         def update
           @user_telephone = UserTelephone.find_by(public_id: params["public_id"])
@@ -308,7 +310,7 @@ module Sign
           last_sent_at = session[:user_telephone_otp_last_sent_at]
           return false if last_sent_at.blank?
 
-          last_sent_at.to_i > 60.seconds.ago.to_i
+          last_sent_at.to_i > Common::OtpPolicy::SEND_COOLDOWN.ago.to_i
         end
 
         def load_registration_telephone(registration_session)

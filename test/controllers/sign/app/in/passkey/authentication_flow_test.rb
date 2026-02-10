@@ -109,7 +109,8 @@ module Sign::App::In::Passkey
       assert_equal 11, @passkey.sign_count # updated
     end
 
-    test "passkey login completes even when user has active totp" do
+    test "passkey login completes without additional MFA even when MFA is enabled" do
+      @user.update!(multi_factor_enabled: true)
       UserOneTimePassword.create!(
         user: @user,
         private_key: ROTP::Base32.random_base32,
@@ -148,7 +149,7 @@ module Sign::App::In::Passkey
 
       assert_response :success
       assert_equal "ok", response.parsed_body["status"]
-      assert_not_equal "totp_required", response.parsed_body["status"]
+      assert_not_equal "mfa_required", response.parsed_body["status"]
     end
 
     test "should fail verification with invalid challenge" do

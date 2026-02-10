@@ -3,7 +3,7 @@
 require "test_helper"
 
 class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
-  fixtures :user_social_google_statuses, :user_statuses, :user_one_time_password_statuses
+  fixtures :user_social_google_statuses, :user_social_apple_statuses, :user_statuses, :user_one_time_password_statuses
 
   setup do
     OmniAuth.config.test_mode = true
@@ -70,6 +70,43 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     assert_not_nil user
   end
 
+  test "apple social login with MFA enabled does not require additional MFA challenge" do
+    user = User.create!(multi_factor_enabled: true)
+    UserOneTimePassword.create!(
+      user: user,
+      private_key: ROTP::Base32.random_base32,
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+      title: "totp",
+    )
+    UserSocialApple.create!(
+      user: user,
+      uid: "apple_mfa_skip_uid",
+      provider: "apple",
+      token: "existing_token",
+      expires_at: 1.week.from_now.to_i,
+      user_social_apple_status: user_social_apple_statuses(:active),
+    )
+
+    OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(
+      {
+        provider: "apple",
+        uid: "apple_mfa_skip_uid",
+        info: {},
+        credentials: {
+          token: "apple_token",
+          expires_at: 1.week.from_now.to_i,
+        },
+      },
+    )
+
+    post sign_app_auth_callback_url(provider: "apple", ri: "jp"),
+         headers: SocialCallbackTestHelper.callback_headers(@host)
+
+    assert_response :redirect
+    assert_match(%r{/configuration}, response.redirect_url)
+    assert_nil session[:pending_mfa]
+  end
+
   test "should sign in with existing Google user" do
     user = User.create!
     UserSocialGoogle.create!(
@@ -105,8 +142,9 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("sign.app.social.sessions.create.already_registered", provider: provider_name), flash[:notice]
   end
 
-  test "social login requiring mfa redirects to mfa hub and sets pending session" do
+  test "social login with MFA enabled does not require additional MFA challenge" do
     user = User.create!
+    user.update!(multi_factor_enabled: true)
     UserOneTimePassword.create!(
       user: user,
       private_key: ROTP::Base32.random_base32,
@@ -139,12 +177,13 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
     get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
         headers: SocialCallbackTestHelper.callback_headers(@host)
 
-    assert_redirected_to sign_app_in_mfa_url(ri: "jp")
-    assert_not_equal new_sign_app_in_url(ri: "jp"), response.redirect_url
-    assert_equal user.id, session[:pending_mfa]["user_id"]
+    assert_response :redirect
+    assert_match(%r{/configuration}, response.redirect_url)
+    assert_nil session[:pending_mfa]
   end
 
-  test "google login raises when user_token_kind is missing" do
+  test "google login with missing user_token_kind does not crash callback" do
+    UserToken.delete_all
     UserTokenKind.delete_all
 
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
@@ -162,10 +201,10 @@ class OmniauthCallbacksTest < ActionDispatch::IntegrationTest
       },
     )
 
-    assert_raises(ActiveRecord::RecordNotFound) do
-      get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
-          headers: SocialCallbackTestHelper.callback_headers(@host)
-    end
+    get sign_app_auth_callback_url(provider: "google_oauth2", ri: "jp"),
+        headers: SocialCallbackTestHelper.callback_headers(@host)
+
+    assert_response :redirect
   end
 
   # rubocop:disable Minitest/MultipleAssertions

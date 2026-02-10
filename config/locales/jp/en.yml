@@ -198,6 +198,20 @@ en:
           logout_desc: "Sign out of your account"
           mfa: "MFA settings"
           mfa_desc: "Enable and manage multi-factor authentication"
+        activity:
+          index:
+            page_title: "Activity"
+            description: "View login-related events on your account."
+            empty: "No activity logs are available."
+            table:
+              occurred_at: "Occurred at"
+              event: "Event"
+              ip_address: "IP address"
+              context: "Context"
+          events:
+            logged_in: "Login success"
+            login_success: "Login success"
+            unknown: "Unknown event (%{event_id})"
         passkeys:
           edit:
             title: "Edit passkey"
@@ -223,6 +237,8 @@ en:
             success: "MFA settings updated."
             failure: "Failed to update MFA settings."
         email:
+          edit:
+            title: "Delete Email Address"
           index:
             title: "Email Addresses"
             description: "Manage your email addresses"
@@ -232,11 +248,9 @@ en:
           destroy:
             success: "Email address deleted."
             last_method: "You must keep at least one login or recovery method."
-          update:
-            success: "Email address has been verified."
-            code_required: "Verification code is required."
-            attempts_exceeded: "Maximum verification attempts exceeded. Please start over."
         telephone:
+          edit:
+            title: "Delete Phone Number"
           index:
             title: "Phone Numbers"
             description: "Manage your phone numbers"

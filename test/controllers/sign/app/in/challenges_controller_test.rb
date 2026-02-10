@@ -1,0 +1,131 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class Sign::App::In::ChallengesControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :user_statuses, :user_passkey_statuses, :user_secret_kinds, :user_secret_statuses,
+           :user_email_statuses, :user_one_time_password_statuses
+
+  setup do
+    host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+    CloudflareTurnstile.test_mode = true
+    CloudflareTurnstile.test_validation_response = { "success" => true }
+    @user = User.create!(multi_factor_enabled: true)
+    @email = "challenge_hub_#{SecureRandom.hex(4)}@example.com".freeze
+    @user.user_emails.create!(address: @email, user_email_status_id: UserEmailStatus::VERIFIED)
+    UserOneTimePassword.create!(
+      user: @user,
+      private_key: ROTP::Base32.random_base32,
+      user_one_time_password_status_id: UserOneTimePasswordStatus::ACTIVE,
+      title: "totp",
+    )
+    _secret, @raw_secret = UserSecret.issue!(
+      name: "Hub secret",
+      user_id: @user.id,
+      user_secret_kind_id: UserSecretKind::PERMANENT,
+      uses: 10,
+      status: :active,
+    )
+  end
+
+  teardown do
+    CloudflareTurnstile.test_mode = false
+    CloudflareTurnstile.test_validation_response = nil
+  end
+
+  test "show requires pending_mfa - redirects with alert" do
+    get sign_app_in_challenge_path(ri: "jp")
+
+    assert_response :see_other
+    assert_redirected_to new_sign_app_in_path(ri: "jp")
+    assert_equal I18n.t("sign.app.in.mfa.session_expired"), flash[:alert]
+  end
+
+  test "show renders for pending_mfa user with MFA enabled" do
+    post sign_app_in_secret_path(ri: "jp"), params: {
+      secret_login_form: {
+        identifier: @email,
+        secret_value: @raw_secret,
+      },
+      "cf-turnstile-response": "test_token",
+    }
+
+    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
+
+    follow_redirect!
+
+    assert_response :success
+    assert_includes response.body, I18n.t("sign.app.in.mfa.title")
+    assert_includes response.body, I18n.t("sign.app.in.mfa.methods.totp")
+  end
+
+  test "show does not display totp method when disabled" do
+    @user.user_one_time_passwords.delete_all
+
+    post sign_app_in_secret_path(ri: "jp"), params: {
+      secret_login_form: {
+        identifier: @email,
+        secret_value: @raw_secret,
+      },
+      "cf-turnstile-response": "test_token",
+    }
+
+    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
+
+    follow_redirect!
+    assert_response :success
+    assert_not_includes response.body, I18n.t("sign.app.in.mfa.methods.totp")
+  end
+
+  test "show does not display passkey method when disabled" do
+    @user.user_passkeys.delete_all
+
+    post sign_app_in_secret_path(ri: "jp"), params: {
+      secret_login_form: {
+        identifier: @email,
+        secret_value: @raw_secret,
+      },
+      "cf-turnstile-response": "test_token",
+    }
+
+    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
+
+    follow_redirect!
+    assert_response :success
+    assert_not_includes response.body, I18n.t("sign.app.in.mfa.methods.passkey")
+  end
+
+  test "backward compatibility: old mfa path redirects to challenge with ri param" do
+    get "/in/mfa?ri=jp"
+    assert_response :found
+    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
+  end
+
+  test "backward compatibility: old mfa/totp/new redirects with params" do
+    get "/in/mfa/totp/new?ri=jp"
+    assert_response :found
+    assert_redirected_to "/in/challenge/totp/new?ri=jp"
+  end
+
+  test "backward compatibility: old mfa/totp POST redirects with params" do
+    post "/in/mfa/totp?ri=jp", params: {
+      totp_challenge_form: { token: "000000" },
+    }
+    assert_response :found
+    assert_redirected_to sign_app_in_challenge_totp_path(ri: "jp")
+  end
+
+  test "backward compatibility: old mfa/passkey/new redirects with params" do
+    get "/in/mfa/passkey/new?ri=jp"
+    assert_response :found
+    assert_redirected_to "/in/challenge/passkey/new?ri=jp"
+  end
+
+  test "backward compatibility: old mfa/passkey POST redirects with params" do
+    post "/in/mfa/passkey?ri=jp", params: {
+      mfa_passkey_form: { challenge_id: "test", credential_json: "{}" },
+    }
+    assert_response :found
+    assert_redirected_to sign_app_in_challenge_passkey_path(ri: "jp")
+  end
+end

@@ -200,7 +200,7 @@ module Sign::App::In
         assert_response :ok
         json = response.parsed_body
         assert_equal "session_restricted", json["status"]
-        assert_equal sign_app_in_session_path, json["redirect_url"]
+        assert_equal sign_app_in_session_path(ri: "jp"), json["redirect_url"]
 
         # A restricted token should have been created
         restricted = UserToken.where(user_id: @user.id, status: UserToken::STATUS_RESTRICTED)
@@ -211,5 +211,59 @@ module Sign::App::In
       end
     end
     # rubocop:enable Minitest/MultipleAssertions
+
+    test "verification returns same response for credential mismatch and missing verified pii" do
+      # Baseline: credential mismatch
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: @user_email.address }
+      baseline_challenge_id = response.parsed_body["challenge_id"]
+
+      post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
+        challenge_id: baseline_challenge_id,
+        credential: {
+          id: Base64.urlsafe_encode64("unknown_credential", padding: false),
+          response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+        },
+      }
+
+      assert_response :unauthorized
+      mismatch_body = response.body
+
+      # PII missing user with valid passkey credential
+      user_without_verified_pii = User.create!(status_id: UserStatus::NEYO, multi_factor_enabled: false)
+      email = user_without_verified_pii.user_emails.create!(
+        address: "unverified_passkey_#{SecureRandom.hex(4)}@example.com",
+        user_email_status_id: UserEmailStatus::VERIFIED,
+      )
+      passkey = UserPasskey.create!(
+        user: user_without_verified_pii,
+        webauthn_id: Base64.urlsafe_encode64("pii_missing_login_id_#{SecureRandom.hex(4)}", padding: false),
+        external_id: SecureRandom.uuid,
+        public_key: "pii_missing_public_key",
+        description: "PII missing key",
+        status_id: UserPasskeyStatus::ACTIVE,
+      )
+      email.update!(user_email_status_id: UserEmailStatus::UNVERIFIED)
+
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email.address }
+      pii_challenge_id = response.parsed_body["challenge_id"]
+
+      mock_credential = Object.new
+      mock_credential.define_singleton_method(:id) { passkey.webauthn_id }
+      mock_credential.define_singleton_method(:sign_count) { 1 }
+      mock_credential.define_singleton_method(:verify) { |*_args| true }
+
+      WebAuthn::Credential.stub :from_get, mock_credential do
+        post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
+          challenge_id: pii_challenge_id,
+          credential: {
+            id: passkey.webauthn_id,
+            response: { clientDataJSON: "e30=", authenticatorData: "e30=", signature: "sig", userHandle: "h" },
+          },
+        }
+      end
+
+      assert_response :unauthorized
+      assert_equal mismatch_body, response.body
+    end
   end
 end

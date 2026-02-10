@@ -220,6 +220,33 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to "/"
   end
 
+  test "email sign-in redirects to MFA challenge when MFA is enabled" do
+    user = users(:one)
+    user.update!(multi_factor_enabled: true)
+    test_email = user.user_emails.create!(
+      address: "mfa_email_login_#{SecureRandom.hex(4)}@example.com",
+    )
+
+    post sign_app_in_email_url(ri: "jp"),
+         params: {
+           :user_email => { address: test_email.address },
+           "cf-turnstile-response" => "test_token",
+         },
+         headers: { "Host" => @host }
+
+    otp_private_key = ROTP::Base32.random_base32
+    otp_counter = 55_555
+    valid_pass_code = ROTP::HOTP.new(otp_private_key).at(otp_counter).to_s
+    test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
+
+    patch sign_app_in_email_url(ri: "jp"),
+          params: { user_email: { pass_code: valid_pass_code } },
+          headers: { "Host" => @host }
+
+    assert_response :found
+    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
+  end
+
   test "otp resend enforces cooldown" do
     user = users(:one)
     test_email = user.user_emails.create!(
@@ -251,7 +278,18 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_equal initial_sent_at, test_email.reload.otp_last_sent_at
 
-    travel Email::OTP_COOLDOWN_PERIOD + 1.second do
+    travel 29.seconds do
+      assert_no_difference -> { ActionMailer::Base.deliveries.count } do
+        post sign_app_in_email_url(ri: "jp"),
+             params: {
+               :user_email => { address: test_email.address },
+               "cf-turnstile-response" => "test_token",
+             },
+             headers: { "Host" => @host }
+      end
+    end
+
+    travel 31.seconds do
       assert_difference -> { ActionMailer::Base.deliveries.count }, 1 do
         perform_enqueued_jobs do
           post sign_app_in_email_url(ri: "jp"),
@@ -525,13 +563,13 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     valid_pass_code = hotp.at(otp_counter).to_s
     test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
 
-    # Verify OTP — should redirect to session management, not "/"
+    # Verify OTP - should redirect to session management, not "/"
     patch sign_app_in_email_url(ri: "jp"),
           params: { user_email: { pass_code: valid_pass_code } },
           headers: { "Host" => @host }
 
     assert_response :found
-    assert_redirected_to sign_app_in_session_path
+    assert_redirected_to sign_app_in_session_path(ri: "jp")
     assert_equal I18n.t("sign.app.in.session.restricted_notice"), flash[:notice]
 
     # A restricted token should have been created
@@ -576,7 +614,7 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     json = response.parsed_body
     assert_equal "session_restricted", json["status"]
-    assert_equal sign_app_in_session_path, json["redirect_url"]
+    assert_equal sign_app_in_session_path(ri: "jp"), json["redirect_url"]
   end
   # rubocop:enable Minitest/MultipleAssertions
 end

@@ -34,22 +34,6 @@ module Sign
           end
         end
 
-        def update
-          submitted_code = params[:user_telephone][:pass_code]
-          status =
-            complete_telephone_verification(params[:id], submitted_code) do |user_telephone|
-              user_telephone.user = current_user
-              user_telephone.save!
-            end
-
-          if status == :success
-            redirect_to sign_app_configuration_telephones_path,
-                        notice: t("sign.app.configuration.telephone.update.success")
-          else
-            render :edit, status: :unprocessable_content
-          end
-        end
-
         def destroy
           telephone = current_user.user_telephones.find_by!(public_id: params[:id])
 

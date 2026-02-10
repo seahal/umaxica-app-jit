@@ -38,10 +38,8 @@
                   <% end %>
                 </td>
                 <td>
-                  <%= button_to t("sign.app.configuration.telephone.index.delete"),
-                                sign_app_configuration_telephone_path(telephone),
-                                method: :delete,
-                                data: { turbo_confirm: t("sign.app.configuration.telephone.index.delete_confirm") } %>
+                  <%= link_to t("sign.app.configuration.telephone.index.edit"),
+                              edit_sign_app_configuration_telephone_path(telephone) %>
                 </td>
               </tr>
             <% end %>

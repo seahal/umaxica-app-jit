@@ -82,16 +82,16 @@ module Sign
         # Redirects and returns false if invalid; returns true if valid.
         def require_reauth_session!
           rs = current_reauth_session
-          if rs.present? &&
-              rs["expires_at"].to_i > Time.current.to_i &&
-              rs["user_id"] == current_user.id &&
-              rs["scope"].present?
+          if valid_reauth_session?(rs)
             return true
           end
 
-          session.delete(REAUTH_SESSION_KEY)
-          session.delete(EMAIL_OTP_SESSION_KEY)
-          redirect_to sign_app_configuration_path(ri: params[:ri]),
+          clear_reauth_state!
+          if restore_reauth_session_from_params! && valid_reauth_session?(current_reauth_session)
+            return true
+          end
+
+          redirect_to sign_app_verification_path(verification_recovery_redirect_params),
                       alert: I18n.t("auth.step_up.session_expired", default: "再認証が必要です")
           false
         end
@@ -124,7 +124,7 @@ module Sign
         end
 
         def verification_params
-          params.fetch(:verification, {}).permit(:code, :challenge_id, :credential_json)
+          params.fetch(:verification, {}).permit(:code, :challenge_id, :credential_json, :scope, :return_to)
         end
 
         def verification_scope
@@ -161,6 +161,61 @@ module Sign
           rs["email_nonce"] ||= SecureRandom.urlsafe_base64(16)
           session[REAUTH_SESSION_KEY] = rs
           rs["email_nonce"]
+        end
+
+        def current_reauth_scope
+          current_reauth_session&.fetch("scope", nil)
+        end
+
+        def current_reauth_return_to_param
+          return_to = current_reauth_session&.fetch("return_to", nil)
+          return if return_to.blank?
+
+          Base64.urlsafe_encode64(return_to)
+        end
+
+        def verification_recovery_redirect_params
+          attrs = { ri: params[:ri] }
+
+          scope = incoming_scope
+          attrs[:scope] = scope if scope.present?
+
+          return_to = incoming_return_to
+          attrs[:return_to] = return_to if return_to.present?
+
+          attrs
+        end
+
+        def valid_reauth_session?(rs)
+          rs.present? &&
+            rs["expires_at"].to_i > Time.current.to_i &&
+            rs["user_id"] == current_user.id &&
+            rs["scope"].present? &&
+            rs["return_to"].present?
+        end
+
+        def restore_reauth_session_from_params!
+          scope = incoming_scope
+          return_to = incoming_return_to
+          return false if scope.blank? || return_to.blank?
+
+          start_reauth_session!(scope: scope, return_to_param: return_to)
+          true
+        rescue ActionController::BadRequest
+          false
+        end
+
+        def incoming_scope
+          verification_params[:scope].to_s.presence || params[:scope].to_s
+        end
+
+        def incoming_return_to
+          verification_params[:return_to].to_s.presence || params[:return_to].to_s
+        end
+
+        def clear_reauth_state!
+          session.delete(REAUTH_SESSION_KEY)
+          session.delete(EMAIL_OTP_SESSION_KEY)
         end
 
         # ------------------------------------------------------------------

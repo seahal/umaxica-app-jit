@@ -17,17 +17,6 @@ module Sign
           @user_email = current_user.user_emails.find_by!(public_id: params[:id])
         end
 
-        def update
-          @user_email = current_user.user_emails.find_by!(public_id: params[:id])
-          unless @user_email.update(params.expect(user_email: [:address]))
-            render :edit, status: :unprocessable_content
-            return
-          end
-
-          redirect_to sign_app_configuration_emails_path,
-                      notice: t("sign.app.configuration.email.update.success")
-        end
-
         def destroy
           @user_email = current_user.user_emails.find_by!(public_id: params[:id])
 

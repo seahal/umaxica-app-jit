@@ -1,11 +1,6 @@
 <% content_for :page_title, t("sign.app.configuration.email.edit.title") %>
-<div>
-  <div>
     <h1><%= t("sign.app.configuration.email.edit.title") %></h1>
-    <p><%= t("sign.app.configuration.email.edit.description") %></p>
-  </div>
 
-  <div>
     <%= form_with model: @user_email, url: sign_app_configuration_emails_registration_path, method: :patch do |f| %>
       <%= render "sign/app/emails/registrations/verification_fields", form: f, user_email: @user_email, verification_token: @verification_token %>
     <% end %>
@@ -13,5 +8,3 @@
     <div>
       <%= link_to t("sign.app.common.cancel"), sign_app_configuration_emails_path %>
     </div>
-  </div>
-</div>

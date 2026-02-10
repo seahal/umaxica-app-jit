@@ -32,7 +32,9 @@ scope module: :sign, as: :sign do
           collection do
             post :resend
           end
+          # kesitai
           resource :passkey_registration, only: %i(show create)
+          # kroemo kesitai
           post "passkey_registration/begin", to: "passkey_registrations#begin"
         end
       end
@@ -50,14 +52,14 @@ scope module: :sign, as: :sign do
         end
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
-        resource :mfa, only: %i(show)
-        namespace :mfa do
+        resource :challenge, only: %i(show)
+        namespace :challenge do
           resource :totp, only: %i(new create)
           resource :passkey, only: %i(new create)
         end
       end
 
-      # TODO: どっちが、うごいてるん？
+      # TODO: Which one is working?
       # Social auth: start sets intent/state then redirects to /auth/:provider
       namespace :social do
         get "start", to: "sessions#start"
@@ -84,7 +86,7 @@ scope module: :sign, as: :sign do
         resources :emails, only: %i(new create edit update)
       end
 
-      resource :configuration, only: %i(show edit)
+      resource :configuration, only: %i(show)
       namespace :configuration do
         # TODO: implement TOTP settings management
         resources :totps, only: %i(index new create edit update destroy), param: :public_id
@@ -95,29 +97,27 @@ scope module: :sign, as: :sign do
             post :verification
           end
         end
-        resource :mfa, only: %i(show update)
+        resource :challenge, only: %i(show update)
+        resources :emails, only: %i(index edit destroy)
         namespace :emails do
           resource :registration, only: %i(new create edit update), controller: :registrations
         end
-        resources :emails, only: %i(index edit update destroy)
         namespace :telephones do
           resource :registration, only: %i(new create edit update), controller: :registrations
         end
-        resources :telephones, only: %i(index edit update destroy)
+        resources :telephones, only: %i(index edit destroy)
         resource :apple, only: [:show, :destroy]
+        # by the way, what is update mehtods for google here?
         resource :google, only: %i(show update destroy)
         # refactor to standard CRUD
         resources :secrets, param: :public_id do
           post :regenerate, on: :member
         end
-        # what is this?
-        resource :emergency_key, only: :show
         # i want this code more precisely routing.
-        resources :sessions
+        resources :sessions, only: %i(index destroy)
         resources :activities, only: :index
         resource :out, only: %i(edit destroy)
-        # i want this code more precisely routing.
-        resource :withdrawal, only: %i(new update)
+        resource :withdrawal, only: %i(new update create edit destroy)
       end
     end
   end
@@ -153,7 +153,9 @@ scope module: :sign, as: :sign do
         end
         resource :secret, only: %i(new create)
         resource :session, only: %i(show update destroy)
-        resource :mfa, only: %i(show create)
+        resource :challenge, only: %i(show create)
+        # Backward compatibility: redirect mfa to challenge
+        match "mfa", via: [:get, :post], to: redirect(status: 302) { |_params, req| "/in/challenge#{req.query_string.present? ? "?#{req.query_string}" : ""}" }
       end
 
       resource :verification, only: %i(show)
@@ -172,9 +174,11 @@ scope module: :sign, as: :sign do
             post :verification
           end
         end
-        resource :mfa, only: %i(show update)
+        resource :challenge, only: %i(show update)
+        # Backward compatibility: redirect mfa to challenge
+        match "mfa", via: %i(get put patch), to: redirect(status: 302) { |_params, req| "/configuration/challenge#{req.query_string.present? ? "?#{req.query_string}" : ""}" }
         resources :secrets, param: :public_id
-        resources :sessions
+        resources :sessions, only: %i(index show new edit create update destroy)
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(show)
       end

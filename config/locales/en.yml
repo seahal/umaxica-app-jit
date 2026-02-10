@@ -42,6 +42,29 @@ en:
           login_required: "Please log in to manage sessions."
           invalid_session: "Invalid session reference."
           cannot_revoke_current: "Cannot revoke current session this way. Use cancel to log out."
+        mfa:
+          title: "Additional authentication required"
+          description: "Please select an authentication method."
+          required: "Additional authentication is required."
+          session_expired: "Your MFA session has expired. Please sign in again."
+          verification_failed: "Authentication failed."
+          no_methods_available: "No authentication methods are available. Please contact support."
+          methods:
+            totp: "Authenticator app (TOTP)"
+            passkey: "Passkey"
+          totp:
+            title: "Authenticator app verification"
+            description: "Enter the 6-digit code from your authenticator app."
+            token_label: "Verification code"
+            submit: "Verify"
+            back: "Back to method selection"
+            success: "Authentication successful."
+          passkey:
+            title: "Passkey verification"
+            description: "Authenticate using your registered passkey."
+            authenticate: "Authenticate with Passkey"
+            back: "Back to method selection"
+            success: "Authentication successful."
       layout:
         nav:
           log_out: "logout"
@@ -152,6 +175,8 @@ en:
     messages:
       validation_failed: "Please review the highlighted errors."
     login_failed: "Login failed"
+    rate_limit:
+      exceeded: "Too many requests. Please try again later."
     webauthn:
       email_required: "Please enter your email address"
       identifier_required: "Please enter your email or staff code"

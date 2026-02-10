@@ -1,1 +1,15 @@
+/* dev.css */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
+html {
+  line-height: 2.0;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}

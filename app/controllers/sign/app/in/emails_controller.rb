@@ -47,6 +47,7 @@ module Sign
           redirect_to edit_sign_app_in_email_path(rd: peek_redirect_parameter)
         end
 
+        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def update
           # Record start time for timing attack mitigation
           start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -72,7 +73,7 @@ module Sign
                 if result[:restricted]
                   redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
                 elsif result[:redirect_path]
-                  redirect_to result[:redirect_path], notice: t("sign.app.authentication.totp.required")
+                  redirect_to result[:redirect_path], notice: t("sign.app.in.mfa.required")
                 else
                   # Redirect to rd parameter if provided, otherwise to root
                   redirect_with_notice("/", t("sign.app.authentication.email.update.success"))
@@ -109,6 +110,7 @@ module Sign
             end
           end
         end
+        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         private
 
@@ -173,9 +175,12 @@ module Sign
             user = user_from_user_email(user_email)
             clear_otp(user_email)
             session[:user_email_authentication_id] = nil
-            result = log_in(user)
-            if result[:status] == :totp_required
-              { success: true, redirect_path: sign_app_in_mfa_path }
+            rd = peek_redirect_parameter
+            result = complete_sign_in_or_start_mfa!(
+              user, rt: rd, ri: params[:ri], auth_method: "email",
+            )
+            if result[:status] == :mfa_required
+              { success: true, redirect_path: result[:redirect_path] }
             elsif result[:status] == :session_limit_hard_reject
               { success: false, error: result[:message], hard_reject: true, http_status: result[:http_status] }
             elsif result[:restricted]

@@ -5,21 +5,29 @@
 # Table name: users
 # Database name: principal
 #
-#  id                   :bigint           not null, primary key
-#  last_reauth_at       :datetime
-#  lock_version         :integer          default(0), not null
-#  multi_factor_enabled :boolean          default(FALSE), not null
-#  withdrawn_at         :datetime         default(Infinity)
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  public_id            :string(255)      default(""), not null
-#  status_id            :bigint           default(13), not null
+#  id                    :bigint           not null, primary key
+#  deactivated_at        :datetime
+#  last_reauth_at        :datetime
+#  lock_version          :integer          default(0), not null
+#  multi_factor_enabled  :boolean          default(FALSE), not null
+#  purged_at             :datetime
+#  scheduled_purge_at    :datetime
+#  withdrawal_started_at :datetime
+#  withdrawn_at          :datetime         default(Infinity)
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  public_id             :string(255)      default(""), not null
+#  status_id             :bigint           default(13), not null
 #
 # Indexes
 #
-#  index_users_on_public_id     (public_id) UNIQUE
-#  index_users_on_status_id     (status_id)
-#  index_users_on_withdrawn_at  (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
+#  index_users_on_deactivated_at         (deactivated_at) WHERE (deactivated_at IS NOT NULL)
+#  index_users_on_public_id              (public_id) UNIQUE
+#  index_users_on_purged_at              (purged_at) WHERE (purged_at IS NOT NULL)
+#  index_users_on_scheduled_purge_at     (scheduled_purge_at) WHERE (scheduled_purge_at IS NOT NULL)
+#  index_users_on_status_id              (status_id)
+#  index_users_on_withdrawal_started_at  (withdrawal_started_at) WHERE (withdrawal_started_at IS NOT NULL)
+#  index_users_on_withdrawn_at           (withdrawn_at) WHERE (withdrawn_at IS NOT NULL)
 #
 # Foreign Keys
 #
@@ -146,8 +154,11 @@ class User < PrincipalRecord
 
   # what is this?
   def has_verified_recovery_identity?
-    user_emails.exists?(user_email_status_id: VERIFIED_RECOVERY_EMAIL_STATUS_IDS) ||
-      user_telephones.exists?(user_identity_telephone_status_id: VERIFIED_RECOVERY_TELEPHONE_STATUS_IDS)
+    has_verified_pii?
+  end
+
+  def has_verified_pii?
+    verified_email? || verified_telephone?
   end
 
   def login_methods_remaining?(excluding_provider: nil)

@@ -162,7 +162,9 @@ module Sign
         end
 
         def verify_and_login(challenge, user_id)
-          credential = WebAuthn::Credential.from_get(credential_params.to_h)
+          credential = build_credential_for_verification
+          return unless credential
+
           passkey = UserPasskey.find_by(webauthn_id: credential.id)
 
           unless passkey && passkey.user_id == user_id
@@ -170,9 +172,30 @@ module Sign
             return render_error("errors.webauthn.credential_not_found", :unauthorized)
           end
 
+          unless passkey.user.has_verified_pii?
+            Rails.event.notify(
+              "authentication.passkey.failed",
+              reason: "verified_pii_missing",
+              user_id: passkey.user_id,
+              ip_address: request.remote_ip,
+            )
+            return render_error("errors.webauthn.credential_not_found", :unauthorized)
+          end
+
           verify_passkey(credential, passkey, challenge)
-          result = log_in(passkey.user, record_login_audit: true, require_totp_check: false)
+          rd = retrieve_redirect_url
+          result = complete_sign_in_or_start_mfa!(
+            passkey.user, rt: rd, ri: params[:ri], auth_method: "passkey",
+          )
           handle_login_result(result)
+        end
+
+        def build_credential_for_verification
+          WebAuthn::Credential.from_get(credential_params.to_h)
+        rescue StandardError => e
+          Rails.logger.warn("WebAuthn: Invalid credential payload (#{e.class})")
+          render_error("errors.webauthn.credential_not_found", :unauthorized)
+          nil
         end
 
         def verify_passkey(credential, passkey, challenge)
@@ -189,8 +212,8 @@ module Sign
 
         def handle_login_result(result)
           case result[:status]
-          when :totp_required
-            render json: { status: "totp_required", redirect_url: sign_app_in_mfa_path }, status: :ok
+          when :mfa_required
+            render json: { status: "mfa_required", redirect_url: result[:redirect_path] }, status: :ok
           when :session_limit_hard_reject
             render json: {
               status: "session_limit_hard_reject",

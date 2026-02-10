@@ -336,6 +336,26 @@ module Sign::App::Up
       assert_equal I18n.t("sign.app.registration.telephone.resend.rate_limited"), flash[:alert]
     end
 
+    test "resend cooldown is 30 seconds" do
+      post resend_sign_app_up_telephones_url(ri: "jp")
+      sent_at = session[:user_telephone_otp_last_sent_at]
+      assert_predicate sent_at, :present?
+      assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
+      assert_equal I18n.t("sign.app.registration.telephone.resend.sent"), flash[:notice]
+
+      travel 29.seconds do
+        post resend_sign_app_up_telephones_url(ri: "jp")
+        assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
+        assert_equal I18n.t("sign.app.registration.telephone.resend.rate_limited"), flash[:alert]
+      end
+
+      travel 31.seconds do
+        post resend_sign_app_up_telephones_url(ri: "jp")
+        assert_redirected_to new_sign_app_up_telephone_url(ri: "jp")
+        assert_equal I18n.t("sign.app.registration.telephone.resend.sent"), flash[:notice]
+      end
+    end
+
     private
 
     def regional_defaults

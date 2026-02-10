@@ -43,10 +43,8 @@
                   <% end %>
                 </td>
                 <td>
-                  <%= button_to t("sign.app.configuration.email.index.delete"),
-                                sign_app_configuration_email_path(email),
-                                method: :delete,
-                                data: { turbo_confirm: t("sign.app.configuration.email.index.delete_confirm") } %>
+                  <%= link_to t("sign.app.configuration.email.index.edit"),
+                              edit_sign_app_configuration_email_path(email.public_id) %>
                 </td>
               </tr>
             <% end %>

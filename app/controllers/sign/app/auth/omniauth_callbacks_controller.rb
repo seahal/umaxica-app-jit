@@ -104,6 +104,7 @@ module Sign
 
         private
 
+        # rubocop:disable Metrics/MethodLength
         def handle_successful_auth(user, intent, provider_name, _identity, existing_account: nil)
           Rails.logger.debug { "[OmniAuth] handle_successful_auth - intent: #{intent}, user_id: #{user&.id}" }
 
@@ -164,6 +165,7 @@ module Sign
             end
           end
         end
+        # rubocop:enable Metrics/MethodLength
 
         def handle_unexpected_error(error, auth)
           Rails.event.notify(
@@ -183,20 +185,24 @@ module Sign
         end
 
         def sign_in(user)
-          result = log_in(user)
-          Rails.logger.debug { "[OmniAuth] log_in result: #{result.inspect}" }
+          result = complete_sign_in_or_start_mfa!(
+            user, rt: nil, ri: params[:ri], auth_method: "social",
+          )
+          Rails.logger.debug { "[OmniAuth] sign_in result: #{result.inspect}" }
           result
         end
 
         def sign_in_with_reauth(user)
           # Reauth flow - last_reauth_at is already updated by SocialAuthService
-          result = log_in(user)
-          Rails.logger.debug { "[OmniAuth] log_in (reauth) result: #{result.inspect}" }
+          result = complete_sign_in_or_start_mfa!(
+            user, rt: nil, ri: params[:ri], auth_method: "social",
+          )
+          Rails.logger.debug { "[OmniAuth] sign_in (reauth) result: #{result.inspect}" }
           result
         end
 
-        # Handle login failures (session limit, TOTP required, etc.)
-        def handle_login_failure(login_result, _provider_name, user = nil)
+        # Handle login failures (session limit, MFA required, etc.)
+        def handle_login_failure(login_result, _provider_name, _user = nil)
           status = login_result[:status]
 
           case status
@@ -207,11 +213,10 @@ module Sign
             Rails.logger.debug { "[OmniAuth] Session limit exceeded for user" }
             redirect_to new_sign_app_in_path,
                         alert: I18n.t("sign.app.social.sessions.create.session_limit")
-          when :totp_required
-            Rails.logger.debug { "[OmniAuth] TOTP required for user" }
-            set_pending_mfa!(resource: user, primary: "social") if user
-            redirect_to sign_app_in_mfa_path,
-                        alert: I18n.t("sign.app.social.sessions.create.totp_required")
+          when :mfa_required
+            Rails.logger.debug { "[OmniAuth] MFA required for user" }
+            redirect_to login_result[:redirect_path],
+                        notice: I18n.t("sign.app.in.mfa.required")
           else
             Rails.logger.warn { "[OmniAuth] Unknown login failure status: #{status}" }
             redirect_to new_sign_app_in_path,

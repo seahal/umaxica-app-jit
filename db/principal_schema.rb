@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_08_193000) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_09_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -364,15 +364,23 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_08_193000) do
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "deactivated_at"
     t.datetime "last_reauth_at"
     t.integer "lock_version", default: 0, null: false
     t.boolean "multi_factor_enabled", default: false, null: false
     t.string "public_id", limit: 255, default: "", null: false
+    t.datetime "purged_at"
+    t.datetime "scheduled_purge_at"
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.datetime "withdrawal_started_at"
     t.datetime "withdrawn_at", default: ::Float::INFINITY
+    t.index ["deactivated_at"], name: "index_users_on_deactivated_at", where: "(deactivated_at IS NOT NULL)"
     t.index ["public_id"], name: "index_users_on_public_id", unique: true
+    t.index ["purged_at"], name: "index_users_on_purged_at", where: "(purged_at IS NOT NULL)"
+    t.index ["scheduled_purge_at"], name: "index_users_on_scheduled_purge_at", where: "(scheduled_purge_at IS NOT NULL)"
     t.index ["status_id"], name: "index_users_on_status_id"
+    t.index ["withdrawal_started_at"], name: "index_users_on_withdrawal_started_at", where: "(withdrawal_started_at IS NOT NULL)"
     t.index ["withdrawn_at"], name: "index_users_on_withdrawn_at", where: "(withdrawn_at IS NOT NULL)"
   end
 

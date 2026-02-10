@@ -23,8 +23,34 @@ ja:
     otp_locked: "試行回数の上限を超えました。最初からやり直してください。"
     messages:
       validation_failed: "入力内容を確認してください。"
+    rate_limit:
+      exceeded: "リクエストが多すぎます。しばらくしてからもう一度お試しください。"
   sign:
     app:
+      in:
+        mfa:
+          title: "追加の認証が必要です"
+          description: "認証方法を選択してください。"
+          required: "追加の認証が必要です。"
+          session_expired: "MFA セッションの有効期限が切れました。もう一度サインインしてください。"
+          verification_failed: "認証に失敗しました。"
+          no_methods_available: "利用可能な認証方法がありません。サポートにお問い合わせください。"
+          methods:
+            totp: "認証アプリ（TOTP）で認証"
+            passkey: "パスキーで認証"
+          totp:
+            title: "認証アプリによる確認"
+            description: "認証アプリに表示されている6桁のコードを入力してください。"
+            token_label: "認証コード"
+            submit: "認証する"
+            back: "認証方法の選択に戻る"
+            success: "認証に成功しました。"
+          passkey:
+            title: "パスキーによる確認"
+            description: "登録済みのパスキーで認証してください。"
+            authenticate: "パスキーで認証"
+            back: "認証方法の選択に戻る"
+            success: "認証に成功しました。"
       authentication:
         secret:
           new:

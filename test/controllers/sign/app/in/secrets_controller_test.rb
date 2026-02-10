@@ -83,6 +83,18 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to sign_app_configuration_path(ri: "jp")
   end
 
+  test "secret sign-in redirects to MFA challenge for weak method when MFA is enabled" do
+    @user.update!(multi_factor_enabled: true)
+    _secret, raw_secret = issue_secret!(kind: UserSecretKind::PERMANENT, uses: 10)
+
+    post sign_app_in_secret_url(ri: "jp"),
+         params: login_params(identifier: @raw_email, secret_value: raw_secret),
+         headers: default_headers
+
+    assert_response :found
+    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
+  end
+
   test "mismatched secret fails with unified message" do
     _secret, _raw_secret = issue_secret!
 
@@ -108,6 +120,41 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
 
     post sign_app_in_secret_url(ri: "jp"),
          params: login_params(identifier: @raw_email, secret_value: "nope"),
+         headers: default_headers
+
+    assert_response :unprocessable_entity
+    assert_includes response.body, I18n.t("sign.app.authentication.secret.create.invalid")
+  end
+
+  test "secret login returns same response for secret mismatch and missing verified pii" do
+    _secret, _raw_secret = issue_secret!(kind: UserSecretKind::PERMANENT, uses: 10)
+
+    post sign_app_in_secret_url(ri: "jp"),
+         params: login_params(identifier: @raw_email, secret_value: "wrong-secret"),
+         headers: default_headers
+    assert_response :unprocessable_entity
+    assert_includes response.body, I18n.t("sign.app.authentication.secret.create.invalid")
+
+    user_without_verified_pii = User.create!(status_id: UserStatus::NEYO)
+    email_for_secret_issue = user_without_verified_pii.user_emails.create!(
+      address: "secret_verified_#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+    _pii_secret, pii_raw_secret = UserSecret.issue!(
+      name: "PII missing secret",
+      user_id: user_without_verified_pii.id,
+      user_secret_kind_id: UserSecretKind::PERMANENT,
+      uses: 10,
+      status: :active,
+    )
+    email_for_secret_issue.update!(user_email_status_id: UserEmailStatus::UNVERIFIED)
+    unverified_email = user_without_verified_pii.user_emails.create!(
+      address: "secret_unverified_#{SecureRandom.hex(4)}@example.com",
+      user_email_status_id: UserEmailStatus::UNVERIFIED,
+    )
+
+    post sign_app_in_secret_url(ri: "jp"),
+         params: login_params(identifier: unverified_email.address, secret_value: pii_raw_secret),
          headers: default_headers
 
     assert_response :unprocessable_entity
@@ -252,6 +299,8 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
     queries
   end
 
+  public
+
   # rubocop:disable Minitest/MultipleAssertions
   test "secret login with session limit exceeded redirects to session management" do
     UserToken.where(user_id: @user.id).delete_all
@@ -269,7 +318,7 @@ class Sign::App::In::SecretsControllerTest < ActionDispatch::IntegrationTest
          headers: default_headers
 
     assert_response :found
-    assert_redirected_to sign_app_in_session_path
+    assert_redirected_to sign_app_in_session_path(ri: "jp")
     assert_equal I18n.t("sign.app.in.session.restricted_notice"), flash[:notice]
 
     # A restricted token should have been created

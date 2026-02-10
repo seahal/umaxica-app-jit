@@ -134,17 +134,21 @@ module Sign
 
         def handle_successful_mfa(user, secret)
           Rails.event.notify(
-            "authentication.totp.succeeded", user_id: user.id, ip_address: request.remote_ip,
-                                             method: "secret", secret_id: secret.id,
+            "authentication.mfa.succeeded", user_id: user.id, ip_address: request.remote_ip,
+                                            method: "secret", secret_id: secret.id,
           )
           clear_mfa_session!
-          result = log_in(user, require_totp_check: false)
-          if result[:status] == :session_limit_hard_reject
+          result = finalize_mfa_login!(user)
+          case result[:status]
+          when :session_limit_hard_reject
             render plain: result[:message], status: (result[:http_status] || :conflict)
-          elsif result[:restricted]
-            redirect_to sign_app_in_session_path, notice: I18n.t("sign.app.in.session.restricted_notice")
+          when :restricted
+            redirect_to result[:redirect_path], notice: I18n.t("sign.app.in.session.restricted_notice")
           else
-            redirect_with_notice(success_redirect_path, t("sign.app.authentication.secret.create.success"))
+            redirect_to(
+              result[:redirect_path] || success_redirect_path,
+              notice: t("sign.app.authentication.secret.create.success"),
+            )
           end
         end
 
@@ -158,9 +162,11 @@ module Sign
         end
 
         def process_standard_login(user)
-          result = log_in(user, require_totp_check: true)
-          if result[:status] == :totp_required
-            redirect_to sign_app_in_mfa_path(ri: params[:ri]), notice: t("sign.app.authentication.totp.required")
+          result = complete_sign_in_or_start_mfa!(
+            user, rt: nil, ri: params[:ri], auth_method: "secret",
+          )
+          if result[:status] == :mfa_required
+            redirect_to result[:redirect_path], notice: t("sign.app.in.mfa.required")
           elsif result[:status] == :session_limit_hard_reject
             render plain: result[:message], status: (result[:http_status] || :conflict)
           elsif result[:restricted]
@@ -193,6 +199,7 @@ module Sign
         # This keeps verification deterministic and logging easier to reason about.
         def verify_secret_for_sign_in(user:, raw_secret:)
           return SecretVerificationResult.new(reason: :identifier_not_found, details: {}) unless user
+          return SecretVerificationResult.new(reason: :verified_pii_missing, details: {}) unless user.has_verified_pii?
 
           latest_secret = user.user_secrets.order(created_at: :desc).first
           return SecretVerificationResult.new(reason: :secret_not_found, details: {}) unless latest_secret

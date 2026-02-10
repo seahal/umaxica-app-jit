@@ -21,7 +21,7 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
   end
 
   test "new sends otp and redirects to edit" do
-    return_to = Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp"))
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
 
     Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
       Sign::App::Verification::BaseController.any_instance.stub(:send_email_otp!, true) do
@@ -36,8 +36,23 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
     end
   end
 
+  test "new keeps scope and return_to in form hidden fields" do
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
+
+    Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
+      get new_sign_app_verification_email_url(
+        ri: "jp",
+        scope: "configuration_email",
+        return_to: return_to,
+      ), headers: @headers
+    end
+
+    assert_response :redirect
+    assert_match %r{/verification/emails/.+/edit}, response.location
+  end
+
   test "update verifies otp and redirects to return_to" do
-    return_to = Base64.urlsafe_encode64(sign_app_configuration_path(ri: "jp"))
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
 
     Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
       Sign::App::Verification::BaseController.any_instance.stub(:send_email_otp!, true) do
@@ -53,9 +68,68 @@ class Sign::App::Verification::EmailsControllerTest < ActionDispatch::Integratio
                 headers: @headers
 
           assert_response :redirect
-          assert_redirected_to sign_app_configuration_url(ri: "jp")
+          assert_redirected_to sign_app_configuration_emails_url(ri: "jp")
         end
       end
+    end
+  end
+
+  test "step up flow from configuration emails returns to original page" do
+    stale_token = UserToken.create!(user_id: @user.id, created_at: 20.minutes.ago, updated_at: 20.minutes.ago)
+    stale_headers = @headers.merge("X-TEST-SESSION-PUBLIC-ID" => stale_token.public_id)
+
+    Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
+      get sign_app_configuration_emails_url(ri: "jp"), headers: stale_headers
+      assert_response :redirect
+
+      query = Rack::Utils.parse_nested_query(URI(response.location).query)
+      scope = query["scope"]
+      return_to = query["return_to"]
+      assert_equal "configuration_email", scope
+      assert_predicate return_to, :present?
+
+      get sign_app_verification_url(scope: scope, return_to: return_to, ri: "jp"), headers: stale_headers
+      assert_response :success
+
+      Sign::App::Verification::BaseController.any_instance.stub(:send_email_otp!, true) do
+        post sign_app_verification_emails_url(ri: "jp"),
+             params: { verification: { scope: scope, return_to: return_to } },
+             headers: stale_headers
+      end
+
+      assert_response :redirect
+      nonce = response.location[%r{/verification/emails/([^/]+)/edit}, 1]
+      assert_predicate nonce, :present?
+
+      Sign::App::Verification::BaseController.any_instance.stub(:verify_email_otp!, true) do
+        patch sign_app_verification_email_url(nonce, ri: "jp"),
+              params: { verification: { code: "123456", scope: scope, return_to: return_to } },
+              headers: stale_headers
+      end
+
+      assert_response :redirect
+      assert_redirected_to sign_app_configuration_emails_url(ri: "jp")
+    end
+  end
+
+  test "create restores reauth session only when scope and return_to are present" do
+    Sign::App::Verification::BaseController.any_instance.stub(:available_step_up_methods, [:email_otp]) do
+      Sign::App::Verification::BaseController.any_instance.stub(:send_email_otp!, true) do
+        post sign_app_verification_emails_url(ri: "jp"),
+             params: { verification: { scope: "", return_to: "" } },
+             headers: @headers
+
+        assert_response :redirect
+        assert_redirected_to sign_app_verification_url(ri: "jp")
+      end
+
+      return_to = Base64.urlsafe_encode64(sign_app_configuration_telephones_path(ri: "jp"))
+      post sign_app_verification_emails_url(ri: "jp"),
+           params: { verification: { scope: "configuration_telephone", return_to: return_to } },
+           headers: @headers
+
+      assert_response :redirect
+      assert_match %r{/verification/emails/.+/edit}, response.location
     end
   end
 end
