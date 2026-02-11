@@ -15,7 +15,7 @@ class Sign::App::LayoutTest < ActionDispatch::IntegrationTest
 
   # rubocop:disable Minitest/MultipleAssertions
   test "layout links when not logged in" do
-    get new_sign_app_up_emails_registration_url(ri: "jp"), headers: default_headers
+    get new_sign_app_up_email_url(ri: "jp"), headers: default_headers
 
     assert_response :success
 

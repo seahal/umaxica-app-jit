@@ -99,11 +99,4 @@ class Sign::App::Configuration::Emails::RegistrationsControllerTest < ActionDisp
 
     assert_response :success
   end
-
-  test "legacy /configuration/emails/new redirects to registration/new" do
-    get "/configuration/emails/new?ri=jp", headers: request_headers
-
-    assert_response :redirect
-    assert_match %r{/configuration/emails/registration/new}, response.location
-  end
 end

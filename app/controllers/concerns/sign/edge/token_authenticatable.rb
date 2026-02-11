@@ -12,13 +12,28 @@ module Sign
       private
 
       def authenticate_edge_token!
-        return if logged_in?
+        if logged_in?
+          enforce_withdrawal_gate_after_auth!
+          return if performed?
+
+          return
+        end
 
         # TODO: Consider single-flight/lock by user or refresh token to avoid
         # duplicate refresh across concurrent requests (DB/Redis/Durable Object).
         # Keep refresh attempts bounded to at most once per request.
         refresh_from_cookie_once!
-        return if logged_in?
+        if logged_in?
+          enforce_withdrawal_gate_after_auth!
+          return if performed?
+
+          return
+        end
+
+        if respond_to?(:refresh_failure_code, true) && refresh_failure_code == "withdrawal_required"
+          render json: { error: "WITHDRAWAL_REQUIRED" }, status: :forbidden
+          return
+        end
 
         render json: { signed_in: false, error: "unauthorized" }, status: :unauthorized
       end
@@ -32,6 +47,12 @@ module Sign
         request.env["jit_edge_signed_in_refreshed"] = true
         refreshed = refresh_access_token(refresh_plain)
         @current_resource = refreshed[:user] if refreshed
+      end
+
+      def enforce_withdrawal_gate_after_auth!
+        return unless respond_to?(:enforce_withdrawal_gate!, true)
+
+        enforce_withdrawal_gate!
       end
     end
   end

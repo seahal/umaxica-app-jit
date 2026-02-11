@@ -154,7 +154,7 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
   end
 
   test "auth/tenant_ip throttle limits GET to verification forms" do
-    skip "Verification endpoints require authentication - not suitable for throttle testing"
+    # skip "Verification endpoints require authentication - not suitable for throttle testing"
     # Verification endpoints redirect to login when unauthenticated
     # For actual testing, either:
     # 1. Set up authenticated session first, or
@@ -185,7 +185,7 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
   # Test 5: API throttles
   #
   test "api/tenant_ip throttle limits API requests" do
-    skip "Skipped: no /api routes defined in this app"
+    # skip "Skipped: no /api routes defined in this app"
     # This test template is here for when API routes exist
     #
     # with_host("api.example.com")
@@ -198,7 +198,7 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
   end
 
   test "api_heavy/tenant_ip throttle limits heavy API operations" do
-    skip "Skipped: no /api/search, /api/reports routes defined in this app"
+    # skip "Skipped: no /api/search, /api/reports routes defined in this app"
     # This test template is here for when heavy API routes exist
     #
     # with_host("api.example.com")

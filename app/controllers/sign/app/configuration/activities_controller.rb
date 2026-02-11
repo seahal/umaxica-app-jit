@@ -23,12 +23,18 @@ module Sign
 
         before_action :authenticate_user!
 
-        helper_method :activity_event_label, :activity_ip_address, :activity_context_text, :activity_occurred_at
+        helper_method :activity_event_label, :activity_ip_address, :activity_context_text, :activity_occurred_at,
+                      :activity_user_agent_summary, :activity_login_method
 
         def index
           @activities = current_user_activities.limit(100)
         rescue StandardError
           @activities = UserAudit.none
+        end
+
+        def show
+          index
+          render :index
         end
 
         private
@@ -48,7 +54,7 @@ module Sign
           key = EVENT_LABELS[activity.event_id]
           return t("sign.app.configuration.activity.events.unknown", event_id: activity.event_id) if key.blank?
 
-          t("sign.app.configuration.activity.events.#{key}")
+          I18n.t("sign.app.configuration.activity.events." + key)
         end
 
         def activity_ip_address(activity)
@@ -78,6 +84,47 @@ module Sign
         def sensitive_context_key?(key)
           normalized = key.to_s.downcase
           SENSITIVE_CONTEXT_PATTERNS.any? { |pattern| normalized.include?(pattern) }
+        end
+
+        def activity_user_agent_summary(activity)
+          user_agent = activity_context_value(activity, "user_agent")
+          return "-" if user_agent.blank?
+
+          browser = detect_browser(user_agent)
+          device = detect_device_type(user_agent)
+          "#{browser} / #{device}"
+        end
+
+        def activity_login_method(activity)
+          method = activity_context_value(activity, "auth_method") || activity_context_value(activity, "method")
+          return "-" if method.blank?
+
+          method.to_s
+        end
+
+        def activity_context_value(activity, key)
+          context = activity.context
+          return nil unless context.is_a?(Hash)
+
+          context.deep_stringify_keys[key]
+        end
+
+        def detect_browser(user_agent)
+          ua = user_agent.to_s
+          return "Edge" if ua.include?("Edg/")
+          return "Chrome" if ua.include?("Chrome/")
+          return "Safari" if ua.include?("Safari/") && ua.exclude?("Chrome/")
+          return "Firefox" if ua.include?("Firefox/")
+
+          "Other"
+        end
+
+        def detect_device_type(user_agent)
+          ua = user_agent.to_s
+          return "Mobile" if ua.match?(/Mobile|iPhone|Android/i)
+          return "Tablet" if ua.match?(/iPad|Tablet/i)
+
+          "Desktop"
         end
       end
     end

@@ -16,4 +16,18 @@ class AppPreferenceAuditLevelTest < ActiveSupport::TestCase
     ordered_ids = AppPreferenceAuditLevel.ordered.pluck(:id)
     assert_equal ordered_ids.sort, ordered_ids
   end
+
+  test "INFO constant is defined" do
+    assert_equal 1, AppPreferenceAuditLevel::INFO
+  end
+
+  test "record_timestamps is disabled" do
+    assert_not AppPreferenceAuditLevel.record_timestamps
+  end
+
+  test "has_many association with app_preference_audits" do
+    association = AppPreferenceAuditLevel.reflect_on_association(:app_preference_audits)
+    assert_equal :has_many, association.macro
+    assert_equal :restrict_with_error, association.options[:dependent]
+  end
 end

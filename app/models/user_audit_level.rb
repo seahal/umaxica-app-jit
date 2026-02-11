@@ -21,6 +21,8 @@ class UserAuditLevel < ActivityRecord
            dependent: :restrict_with_error,
            inverse_of: :user_audit_level
 
+  scope :ordered, -> { order(:id) }
+
   DEFAULTS = [DEBUG, ERROR, INFO, NEYO, WARN].freeze
 
   def self.ensure_defaults!

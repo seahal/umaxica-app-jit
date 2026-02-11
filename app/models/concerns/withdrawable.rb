@@ -4,8 +4,8 @@
 module Withdrawable
   extend ActiveSupport::Concern
 
-  # Deterministic recovery window: use 30 days to avoid month-length ambiguity.
-  WITHDRAWAL_RECOVERY_PERIOD = 30.days
+  # Deterministic recovery window: use 31 days to match product requirement.
+  WITHDRAWAL_RECOVERY_PERIOD = 31.days
 
   included do
     scope :withdrawn, -> { where.not(withdrawn_at: nil) }
@@ -16,7 +16,11 @@ module Withdrawable
   end
 
   def active?
-    !withdrawn?
+    !withdrawn? && !deactivated?
+  end
+
+  def deactivated?
+    respond_to?(:deactivated_at) && deactivated_at.present?
   end
 
   def recovery_deadline

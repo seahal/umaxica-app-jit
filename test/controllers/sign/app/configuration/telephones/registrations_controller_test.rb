@@ -13,10 +13,10 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     @token = UserToken.create!(
       user_id: @user.id,
     )
-
   end
 
   teardown do
+    # Cleanup if needed
   end
 
   def request_headers

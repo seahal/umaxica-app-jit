@@ -41,4 +41,15 @@ class StaffAuditLevelTest < ActiveSupport::TestCase
     record = StaffAuditLevel.new(id: 3)
     assert_predicate record, :valid?
   end
+
+  test "NEYO constant is defined" do
+    assert_equal 1, StaffAuditLevel::NEYO
+  end
+
+  test "has_many association with staff_audits" do
+    association = StaffAuditLevel.reflect_on_association(:staff_audits)
+    assert_equal :has_many, association.macro
+    assert_equal :restrict_with_error, association.options[:dependent]
+    assert_equal :level_id, association.options[:foreign_key]
+  end
 end

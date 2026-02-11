@@ -9,6 +9,8 @@ module Sign::App::In::Passkey
 
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+      Jit::Security::TurnstileVerifier.test_mode = true
+      Jit::Security::TurnstileVerifier.test_response = { "success" => true }
       # Mock TRUSTED_ORIGINS
       @original_trusted_origins = Webauthn.method(:trusted_origins)
       Webauthn.define_singleton_method(:trusted_origins) { ["http://sign.app.localhost", "http://sign.org.localhost"] }
@@ -42,11 +44,13 @@ module Sign::App::In::Passkey
 
     teardown do
       Webauthn.define_singleton_method(:trusted_origins, @original_trusted_origins)
+      Jit::Security::TurnstileVerifier.test_mode = false
+      Jit::Security::TurnstileVerifier.test_response = nil
     end
 
     test "should generate authentication options and store challenge in session" do
       email = @user.user_emails.first.address
-      post options_sign_app_in_passkeys_url(ri: "jp"), params: { identifier: email }, as: :json
+      post options_sign_app_in_passkeys_url(ri: "jp"), params: options_params(identifier: email), as: :json
 
       assert_response :success
       json_response = response.parsed_body
@@ -62,7 +66,7 @@ module Sign::App::In::Passkey
     test "should verify valid credential and log in" do
       # 1. Get options to setup session
       email = @user.user_emails.first.address
-      post options_sign_app_in_passkeys_url(ri: "jp"), params: { identifier: email }, as: :json
+      post options_sign_app_in_passkeys_url(ri: "jp"), params: options_params(identifier: email), as: :json
 
       json_response = response.parsed_body
       challenge_id = json_response["challenge_id"]
@@ -119,7 +123,7 @@ module Sign::App::In::Passkey
       )
 
       email = @user.user_emails.first.address
-      post options_sign_app_in_passkeys_url(ri: "jp"), params: { identifier: email }, as: :json
+      post options_sign_app_in_passkeys_url(ri: "jp"), params: options_params(identifier: email), as: :json
       challenge_id = response.parsed_body["challenge_id"]
 
       mock_credential = OpenStruct.new(
@@ -163,6 +167,15 @@ module Sign::App::In::Passkey
       assert_response :bad_request
       json_response = response.parsed_body
       assert_equal I18n.t("errors.webauthn.challenge_invalid"), json_response["error"]
+    end
+
+    private
+
+    def options_params(identifier:)
+      {
+        identifier: identifier,
+        "cf-turnstile-response": "test_token",
+      }
     end
   end
 end

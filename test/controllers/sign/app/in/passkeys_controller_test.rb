@@ -10,6 +10,8 @@ module Sign::App::In
 
     setup do
       host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
+      Jit::Security::TurnstileVerifier.test_mode = true
+      Jit::Security::TurnstileVerifier.test_response = { "success" => true }
       @user = create_verified_user_with_email(email_address: "passkey_test_user@example.com")
       @user_email = @user.user_emails.first # Use the email created by the helper
 
@@ -36,6 +38,8 @@ module Sign::App::In
 
     teardown do
       Webauthn.define_singleton_method(:trusted_origins, @original_trusted_origins)
+      Jit::Security::TurnstileVerifier.test_mode = false
+      Jit::Security::TurnstileVerifier.test_response = nil
     end
 
     test "should get new" do
@@ -46,7 +50,7 @@ module Sign::App::In
 
     # Case F-1: Identifier does not exist
     test "options returns error if identifier not found" do
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: "unknown@example.com" }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: "unknown@example.com")
 
       assert_response :unprocessable_content
       assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
@@ -57,7 +61,8 @@ module Sign::App::In
       user_no_passkey = users(:two)
       user_no_passkey_email = UserEmail.create!(user: user_no_passkey, address: "nopasskey@example.com")
 
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: user_no_passkey_email.address }
+      post options_sign_app_in_passkeys_path(ri: "jp"),
+           params: options_params(identifier: user_no_passkey_email.address)
 
       assert_response :unprocessable_content
       assert_includes response.body, I18n.t("errors.webauthn.no_passkeys_available")
@@ -66,7 +71,7 @@ module Sign::App::In
     test "options returns challenge and allowCredentials for email identifier" do
       email = UserEmail.find_by(user: @user).address
 
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: email)
 
       assert_response :ok
       json = response.parsed_body
@@ -89,7 +94,7 @@ module Sign::App::In
     end
 
     test "options returns challenge and allowCredentials for telephone identifier" do
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: @user_telephone.number }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: @user_telephone.number)
 
       assert_response :ok
       json = response.parsed_body
@@ -101,7 +106,7 @@ module Sign::App::In
     test "options returns valid Base64URL encoded challenge" do
       email = UserEmail.find_by(user: @user).address
 
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: email)
 
       assert_response :ok
       json = response.parsed_body
@@ -131,7 +136,7 @@ module Sign::App::In
       assert_not_nil @passkey, "Passkey must exist"
       # Get challenge
       email = UserEmail.find_by(user: @user).address
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: email)
       explanation = response.parsed_body
       challenge_id = explanation["challenge_id"]
 
@@ -175,7 +180,7 @@ module Sign::App::In
 
       # Get challenge
       email = UserEmail.find_by(user: @user).address
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: email)
       explanation = response.parsed_body
       challenge_id = explanation["challenge_id"]
 
@@ -214,7 +219,7 @@ module Sign::App::In
 
     test "verification returns same response for credential mismatch and missing verified pii" do
       # Baseline: credential mismatch
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: @user_email.address }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: @user_email.address)
       baseline_challenge_id = response.parsed_body["challenge_id"]
 
       post verification_sign_app_in_passkeys_path(ri: "jp"), params: {
@@ -244,7 +249,7 @@ module Sign::App::In
       )
       email.update!(user_email_status_id: UserEmailStatus::UNVERIFIED)
 
-      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: email.address }
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: options_params(identifier: email.address)
       pii_challenge_id = response.parsed_body["challenge_id"]
 
       mock_credential = Object.new
@@ -264,6 +269,25 @@ module Sign::App::In
 
       assert_response :unauthorized
       assert_equal mismatch_body, response.body
+    end
+
+    test "options returns turnstile error when response token is missing" do
+      Jit::Security::TurnstileVerifier.test_mode = false
+      Jit::Security::TurnstileVerifier.test_response = nil
+
+      post options_sign_app_in_passkeys_path(ri: "jp"), params: { identifier: @user_email.address }
+
+      assert_response :unprocessable_content
+      assert_equal I18n.t("turnstile_error"), response.parsed_body["error"]
+    end
+
+    private
+
+    def options_params(identifier:)
+      {
+        identifier: identifier,
+        "cf-turnstile-response": "test_token",
+      }
     end
   end
 end

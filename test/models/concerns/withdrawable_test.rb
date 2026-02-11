@@ -3,11 +3,11 @@
 require "test_helper"
 
 class WithdrawableConcernTest < ActiveSupport::TestCase
-  test "recovery and permanent deletion boundary at exactly 30 days" do
+  test "recovery and permanent deletion boundary at exactly 31 days" do
     user = User.find_by!(public_id: "one_id")
 
-    # set withdrawn_at exactly 30 days ago
-    user.update!(withdrawn_at: 30.days.ago)
+    # set withdrawn_at exactly 31 days ago
+    user.update!(withdrawn_at: 31.days.ago)
 
     # At exactly the deadline: can_recover? should be false, permanently_deletable? should be true
     assert_not user.can_recover?, "User should not be able to recover at exact boundary"
@@ -60,6 +60,13 @@ class WithdrawableConcernTest < ActiveSupport::TestCase
     assert_not user.active?
   end
 
+  test "active? returns false when deactivated_at is set" do
+    user = User.find_by!(public_id: "one_id")
+    user.update!(withdrawn_at: nil, deactivated_at: Time.current)
+
+    assert_not user.active?
+  end
+
   # recovery_deadline tests
   test "recovery_deadline returns nil when not withdrawn" do
     user = User.find_by!(public_id: "one_id")
@@ -68,18 +75,18 @@ class WithdrawableConcernTest < ActiveSupport::TestCase
     assert_nil user.recovery_deadline
   end
 
-  test "recovery_deadline returns 30 days after withdrawn_at" do
+  test "recovery_deadline returns 31 days after withdrawn_at" do
     user = User.find_by!(public_id: "one_id")
     withdrawal_time = 1.day.ago
     user.update!(withdrawn_at: withdrawal_time)
 
-    expected_deadline = withdrawal_time + 30.days
+    expected_deadline = withdrawal_time + 31.days
 
     assert_in_delta expected_deadline.to_i, user.recovery_deadline.to_i, 1
   end
 
   # can_recover? tests
-  test "can_recover? returns true when withdrawn within 30 days" do
+  test "can_recover? returns true when withdrawn within 31 days" do
     user = User.find_by!(public_id: "one_id")
     user.update!(withdrawn_at: 15.days.ago)
 
@@ -93,23 +100,23 @@ class WithdrawableConcernTest < ActiveSupport::TestCase
     assert_not user.can_recover?
   end
 
-  test "can_recover? returns false when exactly 30 days have passed" do
-    user = User.find_by!(public_id: "one_id")
-    user.update!(withdrawn_at: 30.days.ago)
-
-    assert_not user.can_recover?
-  end
-
-  test "can_recover? returns false when more than 30 days have passed" do
+  test "can_recover? returns false when exactly 31 days have passed" do
     user = User.find_by!(public_id: "one_id")
     user.update!(withdrawn_at: 31.days.ago)
 
     assert_not user.can_recover?
   end
 
+  test "can_recover? returns false when more than 31 days have passed" do
+    user = User.find_by!(public_id: "one_id")
+    user.update!(withdrawn_at: 32.days.ago)
+
+    assert_not user.can_recover?
+  end
+
   test "can_recover? returns true when 1 second before deadline" do
     user = User.find_by!(public_id: "one_id")
-    user.update!(withdrawn_at: 29.days.ago.advance(seconds: -1))
+    user.update!(withdrawn_at: 31.days.ago.advance(seconds: 1))
 
     assert_predicate user, :can_recover?
   end
@@ -122,23 +129,23 @@ class WithdrawableConcernTest < ActiveSupport::TestCase
     assert_not user.permanently_deletable?
   end
 
-  test "permanently_deletable? returns false when withdrawn less than 30 days ago" do
+  test "permanently_deletable? returns false when withdrawn less than 31 days ago" do
     user = User.find_by!(public_id: "one_id")
     user.update!(withdrawn_at: 15.days.ago)
 
     assert_not user.permanently_deletable?
   end
 
-  test "permanently_deletable? returns true when exactly 30 days have passed" do
+  test "permanently_deletable? returns true when exactly 31 days have passed" do
     user = User.find_by!(public_id: "one_id")
-    user.update!(withdrawn_at: 30.days.ago)
+    user.update!(withdrawn_at: 31.days.ago)
 
     assert_predicate user, :permanently_deletable?
   end
 
-  test "permanently_deletable? returns true when more than 30 days have passed" do
+  test "permanently_deletable? returns true when more than 31 days have passed" do
     user = User.find_by!(public_id: "one_id")
-    user.update!(withdrawn_at: 31.days.ago)
+    user.update!(withdrawn_at: 32.days.ago)
 
     assert_predicate user, :permanently_deletable?
   end
@@ -196,7 +203,7 @@ class WithdrawableConcernTest < ActiveSupport::TestCase
 
     assert_predicate staff, :can_recover?
 
-    staff.update!(withdrawn_at: 30.days.ago)
+    staff.update!(withdrawn_at: 31.days.ago)
 
     assert_not staff.can_recover?
   end
@@ -207,7 +214,7 @@ class WithdrawableConcernTest < ActiveSupport::TestCase
 
     assert_not staff.permanently_deletable?
 
-    staff.update!(withdrawn_at: 30.days.ago)
+    staff.update!(withdrawn_at: 31.days.ago)
 
     assert_predicate staff, :permanently_deletable?
   end

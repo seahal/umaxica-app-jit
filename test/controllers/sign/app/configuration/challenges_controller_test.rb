@@ -34,26 +34,4 @@ class Sign::App::Configuration::ChallengesControllerTest < ActionDispatch::Integ
     assert_redirected_to sign_app_configuration_challenge_url(ri: "jp")
     assert @user.reload.multi_factor_enabled
   end
-
-  test "backward compatibility: old mfa path redirects to challenge with ri param" do
-    get sign_app_configuration_mfa_url(ri: "jp"), headers: @headers
-    assert_response :found
-    assert_redirected_to sign_app_configuration_challenge_url(ri: "jp")
-  end
-
-  test "backward compatibility: old mfa PUT redirects to challenge with ri param" do
-    put sign_app_configuration_mfa_url(ri: "jp"),
-        params: { user: { multi_factor_enabled: "1" } },
-        headers: @headers
-    assert_response :found
-    assert_redirected_to sign_app_configuration_challenge_url(ri: "jp")
-  end
-
-  test "backward compatibility: old mfa PATCH redirects to challenge with ri param" do
-    patch sign_app_configuration_mfa_url(ri: "jp"),
-          params: { user: { multi_factor_enabled: "1" } },
-          headers: @headers
-    assert_response :found
-    assert_redirected_to sign_app_configuration_challenge_url(ri: "jp")
-  end
 end

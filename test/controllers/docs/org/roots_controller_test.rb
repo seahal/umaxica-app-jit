@@ -26,7 +26,7 @@ class Docs::Org::RootsControllerTest < ActionDispatch::IntegrationTest
     assert_layout_contract
     assert_select "head", count: 1 do
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
-      assert_select "title", text: "#{brand_name} (org) Documents"
+      assert_select "title", text: /#{brand_name} \(org\) Documents/
     end
     assert_select "body", count: 1 do
       assert_select "header", minimum: 1

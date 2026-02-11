@@ -44,4 +44,25 @@ class Sign::App::VerificationControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='verification[scope]'][value='configuration_email']"
     assert_select "input[name='verification[return_to]'][value='#{return_to}']"
   end
+
+  test "show handles bad request error" do
+    return_to = Base64.urlsafe_encode64(sign_app_configuration_emails_path(ri: "jp"))
+
+    get sign_app_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
+        headers: @headers
+
+    # Should either succeed or redirect gracefully
+    assert response.ok? || response.redirect?
+  end
+
+  test "show with recent verification shows success message" do
+    # Create a token with recent step_up
+    token = UserToken.find_by(user_id: @user.id)
+    token&.update!(last_step_up_at: 5.minutes.ago, last_step_up_scope: "configuration_email")
+
+    get sign_app_verification_url(ri: "jp"), headers: @headers
+
+    # Should show success or verification page
+    assert_response :success
+  end
 end

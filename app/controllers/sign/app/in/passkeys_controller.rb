@@ -43,6 +43,8 @@ module Sign
         #   }
         # rubocop:disable Metrics/AbcSize
         def options
+          return unless verify_turnstile_stealth!
+
           identifier = params[:identifier].to_s.strip
           return render_error("errors.webauthn.pii_required", :unprocessable_content) if identifier.blank?
 
@@ -159,6 +161,18 @@ module Sign
 
         def render_error(message_key, status)
           render json: { error: I18n.t(message_key) }, status: status
+        end
+
+        def verify_turnstile_stealth!
+          result = Jit::Security::TurnstileVerifier.verify(
+            token: params["cf-turnstile-response"].to_s,
+            remote_ip: request.remote_ip,
+            mode: :stealth,
+          )
+          return true if result["success"]
+
+          render json: { error: I18n.t("turnstile_error") }, status: :unprocessable_content
+          false
         end
 
         def verify_and_login(challenge, user_id)

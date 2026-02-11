@@ -36,6 +36,7 @@
 				"-sorbet.sorbet-vscode-extension",
 				"-GitHub.copilot",
 				"-GitHub.copilot-chat",
+				"google.geminicodeassist"
 			],
 			"settings": {
 				"claude.allowDangerouslySkipPermissions": true,

@@ -27,4 +27,20 @@ class UserAuditLevelTest < ActiveSupport::TestCase
     assert_equal 4, UserAuditLevel::NEYO
     assert_equal 5, UserAuditLevel::WARN
   end
+
+  test "ensure_defaults! creates records" do
+    UserAuditLevel.delete_all
+    assert_difference("UserAuditLevel.count", 5) do
+      UserAuditLevel.ensure_defaults!
+    end
+    assert UserAuditLevel.exists?(id: UserAuditLevel::DEBUG)
+  end
+
+  test "ordered scope returns ordered records" do
+    UserAuditLevel.ensure_defaults!
+    levels = UserAuditLevel.ordered
+    assert_kind_of ActiveRecord::Relation, levels
+    ordered_ids = levels.pluck(:id)
+    assert_equal ordered_ids.sort, ordered_ids
+  end
 end

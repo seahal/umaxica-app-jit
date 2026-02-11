@@ -14,12 +14,15 @@ class AddNumberDigestToUserTelephones < ActiveRecord::Migration[8.2]
 
     say_with_time("Backfilling user_telephones.number_digest from number_bidx") do
       MigrationUserTelephone.reset_column_information
+      # Intentionally skip validations for data migration
+      # rubocop:disable Rails/SkipsModelValidations
       MigrationUserTelephone
         .where(number_digest: nil)
         .where.not(number_bidx: nil)
         .in_batches(of: 1000) do |batch|
           batch.update_all("number_digest = number_bidx")
         end
+      # rubocop:enable Rails/SkipsModelValidations
     end
 
     add_index :user_telephones,

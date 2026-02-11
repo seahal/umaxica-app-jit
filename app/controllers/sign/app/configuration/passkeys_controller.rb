@@ -165,8 +165,7 @@ module Sign
         def destroy
           authorize @passkey
 
-          # Prevent deleting the last passkey
-          if current_user.user_passkeys.active.count <= 1
+          unless AuthMethodGuard.can_remove_passkey?(current_user, @passkey)
             respond_to do |format|
               format.html do
                 redirect_to sign_app_configuration_passkeys_path,
@@ -244,9 +243,16 @@ module Sign
         end
 
         def render_verification_success
+          redirect_url =
+            if respond_to?(:sign_app_configuration_emergency_key_path, true)
+              sign_app_configuration_emergency_key_path(ri: params[:ri])
+            else
+              sign_app_configuration_passkeys_path(ri: params[:ri])
+            end
+
           render json: {
             status: "ok",
-            redirect_url: sign_app_configuration_emergency_key_path(ri: params[:ri]),
+            redirect_url: redirect_url,
           }, status: :created
         end
 

@@ -62,7 +62,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "new returns forbidden plain message when user has no verified recovery identity" do
-    user = User.create!(status_id: UserStatus::NEYO, public_id: "secret_user_no_identity_#{SecureRandom.hex(4)}")
+    user = User.create!(status_id: UserStatus::NEYO, public_id: "u_no_id_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id, last_step_up_at: 1.minute.ago,
       last_step_up_scope: "configuration_secret",
@@ -111,7 +111,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
   end
 
   test "create returns unprocessable entity plain message when user has no verified recovery identity" do
-    user = User.create!(status_id: UserStatus::NEYO, public_id: "secret_user_no_identity_create_#{SecureRandom.hex(4)}")
+    user = User.create!(status_id: UserStatus::NEYO, public_id: "u_no_id_c_#{SecureRandom.hex(4)}")
     token = UserToken.create!(
       user_id: user.id, last_step_up_at: 1.minute.ago,
       last_step_up_scope: "configuration_secret",
@@ -131,15 +131,13 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_includes response.body, User::RECOVERY_IDENTITY_REQUIRED_MESSAGE
   end
 
-  test "should update secret and redirect to index" do
+  test "update is not routable (secret overwrite is disabled)" do
     patch sign_app_configuration_secret_url(@user_secret, ri: "jp"),
           params: { user_secret: { name: "Updated Secret", enabled: false } },
           headers: authenticated_headers
 
-    assert_redirected_to sign_app_configuration_secrets_url(ri: "jp")
-    assert_predicate flash[:notice], :present?
-    @user_secret.reload
-    assert_equal "Updated Secret", @user_secret.name
+    assert_response :not_found
+    assert_equal "Test Secret", @user_secret.reload.name
   end
 
   test "should get destroy" do
@@ -185,7 +183,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
     assert_response :not_found
   end
 
-  test "update blocks disabling last method" do
+  test "update route stays unavailable even when secret is last method" do
     user = create_verified_user_with_email(email_address: "update_block_user@example.com")
     token = UserToken.create!(
       user_id: user.id, last_step_up_at: 1.minute.ago,
@@ -206,8 +204,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
             "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
           }
 
-    assert_redirected_to sign_app_configuration_secrets_url(ri: "jp")
-    assert_equal I18n.t("sign.app.configuration.secrets.update.last_method"), flash[:alert]
+    assert_response :not_found
     assert_equal UserSecretStatus::ACTIVE, secret.reload.user_identity_secret_status_id
   end
 
@@ -223,6 +220,7 @@ class Sign::App::Configuration::SecretsControllerTest < ActionDispatch::Integrat
       password_digest: "test_password_digest",
       user_secret_kind_id: UserSecret::Kinds::LOGIN,
     )
+    user.user_emails.update_all(user_email_status_id: UserEmailStatus::UNVERIFIED) # rubocop:disable Rails/SkipsModelValidations
 
     assert_no_difference("UserSecret.count") do
       delete sign_app_configuration_secret_url(secret, ri: "jp"),

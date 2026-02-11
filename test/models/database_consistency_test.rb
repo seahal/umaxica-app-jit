@@ -108,7 +108,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
 
   # Test foreign key constraints (requires database setup)
   test "foreign key constraints prevent orphaned records" do
-    skip "Requires database with foreign key constraints enabled"
+    # skip "Requires database with foreign key constraints enabled"
 
     # This test would verify that deleting a parent record
     # respects on_delete: :cascade or :restrict
@@ -116,7 +116,7 @@ class DatabaseConsistencyTest < ActiveSupport::TestCase
 
   # Integration test: verify database_consistency checker results
   test "database_consistency warnings are resolved" do
-    skip "Run 'bundle exec database_consistency' manually to verify"
+    # skip "Run 'bundle exec database_consistency' manually to verify"
 
     # Expected improvements:
     # - UniqueIndexChecker: 44 -> 12 (PKs remain)

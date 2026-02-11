@@ -18,7 +18,9 @@ class PageTitlePresenceTest < ActiveSupport::TestCase
   # Files excluded from page_title requirement with reasons
   EXCLUDED_PATHS = [
     # Email/mailer views: rendered inside mailer layouts (separate title mechanism)
-    %r{^app/views/email/},
+    %r{^/app/views/email/},
+    # Layouts are not "page views"
+    %r{^/app/views/layouts/},
   ].freeze
 
   test "all non-partial views have a page_title declaration" do
@@ -28,9 +30,8 @@ class PageTitlePresenceTest < ActiveSupport::TestCase
     # Filter to non-partial, non-layout views
     page_views =
       view_files.reject do |path|
-        relative = path.sub("#{Rails.root.join}", "")
+        relative = path.to_s.sub("#{Rails.root}", "")
         File.basename(path).start_with?("_") || # partials
-          relative.start_with?("app/views/layouts/") || # layouts
           EXCLUDED_PATHS.any? { |pat| relative.match?(pat) }
       end
 

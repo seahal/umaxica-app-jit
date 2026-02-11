@@ -14,12 +14,15 @@ class AddAddressDigestToUserEmails < ActiveRecord::Migration[8.2]
 
     say_with_time("Backfilling user_emails.address_digest from address_bidx") do
       MigrationUserEmail.reset_column_information
+      # Intentionally skip validations for data migration
+      # rubocop:disable Rails/SkipsModelValidations
       MigrationUserEmail
         .where(address_digest: nil)
         .where.not(address_bidx: nil)
         .in_batches(of: 1000) do |batch|
           batch.update_all("address_digest = address_bidx")
         end
+      # rubocop:enable Rails/SkipsModelValidations
     end
 
     add_index :user_emails,

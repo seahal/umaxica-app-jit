@@ -24,6 +24,50 @@ module Sign
           end
         end
 
+        def edit
+          unless current_user.deactivated?
+            return safe_redirect_to(
+              new_sign_app_configuration_withdrawal_path(ri: params[:ri]),
+              fallback: sign_app_configuration_path(ri: params[:ri]),
+              status: :see_other,
+            )
+          end
+
+          @recovery_deadline = current_user.deactivated_at + recovery_period
+          @recoverable = recoverable_withdrawal?
+        end
+
+        def create
+          unless recoverable_withdrawal?
+            return safe_redirect_to(
+              edit_sign_app_configuration_withdrawal_path(ri: params[:ri]),
+              fallback: new_sign_app_configuration_withdrawal_path(ri: params[:ri]),
+              status: :see_other,
+            )
+          end
+
+          User.transaction do
+            current_user.update!(
+              withdrawal_started_at: nil,
+              deactivated_at: nil,
+              scheduled_purge_at: nil,
+              withdrawn_at: nil,
+            )
+
+            Rails.event.notify(
+              "user.withdrawal.recovered",
+              user_id: current_user.id,
+              ip_address: request.remote_ip,
+            )
+          end
+
+          safe_redirect_to(
+            sign_app_configuration_path(ri: params[:ri]),
+            fallback: "/configuration",
+            status: :see_other,
+          )
+        end
+
         def update
           @schedule_form = Withdrawal::ScheduleForm.new(ack_schedule_purge: "1")
           @deactivate_form = Withdrawal::DeactivateForm.new(deactivate_params)
@@ -67,6 +111,16 @@ module Sign
         end
 
         private
+
+        def recoverable_withdrawal?
+          return false if current_user.deactivated_at.blank?
+
+          Time.current < current_user.deactivated_at + recovery_period
+        end
+
+        def recovery_period
+          31.days
+        end
 
         def schedule_params
           params.permit(:ack_schedule_purge)

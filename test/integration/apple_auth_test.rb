@@ -73,7 +73,7 @@ class AppleAuthTest < ActionDispatch::IntegrationTest
 
     PreferenceRecord.connected_to(role: :writing) do
       assert AppPreferenceTimezoneOption.exists?(id: AppPreferenceTimezoneOption::ASIA_TOKYO)
-      assert AppPreferenceTimezone.exists?
+      assert_predicate AppPreferenceTimezone, :exists?
     end
   end
 

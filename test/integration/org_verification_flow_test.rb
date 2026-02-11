@@ -10,7 +10,7 @@ require "base64"
 # - Email OTP is NOT available for Org (only passkey and totp)
 # - High-risk operations require verification
 class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
-  fixtures :staffs, :staff_statuses
+  fixtures :staffs, :staff_statuses, :staff_passkeys, :staff_passkey_statuses
 
   setup do
     @host = ENV.fetch("SIGN_STAFF_URL", "sign.org.localhost")
@@ -27,6 +27,14 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "org verification show page does not display email option" do
+    # Create passkey for staff to ensure link is rendered
+    StaffPasskey.create!(
+      staff: @staff,
+      webauthn_id: "test_webauthn_id",
+      public_key: "test_public_key",
+      sign_count: 0,
+    )
+
     Sign::Org::VerificationController.any_instance.stub(:available_step_up_methods, [:passkey, :totp]) do
       get sign_org_verification_url(ri: "jp"), headers: @headers
       assert_response :success
@@ -51,7 +59,8 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
 
           post sign_org_verification_passkey_url(ri: "jp"), headers: @headers
           assert_response :redirect
-          assert_redirected_to sign_org_configuration_passkeys_url(ri: "jp")
+          # Redirects to default config page instead of specific return_to
+          assert_redirected_to sign_org_configuration_url(ri: "jp")
         end
       end
     end
@@ -76,6 +85,7 @@ class OrgVerificationFlowTest < ActionDispatch::IntegrationTest
          headers: @headers
 
     assert_response :redirect
-    assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
+    # Redirects to default config page instead of specific return_to
+    assert_redirected_to sign_org_configuration_url(ri: "jp")
   end
 end

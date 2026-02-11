@@ -32,6 +32,10 @@ class Auth::UserTest < ActiveSupport::TestCase
     def reset_session
       @session = {}
     end
+
+    def controller_path
+      "auth/users"
+    end
   end
 
   class CookieMock < Hash

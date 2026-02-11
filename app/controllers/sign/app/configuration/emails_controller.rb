@@ -20,7 +20,7 @@ module Sign
         def destroy
           @user_email = current_user.user_emails.find_by!(public_id: params[:id])
 
-          if AuthMethodGuard.last_method?(current_user, excluding: @user_email)
+          unless AuthMethodGuard.can_remove_email?(current_user, @user_email)
             redirect_to sign_app_configuration_emails_path,
                         alert: t("sign.app.configuration.email.destroy.last_method")
             return

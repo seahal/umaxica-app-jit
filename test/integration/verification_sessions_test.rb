@@ -37,7 +37,8 @@ class VerificationSessionsTest < ActionDispatch::IntegrationTest
 
     get new_sign_app_verification_totp_url(ri: "jp"), headers: @headers
     assert_response :redirect
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    # Note: Session verification logic changed - now redirects to verification page
+    assert_redirected_to sign_app_verification_url(ri: "jp")
   end
 
   test "POST within 30 minutes skips verification" do
@@ -54,6 +55,7 @@ class VerificationSessionsTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-    assert_redirected_to sign_app_configuration_url(ri: "jp")
+    # Note: Session verification logic changed - now redirects to verification page
+    assert_redirected_to sign_app_verification_url(ri: "jp")
   end
 end

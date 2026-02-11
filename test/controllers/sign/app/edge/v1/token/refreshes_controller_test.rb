@@ -239,6 +239,23 @@ class Sign::App::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     assert_equal "invalid_csrf_token", json["error"]
   end
 
+  test "POST refresh rejects deactivated user even with valid refresh token" do
+    @user.update!(deactivated_at: Time.current, withdrawal_started_at: 1.hour.ago, scheduled_purge_at: 31.days.from_now)
+
+    token_record = UserToken.create!(user: @user)
+    refresh_plain = token_record.rotate_refresh_token!
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    post "/edge/v1/token/refresh",
+         headers: json_headers(with_csrf: true),
+         as: :json
+
+    assert_includes [401, 403], response.status
+    json = response.parsed_body
+    assert_not json["refreshed"]
+    assert_predicate json["error_code"], :present?
+  end
+
   private
 
   def json_headers(with_csrf:)

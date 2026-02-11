@@ -5,7 +5,7 @@ require "test_helper"
 require "ostruct"
 
 class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_statuses, :user_telephone_statuses
+  fixtures :users, :user_statuses, :user_telephone_statuses, :user_email_statuses
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -89,6 +89,37 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     assert_equal I18n.t("sign.app.configuration.telephone.destroy.last_method"), flash[:alert]
   end
 
+  test "destroy allows removing last telephone when verified email exists" do
+    user = User.create!(status_id: UserStatus::NEYO, public_id: "tel_rule_ok_#{SecureRandom.hex(4)}")
+    token = UserToken.create!(
+      user_id: user.id,
+      last_step_up_at: 1.minute.ago,
+      last_step_up_scope: "configuration_telephone",
+    )
+    telephone = UserTelephone.create!(
+      number: "+10000000005",
+      user: user,
+      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    )
+    UserEmail.create!(
+      user: user,
+      address: "telephone_rule_ok@example.com",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    headers = {
+      "Host" => @host,
+      "X-TEST-CURRENT-USER" => user.id,
+      "X-TEST-SESSION-PUBLIC-ID" => token.public_id,
+    }
+
+    assert_difference("UserTelephone.count", -1) do
+      delete sign_app_configuration_telephone_url(telephone, ri: "jp"), headers: headers
+    end
+
+    assert_response :see_other
+  end
+
   test "destroy rejects other user's public_id" do
     other_user = User.create!(status_id: UserStatus::NEYO)
     other_telephone = UserTelephone.create!(
@@ -98,19 +129,17 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     )
 
     assert_no_difference("UserTelephone.count") do
-      assert_raises(ActiveRecord::RecordNotFound) do
-        delete sign_app_configuration_telephone_url(other_telephone, ri: "jp"),
-               headers: request_headers
-      end
+      delete sign_app_configuration_telephone_url(other_telephone, ri: "jp"),
+             headers: request_headers
+      assert_response :not_found
     end
   end
 
   test "destroy rejects missing public_id" do
     assert_no_difference("UserTelephone.count") do
-      assert_raises(ActiveRecord::RecordNotFound) do
-        delete sign_app_configuration_telephone_url("missing-public-id", ri: "jp"),
-               headers: request_headers
-      end
+      delete sign_app_configuration_telephone_url("missing-public-id", ri: "jp"),
+             headers: request_headers
+      assert_response :not_found
     end
   end
 end

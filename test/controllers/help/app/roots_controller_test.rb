@@ -40,7 +40,7 @@ class Help::App::RootsControllerTest < ActionDispatch::IntegrationTest
 
     assert_layout_contract
     assert_select "head", count: 1 do
-      assert_select "title", count: 1, text: "#{brand_name} (app) Help Center"
+      assert_select "title", count: 1, text: "#{brand_name} (app) Help Center | クイックステータス"
       assert_select "link[rel=?][sizes=?]", "icon", "32x32", count: 1
     end
     assert_select "body", count: 1 do

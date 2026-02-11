@@ -136,7 +136,9 @@ class ActiveSupport::TestCase
            :ip_occurrence_statuses,
            :client_statuses,
            :clients,
-           :user_client_suspensions unless ENV["SKIP_DB"] == "1"
+           :user_client_suspensions,
+           :app_contact_categories,
+           :org_timeline_statuses unless ENV["SKIP_DB"] == "1"
 
   # Load fixtures only when explicitly needed in individual test files
   # instead of loading all fixtures globally

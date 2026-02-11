@@ -61,4 +61,20 @@ class Sign::App::Edge::V1::SignedInsControllerTest < ActionDispatch::Integration
       response.parsed_body,
     )
   end
+
+  test "GET signed_in returns 403 for deactivated user even when refresh token is valid" do
+    @user.update!(deactivated_at: Time.current, withdrawal_started_at: 1.hour.ago, scheduled_purge_at: 31.days.from_now)
+
+    token_record = UserToken.create!(user: @user)
+    refresh_plain = token_record.rotate_refresh_token!
+    cookies[Auth::Base::ACCESS_COOKIE_KEY] = "invalid.jwt.token"
+    cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
+
+    get "/edge/v1/signed_in",
+        headers: { "Host" => @host, "Accept" => "application/json" },
+        as: :json
+
+    assert_response :forbidden
+    assert_equal({ "error" => "WITHDRAWAL_REQUIRED" }, response.parsed_body)
+  end
 end

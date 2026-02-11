@@ -8,6 +8,12 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
   setup do
     @staff = staffs(:one)
     @host = ENV.fetch("SIGN_STAFF_URL", "test.umaxica.com")
+    @original_allow_forgery_protection = ActionController::Base.allow_forgery_protection
+    ActionController::Base.allow_forgery_protection = false
+  end
+
+  teardown do
+    ActionController::Base.allow_forgery_protection = @original_allow_forgery_protection
   end
 
   test "POST refresh with valid refresh token sets both access and refresh cookies" do

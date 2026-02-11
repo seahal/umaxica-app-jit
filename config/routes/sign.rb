@@ -41,7 +41,6 @@ scope module: :sign, as: :sign do
 
       resource :in, only: %i(new)
       namespace :in do
-        # TODO: add show/delete for 2FA
         resource :email, only: %i(new create edit update)
         # TODO: refactor to standard CRUD
         resources :passkeys, only: [:new] do
@@ -86,7 +85,7 @@ scope module: :sign, as: :sign do
         resources :emails, only: %i(new create edit update)
       end
 
-      resource :configuration, only: %i(show)
+      resource :configuration, only: %i(show edit)
       namespace :configuration do
         # TODO: implement TOTP settings management
         resources :totps, only: %i(index new create edit update destroy), param: :public_id
@@ -110,12 +109,13 @@ scope module: :sign, as: :sign do
         # by the way, what is update mehtods for google here?
         resource :google, only: %i(show update destroy)
         # refactor to standard CRUD
-        resources :secrets, param: :public_id do
+        resources :secrets, only: %i(index show new edit create destroy), param: :public_id do
           post :regenerate, on: :member
         end
         # i want this code more precisely routing.
         resources :sessions, only: %i(index destroy)
         resources :activities, only: :index
+        resource :activity, only: :show, controller: :activities
         resource :out, only: %i(edit destroy)
         resource :withdrawal, only: %i(new update create edit destroy)
       end

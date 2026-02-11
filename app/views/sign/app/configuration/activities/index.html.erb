@@ -11,6 +11,8 @@
         <th><%= t("sign.app.configuration.activity.index.table.occurred_at") %></th>
         <th><%= t("sign.app.configuration.activity.index.table.event") %></th>
         <th><%= t("sign.app.configuration.activity.index.table.ip_address") %></th>
+        <th>Device</th>
+        <th>Login method</th>
         <th><%= t("sign.app.configuration.activity.index.table.context") %></th>
       </tr>
     </thead>
@@ -23,6 +25,8 @@
             (<%= activity.event_id %>)
           </td>
           <td><%= activity_ip_address(activity) %></td>
+          <td><%= activity_user_agent_summary(activity) %></td>
+          <td><%= activity_login_method(activity) %></td>
           <td><code><%= activity_context_text(activity) %></code></td>
         </tr>
       <% end %>

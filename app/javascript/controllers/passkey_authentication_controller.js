@@ -14,11 +14,16 @@ import { normalizePublicKeyOptions } from "controllers/webauthn_utils";
 //     <p data-passkey-authentication-target="status" class="hidden text-gray-600"></p>
 //   </div>
 export default class extends Controller {
-	static targets = ["identifier", "error", "status"];
+	static targets = ["identifier", "error", "status", "turnstileResponse"];
 	static values = {
 		optionsUrl: String,
 		verificationUrl: String,
 		identifierParam: { type: String, default: "email" },
+		turnstileSiteKey: String,
+		turnstileErrorMessage: {
+			type: String,
+			default: "Security verification failed. Please refresh and try again.",
+		},
 	};
 
 	async authenticate(event) {
@@ -38,6 +43,7 @@ export default class extends Controller {
 		}
 
 		try {
+			const turnstileToken = await this.ensureTurnstileToken();
 			this.showStatus("認証オプションを取得中...");
 
 			// Step 1: Get authentication options from server
@@ -50,6 +56,7 @@ export default class extends Controller {
 				},
 				body: JSON.stringify({
 					[this.identifierParamValue]: identifier,
+					"cf-turnstile-response": turnstileToken,
 				}),
 			});
 
@@ -139,6 +146,74 @@ export default class extends Controller {
 			return this.identifierTarget.value.trim();
 		}
 		return "";
+	}
+
+	async ensureTurnstileToken() {
+		if (!this.turnstileSiteKeyValue) {
+			throw new Error(this.turnstileErrorMessageValue);
+		}
+		if (this.hasTurnstileResponseTarget && this.turnstileResponseTarget.value) {
+			return this.turnstileResponseTarget.value;
+		}
+
+		await this.ensureTurnstileScriptLoaded();
+		return this.requestTurnstileToken();
+	}
+
+	ensureTurnstileScriptLoaded() {
+		return new Promise((resolve, reject) => {
+			if (window.turnstile) {
+				resolve();
+				return;
+			}
+
+			const existingScript = document.querySelector(
+				"script[src*='challenges.cloudflare.com/turnstile']",
+			);
+			if (existingScript) {
+				existingScript.addEventListener("load", () => resolve(), { once: true });
+				existingScript.addEventListener(
+					"error",
+					() => reject(new Error(this.turnstileErrorMessageValue)),
+					{ once: true },
+				);
+				return;
+			}
+
+			const script = document.createElement("script");
+			script.src =
+				"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+			script.async = true;
+			script.defer = true;
+			script.onload = () => resolve();
+			script.onerror = () => reject(new Error(this.turnstileErrorMessageValue));
+			document.head.appendChild(script);
+		});
+	}
+
+	requestTurnstileToken() {
+		return new Promise((resolve, reject) => {
+			try {
+				const container = document.createElement("div");
+				container.style.display = "none";
+				this.element.appendChild(container);
+
+				window.turnstile.render(container, {
+					sitekey: this.turnstileSiteKeyValue,
+					size: "invisible",
+					callback: (token) => {
+						if (this.hasTurnstileResponseTarget) {
+							this.turnstileResponseTarget.value = token;
+						}
+						resolve(token);
+					},
+					"error-callback": () => reject(new Error(this.turnstileErrorMessageValue)),
+					"expired-callback": () => reject(new Error(this.turnstileErrorMessageValue)),
+				});
+			} catch (_error) {
+				reject(new Error(this.turnstileErrorMessageValue));
+			}
+		});
 	}
 
 	encodeCredential(credential) {

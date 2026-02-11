@@ -94,38 +94,4 @@ class Sign::App::In::ChallengesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not_includes response.body, I18n.t("sign.app.in.mfa.methods.passkey")
   end
-
-  test "backward compatibility: old mfa path redirects to challenge with ri param" do
-    get "/in/mfa?ri=jp"
-    assert_response :found
-    assert_redirected_to sign_app_in_challenge_path(ri: "jp")
-  end
-
-  test "backward compatibility: old mfa/totp/new redirects with params" do
-    get "/in/mfa/totp/new?ri=jp"
-    assert_response :found
-    assert_redirected_to "/in/challenge/totp/new?ri=jp"
-  end
-
-  test "backward compatibility: old mfa/totp POST redirects with params" do
-    post "/in/mfa/totp?ri=jp", params: {
-      totp_challenge_form: { token: "000000" },
-    }
-    assert_response :found
-    assert_redirected_to sign_app_in_challenge_totp_path(ri: "jp")
-  end
-
-  test "backward compatibility: old mfa/passkey/new redirects with params" do
-    get "/in/mfa/passkey/new?ri=jp"
-    assert_response :found
-    assert_redirected_to "/in/challenge/passkey/new?ri=jp"
-  end
-
-  test "backward compatibility: old mfa/passkey POST redirects with params" do
-    post "/in/mfa/passkey?ri=jp", params: {
-      mfa_passkey_form: { challenge_id: "test", credential_json: "{}" },
-    }
-    assert_response :found
-    assert_redirected_to sign_app_in_challenge_passkey_path(ri: "jp")
-  end
 end

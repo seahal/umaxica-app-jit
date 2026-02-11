@@ -44,6 +44,8 @@ class UserAuditEvent < ActivityRecord
            dependent: :restrict_with_error,
            inverse_of: :user_audit_event
 
+  scope :ordered, -> { order(:id) }
+
   DEFAULTS = [
     ACCOUNT_RECOVERED,
     ACCOUNT_WITHDRAWN,

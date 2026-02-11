@@ -176,7 +176,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
   test "create shows identical user-facing response for existing and new emails" do
     existing_user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
-    existing_email = UserEmail.create!(
+    UserEmail.create!(
       user: existing_user,
       address: "enum-safe@example.com",
       confirm_policy: "1",

@@ -19,7 +19,7 @@ class Sign::App::ConfigurationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "a[href^=?]", sign_app_configuration_emails_path(ri: "jp")
     assert_select "a[href^=?]", sign_app_configuration_telephones_path(ri: "jp")
-    assert_select "a[href^=?]", sign_app_configuration_mfa_path(ri: "jp")
+    assert_select "a[href^=?]", sign_app_configuration_challenge_path(ri: "jp")
     assert_select "a[href^=?]", sign_app_configuration_google_path(ri: "jp")
     assert_select "a[href^=?]", sign_app_configuration_apple_path(ri: "jp")
     assert_select "a[href^=?]", sign_app_configuration_sessions_path(ri: "jp")

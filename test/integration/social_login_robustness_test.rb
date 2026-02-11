@@ -5,7 +5,7 @@ require "test_helper"
 class SocialLoginRobustnessTest < ActionDispatch::IntegrationTest
   include SocialCallbackTestHelper
 
-  fixtures :users, :user_statuses
+  fixtures :users, :user_statuses, :user_social_google_statuses
 
   setup do
     OmniAuth.config.test_mode = true

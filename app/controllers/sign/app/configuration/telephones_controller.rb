@@ -38,7 +38,7 @@ module Sign
         def destroy
           telephone = current_user.user_telephones.find_by!(public_id: params[:id])
 
-          if AuthMethodGuard.last_method?(current_user, excluding: telephone)
+          unless AuthMethodGuard.can_remove_telephone?(current_user, telephone)
             redirect_to sign_app_configuration_telephones_path,
                         alert: t("sign.app.configuration.telephone.destroy.last_method")
             return

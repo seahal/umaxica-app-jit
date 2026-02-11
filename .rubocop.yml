@@ -45,6 +45,7 @@ AllCops:
     - 'bin/**/*'
     - 'tmp/**/*'
     - 'log/**/*'
+    - '**/*.md'
   Include:
     - '**/*.rb'
     - '**/*.rake'

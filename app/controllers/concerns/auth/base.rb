@@ -812,7 +812,8 @@ module Auth
       return true if controller_path.end_with?("/configurations") && action_name == "edit"
 
       # Allowlist: withdrawal controller actions
-      return true if controller_path.end_with?("configuration/withdrawals") && %w(new update).include?(action_name)
+      return true if controller_path.end_with?("configuration/withdrawals") && %w(new edit update
+                                                                                  create).include?(action_name)
 
       # Allowlist: health/assets (rarely needed but safe)
       return true if controller_path == "rails/health"
@@ -933,7 +934,11 @@ module Auth
     end
 
     def handle_inactive_resource(resource, refresh_public_id, token_record)
-      set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+      if resource.respond_to?(:deactivated?) && resource.deactivated?
+        set_refresh_failure!(:forbidden, "withdrawal_required")
+      else
+        set_refresh_failure!(:unauthorized, "invalid_refresh_token")
+      end
 
       Rails.event.notify(
         "#{resource_type}.token.refresh.failed",

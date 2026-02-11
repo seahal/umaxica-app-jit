@@ -315,20 +315,24 @@ module Preference
             next
           end
 
-          ids = option_class.constants(false).filter_map do |const_name|
-            value = option_class.const_get(const_name)
-            value if value.is_a?(Integer)
-          end
+          ids =
+            option_class.constants(false).filter_map do |const_name|
+              value = option_class.const_get(const_name)
+              value if value.is_a?(Integer)
+            end
           next if ids.empty?
 
           existing_ids = option_class.where(id: ids).pluck(:id)
           missing_ids = ids - existing_ids
           next if missing_ids.empty?
 
+          # Intentionally skip validations for bulk insert of default option IDs
+          # rubocop:disable Rails/SkipsModelValidations
           option_class.insert_all(
             missing_ids.map { |id| { id: id } },
             unique_by: :primary_key,
           )
+          # rubocop:enable Rails/SkipsModelValidations
         end
       end
     rescue StandardError => e

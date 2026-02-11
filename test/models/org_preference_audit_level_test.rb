@@ -16,4 +16,10 @@ class OrgPreferenceAuditLevelTest < ActiveSupport::TestCase
     ordered_ids = OrgPreferenceAuditLevel.ordered.pluck(:id)
     assert_equal ordered_ids.sort, ordered_ids
   end
+
+  test "has_many association with org_preference_audits" do
+    association = OrgPreferenceAuditLevel.reflect_on_association(:org_preference_audits)
+    assert_equal :has_many, association.macro
+    assert_equal :restrict_with_error, association.options[:dependent]
+  end
 end

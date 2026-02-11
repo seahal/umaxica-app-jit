@@ -27,7 +27,7 @@ module Sign
                       notice: t("sign.app.registration.telephone.edit.session_expired")
         end
 
-        # rubocop:disable Metrics/MethodLength
+        # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         def create
           @user_telephone = UserTelephone.new(
             params.expect(
@@ -47,8 +47,7 @@ module Sign
           @user_telephone.skip_user_presence_validation = true
           @user_telephone.validate
           @user_telephone.skip_user_presence_validation = false
-          existing_telephone =
-            @user_telephone.number_digest.present? ? UserTelephone.find_by(number_digest: @user_telephone.number_digest) : nil
+          existing_telephone = find_existing_telephone_by_digest
           uniqueness_only = telephone_uniqueness_only_error?(@user_telephone)
 
           if @user_telephone.errors.any? && !uniqueness_only
@@ -405,7 +404,13 @@ module Sign
         def log_signup_telephone_errors
           return unless @user_telephone&.errors&.any?
 
-          Rails.logger.warn("signup telephone invalid: #{@user_telephone.errors.full_messages.join(', ')}")
+          Rails.logger.warn("signup telephone invalid: #{@user_telephone.errors.full_messages.join(", ")}")
+        end
+
+        def find_existing_telephone_by_digest
+          return nil if @user_telephone.number_digest.blank?
+
+          UserTelephone.find_by(number_digest: @user_telephone.number_digest)
         end
       end
     end

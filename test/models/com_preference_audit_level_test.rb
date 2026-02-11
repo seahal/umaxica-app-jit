@@ -16,4 +16,10 @@ class ComPreferenceAuditLevelTest < ActiveSupport::TestCase
     ordered_ids = ComPreferenceAuditLevel.ordered.pluck(:id)
     assert_equal ordered_ids.sort, ordered_ids
   end
+
+  test "has_many association with com_preference_audits" do
+    association = ComPreferenceAuditLevel.reflect_on_association(:com_preference_audits)
+    assert_equal :has_many, association.macro
+    assert_equal :restrict_with_error, association.options[:dependent]
+  end
 end
