@@ -4,6 +4,12 @@ ja:
     totp_successfully_updated: "TOTP の設定が更新されました。"
   actions:
     up: "上へ"
+  otp:
+    resend:
+      button: "コードを再送する"
+      sent: "認証コードを再送しました。"
+      too_soon: "しばらく待ってから再送してください。"
+      failed: "再送に失敗しました。時間を置いて再度お試しください。"
   activerecord:
     errors:
       messages:
@@ -23,6 +29,10 @@ ja:
     otp_locked: "試行回数の上限を超えました。最初からやり直してください。"
     messages:
       validation_failed: "入力内容を確認してください。"
+    occurrence:
+      invalid_telephone_format: "電話番号の形式が正しくありません（E.164形式で入力してください）"
+      missing_hmac_secret: "HMACシークレットが設定されていません"
+      memo_too_long: "メモは1000文字以内で入力してください"
     rate_limit:
       exceeded: "リクエストが多すぎます。しばらくしてからもう一度お試しください。"
     social_auth:

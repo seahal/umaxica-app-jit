@@ -76,6 +76,7 @@ ja:
             email_not_found: 登録済みのメールアドレスが見つかりませんでした。
             verification_code_sent: 確認コードをメールアドレスに送信しました。
             turnstile_error: セキュリティ検証に失敗しました。ページを更新して再度お試しください。
+            cooldown: しばらくしてから再度お試しください。
           edit:
             page_title: 認証コードの入力
             description: 完了まであと少しです。メールに送信された6桁の認証コードを入力してください。
@@ -135,6 +136,7 @@ ja:
             verification_code_sent: 確認コードをメールアドレスに送信しました。
             success: "登録が完了しました。"
             turnstile_validation_failed: セキュリティ検証に失敗しました。もう一度お試しください。
+            otp_resend_too_soon: しばらく時間をおいてから再度お試しください。
           edit:
             session_expired: セッションの有効期限が切れました。最初からやり直してください。
           update:

@@ -38,7 +38,13 @@ module Sign
             return render :new, status: :unprocessable_content
           end
 
+          if sign_in_email_cooldown_active?(normalized_address)
+            render plain: t("sign.app.authentication.email.create.cooldown"), status: :too_many_requests
+            return
+          end
+
           process_email_authentication(normalized_address)
+          record_sign_in_email_cooldown!(normalized_address)
 
           # Preserve rd parameter if provided
           preserve_redirect_parameter
@@ -75,8 +81,8 @@ module Sign
                 elsif result[:redirect_path]
                   redirect_to result[:redirect_path], notice: t("sign.app.in.mfa.required")
                 else
-                  # Redirect to rd parameter if provided, otherwise to root
-                  redirect_with_notice("/", t("sign.app.authentication.email.update.success"))
+                  # Redirect to rd parameter if provided, otherwise to configuration
+                  redirect_with_notice(sign_app_configuration_path, t("sign.app.authentication.email.update.success"))
                 end
               end
               format.json do
@@ -127,9 +133,15 @@ module Sign
             unless @user_email
               flash[:notice] = t("sign.app.authentication.email.edit.session_expired")
               redirect_to new_sign_app_in_email_path(rd: peek_redirect_parameter)
+              return
             end
+            @otp_resend_state = Sign::In::OtpResendState.issue(kind: :email, target: @user_email.address)
           elsif session[:user_email_authentication_address].present?
             @user_email = UserEmail.new(address: session[:user_email_authentication_address])
+            @otp_resend_state = Sign::In::OtpResendState.issue(
+              kind: :email,
+              target: session[:user_email_authentication_address],
+            )
           else
 
             flash[:notice] = t("sign.app.authentication.email.edit.session_expired")
@@ -229,6 +241,20 @@ module Sign
           return false unless user_email.otp_cooldown_active?
 
           true
+        end
+
+        def sign_in_email_cooldown_active?(normalized_address)
+          return false if session[:sign_in_email_cooldown_address] != normalized_address
+
+          last_sent_at = session[:sign_in_email_cooldown_at]
+          return false if last_sent_at.blank?
+
+          last_sent_at.to_i > Common::OtpPolicy::SEND_COOLDOWN.ago.to_i
+        end
+
+        def record_sign_in_email_cooldown!(normalized_address)
+          session[:sign_in_email_cooldown_address] = normalized_address
+          session[:sign_in_email_cooldown_at] = Time.current.to_i
         end
       end
     end

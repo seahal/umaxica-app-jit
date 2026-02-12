@@ -25,6 +25,19 @@ scope module: :sign, as: :sign do
         end
       end
 
+      namespace :web do
+        namespace :v1 do
+          namespace :in do
+            namespace :email do
+              resource :otp, only: :create, controller: :otps
+            end
+            namespace :telephone do
+              resource :otp, only: :create, controller: :otps
+            end
+          end
+        end
+      end
+
       resource :up, only: :new
       namespace :up do
         resources :emails, only: %i(new create edit update)

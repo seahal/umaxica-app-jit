@@ -99,29 +99,27 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_not_nil first_email.address_digest
 
-    # Second registration attempt immediately after (case-variant)
+    # Second registration attempt after cooldown expires (case-variant)
     # This should delete the previous unverified record and create a new one
-    post sign_app_up_emails_url(ri: "jp"),
-         params: {
-           user_email: {
-             raw_address: "TEST_RE_REG@EXAMPLE.COM",
-             confirm_policy: "1",
+    travel Common::OtpPolicy::SEND_COOLDOWN + 1.second do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: "TEST_RE_REG@EXAMPLE.COM",
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
            },
-           "cf-turnstile-response": "test",
-         },
-         headers: default_headers
+           headers: default_headers
 
-    # Should succeed because old unverified record is deleted
-    assert_response :redirect
+      # Should succeed because old unverified record is deleted
+      assert_response :redirect
 
-    # Verify old record was deleted and new record was created
-    # assert_nil UserEmail.find_by(public_id: first_email_id)
-    new_email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
-    # new_email = UserEmail.find_by(public_id: new_email_id)
+      # Verify old record was deleted and new record was created
+      new_email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
 
-    # assert_not_nil new_email
-    # assert_equal "UNVERIFIED_WITH_SIGN_UP", new_email.user_email_status_id
-    assert_not_equal first_email.id, new_email_id # Check IDs from URL differ
+      assert_not_equal first_email.id, new_email_id # Check IDs from URL differ
+    end
   end
 
   test "create redirects to edit and allows edit page" do
@@ -156,15 +154,17 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_no_difference("User.count") do
       assert_no_difference("UserEmail.count") do
-        post sign_app_up_emails_url(ri: "jp"),
-             params: {
-               user_email: {
-                 raw_address: existing_email.address,
-                 confirm_policy: "1",
+        assert_enqueued_emails 0 do
+          post sign_app_up_emails_url(ri: "jp"),
+               params: {
+                 user_email: {
+                   raw_address: existing_email.address,
+                   confirm_policy: "1",
+                 },
+                 "cf-turnstile-response": "test",
                },
-               "cf-turnstile-response": "test",
-             },
-             headers: default_headers
+               headers: default_headers
+        end
       end
     end
 
@@ -228,6 +228,31 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
+  end
+
+  test "create with existing email enqueues no emails" do
+    user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+    UserEmail.create!(
+      user: user,
+      address: "no_otp_send@example.com",
+      confirm_policy: "1",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    assert_enqueued_emails 0 do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: "no_otp_send@example.com",
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    assert_response :redirect
+    assert_match(%r{/up/emails/[^/]+/edit}, response.location)
   end
 
   test "create with validation failure enqueues no emails and returns 422" do
@@ -833,11 +858,46 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     # Count users before second attempt
     user_count_before_second = User.count
 
-    # Second registration attempt (should delete first pending user)
+    # Second registration attempt after cooldown (should delete first pending user)
+    travel Common::OtpPolicy::SEND_COOLDOWN + 1.second do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+
+      assert_response :redirect
+
+      # Verify first user was deleted
+      assert_nil User.find_by(id: first_user_id), "First pending user should be deleted"
+
+      # Verify new user was created (count should remain the same: one deleted, one created)
+      assert_equal user_count_before_second, User.count
+
+      # Verify new email has a different user
+      second_email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+      second_email = UserEmail.find_by(public_id: second_email_id)
+
+      assert_not_equal first_user_id, second_email.user_id
+      assert_not_nil second_email.user
+    end
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
+  test "can abandon first email and register with a different email without error" do
+    first_email = "first_abandoned@example.com"
+    second_email = "second_attempt@example.com"
+
+    # First registration attempt with email A
     post sign_app_up_emails_url(ri: "jp"),
          params: {
            user_email: {
-             raw_address: email,
+             raw_address: first_email,
              confirm_policy: "1",
            },
            "cf-turnstile-response": "test",
@@ -846,20 +906,163 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
 
-    # Verify first user was deleted
-    assert_nil User.find_by(id: first_user_id), "First pending user should be deleted"
+    # Get first pending user info
+    first_email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
+    first_record = UserEmail.find_by(public_id: first_email_id)
+    first_user_id = first_record.user_id
 
-    # Verify new user was created (count should remain the same: one deleted, one created)
-    assert_equal user_count_before_second, User.count
+    assert_not_nil first_record
+    assert_equal UserEmailStatus::UNVERIFIED_WITH_SIGN_UP, first_record.user_email_status_id
 
-    # Verify new email has a different user
+    # User abandons: navigates back to "new" page
+    # This should succeed without redirect loop or error
+    get new_sign_app_up_email_url(ri: "jp"), headers: default_headers
+
+    assert_response :success
+
+    # User submits a different email B
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: second_email,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    assert_response :redirect
+
+    # Verify second registration created a new pending user
     second_email_id = response.location.match(/\/up\/emails\/([^\/\?]+)/)[1]
-    second_email = UserEmail.find_by(public_id: second_email_id)
+    second_record = UserEmail.find_by(public_id: second_email_id)
 
-    assert_not_equal first_user_id, second_email.user_id
-    assert_not_nil second_email.user
+    assert_not_nil second_record
+    assert_equal UserEmailStatus::UNVERIFIED_WITH_SIGN_UP, second_record.user_email_status_id
+    assert_not_equal first_user_id, second_record.user_id
+
+    # Verify first pending user was cleaned up
+    assert_nil User.find_by(id: first_user_id),
+               "First pending user should be cleaned up when registering with a different email"
   end
   # rubocop:enable Minitest/MultipleAssertions
+
+  # OTP Resend Cooldown Tests
+  test "create returns 429 when resending OTP within cooldown for new signup" do
+    email = "cooldown_test@example.com"
+
+    # First registration attempt
+    assert_enqueued_emails 1 do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    assert_response :redirect
+
+    # Second attempt immediately (within 30s cooldown)
+    assert_enqueued_emails 0 do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    assert_response :too_many_requests
+    assert_includes @response.body, I18n.t("sign.app.registration.email.create.otp_resend_too_soon")
+  end
+
+  test "create allows resending OTP after cooldown expires for new signup" do
+    email = "cooldown_expire_test@example.com"
+
+    # First registration attempt
+    assert_enqueued_emails 1 do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: email,
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    assert_response :redirect
+
+    # After cooldown expires
+    travel Common::OtpPolicy::SEND_COOLDOWN + 1.second do
+      assert_enqueued_emails 1 do
+        post sign_app_up_emails_url(ri: "jp"),
+             params: {
+               user_email: {
+                 raw_address: email,
+                 confirm_policy: "1",
+               },
+               "cf-turnstile-response": "test",
+             },
+             headers: default_headers
+      end
+
+      assert_response :redirect
+    end
+  end
+
+  test "cooldown does not apply to existing registered emails" do
+    user = User.create!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
+    UserEmail.create!(
+      user: user,
+      address: "registered_cooldown@example.com",
+      confirm_policy: "1",
+      user_email_status_id: UserEmailStatus::VERIFIED,
+    )
+
+    # First attempt with existing email -- no OTP sent, still redirects
+    assert_enqueued_emails 0 do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: "registered_cooldown@example.com",
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    assert_response :redirect
+
+    # Second attempt immediately -- same behavior, no 429
+    assert_enqueued_emails 0 do
+      post sign_app_up_emails_url(ri: "jp"),
+           params: {
+             user_email: {
+               raw_address: "registered_cooldown@example.com",
+               confirm_policy: "1",
+             },
+             "cf-turnstile-response": "test",
+           },
+           headers: default_headers
+    end
+
+    assert_response :redirect
+  end
+
+  test "otp_resend_too_soon i18n key exists in both locales" do
+    assert_not_nil I18n.t("sign.app.registration.email.create.otp_resend_too_soon", locale: :ja, default: nil)
+    assert_not_nil I18n.t("sign.app.registration.email.create.otp_resend_too_soon", locale: :en, default: nil)
+  end
 
   private
 

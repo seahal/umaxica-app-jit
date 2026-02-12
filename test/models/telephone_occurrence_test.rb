@@ -16,10 +16,11 @@
 #
 # Indexes
 #
-#  index_telephone_occurrences_on_body        (body) UNIQUE
-#  index_telephone_occurrences_on_expires_at  (expires_at)
-#  index_telephone_occurrences_on_public_id   (public_id) UNIQUE
-#  index_telephone_occurrences_on_status_id   (status_id)
+#  index_telephone_occurrences_on_body             (body) UNIQUE
+#  index_telephone_occurrences_on_body_created_at  (body,created_at)
+#  index_telephone_occurrences_on_expires_at       (expires_at)
+#  index_telephone_occurrences_on_public_id        (public_id) UNIQUE
+#  index_telephone_occurrences_on_status_id        (status_id)
 #
 # Foreign Keys
 #

@@ -112,6 +112,7 @@ en:
             email_not_found: "We couldn't find an account matching that email address."
             verification_code_sent: "Verification code has been sent to your email address."
             turnstile_error: "Security verification failed. Please refresh and try again."
+            cooldown: "Please wait and try again."
         telephone:
           new:
             page_title: "Sign in with telephone"
@@ -153,6 +154,7 @@ en:
           create:
             verification_code_sent: "Verification code has been sent to your email address."
             turnstile_validation_failed: "Security verification failed. Please try again."
+            otp_resend_too_soon: "Please wait before requesting another code."
           edit:
             return_page: "Back"
             session_expired: "Your session has expired. Please start over."

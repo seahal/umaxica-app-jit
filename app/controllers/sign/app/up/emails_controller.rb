@@ -26,11 +26,18 @@ module Sign
           email_params = params.expect(user_email: %i(raw_address address confirm_policy))
           email_address = email_params[:raw_address] || email_params[:address]
 
-          unless initiate_email_verification!(
+          result = initiate_email_verification!(
             email_address,
             confirm_policy: email_params[:confirm_policy],
             allow_existing: true,
           )
+
+          if result == :cooldown
+            render plain: t("sign.app.registration.email.create.otp_resend_too_soon"), status: :too_many_requests
+            return
+          end
+
+          unless result
             log_signup_email_errors
             render :new, status: :unprocessable_content
             return

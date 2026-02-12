@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_12_000010) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_12_120200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -187,10 +187,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000010) do
     t.string "public_id", limit: 21, default: "", null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["body", "created_at"], name: "index_email_occurrences_on_body_created_at"
     t.index ["body"], name: "index_email_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_email_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_email_occurrences_on_public_id", unique: true
     t.index ["status_id"], name: "index_email_occurrences_on_status_id"
+    t.check_constraint "char_length(memo::text) <= 1000", name: "chk_email_occurrences_memo_length"
   end
 
   create_table "email_staff_occurrences", force: :cascade do |t|
@@ -240,10 +242,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000010) do
     t.string "public_id", limit: 21, default: "", null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["body", "created_at"], name: "index_ip_occurrences_on_body_created_at"
     t.index ["body"], name: "index_ip_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_ip_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_ip_occurrences_on_public_id", unique: true
     t.index ["status_id"], name: "index_ip_occurrences_on_status_id"
+    t.check_constraint "char_length(memo::text) <= 1000", name: "chk_ip_occurrences_memo_length"
   end
 
   create_table "ip_staff_occurrences", force: :cascade do |t|
@@ -337,10 +341,12 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_12_000010) do
     t.string "public_id", limit: 21, default: "", null: false
     t.bigint "status_id", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["body", "created_at"], name: "index_telephone_occurrences_on_body_created_at"
     t.index ["body"], name: "index_telephone_occurrences_on_body", unique: true
     t.index ["expires_at"], name: "index_telephone_occurrences_on_expires_at"
     t.index ["public_id"], name: "index_telephone_occurrences_on_public_id", unique: true
     t.index ["status_id"], name: "index_telephone_occurrences_on_status_id"
+    t.check_constraint "char_length(memo::text) <= 1000", name: "chk_telephone_occurrences_memo_length"
   end
 
   create_table "telephone_user_occurrences", force: :cascade do |t|

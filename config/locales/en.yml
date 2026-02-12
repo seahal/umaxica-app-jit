@@ -1,4 +1,10 @@
 en:
+  otp:
+    resend:
+      button: "Resend code"
+      sent: "Verification code sent."
+      too_soon: "Please wait before requesting another code."
+      failed: "Unable to resend code. Please try again."
   session_limit:
     gate_expired: "The operation has timed out. Please log in again."
     user_not_found: "User not found. Please log in again."

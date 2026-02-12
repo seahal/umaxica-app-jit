@@ -42,7 +42,7 @@ module Sign
       return unless required_state
 
       current_state = email_flow_state
-      if action_name.to_sym == :create && current_state == STATE_EMAIL_CREATED
+      if action_name.to_sym.in?([:new, :create]) && current_state != STATE_INIT
         reset_email_flow!
         return
       end
@@ -99,8 +99,10 @@ module Sign
           existing_email&.user_email_status_id == UserEmailStatus::UNVERIFIED_WITH_SIGN_UP
       end
 
-      # Rate limit check (TODO: Implement rate limiting)
-      # if rate_limited? ...
+      if existing_email&.user_email_status_id == UserEmailStatus::UNVERIFIED_WITH_SIGN_UP &&
+          existing_email.otp_cooldown_active?
+        return :cooldown
+      end
 
       begin
         UserEmail.transaction do
@@ -109,6 +111,7 @@ module Sign
           create_pending_user!
 
           num = generate_otp_attributes(@user_email)
+          @user_email.otp_last_sent_at = Time.current
           @user_email.save!
 
           send_verification_email(num)
@@ -179,11 +182,9 @@ module Sign
 
     def cleanup_pending_signup!
       pending_user_id = session[:pending_sign_up_user_id]
-      pending_email = session[:pending_sign_up_email].to_s.downcase
       return if pending_user_id.blank?
-      return unless pending_email == @user_email.address.to_s.downcase
 
-      User.find_by(id: pending_user_id)&.destroy!
+      User.find_by(id: pending_user_id, status_id: UserStatus::UNVERIFIED_WITH_SIGN_UP)&.destroy!
     end
 
     def remove_existing_unverified_emails!
@@ -213,8 +214,7 @@ module Sign
 
     def dispatch_existing_email_verification!(existing_email)
       @user_email = existing_email
-      otp_number = generate_otp_for(@user_email)
-      send_verification_email(otp_number)
+      generate_otp_for(@user_email)
       session[EXISTING_EMAIL_SESSION_KEY] = @user_email.id
       true
     end

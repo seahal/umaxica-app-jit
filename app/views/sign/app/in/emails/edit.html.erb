@@ -11,7 +11,19 @@
         </p>
       </div>
 
-      <%= form_with model: @user_email, url: sign_app_in_email_path, method: :patch, data: { turbo: false } do |form| %>
+      <%= form_with model: @user_email,
+                    url: sign_app_in_email_path,
+                    method: :patch,
+                    data: {
+                      turbo: false,
+                      controller: "otp-resend",
+                      otp_resend_endpoint_value: sign_app_web_v1_in_email_otp_path,
+                      otp_resend_state_value: @otp_resend_state,
+                      otp_resend_button_label_value: t("otp.resend.button"),
+                      otp_resend_sent_message_value: t("otp.resend.sent"),
+                      otp_resend_too_soon_message_value: t("otp.resend.too_soon"),
+                      otp_resend_failed_message_value: t("otp.resend.failed"),
+                    } do |form| %>
         <%= hidden_field_tag :rd, params[:rd] if params[:rd].present? %>
 
         <% if @user_email.errors.any? %>
@@ -35,9 +47,17 @@
                                 autocomplete: "one-time-code",
                                 inputmode: "numeric",
                                 pattern: "[0-9]*",
+                                data: { otp_resend_target: "input" },
                                 required: true %>
             <div></div>
           </div>
+        </div>
+
+        <div>
+          <button type="button" data-action="otp-resend#resend" data-otp-resend-target="button">
+            <%= t("otp.resend.button") %>
+          </button>
+          <p data-otp-resend-target="status"></p>
         </div>
 
         <div>
