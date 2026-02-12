@@ -207,7 +207,8 @@ module SocialCallbackGuard
     [false, "state_parse_error"]
   end
 
-  def load_callback_state_data(provider) # rubocop:disable Lint/UnusedMethodArgument
+  def load_callback_state_data(_provider)
+    # rubocop:disable Lint/UnusedMethodArgument
     {
       callback: params[:state].to_s.presence,
       expected: session[SOCIAL_STATE_SESSION_KEY].to_s.presence ||

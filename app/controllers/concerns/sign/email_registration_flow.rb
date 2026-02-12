@@ -175,7 +175,7 @@ module Sign
       on_email_registration_verified!(user_email:, target_user:)
     end
 
-    def on_email_registration_verified!(user_email:, target_user:) # rubocop:disable Lint/UnusedMethodArgument
+    def on_email_registration_verified!(user_email:, target_user:)
       nil
     end
 

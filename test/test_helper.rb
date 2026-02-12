@@ -71,11 +71,37 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
     add_filter "test/"
     add_filter "config/"
     add_filter "db/"
-    add_filter "tmp/"
     add_filter "bin/"
     add_filter "docs/"
     add_filter "log/"
     add_filter "docker/"
+    add_filter "dependency/"
+    add_filter "public/"
+    add_filter "node_modules/"
+    add_filter "vendor/"
+    
+    # Redundant schema files
+    add_filter "db/schema.rb"
+    add_filter "db/activity_schema.rb"
+    add_filter "db/avatar_schema.rb"
+    add_filter "db/behavior_schema.rb"
+    add_filter "db/billing_schema.rb"
+    add_filter "db/cache_schema.rb"
+    add_filter "db/default_schema.rb"
+    add_filter "db/document_schema.rb"
+    add_filter "db/guest_schema.rb"
+    add_filter "db/identifier_schema.rb"
+    add_filter "db/message_schema.rb"
+    add_filter "db/news_schema.rb"
+    add_filter "db/notification_schema.rb"
+    add_filter "db/occurrence_schema.rb"
+    add_filter "db/operator_schema.rb"
+    add_filter "db/preference_schema.rb"
+    add_filter "db/principal_schema.rb"
+    add_filter "db/profile_schema.rb"
+    add_filter "db/queue_schema.rb"
+    add_filter "db/storage_schema.rb"
+    add_filter "db/token_schema.rb"
   end
 end
 
@@ -138,6 +164,22 @@ class ActiveSupport::TestCase
            :clients,
            :user_client_suspensions,
            :app_contact_categories,
+           :app_contact_statuses,
+           :com_contact_statuses,
+           :org_contact_statuses,
+           :handle_statuses,
+           :handles,
+           :avatar_capabilities,
+           :avatar_membership_statuses,
+           :avatar_moniker_statuses,
+           :avatar_ownership_statuses,
+           :avatars,
+           :post_statuses,
+           :post_review_statuses,
+           :app_preference_audit_levels,
+           :org_preference_audit_levels,
+           :staff_audit_levels,
+           :user_audit_levels,
            :org_timeline_statuses unless ENV["SKIP_DB"] == "1"
 
   # Load fixtures only when explicitly needed in individual test files

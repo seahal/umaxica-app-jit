@@ -1,15 +1,15 @@
-import { Application } from "@hotwired/stimulus";
+import {Application} from "@hotwired/stimulus";
 
 const application = Application.start();
 
 // Configure Stimulus development experience
 const hostname = window.location.hostname;
 const isLocalhost =
-	hostname === "localhost" ||
-	hostname === "127.0.0.1" ||
-	hostname === "[::1]" ||
-	hostname.endsWith(".localhost");
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "[::1]" ||
+    hostname.endsWith(".localhost");
 application.debug = isLocalhost;
 window.Stimulus = application;
 
-export { application };
+export {application};

@@ -115,7 +115,7 @@ class StaffToken < TokenRecord
   end
 
   # Find token by signed reference (returns nil if invalid/expired)
-  def self.find_by_signed_ref(signed_ref)
+  def self.find_from_signed_ref(signed_ref)
     return nil if signed_ref.blank?
 
     data = Rails.application.message_verifier(:session_ref).verify(signed_ref)

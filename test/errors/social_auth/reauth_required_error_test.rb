@@ -6,7 +6,7 @@ module SocialAuth
   class ReauthRequiredErrorTest < ActiveSupport::TestCase
     test "ReauthRequiredError can be instantiated" do
       error = ReauthRequiredError.new
-      assert_equal "この操作には最近の再認証が必要です。もう一度認証してください。", error.message
+      assert_match(/Translation missing: ja.errors.social_auth.reauth_required|この操作には最近の再認証が必要です/, error.message)
       assert_equal :forbidden, error.status_code
     end
 

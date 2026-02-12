@@ -5,11 +5,13 @@ class ConvertDocumentPks < ActiveRecord::Migration[8.0]
     # -------------------------------------------------------------------------
     # APP DOCUMENTS
     # -------------------------------------------------------------------------
-    drop_table :app_document_revisions, if_exists: true
-    drop_table :app_document_versions, if_exists: true
-    drop_table :app_document_categories, if_exists: true
-    drop_table :app_document_tags, if_exists: true
-    drop_table :app_documents, if_exists: true
+    safety_assured do
+      execute "DROP TABLE IF EXISTS app_document_revisions CASCADE"
+      execute "DROP TABLE IF EXISTS app_document_versions CASCADE"
+      execute "DROP TABLE IF EXISTS app_document_categories CASCADE"
+      execute "DROP TABLE IF EXISTS app_document_tags CASCADE"
+      execute "DROP TABLE IF EXISTS app_documents CASCADE"
+    end
 
     create_table :app_documents do |t|
       t.datetime "created_at", null: false
@@ -105,11 +107,13 @@ class ConvertDocumentPks < ActiveRecord::Migration[8.0]
     # -------------------------------------------------------------------------
     # COM DOCUMENTS
     # -------------------------------------------------------------------------
-    drop_table :com_document_revisions, if_exists: true
-    drop_table :com_document_versions, if_exists: true
-    drop_table :com_document_categories, if_exists: true
-    drop_table :com_document_tags, if_exists: true
-    drop_table :com_documents, if_exists: true
+    safety_assured do
+      execute "DROP TABLE IF EXISTS com_document_revisions CASCADE"
+      execute "DROP TABLE IF EXISTS com_document_versions CASCADE"
+      execute "DROP TABLE IF EXISTS com_document_categories CASCADE"
+      execute "DROP TABLE IF EXISTS com_document_tags CASCADE"
+      execute "DROP TABLE IF EXISTS com_documents CASCADE"
+    end
 
     create_table :com_documents do |t|
       t.datetime "created_at", null: false
@@ -205,11 +209,13 @@ class ConvertDocumentPks < ActiveRecord::Migration[8.0]
     # -------------------------------------------------------------------------
     # ORG DOCUMENTS
     # -------------------------------------------------------------------------
-    drop_table :org_document_revisions, if_exists: true
-    drop_table :org_document_versions, if_exists: true
-    drop_table :org_document_categories, if_exists: true
-    drop_table :org_document_tags, if_exists: true
-    drop_table :org_documents, if_exists: true
+    safety_assured do
+      execute "DROP TABLE IF EXISTS org_document_revisions CASCADE"
+      execute "DROP TABLE IF EXISTS org_document_versions CASCADE"
+      execute "DROP TABLE IF EXISTS org_document_categories CASCADE"
+      execute "DROP TABLE IF EXISTS org_document_tags CASCADE"
+      execute "DROP TABLE IF EXISTS org_documents CASCADE"
+    end
 
     create_table :org_documents do |t|
       t.datetime "created_at", null: false

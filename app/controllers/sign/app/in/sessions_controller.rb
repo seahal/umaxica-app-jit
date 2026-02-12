@@ -159,7 +159,7 @@ class Sign::App::In::SessionsController < Sign::App::ApplicationController
   end
 
   def revoke_session_by_ref(user, ref)
-    token = UserToken.find_by(signed_ref: ref)
+    token = UserToken.find_from_signed_ref(ref)
     unless token && token.user_id == user.id
       flash[:alert] = I18n.t("sign.app.in.session.invalid_session")
       return
@@ -184,7 +184,7 @@ class Sign::App::In::SessionsController < Sign::App::ApplicationController
     TokenRecord.connected_to(role: :writing) do
       UserToken.transaction do
         refs.each do |ref|
-          token = UserToken.find_by(signed_ref: ref)
+          token = UserToken.find_from_signed_ref(ref)
           next unless token && token.user_id == user.id
           next if token.public_id == current_session_public_id # Skip current session
 

@@ -22,4 +22,30 @@ class OrgPreferenceAuditLevelTest < ActiveSupport::TestCase
     assert_equal :has_many, association.macro
     assert_equal :restrict_with_error, association.options[:dependent]
   end
+
+  test "INFO constant is defined" do
+    assert_equal 1, OrgPreferenceAuditLevel::INFO
+  end
+
+  test "record_timestamps is disabled" do
+    assert_not OrgPreferenceAuditLevel.record_timestamps
+  end
+
+  test "DEFAULTS includes INFO" do
+    assert_includes OrgPreferenceAuditLevel::DEFAULTS, OrgPreferenceAuditLevel::INFO
+  end
+
+  test "ensure_defaults! creates the INFO record" do
+    OrgPreferenceAudit.delete_all
+    OrgPreferenceAuditLevel.where(id: OrgPreferenceAuditLevel::INFO).delete_all
+    assert_nil OrgPreferenceAuditLevel.find_by(id: OrgPreferenceAuditLevel::INFO)
+
+    OrgPreferenceAuditLevel.ensure_defaults!
+    assert_not_nil OrgPreferenceAuditLevel.find_by(id: OrgPreferenceAuditLevel::INFO)
+  end
+
+  test "ensure_defaults! is idempotent" do
+    OrgPreferenceAuditLevel.ensure_defaults!
+    assert_nothing_raised { OrgPreferenceAuditLevel.ensure_defaults! }
+  end
 end

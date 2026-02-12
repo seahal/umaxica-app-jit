@@ -1,5 +1,5 @@
 <head>
-  <%= display_meta_tags site: (defined?(title) ? title : "#{ENV.fetch('BRAND_NAME', 'Umaxica')} (#{namespace})"), title: (content_for(:page_title) if content_for?(:page_title)) %>
+  <%= display_meta_tags site: (defined?(title) ? title : "#{ENV.fetch('BRAND_NAME', 'Umaxica')} (#{namespace})"), title: page_title %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="turbo-refresh-method" content="morph">
   <meta name="turbo-refresh-scroll" content="preserve">

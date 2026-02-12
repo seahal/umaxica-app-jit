@@ -693,7 +693,7 @@ module Preference
       generated_token = nil
 
       PreferenceRecord.connected_to(role: :writing) do
-        ActiveRecord::Base.transaction do
+        PreferenceRecord.transaction do
           ensure_preference_status_defaults!
           @preferences = preference_class.create!(
             expires_at: expires_at,

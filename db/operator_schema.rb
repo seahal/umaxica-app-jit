@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_08_193100) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_12_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -247,6 +247,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_08_193100) do
 
   create_table "staffs", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
     t.boolean "multi_factor_enabled", default: false, null: false
     t.string "public_id", null: false
     t.bigint "status_id", default: 0, null: false

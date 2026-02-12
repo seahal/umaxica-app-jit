@@ -22,7 +22,7 @@ class UserAuditEventTest < ActiveSupport::TestCase
     assert_predicate record, :valid?
   end
 
-  test "all constants are defined with correct values" do
+  test "all constants are defined with correct values" do # rubocop:disable Minitest/MultipleAssertions
     assert_equal 1, UserAuditEvent::ACCOUNT_RECOVERED
     assert_equal 2, UserAuditEvent::ACCOUNT_WITHDRAWN
     assert_equal 3, UserAuditEvent::AUTHORIZATION_FAILED

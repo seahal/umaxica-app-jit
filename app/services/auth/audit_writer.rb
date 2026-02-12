@@ -97,6 +97,7 @@ module Auth
         resource.class.name.downcase
       end
     end
+
     private_class_method :infer_resource_type
 
     def self.normalize_event_id(audit_class, event_id)
@@ -110,6 +111,7 @@ module Auth
 
       event_class.const_get(event_id)
     end
+
     private_class_method :normalize_event_id
   end
 end

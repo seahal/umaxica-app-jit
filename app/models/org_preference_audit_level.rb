@@ -14,4 +14,10 @@ class OrgPreferenceAuditLevel < ActivityRecord
 
   has_many :org_preference_audits, dependent: :restrict_with_error, inverse_of: :org_preference_audit_level
   scope :ordered, -> { column_names.include?("position") ? order(:position, :id) : order(:id) }
+
+  DEFAULTS = [INFO].freeze
+
+  def self.ensure_defaults!
+    DEFAULTS.each { |id| find_or_create_by!(id: id) }
+  end
 end

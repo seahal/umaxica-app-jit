@@ -152,6 +152,12 @@ class User < PrincipalRecord
     true
   end
 
+  # Compatibility shim for legacy pluralized callers.
+  # Association remains has_one.
+  def user_social_googles
+    user_social_google ? [user_social_google] : []
+  end
+
   # what is this?
   def has_verified_recovery_identity?
     has_verified_pii?

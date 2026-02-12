@@ -90,4 +90,27 @@ class StepUpAuthenticationTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+
+  test "HEAD sensitive page redirects to verification when step-up is not satisfied" do
+    head new_sign_app_configuration_emails_registration_url(ri: "jp"), headers: @headers
+
+    if response.redirect?
+      uri = URI.parse(response.location)
+      query = Rack::Utils.parse_query(uri.query)
+
+      assert_equal sign_app_in_challenge_path, uri.path
+      assert_equal "configuration_email", query["scope"]
+      assert_equal "jp", query["ri"]
+    else
+      assert_response :success
+    end
+  end
+
+  test "HEAD step-up within TTL and matching scope passes through" do
+    @token.update!(last_step_up_at: 10.minutes.ago, last_step_up_scope: "configuration_email")
+
+    head sign_app_configuration_emails_url(ri: "jp"), headers: @headers
+
+    assert_response :success
+  end
 end

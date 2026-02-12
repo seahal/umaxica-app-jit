@@ -18,16 +18,16 @@
         <h2>
           <%= t("apex.org.preferences.regions.region_section") %>
         </h2>
-          <%= f.label :option_id, t("apex.org.preferences.regions.select_region") %>
-          <div>
-            <%= f.select :option_id,
-                         options_for_select(
-                           OrgPreferenceRegionOption.all.order(:id).map { |o| [t("apex.org.preferences.regions.select_region_selector.#{o.name}", default: o.name), o.id] },
-                           @preference_region.option_id
-                         ),
-                         { prompt: t("apex.org.preferences.regions.select_region_prompt") } %>
-          </div>
+        <%= f.label :option_id, t("apex.org.preferences.regions.select_region") %>
+        <div>
+          <%= f.select :option_id,
+                       options_for_select(
+                         OrgPreferenceRegionOption.all.order(:id).map { |o| [t("apex.org.preferences.regions.select_region_selector.#{o.name}", default: o.name), o.id] },
+                         @preference_region.option_id
+                       ),
+                       { prompt: t("apex.org.preferences.regions.select_region_prompt") } %>
         </div>
+      </div>
       </div>
 
       <div>
@@ -53,5 +53,5 @@
         <% end %>
       </div>
     </div>
-  </div>
-</section>
+    </div>
+    </section>

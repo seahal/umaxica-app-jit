@@ -56,7 +56,7 @@ module Sign
               .each do |totp|
                 last_otp_at = ROTP::TOTP.new(totp.private_key).verify(token.to_s)
                 return [last_otp_at, totp] if last_otp_at
-              end
+            end
             [nil, nil]
           end
 

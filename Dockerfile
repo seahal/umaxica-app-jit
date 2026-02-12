@@ -177,20 +177,18 @@ RUN apt-get update -qq \
     yq \
     lsb-release \
     ncdu \
+    nodejs \
     npm \
     openssl \
     ripgrep \
     silversearcher-ag \
     sudo \
     tig \
-    tmux \
     tree \
     unzip \
-    vim \
     watch \
     wget \
     zip \
-    zsh \
     socat \
     netcat-openbsd \
     && apt-get clean \

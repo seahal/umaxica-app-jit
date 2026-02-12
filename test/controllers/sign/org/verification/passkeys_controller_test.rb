@@ -30,8 +30,8 @@ class Sign::Org::Verification::PasskeysControllerTest < ActionDispatch::Integrat
               headers: @headers
 
           get new_sign_org_verification_passkey_url(ri: "jp"), headers: @headers
-          assert_response :redirect
-          # assert_response :success
+          assert_response :success
+          # assert_response :redirect
 
           # post sign_org_verification_passkey_url(ri: "jp"), headers: @headers
 

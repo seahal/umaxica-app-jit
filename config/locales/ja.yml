@@ -25,6 +25,8 @@ ja:
       validation_failed: "入力内容を確認してください。"
     rate_limit:
       exceeded: "リクエストが多すぎます。しばらくしてからもう一度お試しください。"
+    social_auth:
+      provider_error: "プロバイダーとの通信中にエラーが発生しました"
   sign:
     app:
       in:

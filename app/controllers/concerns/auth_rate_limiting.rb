@@ -10,8 +10,8 @@ module AuthRateLimiting
 
   # Rate limits for different operations
   RATE_LIMIT_CONFIGS = {
-    otp_send: { max_requests: 3, window: 300 },           # 3 per 5 minutes
-    otp_resend: { max_requests: 2, window: 600 },         # 2 per 10 minutes
+    otp_send: { max_requests: 3, window: 300 }, # 3 per 5 minutes
+    otp_resend: { max_requests: 2, window: 600 }, # 2 per 10 minutes
     social_login_start: { max_requests: 20, window: 60 }, # 20 per minute
     social_login_callback: { max_requests: 10, window: 60 }, # 10 per minute
     token_refresh: { max_requests: 30, window: 60 }, # 30 per minute

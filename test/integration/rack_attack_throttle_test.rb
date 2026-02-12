@@ -79,7 +79,7 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
     get_with_host "/edge/v1/csrf?ri=jp", headers: { "Accept" => "text/html" }
     assert_response :too_many_requests
     assert_equal "text/plain", response.content_type
-    assert_match(/rate limit exceeded/i, response.body)
+    assert_match(/rate limit exceeded|リクエストが多すぎます/i, response.body)
     assert_equal "60", response.headers["Retry-After"]
   end
 
@@ -137,7 +137,7 @@ class RackAttackThrottleTest < ActionDispatch::IntegrationTest
     get_with_host "/in/new?ri=jp", headers: { "Accept" => "text/html" }
     assert_response :too_many_requests
     assert_equal "text/plain", response.content_type
-    assert_match(/rate limit exceeded/i, response.body)
+    assert_match(/rate limit exceeded|リクエストが多すぎます/i, response.body)
   end
 
   test "auth/tenant_ip throttle limits GET to sign-up form" do

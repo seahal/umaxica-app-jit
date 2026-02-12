@@ -20,10 +20,16 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     token_record = StaffToken.create!(staff: @staff)
     refresh_plain = token_record.rotate_refresh_token!
 
+    csrf_token = "test_csrf_token"
+    cookies["jit_csrf_token"] = csrf_token
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: {
+           "Host" => @host,
+           "Accept" => "application/json",
+           "X-CSRF-Token" => csrf_token,
+         },
          as: :json
 
     assert_response :ok
@@ -48,10 +54,16 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     token_record = StaffToken.create!(staff: @staff)
     refresh_plain = token_record.rotate_refresh_token!
 
+    csrf_token = "test_csrf_token"
+    cookies["jit_csrf_token"] = csrf_token
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = refresh_plain
 
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: {
+           "Host" => @host,
+           "Accept" => "application/json",
+           "X-CSRF-Token" => csrf_token,
+         },
          as: :json
 
     assert_response :ok
@@ -73,10 +85,16 @@ class Sign::Org::Edge::V1::Token::RefreshesControllerTest < ActionDispatch::Inte
     old_refresh_plain = token_record.rotate_refresh_token!
     token_record.rotate_refresh_token!
 
+    csrf_token = "test_csrf_token"
+    cookies["jit_csrf_token"] = csrf_token
     cookies[Auth::Base::REFRESH_COOKIE_KEY] = old_refresh_plain
 
     post "/edge/v1/token/refresh",
-         headers: { "Host" => @host, "Accept" => "application/json" },
+         headers: {
+           "Host" => @host,
+           "Accept" => "application/json",
+           "X-CSRF-Token" => csrf_token,
+         },
          as: :json
 
     assert_response :unauthorized

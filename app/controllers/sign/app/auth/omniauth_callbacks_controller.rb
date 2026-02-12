@@ -165,6 +165,7 @@ module Sign
             end
           end
         end
+
         # rubocop:enable Metrics/MethodLength
 
         def handle_unexpected_error(error, auth)

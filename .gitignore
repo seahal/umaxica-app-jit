@@ -115,3 +115,5 @@ erd.pdf
 .pnpm-store/
 .claudeignore
 test_output*.txt
+.gemini/
+gha-creds-*.json

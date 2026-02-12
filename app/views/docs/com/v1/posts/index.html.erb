@@ -50,11 +50,11 @@
         </div>
 
         <!-- Pagination -->
-        <% if @total_pages> 1 %>
+        <% if @total_pages > 1 %>
           <div>
             <nav>
               <ul>
-                <% if @page> 1 %>
+                <% if @page > 1 %>
                   <li>
                     <%= link_to "‹",
                                 docs_com_v1_posts_path(q: @query, page: @page - 1) %>

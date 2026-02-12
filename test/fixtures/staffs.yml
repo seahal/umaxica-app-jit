@@ -4,6 +4,7 @@
 # Database name: operator
 #
 #  id                   :bigint           not null, primary key
+#  lock_version         :integer          default(0), not null
 #  multi_factor_enabled :boolean          default(FALSE), not null
 #  withdrawn_at         :datetime
 #  created_at           :datetime         not null

@@ -15,7 +15,7 @@
                 url: core_app_contacts_path,
                 scope: :app_contact,
                 data: { turbo: false },
-                html: {  } do |form| %>
+                html: {} do |form| %>
     <% if @contact&.errors&.any? %>
       <div id="error_explanation">
         <h2>
@@ -70,7 +70,7 @@
 
     <div>
       <%= form.submit t('help.app.contacts.new.submit', default: t('helpers.submit.create')) %> <%= link_to t('help.app.contacts.new.cancel'),
-                                                                                                                                                                                                                                                                                                                                                                                    core_app_root_path %>
+                                                                                                            core_app_root_path %>
 
     </div>
   <% end %>

@@ -15,7 +15,7 @@
                 url: core_org_contacts_path,
                 scope: :org_contact,
                 data: { turbo: false },
-                html: {  } do |form| %>
+                html: {} do |form| %>
     <% if @contact&.errors&.any? %>
       <div id="error_explanation">
         <h2>

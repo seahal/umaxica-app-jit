@@ -27,10 +27,10 @@
     </div>
 
     <div>
-      <% if @total_pages> 1 %>
+      <% if @total_pages > 1 %>
         <nav>
           <ul>
-            <% if @page> 1 %>
+            <% if @page > 1 %>
               <li>
                 <%= link_to "Previous", docs_com_cms_documents_path(page: @page - 1) %>
               </li>

@@ -124,7 +124,15 @@
 	"updateRemoteUserUID": true,
 	"postCreateCommand": "RAILS_ENV=test bin/rails db:create || true",
 	"features": {
-		"ghcr.io/devcontainers/features/github-cli:1": {}
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/dhoeric/features/trivy:1": {},
+    "ghcr.io/shyim/devcontainers-features/bun:0": {},
+    "ghcr.io/jsburckhardt/devcontainer-features/codex:1": {},
+    "ghcr.io/marcosbolanos/devcontainer-features/neovim-prebuilt:1": {},
+    "ghcr.io/devcontainers/features/copilot-cli:1": {},
+    "ghcr.io/stu-bell/devcontainer-features/gemini-cli:0": {}, 
+    "ghcr.io/devcontainers-extra/features/claude-code:1": {},
+    "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {}
 	},
 	"mounts": [
 		"source=${localEnv:HOME}/.claude,target=/home/jit/.claude,type=bind,consistency=cached",

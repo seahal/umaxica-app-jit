@@ -55,7 +55,7 @@ module Auth
       return if initial_setup_step_up_exempt?
 
       flash[:alert] = I18n.t("auth.step_up.required")
-      if request.get?
+      if request.get? || request.head?
         reauth_new_path = am_i_staff? ? :sign_org_in_challenge_path : :sign_app_in_challenge_path
         redirect_to send(
           reauth_new_path,
@@ -79,7 +79,7 @@ module Auth
       rules = INITIAL_SETUP_CONTROLLERS[controller_path]
       return false unless rules
 
-      if request.get?
+      if request.get? || request.head?
         rules[:get_actions].include?(action_name)
       else
         rules[:non_get_actions].include?(action_name)

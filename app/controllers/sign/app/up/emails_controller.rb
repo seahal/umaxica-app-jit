@@ -156,18 +156,34 @@ module Sign
           @user = user_email.user
           @user.update!(status_id: UserStatus::VERIFIED_WITH_SIGN_UP)
 
-          # Create audit record
-          # Note: After DB refactoring, actor_id is now bigint type
-          audit = UserAudit.new
-          audit.actor_type = "User"
-          audit.actor_id = @user.id
-          audit.event_id = UserAuditEvent::SIGNED_UP_WITH_EMAIL
-          audit.subject_id = @user.id.to_s
-          audit.subject_type = "User"
-          audit.save!
+          create_signup_audit!
 
           user_email.save!
           log_in(@user, record_login_audit: false)
+        end
+
+        def create_signup_audit!
+          event_id = UserAuditEvent::SIGNED_UP_WITH_EMAIL
+
+          ActivityRecord.connected_to(role: :writing) do
+            UserAuditEvent.find_or_create_by!(id: event_id)
+            UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+          end
+
+          audit = UserAudit.new(
+            actor_type: "User",
+            actor_id: @user.id,
+            event_id: event_id,
+            subject_id: @user.id.to_s,
+            subject_type: "User",
+          )
+          audit.save!
+        rescue ActiveRecord::RecordInvalid => e
+          Rails.logger.error(
+            "signup audit save failed: user_id=#{@user&.id} event_id=#{event_id} " \
+            "errors=#{e.record.errors.full_messages.join(", ")}",
+          )
+          raise
         end
       end
     end

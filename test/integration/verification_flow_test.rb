@@ -14,6 +14,7 @@ class VerificationFlowTest < ActionDispatch::IntegrationTest
   setup do
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
+    UserEmail.create!(user: @user, address: "vf_#{SecureRandom.hex(4)}@example.com", user_email_status_id: UserEmailStatus::VERIFIED)
     @token = UserToken.create!(
       user: @user,
       user_token_status_id: UserTokenStatus::NEYO,
@@ -33,7 +34,20 @@ class VerificationFlowTest < ActionDispatch::IntegrationTest
     get sign_app_configuration_emails_url(ri: "jp"), headers: @headers
 
     assert_response :redirect
-    assert_match %r{/verification}, response.location
+    assert_match %r{/in/challenge}, response.location
+    assert_match(/scope=configuration_email/, response.location)
+    assert_match(/return_to=/, response.location)
+  end
+
+  test "high-risk operation redirects to verification when step-up not satisfied (HEAD)" do
+    # Make token old enough to require step-up
+    @token.update!(created_at: 1.hour.ago)
+
+    # Try to access email configuration (requires step-up)
+    head sign_app_configuration_emails_url(ri: "jp"), headers: @headers
+
+    assert_response :redirect
+    assert_match %r{/in/challenge}, response.location
     assert_match(/scope=configuration_email/, response.location)
     assert_match(/return_to=/, response.location)
   end

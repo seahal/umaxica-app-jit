@@ -26,19 +26,19 @@ module TelephoneNormalization
 
   # Characters to remove during normalization (formatting characters)
   FORMATTING_CHARS = [
-    " ",      # Half-width space
+    " ", # Half-width space
     "\u3000", # Full-width space
-    "-",      # Hyphen-minus
-    "‐",      # Hyphen
-    "−",      # Minus sign
-    "–",      # En dash
-    "—",      # Em dash
-    "(",      # Left parenthesis
-    ")",      # Right parenthesis
-    "（",     # Full-width left parenthesis
-    "）",     # Full-width right parenthesis
-    ".",      # Period
-    "/",      # Slash
+    "-", # Hyphen-minus
+    "‐", # Hyphen
+    "−", # Minus sign
+    "–", # En dash
+    "—", # Em dash
+    "(", # Left parenthesis
+    ")", # Right parenthesis
+    "（", # Full-width left parenthesis
+    "）", # Full-width right parenthesis
+    ".", # Period
+    "/", # Slash
     "・", # Middle dot
   ].freeze
 
@@ -123,6 +123,7 @@ module TelephoneNormalization
     FORMATTING_CHARS.each { |char| result.gsub!(char, "") }
     result
   end
+
   private_class_method :remove_formatting_characters
 
   # Convert international dialing prefixes (00, 010) to +
@@ -156,6 +157,7 @@ module TelephoneNormalization
 
     [input, false]
   end
+
   private_class_method :convert_international_prefix
 
   # Remove domestic 0 after country code
@@ -200,6 +202,7 @@ module TelephoneNormalization
     # No domestic 0 found or pattern doesn't match
     input
   end
+
   private_class_method :remove_domestic_zero_after_country_code
 
   # Convert domestic format to E.164 with default country code (Japan: +81)
@@ -230,5 +233,6 @@ module TelephoneNormalization
     # Return as-is and let validation fail
     input
   end
+
   private_class_method :convert_domestic_format
 end

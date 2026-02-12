@@ -46,8 +46,8 @@ class OrgVerificationTest < ActionDispatch::IntegrationTest
          headers: @headers
 
     assert_response :redirect
-    # assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
-    assert_redirected_to sign_org_configuration_url(ri: "jp")
+    assert_redirected_to sign_org_configuration_totps_url(ri: "jp")
+    # assert_redirected_to sign_org_configuration_url(ri: "jp")
 
     @token.reload
     assert_not_nil @token.last_step_up_at
@@ -70,7 +70,7 @@ class OrgVerificationTest < ActionDispatch::IntegrationTest
          params: { verification: { code: "000000" } },
          headers: @headers
 
-    assert_response :redirect
-    # assert_response :unprocessable_content
+    # assert_response :redirect
+    assert_response :unprocessable_content
   end
 end

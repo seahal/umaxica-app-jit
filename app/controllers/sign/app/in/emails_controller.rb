@@ -110,6 +110,7 @@ module Sign
             end
           end
         end
+
         # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         private

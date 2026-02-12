@@ -106,6 +106,7 @@ module Sign
             render :new, status: :unprocessable_content
           end
         end
+
         # rubocop:enable Metrics/MethodLength
 
         def update

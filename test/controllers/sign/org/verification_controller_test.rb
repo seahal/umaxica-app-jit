@@ -30,7 +30,7 @@ class Sign::Org::VerificationControllerTest < ActionDispatch::IntegrationTest
     get sign_org_verification_url(scope: "configuration_email", return_to: return_to, ri: "jp"),
         headers: @headers
 
-    assert_response :success
+    assert_response :redirect
   end
 
   test "show handles recent verification" do

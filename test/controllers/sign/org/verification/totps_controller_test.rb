@@ -33,8 +33,8 @@ class Sign::Org::Verification::TotpsControllerTest < ActionDispatch::Integration
         headers: @headers
 
     get new_sign_org_verification_totp_url(ri: "jp"), headers: @headers
-    assert_response :redirect
-    # assert_response :success
+    assert_response :success
+    # assert_response :redirect
 
     # code = ROTP::TOTP.new(private_key).at(Time.current.to_i)
 

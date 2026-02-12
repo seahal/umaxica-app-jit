@@ -17,7 +17,7 @@
 
       <% { functional: 'accept_functional_cookies', performant: 'accept_performance_cookies', targetable: 'accept_targeting_cookies', consented: 'accept_consent_cookies' }.each do |field, label_key| %>
         <div>
-          <%= f.check_box field, { data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" }} %>
+          <%= f.check_box field, { data: { cookie_toggle_target: "checkbox", action: "change->cookie-toggle#toggle" } } %>
           <%= f.label field, t("apex.com.preference.cookie.edit.#{label_key}") %>
         </div>
       <% end %>

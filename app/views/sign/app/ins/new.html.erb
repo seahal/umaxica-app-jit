@@ -2,11 +2,12 @@
 <h1><%= t("sign.app.authentication.new.page_title") %></h1>
 <p><%= t("sign.app.authentication.new.description") %></p>
 
-<ul><li><%= link_to t("sign.app.authentication.new.links.email"), new_sign_app_in_email_path %></li>
-<li><%= link_to t("sign.app.authentication.new.links.passkey"), new_sign_app_in_passkey_path %>
-</li>
-<li><%= link_to t("sign.app.authentication.new.links.secret"), new_sign_app_in_secret_path %>
-</li>
+<ul>
+  <li><%= link_to t("sign.app.authentication.new.links.email"), new_sign_app_in_email_path %></li>
+  <li><%= link_to t("sign.app.authentication.new.links.passkey"), new_sign_app_in_passkey_path %>
+  </li>
+  <li><%= link_to t("sign.app.authentication.new.links.secret"), new_sign_app_in_secret_path %>
+  </li>
 </ul>
 
 <%= button_to "/auth/google_oauth2", method: :post, data: { turbo: false } do %>

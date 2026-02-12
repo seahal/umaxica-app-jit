@@ -14,9 +14,9 @@
           <%= "class=\"#{local_assigns[:class]}\"" if local_assigns[:class].present? %>
           <%= "disabled" if local_assigns[:disabled] %>
           <% if local_assigns[:data] %>
-            <% data.each do |k, v| %>
-              data-<%= k %>="<%= v %>"
-            <% end %>
+          <% data.each do |k, v| %>
+          data-<%= k %>="<%= v %>"
+          <% end %>
           <% end %>>
     <%= local_assigns[:label] || yield %>
   </button>

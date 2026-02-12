@@ -30,4 +30,22 @@ class AppPreferenceAuditLevelTest < ActiveSupport::TestCase
     assert_equal :has_many, association.macro
     assert_equal :restrict_with_error, association.options[:dependent]
   end
+
+  test "DEFAULTS includes INFO" do
+    assert_includes AppPreferenceAuditLevel::DEFAULTS, AppPreferenceAuditLevel::INFO
+  end
+
+  test "ensure_defaults! creates the INFO record" do
+    AppPreferenceAudit.delete_all
+    AppPreferenceAuditLevel.where(id: AppPreferenceAuditLevel::INFO).delete_all
+    assert_nil AppPreferenceAuditLevel.find_by(id: AppPreferenceAuditLevel::INFO)
+
+    AppPreferenceAuditLevel.ensure_defaults!
+    assert_not_nil AppPreferenceAuditLevel.find_by(id: AppPreferenceAuditLevel::INFO)
+  end
+
+  test "ensure_defaults! is idempotent" do
+    AppPreferenceAuditLevel.ensure_defaults!
+    assert_nothing_raised { AppPreferenceAuditLevel.ensure_defaults! }
+  end
 end

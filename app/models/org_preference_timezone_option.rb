@@ -27,5 +27,6 @@ class OrgPreferenceTimezoneOption < PreferenceRecord
     when ASIA_TOKYO then "Asia/Tokyo"
     end
   end
+
   private
 end

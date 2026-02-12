@@ -576,6 +576,45 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   # rubocop:enable Minitest/MultipleAssertions
 
   # rubocop:disable Minitest/MultipleAssertions
+  test "successful OTP verification recreates missing signup audit event" do
+    email = "missing_audit_event_signup@example.com"
+
+    UserAudit.where(event_id: UserAuditEvent::SIGNED_UP_WITH_EMAIL).delete_all
+    UserAuditEvent.where(id: UserAuditEvent::SIGNED_UP_WITH_EMAIL).delete_all
+
+    post sign_app_up_emails_url(ri: "jp"),
+         params: {
+           user_email: {
+             raw_address: email,
+             confirm_policy: "1",
+           },
+           "cf-turnstile-response": "test",
+         },
+         headers: default_headers
+
+    assert_response :redirect, "Expected redirect but got #{response.status}: #{response.body[0..500]}"
+    email_id = response.location.match(%r{/up/emails/([^/?]+)})[1]
+    user_email = UserEmail.find_by(public_id: email_id)
+    otp_data = user_email.get_otp
+    hotp = ROTP::HOTP.new(otp_data[:otp_private_key])
+    correct_code = hotp.at(otp_data[:otp_counter]).to_s
+
+    patch sign_app_up_email_url(user_email, ri: "jp"),
+          params: {
+            id: user_email.id,
+            user_email: {
+              pass_code: correct_code,
+            },
+          },
+          headers: default_headers
+
+    assert_redirected_to sign_app_configuration_path(ri: "jp")
+    assert UserAuditEvent.exists?(id: UserAuditEvent::SIGNED_UP_WITH_EMAIL)
+    assert UserAudit.exists?(event_id: UserAuditEvent::SIGNED_UP_WITH_EMAIL, subject_id: user_email.user_id)
+  end
+  # rubocop:enable Minitest/MultipleAssertions
+
+  # rubocop:disable Minitest/MultipleAssertions
   test "sets user session after successful registration" do
     email = "session_set@example.com"
 

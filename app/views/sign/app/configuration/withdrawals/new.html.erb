@@ -21,8 +21,8 @@
     <% end %>
 
     <%= form_with url: new_sign_app_configuration_withdrawal_path(ri: params[:ri]),
-            method: :get,
-            local: true do |f| %>
+                  method: :get,
+                  local: true do |f| %>
       <div>
         <%= f.check_box :ack_schedule_purge,
                         { checked: @schedule_form.ack_schedule_purge.to_s == "1" },
@@ -47,8 +47,8 @@
       <% end %>
 
       <%= form_with url: sign_app_configuration_withdrawal_path(ri: params[:ri]),
-            method: :patch,
-            local: true do |f| %>
+                    method: :patch,
+                    local: true do |f| %>
         <div>
           <%= f.check_box :ack_deactivate_today, {}, "1", "0" %>
           <%= f.label :ack_deactivate_today, t("sign.app.configuration.withdrawal.deactivate.ack_label") %>

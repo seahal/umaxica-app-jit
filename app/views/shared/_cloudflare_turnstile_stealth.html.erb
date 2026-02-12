@@ -24,7 +24,10 @@
           let widgetId = null;
 
           function ensureScript(callback) {
-              if (window.turnstileScriptLoaded) { callback(); return; }
+              if (window.turnstileScriptLoaded) {
+                  callback();
+                  return;
+              }
 
               if (!window.turnstileScriptLoading) {
                   window.turnstileScriptLoading = true;
@@ -44,7 +47,10 @@
                   document.head.appendChild(s);
               } else {
                   var iv = setInterval(function () {
-                      if (window.turnstileScriptLoaded) { clearInterval(iv); callback(); }
+                      if (window.turnstileScriptLoaded) {
+                          clearInterval(iv);
+                          callback();
+                      }
                   }, 100);
               }
           }

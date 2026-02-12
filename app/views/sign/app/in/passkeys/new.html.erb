@@ -7,12 +7,12 @@
   </div>
 
   <div
-       data-controller="passkey-authentication"
-       data-passkey-authentication-options-url-value="<%= options_sign_app_in_passkeys_path %>"
-       data-passkey-authentication-verification-url-value="<%= verification_sign_app_in_passkeys_path %>"
-       data-passkey-authentication-identifier-param-value="identifier"
-       data-passkey-authentication-turnstile-site-key-value="<%= Jit::Security::TurnstileConfig.stealth_site_key.to_s %>"
-       data-passkey-authentication-turnstile-error-message-value="<%= t("turnstile_error") %>">
+    data-controller="passkey-authentication"
+    data-passkey-authentication-options-url-value="<%= options_sign_app_in_passkeys_path %>"
+    data-passkey-authentication-verification-url-value="<%= verification_sign_app_in_passkeys_path %>"
+    data-passkey-authentication-identifier-param-value="identifier"
+    data-passkey-authentication-turnstile-site-key-value="<%= Jit::Security::TurnstileConfig.stealth_site_key.to_s %>"
+    data-passkey-authentication-turnstile-error-message-value="<%= t("turnstile_error") %>">
 
     <div>
       <label for="identifier">
