@@ -5,7 +5,8 @@ services:
       - DEVCONTAINER=1
       - RUBY_DEBUG_OPEN=false
     restart: unless-stopped
-    ports:  !reset [3002:3000]
+    ports: !reset
+      - "3002:3000"
     tty: true
     stdin_open: true
   primary:

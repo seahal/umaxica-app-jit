@@ -18,8 +18,7 @@
 #
 # Foreign Keys
 #
-#  fk_admin_notifications_on_staff_notification_id_cascade  (staff_notification_id => staff_notifications.id)
-#                                                           ON DELETE => cascade
+#  fk_admin_notifications_on_staff_notification_id_cascade  (staff_notification_id => staff_notifications.id) ON DELETE => cascade
 #
 
 class AdminNotification < NotificationRecord

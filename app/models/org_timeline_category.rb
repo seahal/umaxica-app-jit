@@ -16,10 +16,8 @@
 #
 # Foreign Keys
 #
-#  fk_org_timeline_categories_on_org_timeline_category_master_id  (org_timeline_category_master_id =>
-#                                                                  org_timeline_category_masters.id)
-#  fk_rails_...                                                   (org_timeline_id => org_timelines.id)
-#                                                                  ON DELETE => cascade
+#  fk_org_timeline_categories_on_org_timeline_category_master_id  (org_timeline_category_master_id => org_timeline_category_masters.id)
+#  fk_rails_...                                                   (org_timeline_id => org_timelines.id) ON DELETE => cascade
 #
 
 # frozen_string_literal: true

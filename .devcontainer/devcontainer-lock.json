@@ -5,6 +5,11 @@
       "resolved": "ghcr.io/devcontainers-extra/features/claude-code@sha256:cce04f0fb8313336f679c243f032338434d9386d4857c3d38e1253b1e3d62a00",
       "integrity": "sha256:cce04f0fb8313336f679c243f032338434d9386d4857c3d38e1253b1e3d62a00"
     },
+    "ghcr.io/devcontainers-extra/features/lefthook-asdf:1": {
+      "version": "1.0.3",
+      "resolved": "ghcr.io/devcontainers-extra/features/lefthook-asdf@sha256:7eeba1f61b4eda2004fdced224c39a775c00e248790f35407353252b48f3cc43",
+      "integrity": "sha256:7eeba1f61b4eda2004fdced224c39a775c00e248790f35407353252b48f3cc43"
+    },
     "ghcr.io/devcontainers/features/copilot-cli:1": {
       "version": "1.0.0",
       "resolved": "ghcr.io/devcontainers/features/copilot-cli@sha256:905c3bd16f12b57e4e68319838799f51d5540982a8911a68f1605f3562838c8b",

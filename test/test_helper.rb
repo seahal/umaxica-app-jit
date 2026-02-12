@@ -79,7 +79,7 @@ if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
     add_filter "public/"
     add_filter "node_modules/"
     add_filter "vendor/"
-    
+
     # Redundant schema files
     add_filter "db/schema.rb"
     add_filter "db/activity_schema.rb"
