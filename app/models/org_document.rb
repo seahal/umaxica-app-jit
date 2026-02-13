@@ -65,9 +65,9 @@ class OrgDocument < DocumentRecord
 
   has_many :org_document_versions, dependent: :delete_all, inverse_of: :org_document
   has_many :org_document_revisions, dependent: :delete_all, inverse_of: :org_document
-  has_many :org_document_audits,
+  has_many :org_document_behaviors,
            #         -> { where(subject_type: "OrgDocument") },
-           class_name: "OrgDocumentAudit",
+           class_name: "OrgDocumentBehavior",
            foreign_key: :subject_id,
            inverse_of: :org_document,
            dependent: :delete_all

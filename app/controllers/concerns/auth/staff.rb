@@ -50,7 +50,7 @@ module Auth
     end
 
     def audit_class
-      ::StaffAudit
+      ::StaffActivity
     end
 
     def resource_type

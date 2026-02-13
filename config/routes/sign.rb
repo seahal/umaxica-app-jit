@@ -117,7 +117,7 @@ scope module: :sign, as: :sign do
         namespace :telephones do
           resource :registration, only: %i(new create edit update), controller: :registrations
         end
-        resources :telephones, only: %i(index edit destroy)
+        resources :telephones, only: %i(index new edit create destroy)
         resource :apple, only: [:show, :destroy]
         # by the way, what is update mehtods for google here?
         resource :google, only: %i(show update destroy)

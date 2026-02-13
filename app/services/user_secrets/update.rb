@@ -3,7 +3,7 @@
 module UserSecrets
   class Update
     ACTION = "user_secret.update"
-    EVENT_ID = UserAuditEvent::USER_SECRET_UPDATED
+    EVENT_ID = UserActivityEvent::USER_SECRET_UPDATED
 
     Result = Struct.new(:secret, keyword_init: true)
 
@@ -42,7 +42,7 @@ module UserSecrets
     private
 
     def audit_class
-      @audit_class ||= @actor.is_a?(Staff) ? StaffAudit : UserAudit
+      @audit_class ||= @actor.is_a?(Staff) ? StaffActivity : UserActivity
     end
 
     def status_id_for(enabled_param)
@@ -53,8 +53,8 @@ module UserSecrets
 
     def ensure_audit_dependencies!
       ActivityRecord.connected_to(role: :writing) do
-        UserAuditEvent.find_or_create_by!(id: EVENT_ID)
-        UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+        UserActivityEvent.find_or_create_by!(id: EVENT_ID)
+        UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
       end
     end
   end

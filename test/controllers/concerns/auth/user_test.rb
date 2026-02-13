@@ -30,8 +30,8 @@ module Auth
       assert_equal UserToken, @controller.send(:token_class)
     end
 
-    test "audit_class returns UserAudit" do
-      assert_equal ::UserAudit, @controller.send(:audit_class)
+    test "audit_class returns UserActivity" do
+      assert_equal ::UserActivity, @controller.send(:audit_class)
     end
 
     test "resource_type returns user" do

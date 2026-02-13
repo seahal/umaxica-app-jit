@@ -79,7 +79,7 @@ class User < PrincipalRecord
   has_many :user_one_time_passwords,
            dependent: :destroy,
            inverse_of: :user
-  has_many :user_audits,
+  has_many :user_activities,
            foreign_key: :subject_id,
            dependent: :destroy,
            inverse_of: false
@@ -89,7 +89,7 @@ class User < PrincipalRecord
   has_many :user_memberships,
            dependent: :destroy,
            inverse_of: :user
-  has_many :staff_audits,
+  has_many :staff_activities,
            as: :actor,
            dependent: :destroy
   has_many :user_messages,

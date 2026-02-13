@@ -9,8 +9,8 @@ class IdColumnTypeTest < ActiveSupport::TestCase
   end
 
   test "polymorphic ids use bigint" do
-    assert_bigint_column(AppDocumentAudit, "actor_id")
-    assert_bigint_column(AppDocumentAudit, "subject_id")
+    assert_bigint_column(AppDocumentBehavior, "actor_id")
+    assert_bigint_column(AppDocumentBehavior, "subject_id")
 
     assert_bigint_column(PostVersion, "edited_by_id")
     assert_bigint_column(Post, "created_by_actor_id")

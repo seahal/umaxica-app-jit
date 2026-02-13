@@ -40,7 +40,7 @@ class StaffTelephone < OperatorRecord
   belongs_to :staff
 
   # Note: :number validation is now handled by Telephone concern (E.164 normalization)
-  validates :number, uniqueness: { case_sensitive: false }
+  validates :number, presence: true, uniqueness: { case_sensitive: false }
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }

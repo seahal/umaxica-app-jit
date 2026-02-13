@@ -6,6 +6,7 @@ require "ostruct"
 
 class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses, :user_telephone_statuses, :user_email_statuses
+  include ActiveJob::TestHelper
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -42,6 +43,37 @@ class Sign::App::Configuration::TelephonesControllerTest < ActionDispatch::Integ
     get new_sign_app_configuration_telephones_registration_url(ri: "jp"),
         headers: request_headers
     assert_response :success
+  end
+
+  test "create registers telephone without signup confirmation params" do
+    assert_enqueued_jobs 1, only: SmsDeliveryJob do
+      assert_difference("UserTelephone.count", 1) do
+        post sign_app_configuration_telephones_url(ri: "jp"),
+             params: { user_telephone: { raw_number: "+10000000008" } },
+             headers: request_headers
+      end
+    end
+
+    created = UserTelephone.order(created_at: :desc).first
+    assert_redirected_to edit_sign_app_configuration_telephone_url(created.id, ri: "jp")
+  end
+
+  test "create reuses existing telephone and sends sms when same number is submitted again" do
+    existing = UserTelephone.create!(
+      number: "+10000000012",
+      user: @user,
+      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    )
+
+    assert_enqueued_jobs 1, only: SmsDeliveryJob do
+      assert_no_difference("UserTelephone.count") do
+        post sign_app_configuration_telephones_url(ri: "jp"),
+             params: { user_telephone: { raw_number: "+10000000012" } },
+             headers: request_headers
+      end
+    end
+
+    assert_redirected_to edit_sign_app_configuration_telephone_url(existing.id, ri: "jp")
   end
 
   test "destroy removes telephone when not last method" do

@@ -14,12 +14,7 @@ BINDING=0.0.0.0
 OPEN_TELEMETRY=false
 # Node Environment
 NODE_ENV=development
-# Identifiers
-SINGLETON_DEFAULT_SALT=hoge # TODO: RE MOVE
-IDENTIFIER_REGION_CODE=392 # TODO: RE MOVE
-IDENTIFIER_INSTANCE_ID=0123456789 # TODO: RE MOVE
 # Region
-APEX_REGION=true # TODO: RE MOVE
 GLOBAL_MODE=true
 REGION_CODE=jp
 # Database Configuration
@@ -36,6 +31,7 @@ POSTGRESQL_OCCURRENCE_SUB=replica
 POSTGRESQL_ACTIVITY_PUB=primary
 POSTGRESQL_ACTIVITY_SUB=replica
 POSTGRESQL_BEHAVIOR_PUB=primary
+POSTGRESQL_BEHAVIOR_SUB=replica
 POSTGRESQL_GUEST_PUB=primary
 POSTGRESQL_GUEST_SUB=replica
 POSTGRESQL_IDENTITY_PUB=primary
@@ -79,7 +75,7 @@ RESEND_SMTP_USER_NAME=resend
 APEX_CORPORATE_URL=com.localhost
 APEX_SERVICE_URL=app.localhost
 APEX_STAFF_URL=org.localhost
-SIGN_SERVICE_URL=sign.umaxica.app
+SIGN_SERVICE_URL=sign.app.localhost
 SIGN_STAFF_URL=sign.org.localhost
 CORE_CORPORATE_URL=www.com.localhost
 CORE_SERVICE_URL=www.app.localhost
@@ -98,7 +94,6 @@ EDGE_SERVICE_URL=jp.umaxica.app
 EDGE_STAFF_URL=jp.umaxica.org
 STATUS_URL=status.umaxica.dev
 ASSET_URL=asset.localhost
-CSS_URL=css.localhost
 # JWT Configuration
 PREFERENCE_JWT_AUDIENCES=umaxica.app,umaxica.com,localhost
 JWT_CORPORATE_PRIVATE_KEY="-----BEGIN EC PRIVATE KEY-----\nMIGkAgEBBDD/EUvJBtMoDgkXKpEDM7ScEPlhYnxy6cggO9geUVd8DmxpzqYE5L/T\nVFzXKaloieOgBwYFK4EEACKhZANiAATpeKKqtOnn4uWa11Ovfy8tXgaE7NWL0t3b\nyddl35xWcheHbU7QDGfRSAr+0rR5HpmjDrbQgY3s0EbRX4bt3R0FjZRqi3QyRO24\n5R5s9vhX42LVcXMVY1aCJFdVW/XqrEg=\n-----END EC PRIVATE KEY-----\n"

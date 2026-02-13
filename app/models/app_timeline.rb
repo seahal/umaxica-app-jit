@@ -64,9 +64,9 @@ class AppTimeline < NewsRecord
 
   has_many :app_timeline_versions, dependent: :delete_all, inverse_of: :app_timeline
   has_many :app_timeline_revisions, dependent: :delete_all, inverse_of: :app_timeline
-  has_many :app_timeline_audits,
+  has_many :app_timeline_behaviors,
            -> { where(subject_type: "AppTimeline") },
-           class_name: "AppTimelineAudit",
+           class_name: "AppTimelineBehavior",
            foreign_key: :subject_id,
            inverse_of: :app_timeline,
            dependent: :delete_all

@@ -9,9 +9,9 @@ module Core
         class PreferenceControllerTest < ActionDispatch::IntegrationTest
           fixtures :com_preferences,
                    :com_preference_statuses,
-                   :com_preference_audits,
-                   :com_preference_audit_events,
-                   :com_preference_audit_levels,
+                   :com_preference_activities,
+                   :com_preference_activity_events,
+                   :com_preference_activity_levels,
                    :com_preference_languages,
                    :com_preference_language_options,
                    :com_preference_regions,
@@ -46,7 +46,7 @@ module Core
 
           test "should create new preference when cookie is missing" do
             assert_difference -> { ComPreference.count }, 1 do
-              assert_difference -> { ComPreferenceAudit.count }, 2 do
+              assert_difference -> { ComPreferenceActivity.count }, 2 do
                 get core_com_edge_v1_preference_url
                 assert_response :success
               end
@@ -64,10 +64,10 @@ module Core
             get core_com_edge_v1_preference_url
             assert_response :success
 
-            audit = ComPreferenceAudit.where(event_id: ComPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN).order(:created_at).last
+            audit = ComPreferenceActivity.where(event_id: ComPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN).order(:created_at).last
             assert_predicate audit, :present?
-            assert_equal ComPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN, audit.event_id
-            assert_equal ComPreferenceAuditLevel::INFO, audit.level_id
+            assert_equal ComPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN, audit.event_id
+            assert_equal ComPreferenceActivityLevel::INFO, audit.level_id
             assert_equal "ComPreference", audit.subject_type
           end
 

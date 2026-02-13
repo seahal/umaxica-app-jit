@@ -189,6 +189,12 @@ development:
     database: development_behavior_db
     host: <%= ENV["POSTGRESQL_BEHAVIOR_PUB"] || default_host %>
     migrations_paths: db/behavior_migrate
+  behavior_replica:
+    !!merge <<: *default
+    replica: true
+    database: development_behavior_db
+    host: <%= ENV["POSTGRESQL_BEHAVIOR_SUB"] || default_host %>
+    migrations_paths: db/behavior_migrate
   operator:
     !!merge <<: *default
     database: development_operator_db
@@ -392,6 +398,12 @@ test:
     !!merge <<: *test_default
     database: test_behavior_db
     host: <%= ENV["POSTGRESQL_BEHAVIOR_PUB"] || default_host %>
+    migrations_paths: db/behavior_migrate
+  behavior_replica:
+    !!merge <<: *test_default
+    replica: true
+    database: test_behavior_db
+    host: <%= ENV["POSTGRESQL_BEHAVIOR_SUB"] || default_host %>
     migrations_paths: db/behavior_migrate
   operator:
     !!merge <<: *test_default

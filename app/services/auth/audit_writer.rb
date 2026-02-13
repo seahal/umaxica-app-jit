@@ -71,8 +71,8 @@ module Auth
       end
 
       # Set resource using the appropriate setter method
-      # For UserAudit: user= or subject_id=/subject_type=
-      # For StaffAudit: staff= or subject_id=/subject_type=
+      # For UserActivity: user= or subject_id=/subject_type=
+      # For StaffActivity: staff= or subject_id=/subject_type=
       resource_type = infer_resource_type(audit_class, resource)
       if audit.respond_to?("#{resource_type}=")
         audit.public_send("#{resource_type}=", resource)
@@ -86,11 +86,11 @@ module Auth
     end
 
     # Infers resource type from audit class name
-    # UserAudit -> "user", StaffAudit -> "staff"
+    # UserActivity -> "user", StaffActivity -> "staff"
     def self.infer_resource_type(audit_class, resource)
-      # Try to extract from audit class name (UserAudit -> user)
+      # Try to extract from audit class name (UserActivity -> user)
       class_name = audit_class.name.demodulize
-      if class_name =~ /^(\w+)Audit$/
+      if class_name =~ /^(\w+)Activity$/
         Regexp.last_match(1).downcase
       else
         # Fallback to resource class name
@@ -104,7 +104,7 @@ module Auth
       return event_id if event_id.is_a?(Integer)
       return event_id unless event_id.is_a?(String)
 
-      event_class_name = audit_class.name.sub(/Audit\z/, "AuditEvent")
+      event_class_name = audit_class.name.sub(/Activity\z/, "ActivityEvent")
       event_class = event_class_name.safe_constantize
       return event_id unless event_class
       return event_id unless event_class.const_defined?(event_id)

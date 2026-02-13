@@ -27,7 +27,7 @@ module Sign
           end
 
           @user_email.destroy!
-          create_audit_event!(UserAuditEvent::EMAIL_REMOVED, subject: @user_email)
+          create_audit_event!(UserActivityEvent::EMAIL_REMOVED, subject: @user_email)
 
           redirect_to sign_app_configuration_emails_path,
                       notice: t("sign.app.configuration.email.destroy.success"),
@@ -38,11 +38,11 @@ module Sign
 
         def create_audit_event!(event_id, subject:)
           ActivityRecord.connected_to(role: :writing) do
-            UserAuditEvent.find_or_create_by!(id: event_id)
-            UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+            UserActivityEvent.find_or_create_by!(id: event_id)
+            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
           end
 
-          UserAudit.create!(
+          UserActivity.create!(
             actor_type: "User",
             actor_id: current_user.id,
             event_id: event_id,

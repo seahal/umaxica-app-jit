@@ -3,7 +3,7 @@
 require "test_helper"
 
 class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::IntegrationTest
-  fixtures :users, :user_statuses, :user_audit_events, :user_audit_levels
+  fixtures :users, :user_statuses, :user_activity_events, :user_activity_levels
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
@@ -13,7 +13,7 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
     @headers = as_user_headers(@user, host: @host)
 
     ActivityRecord.connected_to(role: :writing) do
-      UserAudit.delete_all
+      UserActivity.delete_all
     end
   end
 
@@ -33,13 +33,13 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
   test "shows only current user activity logs" do
     create_user_audit(
       user: @user,
-      event_id: UserAuditEvent::LOGGED_IN,
+      event_id: UserActivityEvent::LOGGED_IN,
       occurred_at: 2.minutes.ago,
       context: { tag: "my-login-event" },
     )
     create_user_audit(
       user: @other_user,
-      event_id: UserAuditEvent::LOGGED_IN,
+      event_id: UserActivityEvent::LOGGED_IN,
       occurred_at: 1.minute.ago,
       context: { tag: "other-user-event" },
     )
@@ -54,19 +54,19 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
   test "orders activity by occurred_at desc" do
     create_user_audit(
       user: @user,
-      event_id: UserAuditEvent::LOGGED_IN,
+      event_id: UserActivityEvent::LOGGED_IN,
       occurred_at: 3.hours.ago,
       context: { tag: "oldest-entry" },
     )
     create_user_audit(
       user: @user,
-      event_id: UserAuditEvent::LOGGED_IN,
+      event_id: UserActivityEvent::LOGGED_IN,
       occurred_at: 2.hours.ago,
       context: { tag: "middle-entry" },
     )
     create_user_audit(
       user: @user,
-      event_id: UserAuditEvent::LOGGED_IN,
+      event_id: UserActivityEvent::LOGGED_IN,
       occurred_at: 1.hour.ago,
       context: { tag: "newest-entry" },
     )
@@ -87,7 +87,7 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
     120.times do |i|
       create_user_audit(
         user: @user,
-        event_id: UserAuditEvent::LOGGED_IN,
+        event_id: UserActivityEvent::LOGGED_IN,
         occurred_at: base_time + i.minutes,
         context: { tag: "limit-entry-#{i}" },
       )
@@ -105,13 +105,13 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
   test "filters to login success events" do
     create_user_audit(
       user: @user,
-      event_id: UserAuditEvent::LOGGED_IN,
+      event_id: UserActivityEvent::LOGGED_IN,
       occurred_at: 2.minutes.ago,
       context: { tag: "login-success-event" },
     )
     create_user_audit(
       user: @user,
-      event_id: UserAuditEvent::ACCOUNT_WITHDRAWN,
+      event_id: UserActivityEvent::ACCOUNT_WITHDRAWN,
       occurred_at: 1.minute.ago,
       context: { tag: "non-login-event" },
     )
@@ -126,7 +126,7 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
   test "renders user agent summary and login method" do
     create_user_audit(
       user: @user,
-      event_id: UserAuditEvent::LOGGED_IN,
+      event_id: UserActivityEvent::LOGGED_IN,
       occurred_at: Time.current,
       context: {
         tag: "ua-method-entry",
@@ -145,11 +145,11 @@ class Sign::App::Configuration::ActivitiesControllerTest < ActionDispatch::Integ
   private
 
   def create_user_audit(user:, event_id:, occurred_at:, context:, ip_address: "203.0.113.25")
-    UserAudit.create!(
+    UserActivity.create!(
       actor_type: "User",
       actor_id: user.id,
       event_id: event_id,
-      level_id: UserAuditLevel::NEYO,
+      level_id: UserActivityLevel::NEYO,
       subject_id: user.id,
       subject_type: "User",
       occurred_at: occurred_at,

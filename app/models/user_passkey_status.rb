@@ -13,5 +13,8 @@ class UserPasskeyStatus < PrincipalRecord
   REVOKED = 3
   DELETED = 4
   NEYO = 5
-  has_many :user_passkeys, dependent: :restrict_with_error
+  has_many :user_passkeys,
+           foreign_key: :status_id,
+           inverse_of: :status,
+           dependent: :restrict_with_error
 end

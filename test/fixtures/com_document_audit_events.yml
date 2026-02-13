@@ -1,9 +1,0 @@
-# == Schema Information
-#
-# Table name: com_document_audit_events
-# Database name: activity
-#
-#  id :bigint           not null, primary key
-#
-created:
-  id: 1

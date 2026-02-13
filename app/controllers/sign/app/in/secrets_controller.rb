@@ -297,14 +297,14 @@ module Sign
 
         def audit_recovery_code_used!(user, secret)
           ActivityRecord.connected_to(role: :writing) do
-            UserAuditEvent.find_or_create_by!(id: UserAuditEvent::RECOVERY_CODE_USED)
-            UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+            UserActivityEvent.find_or_create_by!(id: UserActivityEvent::RECOVERY_CODE_USED)
+            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
           end
 
-          UserAudit.create!(
+          UserActivity.create!(
             actor_type: "User",
             actor_id: user.id,
-            event_id: UserAuditEvent::RECOVERY_CODE_USED,
+            event_id: UserActivityEvent::RECOVERY_CODE_USED,
             subject_id: secret.id.to_s,
             subject_type: "UserSecret",
             occurred_at: Time.current,

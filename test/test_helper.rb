@@ -27,37 +27,37 @@ require_relative "../app/controllers/concerns/auth/user"
 require_relative "../app/controllers/concerns/auth/staff"
 
 Rails.root.glob("test/support/**/*.rb").each { |f| require f }
-if defined?(UserAuditEvent)
-  UserAuditEvent.ensure_defaults!
+if defined?(UserActivityEvent)
+  UserActivityEvent.ensure_defaults!
 end
-if defined?(UserAuditLevel)
-  UserAuditLevel.ensure_defaults!
+if defined?(UserActivityLevel)
+  UserActivityLevel.ensure_defaults!
 end
-if defined?(StaffAuditLevel)
-  StaffAuditLevel.find_or_create_by!(id: StaffAuditLevel::NEYO)
+if defined?(StaffActivityLevel)
+  StaffActivityLevel.find_or_create_by!(id: StaffActivityLevel::NEYO)
 end
-if defined?(UserAuditEvent)
+if defined?(UserActivityEvent)
   [
-    UserAuditEvent::USER_SECRET_CREATED,
-    UserAuditEvent::USER_SECRET_REMOVED,
-    UserAuditEvent::USER_SECRET_UPDATED,
-  ].each { |id| UserAuditEvent.find_or_create_by!(id: id) }
+    UserActivityEvent::USER_SECRET_CREATED,
+    UserActivityEvent::USER_SECRET_REMOVED,
+    UserActivityEvent::USER_SECRET_UPDATED,
+  ].each { |id| UserActivityEvent.find_or_create_by!(id: id) }
 end
-if defined?(StaffAuditEvent)
+if defined?(StaffActivityEvent)
   [
-    StaffAuditEvent::STAFF_SECRET_CREATED,
-    StaffAuditEvent::STAFF_SECRET_REMOVED,
-    StaffAuditEvent::STAFF_SECRET_UPDATED,
-  ].each { |id| StaffAuditEvent.find_or_create_by!(id: id) }
+    StaffActivityEvent::STAFF_SECRET_CREATED,
+    StaffActivityEvent::STAFF_SECRET_REMOVED,
+    StaffActivityEvent::STAFF_SECRET_UPDATED,
+  ].each { |id| StaffActivityEvent.find_or_create_by!(id: id) }
 end
-if defined?(AppPreferenceAuditLevel)
-  AppPreferenceAuditLevel.find_or_create_by!(id: AppPreferenceAuditLevel::INFO)
+if defined?(AppPreferenceActivityLevel)
+  AppPreferenceActivityLevel.find_or_create_by!(id: AppPreferenceActivityLevel::INFO)
 end
-if defined?(ComPreferenceAuditLevel)
-  ComPreferenceAuditLevel.find_or_create_by!(id: ComPreferenceAuditLevel::INFO)
+if defined?(ComPreferenceActivityLevel)
+  ComPreferenceActivityLevel.find_or_create_by!(id: ComPreferenceActivityLevel::INFO)
 end
-if defined?(OrgPreferenceAuditLevel)
-  OrgPreferenceAuditLevel.find_or_create_by!(id: OrgPreferenceAuditLevel::INFO)
+if defined?(OrgPreferenceActivityLevel)
+  OrgPreferenceActivityLevel.find_or_create_by!(id: OrgPreferenceActivityLevel::INFO)
 end
 if ENV["RAILS_ENV"] == "test" && ENV["COVERAGE"] != "false"
   require "simplecov"
@@ -135,13 +135,13 @@ class ActiveSupport::TestCase
            :com_document_statuses,
            :com_timeline_statuses,
            :app_timeline_statuses,
-           :com_document_audit_levels,
-           :org_document_audit_levels,
-           :org_document_audit_events,
-           :app_timeline_audit_events,
-           :app_timeline_audit_levels,
-           :com_preference_audit_events,
-           :com_preference_audit_levels,
+           :com_document_behavior_levels,
+           :org_document_behavior_levels,
+           :org_document_behavior_events,
+           :app_timeline_behavior_events,
+           :app_timeline_behavior_levels,
+           :com_preference_activity_events,
+           :com_preference_activity_levels,
            :area_occurrence_statuses,
            :area_occurrences,
            :app_documents,
@@ -176,10 +176,10 @@ class ActiveSupport::TestCase
            :avatars,
            :post_statuses,
            :post_review_statuses,
-           :app_preference_audit_levels,
-           :org_preference_audit_levels,
-           :staff_audit_levels,
-           :user_audit_levels,
+           :app_preference_activity_levels,
+           :org_preference_activity_levels,
+           :staff_activity_levels,
+           :user_activity_levels,
            :org_timeline_statuses unless ENV["SKIP_DB"] == "1"
 
   # Load fixtures only when explicitly needed in individual test files

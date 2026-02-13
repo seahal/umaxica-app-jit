@@ -20,11 +20,10 @@
 #
 # Indexes
 #
-#  index_user_identity_passkeys_on_user_id      (user_id)
-#  index_user_identity_passkeys_on_webauthn_id  (webauthn_id) UNIQUE
-#  index_user_passkeys_on_public_id             (public_id) UNIQUE
-#  index_user_passkeys_on_status_id             (status_id)
-#  index_user_passkeys_on_webauthn_id           (webauthn_id) UNIQUE
+#  index_user_identity_passkeys_on_user_id  (user_id)
+#  index_user_passkeys_on_public_id         (public_id) UNIQUE
+#  index_user_passkeys_on_status_id         (status_id)
+#  index_user_passkeys_on_webauthn_id       (webauthn_id) UNIQUE
 #
 # Foreign Keys
 #

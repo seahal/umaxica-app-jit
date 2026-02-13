@@ -1,0 +1,9 @@
+# == Schema Information
+#
+# Table name: com_document_behavior_levels
+# Database name: activity
+#
+#  id :bigint           not null, primary key
+#
+neyo:
+  id: 1

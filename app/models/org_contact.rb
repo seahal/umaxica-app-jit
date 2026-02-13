@@ -50,6 +50,11 @@ class OrgContact < GuestRecord
              foreign_key: :status_id,
              inverse_of: :org_contacts
   has_many :org_contact_topics, dependent: :destroy, inverse_of: :org_contact
+  has_many :org_contact_behaviors,
+           class_name: "OrgContactBehavior",
+           foreign_key: :subject_id,
+           inverse_of: :org_contact,
+           dependent: :delete_all
 
   after_initialize do
     if new_record?

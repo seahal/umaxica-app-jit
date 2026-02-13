@@ -9,9 +9,9 @@ module Core
         class PreferenceControllerTest < ActionDispatch::IntegrationTest
           fixtures :org_preferences,
                    :org_preference_statuses,
-                   :org_preference_audits,
-                   :org_preference_audit_events,
-                   :org_preference_audit_levels,
+                   :org_preference_activities,
+                   :org_preference_activity_events,
+                   :org_preference_activity_levels,
                    :org_preference_languages,
                    :org_preference_language_options,
                    :org_preference_regions,
@@ -46,7 +46,7 @@ module Core
 
           test "should create new preference when cookie is missing" do
             assert_difference -> { OrgPreference.count }, 1 do
-              assert_difference -> { OrgPreferenceAudit.count }, 2 do
+              assert_difference -> { OrgPreferenceActivity.count }, 2 do
                 get core_org_edge_v1_preference_url
                 assert_response :success
               end
@@ -64,10 +64,10 @@ module Core
             get core_org_edge_v1_preference_url
             assert_response :success
 
-            audit = OrgPreferenceAudit.where(event_id: OrgPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN).order(:created_at).last
+            audit = OrgPreferenceActivity.where(event_id: OrgPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN).order(:created_at).last
             assert_predicate audit, :present?
-            assert_equal OrgPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN, audit.event_id
-            assert_equal OrgPreferenceAuditLevel::INFO, audit.level_id
+            assert_equal OrgPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN, audit.event_id
+            assert_equal OrgPreferenceActivityLevel::INFO, audit.level_id
             assert_equal "OrgPreference", audit.subject_type
           end
 

@@ -1,0 +1,10 @@
+# == Schema Information
+#
+# Table name: com_preference_activity_levels
+# Database name: activity
+#
+#  id :bigint           not null, primary key
+#
+
+info:
+  id: 1

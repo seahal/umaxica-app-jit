@@ -13,12 +13,12 @@ class ActivityRecordTest < ActiveSupport::TestCase
 
   test "can perform basic write and read via activity model" do
     temp_id = 99_991
-    UserAuditLevel.where(id: temp_id).delete_all
+    UserActivityLevel.where(id: temp_id).delete_all
 
-    record = UserAuditLevel.create!(id: temp_id)
+    record = UserActivityLevel.create!(id: temp_id)
     assert_equal temp_id, record.id
-    assert_equal record, UserAuditLevel.find(temp_id)
+    assert_equal record, UserActivityLevel.find(temp_id)
   ensure
-    UserAuditLevel.where(id: temp_id).delete_all
+    UserActivityLevel.where(id: temp_id).delete_all
   end
 end

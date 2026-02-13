@@ -9,7 +9,7 @@ class Sign::App::Configuration::TotpsControllerTest < ActionDispatch::Integratio
            :user_token_statuses,
            :user_token_kinds,
            :user_one_time_password_statuses,
-           :app_preference_audit_levels
+           :app_preference_activity_levels
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")

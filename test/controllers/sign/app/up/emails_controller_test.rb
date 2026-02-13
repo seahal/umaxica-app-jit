@@ -560,7 +560,7 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
     correct_code = hotp.at(otp_data[:otp_counter]).to_s
 
     initial_user_count = User.count
-    initial_audit_count = UserAudit.count
+    initial_audit_count = UserActivity.count
 
     # Submit correct OTP
     patch sign_app_up_email_url(user_email, ri: "jp"),
@@ -589,14 +589,14 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal UserStatus::VERIFIED_WITH_SIGN_UP, user.status_id
 
-    # Verify UserAudit was created
-    assert_equal initial_audit_count + 1, UserAudit.count
-    audit = UserAudit.last
+    # Verify UserActivity was created
+    assert_equal initial_audit_count + 1, UserActivity.count
+    audit = UserActivity.last
 
     assert_equal user.id.to_s, audit.user_id
     assert_equal user.id, audit.actor_id
     assert_equal "User", audit.actor_type
-    assert_equal UserAuditEvent::SIGNED_UP_WITH_EMAIL, audit.event_id
+    assert_equal UserActivityEvent::SIGNED_UP_WITH_EMAIL, audit.event_id
   end
   # rubocop:enable Minitest/MultipleAssertions
 
@@ -604,8 +604,8 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
   test "successful OTP verification recreates missing signup audit event" do
     email = "missing_audit_event_signup@example.com"
 
-    UserAudit.where(event_id: UserAuditEvent::SIGNED_UP_WITH_EMAIL).delete_all
-    UserAuditEvent.where(id: UserAuditEvent::SIGNED_UP_WITH_EMAIL).delete_all
+    UserActivity.where(event_id: UserActivityEvent::SIGNED_UP_WITH_EMAIL).delete_all
+    UserActivityEvent.where(id: UserActivityEvent::SIGNED_UP_WITH_EMAIL).delete_all
 
     post sign_app_up_emails_url(ri: "jp"),
          params: {
@@ -634,8 +634,8 @@ class Sign::App::Up::EmailsControllerTest < ActionDispatch::IntegrationTest
           headers: default_headers
 
     assert_redirected_to sign_app_configuration_path(ri: "jp")
-    assert UserAuditEvent.exists?(id: UserAuditEvent::SIGNED_UP_WITH_EMAIL)
-    assert UserAudit.exists?(event_id: UserAuditEvent::SIGNED_UP_WITH_EMAIL, subject_id: user_email.user_id)
+    assert UserActivityEvent.exists?(id: UserActivityEvent::SIGNED_UP_WITH_EMAIL)
+    assert UserActivity.exists?(event_id: UserActivityEvent::SIGNED_UP_WITH_EMAIL, subject_id: user_email.user_id)
   end
   # rubocop:enable Minitest/MultipleAssertions
 

@@ -338,15 +338,15 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     valid_pass_code = hotp.at(otp_counter).to_s
     test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
 
-    assert_difference -> { UserAudit.where(event_id: UserAuditEvent::LOGGED_IN).count }, 1 do
+    assert_difference -> { UserActivity.where(event_id: UserActivityEvent::LOGGED_IN).count }, 1 do
       patch sign_app_in_email_url(ri: "jp"),
             params: { user_email: { pass_code: valid_pass_code } },
             headers: { "Host" => @host }
     end
 
-    audit = UserAudit.order(created_at: :desc).first
+    audit = UserActivity.order(created_at: :desc).first
 
-    assert_equal UserAuditEvent::LOGGED_IN, audit.event_id
+    assert_equal UserActivityEvent::LOGGED_IN, audit.event_id
     assert_equal user, audit.user
   end
   # rubocop:enable Minitest/MultipleAssertions
@@ -402,15 +402,15 @@ class Sign::App::In::EmailsControllerTest < ActionDispatch::IntegrationTest
     otp_counter = 56_789
     test_email.store_otp(otp_private_key, otp_counter, 12.minutes.from_now.to_i)
 
-    assert_difference -> { UserAudit.where(event_id: UserAuditEvent::LOGIN_FAILED).count }, 1 do
+    assert_difference -> { UserActivity.where(event_id: UserActivityEvent::LOGIN_FAILED).count }, 1 do
       patch sign_app_in_email_url(ri: "jp"),
             params: { user_email: { pass_code: "000000" } },
             headers: { "Host" => @host }
     end
 
-    audit = UserAudit.order(created_at: :desc).first
+    audit = UserActivity.order(created_at: :desc).first
 
-    assert_equal UserAuditEvent::LOGIN_FAILED, audit.event_id
+    assert_equal UserActivityEvent::LOGIN_FAILED, audit.event_id
     assert_equal user, audit.user
   end
   # rubocop:enable Minitest/MultipleAssertions

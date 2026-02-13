@@ -51,7 +51,7 @@ module Auth
     end
 
     def audit_class
-      ::UserAudit
+      ::UserActivity
     end
 
     def resource_type

@@ -333,7 +333,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
     test "#{domain[:name]} domain reset destroy updates preference status to DELETED" do
       host!(domain[:host])
       pref, _token, _cookie_name = assert_preference_created(domain)
-      audit_class = "#{domain[:name].capitalize}PreferenceAudit".constantize
+      audit_class = "#{domain[:name].capitalize}PreferenceActivity".constantize
 
       # Record initial state
       initial_status = pref.status_id
@@ -356,7 +356,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
                       "Audit log should be created"
 
       # Verify audit log event
-      event_class = "#{domain[:name].capitalize}PreferenceAuditEvent".constantize
+      event_class = "#{domain[:name].capitalize}PreferenceActivityEvent".constantize
       audit = audit_class.where(subject_id: pref.id).order(id: :desc).first
       assert_equal event_class::RESET_BY_USER_DECISION, audit.event_id
     end
@@ -408,7 +408,7 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
     test "#{domain[:name]} domain reset logs database operations" do
       host!(domain[:host])
       _, _token, _cookie_name = assert_preference_created(domain)
-      "#{domain[:name].capitalize}PreferenceAudit".constantize
+      "#{domain[:name].capitalize}PreferenceActivity".constantize
 
       # Capture SQL queries
       queries = []
@@ -426,9 +426,9 @@ class ApexPreferenceTest < ActionDispatch::IntegrationTest
       update_queries = queries.select { |q| q.include?("UPDATE") && q.include?("preferences") }
       assert_not_empty update_queries, "Should have UPDATE query on preferences table"
 
-      # Verify INSERT query was executed on audit table
-      insert_queries = queries.select { |q| q.include?("INSERT") && q.include?("audit") }
-      assert_not_empty insert_queries, "Should have INSERT query on audit table"
+      # Verify INSERT query was executed on activity table
+      insert_queries = queries.select { |q| q.include?("INSERT") && q.include?("activit") }
+      assert_not_empty insert_queries, "Should have INSERT query on activity table"
 
       # Log for debugging
       Rails.logger.info "=== #{domain[:name]} reset DB operations ==="

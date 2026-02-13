@@ -10,9 +10,9 @@ module Core
         class PreferenceControllerTest < ActionDispatch::IntegrationTest
           fixtures :app_preferences,
                    :app_preference_statuses,
-                   :app_preference_audits,
-                   :app_preference_audit_events,
-                   :app_preference_audit_levels,
+                   :app_preference_activities,
+                   :app_preference_activity_events,
+                   :app_preference_activity_levels,
                    :app_preference_languages,
                    :app_preference_language_options,
                    :app_preference_regions,
@@ -47,7 +47,7 @@ module Core
 
           test "should create new preference when cookie is missing" do
             assert_difference -> { AppPreference.count }, 1 do
-              assert_difference -> { AppPreferenceAudit.count }, 2 do
+              assert_difference -> { AppPreferenceActivity.count }, 2 do
                 get core_app_edge_v1_preference_url
                 assert_response :success
               end
@@ -65,10 +65,10 @@ module Core
             get core_app_edge_v1_preference_url
             assert_response :success
 
-            audit = AppPreferenceAudit.where(event_id: AppPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN).order(:created_at).last
+            audit = AppPreferenceActivity.where(event_id: AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN).order(:created_at).last
             assert_predicate audit, :present?
-            assert_equal AppPreferenceAuditEvent::CREATE_NEW_PREFERENCE_TOKEN, audit.event_id
-            assert_equal AppPreferenceAuditLevel::INFO, audit.level_id
+            assert_equal AppPreferenceActivityEvent::CREATE_NEW_PREFERENCE_TOKEN, audit.event_id
+            assert_equal AppPreferenceActivityLevel::INFO, audit.level_id
             assert_equal "AppPreference", audit.subject_type
           end
 

@@ -3,7 +3,7 @@
 module UserSecrets
   class IssueRecovery
     ACTION = "user_secret.recovery_issue"
-    EVENT_ID = UserAuditEvent::RECOVERY_CODES_GENERATED
+    EVENT_ID = UserActivityEvent::RECOVERY_CODES_GENERATED
 
     Result = Struct.new(:secret, :raw_secret, keyword_init: true)
 
@@ -50,7 +50,7 @@ module UserSecrets
     private
 
     def audit_class
-      @audit_class ||= @actor.is_a?(Staff) ? StaffAudit : UserAudit
+      @audit_class ||= @actor.is_a?(Staff) ? StaffActivity : UserActivity
     end
 
     def revoke_existing_recovery_secrets!
@@ -61,8 +61,8 @@ module UserSecrets
 
     def ensure_audit_dependencies!
       ActivityRecord.connected_to(role: :writing) do
-        UserAuditEvent.find_or_create_by!(id: EVENT_ID)
-        UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+        UserActivityEvent.find_or_create_by!(id: EVENT_ID)
+        UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
       end
     end
   end

@@ -9,17 +9,23 @@ module Sign
       include Common::Otp
     end
 
-    def initiate_telephone_verification(user, number)
+    def initiate_telephone_verification(user, number, auto_accept_confirmations: false)
       return false if user.blank?
 
       # TODO: Rate limit check
 
-      @user_telephone = user.user_telephones.build(raw_number: number)
+      existing_user_telephone = find_existing_user_telephone(user, number)
+      @user_telephone = existing_user_telephone || user.user_telephones.build(raw_number: number)
+      @user_telephone.raw_number = number if existing_user_telephone
       @user_telephone.user_telephone_status_id = UserTelephoneStatus::UNVERIFIED
       @user_telephone.skip_user_presence_validation = false
+      if auto_accept_confirmations
+        @user_telephone.confirm_policy = true
+        @user_telephone.confirm_using_mfa = true
+      end
 
       # Delete existing unverified
-      if @user_telephone.number_digest.present?
+      if @user_telephone.number_digest.present? && existing_user_telephone.blank?
         UserTelephone.where(
           number_digest: @user_telephone.number_digest,
           user_id: user.id,
@@ -38,6 +44,13 @@ module Sign
       send_telephone_verification_sms(@user_telephone, otp_number)
 
       true
+    end
+
+    def find_existing_user_telephone(user, number)
+      digest = IdentifierBlindIndex.bidx_for_telephone(number)
+      return nil if digest.blank?
+
+      user.user_telephones.find_by(number_digest: digest)
     end
 
     def complete_telephone_verification(id, submitted_code)

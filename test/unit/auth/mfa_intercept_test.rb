@@ -88,7 +88,7 @@ class Auth::MfaInterceptUnitTest < ActiveSupport::TestCase
 
         def token_class = UserToken
 
-        def audit_class = ::UserAudit
+        def audit_class = ::UserActivity
 
         def resource_type = "user"
 

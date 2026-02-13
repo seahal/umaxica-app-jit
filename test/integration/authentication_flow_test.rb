@@ -9,8 +9,8 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     @host = ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")
     @user = users(:one)
     # Ensure master data needed for audit
-    UserAuditEvent.ensure_defaults! if UserAuditEvent.respond_to?(:ensure_defaults!)
-    UserAuditLevel.ensure_defaults! if UserAuditLevel.respond_to?(:ensure_defaults!)
+    UserActivityEvent.ensure_defaults! if UserActivityEvent.respond_to?(:ensure_defaults!)
+    UserActivityLevel.ensure_defaults! if UserActivityLevel.respond_to?(:ensure_defaults!)
 
     # Ensure user is active for refresh to work
     # We update status to something active if available, or just rely on 'active?' returning true.
@@ -66,10 +66,10 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
   test "audit event is created on refresh" do
     # Ensure master data exists for this test to pass (or fail if missing as expected)
-    if UserAuditEvent.respond_to?(:ensure_defaults!)
-      UserAuditEvent.ensure_defaults!
-    elsif !UserAuditEvent.exists?(id: UserAuditEvent::TOKEN_REFRESHED)
-      UserAuditEvent.create!(id: UserAuditEvent::TOKEN_REFRESHED) rescue nil
+    if UserActivityEvent.respond_to?(:ensure_defaults!)
+      UserActivityEvent.ensure_defaults!
+    elsif !UserActivityEvent.exists?(id: UserActivityEvent::TOKEN_REFRESHED)
+      UserActivityEvent.create!(id: UserActivityEvent::TOKEN_REFRESHED) rescue nil
     end
 
     token_record = UserToken.create!(
@@ -89,8 +89,8 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
     # Check audit using subject fields
     assert(
-      UserAudit.exists?(
-        event_id: UserAuditEvent::TOKEN_REFRESHED,
+      UserActivity.exists?(
+        event_id: UserActivityEvent::TOKEN_REFRESHED,
         subject_id: @user.id,
         subject_type: "User",
       ),
@@ -100,8 +100,8 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
 
   test "S1: audit failure does not block authentication (refresh succeeds)" do
     # Ensure master data exists
-    UserAuditEvent.ensure_defaults! if UserAuditEvent.respond_to?(:ensure_defaults!)
-    UserAuditLevel.ensure_defaults! if UserAuditLevel.respond_to?(:ensure_defaults!)
+    UserActivityEvent.ensure_defaults! if UserActivityEvent.respond_to?(:ensure_defaults!)
+    UserActivityLevel.ensure_defaults! if UserActivityLevel.respond_to?(:ensure_defaults!)
 
     token_record = UserToken.create!(
       user: @user,
@@ -144,8 +144,8 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     # We'll test this by accessing a guest_only page with valid refresh cookie
     # and verifying redirect to after_login_path happens (proving auth succeeded)
 
-    UserAuditEvent.ensure_defaults! if UserAuditEvent.respond_to?(:ensure_defaults!)
-    UserAuditLevel.ensure_defaults! if UserAuditLevel.respond_to?(:ensure_defaults!)
+    UserActivityEvent.ensure_defaults! if UserActivityEvent.respond_to?(:ensure_defaults!)
+    UserActivityLevel.ensure_defaults! if UserActivityLevel.respond_to?(:ensure_defaults!)
 
     token_record = UserToken.create!(
       user: @user,

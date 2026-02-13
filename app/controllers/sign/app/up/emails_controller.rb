@@ -170,14 +170,14 @@ module Sign
         end
 
         def create_signup_audit!
-          event_id = UserAuditEvent::SIGNED_UP_WITH_EMAIL
+          event_id = UserActivityEvent::SIGNED_UP_WITH_EMAIL
 
           ActivityRecord.connected_to(role: :writing) do
-            UserAuditEvent.find_or_create_by!(id: event_id)
-            UserAuditLevel.find_or_create_by!(id: UserAuditLevel::NEYO)
+            UserActivityEvent.find_or_create_by!(id: event_id)
+            UserActivityLevel.find_or_create_by!(id: UserActivityLevel::NEYO)
           end
 
-          audit = UserAudit.new(
+          audit = UserActivity.new(
             actor_type: "User",
             actor_id: @user.id,
             event_id: event_id,

@@ -4,7 +4,7 @@ require "test_helper"
 
 class Sign::App::Configuration::SessionsControllerTest < ActionDispatch::IntegrationTest
   fixtures :users, :user_statuses, :user_token_statuses, :user_token_kinds,
-           :app_preference_audit_levels, :app_preference_audit_events
+           :app_preference_activity_levels, :app_preference_activity_events
 
   setup do
     host! ENV.fetch("SIGN_SERVICE_URL", "sign.app.localhost")

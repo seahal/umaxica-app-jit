@@ -1,0 +1,21 @@
+# == Schema Information
+#
+# Table name: app_timeline_behavior_levels
+# Database name: activity
+#
+#  id :bigint           not null, primary key
+#
+neyo:
+  id: 1
+
+debug:
+  id: 2
+
+info:
+  id: 3
+
+warn:
+  id: 4
+
+error:
+  id: 5

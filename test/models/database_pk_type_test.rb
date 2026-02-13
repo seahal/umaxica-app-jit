@@ -50,8 +50,8 @@ class DatabasePkTypeTest < ActiveSupport::TestCase
   end
 
   test "activity schema tables use bigint primary keys" do
-    assert_bigint_pk(StaffAuditEvent)
-    assert_bigint_pk(UserAuditLevel)
+    assert_bigint_pk(StaffActivityEvent)
+    assert_bigint_pk(UserActivityLevel)
   end
 
   test "models with code column use citext" do

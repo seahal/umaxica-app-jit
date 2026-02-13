@@ -32,7 +32,7 @@ module Sign
             tel_params = params.expect(user_telephone: [:raw_number, :number])
             number = tel_params[:raw_number] || tel_params[:number]
 
-            unless initiate_telephone_verification(user, number)
+            unless initiate_telephone_verification(user, number, auto_accept_confirmations: true)
               render :new, status: :unprocessable_content
               return
             end

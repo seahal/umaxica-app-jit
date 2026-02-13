@@ -54,12 +54,15 @@ class UserTelephone < PrincipalRecord
   belongs_to :user, optional: true, inverse_of: :user_telephones
 
   # Note: :number validation is now handled by Telephone concern (E.164 normalization)
+  validates :number, uniqueness: { case_sensitive: false }
+  validates :number_bidx, uniqueness: true, allow_nil: true
+  validates :number_digest, uniqueness: true, allow_nil: true
+  validates :user, presence: true, unless: :skip_user_presence_validation
   validates :otp_attempts_count, presence: true, numericality: { only_integer: true }
   validates :otp_counter, presence: true
   validates :otp_private_key, presence: true, length: { maximum: 255 }
   validates :user_identity_telephone_status_id, numericality: { only_integer: true }
   validate :ensure_unique_number_digest
-  validate :require_user_presence
   validate :enforce_user_telephone_limit, on: :create
   before_validation :set_number_digests
 
@@ -83,12 +86,6 @@ class UserTelephone < PrincipalRecord
     if self.class.where(number_digest: number_digest).where.not(id: id).exists?
       errors.add(:number, :taken)
     end
-  end
-
-  def require_user_presence
-    return if skip_user_presence_validation
-
-    errors.add(:user, :blank) if user.blank?
   end
 
   def enforce_user_telephone_limit

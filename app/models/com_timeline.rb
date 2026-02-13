@@ -66,9 +66,9 @@ class ComTimeline < NewsRecord
 
   has_many :com_timeline_versions, dependent: :delete_all, inverse_of: :com_timeline
   has_many :com_timeline_revisions, dependent: :delete_all, inverse_of: :com_timeline
-  has_many :com_timeline_audits,
+  has_many :com_timeline_behaviors,
            -> { where(subject_type: "ComTimeline") },
-           class_name: "ComTimelineAudit",
+           class_name: "ComTimelineBehavior",
            foreign_key: :subject_id,
            inverse_of: :com_timeline,
            dependent: :delete_all

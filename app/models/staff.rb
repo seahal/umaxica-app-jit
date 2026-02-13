@@ -52,12 +52,12 @@ class Staff < OperatorRecord
   has_many :staff_passkeys,
            dependent: :destroy,
            inverse_of: :staff
-  has_many :staff_audits,
+  has_many :staff_activities,
            -> { where(subject_type: "Staff") },
            foreign_key: :subject_id,
            dependent: :nullify,
            inverse_of: false
-  has_many :user_audits,
+  has_many :user_activities,
            as: :actor,
            dependent: :nullify
   has_many :staff_secrets,

@@ -5,9 +5,9 @@ require "base64"
 
 module Sign::App::Up
   class TelephonesControllerTest < ActionDispatch::IntegrationTest
-    fixtures :app_preference_audit_levels, :app_preference_audit_events,
+    fixtures :app_preference_activity_levels, :app_preference_activity_events,
              :user_statuses, :user_telephone_statuses,
-             :user_audit_events, :user_audit_levels
+             :user_activity_events, :user_activity_levels
     include ActiveJob::TestHelper
 
     setup do
@@ -238,8 +238,8 @@ module Sign::App::Up
         user_telephone: { pass_code: code },
       }
 
-      signup_audit = UserAudit.where(
-        event_id: UserAuditEvent::SIGNED_UP_WITH_TELEPHONE,
+      signup_audit = UserActivity.where(
+        event_id: UserActivityEvent::SIGNED_UP_WITH_TELEPHONE,
         actor_id: user.id,
       ).last
       assert_not_nil signup_audit

@@ -72,9 +72,9 @@ module AuthorizationAudit
   end
 
   def create_user_authorization_audit(user, log_data)
-    audit = UserAudit.new(
+    audit = UserActivity.new(
       actor: user,
-      event_id: UserAuditEvent::AUTHORIZATION_FAILED,
+      event_id: UserActivityEvent::AUTHORIZATION_FAILED,
       ip_address: log_data[:ip_address],
       occurred_at: log_data[:timestamp],
     )
@@ -86,9 +86,9 @@ module AuthorizationAudit
   end
 
   def create_staff_authorization_audit(staff, log_data)
-    audit = StaffAudit.new(
+    audit = StaffActivity.new(
       actor: staff,
-      event_id: StaffAuditEvent::AUTHORIZATION_FAILED,
+      event_id: StaffActivityEvent::AUTHORIZATION_FAILED,
       ip_address: log_data[:ip_address],
       occurred_at: log_data[:timestamp],
     )

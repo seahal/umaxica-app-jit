@@ -27,7 +27,7 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     }
   end
 
-  test "create registers telephone for current user" do
+  test "create registers telephone for current user without signup confirmation params" do
     assert_enqueued_jobs 1, only: SmsDeliveryJob do
       assert_difference("UserTelephone.count", 1) do
         post sign_app_configuration_telephones_registration_url(ri: "jp"),
@@ -46,5 +46,37 @@ class Sign::App::Configuration::Telephones::RegistrationsControllerTest < Action
     job = enqueued_jobs.last
     assert_equal SmsDeliveryJob, job[:job]
     assert_equal "+10000000009", job[:args].first["to"]
+  end
+
+  test "create returns 422 for invalid number" do
+    assert_no_difference("UserTelephone.count") do
+      post sign_app_configuration_telephones_registration_url(ri: "jp"),
+           params: { user_telephone: { raw_number: "invalid-number" } },
+           headers: request_headers
+    end
+
+    assert_response :unprocessable_content
+  end
+
+  test "create reuses existing telephone and sends sms when same number is submitted again" do
+    existing = UserTelephone.create!(
+      number: "+10000000011",
+      user: @user,
+      user_telephone_status_id: UserTelephoneStatus::VERIFIED,
+    )
+
+    assert_enqueued_jobs 1, only: SmsDeliveryJob do
+      assert_no_difference("UserTelephone.count") do
+        post sign_app_configuration_telephones_registration_url(ri: "jp"),
+             params: { user_telephone: { raw_number: "+10000000011" } },
+             headers: request_headers
+      end
+    end
+
+    assert_response :redirect
+    assert_redirected_to edit_sign_app_configuration_telephones_registration_url(ri: "jp")
+
+    reused = UserTelephone.find(existing.id)
+    assert_equal UserTelephoneStatus::UNVERIFIED, reused.user_telephone_status_id
   end
 end

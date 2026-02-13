@@ -29,7 +29,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (category_id => app_contact_categories.id)
-#  fk_rails_...  (status_id => app_contact_statuses.id) ON DELETE => nullify
+#  fk_rails_...  (status_id => app_contact_statuses.id) ON DELETE => restrict
 #
 require "test_helper"
 

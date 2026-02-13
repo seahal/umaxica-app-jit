@@ -3,7 +3,7 @@
 module StaffSecrets
   class Create
     ACTION = "staff_secret.create"
-    EVENT_ID = StaffAuditEvent::STAFF_SECRET_CREATED
+    EVENT_ID = StaffActivityEvent::STAFF_SECRET_CREATED
 
     Result = Struct.new(:secret, :raw_secret, keyword_init: true)
 
@@ -25,11 +25,11 @@ module StaffSecrets
       secret.password = raw_secret
       secret.staff_secret_status_id = status_id_for(@params[:enabled])
 
-      StaffAudit.transaction do
+      StaffActivity.transaction do
         StaffSecret.transaction do
           ensure_audit_dependencies!
           secret.save!
-          StaffAudit.create!(
+          StaffActivity.create!(
             actor: @actor,
             subject_type: "StaffSecret",
             subject_id: secret.id.to_s,
@@ -53,8 +53,8 @@ module StaffSecrets
 
     def ensure_audit_dependencies!
       ActivityRecord.connected_to(role: :writing) do
-        StaffAuditEvent.find_or_create_by!(id: EVENT_ID)
-        StaffAuditLevel.find_or_create_by!(id: StaffAuditLevel::NEYO)
+        StaffActivityEvent.find_or_create_by!(id: EVENT_ID)
+        StaffActivityLevel.find_or_create_by!(id: StaffActivityLevel::NEYO)
       end
     end
   end

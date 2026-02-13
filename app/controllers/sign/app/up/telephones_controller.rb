@@ -295,10 +295,10 @@ module Sign
             end
 
             # Audit record
-            audit = UserAudit.new
+            audit = UserActivity.new
             audit.actor_type = "User"
             audit.actor_id = user.id
-            audit.event_id = UserAuditEvent::SIGNED_UP_WITH_TELEPHONE
+            audit.event_id = UserActivityEvent::SIGNED_UP_WITH_TELEPHONE
             audit.subject_id = user.id.to_s
             audit.subject_type = "User"
             audit.save!

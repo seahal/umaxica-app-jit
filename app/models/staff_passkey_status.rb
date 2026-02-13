@@ -13,5 +13,8 @@ class StaffPasskeyStatus < OperatorRecord
   ACTIVE = 1
   REVOKED = 2
 
-  has_many :staff_passkeys, dependent: :restrict_with_error
+  has_many :staff_passkeys,
+           foreign_key: :status_id,
+           inverse_of: :status,
+           dependent: :restrict_with_error
 end

@@ -439,15 +439,15 @@ module Preference
     end
 
     def preference_audit_class
-      @preference_audit_class ||= "#{preference_class.name}Audit".constantize
+      @preference_audit_class ||= "#{preference_class.name}Activity".constantize
     end
 
     def preference_audit_event_class
-      @preference_audit_event_class ||= "#{preference_class.name}AuditEvent".constantize
+      @preference_audit_event_class ||= "#{preference_class.name}ActivityEvent".constantize
     end
 
     def preference_audit_level_class
-      @preference_audit_level_class ||= "#{preference_class.name}AuditLevel".constantize
+      @preference_audit_level_class ||= "#{preference_class.name}ActivityLevel".constantize
     end
 
     def preference_status_class

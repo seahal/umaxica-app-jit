@@ -55,7 +55,7 @@ class AppPreference < PreferenceRecord
           foreign_key: :preference_id,
           inverse_of: :preference,
           dependent: :destroy
-  has_many :app_preference_audits,
+  has_many :app_preference_activities,
            foreign_key: :subject_id,
            inverse_of: :app_preference,
            dependent: :destroy

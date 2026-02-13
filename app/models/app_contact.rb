@@ -29,7 +29,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (category_id => app_contact_categories.id)
-#  fk_rails_...  (status_id => app_contact_statuses.id) ON DELETE => nullify
+#  fk_rails_...  (status_id => app_contact_statuses.id) ON DELETE => restrict
 #
 
 class AppContact < GuestRecord
@@ -50,6 +50,11 @@ class AppContact < GuestRecord
   has_many :app_contact_topics, dependent: :destroy, inverse_of: :app_contact
   has_many :app_contact_emails, dependent: :destroy, inverse_of: :app_contact
   has_many :app_contact_telephones, dependent: :destroy, inverse_of: :app_contact
+  has_many :app_contact_behaviors,
+           class_name: "AppContactBehavior",
+           foreign_key: :subject_id,
+           inverse_of: :app_contact,
+           dependent: :delete_all
 
   after_initialize do
     if new_record?

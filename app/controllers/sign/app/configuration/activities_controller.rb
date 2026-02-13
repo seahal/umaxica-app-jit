@@ -4,10 +4,10 @@ module Sign
   module App
     module Configuration
       class ActivitiesController < ApplicationController
-        LOGIN_EVENT_IDS = [UserAuditEvent::LOGGED_IN, UserAuditEvent::LOGIN_SUCCESS].freeze
+        LOGIN_EVENT_IDS = [UserActivityEvent::LOGGED_IN, UserActivityEvent::LOGIN_SUCCESS].freeze
         EVENT_LABELS = {
-          UserAuditEvent::LOGGED_IN => "logged_in",
-          UserAuditEvent::LOGIN_SUCCESS => "login_success",
+          UserActivityEvent::LOGGED_IN => "logged_in",
+          UserActivityEvent::LOGIN_SUCCESS => "login_success",
         }.freeze
         SENSITIVE_CONTEXT_PATTERNS = %w(
           user_agent
@@ -29,7 +29,7 @@ module Sign
         def index
           @activities = current_user_activities.limit(100)
         rescue StandardError
-          @activities = UserAudit.none
+          @activities = UserActivity.none
         end
 
         def show
@@ -39,9 +39,9 @@ module Sign
 
         private
 
-        # UserAudit is currently written with numeric user.id in subject_id.
+        # UserActivity is currently written with numeric user.id in subject_id.
         def current_user_activities
-          UserAudit
+          UserActivity
             .where(subject_type: "User", subject_id: current_user.id, event_id: LOGIN_EVENT_IDS)
             .order(Arel.sql("COALESCE(occurred_at, created_at) DESC"))
         end

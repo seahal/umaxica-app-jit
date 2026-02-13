@@ -28,8 +28,8 @@
 #
 # Foreign Keys
 #
-#  fk_com_contacts_on_status_id_nullify  (status_id => com_contact_statuses.id) ON DELETE => nullify
-#  fk_rails_...                          (category_id => com_contact_categories.id)
+#  fk_rails_...  (category_id => com_contact_categories.id)
+#  fk_rails_...  (status_id => com_contact_statuses.id) ON DELETE => restrict
 #
 require "test_helper"
 

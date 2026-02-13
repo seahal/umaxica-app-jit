@@ -64,8 +64,8 @@ class AppDocument < DocumentRecord
 
   has_many :app_document_versions, dependent: :delete_all, inverse_of: :app_document
   has_many :app_document_revisions, dependent: :delete_all, inverse_of: :app_document
-  has_many :app_document_audits,
-           class_name: "AppDocumentAudit",
+  has_many :app_document_behaviors,
+           class_name: "AppDocumentBehavior",
            foreign_key: :subject_id,
            inverse_of: :app_document,
            dependent: :delete_all

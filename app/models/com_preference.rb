@@ -55,7 +55,7 @@ class ComPreference < PreferenceRecord
           foreign_key: :preference_id,
           inverse_of: :preference,
           dependent: :destroy
-  has_many :com_preference_audits,
+  has_many :com_preference_activities,
            foreign_key: :subject_id,
            inverse_of: :com_preference,
            dependent: :destroy

@@ -60,9 +60,9 @@ class OrgTimeline < NewsRecord
 
   has_many :org_timeline_versions, dependent: :delete_all, inverse_of: :org_timeline
   has_many :org_timeline_revisions, dependent: :delete_all, inverse_of: :org_timeline
-  has_many :org_timeline_audits,
+  has_many :org_timeline_behaviors,
            -> { where(subject_type: "OrgTimeline") },
-           class_name: "OrgTimelineAudit",
+           class_name: "OrgTimelineBehavior",
            foreign_key: :subject_id,
            inverse_of: :org_timeline,
            dependent: :delete_all
